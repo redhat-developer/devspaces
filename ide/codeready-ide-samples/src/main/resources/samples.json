@@ -1,0 +1,464 @@
+[
+  {
+    "name": "kitchensink-example",
+    "displayName": "kitchensink-example",
+    "path": "/kitchensink-example",
+    "description": "This is the kitchensink JBoss quickstart app",
+    "projectType": "maven",
+    "mixins": [],
+    "attributes": {
+      "language": [
+        "java"
+      ]
+    },
+    "modules": [],
+    "problems": [],
+    "source": {
+      "type": "git",
+      "location": "https://github.com/openshift-quickstart/kitchensink-example.git",
+      "parameters": {}
+    },
+    "commands": [
+      {
+        "name": "build",
+        "type": "mvn",
+        "commandLine": "mvn -f ${current.project.path}/pom.xml clean install",
+        "attributes": {
+          "previewUrl": "",
+          "goal": "Build"
+        }
+      },
+      {
+        "name": "build and run in debug",
+        "type": "mvn",
+        "commandLine": "mvn -f ${current.project.path}/pom.xml clean install\ncp ${current.project.path}/target/*.war /opt/eap/standalone/deployments/ROOT.war\nunset JAVA_OPTS\n/opt/eap/bin/standalone.sh -b 0.0.0.0 --debug 8000",
+        "attributes": {
+          "previewUrl": "${server.eap}",
+          "goal": "Run"
+        }
+      },
+      {
+        "name": "hot update",
+        "type": "mvn",
+        "commandLine": "mvn -f ${current.project.path}/pom.xml clean install\ncp ${current.project.path}/target/*.war /opt/eap/standalone/deployments/ROOT.war",
+        "attributes": {
+          "previewUrl": "${server.eap}",
+          "goal": "Run"
+        }
+      }
+    ],
+    "links": [],
+    "category": "Samples",
+    "tags": [
+      "eap"
+    ]
+  },
+  {
+    "name": "spring-boot-http-booster",
+    "displayName": "spring-boot-http-booster",
+    "path": "/spring-boot-http-booster",
+    "description": "Quickstart to expose a REST Greeting endpoint using SpringBoot and Apache Tomcat in embedded mode",
+    "projectType": "maven",
+    "mixins": [],
+    "attributes": {
+      "language": [
+        "java"
+      ]
+    },
+    "modules": [],
+    "problems": [],
+    "source": {
+      "type": "git",
+      "location": "https://github.com/snowdrop/spring-boot-http-booster",
+      "parameters": {}
+    },
+    "commands": [
+      {
+        "name": "build",
+        "type": "mvn",
+        "commandLine": "mvn -f ${current.project.path}/pom.xml clean install",
+        "attributes": {
+          "previewUrl": "",
+          "goal": "Build"
+        }
+      },
+      {
+        "name": "run",
+        "type": "mvn",
+        "commandLine": "mvn -f ${current.project.path}/pom.xml spring-boot:run",
+        "attributes": {
+          "previewUrl": "${server.springboot}",
+          "goal": "Run"
+        }
+      },
+      {
+        "name": "debug",
+        "type": "mvn",
+        "commandLine": "mvn -f ${current.project.path}/pom.xml spring-boot:run -Drun.jvmArguments=\"-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000\"",
+        "attributes": {
+          "previewUrl": "${server.springboot}",
+          "goal": "Debug"
+        }
+      }
+    ],
+    "links": [],
+    "category": "Samples",
+    "tags": [
+      "spring-boot"
+    ]
+  },
+  {
+    "name": "wfswarm-rest-http",
+    "displayName": "wfswarm-rest-http",
+    "path": "/wfswarm-rest-http",
+    "description": "Quickstart to expose a REST Greeting endpoint using Wildfly Swarm",
+    "projectType": "maven",
+    "mixins": [],
+    "attributes": {
+      "language": [
+        "java"
+      ]
+    },
+    "modules": [],
+    "problems": [],
+    "source": {
+      "type": "git",
+      "location": "https://github.com/wildfly-swarm-openshiftio-boosters/wfswarm-rest-http",
+      "parameters": {}
+    },
+    "commands": [
+      {
+        "name": "build",
+        "type": "mvn",
+        "attributes": {
+          "previewUrl": "",
+          "goal": "Build"
+        },
+        "commandLine": "export MAVEN_OPTS='-Xms20m'\nmvn clean install -f ${current.project.path}/pom.xml -DskipTests"
+      },
+      {
+        "name": "run",
+        "type": "custom",
+        "attributes": {
+          "previewUrl": "${server.wildfly}",
+          "goal": "Run"
+        },
+        "commandLine": "cd ${current.project.path}\njava -jar target/*-thorntail.jar -Djava.net.preferIPv4Stack=true"
+      }
+    ],
+    "links": [],
+    "category": "Samples",
+    "tags": [
+      "wildfly-swarm"
+    ]
+  },
+  {
+    "name": "vertx-http-booster",
+    "displayName": "vertx-http-booster",
+    "path": "/vertx-http-booster",
+    "description": "HTTP Vert.x Booster",
+    "projectType": "maven",
+    "mixins": [],
+    "attributes": {
+      "language": [
+        "java"
+      ]
+    },
+    "modules": [],
+    "problems": [],
+    "source": {
+      "type": "git",
+      "location": "https://github.com/openshiftio-vertx-boosters/vertx-http-booster",
+      "parameters": {}
+    },
+    "commands": [],
+    "links": [],
+    "category": "Samples",
+    "tags": [
+      "vert.x"
+    ]
+  },
+  {
+    "name": "dotnet-web-simple",
+    "displayName": "dotnet-web-simple",
+    "path": "/dotnet-web-simple",
+    "description": "A simple .NET 2.0 web sample.",
+    "projectType": "csharp",
+    "mixins": [],
+    "attributes": {
+      "language": [
+        "dotnet"
+      ]
+    },
+    "modules": [],
+    "problems": [],
+    "source": {
+      "type": "git",
+      "location": "https://github.com/che-samples/dotnet-web-simple.git",
+      "parameters": {}
+    },
+    "commands": [
+      {
+        "name": "update dependencies",
+        "type": "custom",
+        "commandLine": "cd ${current.project.path} \ndotnet restore",
+        "attributes": {
+          "previewUrl": "",
+          "goal": "Build"
+        }
+      },
+      {
+        "name": "run",
+        "type": "custom",
+        "commandLine": "cd ${current.project.path} \ndotnet run",
+        "attributes": {
+          "previewUrl": "${server.dotnet}",
+          "goal": "Run"
+        }
+      }
+    ],
+    "links": [],
+    "category": "Samples",
+    "tags": [
+      "Dotnet"
+    ]
+  },
+  {
+    "name": "web-php-simple",
+    "displayName": "web-php-simple",
+    "path": "/web-php-simple",
+    "description": "A hello world PHP script.",
+    "projectType": "php",
+    "mixins": [],
+    "attributes": {
+      "language": [
+        "php"
+      ]
+    },
+    "modules": [],
+    "problems": [],
+    "source": {
+      "type": "git",
+      "location": "https://github.com/che-samples/web-php-simple.git",
+      "parameters": {}
+    },
+    "commands": [],
+    "links": [],
+    "category": "Samples",
+    "tags": [
+      "php"
+    ]
+  },
+  {
+    "name": "cakephp-ex",
+    "displayName": "cakephp-ex",
+    "path": "/cakephp-ex",
+    "description": "CakePHP Example",
+    "projectType": "php",
+    "mixins": [],
+    "attributes": {
+      "language": [
+        "php"
+      ]
+    },
+    "modules": [],
+    "problems": [],
+    "source": {
+      "type": "git",
+      "location": "https://github.com/sclorg/cakephp-ex",
+      "parameters": {}
+    },
+    "commands": [
+      {
+        "name": "install dependencies",
+        "type": "custom",
+        "commandLine": "cd ${current.project.path}\ncomposer install 2>&1",
+        "attributes": {
+          "previewUrl": "",
+          "goal": "Run"
+        }
+      }
+    ],
+    "links": [],
+    "category": "Samples",
+    "tags": [
+      "php"
+    ]
+  },
+  {
+    "name": "console-python3-simple",
+    "displayName": "console-python3.5-simple",
+    "path": "/console-python3-simple",
+    "description": "Simple Python3.5 Project.",
+    "projectType": "python",
+    "mixins": [],
+    "attributes": {
+      "language": [
+        "python"
+      ]
+    },
+    "modules": [],
+    "problems": [],
+    "source": {
+      "type": "git",
+      "location": "https://github.com/che-samples/console-python3-simple.git",
+      "parameters": {}
+    },
+    "commands": [
+      {
+        "name": "run",
+        "type": "custom",
+        "commandLine": "cd ${current.project.path} \npython main.py",
+        "attributes": {
+          "previewUrl": "",
+          "goal": "Run"
+        }
+      }
+    ],
+    "links": [],
+    "category": "Samples",
+    "tags": [
+      "python"
+    ]
+  },
+  {
+    "name": "c-simple-console",
+    "displayName": "c-simple-console",
+    "path": "/c-simple-console",
+    "description": "A simple Hello World in C.",
+    "projectType": "c",
+    "mixins": [],
+    "attributes": {},
+    "modules": [],
+    "problems": [],
+    "source": {
+      "type": "git",
+      "location": "https://github.com/che-samples/c-simple-console.git",
+      "parameters": {}
+    },
+    "commands": [
+      {
+        "name": "build and run",
+        "type": "custom",
+        "commandLine": "cd ${current.project.path} \ngcc -o Hello Hello.c \n./Hello",
+        "attributes": {
+          "previewUrl": "",
+          "goal": "Run"
+        }
+      }
+    ],
+    "links": [],
+    "category": "Samples",
+    "tags": [
+      "c"
+    ]
+  },
+  {
+    "name": "console-cpp-simple",
+    "displayName": "console-cpp-simple",
+    "path": "/console-cpp-simple",
+    "description": "The app will print Hello World to the console.",
+    "projectType": "cpp",
+    "mixins": [],
+    "attributes": {
+      "language": [
+        "cpp"
+      ]
+    },
+    "modules": [],
+    "problems": [],
+    "source": {
+      "type": "git",
+      "location": "https://github.com/che-samples/console-cpp-simple.git",
+      "parameters": {}
+    },
+    "commands": [
+      {
+        "name": "build and run",
+        "type": "custom",
+        "commandLine": "cd ${current.project.path} \nmake \n./a.out",
+        "attributes": {
+          "previewUrl": "",
+          "goal": "Run"
+        }
+      }
+    ],
+    "links": [],
+    "category": "Samples",
+    "tags": [
+      "cpp"
+    ]
+  },
+  {
+    "name": "web-nodejs-simple",
+    "displayName": "web-nodejs-simple",
+    "path": "/web-nodejs-simple",
+    "description": "NodeJS Hello World",
+    "projectType": "node-js",
+    "mixins": [],
+    "attributes": {
+      "language": [
+        "javascript"
+      ]
+    },
+    "modules": [],
+    "problems": [],
+    "source": {
+      "type": "git",
+      "location": "https://github.com/che-samples/web-nodejs-sample",
+      "parameters": {}
+    },
+    "commands": [
+      {
+        "name": "run",
+        "type": "custom",
+        "commandLine": "cd ${current.project.path} \nnode app/app.js",
+        "attributes": {
+          "previewUrl": "${server.3000/tcp}",
+          "goal": "Run"
+        }
+      }
+    ],
+    "links": [],
+    "category": "Samples",
+    "tags": [
+      "nodejs"
+    ]
+  },
+  {
+    "name": "web-go-simple",
+    "displayName": "web-go-simple",
+    "path": "/web-go-simple",
+    "description": "Simple Go Hello World.",
+    "projectType": "golang",
+    "mixins": [],
+    "attributes": {
+      "language": [
+        "go"
+      ]
+    },
+    "modules": [],
+    "problems": [],
+    "source": {
+      "type": "git",
+      "location": "https://github.com/che-samples/web-go-simple.git",
+      "parameters": {}
+    },
+    "commands": [
+      {
+        "name": "run",
+        "type": "custom",
+        "commandLine": "cd ${current.project.path} \ngo get -d \ngo run main.go",
+        "attributes": {
+          "previewUrl": "${server.8080/tcp}",
+          "goal": "Run"
+        }
+      }
+    ],
+    "links": [],
+    "category": "Samples",
+    "tags": [
+      "go"
+    ]
+  }
+]

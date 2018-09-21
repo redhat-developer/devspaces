@@ -1,0 +1,79 @@
+.Dockerfile
+# Eclipse  #
+###################
+
+*.launch
+.classpath
+.project
+.settings/
+target/
+bin/
+test-output/
+maven-eclipse.xml
+
+# Idea #
+##################
+*.iml
+*.ipr
+*.iws
+.idea/
+
+.vscode/
+
+# Compiled source #
+###################
+!*.com/
+*.class
+*.dll
+*.exe
+*.o
+*.so
+
+# Packages #
+############
+# it's better to unpack these files and commit the raw source
+# git has its own built in compression methods
+*.7z
+*.dmg
+*.gz
+*.iso
+*.jar
+*.rar
+*.tar
+*.zip
+*.war
+*.ear
+
+
+
+# Logs and databases #
+######################
+*.log
+*.sqlite
+npm-debug.log.*
+
+# OS generated files #
+######################
+.DS_Store
+ehthumbs.db
+Icon?
+Thumbs.db
+*/overlays
+*~
+
+# Che files #
+#############
+.che
+dockerfiles/che/eclipse-che.tar.gz
+dockerfiles/che/eclipse-che/
+.unison*
+docs/_site
+docs/.sass-cache
+docs/.jekyll-metadata
+docs/assets/imgs
+!assembly/assembly-main/src/assembly/bin/
+
+# NodeJs modules #
+##################
+plugins/plugin-terminal-ui/node_modules/
+plugins/plugin-terminal-ui/build/

@@ -1,0 +1,938 @@
+[
+  {
+    "id": "java-default",
+    "creator": "ide",
+    "name": "Java 1.8",
+    "description": "Default Java Stack with OpenJDK 1.8, Maven 3.5",
+    "scope": "general",
+    "tags": [
+      "eap",
+      "maven",
+      "java"
+    ],
+    "components": [
+      {
+        "name": "RHEL",
+        "version": "7.4"
+      },
+      {
+        "name": "OpenJDK",
+        "version": "1.8.0_151"
+      },
+      {
+        "name": "Maven",
+        "version": "3.5.0"
+      },
+      {
+        "name": "EAP",
+        "version": "7.1"
+      }
+    ],
+    "workspaceConfig": {
+      "environments": {
+        "default": {
+          "machines": {
+            "dev-machine": {
+              "installers": [
+                "org.eclipse.che.exec", "org.eclipse.che.terminal", "org.eclipse.che.ws-agent"
+              ],
+              "servers": {
+                "eap" : {
+                  "port" : "8080",
+                  "protocol" : "http"
+                },
+                "eap-debug" : {
+                  "port" : "8000",
+                  "protocol" : "http"
+                }
+              },
+              "attributes" : {
+                "memoryLimitBytes": "2147483648"
+              }
+            }
+          },
+          "recipe": {
+            "content": "docker-registry.default.svc:5000/openshift/rhel-base-jdk8",
+            "type": "dockerimage"
+          }
+        }
+      },
+      "name": "default",
+      "defaultEnv": "default",
+      "description": null,
+      "commands": [
+        {
+          "commandLine": "mvn clean install -f ${current.project.path}/pom.xml",
+          "name": "build",
+          "type": "mvn",
+          "attributes": {
+            "previewUrl": "",
+            "goal": "Build"
+          }
+        }
+      ]
+    },
+    "stackIcon": {
+      "name": "type-java.svg",
+      "mediaType": "image/svg+xml"
+    }
+  },
+  {
+    "id": "java10-default",
+    "creator": "ide",
+    "name": "Java 10.0.1",
+    "description": "Default Java Stack with OpenJDK 10.0.1, Maven 3.5",
+    "scope": "general",
+    "tags": [
+      "eap",
+      "maven",
+      "java"
+    ],
+    "components": [
+      {
+        "name": "RHEL",
+        "version": "7.4"
+      },
+      {
+        "name": "OpenJDK",
+        "version": "10.0.1"
+      },
+      {
+        "name": "Maven",
+        "version": "3.5.0"
+      },
+      {
+        "name": "EAP",
+        "version": "7.1"
+      }
+    ],
+    "workspaceConfig": {
+      "environments": {
+        "default": {
+          "machines": {
+            "dev-machine": {
+              "installers": [
+                "org.eclipse.che.exec", "org.eclipse.che.terminal", "org.eclipse.che.ws-agent"
+              ],
+              "servers": {
+                "eap" : {
+                  "port" : "8080",
+                  "protocol" : "http"
+                },
+                "eap-debug" : {
+                  "port" : "8000",
+                  "protocol" : "http"
+                }
+              },
+              "attributes" : {
+                "memoryLimitBytes": "2147483648"
+              }
+            }
+          },
+          "recipe": {
+            "content": "docker-registry.default.svc:5000/openshift/rhel-openjdk10",
+            "type": "dockerimage"
+          }
+        }
+      },
+      "name": "default",
+      "defaultEnv": "default",
+      "description": null,
+      "commands": [
+        {
+          "commandLine": "mvn clean install -f ${current.project.path}/pom.xml",
+          "name": "build",
+          "type": "mvn",
+          "attributes": {
+            "previewUrl": "",
+            "goal": "Build"
+          }
+        }
+      ]
+    },
+    "stackIcon": {
+      "name": "type-java.svg",
+      "mediaType": "image/svg+xml"
+    }
+  },
+  {
+    "id": "vert.x-default",
+    "creator": "ide",
+    "name": "Vert.x",
+    "description": "Default Vert.x Stack",
+    "scope": "general",
+    "tags": [
+      "vert.x"
+    ],
+    "components": [
+      {
+        "name": "RHEL",
+        "version": "7.4"
+      },
+      {
+        "name": "OpenJDK",
+        "version": "1.8.0_151"
+      },
+      {
+        "name": "Maven",
+        "version": "3.5.0"
+      }
+    ],
+    "workspaceConfig": {
+      "environments": {
+        "default": {
+          "machines": {
+            "dev-machine": {
+              "installers": [
+                "org.eclipse.che.exec", "org.eclipse.che.terminal", "org.eclipse.che.ws-agent"
+              ],
+              "servers": {
+                "vertx" : {
+                  "port" : "8080",
+                  "protocol" : "http"
+                },
+                "vertx-debug" : {
+                  "port" : "5005",
+                  "protocol" : "http"
+                }
+              },
+              "attributes" : {
+                "memoryLimitBytes": "2147483648"
+              }
+            }
+          },
+          "recipe": {
+            "content": "docker-registry.default.svc:5000/openshift/rhel-base-jdk8",
+            "type": "dockerimage"
+          }
+        }
+      },
+      "name": "default",
+      "defaultEnv": "default",
+      "description": null,
+      "commands": [
+        {
+          "commandLine": "mvn clean install -f ${current.project.path}/pom.xml",
+          "name": "build",
+          "type": "mvn",
+          "attributes": {
+            "previewUrl": "",
+            "goal": "Build"
+          }
+        }, {
+          "commandLine": "mvn compile vertx:run -f ${current.project.path}/pom.xml -Dvertx.disableDnsResolver=true",
+          "name": "run",
+          "type": "custom",
+          "attributes": {
+            "previewUrl": "${server.vertx}",
+            "goal": "Run"
+          }
+        }, {
+          "commandLine": "mvn compile vertx:debug -f ${current.project.path}/pom.xml -Dvertx.disableDnsResolver=true",
+          "name": "debug",
+          "type": "custom",
+          "attributes": {
+            "previewUrl": "${server.vertx}",
+            "goal": "Debug"
+          }
+        }
+      ]
+    },
+    "stackIcon": {
+      "name": "type-vertx.svg",
+      "mediaType": "image/svg+xml"
+    }
+  },
+  {
+    "id": "eap-default",
+    "creator": "ide",
+    "name": "Java EAP",
+    "description": "Default Java Stack with OpenJDK 1.8, Maven 3.5 and EAP 7.1",
+    "scope": "general",
+    "tags": [
+      "eap",
+      "maven",
+      "java"
+    ],
+    "components": [
+      {
+        "name": "RHEL",
+        "version": "7.4"
+      },
+      {
+        "name": "OpenJDK",
+        "version": "1.8.0_151"
+      },
+      {
+        "name": "Maven",
+        "version": "3.5.0"
+      },
+      {
+        "name": "EAP",
+        "version": "7.1"
+      }
+    ],
+    "workspaceConfig": {
+      "environments": {
+        "default": {
+          "machines": {
+            "dev-machine": {
+              "installers": [
+                "org.eclipse.che.exec", "org.eclipse.che.terminal", "org.eclipse.che.ws-agent"
+              ],
+              "servers": {
+                "eap" : {
+                  "port" : "8080",
+                  "protocol" : "http"
+                },
+                "eap-debug" : {
+                  "port" : "8000",
+                  "protocol" : "http"
+                }
+              },
+              "attributes" : {
+                "memoryLimitBytes": "2147483648"
+              }
+            }
+          },
+          "recipe": {
+            "content": "docker-registry.default.svc:5000/openshift/rhel-base-jdk8",
+            "type": "dockerimage"
+          }
+        }
+      },
+      "name": "default",
+      "defaultEnv": "default",
+      "description": null,
+      "commands": [
+        {
+          "commandLine": "mvn clean install -f ${current.project.path}/pom.xml",
+          "name": "build",
+          "type": "mvn",
+          "attributes": {
+            "previewUrl": "",
+            "goal": "Build"
+          }
+        }
+      ]
+    },
+    "stackIcon": {
+      "name": "type-jboss.svg",
+      "mediaType": "image/svg+xml"
+    }
+  },
+  {
+    "id": "wildfly-swarm-default",
+    "creator": "ide",
+    "name": "Wildfly Swarm",
+    "description": "Default Wildfly Swarm Stack",
+    "scope": "general",
+    "tags": [
+      "wildfly-swarm",
+      "maven",
+      "java"
+    ],
+    "components": [
+      {
+        "name": "RHEL",
+        "version": "7.4"
+      },
+      {
+        "name": "OpenJDK",
+        "version": "1.8.0_151"
+      },
+      {
+        "name": "Maven",
+        "version": "3.5.0"
+      }
+    ],
+    "workspaceConfig": {
+      "environments": {
+        "default": {
+          "machines": {
+            "dev-machine": {
+              "installers": [
+                "org.eclipse.che.exec", "org.eclipse.che.terminal", "org.eclipse.che.ws-agent"
+              ],
+              "servers": {
+                "wildfly" : {
+                  "port" : "8080",
+                  "protocol" : "http"
+                },
+                "wildfly-debug" : {
+                  "port" : "8000",
+                  "protocol" : "http"
+                }
+              },
+              "attributes" : {
+                "memoryLimitBytes": "2147483648"
+              }
+            }
+          },
+          "recipe": {
+            "content": "docker-registry.default.svc:5000/openshift/rhel-base-jdk8",
+            "type": "dockerimage"
+          }
+        }
+      },
+      "name": "default",
+      "defaultEnv": "default",
+      "description": null,
+      "commands": [
+        {
+          "commandLine": "mvn clean install -f ${current.project.path}/pom.xml -DskipTests",
+          "name": "build",
+          "type": "mvn",
+          "attributes": {
+            "previewUrl": "",
+            "goal": "Build"
+          }
+        }
+      ]
+    },
+    "stackIcon": {
+      "name": "type-wildfly-swarm.svg",
+      "mediaType": "image/svg+xml"
+    }
+  },
+  {
+    "id": "spring-boot-default",
+    "creator": "ide",
+    "name": "Spring Boot",
+    "description": "Default Spring Boot Stack",
+    "scope": "general",
+    "tags": [
+      "spring-boot",
+      "maven",
+      "java"
+    ],
+    "components": [
+      {
+        "name": "RHEL",
+        "version": "7.4"
+      },
+      {
+        "name": "OpenJDK",
+        "version": "1.8.0_151"
+      },
+      {
+        "name": "Maven",
+        "version": "3.5.0"
+      }
+    ],
+    "workspaceConfig": {
+      "environments": {
+        "default": {
+          "machines": {
+            "dev-machine": {
+              "installers": [
+                "org.eclipse.che.exec", "org.eclipse.che.terminal", "org.eclipse.che.ws-agent"
+              ],
+              "servers": {
+                "springboot" : {
+                  "port" : "8080",
+                  "protocol" : "http"
+                }
+              },
+              "attributes" : {
+                "memoryLimitBytes": "2147483648"
+              }
+            }
+          },
+          "recipe": {
+            "content": "docker-registry.default.svc:5000/openshift/rhel-base-jdk8",
+            "type": "dockerimage"
+          }
+        }
+      },
+      "name": "default",
+      "defaultEnv": "default",
+      "description": null,
+      "commands": [
+        {
+          "commandLine": "mvn clean install -f ${current.project.path}/pom.xml",
+          "name": "build",
+          "type": "mvn",
+          "attributes": {
+            "previewUrl": "",
+            "goal": "Build"
+          }
+        }
+      ]
+    },
+    "stackIcon": {
+      "name": "type-spring-boot.svg",
+      "mediaType": "image/svg+xml"
+    }
+  },
+  {
+    "id": "cpp-default",
+    "creator": "ide",
+    "name": "C/C++",
+    "description": "Stack with C/CPP developer tools",
+    "scope": "general",
+    "tags": [
+      "c",
+      "cpp",
+      "gcc",
+      "g++",
+      "make",
+      "cmake"
+    ],
+    "components": [
+      {
+        "name": "RHEL",
+        "version": "7.4"
+      },
+      {
+        "name": "make",
+        "version": "3.82"
+      },
+      {
+        "name": "cmake",
+        "version": "2.8.12.2"
+      },
+      {
+        "name": "gcc",
+        "version": "4.8.5"
+      },
+      {
+        "name": "g++",
+        "version": "4.8.5"
+      },
+      {
+        "name": "llvm-toolset",
+        "version": "5.0.1-4"
+      }
+    ],
+    "workspaceConfig": {
+      "environments": {
+        "default": {
+          "machines": {
+            "dev-machine": {
+              "installers": [
+                "org.eclipse.che.exec", "org.eclipse.che.terminal", "org.eclipse.che.ws-agent"
+              ],
+              "servers": {},
+              "attributes" : {
+                "memoryLimitBytes": "2147483648"
+              }
+            }
+          },
+          "recipe": {
+            "content": "docker-registry.default.svc:5000/openshift/rhel-c-cpp",
+            "type": "dockerimage"
+          }
+        }
+      },
+      "name": "default",
+      "defaultEnv": "default",
+      "description": null,
+      "commands": [
+        {
+          "name": "run",
+          "type": "custom",
+          "commandLine": "cd ${current.project.path} && make && ./a.out",
+          "attributes": {
+            "previewUrl": "",
+            "goal": "Run"
+          }
+        }
+      ]
+    },
+    "stackIcon": {
+      "name": "type-cpp.svg",
+      "mediaType": "image/svg+xml"
+    }
+  },
+  {
+    "id": "dotnet-default",
+    "creator": "ide",
+    "name": ".NET",
+    "description": ".NET 2.0 Stack with .NET Core SDK and Runtime",
+    "scope": "general",
+    "tags": [
+      "dotnet"
+    ],
+    "components": [
+      {
+        "name": "RHEL",
+        "version": "7.4"
+      },
+      {
+        "name": ".NET Runtime",
+        "version": "2.0.3"
+      },
+      {
+        "name": ".NET SDK",
+        "version": "2.0.3"
+      }
+    ],
+    "workspaceConfig": {
+      "environments": {
+        "default": {
+          "machines": {
+            "dev-machine": {
+              "installers": [
+                "org.eclipse.che.exec", "org.eclipse.che.terminal", "org.eclipse.che.ws-agent", "org.eclipse.che.ls.csharp"
+              ],
+              "servers": {
+                "dotnet" : {
+                  "port" : "5000",
+                  "protocol" : "http"
+                }
+              },
+              "attributes" : {
+                "memoryLimitBytes": "2147483648"
+              }
+            }
+          },
+          "recipe": {
+            "content": "docker-registry.default.svc:5000/openshift/rhel-dotnet",
+            "type": "dockerimage"
+          }
+        }
+      },
+      "name": "default",
+      "defaultEnv": "default",
+      "description": null,
+      "commands": [
+        {
+          "name": "update dependencies",
+          "type": "custom",
+          "commandLine": "cd ${current.project.path} && dotnet restore",
+          "attributes": {
+            "previewUrl": "",
+            "goal": "Build"
+          }
+        },
+        {
+          "name": "run",
+          "type": "custom",
+          "commandLine": "cd ${current.project.path} && dotnet run",
+          "attributes": {
+            "previewUrl": "${server.dot.net.server}",
+            "goal": "Run"
+          }
+        }
+      ]
+    },
+    "stackIcon": {
+      "name": "type-dotnet.svg",
+      "mediaType": "image/svg+xml"
+    }
+  },
+  {
+    "id": "go-default",
+    "creator": "ide",
+    "name": "Go",
+    "description": "Golang stack",
+    "scope": "general",
+    "tags": ["go"],
+    "components": [
+      {
+        "name": "RHEL",
+        "version": "7.4"
+      },
+      {
+        "name": "Golang",
+        "version": "1.9.4"
+      }
+    ],
+    "workspaceConfig": {
+      "environments": {
+        "default": {
+          "machines": {
+            "dev-machine": {
+              "installers": [
+                "org.eclipse.che.exec", "org.eclipse.che.terminal", "org.eclipse.che.ws-agent", "org.eclipse.che.ls.golang"
+              ],
+              "servers": {
+                "8080/tcp" : {
+                  "port" : "8080",
+                  "protocol" : "http"
+                }
+              },
+              "attributes" : {
+                "memoryLimitBytes": "2147483648"
+              }
+            }
+          },
+          "recipe": {
+            "content": "docker-registry.default.svc:5000/openshift/rhel-golang",
+            "type": "dockerimage"
+          }
+        }
+      },
+      "name": "default",
+      "defaultEnv": "default",
+      "description": null,
+      "commands": [
+        {
+          "name": "run",
+          "type": "custom",
+          "commandLine": "cd ${current.project.path} && go get -d && go run main.go",
+          "attributes": {
+            "previewUrl": "${server.8080/tcp}",
+            "goal": "Run"
+          }
+        }
+      ]
+    },
+    "stackIcon": {
+      "name": "type-go.svg",
+      "mediaType": "image/svg+xml"
+    }
+  },
+
+  {
+    "id": "node-default",
+    "creator": "ide",
+    "name": "Node",
+    "description": "Stack with NodeJS 8x",
+    "scope": "general",
+    "tags": [
+      "nodejs",
+      "npm"
+    ],
+    "components": [
+      {
+        "name": "RHEL",
+        "version": "7.4"
+      },
+      {
+        "name": "NodeJS",
+        "version": "8.9.4"
+      },
+      {
+        "name": "NPM",
+        "version": "5.6.0"
+      }
+    ],
+    "workspaceConfig": {
+      "environments": {
+        "default": {
+          "machines": {
+            "dev-machine": {
+              "installers": [
+                "org.eclipse.che.exec", "org.eclipse.che.terminal", "org.eclipse.che.ws-agent", "org.eclipse.che.ls.js-ts"
+              ],
+              "servers": {
+                "3000/tcp" : {
+                  "port" : "3000",
+                  "protocol" : "http"
+                },
+                "5000/tcp" : {
+                  "port" : "5000",
+                  "protocol" : "http"
+                },
+                "9000/tcp" : {
+                  "port" : "9000",
+                  "protocol" : "http"
+                }
+              },
+              "attributes" : {
+                "memoryLimitBytes": "2147483648"
+              }
+            }
+          },
+          "recipe": {
+            "content": "docker-registry.default.svc:5000/openshift/rhel-node",
+            "type": "dockerimage"
+          }
+        }
+      },
+      "name": "default",
+      "defaultEnv": "default",
+      "description": null
+    },
+    "stackIcon": {
+      "name": "type-node.svg",
+      "mediaType": "image/svg+xml"
+    }
+  },
+  {
+    "id": "php-default",
+    "creator": "ide",
+    "name": "PHP",
+    "description": "PHP Stack with PHP 7.1 and most popular extensions",
+    "scope": "general",
+    "tags": ["PHP"],
+    "components": [
+      {
+        "name": "RHEL",
+        "version": "7.4"
+      },
+      {
+        "name": "PHP",
+        "version": "7.1.8"
+      },
+      {
+        "name": "Composer",
+        "version": "1.6.5"
+      }
+    ],
+    "workspaceConfig": {
+      "environments": {
+        "default": {
+          "machines": {
+            "dev-machine": {
+              "installers": [
+                "org.eclipse.che.exec", "org.eclipse.che.terminal", "org.eclipse.che.ws-agent", "org.eclipse.che.ls.php"
+              ],
+              "servers": {
+                "8080/tcp": {
+                  "port": "8080",
+                  "protocol": "http"
+                },
+                "8000/tcp": {
+                  "port": "8000",
+                  "protocol": "http"
+                },
+                "80/tcp": {
+                  "port": "80",
+                  "protocol": "http"
+                }
+              },
+              "attributes" : {
+                "memoryLimitBytes": "2147483648"
+              }
+            }
+          },
+          "recipe": {
+            "content": "docker-registry.default.svc:5000/openshift/rhel-php",
+            "type": "dockerimage"
+          }
+        }
+      },
+      "name": "default",
+      "defaultEnv": "default",
+      "description": null,
+      "commands": [
+        {
+          "name": "run php script",
+          "type": "custom",
+          "commandLine": "[ -z ${editor.current.file.path} ] && echo \"Open a PHP file in the editor before executing this command.\" || php ${editor.current.file.path}",
+          "attributes": {
+            "previewUrl": "",
+            "goal": "Run"
+          }
+        },
+        {
+          "name": "debug php script",
+          "type": "custom",
+          "commandLine": "[ -z ${editor.current.file.path} ] && echo \"Open a PHP file in the editor before executing this command.\" || QUERY_STRING=\"start_debug=1&debug_host=localhost&debug_port=10137\" php ${editor.current.file.path}",
+          "attributes": {
+            "previewUrl": "",
+            "goal": "Debug"
+          }
+        },
+        {
+          "name": "start httpd",
+          "type": "custom",
+          "commandLine": "httpd -k start\ntail -f /opt/rh/httpd24/root/etc/httpd/logs/access_log &\ntail -f /opt/rh/httpd24/root/etc/httpd/logs/error_log",
+          "attributes": {
+            "previewUrl": "${server.8080/tcp}/${current.project.relpath}",
+            "goal": "Run"
+          }
+        },
+        {
+          "name": "stop httpd",
+          "type": "custom",
+          "commandLine": "httpd -k stop",
+          "attributes": {
+            "previewUrl": "",
+            "goal": "Run"
+          }
+        },
+        {
+          "name": "restart httpd",
+          "type": "custom",
+          "commandLine": "httpd -k restart",
+          "attributes": {
+            "previewUrl": "${server.8080/tcp}/${current.project.relpath}",
+            "goal": "Run"
+          }
+        }
+      ]
+    },
+    "stackIcon": {
+      "name": "type-php.svg",
+      "mediaType": "image/svg+xml"
+    }
+  },
+
+  {
+    "id": "python-default",
+    "creator": "ide",
+    "name": "Python",
+    "description": "Python Stack with Python 3.6",
+    "scope": "general",
+    "tags": [
+      "python",
+      "pip"
+    ],
+    "components": [
+      {
+        "name": "RHEL",
+        "version": "7.4"
+      },
+      {
+        "name": "Python",
+        "version": "3.6.3"
+      },
+      {
+        "name": "PIP",
+        "version": "10.0.1"
+      }
+    ],
+    "workspaceConfig": {
+      "environments": {
+        "default": {
+          "machines": {
+            "dev-machine": {
+              "installers": [
+                "org.eclipse.che.exec", "org.eclipse.che.terminal", "org.eclipse.che.ws-agent", "org.eclipse.che.ls.python"
+              ],
+              "servers": {
+                "8080/tcp" : {
+                  "port" : "8080",
+                  "protocol" : "http"
+                },
+                "8000/tcp" : {
+                  "port" : "8000",
+                  "protocol" : "http"
+                }
+              },
+              "attributes" : {
+                "memoryLimitBytes": "2147483648"
+              }
+            }
+          },
+          "recipe": {
+            "content": "docker-registry.default.svc:5000/openshift/rhel-python",
+            "type": "dockerimage"
+          }
+        }
+      },
+      "name": "default",
+      "defaultEnv": "default",
+      "description": null,
+      "commands": [
+        {
+          "name": "run",
+          "type": "custom",
+          "commandLine": "cd ${current.project.path} && python main.py",
+          "attributes": {
+            "previewUrl": "",
+            "goal": "Run"
+          }
+        }
+      ]
+    },
+    "stackIcon": {
+      "name": "type-python.svg",
+      "mediaType": "image/svg+xml"
+    }
+  }
+]

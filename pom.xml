@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright (c) 2012-2017
+    All rights reserved. This program and the accompanying materials
+    are made available under the terms of the Eclipse Public License v1.0
+    which accompanies this distribution, and is available at
+    http://www.eclipse.org/legal/epl-v10.html
+
+--><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <artifactId>maven-depmgt-pom</artifactId>
+        <groupId>org.eclipse.che.depmgt</groupId>
+        <version>6.10.0</version>
+    </parent>
+    <groupId>com.redhat</groupId>
+    <artifactId>codeready</artifactId>
+    <version>${che.version}</version>
+    <packaging>pom</packaging>
+    <name>Code Ready :: Parent</name>
+    <url>https://www.eclipse.org/che/</url>
+    <licenses>
+        <license>
+            <name>Eclipse Public License v1.0</name>
+            <url>http://www.eclipse.org/legal/epl-v10.html</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+    <properties>
+        <che.version>6.11.0</che.version>
+    </properties>
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>com.redhat</groupId>
+                <artifactId>codeready-ide-gwt-app</artifactId>
+                <version>${project.version}</version>
+                <type>war</type>
+            </dependency>
+            <dependency>
+                <groupId>com.redhat</groupId>
+                <artifactId>codeready-product-info</artifactId>
+                <version>${project.version}</version>
+                <type>gwt-lib</type>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.che.core</groupId>
+                <artifactId>che-core-gwt-maven-plugin</artifactId>
+                <version>${che.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.redhat</groupId>
+                <artifactId>codeready-dashboard-war</artifactId>
+                <type>war</type>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.redhat</groupId>
+                <artifactId>codeready-ide-assembly-ide-war</artifactId>
+                <type>war</type>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.redhat</groupId>
+                <artifactId>codeready-stacks</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.redhat</groupId>
+                <artifactId>codeready-samples</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.redhat</groupId>
+                <artifactId>assembly-main</artifactId>
+                <type>tar.gz</type>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.redhat</groupId>
+                <artifactId>assembly-main</artifactId>
+                <type>zip</type>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.redhat</groupId>
+                <artifactId>assembly-wsmaster-war</artifactId>
+                <type>war</type>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.che</groupId>
+                <artifactId>che-parent</artifactId>
+                <version>${che.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+    <repositories>
+      <repository>
+                 <id>ossrh</id>
+                 <name>central public snapshots</name>
+                 <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+             </repository>
+             <repository>
+                 <id>codenvy-public-repo</id>
+                 <name>codenvy public</name>
+                 <url>https://maven.codenvycorp.com/content/groups/public/</url>
+             </repository>
+    </repositories>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>com.mycila</groupId>
+                <artifactId>license-maven-plugin</artifactId>
+                <configuration>
+                    <excludes>
+                        <exclude>**/*.*</exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>com.google.code.sortpom</groupId>
+                <artifactId>maven-sortpom-plugin</artifactId>
+                <version>${version.sortpom.plugin}</version>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+  <modules>
+    <module>ide</module>
+    <module>assembly</module>
+  </modules>
+</project>

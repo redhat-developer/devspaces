@@ -1,0 +1,73 @@
+<!--
+
+    Copyright (c) 2012-2017
+    All rights reserved. This program and the accompanying materials
+    are made available under the terms of the Eclipse Public License v1.0
+    which accompanies this distribution, and is available at
+    http://www.eclipse.org/legal/epl-v10.html
+
+-->
+<assembly xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2 http://maven.apache.org/xsd/assembly-1.1.2.xsd">
+    <id>tomcat-zip</id>
+    <formats>
+        <format>dir</format>
+        <format>zip</format>
+        <format>tar.gz</format>
+    </formats>
+    <dependencySets>
+        <dependencySet>
+            <useProjectArtifact>false</useProjectArtifact>
+            <unpack>false</unpack>
+            <outputDirectory>tomcat/webapps</outputDirectory>
+            <outputFileNameMapping>ROOT.war</outputFileNameMapping>
+            <includes>
+                <include>com.redhat:codeready-ide-assembly-ide-war</include>
+            </includes>
+        </dependencySet>
+        <dependencySet>
+            <useProjectArtifact>false</useProjectArtifact>
+            <unpack>false</unpack>
+            <outputDirectory>tomcat/webapps</outputDirectory>
+            <outputFileNameMapping>dashboard.war</outputFileNameMapping>
+            <includes>
+                <include>com.redhat:codeready-dashboard-war</include>
+            </includes>
+        </dependencySet>
+        <dependencySet>
+            <useProjectArtifact>false</useProjectArtifact>
+            <unpack>false</unpack>
+            <outputDirectory>tomcat/webapps</outputDirectory>
+            <outputFileNameMapping>api.war</outputFileNameMapping>
+            <includes>
+                <include>com.redhat:assembly-wsmaster-war</include>
+            </includes>
+        </dependencySet>
+        <dependencySet>
+            <useProjectArtifact>false</useProjectArtifact>
+            <unpack>true</unpack>
+            <outputDirectory>templates</outputDirectory>
+            <includes>
+                <include>com.redhat:codeready-samples</include>
+            </includes>
+            <unpackOptions>
+                <excludes>
+                    <exclude>META-INF/**</exclude>
+                </excludes>
+            </unpackOptions>
+        </dependencySet>
+    </dependencySets>
+
+    <fileSets>
+        <fileSet>
+            <directory>${project.build.directory}/dependency/eclipse-che-${che.version}</directory>
+            <outputDirectory></outputDirectory>
+            <excludes>
+                <exclude>**/tomcat/webapps/api.war</exclude>
+                <exclude>**/tomcat/webapps/ROOT.war</exclude>
+                <exclude>**/tomcat/webapps/dashboard.war</exclude>
+                <exclude>**/templates/**</exclude>
+            </excludes>
+        </fileSet>
+    </fileSets>
+</assembly>
