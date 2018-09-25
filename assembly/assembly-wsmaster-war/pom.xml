@@ -15,7 +15,7 @@
     <parent>
         <artifactId>codeready-assembly-parent</artifactId>
         <groupId>com.redhat</groupId>
-        <version>${che.version}</version>
+        <version>6.11.0</version>
     </parent>
     <artifactId>assembly-wsmaster-war</artifactId>
     <packaging>war</packaging>
