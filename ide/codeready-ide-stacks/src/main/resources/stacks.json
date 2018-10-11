@@ -52,7 +52,7 @@
             }
           },
           "recipe": {
-            "content": ".default.svc:5000/openshift/rhel-base-jdk8",
+            "content": "brew-pulp-docker01.web.prod.ext.phx2.redhat.com:8888/workspaces/stacks-java:codeready-1.0-rhel-7-containers-candidate-59250-20181006142032",
             "type": "dockerimage"
           }
         }

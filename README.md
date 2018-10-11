@@ -39,4 +39,4 @@ docker build -t ${REGISTRY}/${REPO} .
 
 You can then reference this image in your deployment (set umage pull policy to IfNotPresent to avoid pushing the image to a registry).
 
-Please note, that some stacks reference non existing images. Works in progress. Java and NodeJS images are available. 
+Please note, that some stacks reference non existing images. Works in progress. Java and NodeJS images are available.
