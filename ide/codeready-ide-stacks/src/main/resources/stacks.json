@@ -52,7 +52,7 @@
             }
           },
           "recipe": {
-            "content": "docker-registry.default.svc:5000/openshift/rhel-base-jdk8",
+            "content": "docker-registry.engineering.redhat.com/crw/openshift/rhel-base-jdk8",
             "type": "dockerimage"
           }
         }
@@ -130,7 +130,7 @@
             }
           },
           "recipe": {
-            "content": "docker-registry.default.svc:5000/openshift/rhel-openjdk10",
+            "content": "docker-registry.engineering.redhat.com/crw/openshift/rhel-openjdk10",
             "type": "dockerimage"
           }
         }
@@ -202,7 +202,7 @@
             }
           },
           "recipe": {
-            "content": "docker-registry.default.svc:5000/openshift/rhel-base-jdk8",
+            "content": "docker-registry.engineering.redhat.com/crw/openshift/rhel-base-jdk8",
             "type": "dockerimage"
           }
         }
@@ -296,7 +296,7 @@
             }
           },
           "recipe": {
-            "content": "docker-registry.default.svc:5000/openshift/rhel-base-jdk8",
+            "content": "docker-registry.engineering.redhat.com/crw/openshift/rhel-base-jdk8",
             "type": "dockerimage"
           }
         }
@@ -370,7 +370,7 @@
             }
           },
           "recipe": {
-            "content": "docker-registry.default.svc:5000/openshift/rhel-base-jdk8",
+            "content": "docker-registry.engineering.redhat.com/crw/openshift/rhel-base-jdk8",
             "type": "dockerimage"
           }
         }
@@ -440,7 +440,7 @@
             }
           },
           "recipe": {
-            "content": "docker-registry.default.svc:5000/openshift/rhel-base-jdk8",
+            "content": "docker-registry.engineering.redhat.com/crw/openshift/rhel-base-jdk8",
             "type": "dockerimage"
           }
         }
@@ -520,7 +520,7 @@
             }
           },
           "recipe": {
-            "content": "docker-registry.default.svc:5000/openshift/rhel-c-cpp",
+            "content": "docker-registry.engineering.redhat.com/crw/openshift/rhel-c-cpp",
             "type": "dockerimage"
           }
         }
@@ -588,7 +588,7 @@
             }
           },
           "recipe": {
-            "content": "docker-registry.default.svc:5000/openshift/rhel-dotnet",
+            "content": "docker-registry.engineering.redhat.com/crw/openshift/rhel-dotnet",
             "type": "dockerimage"
           }
         }
@@ -659,7 +659,7 @@
             }
           },
           "recipe": {
-            "content": "docker-registry.default.svc:5000/openshift/rhel-golang",
+            "content": "docker-registry.engineering.redhat.com/crw/openshift/rhel-golang",
             "type": "dockerimage"
           }
         }
@@ -737,7 +737,7 @@
             }
           },
           "recipe": {
-            "content": "docker-registry.default.svc:5000/openshift/rhel-node",
+            "content": "docker-registry.engineering.redhat.com/crw/openshift/rhel-node",
             "type": "dockerimage"
           }
         }
@@ -800,7 +800,7 @@
             }
           },
           "recipe": {
-            "content": "docker-registry.default.svc:5000/openshift/rhel-php",
+            "content": "docker-registry.engineering.redhat.com/crw/openshift/rhel-php",
             "type": "dockerimage"
           }
         }
@@ -910,7 +910,7 @@
             }
           },
           "recipe": {
-            "content": "docker-registry.default.svc:5000/openshift/rhel-python",
+            "content": "docker-registry.engineering.redhat.com/crw/openshift/rhel-python",
             "type": "dockerimage"
           }
         }
