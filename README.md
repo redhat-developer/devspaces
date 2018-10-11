@@ -39,4 +39,4 @@ docker build -t ${REGISTRY}/${REPO} .
 
 You can then reference this image in your deployment (set umage pull policy to IfNotPresent to avoid pushing the image to a registry).
 
-Please note, that stacks reference non existing images like `docker-registry.default.svc:5000/openshift/rhel-base-jdk8`. These images are built as a post installation step.
+Please note, that some stacks reference non existing images. Works in progress. Java and NodeJS images are available. 
