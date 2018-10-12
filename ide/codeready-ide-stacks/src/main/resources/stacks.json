@@ -52,7 +52,7 @@
             }
           },
           "recipe": {
-            "content": "brew-pulp-docker01.web.prod.ext.phx2.redhat.com:8888/workspaces/stacks-java:codeready-1.0-rhel-7-containers-candidate-59250-20181006142032",
+            "content": "docker-registry.engineering.redhat.com/crw/rhel-base-jdk8",
             "type": "dockerimage"
           }
         }
@@ -124,7 +124,7 @@
             }
           },
           "recipe": {
-            "content": "brew-pulp-docker01.web.prod.ext.phx2.redhat.com:8888/workspaces/stacks-java:codeready-1.0-rhel-7-containers-candidate-59250-20181006142032",
+            "content": "docker-registry.engineering.redhat.com/crw/rhel-base-jdk8",
             "type": "dockerimage"
           }
         }
@@ -218,7 +218,7 @@
             }
           },
           "recipe": {
-            "content": "brew-pulp-docker01.web.prod.ext.phx2.redhat.com:8888/workspaces/stacks-java:codeready-1.0-rhel-7-containers-candidate-59250-20181006142032",
+            "content": "docker-registry.engineering.redhat.com/crw/rhel-base-jdk8",
             "type": "dockerimage"
           }
         }
@@ -292,7 +292,7 @@
             }
           },
           "recipe": {
-            "content": "brew-pulp-docker01.web.prod.ext.phx2.redhat.com:8888/workspaces/stacks-java:codeready-1.0-rhel-7-containers-candidate-59250-20181006142032",
+            "content": "docker-registry.engineering.redhat.com/crw/rhel-base-jdk8",
             "type": "dockerimage"
           }
         }
@@ -362,7 +362,7 @@
             }
           },
           "recipe": {
-            "content": "brew-pulp-docker01.web.prod.ext.phx2.redhat.com:8888/workspaces/stacks-java:codeready-1.0-rhel-7-containers-candidate-59250-20181006142032",
+            "content": "docker-registry.engineering.redhat.com/crw/rhel-base-jdk8",
             "type": "dockerimage"
           }
         }
