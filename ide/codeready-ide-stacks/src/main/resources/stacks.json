@@ -659,7 +659,7 @@
             }
           },
           "recipe": {
-            "content": "brew-pulp-docker01.web.prod.ext.phx2.redhat.com:8888/workspaces/stacks-node:codeready-1.0-rhel-7-containers-candidate-17894-20181010162121",
+            "content": "docker-registry.engineering.redhat.com/crw/rhel-node",
             "type": "dockerimage"
           }
         }
