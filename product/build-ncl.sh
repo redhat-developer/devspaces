@@ -125,7 +125,7 @@ if [[ $includeDashboardFromSource -gt 0 ]]; then
   mkdir -p /tmp/phantomjs/
   pushd /tmp/phantomjs/
     # previously mirrored from https://github.com/Medium/phantomjs/releases/download/v2.1.1/phantomjs-2.1.1-linux-x86_64.tar.bz2
-    time wget -q http://download.jboss.org/jbosstools/updates/requirements/node/phantomjs/phantomjs-2.1.1-linux-x86_64.tar.bz2
+    time wget -q http://download.jboss.org/jbosstools/requirements/codeready-workspaces/node/phantomjs/phantomjs-2.1.1-linux-x86_64.tar.bz2
   popd
 
   pushd dashboard
