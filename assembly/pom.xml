@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (c) 2012-2017
+    Copyright (c) 2018 Red Hat, Inc.
     All rights reserved. This program and the accompanying materials
     are made available under the terms of the Eclipse Public License v1.0
     which accompanies this distribution, and is available at
@@ -12,13 +12,12 @@
     <parent>
         <artifactId>codeready</artifactId>
         <groupId>com.redhat</groupId>
-        <version>6.13.0-SNAPSHOT</version>
-        <relativePath>../pom.xml</relativePath>
+        <version>1.0.0.Beta1-SNAPSHOT</version>
     </parent>
     <groupId>com.redhat</groupId>
     <artifactId>codeready-assembly-parent</artifactId>
     <packaging>pom</packaging>
-    <name>Code Ready Workspaces :: Che Assembly :: Parent</name>
+    <name>CodeReady Workspaces :: Che Assembly :: Parent</name>
   <modules>
       <module>codeready-ide-gwt-app</module>
       <module>assembly-ide-war</module>

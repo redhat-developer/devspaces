@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (c) 2012-2017 Red Hat, Inc.
+    Copyright (c) 2018 Red Hat, Inc.
+
     All rights reserved. This program and the accompanying materials
     are made available under the terms of the Eclipse Public License v1.0
     which accompanies this distribution, and is available at
@@ -16,15 +17,16 @@
     <parent>
         <artifactId>codeready-assembly-parent</artifactId>
         <groupId>com.redhat</groupId>
-        <version>6.13.0-SNAPSHOT</version>
+        <version>1.0.0.Beta1-SNAPSHOT</version>
     </parent>
     <artifactId>codeready-dashboard-war</artifactId>
     <packaging>pom</packaging>
-    <name>Code Ready Dashboard :: WAR</name>
+    <name>CodeReady Dashboard :: WAR</name>
     <dependencies>
         <dependency>
             <groupId>org.eclipse.che.dashboard</groupId>
             <artifactId>che-dashboard-war</artifactId>
+            <version>${che.dashboard.version}</version>
             <type>war</type>
         </dependency>
     </dependencies>
@@ -46,6 +48,7 @@
                                 <artifactItem>
                                     <groupId>org.eclipse.che.dashboard</groupId>
                                     <artifactId>che-dashboard-war</artifactId>
+                                    <version>${che.dashboard.version}</version>
                                     <type>war</type>
                                 </artifactItem>
                             </artifactItems>

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (c) 2012-2017
+    Copyright (c) 2018 Red Hat, Inc.
     All rights reserved. This program and the accompanying materials
     are made available under the terms of the Eclipse Public License v1.0
     which accompanies this distribution, and is available at
@@ -15,8 +15,8 @@
     <parent>
         <artifactId>codeready-ide-parent</artifactId>
         <groupId>com.redhat</groupId>
-        <version>6.13.0-SNAPSHOT</version>
+        <version>1.0.0.Beta1-SNAPSHOT</version>
     </parent>
     <artifactId>codeready-samples</artifactId>
-    <name>Code Ready Samples :: IDE :: SAMPLES</name>
+    <name>CodeReady Samples :: IDE :: SAMPLES</name>
 </project>
