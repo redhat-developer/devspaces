@@ -52,85 +52,7 @@
             }
           },
           "recipe": {
-            "content": "docker-registry.default.svc:5000/openshift/rhel-base-jdk8",
-            "type": "dockerimage"
-          }
-        }
-      },
-      "name": "default",
-      "defaultEnv": "default",
-      "description": null,
-      "commands": [
-        {
-          "commandLine": "mvn clean install -f ${current.project.path}/pom.xml",
-          "name": "build",
-          "type": "mvn",
-          "attributes": {
-            "previewUrl": "",
-            "goal": "Build"
-          }
-        }
-      ]
-    },
-    "stackIcon": {
-      "name": "type-java.svg",
-      "mediaType": "image/svg+xml"
-    }
-  },
-  {
-    "id": "java10-default",
-    "creator": "ide",
-    "name": "Java 10.0.1",
-    "description": "Default Java Stack with OpenJDK 10.0.1, Maven 3.5",
-    "scope": "general",
-    "tags": [
-      "eap",
-      "maven",
-      "java"
-    ],
-    "components": [
-      {
-        "name": "RHEL",
-        "version": "7.4"
-      },
-      {
-        "name": "OpenJDK",
-        "version": "10.0.1"
-      },
-      {
-        "name": "Maven",
-        "version": "3.5.0"
-      },
-      {
-        "name": "EAP",
-        "version": "7.1"
-      }
-    ],
-    "workspaceConfig": {
-      "environments": {
-        "default": {
-          "machines": {
-            "dev-machine": {
-              "installers": [
-                "org.eclipse.che.exec", "org.eclipse.che.terminal", "org.eclipse.che.ws-agent"
-              ],
-              "servers": {
-                "eap" : {
-                  "port" : "8080",
-                  "protocol" : "http"
-                },
-                "eap-debug" : {
-                  "port" : "8000",
-                  "protocol" : "http"
-                }
-              },
-              "attributes" : {
-                "memoryLimitBytes": "2147483648"
-              }
-            }
-          },
-          "recipe": {
-            "content": "docker-registry.default.svc:5000/openshift/rhel-openjdk10",
+            "content": "docker-registry.engineering.redhat.com/crw/rhel-base-jdk8",
             "type": "dockerimage"
           }
         }
@@ -202,7 +124,7 @@
             }
           },
           "recipe": {
-            "content": "docker-registry.default.svc:5000/openshift/rhel-base-jdk8",
+            "content": "docker-registry.engineering.redhat.com/crw/rhel-base-jdk8",
             "type": "dockerimage"
           }
         }
@@ -296,7 +218,7 @@
             }
           },
           "recipe": {
-            "content": "docker-registry.default.svc:5000/openshift/rhel-base-jdk8",
+            "content": "docker-registry.engineering.redhat.com/crw/rhel-base-jdk8",
             "type": "dockerimage"
           }
         }
@@ -370,7 +292,7 @@
             }
           },
           "recipe": {
-            "content": "docker-registry.default.svc:5000/openshift/rhel-base-jdk8",
+            "content": "docker-registry.engineering.redhat.com/crw/rhel-base-jdk8",
             "type": "dockerimage"
           }
         }
@@ -440,7 +362,7 @@
             }
           },
           "recipe": {
-            "content": "docker-registry.default.svc:5000/openshift/rhel-base-jdk8",
+            "content": "docker-registry.engineering.redhat.com/crw/rhel-base-jdk8",
             "type": "dockerimage"
           }
         }
@@ -737,7 +659,7 @@
             }
           },
           "recipe": {
-            "content": "docker-registry.default.svc:5000/openshift/rhel-node",
+            "content": "docker-registry.engineering.redhat.com/crw/rhel-node",
             "type": "dockerimage"
           }
         }
