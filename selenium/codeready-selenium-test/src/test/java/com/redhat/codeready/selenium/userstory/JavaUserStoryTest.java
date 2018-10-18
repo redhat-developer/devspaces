@@ -3,16 +3,14 @@ package com.redhat.codeready.selenium.userstory;
 import static com.redhat.codeready.selenium.pageobject.dashboard.CodereadyNewWorkspace.CodereadyStacks.JAVA_EAP;
 import static org.eclipse.che.commons.lang.NameGenerator.generate;
 import static org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants.Assistant.ASSISTANT;
+import static org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants.Assistant.FIND_DEFINITION;
 import static org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants.Assistant.FIND_USAGES;
-import static org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants.Assistant.OPEN_DECLARATION;
 import static org.eclipse.che.selenium.pageobject.debug.DebugPanel.DebuggerActionButtons.BTN_DISCONNECT;
 import static org.eclipse.che.selenium.pageobject.debug.DebugPanel.DebuggerActionButtons.EVALUATE_EXPRESSIONS;
 import static org.eclipse.che.selenium.pageobject.debug.DebugPanel.DebuggerActionButtons.RESUME_BTN_ID;
 import static org.eclipse.che.selenium.pageobject.debug.DebugPanel.DebuggerActionButtons.STEP_INTO;
 import static org.eclipse.che.selenium.pageobject.debug.DebugPanel.DebuggerActionButtons.STEP_OUT;
 import static org.eclipse.che.selenium.pageobject.debug.DebugPanel.DebuggerActionButtons.STEP_OVER;
-import static org.openqa.selenium.Keys.ALT;
-import static org.openqa.selenium.Keys.ARROW_LEFT;
 import static org.openqa.selenium.Keys.CONTROL;
 import static org.openqa.selenium.Keys.F4;
 import static org.testng.Assert.assertEquals;
@@ -45,7 +43,6 @@ import org.eclipse.che.selenium.pageobject.dashboard.workspaces.WorkspaceOvervie
 import org.eclipse.che.selenium.pageobject.dashboard.workspaces.Workspaces;
 import org.eclipse.che.selenium.pageobject.debug.JavaDebugConfig;
 import org.eclipse.che.selenium.pageobject.intelligent.CommandsPalette;
-import org.openqa.selenium.Keys;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.annotations.AfterClass;
@@ -121,27 +118,24 @@ public class JavaUserStoryTest {
     editor.goToPosition(39, 14);
     editor.typeTextIntoEditor(F4.toString());
     editor.waitActiveTabFileName("Member");
-    editor.waitCursorPosition(23, 14);
+    editor.waitCursorPosition(23, 20);
 
     menu.runCommand(ASSISTANT, FIND_USAGES);
-    findUsages.waitExpectedOccurences(21);
-    menu.runCommand(TestMenuCommandsConstants.Edit.EDIT,  "gwt-debug-topmenu/Edit/switchLeftTab");
+    findUsages.waitExpectedOccurences(26);
+    menu.runCommand(TestMenuCommandsConstants.Edit.EDIT, "gwt-debug-topmenu/Edit/switchLeftTab");
     editor.waitActiveTabFileName("MemberRegistration");
     editor.waitActive();
     editor.goToPosition(36, 7);
-    menu.runCommand(ASSISTANT, OPEN_DECLARATION);
-    editor.waitActiveTabFileName("Inject");
-    editor.waitTextIntoEditor("public @interface Inject");
-    editor.clickOnDownloadSourcesLink();
-    editor.waitTextIntoEditor("Copyright (C) 2009 The JSR-330 Expert Group");
+    menu.runCommand(ASSISTANT, FIND_DEFINITION);
+    editor.waitActiveTabFileName("Inject.class");
+    editor.waitCursorPosition(185, 25);
+
     editor.waitTextIntoEditor(
-        "Identifies injectable constructors, methods, and fields. May apply to static");
+        "@see javax.inject.Provider\n */\n@Target({ METHOD, CONSTRUCTOR, FIELD })\n@Retention(RUNTIME)\n@Documented\npublic @interface Inject {}");
     editor.selectTabByName("MemberRegistration");
     editor.goToPosition(28, 14);
     editor.typeTextIntoEditor(CONTROL.toString() + "q");
-    editor.waitTextInJa("java.util.logging.Logger");
-
-
+    // editor.waitAndCheckTextPresenceInJavaDoc("java.util.logging.Logger");
   }
 
   private void setUpDebugMode() {
@@ -176,6 +170,8 @@ public class JavaUserStoryTest {
     projectExplorer.waitItem(kitchenExampleName);
     events.clickEventLogBtn();
     events.waitExpectedMessage("Branch 'master' is checked out");
+    consoles.clickOnProcessesButton();
+    consoles.waitJDTLSProjectResolveFinishedMessage(PROJECT);
     projectExplorer.quickExpandWithJavaScript();
   }
 
