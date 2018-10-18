@@ -10,7 +10,7 @@
 
 FROM registry.access.redhat.com/redhat-openjdk-18/openjdk18-openshift
 COPY entrypoint.sh /entrypoint.sh
-ADD assembly/assembly-main/target/codeready-6.12.1/codeready-6.12.1 /home/jboss/codeready
+ADD assembly/assembly-main/target/codeready-6.13.0-SNAPSHOT/codeready-6.13.0-SNAPSHOT /home/jboss/codeready
 USER root
 RUN mkdir -p /logs /data && \
     for f in "/home/jboss" "/data" "/logs"; do\
