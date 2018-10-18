@@ -32,6 +32,8 @@ for var in "$@"; do
     fi
 done
 
+export CHE_INFRASTRUCTURE=openshift
+
 mvn $CLEAN_GOAL dependency:unpack-dependencies \
     -DincludeArtifactIds=che-selenium-core \
     -DincludeGroupIds=org.eclipse.che.selenium \

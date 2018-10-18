@@ -16,6 +16,9 @@ import static com.google.inject.name.Names.named;
 import com.google.inject.Key;
 import com.google.inject.TypeLiteral;
 import com.google.inject.assistedinject.FactoryModuleBuilder;
+import com.redhat.codeready.selenium.core.client.keycloak.cli.CodereadyKeycloakCliCommandExecutor;
+import com.redhat.codeready.selenium.core.user.MultiUserCodereadyDefaultTestUserProvider;
+import com.redhat.codeready.selenium.core.user.MultiUserCodereadyTestUserProvider;
 import org.eclipse.che.api.core.rest.HttpJsonRequestFactory;
 import org.eclipse.che.selenium.core.CheSeleniumSuiteModule;
 import org.eclipse.che.selenium.core.client.CheTestDefaultOrganizationServiceClient;
@@ -32,7 +35,6 @@ import org.eclipse.che.selenium.core.client.TestWorkspaceServiceClient;
 import org.eclipse.che.selenium.core.client.TestWorkspaceServiceClientFactory;
 import org.eclipse.che.selenium.core.client.keycloak.KeycloakTestAuthServiceClient;
 import org.eclipse.che.selenium.core.client.keycloak.cli.KeycloakCliCommandExecutor;
-import org.eclipse.che.selenium.core.client.keycloak.cli.OpenShiftKeycloakCliCommandExecutor;
 import org.eclipse.che.selenium.core.configuration.SeleniumTestConfiguration;
 import org.eclipse.che.selenium.core.configuration.TestConfiguration;
 import org.eclipse.che.selenium.core.pageobject.PageObjectsInjector;
@@ -55,8 +57,6 @@ import org.eclipse.che.selenium.core.requestfactory.TestUserHttpJsonRequestFacto
 import org.eclipse.che.selenium.core.user.AdminTestUser;
 import org.eclipse.che.selenium.core.user.DefaultTestUser;
 import org.eclipse.che.selenium.core.user.MultiUserCheAdminTestUserProvider;
-import org.eclipse.che.selenium.core.user.MultiUserCheDefaultTestUserProvider;
-import org.eclipse.che.selenium.core.user.MultiUserCheTestUserProvider;
 import org.eclipse.che.selenium.core.user.TestUser;
 import org.eclipse.che.selenium.core.user.TestUserFactory;
 import org.eclipse.che.selenium.core.user.TestUserImpl;
@@ -133,7 +133,7 @@ public class CodereadySeleniumSuiteModule extends CheSeleniumSuiteModule {
   private void configureCodereadyRelatedDependencies() {
     // TODO get to adapt to CodeReady
     bind(TestWorkspaceLogsReader.class).to(CheTestOpenshiftWorkspaceLogsReader.class);
-    bind(KeycloakCliCommandExecutor.class).to(OpenShiftKeycloakCliCommandExecutor.class);
+    bind(KeycloakCliCommandExecutor.class).to(CodereadyKeycloakCliCommandExecutor.class);
   }
 
   private void configureUserRelatedDependencies() {
@@ -141,10 +141,10 @@ public class CodereadySeleniumSuiteModule extends CheSeleniumSuiteModule {
     bind(TestAuthServiceClient.class).to(KeycloakTestAuthServiceClient.class);
     bind(TestMachineServiceClient.class).to(CheTestMachineServiceClient.class);
 
-    bind(DefaultTestUserProvider.class).to(MultiUserCheDefaultTestUserProvider.class);
+    bind(DefaultTestUserProvider.class).to(MultiUserCodereadyDefaultTestUserProvider.class);
 
     bind(TestUser.class).toProvider(TestUserProvider.class);
-    bind(TestUserProvider.class).to(MultiUserCheTestUserProvider.class);
+    bind(TestUserProvider.class).to(MultiUserCodereadyTestUserProvider.class);
 
     bind(AdminTestUser.class).toProvider(AdminTestUserProvider.class);
     bind(AdminTestUserProvider.class).to(MultiUserCheAdminTestUserProvider.class);

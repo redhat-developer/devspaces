@@ -17,7 +17,7 @@
     <parent>
         <artifactId>codeready-selenium-parent</artifactId>
         <groupId>com.redhat</groupId>
-        <version>6.11.0</version>
+        <version>6.12.1</version>
     </parent>
     <artifactId>codeready-selenium-test</artifactId>
     <packaging>jar</packaging>
@@ -32,6 +32,10 @@
             <groupId>org.eclipse.che.selenium</groupId>
             <artifactId>che-selenium-core</artifactId>
             <version>${che.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.annotation</groupId>
+            <artifactId>javax.annotation-api</artifactId>
         </dependency>
         <dependency>
             <groupId>org.eclipse.che.selenium</groupId>
