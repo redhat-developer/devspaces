@@ -1,4 +1,4 @@
-# Copyright (c) 2012-2018 Red Hat, Inc.
+# Copyright (c) 2018 Red Hat, Inc.
 # All rights reserved. This program and the accompanying materials
 # are made available under the terms of the Eclipse Public License v1.0
 # which accompanies this distribution, and is available at
@@ -13,8 +13,8 @@ FROM registry.access.redhat.com/redhat-openjdk-18/openjdk18-openshift:1.5-14
 
 ENV SUMMARY="Red Hat CodeReady Workspaces container that provides the Red Hat CodeReady Workspaces (Eclipse Che Server)" \
     DESCRIPTION="Red Hat CodeReady Workspaces container that provides the Red Hat CodeReady Workspaces (Eclipse Che Server)" \
-    PRODNAME="workspaces" \
-    COMPNAME="server-image"
+    PRODNAME="codeready-workspaces" \
+    COMPNAME="container"
 
 LABEL summary="$SUMMARY" \
       description="$DESCRIPTION" \
