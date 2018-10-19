@@ -24,7 +24,6 @@ import com.redhat.codeready.selenium.pageobject.dashboard.CodereadyNewWorkspace;
 import com.redhat.codeready.selenium.pageobject.dashboard.RhFindUsagesWidget;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.security.Key;
 import java.util.stream.Stream;
 import javax.ws.rs.HttpMethod;
 import org.eclipse.che.api.core.rest.HttpJsonRequestFactory;
@@ -47,7 +46,6 @@ import org.eclipse.che.selenium.pageobject.dashboard.workspaces.WorkspaceOvervie
 import org.eclipse.che.selenium.pageobject.dashboard.workspaces.Workspaces;
 import org.eclipse.che.selenium.pageobject.debug.JavaDebugConfig;
 import org.eclipse.che.selenium.pageobject.intelligent.CommandsPalette;
-import org.openqa.selenium.Keys;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.annotations.AfterClass;
@@ -119,10 +117,11 @@ public class JavaUserStoryTest {
   @Test(priority = 3)
   public void checkCodeAssistantFeatures() {
     String expectedTextOfInjectClass =
-            "@see javax.inject.Provider\n */\n@Target({ METHOD, CONSTRUCTOR, FIELD })\n@Retention(RUNTIME)\n@Documented\npublic @interface Inject {}";
+        "@see javax.inject.Provider\n */\n@Target({ METHOD, CONSTRUCTOR, FIELD })\n@Retention(RUNTIME)\n@Documented\npublic @interface Inject {}";
     String memberRegistrationTabName = "MemberRegistration";
 
-    String loggerJavaDocFragment = "On each logging call the Logger initially performs a cheap check of the request level (e.g., SEVERE or FINE)";
+    String loggerJavaDocFragment =
+        "On each logging call the Logger initially performs a cheap check of the request level (e.g., SEVERE or FINE)";
     projectExplorer.openItemByPath(PATH_TO_MAIN_PACKAGE + "/controller/MemberRegistration.java");
     editor.waitActive();
     editor.goToPosition(39, 14);
@@ -140,8 +139,7 @@ public class JavaUserStoryTest {
     editor.waitActiveTabFileName("Inject.class");
     editor.waitCursorPosition(185, 25);
 
-    editor.waitTextIntoEditor(
-            expectedTextOfInjectClass);
+    editor.waitTextIntoEditor(expectedTextOfInjectClass);
     editor.selectTabByName(memberRegistrationTabName);
     editor.goToPosition(28, 14);
     editor.typeTextIntoEditor(CONTROL.toString() + "q");
