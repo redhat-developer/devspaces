@@ -20,7 +20,7 @@
     </parent>
     <artifactId>codeready-ide-assembly-ide-war</artifactId>
     <packaging>war</packaging>
-    <name>Code ready IDE :: Assemblies :: IDE</name>
+    <name>CodeReady IDE :: Assemblies :: IDE</name>
     <properties>
         <generated.sources.directory>${project.build.directory}/generated-sources/gen</generated.sources.directory>
         <gwt.log.enable>true</gwt.log.enable>
@@ -30,12 +30,13 @@
         <dependency>
             <groupId>com.redhat</groupId>
             <artifactId>codeready-ide-gwt-app</artifactId>
-            <version>${che.version}</version>
+            <version>${project.version}</version>
             <type>war</type>
         </dependency>
         <dependency>
             <groupId>org.eclipse.che</groupId>
             <artifactId>assembly-ide-war</artifactId>
+            <version>${che.version}</version>
             <type>war</type>
             <scope>runtime</scope>
         </dependency>
