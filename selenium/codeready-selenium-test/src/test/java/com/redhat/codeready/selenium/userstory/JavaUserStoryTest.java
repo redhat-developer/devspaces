@@ -5,12 +5,15 @@ import static org.eclipse.che.commons.lang.NameGenerator.generate;
 import static org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants.Assistant.ASSISTANT;
 import static org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants.Assistant.FIND_DEFINITION;
 import static org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants.Assistant.FIND_USAGES;
+import static org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants.Assistant.QUICK_FIX;
+import static org.eclipse.che.selenium.pageobject.CodenvyEditor.MarkerLocator.ERROR;
 import static org.eclipse.che.selenium.pageobject.debug.DebugPanel.DebuggerActionButtons.BTN_DISCONNECT;
 import static org.eclipse.che.selenium.pageobject.debug.DebugPanel.DebuggerActionButtons.EVALUATE_EXPRESSIONS;
 import static org.eclipse.che.selenium.pageobject.debug.DebugPanel.DebuggerActionButtons.RESUME_BTN_ID;
 import static org.eclipse.che.selenium.pageobject.debug.DebugPanel.DebuggerActionButtons.STEP_INTO;
 import static org.eclipse.che.selenium.pageobject.debug.DebugPanel.DebuggerActionButtons.STEP_OUT;
 import static org.eclipse.che.selenium.pageobject.debug.DebugPanel.DebuggerActionButtons.STEP_OVER;
+import static org.openqa.selenium.Keys.BACK_SPACE;
 import static org.openqa.selenium.Keys.CONTROL;
 import static org.openqa.selenium.Keys.F4;
 import static org.testng.Assert.assertEquals;
@@ -21,6 +24,7 @@ import com.redhat.codeready.selenium.pageobject.dashboard.CodereadyNewWorkspace;
 import com.redhat.codeready.selenium.pageobject.dashboard.RhFindUsagesWidget;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.security.Key;
 import java.util.stream.Stream;
 import javax.ws.rs.HttpMethod;
 import org.eclipse.che.api.core.rest.HttpJsonRequestFactory;
@@ -43,6 +47,7 @@ import org.eclipse.che.selenium.pageobject.dashboard.workspaces.WorkspaceOvervie
 import org.eclipse.che.selenium.pageobject.dashboard.workspaces.Workspaces;
 import org.eclipse.che.selenium.pageobject.debug.JavaDebugConfig;
 import org.eclipse.che.selenium.pageobject.intelligent.CommandsPalette;
+import org.openqa.selenium.Keys;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.annotations.AfterClass;
@@ -113,6 +118,11 @@ public class JavaUserStoryTest {
 
   @Test(priority = 3)
   public void checkCodeAssistantFeatures() {
+    String expectedTextOfInjectClass =
+            "@see javax.inject.Provider\n */\n@Target({ METHOD, CONSTRUCTOR, FIELD })\n@Retention(RUNTIME)\n@Documented\npublic @interface Inject {}";
+    String memberRegistrationTabName = "MemberRegistration";
+
+    String loggerJavaDocFragment = "On each logging call the Logger initially performs a cheap check of the request level (e.g., SEVERE or FINE)";
     projectExplorer.openItemByPath(PATH_TO_MAIN_PACKAGE + "/controller/MemberRegistration.java");
     editor.waitActive();
     editor.goToPosition(39, 14);
@@ -123,7 +133,7 @@ public class JavaUserStoryTest {
     menu.runCommand(ASSISTANT, FIND_USAGES);
     findUsages.waitExpectedOccurences(26);
     menu.runCommand(TestMenuCommandsConstants.Edit.EDIT, "gwt-debug-topmenu/Edit/switchLeftTab");
-    editor.waitActiveTabFileName("MemberRegistration");
+    editor.waitActiveTabFileName(memberRegistrationTabName);
     editor.waitActive();
     editor.goToPosition(36, 7);
     menu.runCommand(ASSISTANT, FIND_DEFINITION);
@@ -131,11 +141,19 @@ public class JavaUserStoryTest {
     editor.waitCursorPosition(185, 25);
 
     editor.waitTextIntoEditor(
-        "@see javax.inject.Provider\n */\n@Target({ METHOD, CONSTRUCTOR, FIELD })\n@Retention(RUNTIME)\n@Documented\npublic @interface Inject {}");
-    editor.selectTabByName("MemberRegistration");
+            expectedTextOfInjectClass);
+    editor.selectTabByName(memberRegistrationTabName);
     editor.goToPosition(28, 14);
     editor.typeTextIntoEditor(CONTROL.toString() + "q");
-    // editor.waitAndCheckTextPresenceInJavaDoc("java.util.logging.Logger");
+    editor.waitAndCheckTextPresenceInJavaDoc("loggerJavaDocFragment");
+    editor.typeTextIntoEditor("-");
+    editor.waitMarkerInPosition(ERROR, 28);
+    editor.typeTextIntoEditor(BACK_SPACE.toString());
+    editor.waitAllMarkersInvisibility(ERROR);
+    editor.goToPosition(40, 1);
+    editor.typeTextIntoEditor("private Member newMember;");
+    editor.goToPosition(40, 18);
+    menu.runCommand(ASSISTANT, QUICK_FIX);
   }
 
   private void setUpDebugMode() {
