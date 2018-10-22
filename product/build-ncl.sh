@@ -104,6 +104,20 @@ npm config set registry ${npmRegistryURL}
 # npm config list
 
 ##########################################################################################
+# get dashboard version from Indy
+##########################################################################################
+
+tmpfile=/tmp/maven-metadata-${version}.html
+upstreamPom=org/eclipse/che/dashboard/che-dashboard-war/${includeDashboardVersion}
+UPSTREAM_POM="api/content/maven/group/builds-untested+shared-imports+public/${upstreamPom}/maven-metadata.xml"
+
+wget ${INDY}/${UPSTREAM_POM} -O ${tmpfile}
+timestamp=$(grep "<timestamp>" ${tmpfile} | sed -e "s#.*<timestamp>\(.\+\)</timestamp>.*#\1#"); echo $timestamp
+buildNumber=$(grep "<buildNumber>" ${tmpfile} | sed -e "s#.*<buildNumber>\(.\+\)</buildNumber>.*#\1#"); echo $buildNumber
+cheDashboardVersion=${version}-${timestamp}-${buildNumber}
+rm -f ${tmpfile}
+
+##########################################################################################
 # configure maven build 
 ##########################################################################################
 
@@ -115,7 +129,7 @@ MVNFLAGS="${MVNFLAGS} -Dorg.slf4j.simpleLogger.dateTimeFormat=HH:mm:ss "
 MVNFLAGS="${MVNFLAGS} -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn"
 MVNFLAGS="${MVNFLAGS} -DnodeDownloadRoot=${nodeDownloadRoot} -DnpmDownloadRoot=${npmDownloadRoot}"
 MVNFLAGS="${MVNFLAGS} -DnpmRegistryURL=${npmRegistryURL}"
-MVNFLAGS="${MVNFLAGS} -Dche.dashboard.version=${includeDashboardVersion}"
+MVNFLAGS="${MVNFLAGS} -Dche.dashboard.version=${cheDashboardVersion}"
 
 ##########################################################################################
 # run maven build 
