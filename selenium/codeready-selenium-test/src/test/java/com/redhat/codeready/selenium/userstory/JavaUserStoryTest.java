@@ -5,6 +5,7 @@ import static org.eclipse.che.commons.lang.NameGenerator.generate;
 import static org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants.Assistant.ASSISTANT;
 import static org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants.Assistant.FIND_DEFINITION;
 import static org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants.Assistant.FIND_USAGES;
+import static org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants.Assistant.QUICK_DOCUMENTATION;
 import static org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants.Assistant.QUICK_FIX;
 import static org.eclipse.che.selenium.pageobject.CodenvyEditor.MarkerLocator.ERROR;
 import static org.eclipse.che.selenium.pageobject.debug.DebugPanel.DebuggerActionButtons.BTN_DISCONNECT;
@@ -13,26 +14,31 @@ import static org.eclipse.che.selenium.pageobject.debug.DebugPanel.DebuggerActio
 import static org.eclipse.che.selenium.pageobject.debug.DebugPanel.DebuggerActionButtons.STEP_INTO;
 import static org.eclipse.che.selenium.pageobject.debug.DebugPanel.DebuggerActionButtons.STEP_OUT;
 import static org.eclipse.che.selenium.pageobject.debug.DebugPanel.DebuggerActionButtons.STEP_OVER;
-import static org.openqa.selenium.Keys.BACK_SPACE;
-import static org.openqa.selenium.Keys.CONTROL;
 import static org.openqa.selenium.Keys.F4;
 import static org.testng.Assert.assertEquals;
 
 import com.google.inject.Inject;
 import com.redhat.codeready.selenium.pageobject.RhDebuggerPanel;
+import com.redhat.codeready.selenium.pageobject.RhEditor;
 import com.redhat.codeready.selenium.pageobject.dashboard.CodereadyNewWorkspace;
 import com.redhat.codeready.selenium.pageobject.dashboard.RhFindUsagesWidget;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.ws.rs.HttpMethod;
 import org.eclipse.che.api.core.rest.HttpJsonRequestFactory;
+import org.eclipse.che.selenium.core.client.TestProjectServiceClient;
 import org.eclipse.che.selenium.core.client.TestWorkspaceServiceClient;
 import org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants;
 import org.eclipse.che.selenium.core.user.DefaultTestUser;
 import org.eclipse.che.selenium.core.webdriver.SeleniumWebDriverHelper;
 import org.eclipse.che.selenium.core.workspace.TestWorkspaceProvider;
-import org.eclipse.che.selenium.pageobject.CodenvyEditor;
 import org.eclipse.che.selenium.pageobject.Consoles;
 import org.eclipse.che.selenium.pageobject.Events;
 import org.eclipse.che.selenium.pageobject.Menu;
@@ -73,7 +79,7 @@ public class JavaUserStoryTest {
   @Inject private CommandsPalette commandsPalette;
   @Inject private Wizard wizard;
   @Inject private Consoles consoles;
-  @Inject private CodenvyEditor editor;
+  @Inject private RhEditor editor;
   @Inject private HttpJsonRequestFactory requestFactory;
   @Inject private Menu menu;
   @Inject private RhDebuggerPanel debugPanel;
@@ -81,8 +87,10 @@ public class JavaUserStoryTest {
   @Inject private Events events;
   @Inject private NotificationsPopupPanel notifications;
   @Inject private RhFindUsagesWidget findUsages;
+  @Inject private TestProjectServiceClient projectServiceClient;
 
   private String appUrl;
+  private String tabNameWithImpl = "NativeMethodAccessorImpl";
 
   @BeforeClass
   public void setUp() {
@@ -99,7 +107,7 @@ public class JavaUserStoryTest {
     createWsFromJavaEAPStackWithTestProject(PROJECT);
   }
 
-  // @Test(priority = 2)
+  @Test(priority = 2)
   public void checkMainDebuggerFeatures() throws Exception {
     setUpDebugMode();
     projectExplorer.openItemByPath(PATH_TO_MAIN_PACKAGE + "/data/MemberListProducer.java");
@@ -115,43 +123,101 @@ public class JavaUserStoryTest {
   }
 
   @Test(priority = 3)
-  public void checkCodeAssistantFeatures() {
+  public void checkCodeAssistantFeatures() throws Exception {
     String expectedTextOfInjectClass =
         "@see javax.inject.Provider\n */\n@Target({ METHOD, CONSTRUCTOR, FIELD })\n@Retention(RUNTIME)\n@Documented\npublic @interface Inject {}";
     String memberRegistrationTabName = "MemberRegistration";
 
     String loggerJavaDocFragment =
         "On each logging call the Logger initially performs a cheap check of the request level (e.g., SEVERE or FINE)";
+
+    String expectedTextAfterQuickFix =
+        "@Override\npublic String decorate(String s) {\n return null;\n}";
+
+    List<String> expectedContentInAutocompleteContainer =
+        Arrays.asList(
+            "name : String Member",
+            "setName(String name) : void Member",
+            "getName() : String Member",
+            "Name - java.util.jar.Attributes");
+
+    checkGoToDeclarationFeature();
+    checkFindUsagesFeature();
+    checkPreviousTabFeature(memberRegistrationTabName);
+    checkFindDefinitionFeature(expectedTextOfInjectClass);
+    checkQuickDocumentationFeature(memberRegistrationTabName, loggerJavaDocFragment);
+    checkCodeValidationFeature(memberRegistrationTabName);
+    addTestFileIntoProjectByApi();
+    checkQuickFixFeature(expectedTextAfterQuickFix);
+    checkAutoCompletionFeature(expectedContentInAutocompleteContainer);
+  }
+
+  private void checkAutoCompletionFeature(List<String> expectedContentInAutocompleteContainer) {
+    editor.goToPosition(57, 18);
+    editor.launchAutocomplete();
+    editor.waitProposalsIntoAutocompleteContainer(expectedContentInAutocompleteContainer);
+  }
+
+  private void checkQuickFixFeature(String expectedTextAfterQuickFix) {
+    projectExplorer.openItemByPath(PATH_TO_MAIN_PACKAGE + "/util/DecoratorSample.java");
+    editor.selectTabByName("Member");
+    editor.goToPosition(23, 31);
+    editor.typeTextIntoEditor(" DecoratorSample,");
+    editor.waitMarkerInPosition(ERROR, 23);
+    editor.goToPosition(23, 34);
+    menu.runCommand(ASSISTANT, QUICK_FIX);
+    editor.selectFirstItemIntoFixErrorPropByDoubleClick();
+    editor.goToPosition(24, 18);
+    menu.runCommand(ASSISTANT, QUICK_FIX);
+    editor.selectFirstItemIntoFixErrorPropByDoubleClick();
+    editor.goToPosition(84, 1);
+    editor.waitTextIntoEditor(expectedTextAfterQuickFix);
+  }
+
+  private void checkCodeValidationFeature(String memberRegistrationTabName) {
+    editor.selectTabByName(memberRegistrationTabName);
+    editor.typeTextIntoEditor("2");
+    editor.waitMarkerInPosition(ERROR, 28);
+    editor.goToPosition(28, 18);
+    menu.runCommand(ASSISTANT, QUICK_FIX);
+    editor.enterTextIntoFixErrorPropByDoubleClick("Change to 'Logger' (java.util.logging)");
+    editor.waitAllMarkersInvisibility(ERROR);
+  }
+
+  private void checkQuickDocumentationFeature(
+      String memberRegistrationTabName, String loggerJavaDocFragment) {
+    editor.selectTabByName(memberRegistrationTabName);
+    editor.goToPosition(28, 17);
+    menu.runCommand(ASSISTANT, QUICK_DOCUMENTATION);
+    editor.checkTextToBePresentInRhJavaDocPopUp(loggerJavaDocFragment);
+  }
+
+  private void checkFindDefinitionFeature(String expectedTextOfInjectClass) {
+    editor.goToPosition(36, 7);
+    menu.runCommand(ASSISTANT, FIND_DEFINITION);
+    editor.waitActiveTabFileName("Inject.class");
+    editor.waitCursorPosition(185, 25);
+    editor.waitTextIntoEditor(expectedTextOfInjectClass);
+  }
+
+  private void checkPreviousTabFeature(String memberRegistrationTabName) {
+    menu.runCommand(TestMenuCommandsConstants.Edit.EDIT, "gwt-debug-topmenu/Edit/switchLeftTab");
+    editor.waitActiveTabFileName(memberRegistrationTabName);
+    editor.waitActive();
+  }
+
+  private void checkFindUsagesFeature() {
+    menu.runCommand(ASSISTANT, FIND_USAGES);
+    findUsages.waitExpectedOccurences(26);
+  }
+
+  private void checkGoToDeclarationFeature() {
     projectExplorer.openItemByPath(PATH_TO_MAIN_PACKAGE + "/controller/MemberRegistration.java");
     editor.waitActive();
     editor.goToPosition(39, 14);
     editor.typeTextIntoEditor(F4.toString());
     editor.waitActiveTabFileName("Member");
     editor.waitCursorPosition(23, 20);
-
-    menu.runCommand(ASSISTANT, FIND_USAGES);
-    findUsages.waitExpectedOccurences(26);
-    menu.runCommand(TestMenuCommandsConstants.Edit.EDIT, "gwt-debug-topmenu/Edit/switchLeftTab");
-    editor.waitActiveTabFileName(memberRegistrationTabName);
-    editor.waitActive();
-    editor.goToPosition(36, 7);
-    menu.runCommand(ASSISTANT, FIND_DEFINITION);
-    editor.waitActiveTabFileName("Inject.class");
-    editor.waitCursorPosition(185, 25);
-
-    editor.waitTextIntoEditor(expectedTextOfInjectClass);
-    editor.selectTabByName(memberRegistrationTabName);
-    editor.goToPosition(28, 14);
-    editor.typeTextIntoEditor(CONTROL.toString() + "q");
-    editor.waitAndCheckTextPresenceInJavaDoc("loggerJavaDocFragment");
-    editor.typeTextIntoEditor("-");
-    editor.waitMarkerInPosition(ERROR, 28);
-    editor.typeTextIntoEditor(BACK_SPACE.toString());
-    editor.waitAllMarkersInvisibility(ERROR);
-    editor.goToPosition(40, 1);
-    editor.typeTextIntoEditor("private Member newMember;");
-    editor.goToPosition(40, 18);
-    menu.runCommand(ASSISTANT, QUICK_FIX);
   }
 
   private void setUpDebugMode() {
@@ -173,7 +239,7 @@ public class JavaUserStoryTest {
     consoles.clickOnProcessesButton();
   }
 
-  private void createWsFromJavaEAPStackWithTestProject(String kitchenExampleName) {
+  private void createWsFromJavaEAPStackWithTestProject(String kitchenExampleName) throws Exception {
     dashboard.selectWorkspacesItemOnDashboard();
     dashboard.waitToolbarTitleName("Workspaces");
     workspaces.clickOnAddWorkspaceBtn();
@@ -189,6 +255,7 @@ public class JavaUserStoryTest {
     consoles.clickOnProcessesButton();
     consoles.waitJDTLSProjectResolveFinishedMessage(PROJECT);
     projectExplorer.quickExpandWithJavaScript();
+    addTestFileIntoProjectByApi();
   }
 
   // do request to test application if debugger for the app. has been set properly,
@@ -226,13 +293,13 @@ public class JavaUserStoryTest {
 
   private void checkStepInto() {
     debugPanel.clickOnButton(STEP_INTO);
-    editor.waitTabIsPresent("NativeMethodAccessorImpl");
+    editor.waitTabIsPresent(tabNameWithImpl);
     debugPanel.waitDebugHighlightedText("return invoke0(method, obj, args);");
   }
 
   private void checkStepOver() {
     debugPanel.clickOnButton(STEP_OVER);
-    editor.waitTabIsPresent("NativeMethodAccessorImpl");
+    editor.waitTabIsPresent(tabNameWithImpl);
     debugPanel.waitDebugHighlightedText("return delegate.invoke(obj, args);");
   }
 
@@ -265,5 +332,17 @@ public class JavaUserStoryTest {
     HttpURLConnection httpURLConnection = (HttpURLConnection) new URL(appUrl).openConnection();
     httpURLConnection.setRequestMethod(HttpMethod.GET);
     assertEquals(httpURLConnection.getResponseCode(), 200);
+  }
+
+  private void addTestFileIntoProjectByApi() throws Exception {
+    URL resourcesOut = getClass().getResource("/projects/Decorator.java");
+    String content =
+        Files.readAllLines(Paths.get(resourcesOut.toURI()), Charset.forName("UTF-8"))
+            .stream()
+            .collect(Collectors.joining());
+    String wsId = workspaceServiceClient.getByName(WORKSPACE, defaultTestUser.getName()).getId();
+    String pathToFolder = PATH_TO_MAIN_PACKAGE + "/util";
+    String NewFileName = "DecoratorSample.java";
+    projectServiceClient.createFileInProject(wsId, pathToFolder, NewFileName, content);
   }
 }
