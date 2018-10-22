@@ -104,18 +104,27 @@ npm config set registry ${npmRegistryURL}
 # npm config list
 
 ##########################################################################################
-# get dashboard version from Indy
+# get dashboard version from Indy - works but can't be resolved during the build?
 ##########################################################################################
 
-tmpfile=/tmp/maven-metadata-${version}.html
-upstreamPom=org/eclipse/che/dashboard/che-dashboard-war/${includeDashboardVersion}
-UPSTREAM_POM="api/content/maven/group/builds-untested+shared-imports+public/${upstreamPom}/maven-metadata.xml"
+#tmpfile=/tmp/maven-metadata-${version}.html
+#upstreamPom=org/eclipse/che/dashboard/che-dashboard-war/${includeDashboardVersion}
+#UPSTREAM_POM="api/content/maven/group/builds-untested+shared-imports+public/${upstreamPom}/maven-metadata.xml"
 
-wget ${INDY}/${UPSTREAM_POM} -O ${tmpfile}
-timestamp=$(grep "<timestamp>" ${tmpfile} | sed -e "s#.*<timestamp>\(.\+\)</timestamp>.*#\1#"); echo $timestamp
-buildNumber=$(grep "<buildNumber>" ${tmpfile} | sed -e "s#.*<buildNumber>\(.\+\)</buildNumber>.*#\1#"); echo $buildNumber
-cheDashboardVersion=${version}-${timestamp}-${buildNumber}
-rm -f ${tmpfile}
+#wget ${INDY}/${UPSTREAM_POM} -O ${tmpfile}
+#timestamp=$(grep "<timestamp>" ${tmpfile} | sed -e "s#.*<timestamp>\(.\+\)</timestamp>.*#\1#"); echo $timestamp
+#buildNumber=$(grep "<buildNumber>" ${tmpfile} | sed -e "s#.*<buildNumber>\(.\+\)</buildNumber>.*#\1#"); echo $buildNumber
+#cheDashboardVersion=${version}-${timestamp}-${buildNumber} && rm -f ${tmpfile}
+#if [[ ! ${cheDashboardVersion} ]]; then cheDashboardVersion=${includeDashboardVersion}; fi # fallback to 6.13.0-SNAPSHOT if not resolved
+
+##########################################################################################
+# get dashboard version from Sonatype - works but requires PME flag -DrepoReportingRemoval=false to resolve Sonatype Nexus
+##########################################################################################
+
+if [[ ${includeDashboardVersion} == *"-SNAPSHOT" ]]; then snapOrRel="snapshots"; else snapOrRel="releases"; fi # echo $snapOrRel
+wget -q http://oss.sonatype.org/content/repositories/${snapOrRel}/org/eclipse/che/dashboard/che-dashboard-war/${includeDashboardVersion}/maven-metadata.xml -O /tmp/mm.xml
+cheDashboardVersion=$(grep value /tmp/mm.xml | tail -1 | sed -e "s#.*<value>\(.\+\)</value>#\1#" && rm -f /tmp/mm.xml)
+if [[ ! ${cheDashboardVersion} ]]; then cheDashboardVersion=${includeDashboardVersion}; fi # fallback to 6.13.0-SNAPSHOT if not resolved
 
 ##########################################################################################
 # configure maven build 
