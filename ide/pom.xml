@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (c) 2012-2017
+    Copyright (c) 2018 Red Hat, Inc.
     All rights reserved. This program and the accompanying materials
     are made available under the terms of the Eclipse Public License v1.0
     which accompanies this distribution, and is available at
@@ -17,7 +17,7 @@
     </parent>
     <artifactId>codeready-ide-parent</artifactId>
     <packaging>pom</packaging>
-    <name>Code Ready Workspaces :: IDE :: Parent</name>
+    <name>CodeReady Workspaces :: IDE :: Parent</name>
   <modules>
       <module>codeready-ide-stacks</module>
       <module>codeready-ide-samples</module>
