@@ -1,6 +1,5 @@
 package com.redhat.codeready.selenium.pageobject;
 
-
 import com.google.inject.Inject;
 import org.eclipse.che.selenium.core.SeleniumWebDriver;
 import org.eclipse.che.selenium.core.action.ActionsFactory;
