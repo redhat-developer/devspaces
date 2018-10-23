@@ -38,6 +38,7 @@ import org.eclipse.che.selenium.core.client.TestWorkspaceServiceClient;
 import org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants;
 import org.eclipse.che.selenium.core.user.DefaultTestUser;
 import org.eclipse.che.selenium.core.webdriver.SeleniumWebDriverHelper;
+import org.eclipse.che.selenium.core.workspace.TestWorkspace;
 import org.eclipse.che.selenium.core.workspace.TestWorkspaceProvider;
 import org.eclipse.che.selenium.pageobject.Consoles;
 import org.eclipse.che.selenium.pageobject.Events;
@@ -89,8 +90,11 @@ public class JavaUserStoryTest {
   @Inject private RhFindUsagesWidget findUsages;
   @Inject private TestProjectServiceClient projectServiceClient;
 
-  private String appUrl;
-  private String tabNameWithImpl = "NativeMethodAccessorImpl";
+  private String        appUrl;
+  private String        tabNameWithImpl = "NativeMethodAccessorImpl";
+
+  // it is used to read workspace logs on test failure
+  private TestWorkspace testWorkspace;
 
   @BeforeClass
   public void setUp() {
@@ -104,7 +108,7 @@ public class JavaUserStoryTest {
 
   @Test(priority = 1)
   public void createJavaEAPWorkspaceWithProjectFromDashBoard() throws Exception {
-    createWsFromJavaEAPStackWithTestProject(PROJECT);
+    testWorkspace = createWsFromJavaEAPStackWithTestProject(PROJECT);
   }
 
   @Test(priority = 2)
@@ -239,7 +243,7 @@ public class JavaUserStoryTest {
     consoles.clickOnProcessesButton();
   }
 
-  private void createWsFromJavaEAPStackWithTestProject(String kitchenExampleName) throws Exception {
+  private TestWorkspace createWsFromJavaEAPStackWithTestProject(String kitchenExampleName) throws Exception {
     dashboard.selectWorkspacesItemOnDashboard();
     dashboard.waitToolbarTitleName("Workspaces");
     workspaces.clickOnAddWorkspaceBtn();
@@ -249,6 +253,9 @@ public class JavaUserStoryTest {
     addOrImportForm.addSampleToWorkspace(kitchenExampleName);
     newWorkspace.clickOnCreateButtonAndOpenInIDE();
     seleniumWebDriverHelper.switchToIdeFrameAndWaitAvailability();
+
+    TestWorkspace testWorkspace = testWorkspaceProvider.getWorkspace(WORKSPACE, defaultTestUser);
+
     projectExplorer.waitItem(kitchenExampleName);
     events.clickEventLogBtn();
     events.waitExpectedMessage("Branch 'master' is checked out");
@@ -256,6 +263,8 @@ public class JavaUserStoryTest {
     consoles.waitJDTLSProjectResolveFinishedMessage(PROJECT);
     projectExplorer.quickExpandWithJavaScript();
     addTestFileIntoProjectByApi();
+
+    return testWorkspace;
   }
 
   // do request to test application if debugger for the app. has been set properly,
