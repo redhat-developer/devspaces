@@ -7,7 +7,7 @@
 
 #set version & compute qualifier from best available in Indy
 # or use commandline overrides for version and suffix
-version=6.13.0
+version=6.14.0
 suffix="" # normally we compute this from version of org/eclipse/che/depmgt/maven-depmgt-pom but can override if needed
 upstreamPom=org/eclipse/che/depmgt/maven-depmgt-pom # usually use depmgt/maven-depmgt-pom but can also align to che-parent for codeready-workspaces build
 INDY=""
@@ -62,13 +62,14 @@ fi
 # persistent: 6.12.0.redhat-00001-ec28abe6
 # pmeVersionSHA=$(git describe --tags)
 # pmeSuffix=${pmeVersion#${version}.}; echo $suffix
-if [[ ${suffix} ]]; then 
+if [[ ${suffix} ]]; then
   for d in $(find . -name pom.xml); do sed -i "s#\(version>\)${version}.*\(</version>\)#\1${version}.${suffix}\2#g" $d; done
   for d in $(find . -name pom.xml); do sed -i "s#\(<che.\+version>\)${version}.*\(</che.\+version>\)#\1${version}.${suffix}\2#g" $d; done
-  for d in $(find . -name pom.xml); do sed -i "s#\(<version>${version}\)-SNAPSHOT#\1.${suffix}#g" $d; done
-  mvn versions:set -DnewVersion=${version}.${suffix}
-  mvn versions:update-parent "-DparentVersion=${version}.${suffix}" -DallowSnapshots=false
-  for d in $(find . -maxdepth 1 -name pom.xml); do sed -i "s#\(<.\+\.version>.\+\)-SNAPSHOT#\1.${suffix}#g" $d; done
+  for d in $(find . -name pom.xml); do sed -i "s#\(<version>${version}\)-SNAPSHOT#\1.${suffix}#g" $d; done # may not be needed 
+  # not needed - the sed replacements are faster and just as effective
+  #mvn versions:set -DnewVersion=${version}.${suffix}
+  #mvn versions:update-parent "-DparentVersion=${version}.${suffix}" -DallowSnapshots=false
+  for d in $(find . -maxdepth 1 -name pom.xml); do sed -i "s#\(<.\+\.version>.\+\)-SNAPSHOT#\1.${suffix}#g" $d; done # may not be needed 
 fi
 
 ##########################################################################################
