@@ -90,8 +90,8 @@ public class JavaUserStoryTest {
   @Inject private RhFindUsagesWidget findUsages;
   @Inject private TestProjectServiceClient projectServiceClient;
 
-  private String        appUrl;
-  private String        tabNameWithImpl = "NativeMethodAccessorImpl";
+  private String appUrl;
+  private String tabNameWithImpl = "NativeMethodAccessorImpl";
 
   // it is used to read workspace logs on test failure
   private TestWorkspace testWorkspace;
@@ -243,7 +243,8 @@ public class JavaUserStoryTest {
     consoles.clickOnProcessesButton();
   }
 
-  private TestWorkspace createWsFromJavaEAPStackWithTestProject(String kitchenExampleName) throws Exception {
+  private TestWorkspace createWsFromJavaEAPStackWithTestProject(String kitchenExampleName)
+      throws Exception {
     dashboard.selectWorkspacesItemOnDashboard();
     dashboard.waitToolbarTitleName("Workspaces");
     workspaces.clickOnAddWorkspaceBtn();
