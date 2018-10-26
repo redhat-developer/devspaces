@@ -1,4 +1,4 @@
-How to run Selenium tests
+How to run End-To-End tests
 ------------------
 
 #### 1. Register OAuth application 
@@ -12,9 +12,9 @@ Go to [OAuth application page](https://github.com/settings/applications/new) and
 Substitute `CHE_OAUTH_GITHUB_CLIENTID` and `CHE_OAUTH_GITHUB_CLIENTSECRET` properties in `che.env` with `Client ID` and `Client Secret` taken from 
 newly created [OAuth application](https://github.com/settings/developers).
 
-#### 2. Configure selenium tests
+#### 2. Configure End-To-End tests
 In case of running GitHub-related tests (which are run by default) you need to define GitHub test users credentials. Set `CHE_LOCAL_CONF_DIR` environment variable 
-and point to the folder where selenium tests configuration will be stored. Then create file with `.properties` extension in that folder 
+and point to the folder where end-to-end tests configuration will be stored. Then create file with `.properties` extension in that folder 
 with the following content:
 ```
 # GitHub account credentials
@@ -46,15 +46,15 @@ Follow the guide: [https://github.com/eclipse/che](https://github.com/eclipse/ch
 
 #### 4. Run tests
 
-Simply launch `./selenium-tests.sh`
+Simply launch `./e2e-tests.sh`
 
 ### How to run tests on OpenShift
 #### 1. Set workspace runtime infrastructure implementation
 export CHE_INFRASTRUCTURE=openshift
 #### 2. Run tests and specify host and port of Che deployed to OpenShift
-Launch `./selenium-tests.sh --host=<Che host on openshift> --port=80`
+Launch `./e2e-tests.sh --host=<Che host on openshift> --port=80`
 
-Example: `./selenium-tests.sh --host=che-spi.192.168.99.100.nip.io --port=80`
+Example: `./e2e-tests.sh --host=che-spi.192.168.99.100.nip.io --port=80`
 
 In case of running the tests for Eclipse Che on OCP, which is run remotely with default Eclipse Che admin and test user credentials: 
 ```
@@ -77,7 +77,7 @@ Default values:
 Run tests configuration properties
 --------------------------------------
 ```
-Usage: ./selenium-tests.sh [-Mmode] [options] [tests scope]
+Usage: ./e2e-tests.sh [-Mmode] [options] [tests scope]
 
 Options:
     --http                              Use 'http' protocol to connect to product
@@ -127,29 +127,29 @@ Other options:
 
 HOW TO of usage:
     Test Eclipse Che single user assembly:
-        ./selenium-tests.sh
+        ./e2e-tests.sh
 
     Test Eclipse Che multi user assembly:
-        ./selenium-tests.sh --multiuser
+        ./e2e-tests.sh --multiuser
 
     Test Eclipse Che assembly and automatically rerun failing tests:
-        ./selenium-tests.sh --rerun [ATTEMPTS]
+        ./e2e-tests.sh --rerun [ATTEMPTS]
 
     Run single test or package of tests:
-        ./selenium-tests.sh <...> --test=<TEST>
+        ./e2e-tests.sh <...> --test=<TEST>
 
     Run suite:
-        ./selenium-tests.sh <...> --suite=<PATH_TO_SUITE>
+        ./e2e-tests.sh <...> --suite=<PATH_TO_SUITE>
 
     Rerun failed tests:
-        ./selenium-tests.sh <...> --failed-tests
-        ./selenium-tests.sh <...> --failed-tests --rerun [ATTEMPTS]
+        ./e2e-tests.sh <...> --failed-tests
+        ./e2e-tests.sh <...> --failed-tests --rerun [ATTEMPTS]
 
-    Debug selenium test:
-        ./selenium-tests.sh -Mlocal --test=<TEST> --debug
+    Debug e2e test:
+        ./e2e-tests.sh -Mlocal --test=<TEST> --debug
 
     Analyse tests results:
-        ./selenium-tests.sh --compare-with-ci [BUILD NUMBER]
+        ./e2e-tests.sh --compare-with-ci [BUILD NUMBER]
 ```
 
 Test development tips
