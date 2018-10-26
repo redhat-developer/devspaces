@@ -3,6 +3,7 @@ package com.redhat.codeready.selenium.pageobject;
 import static org.eclipse.che.selenium.core.constant.TestTimeoutsConstants.ATTACHING_ELEM_TO_DOM_SEC;
 
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import org.eclipse.che.selenium.core.SeleniumWebDriver;
 import org.eclipse.che.selenium.core.webdriver.SeleniumWebDriverHelper;
 import org.eclipse.che.selenium.core.webdriver.WebDriverWaitFactory;
@@ -12,12 +13,13 @@ import org.eclipse.che.selenium.pageobject.debug.DebugPanel;
 import org.eclipse.che.selenium.pageobject.intelligent.CommandsExplorer;
 import org.openqa.selenium.By;
 
-public class RhDebuggerPanel extends DebugPanel {
+@Singleton
+public class CodereadyDebuggerPanel extends DebugPanel {
   private SeleniumWebDriverHelper seleniumWebDriverHelper;
   private final SeleniumWebDriver seleniumWebDriver;
 
   @Inject
-  public RhDebuggerPanel(
+  public CodereadyDebuggerPanel(
       SeleniumWebDriver seleniumWebDriver,
       Loader loader,
       CodenvyEditor editor,

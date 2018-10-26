@@ -18,10 +18,10 @@ import static org.openqa.selenium.Keys.F4;
 import static org.testng.Assert.assertEquals;
 
 import com.google.inject.Inject;
-import com.redhat.codeready.selenium.pageobject.RhDebuggerPanel;
-import com.redhat.codeready.selenium.pageobject.RhEditor;
+import com.redhat.codeready.selenium.pageobject.CodereadyDebuggerPanel;
+import com.redhat.codeready.selenium.pageobject.CodereadyEditor;
 import com.redhat.codeready.selenium.pageobject.dashboard.CodereadyNewWorkspace;
-import com.redhat.codeready.selenium.pageobject.dashboard.RhFindUsagesWidget;
+import com.redhat.codeready.selenium.pageobject.dashboard.CodeкeadyFindUsageWidget;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.Charset;
@@ -80,14 +80,14 @@ public class JavaUserStoryTest {
   @Inject private CommandsPalette commandsPalette;
   @Inject private Wizard wizard;
   @Inject private Consoles consoles;
-  @Inject private RhEditor editor;
+  @Inject private CodereadyEditor editor;
   @Inject private HttpJsonRequestFactory requestFactory;
   @Inject private Menu menu;
-  @Inject private RhDebuggerPanel debugPanel;
+  @Inject private CodereadyDebuggerPanel debugPanel;
   @Inject private JavaDebugConfig debugConfig;
   @Inject private Events events;
   @Inject private NotificationsPopupPanel notifications;
-  @Inject private RhFindUsagesWidget findUsages;
+  @Inject private CodeкeadyFindUsageWidget findUsages;
   @Inject private TestProjectServiceClient projectServiceClient;
 
   private String appUrl;
@@ -193,7 +193,7 @@ public class JavaUserStoryTest {
     editor.selectTabByName(memberRegistrationTabName);
     editor.goToPosition(28, 17);
     menu.runCommand(ASSISTANT, QUICK_DOCUMENTATION);
-    editor.checkTextToBePresentInRhJavaDocPopUp(loggerJavaDocFragment);
+    editor.checkTextToBePresentInCodereadyJavaDocPopUp(loggerJavaDocFragment);
   }
 
   private void checkFindDefinitionFeature(String expectedTextOfInjectClass) {

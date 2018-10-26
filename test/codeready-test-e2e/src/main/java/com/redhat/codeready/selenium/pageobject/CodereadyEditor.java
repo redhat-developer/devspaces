@@ -1,6 +1,7 @@
 package com.redhat.codeready.selenium.pageobject;
 
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import org.eclipse.che.selenium.core.SeleniumWebDriver;
 import org.eclipse.che.selenium.core.action.ActionsFactory;
 import org.eclipse.che.selenium.core.webdriver.SeleniumWebDriverHelper;
@@ -11,11 +12,12 @@ import org.eclipse.che.selenium.pageobject.Loader;
 import org.eclipse.che.selenium.pageobject.TestWebElementRenderChecker;
 import org.openqa.selenium.By;
 
-public class RhEditor extends CodenvyEditor {
+@Singleton
+public class CodereadyEditor extends CodenvyEditor {
   private SeleniumWebDriverHelper seleniumWebDriverHelper;
 
   @Inject
-  public RhEditor(
+  public CodereadyEditor(
       SeleniumWebDriver seleniumWebDriver,
       Loader loader,
       ActionsFactory actionsFactory,
@@ -34,7 +36,7 @@ public class RhEditor extends CodenvyEditor {
     this.seleniumWebDriverHelper = seleniumWebDriverHelper;
   }
 
-  public void checkTextToBePresentInRhJavaDocPopUp(String expectedText) {
+  public void checkTextToBePresentInCodereadyJavaDocPopUp(String expectedText) {
     String rhJavaDocLocator =
         "//div[@class='textviewTooltip' and contains(@style, 'visibility: visible')]";
     seleniumWebDriverHelper.waitTextContains(By.xpath(rhJavaDocLocator), expectedText);

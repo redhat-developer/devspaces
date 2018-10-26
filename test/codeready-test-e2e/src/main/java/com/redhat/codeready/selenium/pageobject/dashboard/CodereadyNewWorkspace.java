@@ -16,6 +16,7 @@ import static java.util.Arrays.asList;
 import static org.eclipse.che.selenium.pageobject.dashboard.NewWorkspace.Locators.STACK_ROW_XPATH;
 
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import java.util.List;
 import java.util.Optional;
 import org.eclipse.che.selenium.core.SeleniumWebDriver;
@@ -30,6 +31,7 @@ import org.openqa.selenium.By;
  * @author Musienko Maxim
  * @author Dmytro Nochevnov
  */
+@Singleton
 public class CodereadyNewWorkspace extends NewWorkspace {
 
   private SeleniumWebDriverHelper seleniumWebDriverHelper;

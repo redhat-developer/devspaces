@@ -1,17 +1,19 @@
 package com.redhat.codeready.selenium.pageobject.dashboard;
 
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import org.eclipse.che.selenium.core.SeleniumWebDriver;
 import org.eclipse.che.selenium.core.webdriver.SeleniumWebDriverHelper;
 import org.eclipse.che.selenium.core.webdriver.WebDriverWaitFactory;
 import org.eclipse.che.selenium.pageobject.FindUsages;
 import org.openqa.selenium.By;
 
-public class RhFindUsagesWidget extends FindUsages {
+@Singleton
+public class CodeкeadyFindUsageWidget extends FindUsages {
   private SeleniumWebDriverHelper seleniumWebDriverHelper;
 
   @Inject
-  public RhFindUsagesWidget(
+  public CodeкeadyFindUsageWidget(
       SeleniumWebDriver seleniumWebDriver,
       WebDriverWaitFactory webDriverWaitFactory,
       SeleniumWebDriverHelper seleniumWebDriverHelper) {
