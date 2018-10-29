@@ -20,8 +20,8 @@ import static org.testng.Assert.assertEquals;
 import com.google.inject.Inject;
 import com.redhat.codeready.selenium.pageobject.CodereadyDebuggerPanel;
 import com.redhat.codeready.selenium.pageobject.CodereadyEditor;
+import com.redhat.codeready.selenium.pageobject.dashboard.CodereadyFindUsageWidget;
 import com.redhat.codeready.selenium.pageobject.dashboard.CodereadyNewWorkspace;
-import com.redhat.codeready.selenium.pageobject.dashboard.CodeкeadyFindUsageWidget;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.Charset;
@@ -87,7 +87,7 @@ public class JavaUserStoryTest {
   @Inject private JavaDebugConfig debugConfig;
   @Inject private Events events;
   @Inject private NotificationsPopupPanel notifications;
-  @Inject private CodeкeadyFindUsageWidget findUsages;
+  @Inject private CodereadyFindUsageWidget findUsages;
   @Inject private TestProjectServiceClient projectServiceClient;
 
   private String appUrl;

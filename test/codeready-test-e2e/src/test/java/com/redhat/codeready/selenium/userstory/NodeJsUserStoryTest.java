@@ -2,12 +2,16 @@ package com.redhat.codeready.selenium.userstory;
 
 import static com.redhat.codeready.selenium.pageobject.dashboard.CodereadyNewWorkspace.CodereadyStacks.NODE;
 import static org.eclipse.che.commons.lang.NameGenerator.generate;
+import static org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants.Assistant.ASSISTANT;
+import static org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants.Assistant.FIND_PROJECT_SYMBOL;
+import static org.eclipse.che.selenium.pageobject.CodenvyEditor.MarkerLocator.ERROR;
+import static org.openqa.selenium.Keys.BACK_SPACE;
 
 import com.google.inject.Inject;
-import com.redhat.codeready.selenium.pageobject.RhDebuggerPanel;
-import com.redhat.codeready.selenium.pageobject.RhEditor;
+import com.redhat.codeready.selenium.pageobject.CodereadyDebuggerPanel;
+import com.redhat.codeready.selenium.pageobject.CodereadyEditor;
+import com.redhat.codeready.selenium.pageobject.dashboard.CodereadyFindUsageWidget;
 import com.redhat.codeready.selenium.pageobject.dashboard.CodereadyNewWorkspace;
-import com.redhat.codeready.selenium.pageobject.dashboard.RhFindUsagesWidget;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -26,6 +30,7 @@ import org.eclipse.che.selenium.core.utils.WaitUtils;
 import org.eclipse.che.selenium.core.webdriver.SeleniumWebDriverHelper;
 import org.eclipse.che.selenium.core.workspace.TestWorkspace;
 import org.eclipse.che.selenium.core.workspace.TestWorkspaceProvider;
+import org.eclipse.che.selenium.pageobject.AssistantFindPanel;
 import org.eclipse.che.selenium.pageobject.Consoles;
 import org.eclipse.che.selenium.pageobject.Events;
 import org.eclipse.che.selenium.pageobject.Menu;
@@ -39,6 +44,7 @@ import org.eclipse.che.selenium.pageobject.dashboard.workspaces.WorkspaceOvervie
 import org.eclipse.che.selenium.pageobject.dashboard.workspaces.Workspaces;
 import org.eclipse.che.selenium.pageobject.debug.JavaDebugConfig;
 import org.eclipse.che.selenium.pageobject.intelligent.CommandsPalette;
+import org.openqa.selenium.Keys;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.annotations.AfterClass;
@@ -65,16 +71,17 @@ public class NodeJsUserStoryTest {
   @Inject private CommandsPalette commandsPalette;
   @Inject private Wizard wizard;
   @Inject private Consoles consoles;
-  @Inject private RhEditor editor;
+  @Inject private CodereadyEditor editor;
   @Inject private HttpJsonRequestFactory requestFactory;
   @Inject private Menu menu;
-  @Inject private RhDebuggerPanel debugPanel;
+  @Inject private CodereadyDebuggerPanel debugPanel;
   @Inject private JavaDebugConfig debugConfig;
   @Inject private Events events;
   @Inject private NotificationsPopupPanel notifications;
-  @Inject private RhFindUsagesWidget findUsages;
+  @Inject private CodereadyFindUsageWidget findUsages;
   @Inject private TestProjectServiceClient projectServiceClient;
   @Inject private SeleniumWebDriver seleniumWebDriver;
+  @Inject private AssistantFindPanel assistantFindPanel;
   private TestWorkspace testWorkspace;
 
   @BeforeClass
@@ -92,9 +99,16 @@ public class NodeJsUserStoryTest {
     createWsFromNodeJsStackWithTestProject(PROJECT);
   }
 
-  @Test
+  @Test(priority = 1)
   public void runAndCheckNodeJsApp() throws Exception {
     runAndCheckHelloWorldApp();
+  }
+
+  @Test(priority = 2)
+  public void checkMainLsFeatures() {
+    checkHovering();
+    checkCodeValidation();
+    checkFindDefinition();
   }
 
   private void createWsFromNodeJsStackWithTestProject(String example) {
@@ -114,7 +128,7 @@ public class NodeJsUserStoryTest {
   }
 
   private void runAndCheckHelloWorldApp()
-          throws InterruptedException, ExecutionException, TimeoutException, IOException {
+      throws InterruptedException, ExecutionException, TimeoutException {
     commandsPalette.openCommandPalette();
     commandsPalette.startCommandByDoubleClick(PROJECT + ":run");
     consoles.waitExpectedTextIntoConsole("Example app listening on port 3000!");
@@ -138,18 +152,41 @@ public class NodeJsUserStoryTest {
     return httpURLConnection.getResponseCode() == HttpStatus.SC_OK;
   }
 
-  private void checkCodeValidation(){
-
+  private void checkCodeValidation() {
+    editor.waitActive();
+    editor.goToCursorPositionVisible(10, 9);
+    editor.typeTextIntoEditor(Keys.SPACE.toString());
+    editor.waitMarkerInPosition(ERROR, 10);
+    editor.moveToMarker(ERROR, 10);
+    editor.waitTextInToolTipPopup("Unexpected token");
+    editor.goToCursorPositionVisible(10, 10);
+    editor.typeTextIntoEditor(BACK_SPACE.toString());
+    editor.waitAllMarkersInvisibility(ERROR);
   }
 
-  private void checkHovering(){
-
+  private void checkHovering() {
+    projectExplorer.quickExpandWithJavaScript();
+    projectExplorer.openItemByPath(PROJECT + "/app/app.js");
+    editor.moveCursorToText("console");
+    editor.waitTextInHoverPopup("Used to print to stdout and stderr.");
   }
 
-  private void checkRenaming(){
+  private void checkRenaming() {}
 
+  private void checkFindDefinition() {
+    editor.goToPosition(3, 8);
+    menu.runCommand(ASSISTANT, FIND_PROJECT_SYMBOL);
+    assistantFindPanel.waitForm();
+    assistantFindPanel.clickOnInputField();
+    assistantFindPanel.typeToInputField("a");
+    assistantFindPanel.waitAllNodes("/web-nodejs-simple/node_modules/express/lib/express.js");
+
+    // select item in the find panel by clicking on node
+    assistantFindPanel.clickOnActionNodeWithTextContains(
+        "/web-nodejs-simple/node_modules/express/lib/express.js");
+    assistantFindPanel.waitFormIsClosed();
+    editor.waitTextIntoEditor("function createApplication()");
+    editor.waitTabIsPresent("express.js");
+    editor.waitCursorPosition(48, 2);
   }
-
-  private void checkSy
-
 }
