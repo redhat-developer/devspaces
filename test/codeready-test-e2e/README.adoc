@@ -1,0 +1,159 @@
+== How to run End-To-End tests
+
+==== 1. Run all tests against locally deployed CodeReady Workspaces on OpenShift Origin in grid mode
+
+Simply launch `./e2e-tests.sh`
+
+==== 2. Run tests with specified host and port of CodeReady Workspaces on OpenShift
+
+Launch `./e2e-tests.sh --host=&lt;CodeReady Workspaces host on OpenShift&gt; --port=<port>`
+
+The tests are running with default CodeReady Workspaces credentials:
+Default values:
+
+- OPENSHIFT_USERNAME: "developer"
+
+- OPENSHIFT_PASSWORD: "any"
+
+- OPENSHIFT_CHE_NAMESPACE: "codeready"
+
+You can change it by using following system variables
+```
+export OPENSHIFT_USERNAME=<openshift_web_console_username>;
+export OPENSHIFT_PASSWORD=<openshift_web_console_password>;
+export OPENSHIFT_TOKEN=<openshift_web_console_bearer_auth_token>;
+export OPENSHIFT_CHE_NAMESPACE=<namespace_of_codeready_workspaces_deployed_on_openshift>;
+```
+where `OPENSHIFT_TOKEN` is optional and is aimed to replace username/password when OpenShift is configured with oAuth. 
+
+==== 3. Setup test admin and test user credentials
+Also you can set your own credentials of test user or admin instead of default ones
+```
+export CHE_ADMIN_NAME=<che_admin_name>
+export CHE_ADMIN_EMAIL=<che_admin_email>
+export CHE_ADMIN_PASSWORD=<che_admin_password>
+
+export CHE_TESTUSER_NAME=<che_test_user_name>
+export CHE_TESTUSER_EMAIL=<che_test_user_email>
+export CHE_TESTUSER_PASSWORD=<che_test_user_password>
+```
+
+Default values:
+
+- CHE_ADMIN_NAME: "admin"
+
+- CHE_ADMIN_EMAIL: "admin@admin.com"
+
+- CHE_ADMIN_PASSWORD: "admin"
+
+If test user credentials aren't set, tests create random test user.
+
+== Run tests configuration properties
+
+[source]
+----
+Usage: ./e2e-tests.sh [-Mmode] [options] [tests scope]
+
+Options:
+    --http                              Use 'http' protocol to connect to product
+    --https                             Use 'https' protocol to connect to product
+    --host=<PRODUCT_HOST>               Set host where product is deployed
+    --port=<PRODUCT_PORT>               Set port of the product, default is 8080
+
+Modes (defines environment to run tests):
+    -Mlocal                             All tests will be run in a Web browser on the developer machine.
+                                        Recommended if test visualization is needed and for debugging purpose.
+
+       Options that go with 'local' mode:
+       --web-driver-version=<VERSION>    To use the specific version of the WebDriver, be default the latest will be used: "${WEBDRIVER_VERSION}"
+       --web-driver-port=<PORT>          To run WebDriver on the specific port, by default: "${WEBDRIVER_PORT}"
+       --threads=<THREADS>               Number of tests that will be run simultaneously. It also means the very same number of
+                                        Web browsers will be opened on the developer machine.
+                                        Default value is in range [2,5] and depends on available RAM.
+
+    -Mgrid (default)                    All tests will be run in parallel among several docker containers.
+                                        One container per thread. Recommended to run test suite.
+
+        Options that go with 'grid' mode:
+        --threads=<THREADS>             Number of tests that will be run simultaneously.
+                                        Default value is in range [2,5] and depends on available RAM.
+
+Define tests scope:
+    --test=<TEST_CLASS>                 Single test/package to run.
+                                        For example: '--test=DialogAboutTest', '--test=org.eclipse.che.selenium.git.**'.
+    --suite=<SUITE>                     Test suite to run, found:
+"$(for x in $(ls -1 src/test/resources/suites); do echo "                                            * "$x; done)"
+    --exclude=<TEST_GROUPS_TO_EXCLUDE>  Comma-separated list of test groups to exclude from execution.
+                                        For example, use '--exclude=github' to exclude GitHub-related tests.
+
+Handle failing tests:
+    --failed-tests                      Rerun failed tests that left after the previous try
+    --regression-tests                  Rerun regression tests that left after the previous try
+    --rerun [ATTEMPTS]                  Automatically rerun failing tests.
+                                        Default attempts number is 1.
+
+Other options:
+    --help                              Display help information
+    --debug                             Run tests in debug mode
+    --skip-sources-validation           Fast build. Skips source validation and enforce plugins
+    --workspace-pool-size=[<SIZE>|auto] Size of test workspace pool.
+                                        Default value is 0, that means that test workspaces are created on demand.
+
+HOW TO of usage:
+    Run tests from CodereadySuite.xml against locally deployed CodeReady Workspaces on OpenShift Origin in grid mode using HTTP protocol:
+        ./e2e-tests.sh
+
+    Test Eclipse Che assembly and automatically rerun failing tests:
+        ./e2e-tests.sh --rerun [ATTEMPTS]
+
+    Run single test or package of tests:
+        ./e2e-tests.sh <...> --test=<TEST>
+
+    Run suite:
+        ./e2e-tests.sh <...> --suite=<PATH_TO_SUITE>
+
+    Rerun failed tests:
+        ./e2e-tests.sh <...> --failed-tests
+        ./e2e-tests.sh <...> --failed-tests --rerun [ATTEMPTS]
+
+    Debug test:
+        ./e2e-tests.sh -Mlocal --test=<TEST> --debug
+----
+
+== Setup GitHub related tests execution
+
+==== 1. Register GitHub oAuth application
+
+Go to https://github.com/settings/applications/new[OAuth application page] and register a new application:
+
+* `Application name` : `CodeReady`
+
+* `Homepage URL` : `http://&lt;OPENSHIFT_SSO_SERVER_ADDRESS&gt;`
+
+* `Authorization callback URL` : `http://&lt;OPENSHIFT_SSO_SERVER_ADDRESS&gt;/api/oauth/callback`
+For OpenShift Origin it has the next format: `http://rh-sso-codeready.<IP>.nip.io/auth/realms/che/broker/github/endpoint`.
+
+
+Then you should create GitHub identity provider in OpenShift SSO server like it described here https://www.eclipse.org/che/docs/user-management.html#social-login-and-brokering.
+
+==== 2. Configure End-To-End tests to run GitHub-related tests
+
+GitHub related end-to-end tests run by default. You can exclude them from execution by using special parameter `-exclude=github`.
+
+In case of running GitHub-related tests you need to define GitHub test users credentials. Set `CHE_LOCAL_CONF_DIR` environment variable
+and point to the folder where end-to-end tests configuration will be stored. Then create file with `.properties` extension in that folder
+with the following content:
+```
+# GitHub test users credentials
+github.username=<MAIN_GITHUB_USERNAME>
+github.password=<MAIN_GITHUB_PASSWORD>
+github.auxiliary.username=<AUXILIARY_GITHUB_USERNAME>
+github.auxiliary.password=<AUXILIARY_GITHUB_PASSWORD>
+```
+
+== Test development tips
+
+It's impossible to use `@Test(dependsOnMethods)` to express dependency between the tests because it breaks parallel execution of test classes (an issue https://github.com/cbeust/testng/issues/1773)[https://github.com/cbeust/testng/issues/1773)].
+
+`@Test(priority)` can be used instead, and dependent test will be skipped if preceding test with higher priority from the same test class has failed.
+Set attribute `@Test(alwaysRun = true)` if test shouldn't be skipped in that case.

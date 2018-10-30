@@ -1,0 +1,55 @@
+{
+  "defaultEnv": "replaced_name",
+  "environments": {
+    "replaced_name": {
+      "machines": {
+        "dev-machine": {
+          "attributes": {
+            "memoryLimitBytes": "desired_memory_value"
+          },
+          "servers": {
+            "eap": {
+              "attributes": {},
+              "port": "8080",
+              "protocol": "http"
+            },
+            "eap-debug": {
+              "attributes": {},
+              "port": "8000",
+              "protocol": "http"
+            }
+          },
+          "volumes": {},
+          "installers": [
+            "org.eclipse.che.exec",
+            "org.eclipse.che.terminal",
+            "org.eclipse.che.ws-agent"
+          ],
+          "env": {
+            "CHE_MACHINE_NAME": "dev-machine"
+          }
+        }
+      },
+      "recipe": {
+        "type": "dockerimage",
+        "content": "docker-registry.engineering.redhat.com/crw/rhel-base-jdk8"
+      }
+    }
+  },
+  "projects": [],
+
+  "name": "replaced_name",
+  "attributes": {},
+  "commands": [
+    {
+      "commandLine": "mvn clean install -f ${current.project.path}/pom.xml",
+      "name": "build",
+      "attributes": {
+        "goal": "Build",
+        "previewUrl": ""
+      },
+      "type": "mvn"
+    }
+  ],
+  "links": []
+}
