@@ -19,7 +19,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import javax.ws.rs.HttpMethod;
-import org.apache.http.HttpStatus;
+import javax.ws.rs.core.Response;
 import org.eclipse.che.api.core.rest.HttpJsonRequestFactory;
 import org.eclipse.che.selenium.core.SeleniumWebDriver;
 import org.eclipse.che.selenium.core.client.TestProjectServiceClient;
@@ -149,7 +149,7 @@ public class NodeJsUserStoryTest {
   private boolean isTestApplicationAvailable(String appUrl) throws IOException {
     HttpURLConnection httpURLConnection = (HttpURLConnection) new URL(appUrl).openConnection();
     httpURLConnection.setRequestMethod(HttpMethod.GET);
-    return httpURLConnection.getResponseCode() == HttpStatus.SC_OK;
+    return httpURLConnection.getResponseCode() == Response.Status.OK.getStatusCode();
   }
 
   private void checkCodeValidation() {
