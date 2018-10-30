@@ -58,6 +58,7 @@ Handle failing tests:
                                         Default attempts number is 1.
 
 Other options:
+    --help                              Display help information
     --debug                             Run tests in debug mode
     --skip-sources-validation           Fast build. Skips source validation and enforce plugins
     --workspace-pool-size=[<SIZE>|auto] Size of test workspace pool.
