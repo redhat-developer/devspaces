@@ -1,30 +1,21 @@
 == How to run End-To-End tests
 
-==== 1. Run all tests against locally deployed CodeReady Workspaces on OpenShift Origin in grid mode using HTTP:
+==== 1. Run all tests against locally deployed CodeReady Workspaces on OpenShift Origin in grid mode
 
-To run tests from link:src/test/resources/suites/CodereadySuite.xml[`CodereadySuite.xml`]:
-
-[source]
-----
-./e2e-tests.sh
-----
+Simply launch `./e2e-tests.sh`
 
 ==== 2. Run tests with specified host and port of CodeReady Workspaces on OpenShift
 
-[source]
-----
-./e2e-tests.sh --host=&lt;CodeReady Workspaces host on OpenShift&gt; --port=<port>`
-----
+Launch `./e2e-tests.sh --host=&lt;CodeReady Workspaces host on OpenShift&gt; --port=<port>`
 
-The tests are running with default CodeReady Workspaces credentials.
-
+The tests are running with default CodeReady Workspaces credentials:
 Default values:
 
-- `OPENSHIFT_USERNAME`: "developer"
+- OPENSHIFT_USERNAME: "developer"
 
-- `OPENSHIFT_PASSWORD`: "any"
+- OPENSHIFT_PASSWORD: "any"
 
-- `OPENSHIFT_CHE_NAMESPACE`: "codeready"
+- OPENSHIFT_CHE_NAMESPACE: "codeready"
 
 You can change it by using following system variables
 ```
@@ -49,22 +40,39 @@ export CHE_TESTUSER_PASSWORD=<che_test_user_password>
 
 Default values:
 
-- `CHE_ADMIN_NAME`: "admin"
+- CHE_ADMIN_NAME: "admin"
 
-- `CHE_ADMIN_EMAIL`: "admin@admin.com"
+- CHE_ADMIN_EMAIL: "admin@admin.com"
 
-- `CHE_ADMIN_PASSWORD`: "admin"
+- CHE_ADMIN_PASSWORD: "admin"
 
 If test user credentials aren't set, tests create random test user.
 
-== Run tests configuration properties
+== Run tests scenarios
+==== Display help information
+`./e2e-tests.sh --help`
 
-For complete commandline syntax reference, including how to configure rerun attempts or debug failures, run the following link:e2e-tests.sh[command] from this link:.[directory]:
+==== Run tests from _CodereadySuite.xml_ against locally deployed CodeReady Workspaces on OpenShift Origin in grid mode using HTTP protocol
+`./e2e-tests.sh`
 
-[source]
-----
-./e2e-tests.sh --help
-----
+==== Test locally deployed CodeReady Workspaces on OpenShift Origin and automatically rerun failing tests
+`./e2e-tests.sh --rerun [ATTEMPTS]`
+
+==== Run single test or package of tests
+`./e2e-tests.sh --test=<TEST>`
+
+==== Run suite
+`./e2e-tests.sh --suite=<PATH_TO_SUITE>`
+
+==== Rerun failed tests
+```
+./e2e-tests.sh --failed-tests
+./e2e-tests.sh --failed-tests --rerun [ATTEMPTS]
+```
+
+==== Debug test
+
+`./e2e-tests.sh -Mlocal --test=<TEST> --debug`
 
 == Setup GitHub related tests execution
 
