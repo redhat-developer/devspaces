@@ -19,7 +19,11 @@
 
     <test name="all">
         <classes>
+            <!-- CodeReady Workspaces specific tests -->
             <class name="com.redhat.codeready.selenium.userstory.JavaUserStoryTest"/>
+            <class name="com.redhat.codeready.selenium.userstory.NodeJsUserStoryTest"/>
+
+            <!-- Ecliipse Che tests -->
             <class name="org.eclipse.che.selenium.assistant.CheckFindActionFeatureInCheTest"/>
             <class name="org.eclipse.che.selenium.assistant.KeyBindingsTest"/>
             <class name="org.eclipse.che.selenium.assistant.OrganizeImportsTest"/>
@@ -51,7 +55,6 @@
             <class name="org.eclipse.che.selenium.dashboard.CreateWorkspaceTest"/>
             <class name="org.eclipse.che.selenium.dashboard.CreateFactoryTest"/>
             <class name="org.eclipse.che.selenium.dashboard.FactoriesListTest"/>
-            <class name="org.eclipse.che.selenium.dashboard.CreateStackTest"/>
             <class name="org.eclipse.che.selenium.dashboard.workspaces.AddOrImportProjectFormTest"/>
             <class name="org.eclipse.che.selenium.dashboard.workspaces.NewWorkspacePageTest"/>
             <class name="org.eclipse.che.selenium.dashboard.organization.UserEmptyOrganizationTest"/>
@@ -102,7 +105,7 @@
             <class name="org.eclipse.che.selenium.factory.CheckFactoryWithSparseCheckoutTest"/>
             <class name="org.eclipse.che.selenium.filewatcher.EditFilesWithTabsTest"/>
             <class name="org.eclipse.che.selenium.filewatcher.RemoveFilesWithActiveTabs"/>
-            <class name="org.eclipse.che.selenium.filewatcher.UpdateFilesWithoutIDE"/>
+            <class name="org.eclipse.che.selenium.filewatcher.UpdateFilesWithoutIDETest"/>
             <class name="org.eclipse.che.selenium.factory.CreateNamedFactoryFromDashboardTest"/>
             <class name="org.eclipse.che.selenium.filewatcher.CheckDeletingProjectByApiTest"/>
             <class name="org.eclipse.che.selenium.filewatcher.CheckFileWatcherExcludeFeatureTest"/>
@@ -147,6 +150,7 @@
             <class name="org.eclipse.che.selenium.miscellaneous.FileStructureCodeEditorTest"/>
             <class name="org.eclipse.che.selenium.miscellaneous.FileStructureNodesTest"/>
             <class name="org.eclipse.che.selenium.miscellaneous.FindTextFeatureTest"/>
+            <class name="org.eclipse.che.selenium.dashboard.CreateStackTest"/>
             <class name="org.eclipse.che.selenium.miscellaneous.FindUsagesBaseOperationTest"/>
             <class name="org.eclipse.che.selenium.miscellaneous.ImplementationBaseOperationsTest"/>
             <class name="org.eclipse.che.selenium.miscellaneous.MachinesAsynchronousStartTest"/>
