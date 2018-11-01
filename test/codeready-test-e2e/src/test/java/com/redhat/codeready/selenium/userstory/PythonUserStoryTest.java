@@ -7,8 +7,8 @@ import static org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants.A
 import static org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants.Assistant.GO_TO_SYMBOL;
 import static org.eclipse.che.selenium.core.constant.TestProjectExplorerContextMenuConstants.ContextMenuCommandGoals.RUN_GOAL;
 import static org.eclipse.che.selenium.core.constant.TestTimeoutsConstants.ELEMENT_TIMEOUT_SEC;
-import static org.eclipse.che.selenium.pageobject.CodenvyEditor.MarkerLocator.ERROR;
 import static org.eclipse.che.selenium.pageobject.CodenvyEditor.MarkerLocator.WARNING;
+import static org.eclipse.che.selenium.pageobject.dashboard.NewWorkspace.Stack.PYTHON;
 import static org.openqa.selenium.Keys.ARROW_LEFT;
 
 import com.google.inject.Inject;
@@ -26,8 +26,6 @@ import org.eclipse.che.selenium.pageobject.Menu;
 import org.eclipse.che.selenium.pageobject.ProjectExplorer;
 import org.eclipse.che.selenium.pageobject.dashboard.CreateWorkspaceHelper;
 import org.eclipse.che.selenium.pageobject.dashboard.Dashboard;
-import org.eclipse.che.selenium.pageobject.dashboard.NewWorkspace.Stack;
-import org.openqa.selenium.Keys;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -38,6 +36,7 @@ public class PythonUserStoryTest {
   private static final String WORKSPACE_NAME = generate("PythonUserStory", 4);
   private static final String PROJECT_NAME = "console-python3-simple";
   private static final String PYTHON_FILE_NAME = "main.py";
+  private static final String PATH_TO_FILE = PROJECT_NAME + "/" + PYTHON_FILE_NAME;
   private static final String LS_INIT_MESSAGE =
       "Initialized language server 'org.eclipse.che.plugin.python.languageserver";
   private static final String EXPECTED_HOVER_TEXT = "towers(i, start, finish, middle)";
@@ -47,7 +46,7 @@ public class PythonUserStoryTest {
       asList("countersymbols (3)", "towers", "counter");
   private static final String TEXT_FOR_INVOKING_SIGNATURE_HELP = "towers(";
   private static final String EXPECTED_SIGNATURE_TEXT = "towers(i, start, finish, middle)";
-
+  private static final String EXPECTED_LINE_TEXT = "counter = 0";
   private static final String FILE_CONTENT =
       "counter = 0\n"
           + "\n"
@@ -63,8 +62,6 @@ public class PythonUserStoryTest {
           + "\n"
           + "towers(5, 'X', 'Z', 'Y')\n"
           + "print(\"\\nPuzzle solved in \" + str(counter) + \" steps.\")";
-
-  private static final String EXPECTED_LINE_TEXT = "counter = 0";
 
   @Inject private Ide ide;
   @Inject private Menu menu;
@@ -93,13 +90,12 @@ public class PythonUserStoryTest {
   }
 
   @Test
-  public void createPythonWorkspaceWithProjectFromDashBoard() {
+  public void createPythonWorkspaceWithProjectFromDashBoard() throws Exception {
     testWorkspace =
         createWorkspaceHelper.createWorkspaceFromStackWithProject(
-            Stack.PYTHON, WORKSPACE_NAME, PROJECT_NAME);
+            PYTHON, WORKSPACE_NAME, PROJECT_NAME);
 
     ide.switchToIdeAndWaitWorkspaceIsReadyToUse();
-
     projectExplorer.waitProjectInitialization(PROJECT_NAME);
 
     consoles.executeCommandFromProjectExplorer(PROJECT_NAME, RUN_GOAL, "run", "Hello, world!");
@@ -107,20 +103,15 @@ public class PythonUserStoryTest {
         PROJECT_NAME, RUN_GOAL, "console-python3-simple:run", "Hello, world!");
 
     checkLanguageServerInitialization(PROJECT_NAME, PYTHON_FILE_NAME, LS_INIT_MESSAGE);
+
+    testProjectServiceClient.updateFile(testWorkspace.getId(), PATH_TO_FILE, FILE_CONTENT);
+    editor.waitTextIntoEditor("def towers(i, start, finish, middle):");
+    consoles.executeCommandFromProjectExplorer(
+        PROJECT_NAME, RUN_GOAL, "console-python3-simple:run", "Puzzle solved in 31 steps.");
   }
 
   @Test(priority = 1)
-  public void checkBasicPythonLanguageServerFeatures() throws Exception {
-    testProjectServiceClient.createFileInProject(
-        testWorkspace.getId(), PROJECT_NAME, PYTHON_FILE_NAME, FILE_CONTENT);
-
-    projectExplorer.openItemByPath(PROJECT_NAME + "/" + PYTHON_FILE_NAME);
-    editor.waitTabIsPresent(PYTHON_FILE_NAME);
-    editor.waitActive();
-
-    consoles.executeCommandFromProjectExplorer(
-        PROJECT_NAME, RUN_GOAL, "console-python3-simple:run", "Puzzle solved in 31 steps.");
-
+  public void checkBasicPythonLanguageServerFeatures() {
     // check Hover feature
     editor.moveCursorToText("towers");
     editor.waitTextInHoverPopUpEqualsTo(EXPECTED_HOVER_TEXT);
@@ -128,7 +119,6 @@ public class PythonUserStoryTest {
     // check Find Reference feature
     editor.goToCursorPositionVisible(10, 14);
     menu.runCommand(ASSISTANT, FIND_REFERENCES);
-
     findReferencesConsoleTab.waitAllReferencesWithText(EXPECTED_FIND_REFERENCE_NODE_TEXT);
     findReferencesConsoleTab.doubleClickOnReference("From:10:9 To:10:16");
     editor.waitSpecifiedValueForLineAndChar(10, 16);
@@ -151,7 +141,7 @@ public class PythonUserStoryTest {
     editor.closeSignaturesContainer();
     editor.waitSignaturesContainerIsClosed();
 
-    // check error marker
+    // check warning marker
     editor.waitMarkerInPosition(WARNING, 12);
     editor.deleteCurrentLineAndInsertNew();
     editor.waitAllMarkersInvisibility(WARNING);
