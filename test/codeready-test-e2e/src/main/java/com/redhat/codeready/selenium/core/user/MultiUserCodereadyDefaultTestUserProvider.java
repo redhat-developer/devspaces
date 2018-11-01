@@ -48,8 +48,7 @@ public class MultiUserCodereadyDefaultTestUserProvider implements DefaultTestUse
       MultiUserCheAdminTestUserProvider adminTestUserProvider,
       @Named("che.testuser.name") String name,
       @Named("che.testuser.email") String email,
-      @Named("che.testuser.password") String password,
-      @Named("che.testuser.offline_token") String offlineToken) {
+      @Named("che.testuser.password") String password) {
     this.keycloakCliClient = keycloakCliClient;
     if (email == null || email.trim().isEmpty() || password == null || password.trim().isEmpty()) {
       DefaultTestUser testUser;
@@ -71,15 +70,13 @@ public class MultiUserCodereadyDefaultTestUserProvider implements DefaultTestUse
                 adminTestUser.getName(),
                 adminTestUser.getEmail(),
                 adminTestUser.getPassword(),
-                adminTestUser.getOfflineToken(),
                 adminTestUserProvider);
       }
 
       this.defaultTestUser = testUser;
       this.isNewUser = isNewUser;
     } else {
-      this.defaultTestUser =
-          defaultTestUserFactory.create(name, email, password, offlineToken, this);
+      this.defaultTestUser = defaultTestUserFactory.create(name, email, password, this);
       this.isNewUser = false;
 
       LOG.info(

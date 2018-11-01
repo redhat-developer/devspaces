@@ -42,13 +42,11 @@ import org.eclipse.che.selenium.core.provider.AdminTestUserProvider;
 import org.eclipse.che.selenium.core.provider.CheTestApiEndpointUrlProvider;
 import org.eclipse.che.selenium.core.provider.CheTestDashboardUrlProvider;
 import org.eclipse.che.selenium.core.provider.CheTestIdeUrlProvider;
-import org.eclipse.che.selenium.core.provider.CheTestOfflineToAccessTokenExchangeApiEndpointUrlProvider;
 import org.eclipse.che.selenium.core.provider.CheTestWorkspaceAgentApiEndpointUrlProvider;
 import org.eclipse.che.selenium.core.provider.DefaultTestUserProvider;
 import org.eclipse.che.selenium.core.provider.TestApiEndpointUrlProvider;
 import org.eclipse.che.selenium.core.provider.TestDashboardUrlProvider;
 import org.eclipse.che.selenium.core.provider.TestIdeUrlProvider;
-import org.eclipse.che.selenium.core.provider.TestOfflineToAccessTokenExchangeApiEndpointUrlProvider;
 import org.eclipse.che.selenium.core.provider.TestUserProvider;
 import org.eclipse.che.selenium.core.provider.TestWorkspaceAgentApiEndpointUrlProvider;
 import org.eclipse.che.selenium.core.requestfactory.CheTestDefaultHttpJsonRequestFactory;
@@ -100,10 +98,6 @@ public class CodereadySeleniumSuiteModule extends CheSeleniumSuiteModule {
     bind(TestApiEndpointUrlProvider.class).to(CheTestApiEndpointUrlProvider.class);
     bind(TestIdeUrlProvider.class).to(CheTestIdeUrlProvider.class);
     bind(TestDashboardUrlProvider.class).to(CheTestDashboardUrlProvider.class);
-
-    // TODO get rid
-    bind(TestOfflineToAccessTokenExchangeApiEndpointUrlProvider.class)
-        .to(CheTestOfflineToAccessTokenExchangeApiEndpointUrlProvider.class);
 
     bind(TestWorkspaceAgentApiEndpointUrlProvider.class)
         .to(CheTestWorkspaceAgentApiEndpointUrlProvider.class);
