@@ -4,6 +4,8 @@ import static com.redhat.codeready.selenium.pageobject.dashboard.CodereadyNewWor
 import static org.eclipse.che.commons.lang.NameGenerator.generate;
 import static org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants.Assistant.ASSISTANT;
 import static org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants.Assistant.FIND_PROJECT_SYMBOL;
+import static org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants.Assistant.Refactoring.LS_RENAME;
+import static org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants.Assistant.Refactoring.REFACTORING;
 import static org.eclipse.che.selenium.pageobject.CodenvyEditor.MarkerLocator.ERROR;
 import static org.openqa.selenium.Keys.BACK_SPACE;
 
@@ -18,12 +20,14 @@ import java.net.URL;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.stream.Stream;
 import javax.ws.rs.HttpMethod;
-import org.apache.http.HttpStatus;
+import javax.ws.rs.core.Response;
 import org.eclipse.che.api.core.rest.HttpJsonRequestFactory;
 import org.eclipse.che.selenium.core.SeleniumWebDriver;
 import org.eclipse.che.selenium.core.client.TestProjectServiceClient;
 import org.eclipse.che.selenium.core.client.TestWorkspaceServiceClient;
+import org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants;
 import org.eclipse.che.selenium.core.constant.TestTimeoutsConstants;
 import org.eclipse.che.selenium.core.user.DefaultTestUser;
 import org.eclipse.che.selenium.core.utils.WaitUtils;
@@ -42,7 +46,7 @@ import org.eclipse.che.selenium.pageobject.dashboard.Dashboard;
 import org.eclipse.che.selenium.pageobject.dashboard.workspaces.WorkspaceDetails;
 import org.eclipse.che.selenium.pageobject.dashboard.workspaces.WorkspaceOverview;
 import org.eclipse.che.selenium.pageobject.dashboard.workspaces.Workspaces;
-import org.eclipse.che.selenium.pageobject.debug.JavaDebugConfig;
+import org.eclipse.che.selenium.pageobject.debug.NodeJsDebugConfig;
 import org.eclipse.che.selenium.pageobject.intelligent.CommandsPalette;
 import org.openqa.selenium.Keys;
 import org.slf4j.Logger;
@@ -75,7 +79,7 @@ public class NodeJsUserStoryTest {
   @Inject private HttpJsonRequestFactory requestFactory;
   @Inject private Menu menu;
   @Inject private CodereadyDebuggerPanel debugPanel;
-  @Inject private JavaDebugConfig debugConfig;
+  @Inject private NodeJsDebugConfig debugConfig;
   @Inject private Events events;
   @Inject private NotificationsPopupPanel notifications;
   @Inject private CodereadyFindUsageWidget findUsages;
@@ -108,7 +112,14 @@ public class NodeJsUserStoryTest {
   public void checkMainLsFeatures() {
     checkHovering();
     checkCodeValidation();
+    checkRenaming();
     checkFindDefinition();
+  }
+
+  @Test(priority = 3)
+  public void checkDebuggingFeatures() {
+    setUpDebug();
+    checkDebugging();
   }
 
   private void createWsFromNodeJsStackWithTestProject(String example) {
@@ -149,7 +160,7 @@ public class NodeJsUserStoryTest {
   private boolean isTestApplicationAvailable(String appUrl) throws IOException {
     HttpURLConnection httpURLConnection = (HttpURLConnection) new URL(appUrl).openConnection();
     httpURLConnection.setRequestMethod(HttpMethod.GET);
-    return httpURLConnection.getResponseCode() == HttpStatus.SC_OK;
+    return httpURLConnection.getResponseCode() == Response.Status.OK.getStatusCode();
   }
 
   private void checkCodeValidation() {
@@ -171,7 +182,25 @@ public class NodeJsUserStoryTest {
     editor.waitTextInHoverPopup("Used to print to stdout and stderr.");
   }
 
-  private void checkRenaming() {}
+  private void checkRenaming() {
+    Stream<String> expectedCodeFragmentsAfterRenaming =
+        Stream.of(
+            "var app2 = express();",
+            "app2.get('/', function (newReg, res)",
+            "app2.listen(3000, function ()");
+    editor.goToPosition(6, 26);
+    menu.runCommand(ASSISTANT, REFACTORING, LS_RENAME);
+    editor.doRenamingByLanguageServerField("newReg");
+    editor.waitTextIntoEditor("app.get('/', function (newReg, res)");
+    editor.goToPosition(4, 6);
+    menu.runCommand(ASSISTANT, REFACTORING, LS_RENAME);
+    editor.doRenamingByLanguageServerField("app2");
+    expectedCodeFragmentsAfterRenaming.forEach(e -> editor.waitTextIntoEditor(e));
+  }
+
+  private void checkDebugging() {
+    editor.goToPosition(2, 2);
+  }
 
   private void checkFindDefinition() {
     editor.goToPosition(3, 8);
@@ -188,5 +217,21 @@ public class NodeJsUserStoryTest {
     editor.waitTextIntoEditor("function createApplication()");
     editor.waitTabIsPresent("express.js");
     editor.waitCursorPosition(48, 2);
+  }
+
+  private void setUpDebug() {
+    menu.runCommand(
+        TestMenuCommandsConstants.Run.RUN_MENU,
+        TestMenuCommandsConstants.Run.EDIT_DEBUG_CONFIGURATION);
+    debugConfig.expandDebugCategory();
+    debugConfig.setPathToScriptForNodeJs(PROJECT + "/app/app.js");
+    debugConfig.saveConfiguration();
+    debugConfig.clickOnDebugButtonAndWaitClosing();
+    debugPanel.waitDebugHighlightedText("/*eslint-env node*/");
+    debugPanel.clickOnButton(CodereadyDebuggerPanel.DebuggerActionButtons.STEP_OVER);
+    debugPanel.clickOnButton(CodereadyDebuggerPanel.DebuggerActionButtons.STEP_OVER);
+    debugPanel.clickOnButton(CodereadyDebuggerPanel.DebuggerActionButtons.STEP_INTO);
+    editor.waitTabIsPresent("express.js");
+    debugPanel.waitDebugHighlightedText("var app = function(req, res, next)");
   }
 }

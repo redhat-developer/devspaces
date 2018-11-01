@@ -57,7 +57,7 @@ public class CodereadyNewWorkspace extends NewWorkspace {
     JAVA_DEFAULT("java-default"),
     VERTX("vert.x-default"),
     SPRING_BOOT("spring-boot-default"),
-    WILD_FLY_SWARM("spring-boot-default"),
+    WILD_FLY_SWARM("wildfly-swarm-default"),
     DOT_NET("dotnet-default"),
     CPP("cpp-default"),
     GO("go-default"),
