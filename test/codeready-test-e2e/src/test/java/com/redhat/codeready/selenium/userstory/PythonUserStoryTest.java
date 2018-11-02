@@ -90,7 +90,7 @@ public class PythonUserStoryTest {
   }
 
   @Test
-  public void createPythonWorkspaceWithProjectFromDashBoard() throws Exception {
+  public void createPythonWorkspaceWithProjectFromDashboard() throws Exception {
     testWorkspace =
         createWorkspaceHelper.createWorkspaceFromStackWithProject(
             PYTHON, WORKSPACE_NAME, PROJECT_NAME);
