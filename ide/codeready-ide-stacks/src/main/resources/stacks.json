@@ -37,7 +37,8 @@
                 "org.eclipse.che.exec",
                 "org.eclipse.che.terminal",
                 "org.eclipse.che.ws-agent",
-                "org.eclipse.che.ls.java"
+                "org.eclipse.che.ls.java",
+                "com.redhat.bayesian.lsp"
               ],
               "servers": {
                 "eap" : {
@@ -112,7 +113,8 @@
                 "org.eclipse.che.exec",
                 "org.eclipse.che.terminal",
                 "org.eclipse.che.ws-agent",
-                "org.eclipse.che.ls.java"
+                "org.eclipse.che.ls.java",
+                "com.redhat.bayesian.lsp"
               ],
               "servers": {
                 "vertx" : {
@@ -209,7 +211,8 @@
                 "org.eclipse.che.exec",
                 "org.eclipse.che.terminal",
                 "org.eclipse.che.ws-agent",
-                "org.eclipse.che.ls.java"
+                "org.eclipse.che.ls.java",
+                "com.redhat.bayesian.lsp"
               ],
               "servers": {
                 "eap" : {
@@ -286,7 +289,8 @@
                 "org.eclipse.che.exec",
                 "org.eclipse.che.terminal",
                 "org.eclipse.che.ws-agent",
-                "org.eclipse.che.ls.java"
+                "org.eclipse.che.ls.java",
+                "com.redhat.bayesian.lsp"
               ],
               "servers": {
                 "wildfly" : {
@@ -363,7 +367,8 @@
                 "org.eclipse.che.exec",
                 "org.eclipse.che.terminal",
                 "org.eclipse.che.ws-agent",
-                "org.eclipse.che.ls.java"
+                "org.eclipse.che.ls.java",
+                "com.redhat.bayesian.lsp"
               ],
               "servers": {
                 "springboot" : {
@@ -652,7 +657,11 @@
           "machines": {
             "dev-machine": {
               "installers": [
-                "org.eclipse.che.exec", "org.eclipse.che.terminal", "org.eclipse.che.ws-agent", "org.eclipse.che.ls.js-ts"
+                "org.eclipse.che.exec",
+                "org.eclipse.che.terminal",
+                "org.eclipse.che.ws-agent",
+                "org.eclipse.che.ls.js-ts",
+                "com.redhat.bayesian.lsp"
               ],
               "servers": {
                 "3000/tcp" : {
@@ -715,7 +724,10 @@
           "machines": {
             "dev-machine": {
               "installers": [
-                "org.eclipse.che.exec", "org.eclipse.che.terminal", "org.eclipse.che.ws-agent", "org.eclipse.che.ls.php"
+                "org.eclipse.che.exec",
+                "org.eclipse.che.terminal",
+                "org.eclipse.che.ws-agent",
+                "org.eclipse.che.ls.php"
               ],
               "servers": {
                 "8080/tcp": {
@@ -829,7 +841,10 @@
           "machines": {
             "dev-machine": {
               "installers": [
-                "org.eclipse.che.exec", "org.eclipse.che.terminal", "org.eclipse.che.ws-agent", "org.eclipse.che.ls.python"
+                "org.eclipse.che.exec",
+                "org.eclipse.che.terminal",
+                "org.eclipse.che.ws-agent",
+                "org.eclipse.che.ls.python"
               ],
               "servers": {
                 "8080/tcp" : {
