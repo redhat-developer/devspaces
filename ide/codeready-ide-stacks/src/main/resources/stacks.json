@@ -140,7 +140,7 @@
       "description": null,
       "commands": [
         {
-          "commandLine": "mvn clean install -f ${current.project.path}/pom.xml",
+          "commandLine": "MAVEN_OPTS='-Xmx100m' && mvn clean install -f ${current.project.path}/pom.xml",
           "name": "build",
           "type": "mvn",
           "attributes": {
@@ -148,7 +148,7 @@
             "goal": "Build"
           }
         }, {
-          "commandLine": "mvn compile vertx:run -f ${current.project.path}/pom.xml -Dvertx.disableDnsResolver=true",
+          "commandLine": "MAVEN_OPTS='-Xmx100m' && mvn compile vertx:run -f ${current.project.path}/pom.xml -Dvertx.disableDnsResolver=true",
           "name": "run",
           "type": "custom",
           "attributes": {
@@ -156,7 +156,7 @@
             "goal": "Run"
           }
         }, {
-          "commandLine": "mvn compile vertx:debug -f ${current.project.path}/pom.xml -Dvertx.disableDnsResolver=true",
+          "commandLine": "MAVEN_OPTS='-Xmx100m' && mvn compile vertx:debug -f ${current.project.path}/pom.xml -Dvertx.disableDnsResolver=true",
           "name": "debug",
           "type": "custom",
           "attributes": {
@@ -314,7 +314,7 @@
       "description": null,
       "commands": [
         {
-          "commandLine": "mvn clean install -f ${current.project.path}/pom.xml -DskipTests",
+          "commandLine": "MAVEN_OPTS='-Xmx100m' && mvn clean install -f ${current.project.path}/pom.xml -DskipTests",
           "name": "build",
           "type": "mvn",
           "attributes": {
@@ -387,7 +387,7 @@
       "description": null,
       "commands": [
         {
-          "commandLine": "mvn clean install -f ${current.project.path}/pom.xml",
+          "commandLine": "MAVEN_OPTS='-Xmx100m' && mvn clean install -f ${current.project.path}/pom.xml",
           "name": "build",
           "type": "mvn",
           "attributes": {
