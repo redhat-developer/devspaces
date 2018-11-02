@@ -22,6 +22,7 @@
             <!-- CodeReady Workspaces specific tests -->
             <class name="com.redhat.codeready.selenium.userstory.JavaUserStoryTest"/>
             <class name="com.redhat.codeready.selenium.userstory.NodeJsUserStoryTest"/>
+            <class name="com.redhat.codeready.selenium.userstory.PythonUserStoryTest"/>
 
             <!-- Eclipse Che tests -->
             <class name="org.eclipse.che.selenium.assistant.CheckFindActionFeatureInCheTest"/>
