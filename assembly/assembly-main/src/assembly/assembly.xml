@@ -56,6 +56,15 @@
                 </excludes>
             </unpackOptions>
         </dependencySet>
+        <dependencySet>
+            <useProjectArtifact>false</useProjectArtifact>
+            <unpack>false</unpack>
+            <outputDirectory>lib</outputDirectory>
+            <outputFileNameMapping>ws-agent.tar.gz</outputFileNameMapping>
+            <includes>
+                <include>com.redhat:codeready-workspaces-assembly-wsagent-server</include>
+            </includes>
+        </dependencySet>
     </dependencySets>
 
     <fileSets>
@@ -67,6 +76,7 @@
                 <exclude>**/tomcat/webapps/ROOT.war</exclude>
                 <exclude>**/tomcat/webapps/dashboard.war</exclude>
                 <exclude>**/templates/**</exclude>
+                <exclude>**/lib/ws-agent.tar.gz</exclude>
             </excludes>
         </fileSet>
     </fileSets>
