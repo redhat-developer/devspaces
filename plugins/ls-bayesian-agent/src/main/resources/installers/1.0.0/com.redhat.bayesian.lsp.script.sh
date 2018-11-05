@@ -5,7 +5,7 @@ LS_LAUNCHER=${LS_DIR}/launch.sh
 AGENT_BINARIES_URI=https://github.com/fabric8-analytics/fabric8-analytics-lsp-server/releases/download/v0.1.42/ca-lsp-server.tar
 
 mkdir -p ${CHE_DIR}
-rm -rf ${LS_DIR} && mkdir -p ${LS_DIR}
+mkdir -p ${LS_DIR}
 
 
 ############################
