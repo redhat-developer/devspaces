@@ -38,16 +38,45 @@ import org.eclipse.che.selenium.pageobject.dashboard.AddOrImportForm;
 import org.eclipse.che.selenium.pageobject.dashboard.Dashboard;
 import org.eclipse.che.selenium.pageobject.dashboard.workspaces.Workspaces;
 import org.openqa.selenium.By;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 public class PhpUserStoryTest {
-  private static final Logger LOG = LoggerFactory.getLogger(NodeJsUserStoryTest.class);
-  private final String WORKSPACE = generate(PhpUserStoryTest.class.getSimpleName(), 4);
-  private final String PROJECT_NAME = "web-php-simple";
+  private static final String WORKSPACE = generate(PhpUserStoryTest.class.getSimpleName(), 4);
+  private static final String PROJECT_NAME = "web-php-simple";
+  private static final String START_APP_COMMAND_NAME = "start httpd";
+  private static final String EXPECTED_APPLICATION_BODY_TEXT = "Hello World!";
+  private static final String EXPECTED_FIXED_CODE = "echo \"Hello World!\";";
+  private static final String CODE_FOR_TYPING =
+      "\nfunction sayHello($name) {\n" + "return \"Hello, $name\";";
+  //  private static final String CODE_FOR_CHECKING =
+  //      "function sayHello($name) {\n" + "    return \"Hello, $name\";\n" + "}";
+
+  private static final String EXPECTED_REGULAR_TEXT =
+      "<?php\n"
+          + "\n"
+          + "echo \"Hello World!\";\n"
+          + "\n"
+          + "function sayHello($name) {\n"
+          + "    return \"Hello, $name\";\n"
+          + "}\n"
+          + "sayHello\n"
+          + "?>";
+  private static final String EXPECTED_BY_CONTROL_SHIFT_COMMENTED_TEXT =
+      "echo \"Hello World!\";\n"
+          + "/*\n"
+          + "function sayHello($name) {\n"
+          + "    return \"Hello, $name\";\n"
+          + "}\n"
+          + "*/sayHello";
+
+  private static final String EXPECTED_BY_CONTROL_COMMENTED_TEXT =
+      "//\n"
+          + "//function sayHello($name) {\n"
+          + "//    return \"Hello, $name\";\n"
+          + "//}\n"
+          + "sayHello";
 
   @Inject private Dashboard dashboard;
   @Inject private Workspaces workspaces;
@@ -76,14 +105,19 @@ public class PhpUserStoryTest {
 
   @Test
   public void shouldCreatePhpStackWithProject() {
+    // go to "New Workspace" page
     dashboard.selectWorkspacesItemOnDashboard();
     dashboard.waitToolbarTitleName("Workspaces");
     workspaces.clickOnAddWorkspaceBtn();
+
+    // set configuration and run workspace
     newWorkspace.typeWorkspaceName(WORKSPACE);
     newWorkspace.selectCodereadyStack(PHP);
     addOrImportForm.clickOnAddOrImportProjectButton();
     addOrImportForm.addSampleToWorkspace(PROJECT_NAME);
     newWorkspace.clickOnCreateButtonAndOpenInIDE();
+
+    // check workspace creation and readiness
     seleniumWebDriverHelper.switchToIdeFrameAndWaitAvailability();
     projectExplorer.waitItem(PROJECT_NAME);
     projectExplorer.waitAndSelectItem(PROJECT_NAME);
@@ -94,11 +128,10 @@ public class PhpUserStoryTest {
 
   @Test(priority = 1)
   public void checkBuildingAndRunning() {
-    final String startAppCommandName = "start httpd";
-    final String stopAppCommandName = "stop httpd";
-
+    // waits application source readiness and run
     projectExplorer.waitItem(PROJECT_NAME);
-    projectExplorer.invokeCommandWithContextMenu(RUN_GOAL, PROJECT_NAME, startAppCommandName);
+    projectExplorer.invokeCommandWithContextMenu(RUN_GOAL, PROJECT_NAME, START_APP_COMMAND_NAME);
+
     waitApplicationAvailability();
   }
 
@@ -106,6 +139,7 @@ public class PhpUserStoryTest {
   public void mainPhpLsFeaturesShouldWork() {
     final String checkedFileName = "index.php";
 
+    // prepare file for checks
     projectExplorer.waitItem(PROJECT_NAME);
     projectExplorer.expandPathInProjectExplorerAndOpenFile(PROJECT_NAME, checkedFileName);
     editor.waitTabIsPresent(checkedFileName);
@@ -117,42 +151,23 @@ public class PhpUserStoryTest {
   }
 
   private void checkCommenting() {
-    final String expectedRegularText =
-        "<?php\n"
-            + "\n"
-            + "echo \"Hello World!\";\n"
-            + "\n"
-            + "function sayHello($name) {\n"
-            + "    return \"Hello, $name\";\n"
-            + "}\n"
-            + "sayHello\n"
-            + "?>";
-    final String expectedByControlShiftCommentedText =
-        "echo \"Hello World!\";\n"
-            + "/*\n"
-            + "function sayHello($name) {\n"
-            + "    return \"Hello, $name\";\n"
-            + "}\n"
-            + "*/sayHello";
-
-    final String expectedByControlCommentedText =
-        "//\n"
-            + "//function sayHello($name) {\n"
-            + "//    return \"Hello, $name\";\n"
-            + "//}\n"
-            + "sayHello";
-
     editor.waitActive();
     editor.setCursorToLine(4);
+
+    // commenting by "Ctrl" + "Shift" + "/"
     performCommentingByControlShift();
-    editor.waitTextIntoEditor(expectedByControlShiftCommentedText);
+    editor.waitTextIntoEditor(EXPECTED_BY_CONTROL_SHIFT_COMMENTED_TEXT);
+
     performUndoCommand();
-    editor.waitTextIntoEditor(expectedRegularText);
+    editor.waitTextIntoEditor(EXPECTED_REGULAR_TEXT);
+
+    // commenting by "Ctrl" + "/"
     editor.setCursorToLine(4);
     performCommentingByControl();
-    editor.waitTextIntoEditor(expectedByControlCommentedText);
+    editor.waitTextIntoEditor(EXPECTED_BY_CONTROL_COMMENTED_TEXT);
+
     performUndoCommand();
-    editor.waitTextIntoEditor(expectedRegularText);
+    editor.waitTextIntoEditor(EXPECTED_REGULAR_TEXT);
   }
 
   private void performUndoCommand() {
@@ -165,21 +180,22 @@ public class PhpUserStoryTest {
   }
 
   private void waitApplicationAvailability() {
-    final String expectedApplicationBodyText = "Hello World!";
     final String parentWindow = seleniumWebDriver.getWindowHandle();
-    AtomicReference<String> currentText = new AtomicReference<>();
+    final AtomicReference<String> currentText = new AtomicReference<>();
 
     seleniumWebDriverHelper.waitSuccessCondition(
         driver -> {
           consoles.waitPreviewUrlIsPresent();
           consoles.clickOnPreviewUrl();
           seleniumWebDriverHelper.switchToNextWindow(parentWindow);
+
           currentText.set(getBodyText());
+
           seleniumWebDriver.close();
           seleniumWebDriver.switchTo().window(parentWindow);
           seleniumWebDriverHelper.switchToIdeFrameAndWaitAvailability();
 
-          return currentText.get().contains(expectedApplicationBodyText);
+          return currentText.get().contains(EXPECTED_APPLICATION_BODY_TEXT);
         },
         LOADER_TIMEOUT_SEC);
   }
@@ -226,10 +242,13 @@ public class PhpUserStoryTest {
   }
 
   private void checkAutocompletion() {
+    // prepare file
     editor.waitActive();
     editor.goToCursorPositionVisible(7, 2);
     editor.typeTextIntoEditor("\nsay");
     editor.waitTextIntoEditor("}\nsay");
+
+    // check autocompletion
     performAutocomplete();
     editor.waitTextIntoEditor("}\nsayHello");
   }
@@ -244,21 +263,19 @@ public class PhpUserStoryTest {
   }
 
   private void checkCodeValidation() {
-    final String expectedFixedCode = "echo \"Hello World!\";";
-    final String codeForTyping = "\nfunction sayHello($name) {\n" + "return \"Hello, $name\";";
-    final String codeForChecking =
-        "function sayHello($name) {\n" + "    return \"Hello, $name\";\n" + "}";
-
+    // prepare file
     editor.setCursorToLine(4);
-    editor.typeTextIntoEditor(codeForTyping);
-    editor.waitTextIntoEditor(codeForChecking);
+    editor.typeTextIntoEditor(CODE_FOR_TYPING);
+    editor.waitTextIntoEditor(EXPECTED_REGULAR_TEXT);
 
+    // check error marker availability and error hint
     editor.clickOnMarker(ERROR_OVERVIEW, 15);
     editor.waitTextInToolTipPopup("';' expected.");
 
+    // validation of error fixing
     editor.goToCursorPositionVisible(3, 20);
     editor.typeTextIntoEditor(";");
-    editor.waitTextIntoEditor(expectedFixedCode);
+    editor.waitTextIntoEditor(EXPECTED_FIXED_CODE);
     editor.waitAllMarkersInvisibility(ERROR_OVERVIEW);
   }
 }
