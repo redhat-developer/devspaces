@@ -37,7 +37,8 @@
                 "org.eclipse.che.exec",
                 "org.eclipse.che.terminal",
                 "org.eclipse.che.ws-agent",
-                "org.eclipse.che.ls.java"
+                "org.eclipse.che.ls.java",
+                "com.redhat.bayesian.lsp"
               ],
               "servers": {
                 "eap" : {
@@ -112,7 +113,8 @@
                 "org.eclipse.che.exec",
                 "org.eclipse.che.terminal",
                 "org.eclipse.che.ws-agent",
-                "org.eclipse.che.ls.java"
+                "org.eclipse.che.ls.java",
+                "com.redhat.bayesian.lsp"
               ],
               "servers": {
                 "vertx" : {
@@ -140,7 +142,7 @@
       "description": null,
       "commands": [
         {
-          "commandLine": "mvn clean install -f ${current.project.path}/pom.xml",
+          "commandLine": "MAVEN_OPTS='-Xmx100m' && mvn clean install -f ${current.project.path}/pom.xml",
           "name": "build",
           "type": "mvn",
           "attributes": {
@@ -148,7 +150,7 @@
             "goal": "Build"
           }
         }, {
-          "commandLine": "mvn compile vertx:run -f ${current.project.path}/pom.xml -Dvertx.disableDnsResolver=true",
+          "commandLine": "MAVEN_OPTS='-Xmx100m' && mvn compile vertx:run -f ${current.project.path}/pom.xml -Dvertx.disableDnsResolver=true",
           "name": "run",
           "type": "custom",
           "attributes": {
@@ -156,7 +158,7 @@
             "goal": "Run"
           }
         }, {
-          "commandLine": "mvn compile vertx:debug -f ${current.project.path}/pom.xml -Dvertx.disableDnsResolver=true",
+          "commandLine": "MAVEN_OPTS='-Xmx100m' && mvn compile vertx:debug -f ${current.project.path}/pom.xml -Dvertx.disableDnsResolver=true",
           "name": "debug",
           "type": "custom",
           "attributes": {
@@ -209,7 +211,8 @@
                 "org.eclipse.che.exec",
                 "org.eclipse.che.terminal",
                 "org.eclipse.che.ws-agent",
-                "org.eclipse.che.ls.java"
+                "org.eclipse.che.ls.java",
+                "com.redhat.bayesian.lsp"
               ],
               "servers": {
                 "eap" : {
@@ -286,7 +289,8 @@
                 "org.eclipse.che.exec",
                 "org.eclipse.che.terminal",
                 "org.eclipse.che.ws-agent",
-                "org.eclipse.che.ls.java"
+                "org.eclipse.che.ls.java",
+                "com.redhat.bayesian.lsp"
               ],
               "servers": {
                 "wildfly" : {
@@ -314,7 +318,7 @@
       "description": null,
       "commands": [
         {
-          "commandLine": "mvn clean install -f ${current.project.path}/pom.xml -DskipTests",
+          "commandLine": "MAVEN_OPTS='-Xmx100m' && mvn clean install -f ${current.project.path}/pom.xml -DskipTests",
           "name": "build",
           "type": "mvn",
           "attributes": {
@@ -363,7 +367,8 @@
                 "org.eclipse.che.exec",
                 "org.eclipse.che.terminal",
                 "org.eclipse.che.ws-agent",
-                "org.eclipse.che.ls.java"
+                "org.eclipse.che.ls.java",
+                "com.redhat.bayesian.lsp"
               ],
               "servers": {
                 "springboot" : {
@@ -387,7 +392,7 @@
       "description": null,
       "commands": [
         {
-          "commandLine": "mvn clean install -f ${current.project.path}/pom.xml",
+          "commandLine": "MAVEN_OPTS='-Xmx100m' && mvn clean install -f ${current.project.path}/pom.xml",
           "name": "build",
           "type": "mvn",
           "attributes": {
@@ -652,7 +657,11 @@
           "machines": {
             "dev-machine": {
               "installers": [
-                "org.eclipse.che.exec", "org.eclipse.che.terminal", "org.eclipse.che.ws-agent", "org.eclipse.che.ls.js-ts"
+                "org.eclipse.che.exec",
+                "org.eclipse.che.terminal",
+                "org.eclipse.che.ws-agent",
+                "org.eclipse.che.ls.js-ts",
+                "com.redhat.bayesian.lsp"
               ],
               "servers": {
                 "3000/tcp" : {
@@ -715,7 +724,10 @@
           "machines": {
             "dev-machine": {
               "installers": [
-                "org.eclipse.che.exec", "org.eclipse.che.terminal", "org.eclipse.che.ws-agent", "org.eclipse.che.ls.php"
+                "org.eclipse.che.exec",
+                "org.eclipse.che.terminal",
+                "org.eclipse.che.ws-agent",
+                "org.eclipse.che.ls.php"
               ],
               "servers": {
                 "8080/tcp": {
@@ -829,7 +841,10 @@
           "machines": {
             "dev-machine": {
               "installers": [
-                "org.eclipse.che.exec", "org.eclipse.che.terminal", "org.eclipse.che.ws-agent", "org.eclipse.che.ls.python"
+                "org.eclipse.che.exec",
+                "org.eclipse.che.terminal",
+                "org.eclipse.che.ws-agent",
+                "org.eclipse.che.ls.python"
               ],
               "servers": {
                 "8080/tcp" : {
