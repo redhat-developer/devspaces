@@ -6,7 +6,11 @@ import static org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants.A
 import static org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants.Assistant.FIND_PROJECT_SYMBOL;
 import static org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants.Assistant.Refactoring.LS_RENAME;
 import static org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants.Assistant.Refactoring.REFACTORING;
+import static org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants.Run.EDIT_DEBUG_CONFIGURATION;
+import static org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants.Run.RUN_MENU;
 import static org.eclipse.che.selenium.pageobject.CodenvyEditor.MarkerLocator.ERROR;
+import static org.eclipse.che.selenium.pageobject.debug.DebugPanel.DebuggerActionButtons.STEP_INTO;
+import static org.eclipse.che.selenium.pageobject.debug.DebugPanel.DebuggerActionButtons.STEP_OVER;
 import static org.openqa.selenium.Keys.BACK_SPACE;
 
 import com.google.inject.Inject;
@@ -27,7 +31,6 @@ import org.eclipse.che.api.core.rest.HttpJsonRequestFactory;
 import org.eclipse.che.selenium.core.SeleniumWebDriver;
 import org.eclipse.che.selenium.core.client.TestProjectServiceClient;
 import org.eclipse.che.selenium.core.client.TestWorkspaceServiceClient;
-import org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants;
 import org.eclipse.che.selenium.core.constant.TestTimeoutsConstants;
 import org.eclipse.che.selenium.core.user.DefaultTestUser;
 import org.eclipse.che.selenium.core.utils.WaitUtils;
@@ -219,19 +222,19 @@ public class NodeJsUserStoryTest {
     editor.waitCursorPosition(48, 2);
   }
 
-  private void setUpDebug() {
-    menu.runCommand(
-        TestMenuCommandsConstants.Run.RUN_MENU,
-        TestMenuCommandsConstants.Run.EDIT_DEBUG_CONFIGURATION);
-    debugConfig.expandDebugCategory();
-    debugConfig.setPathToScriptForNodeJs(PROJECT + "/app/app.js");
-    debugConfig.saveConfiguration();
-    debugConfig.clickOnDebugButtonAndWaitClosing();
-    debugPanel.waitDebugHighlightedText("/*eslint-env node*/");
-    debugPanel.clickOnButton(CodereadyDebuggerPanel.DebuggerActionButtons.STEP_OVER);
-    debugPanel.clickOnButton(CodereadyDebuggerPanel.DebuggerActionButtons.STEP_OVER);
-    debugPanel.clickOnButton(CodereadyDebuggerPanel.DebuggerActionButtons.STEP_INTO);
-    editor.waitTabIsPresent("express.js");
-    debugPanel.waitDebugHighlightedText("var app = function(req, res, next)");
-  }
+    private void setUpDebug() {
+      menu.runCommand(
+              RUN_MENU,
+              EDIT_DEBUG_CONFIGURATION);
+      debugConfig.expandDebugCategory();
+      debugConfig.setPathToScriptForNodeJs(PROJECT + "/app/app.js");
+      debugConfig.saveConfiguration();
+      debugConfig.clickOnDebugButtonAndWaitClosing();
+      debugPanel.waitDebugHighlightedText("/*eslint-env node*/");
+      debugPanel.clickOnButton(STEP_OVER);
+      debugPanel.clickOnButton(STEP_OVER);
+      debugPanel.clickOnButton(STEP_INTO);
+      editor.waitTabIsPresent("express.js");
+      debugPanel.waitDebugHighlightedText("var app = function(req, res, next)");
+   }
 }
