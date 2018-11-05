@@ -37,8 +37,7 @@
                 "org.eclipse.che.exec",
                 "org.eclipse.che.terminal",
                 "org.eclipse.che.ws-agent",
-                "org.eclipse.che.ls.java",
-                "com.redhat.bayesian.lsp"
+                "org.eclipse.che.ls.java"
               ],
               "servers": {
                 "eap" : {
@@ -113,8 +112,7 @@
                 "org.eclipse.che.exec",
                 "org.eclipse.che.terminal",
                 "org.eclipse.che.ws-agent",
-                "org.eclipse.che.ls.java",
-                "com.redhat.bayesian.lsp"
+                "org.eclipse.che.ls.java"
               ],
               "servers": {
                 "vertx" : {
@@ -142,7 +140,7 @@
       "description": null,
       "commands": [
         {
-          "commandLine": "MAVEN_OPTS='-Xmx100m' && mvn clean install -f ${current.project.path}/pom.xml",
+          "commandLine": "mvn clean install -f ${current.project.path}/pom.xml",
           "name": "build",
           "type": "mvn",
           "attributes": {
@@ -150,7 +148,7 @@
             "goal": "Build"
           }
         }, {
-          "commandLine": "MAVEN_OPTS='-Xmx100m' && mvn compile vertx:run -f ${current.project.path}/pom.xml -Dvertx.disableDnsResolver=true",
+          "commandLine": "mvn compile vertx:run -f ${current.project.path}/pom.xml -Dvertx.disableDnsResolver=true",
           "name": "run",
           "type": "custom",
           "attributes": {
@@ -158,7 +156,7 @@
             "goal": "Run"
           }
         }, {
-          "commandLine": "MAVEN_OPTS='-Xmx100m' && mvn compile vertx:debug -f ${current.project.path}/pom.xml -Dvertx.disableDnsResolver=true",
+          "commandLine": "mvn compile vertx:debug -f ${current.project.path}/pom.xml -Dvertx.disableDnsResolver=true",
           "name": "debug",
           "type": "custom",
           "attributes": {
@@ -211,8 +209,7 @@
                 "org.eclipse.che.exec",
                 "org.eclipse.che.terminal",
                 "org.eclipse.che.ws-agent",
-                "org.eclipse.che.ls.java",
-                "com.redhat.bayesian.lsp"
+                "org.eclipse.che.ls.java"
               ],
               "servers": {
                 "eap" : {
@@ -289,8 +286,7 @@
                 "org.eclipse.che.exec",
                 "org.eclipse.che.terminal",
                 "org.eclipse.che.ws-agent",
-                "org.eclipse.che.ls.java",
-                "com.redhat.bayesian.lsp"
+                "org.eclipse.che.ls.java"
               ],
               "servers": {
                 "wildfly" : {
@@ -318,7 +314,7 @@
       "description": null,
       "commands": [
         {
-          "commandLine": "MAVEN_OPTS='-Xmx100m' && mvn clean install -f ${current.project.path}/pom.xml -DskipTests",
+          "commandLine": "mvn clean install -f ${current.project.path}/pom.xml -DskipTests",
           "name": "build",
           "type": "mvn",
           "attributes": {
@@ -367,8 +363,7 @@
                 "org.eclipse.che.exec",
                 "org.eclipse.che.terminal",
                 "org.eclipse.che.ws-agent",
-                "org.eclipse.che.ls.java",
-                "com.redhat.bayesian.lsp"
+                "org.eclipse.che.ls.java"
               ],
               "servers": {
                 "springboot" : {
@@ -392,7 +387,7 @@
       "description": null,
       "commands": [
         {
-          "commandLine": "MAVEN_OPTS='-Xmx100m' && mvn clean install -f ${current.project.path}/pom.xml",
+          "commandLine": "mvn clean install -f ${current.project.path}/pom.xml",
           "name": "build",
           "type": "mvn",
           "attributes": {
@@ -462,7 +457,7 @@
             }
           },
           "recipe": {
-            "content": "docker-registry.engineering.redhat.com/crw/rhel-c-cpp",
+            "content": "docker-registry.default.svc:5000/openshift/rhel-c-cpp",
             "type": "dockerimage"
           }
         }
@@ -530,7 +525,7 @@
             }
           },
           "recipe": {
-            "content": "docker-registry.engineering.redhat.com/crw/rhel-dotnet",
+            "content": "docker-registry.default.svc:5000/openshift/rhel-dotnet",
             "type": "dockerimage"
           }
         }
@@ -601,7 +596,7 @@
             }
           },
           "recipe": {
-            "content": "docker-registry.engineering.redhat.com/crw/rhel-golang",
+            "content": "docker-registry.default.svc:5000/openshift/rhel-golang",
             "type": "dockerimage"
           }
         }
@@ -657,11 +652,7 @@
           "machines": {
             "dev-machine": {
               "installers": [
-                "org.eclipse.che.exec",
-                "org.eclipse.che.terminal",
-                "org.eclipse.che.ws-agent",
-                "org.eclipse.che.ls.js-ts",
-                "com.redhat.bayesian.lsp"
+                "org.eclipse.che.exec", "org.eclipse.che.terminal", "org.eclipse.che.ws-agent", "org.eclipse.che.ls.js-ts"
               ],
               "servers": {
                 "3000/tcp" : {
@@ -724,10 +715,7 @@
           "machines": {
             "dev-machine": {
               "installers": [
-                "org.eclipse.che.exec",
-                "org.eclipse.che.terminal",
-                "org.eclipse.che.ws-agent",
-                "org.eclipse.che.ls.php"
+                "org.eclipse.che.exec", "org.eclipse.che.terminal", "org.eclipse.che.ws-agent", "org.eclipse.che.ls.php"
               ],
               "servers": {
                 "8080/tcp": {
@@ -749,7 +737,7 @@
             }
           },
           "recipe": {
-            "content": "docker-registry.engineering.redhat.com/crw/rhel-php",
+            "content": "docker-registry.default.svc:5000/openshift/rhel-php",
             "type": "dockerimage"
           }
         }
@@ -841,10 +829,7 @@
           "machines": {
             "dev-machine": {
               "installers": [
-                "org.eclipse.che.exec",
-                "org.eclipse.che.terminal",
-                "org.eclipse.che.ws-agent",
-                "org.eclipse.che.ls.python"
+                "org.eclipse.che.exec", "org.eclipse.che.terminal", "org.eclipse.che.ws-agent", "org.eclipse.che.ls.python"
               ],
               "servers": {
                 "8080/tcp" : {
@@ -862,7 +847,7 @@
             }
           },
           "recipe": {
-            "content": "docker-registry.engineering.redhat.com/crw/rhel-python",
+            "content": "docker-registry.default.svc:5000/openshift/rhel-python",
             "type": "dockerimage"
           }
         }
