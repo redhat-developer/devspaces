@@ -13,16 +13,20 @@ package com.redhat.codeready.selenium.userstory;
 
 import static com.redhat.codeready.selenium.pageobject.dashboard.CodereadyNewWorkspace.CodereadyStacks.PHP;
 import static org.eclipse.che.commons.lang.NameGenerator.generate;
+import static org.eclipse.che.selenium.core.constant.TestProjectExplorerContextMenuConstants.ContextMenuCommandGoals.RUN_GOAL;
+import static org.eclipse.che.selenium.core.constant.TestTimeoutsConstants.LOADER_TIMEOUT_SEC;
 import static org.eclipse.che.selenium.pageobject.CodenvyEditor.MarkerLocator.ERROR_OVERVIEW;
-import static org.openqa.selenium.Keys.CONTROL;
+import static org.openqa.selenium.Keys.ARROW_DOWN;
+import static org.openqa.selenium.Keys.LEFT_CONTROL;
+import static org.openqa.selenium.Keys.LEFT_SHIFT;
 import static org.openqa.selenium.Keys.SPACE;
-import static org.openqa.selenium.Keys.chord;
 
 import com.google.inject.Inject;
 import com.redhat.codeready.selenium.pageobject.CodereadyDebuggerPanel;
 import com.redhat.codeready.selenium.pageobject.CodereadyEditor;
 import com.redhat.codeready.selenium.pageobject.dashboard.CodereadyFindUsageWidget;
 import com.redhat.codeready.selenium.pageobject.dashboard.CodereadyNewWorkspace;
+import java.util.concurrent.atomic.AtomicReference;
 import org.eclipse.che.api.core.rest.HttpJsonRequestFactory;
 import org.eclipse.che.selenium.core.SeleniumWebDriver;
 import org.eclipse.che.selenium.core.client.TestProjectServiceClient;
@@ -45,6 +49,8 @@ import org.eclipse.che.selenium.pageobject.dashboard.workspaces.WorkspaceOvervie
 import org.eclipse.che.selenium.pageobject.dashboard.workspaces.Workspaces;
 import org.eclipse.che.selenium.pageobject.debug.JavaDebugConfig;
 import org.eclipse.che.selenium.pageobject.intelligent.CommandsPalette;
+import org.eclipse.che.selenium.pageobject.intelligent.CommandsToolbar;
+import org.openqa.selenium.By;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.annotations.AfterClass;
@@ -81,6 +87,7 @@ public class PhpUserStoryTest {
   @Inject private TestProjectServiceClient projectServiceClient;
   @Inject private SeleniumWebDriver seleniumWebDriver;
   @Inject private AssistantFindPanel assistantFindPanel;
+  @Inject private CommandsToolbar commandsToolbar;
   private TestWorkspace testWorkspace;
 
   @BeforeClass
@@ -105,13 +112,21 @@ public class PhpUserStoryTest {
     newWorkspace.clickOnCreateButtonAndOpenInIDE();
     seleniumWebDriverHelper.switchToIdeFrameAndWaitAvailability();
     projectExplorer.waitItem(PROJECT_NAME);
+    projectExplorer.waitAndSelectItem(PROJECT_NAME);
     events.clickEventLogBtn();
     events.waitExpectedMessage("Branch 'master' is checked out");
     testWorkspace = testWorkspaceProvider.getWorkspace(WORKSPACE, defaultTestUser);
   }
 
   @Test(priority = 1)
-  public void checkBuildingAndRunning() {}
+  public void checkBuildingAndRunning() {
+    final String startAppCommandName = "start httpd";
+    final String stopAppCommandName = "stop httpd";
+
+    projectExplorer.waitItem(PROJECT_NAME);
+    projectExplorer.invokeCommandWithContextMenu(RUN_GOAL, PROJECT_NAME, startAppCommandName);
+    waitApplicationAvailability();
+  }
 
   @Test(priority = 2)
   public void mainPhpLsFeaturesShouldWork() {
@@ -127,15 +142,131 @@ public class PhpUserStoryTest {
     checkCommenting();
   }
 
-  private void checkCommenting() {}
+  private void checkCommenting() {
+    final String expectedRegularText =
+        "<?php\n"
+            + "\n"
+            + "echo \"Hello World!\";\n"
+            + "\n"
+            + "function sayHello($name) {\n"
+            + "    return \"Hello, $name\";\n"
+            + "}\n"
+            + "sayHello\n"
+            + "?>";
+    final String expectedByControlShiftCommentedText =
+        "echo \"Hello World!\";\n"
+            + "/*\n"
+            + "function sayHello($name) {\n"
+            + "    return \"Hello, $name\";\n"
+            + "}\n"
+            + "*/sayHello";
+
+    final String expectedByControlCommentedText =
+        "//\n"
+            + "//function sayHello($name) {\n"
+            + "//    return \"Hello, $name\";\n"
+            + "//}\n"
+            + "sayHello";
+
+    editor.waitActive();
+    editor.setCursorToLine(4);
+    performCommentingByControlShift();
+    editor.waitTextIntoEditor(expectedByControlShiftCommentedText);
+    performUndoCommand();
+    editor.waitTextIntoEditor(expectedRegularText);
+    editor.setCursorToLine(4);
+    performCommentingByControl();
+    editor.waitTextIntoEditor(expectedByControlCommentedText);
+    performUndoCommand();
+    editor.waitTextIntoEditor(expectedRegularText);
+  }
+
+  private void performUndoCommand() {
+    seleniumWebDriverHelper
+        .getAction()
+        .keyDown(LEFT_CONTROL)
+        .sendKeys("z")
+        .keyUp(LEFT_CONTROL)
+        .perform();
+  }
+
+  private void waitApplicationAvailability() {
+    final String expectedApplicationBodyText = "Hello World!";
+    final String parentWindow = seleniumWebDriver.getWindowHandle();
+    AtomicReference<String> currentText = new AtomicReference<>();
+
+    seleniumWebDriverHelper.waitSuccessCondition(
+        driver -> {
+          consoles.waitPreviewUrlIsPresent();
+          consoles.clickOnPreviewUrl();
+          seleniumWebDriverHelper.switchToNextWindow(parentWindow);
+          currentText.set(getBodyText());
+          seleniumWebDriver.close();
+          seleniumWebDriver.switchTo().window(parentWindow);
+          seleniumWebDriverHelper.switchToIdeFrameAndWaitAvailability();
+
+          return currentText.get().contains(expectedApplicationBodyText);
+        },
+        LOADER_TIMEOUT_SEC);
+  }
+
+  private String getBodyText() {
+    return seleniumWebDriverHelper.waitVisibilityAndGetText(By.tagName("body"));
+  }
+
+  private void performCommentingByControlShift() {
+    performTextSelecting();
+
+    pressControlShiftCommentingCombination();
+  }
+
+  private void performTextSelecting() {
+    seleniumWebDriverHelper
+        .getAction()
+        .keyDown(LEFT_SHIFT)
+        .sendKeys(ARROW_DOWN, ARROW_DOWN, ARROW_DOWN, ARROW_DOWN)
+        .keyUp(LEFT_SHIFT)
+        .perform();
+  }
+
+  private void pressControlShiftCommentingCombination() {
+    seleniumWebDriverHelper
+        .getAction()
+        .keyDown(LEFT_CONTROL)
+        .keyDown(LEFT_SHIFT)
+        .sendKeys("/")
+        .keyUp(LEFT_CONTROL)
+        .keyUp(LEFT_SHIFT)
+        .perform();
+  }
+
+  private void performCommentingByControl() {
+    performTextSelecting();
+
+    seleniumWebDriverHelper
+        .getAction()
+        .keyDown(LEFT_CONTROL)
+        .sendKeys("/")
+        .keyUp(LEFT_CONTROL)
+        .perform();
+  }
 
   private void checkAutocompletion() {
     editor.waitActive();
     editor.goToCursorPositionVisible(7, 2);
     editor.typeTextIntoEditor("\nsay");
     editor.waitTextIntoEditor("}\nsay");
-    editor.typeTextIntoEditor(chord(CONTROL, SPACE));
+    performAutocomplete();
     editor.waitTextIntoEditor("}\nsayHello");
+  }
+
+  private void performAutocomplete() {
+    seleniumWebDriverHelper
+        .getAction()
+        .keyDown(LEFT_CONTROL)
+        .sendKeys(SPACE)
+        .keyUp(LEFT_CONTROL)
+        .perform();
   }
 
   private void checkCodeValidation() {
