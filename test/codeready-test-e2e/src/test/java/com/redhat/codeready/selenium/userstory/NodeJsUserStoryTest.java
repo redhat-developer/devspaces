@@ -111,11 +111,17 @@ public class NodeJsUserStoryTest {
   }
 
   @Test(priority = 1)
+  public void checkBayesianLs() {
+    projectExplorer.waitItem(PROJECT);
+    // projectExplorer.expandPathInProjectExplorerAndOpenFile();
+  }
+
+  @Test(priority = 2)
   public void runAndCheckNodeJsApp() throws Exception {
     runAndCheckHelloWorldApp();
   }
 
-  @Test(priority = 2)
+  @Test(priority = 3)
   public void checkMainLsFeatures() {
     checkHovering();
     checkCodeValidation();
