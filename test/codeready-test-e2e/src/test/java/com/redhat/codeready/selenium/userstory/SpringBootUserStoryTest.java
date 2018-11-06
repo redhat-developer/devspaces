@@ -16,9 +16,11 @@ import static org.eclipse.che.commons.lang.NameGenerator.generate;
 import static org.eclipse.che.selenium.core.constant.TestBuildConstants.BUILD_SUCCESS;
 import static org.eclipse.che.selenium.core.constant.TestBuildConstants.LISTENING_AT_ADDRESS_8000;
 import static org.eclipse.che.selenium.core.constant.TestCommandsConstants.BUILD_COMMAND;
+import static org.eclipse.che.selenium.core.constant.TestIntelligentCommandsConstants.CommandItem.BUILD_COMMAND_ITEM;
 import static org.eclipse.che.selenium.core.constant.TestIntelligentCommandsConstants.CommandItem.DEBUG_COMMAND_ITEM;
 import static org.eclipse.che.selenium.core.constant.TestIntelligentCommandsConstants.CommandItem.RUN_COMMAND_ITEM;
 import static org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants.Assistant.ASSISTANT;
+import static org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants.Assistant.QUICK_DOCUMENTATION;
 import static org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants.Assistant.QUICK_FIX;
 import static org.eclipse.che.selenium.core.constant.TestProjectExplorerContextMenuConstants.ContextMenuCommandGoals.BUILD_GOAL;
 import static org.eclipse.che.selenium.core.constant.TestProjectExplorerContextMenuConstants.ContextMenuCommandGoals.DEBUG_GOAL;
@@ -34,13 +36,11 @@ import org.eclipse.che.selenium.core.client.TestWorkspaceServiceClient;
 import org.eclipse.che.selenium.core.user.DefaultTestUser;
 import org.eclipse.che.selenium.core.workspace.TestWorkspace;
 import org.eclipse.che.selenium.pageobject.Consoles;
-import org.eclipse.che.selenium.pageobject.FindUsages;
 import org.eclipse.che.selenium.pageobject.Ide;
 import org.eclipse.che.selenium.pageobject.Menu;
 import org.eclipse.che.selenium.pageobject.ProjectExplorer;
 import org.eclipse.che.selenium.pageobject.dashboard.AddOrImportForm;
 import org.eclipse.che.selenium.pageobject.dashboard.Dashboard;
-import org.eclipse.che.selenium.pageobject.dashboard.workspaces.WorkspaceOverview;
 import org.eclipse.che.selenium.pageobject.dashboard.workspaces.Workspaces;
 import org.openqa.selenium.By;
 import org.testng.annotations.AfterClass;
@@ -52,22 +52,20 @@ public class SpringBootUserStoryTest {
 
   private static final String WORKSPACE_NAME = generate("workspace", 4);
   private static final String PROJECT_NAME = "spring-boot-http-booster";
-  private final String PATH_TO_MAIN_PACKAGE = PROJECT_NAME + "/src/main/java/io/openshift/booster";
+  private static final String PATH_TO_MAIN_PACKAGE =
+      PROJECT_NAME + "/src/main/java/io/openshift/booster";
 
   @Inject private Ide ide;
   @Inject private Menu menu;
   @Inject private Consoles consoles;
   @Inject private Dashboard dashboard;
   @Inject private CodereadyEditor editor;
+  @Inject private Workspaces workspaces;
   @Inject private DefaultTestUser defaultTestUser;
   @Inject private ProjectExplorer projectExplorer;
-  @Inject private TestWorkspaceServiceClient workspaceServiceClient;
-
-  @Inject private Workspaces workspaces;
-  @Inject private FindUsages findUsages;
-  @Inject private WorkspaceOverview workspaceOverview;
-  @Inject private CodereadyNewWorkspace newWorkspace;
   @Inject private AddOrImportForm addOrImportForm;
+  @Inject private CodereadyNewWorkspace newWorkspace;
+  @Inject private TestWorkspaceServiceClient workspaceServiceClient;
 
   // it is used to read workspace logs on test failure
   private TestWorkspace testWorkspace;
@@ -93,11 +91,10 @@ public class SpringBootUserStoryTest {
     consoles.waitJDTLSProjectResolveFinishedMessage(PROJECT_NAME);
   }
 
-  //  @Test(priority = 1)
+  @Test(priority = 1)
   public void checkSpringBootHealthCheckBoosterProjectCommands() {
     By textOnPreviewPage = By.xpath("//h2[text()='HTTP Booster']");
 
-    // build and run 'spring-boot-http-booster' project
     consoles.executeCommandFromProjectExplorer(
         PROJECT_NAME, BUILD_GOAL, BUILD_COMMAND, BUILD_SUCCESS);
 
@@ -120,29 +117,22 @@ public class SpringBootUserStoryTest {
         LISTENING_AT_ADDRESS_8000);
   }
 
-  private void createWorkspaceFromStackWithProject(CodereadyStacks stackName, String projectName) {
-    dashboard.selectWorkspacesItemOnDashboard();
-    dashboard.waitToolbarTitleName("Workspaces");
-
-    workspaces.clickOnAddWorkspaceBtn();
-    newWorkspace.typeWorkspaceName(WORKSPACE_NAME);
-    newWorkspace.selectCodereadyStack(stackName);
-    addOrImportForm.clickOnAddOrImportProjectButton();
-    addOrImportForm.addSampleToWorkspace(projectName);
-    newWorkspace.clickOnCreateButtonAndOpenInIDE();
-  }
-
   @Test(priority = 2)
-  public void checkCodeAssistantFeatures() throws Exception {
+  public void checkCodeAssistantFeatures() {
     projectExplorer.quickExpandWithJavaScript();
+
     projectExplorer.openItemByPath(PATH_TO_MAIN_PACKAGE + "/service/GreetingEndpoint.java");
     editor.waitActive();
+    projectExplorer.openItemByPath(PATH_TO_MAIN_PACKAGE + "/service/Greeting.java");
+    editor.waitActive();
 
+    checkQuickDocumentationFeature();
     checkGoToDeclarationFeature();
     checkCodeValidationFeature();
   }
 
   private void checkGoToDeclarationFeature() {
+    editor.selectTabByName("GreetingEndpoint");
     editor.goToPosition(33, 24);
     editor.typeTextIntoEditor(F4.toString());
     editor.waitActiveTabFileName("Greeting");
@@ -159,5 +149,26 @@ public class SpringBootUserStoryTest {
     menu.runCommand(ASSISTANT, QUICK_FIX);
     editor.enterTextIntoFixErrorPropByDoubleClick("Change to 'content'");
     editor.waitAllMarkersInvisibility(ERROR);
+  }
+
+  private void checkQuickDocumentationFeature() {
+    editor.selectTabByName("Greeting");
+
+    editor.goToPosition(33, 16);
+    menu.runCommand(ASSISTANT, QUICK_DOCUMENTATION);
+    editor.checkTextToBePresentInCodereadyJavaDocPopUp(
+        "The Java language provides special support for the string concatenation operator ( + ), and for conversion of other objects to strings. ");
+  }
+
+  private void createWorkspaceFromStackWithProject(CodereadyStacks stackName, String projectName) {
+    dashboard.selectWorkspacesItemOnDashboard();
+    dashboard.waitToolbarTitleName("Workspaces");
+
+    workspaces.clickOnAddWorkspaceBtn();
+    newWorkspace.typeWorkspaceName(WORKSPACE_NAME);
+    newWorkspace.selectCodereadyStack(stackName);
+    addOrImportForm.clickOnAddOrImportProjectButton();
+    addOrImportForm.addSampleToWorkspace(projectName);
+    newWorkspace.clickOnCreateButtonAndOpenInIDE();
   }
 }
