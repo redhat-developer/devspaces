@@ -14,31 +14,31 @@ package com.redhat.codeready.selenium.userstory;
 import static com.redhat.codeready.selenium.pageobject.dashboard.CodereadyNewWorkspace.CodereadyStacks.SPRING_BOOT;
 import static org.eclipse.che.commons.lang.NameGenerator.generate;
 import static org.eclipse.che.selenium.core.constant.TestBuildConstants.BUILD_SUCCESS;
-import static org.eclipse.che.selenium.core.constant.TestBuildConstants.LISTENING_AT_ADDRESS;
+import static org.eclipse.che.selenium.core.constant.TestBuildConstants.LISTENING_AT_ADDRESS_8000;
 import static org.eclipse.che.selenium.core.constant.TestCommandsConstants.BUILD_COMMAND;
-import static org.eclipse.che.selenium.core.constant.TestCommandsConstants.DEBUG_COMMAND;
-import static org.eclipse.che.selenium.core.constant.TestCommandsConstants.RUN_COMMAND;
-import static org.eclipse.che.selenium.core.constant.TestIntelligentCommandsConstants.CommandItem.BUILD_COMMAND_ITEM;
+import static org.eclipse.che.selenium.core.constant.TestIntelligentCommandsConstants.CommandItem.DEBUG_COMMAND_ITEM;
 import static org.eclipse.che.selenium.core.constant.TestIntelligentCommandsConstants.CommandItem.RUN_COMMAND_ITEM;
+import static org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants.Assistant.ASSISTANT;
+import static org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants.Assistant.QUICK_FIX;
 import static org.eclipse.che.selenium.core.constant.TestProjectExplorerContextMenuConstants.ContextMenuCommandGoals.BUILD_GOAL;
 import static org.eclipse.che.selenium.core.constant.TestProjectExplorerContextMenuConstants.ContextMenuCommandGoals.DEBUG_GOAL;
 import static org.eclipse.che.selenium.core.constant.TestProjectExplorerContextMenuConstants.ContextMenuCommandGoals.RUN_GOAL;
+import static org.eclipse.che.selenium.pageobject.CodenvyEditor.MarkerLocator.ERROR;
+import static org.openqa.selenium.Keys.F4;
 
 import com.google.inject.Inject;
 import com.redhat.codeready.selenium.pageobject.CodereadyEditor;
 import com.redhat.codeready.selenium.pageobject.dashboard.CodereadyNewWorkspace;
-import org.eclipse.che.selenium.core.client.TestProjectServiceClient;
+import com.redhat.codeready.selenium.pageobject.dashboard.CodereadyNewWorkspace.CodereadyStacks;
 import org.eclipse.che.selenium.core.client.TestWorkspaceServiceClient;
 import org.eclipse.che.selenium.core.user.DefaultTestUser;
 import org.eclipse.che.selenium.core.workspace.TestWorkspace;
-import org.eclipse.che.selenium.pageobject.AssistantFindPanel;
 import org.eclipse.che.selenium.pageobject.Consoles;
-import org.eclipse.che.selenium.pageobject.FindReferencesConsoleTab;
+import org.eclipse.che.selenium.pageobject.FindUsages;
 import org.eclipse.che.selenium.pageobject.Ide;
 import org.eclipse.che.selenium.pageobject.Menu;
 import org.eclipse.che.selenium.pageobject.ProjectExplorer;
 import org.eclipse.che.selenium.pageobject.dashboard.AddOrImportForm;
-import org.eclipse.che.selenium.pageobject.dashboard.CreateWorkspaceHelper;
 import org.eclipse.che.selenium.pageobject.dashboard.Dashboard;
 import org.eclipse.che.selenium.pageobject.dashboard.workspaces.WorkspaceOverview;
 import org.eclipse.che.selenium.pageobject.dashboard.workspaces.Workspaces;
@@ -51,7 +51,8 @@ import org.testng.annotations.Test;
 public class SpringBootUserStoryTest {
 
   private static final String WORKSPACE_NAME = generate("workspace", 4);
-  private static final String SPRING_BOOT_HTTP_BOOSTER = "spring-boot-http-booster";
+  private static final String PROJECT_NAME = "spring-boot-http-booster";
+  private final String PATH_TO_MAIN_PACKAGE = PROJECT_NAME + "/src/main/java/io/openshift/booster";
 
   @Inject private Ide ide;
   @Inject private Menu menu;
@@ -60,13 +61,10 @@ public class SpringBootUserStoryTest {
   @Inject private CodereadyEditor editor;
   @Inject private DefaultTestUser defaultTestUser;
   @Inject private ProjectExplorer projectExplorer;
-  @Inject private AssistantFindPanel assistantFindPanel;
-  @Inject private CreateWorkspaceHelper createWorkspaceHelper;
-  @Inject private TestProjectServiceClient testProjectServiceClient;
-  @Inject private FindReferencesConsoleTab findReferencesConsoleTab;
   @Inject private TestWorkspaceServiceClient workspaceServiceClient;
 
   @Inject private Workspaces workspaces;
+  @Inject private FindUsages findUsages;
   @Inject private WorkspaceOverview workspaceOverview;
   @Inject private CodereadyNewWorkspace newWorkspace;
   @Inject private AddOrImportForm addOrImportForm;
@@ -86,54 +84,80 @@ public class SpringBootUserStoryTest {
 
   @Test
   public void createSpringBootWorkspaceWithProjectFromDashBoard() {
-    dashboard.selectWorkspacesItemOnDashboard();
-    dashboard.waitToolbarTitleName("Workspaces");
-    workspaces.clickOnAddWorkspaceBtn();
-    newWorkspace.typeWorkspaceName(WORKSPACE_NAME);
-    newWorkspace.selectCodereadyStack(SPRING_BOOT);
-    addOrImportForm.clickOnAddOrImportProjectButton();
-    addOrImportForm.addSampleToWorkspace(SPRING_BOOT_HTTP_BOOSTER);
-    newWorkspace.clickOnCreateButtonAndOpenInIDE();
+    createWorkspaceFromStackWithProject(SPRING_BOOT, PROJECT_NAME);
 
     ide.switchToIdeAndWaitWorkspaceIsReadyToUse();
 
-    projectExplorer.waitProjectInitialization(SPRING_BOOT_HTTP_BOOSTER);
+    projectExplorer.waitProjectInitialization(PROJECT_NAME);
 
-    consoles.waitJDTLSProjectResolveFinishedMessage(SPRING_BOOT_HTTP_BOOSTER);
+    consoles.waitJDTLSProjectResolveFinishedMessage(PROJECT_NAME);
   }
 
-  @Test(priority = 1)
+  //  @Test(priority = 1)
   public void checkSpringBootHealthCheckBoosterProjectCommands() {
-    By textOnPreviewPage = By.xpath("//h2[text()='Health Check Booster']");
+    By textOnPreviewPage = By.xpath("//h2[text()='HTTP Booster']");
 
-    // build and run 'spring-boot-health-check-booster' project
+    // build and run 'spring-boot-http-booster' project
     consoles.executeCommandFromProjectExplorer(
-        SPRING_BOOT_HTTP_BOOSTER, BUILD_GOAL, BUILD_COMMAND, BUILD_SUCCESS);
+        PROJECT_NAME, BUILD_GOAL, BUILD_COMMAND, BUILD_SUCCESS);
 
     consoles.executeCommandFromProjectExplorer(
-        SPRING_BOOT_HTTP_BOOSTER,
+        PROJECT_NAME, BUILD_GOAL, BUILD_COMMAND_ITEM.getItem(PROJECT_NAME), BUILD_SUCCESS);
+
+    consoles.executeCommandFromProjectExplorer(
+        PROJECT_NAME,
         RUN_GOAL,
-        BUILD_COMMAND_ITEM.getItem(SPRING_BOOT_HTTP_BOOSTER),
-        BUILD_SUCCESS);
-
-    consoles.executeCommandFromProjectExplorer(
-        SPRING_BOOT_HTTP_BOOSTER,
-        RUN_GOAL,
-        RUN_COMMAND_ITEM.getItem(SPRING_BOOT_HTTP_BOOSTER),
-        "Started BoosterApplication in");
+        RUN_COMMAND_ITEM.getItem(PROJECT_NAME),
+        "INFO: Setting the server's publish address to be /");
     consoles.checkWebElementVisibilityAtPreviewPage(textOnPreviewPage);
-    consoles.closeProcessTabWithAskDialog(RUN_COMMAND_ITEM.getItem(SPRING_BOOT_HTTP_BOOSTER));
 
-    consoles.executeCommandFromProjectExplorer(
-        SPRING_BOOT_HTTP_BOOSTER,
-        RUN_GOAL,
-        RUN_COMMAND,
-        "INFO: Setting the server's publish address to be");
-    consoles.checkWebElementVisibilityAtPreviewPage(textOnPreviewPage);
-    consoles.closeProcessTabWithAskDialog(RUN_COMMAND);
+    consoles.closeProcessTabWithAskDialog(RUN_COMMAND_ITEM.getItem(PROJECT_NAME));
 
     consoles.executeCommandFromProcessesArea(
-        "dev-machine", DEBUG_GOAL, DEBUG_COMMAND, LISTENING_AT_ADDRESS);
-    consoles.closeProcessTabWithAskDialog(DEBUG_COMMAND);
+        "dev-machine",
+        DEBUG_GOAL,
+        DEBUG_COMMAND_ITEM.getItem(PROJECT_NAME),
+        LISTENING_AT_ADDRESS_8000);
+  }
+
+  private void createWorkspaceFromStackWithProject(CodereadyStacks stackName, String projectName) {
+    dashboard.selectWorkspacesItemOnDashboard();
+    dashboard.waitToolbarTitleName("Workspaces");
+
+    workspaces.clickOnAddWorkspaceBtn();
+    newWorkspace.typeWorkspaceName(WORKSPACE_NAME);
+    newWorkspace.selectCodereadyStack(stackName);
+    addOrImportForm.clickOnAddOrImportProjectButton();
+    addOrImportForm.addSampleToWorkspace(projectName);
+    newWorkspace.clickOnCreateButtonAndOpenInIDE();
+  }
+
+  @Test(priority = 2)
+  public void checkCodeAssistantFeatures() throws Exception {
+    projectExplorer.quickExpandWithJavaScript();
+    projectExplorer.openItemByPath(PATH_TO_MAIN_PACKAGE + "/service/GreetingEndpoint.java");
+    editor.waitActive();
+
+    checkGoToDeclarationFeature();
+    checkCodeValidationFeature();
+  }
+
+  private void checkGoToDeclarationFeature() {
+    editor.goToPosition(33, 24);
+    editor.typeTextIntoEditor(F4.toString());
+    editor.waitActiveTabFileName("Greeting");
+    editor.waitCursorPosition(29, 20);
+  }
+
+  private void checkCodeValidationFeature() {
+    editor.selectTabByName("Greeting");
+    editor.goToPosition(34, 17);
+    editor.typeTextIntoEditor("p");
+    editor.waitMarkerInPosition(ERROR, 34);
+
+    editor.goToPosition(34, 17);
+    menu.runCommand(ASSISTANT, QUICK_FIX);
+    editor.enterTextIntoFixErrorPropByDoubleClick("Change to 'content'");
+    editor.waitAllMarkersInvisibility(ERROR);
   }
 }
