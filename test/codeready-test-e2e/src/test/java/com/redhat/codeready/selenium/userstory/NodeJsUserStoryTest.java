@@ -154,9 +154,12 @@ public class NodeJsUserStoryTest {
 
   private void runAndCheckHelloWorldApp()
       throws InterruptedException, ExecutionException, TimeoutException {
+    // launch the application from UI
     commandsPalette.openCommandPalette();
     commandsPalette.startCommandByDoubleClick(PROJECT + ":run");
     consoles.waitExpectedTextIntoConsole("Example app listening on port 3000!");
+
+    // check that application is available by http request
     WaitUtils.waitSuccessCondition(
         () -> {
           try {
@@ -233,19 +236,22 @@ public class NodeJsUserStoryTest {
     editor.waitCursorPosition(48, 2);
   }
 
-    private void setUpDebug() {
-      menu.runCommand(
-              RUN_MENU,
-              EDIT_DEBUG_CONFIGURATION);
-      debugConfig.expandDebugCategory();
-      debugConfig.setPathToScriptForNodeJs(PROJECT + "/app/app.js");
-      debugConfig.saveConfiguration();
-      debugConfig.clickOnDebugButtonAndWaitClosing();
-      debugPanel.waitDebugHighlightedText("/*eslint-env node*/");
-      debugPanel.clickOnButton(STEP_OVER);
-      debugPanel.clickOnButton(STEP_OVER);
-      debugPanel.clickOnButton(STEP_INTO);
-      editor.waitTabIsPresent("express.js");
-      debugPanel.waitDebugHighlightedText("var app = function(req, res, next)");
-   }
+  private void setUpDebug() {
+    // launch debug configuration widget with menu
+    menu.runCommand(RUN_MENU, EDIT_DEBUG_CONFIGURATION);
+
+    // set up debug
+    debugConfig.expandDebugCategory();
+    debugConfig.setPathToScriptForNodeJs(PROJECT + "/app/app.js");
+    debugConfig.saveConfiguration();
+    debugConfig.clickOnDebugButtonAndWaitClosing();
+    debugPanel.waitDebugHighlightedText("/*eslint-env node*/");
+    debugPanel.clickOnButton(STEP_OVER);
+    debugPanel.clickOnButton(STEP_OVER);
+    debugPanel.clickOnButton(STEP_INTO);
+
+    // check debug highlighter
+    editor.waitTabIsPresent("express.js");
+    debugPanel.waitDebugHighlightedText("var app = function(req, res, next)");
+  }
 }

@@ -1,3 +1,14 @@
+/*
+ * Copyright (c) 2018 Red Hat, Inc.
+
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *   Red Hat, Inc. - initial API and implementation
+ */
 package com.redhat.codeready.selenium.userstory;
 
 import static com.redhat.codeready.selenium.pageobject.dashboard.CodereadyNewWorkspace.CodereadyStacks.WILD_FLY_SWARM;
@@ -18,7 +29,6 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import javax.ws.rs.HttpMethod;
 import javax.ws.rs.core.Response;
@@ -26,7 +36,6 @@ import org.eclipse.che.api.core.rest.HttpJsonRequestFactory;
 import org.eclipse.che.selenium.core.SeleniumWebDriver;
 import org.eclipse.che.selenium.core.client.TestProjectServiceClient;
 import org.eclipse.che.selenium.core.client.TestWorkspaceServiceClient;
-import org.eclipse.che.selenium.core.constant.TestTimeoutsConstants;
 import org.eclipse.che.selenium.core.user.DefaultTestUser;
 import org.eclipse.che.selenium.core.utils.WaitUtils;
 import org.eclipse.che.selenium.core.webdriver.SeleniumWebDriverHelper;
@@ -74,18 +83,18 @@ public class WildFlyUserStoryTest {
   @Inject private Wizard wizard;
   @Inject private Consoles consoles;
   @Inject private CodereadyEditor editor;
-  @Inject private HttpJsonRequestFactory   requestFactory;
-  @Inject private Menu                     menu;
-  @Inject private CodereadyDebuggerPanel   debugPanel;
-  @Inject private NodeJsDebugConfig        debugConfig;
-  @Inject private Events                   events;
-  @Inject private NotificationsPopupPanel  notifications;
+  @Inject private HttpJsonRequestFactory requestFactory;
+  @Inject private Menu menu;
+  @Inject private CodereadyDebuggerPanel debugPanel;
+  @Inject private NodeJsDebugConfig debugConfig;
+  @Inject private Events events;
+  @Inject private NotificationsPopupPanel notifications;
   @Inject private CodereadyFindUsageWidget findUsages;
   @Inject private TestProjectServiceClient projectServiceClient;
-  @Inject private SeleniumWebDriver        seleniumWebDriver;
-  @Inject private AssistantFindPanel       assistantFindPanel;
-  @Inject private MavenPluginStatusBar     mavenPluginStatusBar;
-  private         TestWorkspace            testWorkspace;
+  @Inject private SeleniumWebDriver seleniumWebDriver;
+  @Inject private AssistantFindPanel assistantFindPanel;
+  @Inject private MavenPluginStatusBar mavenPluginStatusBar;
+  private TestWorkspace testWorkspace;
 
   @BeforeClass
   public void setUp() {
@@ -106,21 +115,22 @@ public class WildFlyUserStoryTest {
   public void runAndCheckWildFlyApp()
       throws InterruptedException, ExecutionException, TimeoutException {
     runAndCheckHelloWorldApp();
-    checkCodeValidation();
+    checkMainJavaFeatures();
   }
 
   private void createWsFromWildFlyStack() {
-    //create workspace based on WildFly Stack
+    // create workspace based on WildFly Stack
     dashboard.selectWorkspacesItemOnDashboard();
     dashboard.waitToolbarTitleName("Workspaces");
     workspaces.clickOnAddWorkspaceBtn();
     newWorkspace.typeWorkspaceName(WORKSPACE);
     newWorkspace.selectCodereadyStack(WILD_FLY_SWARM);
 
-    //add wfswarm-rest-http orject from dash
+    // add project from dashboard
     addOrImportForm.clickOnAddOrImportProjectButton();
     addOrImportForm.addSampleToWorkspace(PROJECT);
 
+    // create workspace, wait project in the just created workspace, wait JDT initialization
     newWorkspace.clickOnCreateButtonAndOpenInIDE();
     seleniumWebDriverHelper.switchToIdeFrameAndWaitAvailability();
     projectExplorer.waitItem(PROJECT);
@@ -133,12 +143,15 @@ public class WildFlyUserStoryTest {
 
   private void runAndCheckHelloWorldApp()
       throws InterruptedException, ExecutionException, TimeoutException {
+    // build and launch application with UI
     commandsPalette.openCommandPalette();
     commandsPalette.startCommandByDoubleClick("wfswarm-rest-http:build");
-    consoles.waitExpectedTextIntoConsole(BUILD_SUCCESS,240);
+    consoles.waitExpectedTextIntoConsole(BUILD_SUCCESS, 240);
     commandsPalette.openCommandPalette();
     commandsPalette.startCommandByDoubleClick("wfswarm-rest-http:run");
     consoles.waitExpectedTextIntoConsole("Thorntail is Ready");
+
+    // check that application is available
     WaitUtils.waitSuccessCondition(
         () -> {
           try {
@@ -159,8 +172,9 @@ public class WildFlyUserStoryTest {
     return httpURLConnection.getResponseMessage().equals(Response.Status.OK.getReasonPhrase());
   }
 
-  private void checkCodeValidation() {
+  private void checkMainJavaFeatures() {
     String pathToFile = PATH_TO_MAIN_PACKAGE + "GreetingEndpoint.java";
+    // check autocompletion
     projectExplorer.quickRevealToItemWithJavaScript(pathToFile);
     projectExplorer.openItemByPath(pathToFile);
     editor.waitActive();
@@ -170,8 +184,10 @@ public class WildFlyUserStoryTest {
     editor.typeTextIntoEditor("suf");
     editor.launchAutocomplete();
     editor.waitTextIntoEditor("\"World\";\n        suffix");
+
+    // check codevalidation with autocompletion
     editor.waitMarkerInPosition(ERROR, 35);
-    editor.goToPosition(35,15);
+    editor.goToPosition(35, 15);
     editor.typeTextIntoEditor(".to");
     editor.launchAutocomplete();
     editor.selectItemIntoAutocompleteAndPerformDoubleClick("CharArray() : char[] ");
@@ -179,6 +195,4 @@ public class WildFlyUserStoryTest {
     editor.typeTextIntoEditor(";");
     editor.waitAllMarkersInvisibility(ERROR);
   }
-
-
 }
