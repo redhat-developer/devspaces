@@ -19,7 +19,6 @@ import static org.eclipse.che.selenium.pageobject.CodenvyEditor.MarkerLocator.ER
 import static org.openqa.selenium.Keys.ARROW_DOWN;
 import static org.openqa.selenium.Keys.LEFT_CONTROL;
 import static org.openqa.selenium.Keys.LEFT_SHIFT;
-import static org.openqa.selenium.Keys.SPACE;
 
 import com.google.inject.Inject;
 import com.redhat.codeready.selenium.pageobject.CodereadyEditor;
@@ -48,10 +47,9 @@ public class PhpUserStoryTest {
   private static final String START_APP_COMMAND_NAME = "start httpd";
   private static final String EXPECTED_APPLICATION_BODY_TEXT = "Hello World!";
   private static final String EXPECTED_FIXED_CODE = "echo \"Hello World!\";";
+
   private static final String CODE_FOR_TYPING =
       "\nfunction sayHello($name) {\n" + "return \"Hello, $name\";";
-  //  private static final String CODE_FOR_CHECKING =
-  //      "function sayHello($name) {\n" + "    return \"Hello, $name\";\n" + "}";
 
   private static final String EXPECTED_REGULAR_TEXT =
       "<?php\n"
@@ -63,6 +61,7 @@ public class PhpUserStoryTest {
           + "}\n"
           + "sayHello\n"
           + "?>";
+
   private static final String EXPECTED_BY_CONTROL_SHIFT_COMMENTED_TEXT =
       "echo \"Hello World!\";\n"
           + "/*\n"
@@ -104,7 +103,7 @@ public class PhpUserStoryTest {
   }
 
   @Test
-  public void shouldCreatePhpStackWithProject() {
+  public void checkCreationPhpStackWithProject() {
     // go to "New Workspace" page
     dashboard.selectWorkspacesItemOnDashboard();
     dashboard.waitToolbarTitleName("Workspaces");
@@ -119,11 +118,11 @@ public class PhpUserStoryTest {
 
     // check workspace creation and readiness
     seleniumWebDriverHelper.switchToIdeFrameAndWaitAvailability();
+    testWorkspace = testWorkspaceProvider.getWorkspace(WORKSPACE, defaultTestUser);
     projectExplorer.waitItem(PROJECT_NAME);
     projectExplorer.waitAndSelectItem(PROJECT_NAME);
     events.clickEventLogBtn();
     events.waitExpectedMessage("Branch 'master' is checked out");
-    testWorkspace = testWorkspaceProvider.getWorkspace(WORKSPACE, defaultTestUser);
   }
 
   @Test(priority = 1)
@@ -136,7 +135,7 @@ public class PhpUserStoryTest {
   }
 
   @Test(priority = 2)
-  public void mainPhpLsFeaturesShouldWork() {
+  public void checkPhpLsFeatures() {
     final String checkedFileName = "index.php";
 
     // prepare file for checks
@@ -185,12 +184,14 @@ public class PhpUserStoryTest {
 
     seleniumWebDriverHelper.waitSuccessCondition(
         driver -> {
+          // open app window by preview URL in terminal
           consoles.waitPreviewUrlIsPresent();
           consoles.clickOnPreviewUrl();
           seleniumWebDriverHelper.switchToNextWindow(parentWindow);
 
           currentText.set(getBodyText());
 
+          // close app window and switch to parent window
           seleniumWebDriver.close();
           seleniumWebDriver.switchTo().window(parentWindow);
           seleniumWebDriverHelper.switchToIdeFrameAndWaitAvailability();
@@ -233,12 +234,7 @@ public class PhpUserStoryTest {
   private void performCommentingByControl() {
     performTextSelecting();
 
-    seleniumWebDriverHelper
-        .getAction()
-        .keyDown(LEFT_CONTROL)
-        .sendKeys("/")
-        .keyUp(LEFT_CONTROL)
-        .perform();
+    editor.launchCommentCodeFeature();
   }
 
   private void checkAutocompletion() {
@@ -249,17 +245,8 @@ public class PhpUserStoryTest {
     editor.waitTextIntoEditor("}\nsay");
 
     // check autocompletion
-    performAutocomplete();
+    editor.launchAutocomplete();
     editor.waitTextIntoEditor("}\nsayHello");
-  }
-
-  private void performAutocomplete() {
-    seleniumWebDriverHelper
-        .getAction()
-        .keyDown(LEFT_CONTROL)
-        .sendKeys(SPACE)
-        .keyUp(LEFT_CONTROL)
-        .perform();
   }
 
   private void checkCodeValidation() {
