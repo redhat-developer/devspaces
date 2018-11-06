@@ -98,26 +98,29 @@ public class WildFlyUserStoryTest {
   }
 
   @Test
-  public void createJavaEAPWorkspaceWithProjectFromDashBoard() {
+  public void createJavaEAPWorkspaceWithProjectFromDashboard() {
     createWsFromWildFlyStack();
   }
 
-  @Test
+  @Test(priority = 1)
   public void runAndCheckWildFlyApp()
       throws InterruptedException, ExecutionException, TimeoutException {
-
     runAndCheckHelloWorldApp();
     checkCodeValidation();
   }
 
   private void createWsFromWildFlyStack() {
+    //create workspace based on WildFly Stack
     dashboard.selectWorkspacesItemOnDashboard();
     dashboard.waitToolbarTitleName("Workspaces");
     workspaces.clickOnAddWorkspaceBtn();
     newWorkspace.typeWorkspaceName(WORKSPACE);
     newWorkspace.selectCodereadyStack(WILD_FLY_SWARM);
+
+    //add wfswarm-rest-http orject from dash
     addOrImportForm.clickOnAddOrImportProjectButton();
     addOrImportForm.addSampleToWorkspace(PROJECT);
+
     newWorkspace.clickOnCreateButtonAndOpenInIDE();
     seleniumWebDriverHelper.switchToIdeFrameAndWaitAvailability();
     projectExplorer.waitItem(PROJECT);
