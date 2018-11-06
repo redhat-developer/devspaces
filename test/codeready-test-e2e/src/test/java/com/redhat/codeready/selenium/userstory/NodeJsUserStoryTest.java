@@ -15,6 +15,7 @@ import static com.redhat.codeready.selenium.pageobject.dashboard.CodereadyNewWor
 import static org.eclipse.che.commons.lang.NameGenerator.generate;
 import static org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants.Assistant.ASSISTANT;
 import static org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants.Assistant.FIND_PROJECT_SYMBOL;
+import static org.eclipse.che.selenium.core.utils.FileUtil.readFileToString;
 import static org.eclipse.che.selenium.pageobject.CodenvyEditor.MarkerLocator.ERROR;
 import static org.openqa.selenium.Keys.BACK_SPACE;
 
@@ -25,6 +26,7 @@ import com.redhat.codeready.selenium.pageobject.dashboard.CodereadyFindUsageWidg
 import com.redhat.codeready.selenium.pageobject.dashboard.CodereadyNewWorkspace;
 import java.io.IOException;
 import java.net.HttpURLConnection;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -94,10 +96,17 @@ public class NodeJsUserStoryTest {
   @Inject private SeleniumWebDriver seleniumWebDriver;
   @Inject private AssistantFindPanel assistantFindPanel;
   private TestWorkspace testWorkspace;
+  private String packageJsonText;
+  private String packageJsonEditedText;
 
   @BeforeClass
-  public void setUp() {
+  public void setUp() throws IOException, URISyntaxException {
     dashboard.open();
+
+    packageJsonText =
+        readFileToString(getClass().getResource("/projects/bayesian/package-json-before.txt"));
+    packageJsonEditedText =
+        readFileToString(getClass().getResource("/projects/bayesian/package-json-after.txt"));
   }
 
   @AfterClass
@@ -111,9 +120,33 @@ public class NodeJsUserStoryTest {
   }
 
   @Test(priority = 1)
-  public void checkBayesianLs() {
+  public void checkBayesianLs() throws Exception {
+    final String fileName = "package.json";
+    final String packageJsonFilePath = PROJECT + "/" + fileName;
+    final String expectedErrorMarkerText =
+        "Application dependency serve-static-1.7.1 is vulnerable: CVE-2015-1164. Recommendation: use version 1.7.2";
+
     projectExplorer.waitItem(PROJECT);
-    // projectExplorer.expandPathInProjectExplorerAndOpenFile();
+    projectExplorer.expandPathInProjectExplorerAndOpenFile(PROJECT, fileName);
+
+    editor.waitTabIsPresent(fileName);
+    editor.waitTabSelection(0, fileName);
+    editor.waitActive();
+
+    projectServiceClient.updateFile(
+        testWorkspace.getId(), packageJsonFilePath, packageJsonEditedText);
+    editor.waitTextIntoEditor(packageJsonEditedText);
+
+    editor.waitMarkerInPosition(ERROR, 13);
+    editor.clickOnMarker(ERROR, 13);
+    editor.waitTextInToolTipPopup(expectedErrorMarkerText);
+    editor.setCursorToLine(13);
+
+    projectServiceClient.updateFile(testWorkspace.getId(), packageJsonFilePath, packageJsonText);
+    editor.waitTextIntoEditor(packageJsonText);
+
+    editor.closeAllTabs();
+    editor.waitTabIsNotPresent(fileName);
   }
 
   @Test(priority = 2)
