@@ -51,6 +51,16 @@ public class PhpUserStoryTest {
   private static final String CODE_FOR_TYPING =
       "\nfunction sayHello($name) {\n" + "return \"Hello, $name\";";
 
+  private static final String EXPECTED_TYPED_TEXT =
+      "<?php\n"
+          + "\n"
+          + "echo \"Hello World!\"\n"
+          + "\n"
+          + "function sayHello($name) {\n"
+          + "    return \"Hello, $name\";\n"
+          + "}\n"
+          + "?>";
+
   private static final String EXPECTED_REGULAR_TEXT =
       "<?php\n"
           + "\n"
@@ -253,7 +263,7 @@ public class PhpUserStoryTest {
     // prepare file
     editor.setCursorToLine(4);
     editor.typeTextIntoEditor(CODE_FOR_TYPING);
-    editor.waitTextIntoEditor(EXPECTED_REGULAR_TEXT);
+    editor.waitTextIntoEditor(EXPECTED_TYPED_TEXT);
 
     // check error marker availability and error hint
     editor.clickOnMarker(ERROR_OVERVIEW, 15);
