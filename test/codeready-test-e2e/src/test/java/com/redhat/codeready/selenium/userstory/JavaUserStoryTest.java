@@ -12,12 +12,15 @@
 package com.redhat.codeready.selenium.userstory;
 
 import static com.redhat.codeready.selenium.pageobject.dashboard.CodereadyNewWorkspace.CodereadyStacks.JAVA_EAP;
+import static java.nio.file.Files.readAllLines;
+import static java.nio.file.Paths.get;
 import static org.eclipse.che.commons.lang.NameGenerator.generate;
 import static org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants.Assistant.ASSISTANT;
 import static org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants.Assistant.FIND_DEFINITION;
 import static org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants.Assistant.FIND_USAGES;
 import static org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants.Assistant.QUICK_DOCUMENTATION;
 import static org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants.Assistant.QUICK_FIX;
+import static org.eclipse.che.selenium.core.utils.FileUtil.readFileToString;
 import static org.eclipse.che.selenium.pageobject.CodenvyEditor.MarkerLocator.ERROR;
 import static org.eclipse.che.selenium.pageobject.debug.DebugPanel.DebuggerActionButtons.BTN_DISCONNECT;
 import static org.eclipse.che.selenium.pageobject.debug.DebugPanel.DebuggerActionButtons.EVALUATE_EXPRESSIONS;
@@ -28,16 +31,18 @@ import static org.eclipse.che.selenium.pageobject.debug.DebugPanel.DebuggerActio
 import static org.openqa.selenium.Keys.F4;
 import static org.testng.Assert.assertEquals;
 
+import com.google.common.base.Joiner;
 import com.google.inject.Inject;
 import com.redhat.codeready.selenium.pageobject.CodereadyDebuggerPanel;
 import com.redhat.codeready.selenium.pageobject.CodereadyEditor;
 import com.redhat.codeready.selenium.pageobject.dashboard.CodereadyFindUsageWidget;
 import com.redhat.codeready.selenium.pageobject.dashboard.CodereadyNewWorkspace;
+import java.io.IOException;
 import java.net.HttpURLConnection;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -103,13 +108,21 @@ public class JavaUserStoryTest {
 
   private String appUrl;
   private String tabNameWithImpl = "NativeMethodAccessorImpl";
+  private String pomFileText;
+  private String pomFileChangedText;
 
   // it is used to read workspace logs on test failure
   private TestWorkspace testWorkspace;
 
   @BeforeClass
-  public void setUp() {
+  public void setUp() throws URISyntaxException, IOException {
+
     dashboard.open();
+
+    pomFileText =
+        readFileToString(getClass().getResource("/projects/bayesian/pom-file-before.txt"));
+    pomFileChangedText =
+        readFileToString(getClass().getResource("/projects/bayesian/pom-file-after.txt"));
   }
 
   @AfterClass
@@ -165,6 +178,37 @@ public class JavaUserStoryTest {
     addTestFileIntoProjectByApi();
     checkQuickFixFeature(expectedTextAfterQuickFix);
     checkAutoCompletionFeature(expectedContentInAutocompleteContainer);
+  }
+
+  @Test(priority = 4)
+  public void checkBayesianLsErrorMarker() throws Exception {
+    final String pomXmlFilePath = PROJECT + "/pom.xml";
+    final String pomXmlEditorTabTitle = "jboss-as-kitchensink";
+
+    final String expectedErrorMarkerText =
+        "Application dependency commons-fileupload:commons-fileupload-1.3 is vulnerable: CVE-2014-0050 CVE-2016-3092 CVE-2016-1000031 CVE-2013-2186. Recommendation: use version 1.3.3";
+
+    // open file
+    projectExplorer.waitItem(PROJECT);
+    projectServiceClient.updateFile(testWorkspace.getId(), pomXmlFilePath, pomFileChangedText);
+    projectExplorer.scrollAndSelectItem(pomXmlFilePath);
+    projectExplorer.waitItemIsSelected(pomXmlFilePath);
+    projectExplorer.openItemByPath(pomXmlFilePath);
+    editor.waitTabIsPresent(pomXmlEditorTabTitle);
+    editor.waitTabSelection(0, pomXmlEditorTabTitle);
+    editor.waitActive();
+
+    // check error marker displaying and description
+    editor.setCursorToLine(62);
+    editor.waitMarkerInPosition(ERROR, 62);
+    editor.clickOnMarker(ERROR, 62);
+    editor.waitTextInToolTipPopup(expectedErrorMarkerText);
+  }
+
+  private String getFileText(String filePath) throws URISyntaxException, IOException {
+    List<String> lines = Files.readAllLines(get(getClass().getResource(filePath).toURI()));
+
+    return Joiner.on('\n').join(lines);
   }
 
   private void checkAutoCompletionFeature(List<String> expectedContentInAutocompleteContainer) {
@@ -358,7 +402,7 @@ public class JavaUserStoryTest {
   private void addTestFileIntoProjectByApi() throws Exception {
     URL resourcesOut = getClass().getResource("/projects/Decorator.java");
     String content =
-        Files.readAllLines(Paths.get(resourcesOut.toURI()), Charset.forName("UTF-8"))
+        readAllLines(get(resourcesOut.toURI()), Charset.forName("UTF-8"))
             .stream()
             .collect(Collectors.joining());
     String wsId = workspaceServiceClient.getByName(WORKSPACE, defaultTestUser.getName()).getId();
