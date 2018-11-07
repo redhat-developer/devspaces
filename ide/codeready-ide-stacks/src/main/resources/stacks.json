@@ -52,6 +52,14 @@
               },
               "attributes" : {
                 "memoryLimitBytes": "2147483648"
+              },
+              "volumes": {
+                "m2": {
+                  "path": "/home/jboss/.m2"
+                },
+                "javadata": {
+                  "path": "/home/jboss/jdtls/data"
+                }
               }
             }
           },
@@ -128,6 +136,14 @@
               },
               "attributes" : {
                 "memoryLimitBytes": "2147483648"
+              },
+              "volumes": {
+                "m2": {
+                  "path": "/home/jboss/.m2"
+                },
+                "javadata": {
+                  "path": "/home/jboss/jdtls/data"
+                }
               }
             }
           },
@@ -226,6 +242,14 @@
               },
               "attributes" : {
                 "memoryLimitBytes": "2147483648"
+              },
+              "volumes": {
+                "m2": {
+                  "path": "/home/jboss/.m2"
+                },
+                "javadata": {
+                  "path": "/home/jboss/jdtls/data"
+                }
               }
             }
           },
@@ -304,6 +328,14 @@
               },
               "attributes" : {
                 "memoryLimitBytes": "2147483648"
+              },
+              "volumes": {
+                "m2": {
+                  "path": "/home/jboss/.m2"
+                },
+                "javadata": {
+                  "path": "/home/jboss/jdtls/data"
+                }
               }
             }
           },
@@ -378,6 +410,14 @@
               },
               "attributes" : {
                 "memoryLimitBytes": "2147483648"
+              },
+              "volumes": {
+                "m2": {
+                  "path": "/home/jboss/.m2"
+                },
+                "javadata": {
+                  "path": "/home/jboss/jdtls/data"
+                }
               }
             }
           },
