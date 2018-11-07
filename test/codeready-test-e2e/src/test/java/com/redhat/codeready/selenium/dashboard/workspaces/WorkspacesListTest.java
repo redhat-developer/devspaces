@@ -14,8 +14,7 @@ package com.redhat.codeready.selenium.dashboard.workspaces;
 import static java.util.Arrays.asList;
 import static org.eclipse.che.selenium.core.TestGroup.UNDER_REPAIR;
 import static org.eclipse.che.selenium.core.project.ProjectTemplates.MAVEN_SPRING;
-import static org.eclipse.che.selenium.core.workspace.WorkspaceTemplate.UBUNTU_JDK8;
-import static org.eclipse.che.selenium.pageobject.dashboard.NewWorkspace.Stack.BLANK;
+import static org.eclipse.che.selenium.pageobject.dashboard.NewWorkspace.Stack.JAVA;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 import static org.testng.Assert.fail;
@@ -49,9 +48,9 @@ import org.testng.annotations.Test;
  * @author Ihor Okhrimenko
  */
 public class WorkspacesListTest {
-  private static final int BLANK_WS_MB = 2048;
+  private static final int NODE_WS_MB = 2048;
   private static final int JAVA_WS_MB = 3072;
-  private static final int BLANK_WS_PROJECTS_COUNT = 0;
+  private static final int NODE_WS_PROJECTS_COUNT = 0;
   private static final int JAVA_WS_PROJECTS_COUNT = 1;
   private static final String EXPECTED_DOCUMENTATION_PAGE_TITLE = "What Is a Che Workspace?";
   private static final String EXPECTED_JAVA_PROJECT_NAME = "web-java-spring";
@@ -77,10 +76,10 @@ public class WorkspacesListTest {
   @InjectTestWorkspace(memoryGb = 2, startAfterCreation = false)
   private TestWorkspace workspaceToDelete;
 
-  @InjectTestWorkspace(template = UBUNTU_JDK8, memoryGb = 3)
+  @InjectTestWorkspace(memoryGb = 2)
   private TestWorkspace javaWorkspace;
 
-  private Workspaces.WorkspaceListItem expectedBlankItem;
+  private Workspaces.WorkspaceListItem expectedNodeItem;
   private Workspaces.WorkspaceListItem expectedJavaItem;
   private Workspaces.WorkspaceListItem expectedNewestWorkspaceItem;
 
@@ -91,12 +90,13 @@ public class WorkspacesListTest {
     testProjectServiceClient.importProject(
         javaWorkspace.getId(), Paths.get(resource.toURI()), "web-java-spring", MAVEN_SPRING);
 
-    expectedBlankItem =
+    expectedNodeItem =
         new Workspaces.WorkspaceListItem(
             defaultTestUser.getName(),
             blankWorkspace.getName(),
-            BLANK_WS_MB,
-            BLANK_WS_PROJECTS_COUNT);
+            NODE_WS_MB,
+            NODE_WS_PROJECTS_COUNT);
+
     expectedJavaItem =
         new Workspaces.WorkspaceListItem(
             defaultTestUser.getName(), javaWorkspace.getName(), JAVA_WS_MB, JAVA_WS_PROJECTS_COUNT);
@@ -105,8 +105,8 @@ public class WorkspacesListTest {
         new Workspaces.WorkspaceListItem(
             defaultTestUser.getName(),
             NEWEST_CREATED_WORKSPACE_NAME,
-            BLANK_WS_MB,
-            BLANK_WS_PROJECTS_COUNT);
+            NODE_WS_MB,
+            NODE_WS_PROJECTS_COUNT);
 
     dashboard.open();
   }
@@ -128,7 +128,7 @@ public class WorkspacesListTest {
     workspaces.waitPageLoading();
     dashboard.waitWorkspacesCountInWorkspacesItem(getWorkspacesCount());
 
-    checkExpectedBlankWorkspaceDisplaying();
+    checkExpectedNodeWorkspaceDisplaying();
 
     checkExpectedJavaWorkspaceDisplaying();
   }
@@ -214,14 +214,14 @@ public class WorkspacesListTest {
     List<Workspaces.WorkspaceListItem> items = workspaces.getVisibleWorkspaces();
 
     // items are sorted by name, check is present for ensuring of items order
-    if (items.get(0).getRamAmount() != BLANK_WS_MB) {
+    if (items.get(0).getRamAmount() != NODE_WS_MB) {
       workspaces.clickOnRamButton();
       items = workspaces.getVisibleWorkspaces();
     }
 
     // check items order after "RAM" clicking
     try {
-      assertEquals(items.get(0).getRamAmount(), BLANK_WS_MB);
+      assertEquals(items.get(0).getRamAmount(), NODE_WS_MB);
       assertEquals(items.get(1).getRamAmount(), JAVA_WS_MB);
     } catch (AssertionError ex) {
       // remove try-catch block after issue has been resolved
@@ -233,7 +233,7 @@ public class WorkspacesListTest {
     items = workspaces.getVisibleWorkspaces();
     try {
       assertEquals(items.get(0).getRamAmount(), JAVA_WS_MB);
-      assertEquals(items.get(1).getRamAmount(), BLANK_WS_MB);
+      assertEquals(items.get(1).getRamAmount(), NODE_WS_MB);
     } catch (AssertionError ex) {
       // remove try-catch block after issue has been resolved
       fail("Known permanent failure https://github.com/eclipse/che/issues/4242");
@@ -242,29 +242,29 @@ public class WorkspacesListTest {
     // check items order after "Projects" clicking
     workspaces.clickOnProjectsButton();
     items = workspaces.getVisibleWorkspaces();
-    assertEquals(items.get(0).getProjectsAmount(), BLANK_WS_PROJECTS_COUNT);
+    assertEquals(items.get(0).getProjectsAmount(), NODE_WS_PROJECTS_COUNT);
     assertEquals(items.get(1).getProjectsAmount(), JAVA_WS_PROJECTS_COUNT);
 
     // check items reverse order after "Projects" clicking
     workspaces.clickOnProjectsButton();
     items = workspaces.getVisibleWorkspaces();
     assertEquals(items.get(0).getProjectsAmount(), JAVA_WS_PROJECTS_COUNT);
-    assertEquals(items.get(1).getProjectsAmount(), BLANK_WS_PROJECTS_COUNT);
+    assertEquals(items.get(1).getProjectsAmount(), NODE_WS_PROJECTS_COUNT);
   }
 
   @Test
   public void checkSearchField() throws Exception {
-    int nameLength = expectedBlankItem.getWorkspaceName().length();
+    int nameLength = expectedNodeItem.getWorkspaceName().length();
     int existingWorkspacesCount = getWorkspacesCount();
     String sequenceForSearch =
-        expectedBlankItem.getWorkspaceName().substring(nameLength - 5, nameLength);
+        expectedNodeItem.getWorkspaceName().substring(nameLength - 5, nameLength);
 
     workspaces.waitVisibleWorkspacesCount(existingWorkspacesCount);
 
     workspaces.typeToSearchInput(sequenceForSearch);
     workspaces.waitVisibleWorkspacesCount(EXPECTED_SORTED_WORKSPACES_COUNT);
     List<Workspaces.WorkspaceListItem> items = workspaces.getVisibleWorkspaces();
-    assertEquals(items.get(0).getWorkspaceName(), expectedBlankItem.getWorkspaceName());
+    assertEquals(items.get(0).getWorkspaceName(), expectedNodeItem.getWorkspaceName());
 
     // check displaying list size
     workspaces.typeToSearchInput("");
@@ -272,7 +272,7 @@ public class WorkspacesListTest {
 
     // check that expected blank and java items are displaying, in sum with previous items count
     // checking it gives a full workspaces list checking
-    checkExpectedBlankWorkspaceDisplaying();
+    checkExpectedNodeWorkspaceDisplaying();
     checkExpectedJavaWorkspaceDisplaying();
   }
 
@@ -300,9 +300,9 @@ public class WorkspacesListTest {
     workspaces.waitPageLoading();
 
     workspaces.clickOnWorkspaceListItem(
-        defaultTestUser.getName(), expectedBlankItem.getWorkspaceName());
+        defaultTestUser.getName(), expectedNodeItem.getWorkspaceName());
 
-    workspaceOverview.checkNameWorkspace(expectedBlankItem.getWorkspaceName());
+    workspaceOverview.checkNameWorkspace(expectedNodeItem.getWorkspaceName());
 
     seleniumWebDriver.navigate().back();
 
@@ -339,7 +339,7 @@ public class WorkspacesListTest {
     workspaces.clickOnAddWorkspaceBtn();
     newWorkspace.waitToolbar();
     newWorkspace.typeWorkspaceName(NEWEST_CREATED_WORKSPACE_NAME);
-    newWorkspace.selectStack(BLANK);
+    newWorkspace.selectStack(JAVA);
     newWorkspace.clickOnCreateButtonAndEditWorkspace();
     workspaceOverview.checkNameWorkspace(NEWEST_CREATED_WORKSPACE_NAME);
 
@@ -366,23 +366,12 @@ public class WorkspacesListTest {
     workspaces.waitWorkspaceIsNotPresent(workspaceToDelete.getName());
   }
 
-  private void checkExpectedBlankWorkspaceDisplaying() {
-    List<Workspaces.WorkspaceListItem> items = workspaces.getVisibleWorkspaces();
-
-    Workspaces.WorkspaceListItem currentDisplayingBlankItem =
-        workspaces.getWorkspacesListItemByWorkspaceName(
-            items, expectedBlankItem.getWorkspaceName());
-
-    assertEquals(currentDisplayingBlankItem, expectedBlankItem);
+  private void checkExpectedNodeWorkspaceDisplaying() {
+    workspaces.waitWorkspaceIsPresent(expectedNodeItem.getWorkspaceName());
   }
 
   private void checkExpectedJavaWorkspaceDisplaying() {
-    List<Workspaces.WorkspaceListItem> items = workspaces.getVisibleWorkspaces();
-
-    Workspaces.WorkspaceListItem currentDisplayingJavaItem =
-        workspaces.getWorkspacesListItemByWorkspaceName(items, expectedJavaItem.getWorkspaceName());
-
-    assertEquals(currentDisplayingJavaItem, expectedJavaItem);
+    workspaces.waitWorkspaceIsPresent(expectedJavaItem.getWorkspaceName());
   }
 
   private int getWorkspacesCount() throws Exception {
