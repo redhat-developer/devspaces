@@ -12,10 +12,8 @@
 package com.redhat.codeready.selenium.dashboard;
 
 import static java.lang.String.format;
-import static org.eclipse.che.selenium.core.constant.TestStacksConstants.ANDROID;
-import static org.eclipse.che.selenium.core.constant.TestStacksConstants.BLANK;
-import static org.eclipse.che.selenium.core.constant.TestStacksConstants.JAVA;
-import static org.eclipse.che.selenium.core.constant.TestStacksConstants.JAVA_MYSQL;
+import static org.eclipse.che.selenium.core.constant.TestStacksConstants.DOTNET;
+import static org.eclipse.che.selenium.core.constant.TestStacksConstants.NODE;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
@@ -39,7 +37,7 @@ public class StacksListTest {
   @Inject private Stacks stacks;
 
   @BeforeClass
-  public void setUp() throws Exception {
+  public void setUp() {
     dashboard.open();
   }
 
@@ -74,17 +72,16 @@ public class StacksListTest {
     assertTrue(headers.contains("COMPONENTS"));
     assertTrue(headers.contains("ACTIONS"));
 
-    // check Android stack info
-    assertTrue(stacks.isStackItemExisted(ANDROID.getName()));
+    // check Java 1.8 stack info
+    assertTrue(stacks.isStackItemExisted("Java 1.8"));
     assertEquals(
-        stacks.getStackDescription(ANDROID.getName()),
-        "Default Android Stack with Java 1.8 and Android SDK");
-    assertEquals(stacks.getStackComponents(ANDROID.getName()), "Centos, JDK, Maven, Android API");
+        stacks.getStackDescription("Java 1.8"), "Default Java Stack with OpenJDK 1.8, Maven 3.5");
+    assertEquals(stacks.getStackComponents("Java 1.8"), "EAP, Maven, OpenJDK, RHEL");
   }
 
   @Test
   public void checkStacksSelectingByCheckbox() {
-    String stackName = createDuplicatedStack(JAVA_MYSQL.getName());
+    String stackName = createDuplicatedStack("Java 1.8");
 
     // select stacks by checkbox and check it is selected
     stacks.selectStackByCheckbox(stackName);
@@ -104,21 +101,21 @@ public class StacksListTest {
     stacks.waitNoStacksFound();
 
     // search stacks by a full name
-    stacks.typeToSearchInput(JAVA.getName());
-    assertTrue(stacks.isStackItemExisted(JAVA.getName()));
-    assertTrue(stacks.isStackItemExisted(JAVA_MYSQL.getName()));
-    assertFalse(stacks.isStackItemExisted(BLANK.getName()));
+    stacks.typeToSearchInput("java");
+    assertTrue(stacks.isStackItemExisted("Java 1.8"));
+    assertTrue(stacks.isStackItemExisted("Java EAP"));
+    assertFalse(stacks.isStackItemExisted(NODE.getName()));
 
-    stacks.typeToSearchInput(BLANK.getName());
-    assertTrue(stacks.isStackItemExisted(BLANK.getName()));
-    assertFalse(stacks.isStackItemExisted(JAVA.getName()));
-    assertFalse(stacks.isStackItemExisted(JAVA_MYSQL.getName()));
+    stacks.typeToSearchInput("node");
+    assertTrue(stacks.isStackItemExisted(NODE.getName()));
+    assertFalse(stacks.isStackItemExisted("Java EAP"));
+    assertFalse(stacks.isStackItemExisted("Java 1.8"));
 
     // search stacks by a part name
-    stacks.typeToSearchInput(BLANK.getName().substring(BLANK.getName().length() / 2));
-    assertTrue(stacks.isStackItemExisted(BLANK.getName()));
-    assertFalse(stacks.isStackItemExisted(JAVA.getName()));
-    assertFalse(stacks.isStackItemExisted(JAVA_MYSQL.getName()));
+    stacks.typeToSearchInput("ne");
+    assertTrue(stacks.isStackItemExisted(DOTNET.getName()));
+    assertFalse(stacks.isStackItemExisted("Java EAP"));
+    assertFalse(stacks.isStackItemExisted("Java 1.8"));
   }
 
   @Test
@@ -147,13 +144,13 @@ public class StacksListTest {
     String stackName;
 
     // create stack duplicate by Duplicate Stack button
-    stackName = createDuplicatedStack(JAVA.getName());
+    stackName = createDuplicatedStack("Java 1.8");
     assertTrue(stacks.isDuplicatedStackExisted(stackName));
 
     // delete stack by the Action delete stack button
     deleteStackByActionDeleteButton(stackName);
 
-    stackName = createDuplicatedStack(BLANK.getName());
+    stackName = createDuplicatedStack(NODE.getName());
     assertTrue(stacks.isDuplicatedStackExisted(stackName));
     deleteStackByActionDeleteButton(stackName);
   }

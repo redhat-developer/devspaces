@@ -115,11 +115,9 @@ public class WorkspaceDetailsOverviewTest {
     newWorkspace.clickOnAllStacksTab();
 
     selectStackAndCheckWorkspaceName(DOT_NET);
-
     selectStackAndCheckWorkspaceName(JAVA);
 
     // create workspace
-    newWorkspace.setMachineRAM(MACHINE_NAME, 3.0);
     addOrImportForm.clickOnAddOrImportProjectButton();
     addOrImportForm.addSampleToWorkspace(SAMPLE_NAME);
     newWorkspace.clickOnCreateButtonAndEditWorkspace();

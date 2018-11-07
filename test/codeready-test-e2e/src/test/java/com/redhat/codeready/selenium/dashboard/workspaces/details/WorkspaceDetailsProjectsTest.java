@@ -102,7 +102,7 @@ public class WorkspaceDetailsProjectsTest {
 
     // reject added project
     workspaceProjects.waitAndClickOn(WorkspaceProjects.BottomButton.CANCEL_BUTTON);
-    workspaceProjects.waitProjectIsNotPresent(SPRING_SAMPLE_NAME);
+    workspaceProjects.waitProjectIsNotPresent("kitchensink-example");
 
     addSpringSampleToWorkspace();
 
@@ -111,7 +111,7 @@ public class WorkspaceDetailsProjectsTest {
     // save added project
     workspaceProjects.waitAndClickOn(SAVE_BUTTON);
     workspaceProjects.waitNotification(EXPECTED_SUCCESS_NOTIFICATION);
-    workspaceProjects.waitProjectIsPresent(SPRING_SAMPLE_NAME);
+    workspaceProjects.waitProjectIsPresent("kitchensink-example");
   }
 
   @Test
@@ -174,22 +174,22 @@ public class WorkspaceDetailsProjectsTest {
     workspaceProjects.clickOnAddNewProjectButton();
     workspaceProjectsSamples.waitSamplesForm();
     workspaceProjectsSamples.waitTabSelected(SAMPLES_BUTTON);
-    workspaceProjectsSamples.waitAllCheckboxesDisabled(SPRING_SAMPLE_NAME, CONSOLE_SAMPLE_NAME);
+    workspaceProjectsSamples.waitAllCheckboxesDisabled("kitchensink-example");
     workspaceProjectsSamples.waitButtonDisabled(ADD_BUTTON, CANCEL_BUTTON);
 
-    workspaceProjectsSamples.clickOnAllCheckboxes(SPRING_SAMPLE_NAME);
-    workspaceProjectsSamples.waitAllCheckboxesEnabled(SPRING_SAMPLE_NAME);
+    workspaceProjectsSamples.clickOnAllCheckboxes("kitchensink-example");
+    workspaceProjectsSamples.waitAllCheckboxesEnabled("kitchensink-example");
     workspaceProjectsSamples.waitButtonEnabled(ADD_BUTTON, CANCEL_BUTTON);
 
     workspaceProjectsSamples.clickOnButton(ADD_BUTTON);
 
     workspaceProjects.waitEnabled(
         WorkspaceProjects.BottomButton.CANCEL_BUTTON, APPLY_BUTTON, SAVE_BUTTON);
-    workspaceProjects.waitProjectIsPresent(SPRING_SAMPLE_NAME);
+    workspaceProjects.waitProjectIsPresent("kitchensink-example");
   }
 
   private void checkProjectAppearanceAndButtonsState() {
-    workspaceProjects.waitProjectIsPresent(SPRING_SAMPLE_NAME);
+    workspaceProjects.waitProjectIsPresent("kitchensink-example");
     workspaceProjects.waitEnabled(
         APPLY_BUTTON, SAVE_BUTTON, WorkspaceProjects.BottomButton.CANCEL_BUTTON);
   }
