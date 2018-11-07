@@ -138,27 +138,22 @@ public class NodeJsUserStoryTest {
     final String expectedErrorMarkerText =
         "Application dependency serve-static-1.7.1 is vulnerable: CVE-2015-1164. Recommendation: use version 1.7.2";
 
+    // open file
     projectExplorer.waitItem(PROJECT);
     projectExplorer.expandPathInProjectExplorerAndOpenFile(PROJECT, fileName);
-
     editor.waitTabIsPresent(fileName);
     editor.waitTabSelection(0, fileName);
     editor.waitActive();
 
+    // update file for test
     projectServiceClient.updateFile(
         testWorkspace.getId(), packageJsonFilePath, packageJsonEditedText);
     editor.waitTextIntoEditor(packageJsonEditedText);
 
+    // check error marker displaying and description
     editor.waitMarkerInPosition(ERROR, 13);
     editor.clickOnMarker(ERROR, 13);
     editor.waitTextInToolTipPopup(expectedErrorMarkerText);
-    editor.setCursorToLine(13);
-
-    projectServiceClient.updateFile(testWorkspace.getId(), packageJsonFilePath, packageJsonText);
-    editor.waitTextIntoEditor(packageJsonText);
-
-    editor.closeAllTabs();
-    editor.waitTabIsNotPresent(fileName);
   }
 
   private void createWsFromNodeJsStackWithTestProject(String example) {

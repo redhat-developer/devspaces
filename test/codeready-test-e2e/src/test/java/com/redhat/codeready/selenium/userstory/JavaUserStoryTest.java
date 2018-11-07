@@ -20,7 +20,6 @@ import static org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants.A
 import static org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants.Assistant.FIND_USAGES;
 import static org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants.Assistant.QUICK_DOCUMENTATION;
 import static org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants.Assistant.QUICK_FIX;
-import static org.eclipse.che.selenium.core.constant.TestTimeoutsConstants.ELEMENT_TIMEOUT_SEC;
 import static org.eclipse.che.selenium.core.utils.FileUtil.readFileToString;
 import static org.eclipse.che.selenium.pageobject.CodenvyEditor.MarkerLocator.ERROR;
 import static org.eclipse.che.selenium.pageobject.debug.DebugPanel.DebuggerActionButtons.BTN_DISCONNECT;
@@ -189,10 +188,9 @@ public class JavaUserStoryTest {
     final String expectedErrorMarkerText =
         "Application dependency commons-fileupload:commons-fileupload-1.3 is vulnerable: CVE-2014-0050 CVE-2016-3092 CVE-2016-1000031 CVE-2013-2186. Recommendation: use version 1.3.3";
 
+    // open file
     projectExplorer.waitItem(PROJECT);
-
     projectServiceClient.updateFile(testWorkspace.getId(), pomXmlFilePath, pomFileChangedText);
-
     projectExplorer.scrollAndSelectItem(pomXmlFilePath);
     projectExplorer.waitItemIsSelected(pomXmlFilePath);
     projectExplorer.openItemByPath(pomXmlFilePath);
@@ -200,23 +198,11 @@ public class JavaUserStoryTest {
     editor.waitTabSelection(0, pomXmlEditorTabTitle);
     editor.waitActive();
 
+    // check error marker displaying and description
     editor.setCursorToLine(62);
     editor.waitMarkerInPosition(ERROR, 62);
     editor.clickOnMarker(ERROR, 62);
     editor.waitTextInToolTipPopup(expectedErrorMarkerText);
-    editor.setCursorToLine(62);
-
-    projectServiceClient.updateFile(testWorkspace.getId(), pomXmlFilePath, pomFileText);
-
-    editor.waitTextIsNotPresentInDefinedSplitEditor(
-        1, ELEMENT_TIMEOUT_SEC, expectedErrorMarkerText);
-    editor.waitAllMarkersInvisibility(ERROR);
-
-    editor.closeAllTabs();
-    editor.waitTabIsNotPresent(pomXmlEditorTabTitle);
-
-    projectExplorer.scrollAndSelectItem(PROJECT);
-    projectExplorer.waitItemIsSelected(PROJECT);
   }
 
   private String getFileText(String filePath) throws URISyntaxException, IOException {
