@@ -41,57 +41,22 @@ import org.testng.annotations.Test;
 public class AddOrImportProjectFormTest {
 
   private static final String NAME_WITH_MAX_AVAILABLE_LENGTH = generate("name", 124);
-  private static final String WORKSPACE_NAME = generate("test-workspace", 4);
-  private static final String TEST_BLANK_WORKSPACE_NAME = "test-blank-workspace";
+  private static final String WORKSPACE_NAME = "test-blank-workspace";
   private static final String TEST_JAVA_WORKSPACE_NAME = "test-java-workspace";
   private static final String TEST_JAVA_WORKSPACE_NAME_EDIT = generate("test-java-workspace", 4);
   private static final String NAME_WITH_SPECIAL_CHARACTERS = "@#$%^&*";
-  private static final String SPRING_SAMPLE_NAME = "web-java-spring";
-  private static final String EXPECTED_SPRING_REPOSITORY_URL =
-      "https://github.com/che-samples/web-java-spring.git";
-  private static final String CHE_SAMPLE_NAME = "che-in-che";
-  private static final String EXPECTED_CHE_REPOSITORY_URL = "https://github.com/eclipse/che";
-  private static final String CONSOLE_SAMPLE_NAME = "console-java-simple";
-  private static final String RENAMED_CONSOLE_SAMPLE_NAME = "java-console-test";
+  private static final String KITCHENSINCK_EXAMPLE = "kitchensink-example";
+  private static final String EXPECTED_KITCHENSINC_REPOSITORY_URL =
+      "https://github.com/openshift-quickstart/kitchensink-example.git";
+  private static final String RENAMED_KITCHENSINK_SAMPLE_NAME = "kitchensink";
   private static final String EXPECTED_CONSOLE_REPOSITORY_URL =
-      "https://github.com/che-samples/console-java-simple.git";
+      "https://github.com/openshift-quickstart/kitchensink-example.git";
   private static final String BLANK_FORM_DESCRIPTION = "example of description";
   private static final String CUSTOM_BLANK_PROJECT_NAME = "blank-project";
   private static final String BLANK_PROJECT_NAME = "blank";
   private static final String BLANK_DEFAULT_URL = "https://github.com/che-samples/blank";
   private static final ImmutableMap<String, String> EXPECTED_SAMPLES_WITH_DESCRIPTIONS =
-      ImmutableMap.of(
-          SPRING_SAMPLE_NAME,
-          "A basic example using Spring servlets. The app returns values entered into a submit form.",
-          CONSOLE_SAMPLE_NAME,
-          "A hello world Java application.");
-  private static final String EXPECTED_TEXT_IN_EDITOR =
-      "package org.eclipse.che.examples;\n"
-          + "\n"
-          + "import org.springframework.web.servlet.ModelAndView;\n"
-          + "import org.springframework.web.servlet.mvc.Controller;\n"
-          + "\n"
-          + "import javax.servlet.http.HttpServletRequest;\n"
-          + "import javax.servlet.http.HttpServletResponse;\n"
-          + "\n"
-          + "public class GreetingController implements Controller\n"
-          + "{\n"
-          + "\n"
-          + "   @Override\n"
-          + "   public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception\n"
-          + "   {\n"
-          + "      String userName = request.getParameter(\"user\");\n"
-          + "      String result = \"\";\n"
-          + "      if (userName != null)\n"
-          + "      {\n"
-          + "        result = \"Hello, \" + userName + \"!\";\n"
-          + "      }\n"
-          + "\n"
-          + "      ModelAndView view = new ModelAndView(\"hello_view\");\n"
-          + "      view.addObject(\"greeting\", result);\n"
-          + "      return view;\n"
-          + "   }\n"
-          + "}\n";
+      ImmutableMap.of(KITCHENSINCK_EXAMPLE, "This is the kitchensink JBoss quickstart app");
 
   @Inject private Dashboard dashboard;
   @Inject private DefaultTestUser defaultTestUser;
@@ -118,7 +83,6 @@ public class AddOrImportProjectFormTest {
   @AfterClass
   public void cleanup() throws Exception {
     testWorkspaceServiceClient.delete(WORKSPACE_NAME, defaultTestUser.getName());
-    testWorkspaceServiceClient.delete(TEST_BLANK_WORKSPACE_NAME, defaultTestUser.getName());
     testWorkspaceServiceClient.delete(TEST_JAVA_WORKSPACE_NAME, defaultTestUser.getName());
     testWorkspaceServiceClient.delete(TEST_JAVA_WORKSPACE_NAME_EDIT, defaultTestUser.getName());
   }
@@ -146,23 +110,23 @@ public class AddOrImportProjectFormTest {
     addOrImportForm.waitAddButtonDisabled();
 
     // click on single disabled checkbox
-    addOrImportForm.clickOnSampleCheckbox(CONSOLE_SAMPLE_NAME);
-    addOrImportForm.waitSampleCheckboxEnabled(CONSOLE_SAMPLE_NAME);
+    addOrImportForm.clickOnSampleCheckbox(KITCHENSINCK_EXAMPLE);
+    addOrImportForm.waitSampleCheckboxEnabled(KITCHENSINCK_EXAMPLE);
     addOrImportForm.waitCancelButtonEnabled();
     addOrImportForm.waitAddButtonEnabled();
 
     // unselect checkbox by "Cancel" button
     addOrImportForm.clickOnCancelButton();
-    addOrImportForm.waitSampleCheckboxDisabled(CONSOLE_SAMPLE_NAME);
+    addOrImportForm.waitSampleCheckboxDisabled(KITCHENSINCK_EXAMPLE);
 
     // select and unselect single checkbox by clicking on it
-    addOrImportForm.clickOnSampleCheckbox(SPRING_SAMPLE_NAME);
-    addOrImportForm.waitSampleCheckboxEnabled(SPRING_SAMPLE_NAME);
+    addOrImportForm.clickOnSampleCheckbox(KITCHENSINCK_EXAMPLE);
+    addOrImportForm.waitSampleCheckboxEnabled(KITCHENSINCK_EXAMPLE);
     addOrImportForm.waitCancelButtonEnabled();
     addOrImportForm.waitAddButtonEnabled();
 
-    addOrImportForm.clickOnSampleCheckbox(SPRING_SAMPLE_NAME);
-    addOrImportForm.waitSampleCheckboxDisabled(SPRING_SAMPLE_NAME);
+    addOrImportForm.clickOnSampleCheckbox(KITCHENSINCK_EXAMPLE);
+    addOrImportForm.waitSampleCheckboxDisabled(KITCHENSINCK_EXAMPLE);
     addOrImportForm.waitCancelButtonDisabled();
     addOrImportForm.waitAddButtonDisabled();
 
@@ -188,20 +152,19 @@ public class AddOrImportProjectFormTest {
     addOrImportForm.waitSamplesButtonSelected();
 
     // add single sample to workspace
-    addOrImportForm.clickOnSampleCheckbox(CONSOLE_SAMPLE_NAME);
-    addOrImportForm.waitSampleCheckboxEnabled(CONSOLE_SAMPLE_NAME);
+    addOrImportForm.clickOnSampleCheckbox(KITCHENSINCK_EXAMPLE);
+    addOrImportForm.waitSampleCheckboxEnabled(KITCHENSINCK_EXAMPLE);
     addOrImportForm.waitCancelButtonEnabled();
     addOrImportForm.waitAddButtonEnabled();
-
     addOrImportForm.clickOnAddButton();
     checkProjectTabAppearanceAndFields(
-        CONSOLE_SAMPLE_NAME,
-        EXPECTED_SAMPLES_WITH_DESCRIPTIONS.get(CONSOLE_SAMPLE_NAME),
-        EXPECTED_CONSOLE_REPOSITORY_URL);
+        KITCHENSINCK_EXAMPLE,
+        EXPECTED_SAMPLES_WITH_DESCRIPTIONS.get(KITCHENSINCK_EXAMPLE),
+        EXPECTED_KITCHENSINC_REPOSITORY_URL);
 
     // remove added sample by "Remove" button
     projectOptions.clickOnRemoveButton();
-    addOrImportForm.waitProjectTabDisappearance(CONSOLE_SAMPLE_NAME);
+    addOrImportForm.waitProjectTabDisappearance(KITCHENSINCK_EXAMPLE);
     addOrImportForm.waitAddOrImportFormOpened();
     addOrImportForm.waitSamplesButtonSelected();
     addOrImportForm.waitSamplesWithDescriptions(EXPECTED_SAMPLES_WITH_DESCRIPTIONS);
@@ -209,37 +172,16 @@ public class AddOrImportProjectFormTest {
     addOrImportForm.waitCancelButtonDisabled();
     addOrImportForm.waitAddButtonDisabled();
 
-    // add multiple samples
     clickOnEachCheckbox();
     waitAllCheckboxesEnabled();
     addOrImportForm.waitCancelButtonEnabled();
     addOrImportForm.waitAddButtonEnabled();
 
     addOrImportForm.clickOnAddButton();
-    addOrImportForm.waitProjectTabAppearance(CONSOLE_SAMPLE_NAME);
-    addOrImportForm.waitProjectTabAppearance(SPRING_SAMPLE_NAME);
-
-    addOrImportForm.clickOnProjectTab(CONSOLE_SAMPLE_NAME);
-    checkProjectTabAppearanceAndFields(
-        CONSOLE_SAMPLE_NAME,
-        EXPECTED_SAMPLES_WITH_DESCRIPTIONS.get(CONSOLE_SAMPLE_NAME),
-        EXPECTED_CONSOLE_REPOSITORY_URL);
-
-    addOrImportForm.clickOnProjectTab(SPRING_SAMPLE_NAME);
-    checkProjectTabAppearanceAndFields(
-        SPRING_SAMPLE_NAME,
-        EXPECTED_SAMPLES_WITH_DESCRIPTIONS.get(SPRING_SAMPLE_NAME),
-        EXPECTED_SPRING_REPOSITORY_URL);
-
-    // remove sample
-    projectOptions.clickOnRemoveButton();
-    addOrImportForm.waitProjectTabAppearance(CONSOLE_SAMPLE_NAME);
-    addOrImportForm.waitProjectTabDisappearance(SPRING_SAMPLE_NAME);
-    addOrImportForm.waitAddOrImportFormOpened();
-    addOrImportForm.waitSamplesButtonSelected();
+    addOrImportForm.waitProjectTabAppearance(KITCHENSINCK_EXAMPLE);
 
     // check name field of the project tab
-    addOrImportForm.clickOnProjectTab(CONSOLE_SAMPLE_NAME);
+    addOrImportForm.clickOnProjectTab(KITCHENSINCK_EXAMPLE);
     projectOptions.waitProjectOptionsForm();
 
     projectOptions.setValueOfNameField("");
@@ -247,7 +189,7 @@ public class AddOrImportProjectFormTest {
     projectOptions.waitSaveButtonDisabling();
     projectOptions.waitCancelButtonEnabling();
 
-    projectOptions.setValueOfNameField(RENAMED_CONSOLE_SAMPLE_NAME);
+    projectOptions.setValueOfNameField(RENAMED_KITCHENSINK_SAMPLE_NAME);
     projectOptions.waitProjectNameErrorDisappearance();
     projectOptions.waitSaveButtonEnabling();
     projectOptions.waitCancelButtonEnabling();
@@ -277,8 +219,8 @@ public class AddOrImportProjectFormTest {
     projectOptions.typeTextInDescriptionField("");
     projectOptions.clickOnCancelButton();
     checkProjectTabAppearanceAndFields(
-        CONSOLE_SAMPLE_NAME,
-        EXPECTED_SAMPLES_WITH_DESCRIPTIONS.get(CONSOLE_SAMPLE_NAME),
+        KITCHENSINCK_EXAMPLE,
+        EXPECTED_SAMPLES_WITH_DESCRIPTIONS.get(KITCHENSINCK_EXAMPLE),
         EXPECTED_CONSOLE_REPOSITORY_URL);
 
     // Check "Url" field
@@ -290,48 +232,48 @@ public class AddOrImportProjectFormTest {
     // check of restoring the previous values of the tab after click "Cancel" button
     projectOptions.clickOnCancelButton();
     checkProjectTabAppearanceAndFields(
-        CONSOLE_SAMPLE_NAME,
-        EXPECTED_SAMPLES_WITH_DESCRIPTIONS.get(CONSOLE_SAMPLE_NAME),
+        KITCHENSINCK_EXAMPLE,
+        EXPECTED_SAMPLES_WITH_DESCRIPTIONS.get(KITCHENSINCK_EXAMPLE),
         EXPECTED_CONSOLE_REPOSITORY_URL);
 
     // check of restoring the previous values of the tab after click on the another project tab
     // without saving
     addOrImportForm.clickOnAddOrImportProjectButton();
     addOrImportForm.waitAddOrImportFormOpened();
-    addOrImportForm.clickOnSampleCheckbox(SPRING_SAMPLE_NAME);
-    addOrImportForm.waitSampleCheckboxEnabled(SPRING_SAMPLE_NAME);
+    addOrImportForm.clickOnSampleCheckbox(KITCHENSINCK_EXAMPLE);
+    addOrImportForm.waitSampleCheckboxEnabled(KITCHENSINCK_EXAMPLE);
     addOrImportForm.clickOnAddButton();
-    addOrImportForm.waitProjectTabAppearance(SPRING_SAMPLE_NAME);
-    addOrImportForm.clickOnProjectTab(CONSOLE_SAMPLE_NAME);
-    projectOptions.waitProjectNameFieldValue(CONSOLE_SAMPLE_NAME);
+    addOrImportForm.waitProjectTabAppearance(KITCHENSINCK_EXAMPLE);
+    addOrImportForm.clickOnProjectTab(KITCHENSINCK_EXAMPLE);
+    projectOptions.waitProjectNameFieldValue(KITCHENSINCK_EXAMPLE);
 
     projectOptions.setValueOfNameField("");
     projectOptions.typeTextInDescriptionField("");
     projectOptions.typeTextInRepositoryUrlField("");
 
-    addOrImportForm.clickOnProjectTab(SPRING_SAMPLE_NAME);
-    projectOptions.waitProjectNameFieldValue(SPRING_SAMPLE_NAME);
+    addOrImportForm.clickOnProjectTab(KITCHENSINCK_EXAMPLE);
+    projectOptions.waitProjectNameFieldValue(KITCHENSINCK_EXAMPLE);
 
-    addOrImportForm.clickOnProjectTab(CONSOLE_SAMPLE_NAME);
+    addOrImportForm.clickOnProjectTab(KITCHENSINCK_EXAMPLE);
     checkProjectTabAppearanceAndFields(
-        CONSOLE_SAMPLE_NAME,
-        EXPECTED_SAMPLES_WITH_DESCRIPTIONS.get(CONSOLE_SAMPLE_NAME),
+        KITCHENSINCK_EXAMPLE,
+        EXPECTED_SAMPLES_WITH_DESCRIPTIONS.get(KITCHENSINCK_EXAMPLE),
         EXPECTED_CONSOLE_REPOSITORY_URL);
 
     // check ability of creation the sample with specified valid name
-    projectOptions.setValueOfNameField(RENAMED_CONSOLE_SAMPLE_NAME);
+    projectOptions.setValueOfNameField(RENAMED_KITCHENSINK_SAMPLE_NAME);
     projectOptions.clickOnSaveButton();
-    addOrImportForm.waitProjectTabAppearance(RENAMED_CONSOLE_SAMPLE_NAME);
+    addOrImportForm.waitProjectTabAppearance(RENAMED_KITCHENSINK_SAMPLE_NAME);
     projectOptions.waitSaveButtonDisabling();
     projectOptions.waitCancelButtonDisabling();
   }
 
   @Test(priority = 2)
-  public void checkProjectsBlank() throws Exception {
+  public void checkProjectsBlank() {
     // preparing
     newWorkspace.waitPageLoad();
-    newWorkspace.selectStack(Stack.BLANK);
-    newWorkspace.waitStackSelected(Stack.BLANK);
+    newWorkspace.selectStack(Stack.JAVA);
+    newWorkspace.waitStackSelected(Stack.JAVA);
     addOrImportForm.clickOnAddOrImportProjectButton();
     addOrImportForm.waitAddOrImportFormOpened();
     addOrImportForm.clickOnBlankButton();
@@ -385,48 +327,33 @@ public class AddOrImportProjectFormTest {
     addOrImportForm.typeToGitUrlField(BLANK_DEFAULT_URL);
     addOrImportForm.clickOnAddButton();
     checkProjectTabAppearanceAndFields(BLANK_PROJECT_NAME, "", BLANK_DEFAULT_URL);
-
-    addOrImportForm.clickOnAddOrImportProjectButton();
-    addOrImportForm.waitAddOrImportFormOpened();
-
-    addOrImportForm.clickOnGitHubButton();
-    newWorkspace.setMachineRAM("dev-machine", 5.0);
-    newWorkspace.typeWorkspaceName(WORKSPACE_NAME);
-
-    newWorkspace.clickOnCreateButtonAndOpenInIDE();
-    // store info about created workspace to make SeleniumTestHandler.captureTestWorkspaceLogs()
-    // possible to read logs in case of test failure
-    testWorkspace = testWorkspaceProvider.getWorkspace(WORKSPACE_NAME, defaultTestUser);
-
-    testWorkspaceServiceClient.waitStatus(WORKSPACE_NAME, defaultTestUser.getName(), RUNNING);
-    dashboard.selectWorkspacesItemOnDashboard();
   }
 
   @Test(priority = 3)
   public void checkCreatingProject() throws Exception {
     // check that name field saves it state after choosing another stack
     newWorkspace.waitPageLoad();
-    newWorkspace.typeWorkspaceName(TEST_BLANK_WORKSPACE_NAME);
+    newWorkspace.typeWorkspaceName(WORKSPACE_NAME);
     newWorkspace.selectStack(Stack.DOT_NET);
     newWorkspace.waitStackSelected(Stack.DOT_NET);
-    assertEquals(newWorkspace.getWorkspaceNameValue(), TEST_BLANK_WORKSPACE_NAME);
+    assertEquals(newWorkspace.getWorkspaceNameValue(), WORKSPACE_NAME);
 
     newWorkspace.selectStack(Stack.JAVA);
     newWorkspace.waitStackSelected(Stack.JAVA);
-    assertEquals(newWorkspace.getWorkspaceNameValue(), TEST_BLANK_WORKSPACE_NAME);
+    assertEquals(newWorkspace.getWorkspaceNameValue(), WORKSPACE_NAME);
 
     // add workspace with specified "RAM" value
-    newWorkspace.setMachineRAM("dev-machine", 3.0);
-    newWorkspace.waitRamValue("dev-machine", 3.0);
+    newWorkspace.setMachineRAM("dev-machine", 2.0);
+    newWorkspace.waitRamValue("dev-machine", 2.0);
 
     addOrImportForm.clickOnAddOrImportProjectButton();
     addOrImportForm.waitAddOrImportFormOpened();
 
-    addOrImportForm.clickOnSampleCheckbox(SPRING_SAMPLE_NAME);
-    addOrImportForm.waitSampleCheckboxEnabled(SPRING_SAMPLE_NAME);
+    addOrImportForm.clickOnSampleCheckbox(KITCHENSINCK_EXAMPLE);
+    addOrImportForm.waitSampleCheckboxEnabled(KITCHENSINCK_EXAMPLE);
 
     addOrImportForm.clickOnAddButton();
-    addOrImportForm.waitProjectTabAppearance(SPRING_SAMPLE_NAME);
+    addOrImportForm.waitProjectTabAppearance(KITCHENSINCK_EXAMPLE);
 
     // check closing of "Workspace Is Created" dialog window
     newWorkspace.clickOnBottomCreateButton();
@@ -434,7 +361,7 @@ public class AddOrImportProjectFormTest {
 
     newWorkspace.closeWorkspaceCreatedDialog();
     newWorkspace.waitWorkspaceCreatedDialogDisappearance();
-    workspaceOverview.checkNameWorkspace(TEST_BLANK_WORKSPACE_NAME);
+    workspaceOverview.checkNameWorkspace(WORKSPACE_NAME);
 
     seleniumWebDriver.navigate().back();
 
@@ -448,16 +375,17 @@ public class AddOrImportProjectFormTest {
     newWorkspace.waitWorkspaceCreatedDialogIsVisible();
     newWorkspace.clickOnOpenInIDEButton();
 
+    // store info about created workspace to make SeleniumTestHandler.captureTestWorkspaceLogs()
+    // possible to read logs in case of test failure
+    testWorkspace =
+        testWorkspaceProvider.getWorkspace(TEST_JAVA_WORKSPACE_NAME_EDIT, defaultTestUser);
+
     testWorkspaceServiceClient.waitStatus(
         TEST_JAVA_WORKSPACE_NAME_EDIT, defaultTestUser.getName(), RUNNING);
     seleniumWebDriverHelper.switchToIdeFrameAndWaitAvailability();
 
     projectExplorer.waitProjectExplorer();
-    projectExplorer.waitItem(SPRING_SAMPLE_NAME);
-    projectExplorer.expandPathInProjectExplorerAndOpenFile(
-        SPRING_SAMPLE_NAME + "/src/main/java/org.eclipse.che.examples", "GreetingController.java");
-    editor.waitActive();
-    editor.waitTextIntoEditor(EXPECTED_TEXT_IN_EDITOR);
+    projectExplorer.waitItem(KITCHENSINCK_EXAMPLE);
   }
 
   private void waitAllCheckboxesDisabled() {
@@ -500,14 +428,14 @@ public class AddOrImportProjectFormTest {
     addOrImportForm.clickOnAddOrImportProjectButton();
     addOrImportForm.waitAddOrImportFormOpened();
 
-    addOrImportForm.clickOnSampleCheckbox(SPRING_SAMPLE_NAME);
-    addOrImportForm.waitSampleCheckboxEnabled(SPRING_SAMPLE_NAME);
+    addOrImportForm.clickOnSampleCheckbox(KITCHENSINCK_EXAMPLE);
+    addOrImportForm.waitSampleCheckboxEnabled(KITCHENSINCK_EXAMPLE);
 
     addOrImportForm.clickOnAddButton();
     checkProjectTabAppearanceAndFields(
-        SPRING_SAMPLE_NAME,
-        EXPECTED_SAMPLES_WITH_DESCRIPTIONS.get(SPRING_SAMPLE_NAME),
-        EXPECTED_SPRING_REPOSITORY_URL);
+        KITCHENSINCK_EXAMPLE,
+        EXPECTED_SAMPLES_WITH_DESCRIPTIONS.get(KITCHENSINCK_EXAMPLE),
+        EXPECTED_KITCHENSINC_REPOSITORY_URL);
 
     // open create dialog
     newWorkspace.clickOnBottomCreateButton();
