@@ -137,7 +137,52 @@ public class JavaUserStoryTest {
   }
 
   @Test(priority = 2)
-  public void checkBayesianLs() throws Exception {
+  public void checkMainDebuggerFeatures() throws Exception {
+    setUpDebugMode();
+    projectExplorer.openItemByPath(PATH_TO_MAIN_PACKAGE + "/data/MemberListProducer.java");
+    editor.setBreakPointAndWaitActiveState(30);
+    doGetRequestToApp();
+    debugPanel.waitDebugHighlightedText("return members;");
+    checkEvaluateExpression();
+    checkStepInto();
+    checkStepOver();
+    checkStepOut();
+    checkFramesAndVariablesWithResume();
+    checkEndDebugSession();
+  }
+
+  @Test(priority = 3)
+  public void checkCodeAssistantFeatures() throws Exception {
+    String expectedTextOfInjectClass =
+        "@see javax.inject.Provider\n */\n@Target({ METHOD, CONSTRUCTOR, FIELD })\n@Retention(RUNTIME)\n@Documented\npublic @interface Inject {}";
+    String memberRegistrationTabName = "MemberRegistration";
+
+    String loggerJavaDocFragment =
+        "On each logging call the Logger initially performs a cheap check of the request level (e.g., SEVERE or FINE)";
+
+    String expectedTextAfterQuickFix =
+        "@Override\npublic String decorate(String s) {\n return null;\n}";
+
+    List<String> expectedContentInAutocompleteContainer =
+        Arrays.asList(
+            "name : String Member",
+            "setName(String name) : void Member",
+            "getName() : String Member",
+            "Name - java.util.jar.Attributes");
+
+    checkGoToDeclarationFeature();
+    checkFindUsagesFeature();
+    checkPreviousTabFeature(memberRegistrationTabName);
+    checkFindDefinitionFeature(expectedTextOfInjectClass);
+    checkQuickDocumentationFeature(memberRegistrationTabName, loggerJavaDocFragment);
+    checkCodeValidationFeature(memberRegistrationTabName);
+    addTestFileIntoProjectByApi();
+    checkQuickFixFeature(expectedTextAfterQuickFix);
+    checkAutoCompletionFeature(expectedContentInAutocompleteContainer);
+  }
+
+  @Test(priority = 4)
+  public void checkBayesianLsErrorMarker() throws Exception {
     final String pomXmlFilePath = PROJECT + "/pom.xml";
     final String pomXmlEditorTabTitle = "jboss-as-kitchensink";
 
@@ -172,51 +217,6 @@ public class JavaUserStoryTest {
 
     projectExplorer.scrollAndSelectItem(PROJECT);
     projectExplorer.waitItemIsSelected(PROJECT);
-  }
-
-  @Test(priority = 3)
-  public void checkMainDebuggerFeatures() throws Exception {
-    setUpDebugMode();
-    projectExplorer.openItemByPath(PATH_TO_MAIN_PACKAGE + "/data/MemberListProducer.java");
-    editor.setBreakPointAndWaitActiveState(30);
-    doGetRequestToApp();
-    debugPanel.waitDebugHighlightedText("return members;");
-    checkEvaluateExpression();
-    checkStepInto();
-    checkStepOver();
-    checkStepOut();
-    checkFramesAndVariablesWithResume();
-    checkEndDebugSession();
-  }
-
-  @Test(priority = 4)
-  public void checkCodeAssistantFeatures() throws Exception {
-    String expectedTextOfInjectClass =
-        "@see javax.inject.Provider\n */\n@Target({ METHOD, CONSTRUCTOR, FIELD })\n@Retention(RUNTIME)\n@Documented\npublic @interface Inject {}";
-    String memberRegistrationTabName = "MemberRegistration";
-
-    String loggerJavaDocFragment =
-        "On each logging call the Logger initially performs a cheap check of the request level (e.g., SEVERE or FINE)";
-
-    String expectedTextAfterQuickFix =
-        "@Override\npublic String decorate(String s) {\n return null;\n}";
-
-    List<String> expectedContentInAutocompleteContainer =
-        Arrays.asList(
-            "name : String Member",
-            "setName(String name) : void Member",
-            "getName() : String Member",
-            "Name - java.util.jar.Attributes");
-
-    checkGoToDeclarationFeature();
-    checkFindUsagesFeature();
-    checkPreviousTabFeature(memberRegistrationTabName);
-    checkFindDefinitionFeature(expectedTextOfInjectClass);
-    checkQuickDocumentationFeature(memberRegistrationTabName, loggerJavaDocFragment);
-    checkCodeValidationFeature(memberRegistrationTabName);
-    addTestFileIntoProjectByApi();
-    checkQuickFixFeature(expectedTextAfterQuickFix);
-    checkAutoCompletionFeature(expectedContentInAutocompleteContainer);
   }
 
   private String getFileText(String filePath) throws URISyntaxException, IOException {

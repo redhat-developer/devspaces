@@ -120,7 +120,19 @@ public class NodeJsUserStoryTest {
   }
 
   @Test(priority = 1)
-  public void checkBayesianLs() throws Exception {
+  public void runAndCheckNodeJsApp() throws Exception {
+    runAndCheckHelloWorldApp();
+  }
+
+  @Test(priority = 2)
+  public void checkMainLsFeatures() {
+    checkHovering();
+    checkCodeValidation();
+    checkFindDefinition();
+  }
+
+  @Test(priority = 3)
+  public void checkBayesianLsErrorMarker() throws Exception {
     final String fileName = "package.json";
     final String packageJsonFilePath = PROJECT + "/" + fileName;
     final String expectedErrorMarkerText =
@@ -147,18 +159,6 @@ public class NodeJsUserStoryTest {
 
     editor.closeAllTabs();
     editor.waitTabIsNotPresent(fileName);
-  }
-
-  @Test(priority = 2)
-  public void runAndCheckNodeJsApp() throws Exception {
-    runAndCheckHelloWorldApp();
-  }
-
-  @Test(priority = 3)
-  public void checkMainLsFeatures() {
-    checkHovering();
-    checkCodeValidation();
-    checkFindDefinition();
   }
 
   private void createWsFromNodeJsStackWithTestProject(String example) {
