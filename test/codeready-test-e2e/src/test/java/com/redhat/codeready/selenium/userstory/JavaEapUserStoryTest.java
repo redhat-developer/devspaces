@@ -11,7 +11,7 @@
 */
 package com.redhat.codeready.selenium.userstory;
 
-import static com.redhat.codeready.selenium.pageobject.dashboard.CodereadyNewWorkspace.CodereadyStacks.JAVA_DEFAULT;
+import static com.redhat.codeready.selenium.pageobject.dashboard.CodereadyNewWorkspace.CodereadyStacks.JAVA_EAP;
 import static java.nio.file.Files.readAllLines;
 import static java.nio.file.Paths.get;
 import static org.eclipse.che.commons.lang.NameGenerator.generate;
@@ -75,7 +75,8 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-public class JavaUserStoryTest {
+/** @author Musienko Maxim */
+public class JavaEapUserStoryTest {
   private static final Logger LOG = LoggerFactory.getLogger(JavaEapUserStoryTest.class);
   private final String WORKSPACE = generate("JavaUserStory", 4);
   private final String PROJECT = "kitchensink-example";
@@ -131,7 +132,7 @@ public class JavaUserStoryTest {
 
   @Test(priority = 1)
   public void createJavaEAPWorkspaceWithProjectFromDashBoard() throws Exception {
-    testWorkspace = createWsFromJavaStackWithTestProject(PROJECT);
+    testWorkspace = createWsFromJavaEAPStackWithTestProject(PROJECT);
   }
 
   @Test(priority = 2)
@@ -297,13 +298,13 @@ public class JavaUserStoryTest {
     consoles.clickOnProcessesButton();
   }
 
-  private TestWorkspace createWsFromJavaStackWithTestProject(String kitchenExampleName)
+  private TestWorkspace createWsFromJavaEAPStackWithTestProject(String kitchenExampleName)
       throws Exception {
     dashboard.selectWorkspacesItemOnDashboard();
     dashboard.waitToolbarTitleName("Workspaces");
     workspaces.clickOnAddWorkspaceBtn();
     newWorkspace.typeWorkspaceName(WORKSPACE);
-    newWorkspace.selectCodereadyStack(JAVA_DEFAULT);
+    newWorkspace.selectCodereadyStack(JAVA_EAP);
     addOrImportForm.clickOnAddOrImportProjectButton();
     addOrImportForm.addSampleToWorkspace(kitchenExampleName);
     newWorkspace.clickOnCreateButtonAndOpenInIDE();
