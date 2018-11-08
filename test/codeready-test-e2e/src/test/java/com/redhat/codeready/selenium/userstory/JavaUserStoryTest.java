@@ -75,6 +75,7 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
+/** @author M. Musienko */
 public class JavaUserStoryTest {
   private static final Logger LOG = LoggerFactory.getLogger(JavaEapUserStoryTest.class);
   private final String WORKSPACE = generate("JavaUserStory", 4);
