@@ -13,7 +13,10 @@ package com.redhat.codeready.selenium.userstory;
 
 import static com.redhat.codeready.selenium.pageobject.dashboard.CodereadyNewWorkspace.CodereadyStacks.PHP;
 import static org.eclipse.che.commons.lang.NameGenerator.generate;
-import static org.eclipse.che.selenium.core.constant.TestProjectExplorerContextMenuConstants.ContextMenuCommandGoals.COMMON_GOAL;
+import static org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants.Run.DEBUG;
+import static org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants.Run.EDIT_DEBUG_CONFIGURATION;
+import static org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants.Run.RUN_MENU;
+import static org.eclipse.che.selenium.core.constant.TestProjectExplorerContextMenuConstants.ContextMenuCommandGoals.DEBUG_GOAL;
 import static org.eclipse.che.selenium.core.constant.TestProjectExplorerContextMenuConstants.ContextMenuCommandGoals.RUN_GOAL;
 import static org.eclipse.che.selenium.core.constant.TestTimeoutsConstants.LOADER_TIMEOUT_SEC;
 import static org.eclipse.che.selenium.pageobject.CodenvyEditor.MarkerLocator.ERROR_OVERVIEW;
@@ -24,13 +27,13 @@ import static org.openqa.selenium.Keys.LEFT_SHIFT;
 import com.google.inject.Inject;
 import com.redhat.codeready.selenium.pageobject.CodereadyEditor;
 import com.redhat.codeready.selenium.pageobject.dashboard.CodereadyNewWorkspace;
-import java.net.URL;
+import java.net.URI;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.concurrent.atomic.AtomicReference;
 import org.eclipse.che.selenium.core.SeleniumWebDriver;
 import org.eclipse.che.selenium.core.client.TestProjectServiceClient;
 import org.eclipse.che.selenium.core.client.TestWorkspaceServiceClient;
-import org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants;
 import org.eclipse.che.selenium.core.project.ProjectTemplates;
 import org.eclipse.che.selenium.core.user.DefaultTestUser;
 import org.eclipse.che.selenium.core.webdriver.SeleniumWebDriverHelper;
@@ -58,8 +61,10 @@ public class PhpUserStoryTest {
   private static final String START_APP_COMMAND_NAME = "start httpd";
   private static final String EXPECTED_APPLICATION_BODY_TEXT = "Hello World!";
   private static final String EXPECTED_FIXED_CODE = "echo \"Hello World!\";";
-  private static final String PATH_TO_INDEX_PHP = DEBUG_PROJECT_NAME + "/index.php";
-  private static final String PATH_TO_LIB_PHP = DEBUG_PROJECT_NAME + "/lib.php";
+  private static final String INDEX_FILE = "index.php";
+  private static final String LIB_FILE = "lib.php";
+  private static final String PATH_TO_INDEX_PHP = DEBUG_PROJECT_NAME + "/" + INDEX_FILE;
+  private static final String PATH_TO_LIB_PHP = DEBUG_PROJECT_NAME + "/" + LIB_FILE;
   private static final String DEBUG_PHP_SCRIPT_COMMAND_NAME = "debug php script";
 
   private static final String CODE_FOR_TYPING =
@@ -154,7 +159,7 @@ public class PhpUserStoryTest {
     events.waitExpectedMessage("Branch 'master' is checked out");
   }
 
-  // @Test(priority = 1)
+  @Test(priority = 1)
   public void checkBuildingAndRunning() {
     // waits application source readiness and run
     projectExplorer.waitItem(PROJECT_NAME);
@@ -165,35 +170,39 @@ public class PhpUserStoryTest {
 
   @Test(priority = 2)
   public void checkDebugMode() throws Exception {
-    URL resource = getClass().getResource("/projects/plugins/DebuggerPlugin/php-tests");
-    testProjectServiceClient.importProject(
-        testWorkspace.getId(),
-        Paths.get(resource.toURI()),
-        DEBUG_PROJECT_NAME,
-        ProjectTemplates.PHP);
+    final URI resource =
+        getClass().getResource("/projects/plugins/DebuggerPlugin/php-tests").toURI();
+    final Path resourcePath = Paths.get(resource);
 
+    // create test project
+    testProjectServiceClient.importProject(
+        testWorkspace.getId(), resourcePath, DEBUG_PROJECT_NAME, ProjectTemplates.PHP);
+
+    // create debug configuration
     projectExplorer.waitAndSelectItem(DEBUG_PROJECT_NAME);
     projectExplorer.waitItemIsSelected(DEBUG_PROJECT_NAME);
-    menu.runCommand(
-        TestMenuCommandsConstants.Run.RUN_MENU,
-        TestMenuCommandsConstants.Run.EDIT_DEBUG_CONFIGURATION);
-
+    menu.runCommand(RUN_MENU, EDIT_DEBUG_CONFIGURATION);
     debugConfig.createConfig(DEBUG_PROJECT_NAME);
 
-    menu.runCommandByXpath(
-        TestMenuCommandsConstants.Run.RUN_MENU,
-        TestMenuCommandsConstants.Run.DEBUG,
-        getXpathForDebugConfigurationMenuItem());
-
+    // run remote debugger
+    menu.runCommand(RUN_MENU, DEBUG, DEBUG + "/" + DEBUG_PROJECT_NAME);
     notificationPopup.waitExpectedMessageOnProgressPanelAndClose("Remote debugger connected");
 
-    projectExplorer.openItemByPath(PATH_TO_LIB_PHP);
+    // set breakpoint
+    projectExplorer.expandPathInProjectExplorerAndOpenFile(DEBUG_PROJECT_NAME, LIB_FILE);
+    editor.waitTabIsPresent(LIB_FILE);
+    editor.waitTabSelection(0, LIB_FILE);
+    editor.waitActive();
     editor.setBreakpoint(14);
     editor.closeAllTabs();
+    editor.waitTabIsNotPresent(LIB_FILE);
 
+    // when (debug script)
     projectExplorer.openItemByPath(PATH_TO_INDEX_PHP);
+    editor.waitTabIsPresent(INDEX_FILE);
+    editor.waitTabSelection(0, INDEX_FILE);
     projectExplorer.invokeCommandWithContextMenu(
-        COMMON_GOAL, DEBUG_PROJECT_NAME, DEBUG_PHP_SCRIPT_COMMAND_NAME);
+        DEBUG_GOAL, DEBUG_PROJECT_NAME, DEBUG_PHP_SCRIPT_COMMAND_NAME);
 
     debugPanel.openDebugPanel();
 
@@ -205,7 +214,7 @@ public class PhpUserStoryTest {
     debugPanel.clickOnButton(DebugPanel.DebuggerActionButtons.RESUME_BTN_ID);
 
     // then
-    editor.waitTabFileWithSavedStatus("lib.php");
+    editor.waitTabFileWithSavedStatus(LIB_FILE);
     editor.waitActiveBreakpoint(14);
     debugPanel.waitDebugHighlightedText("return \"Hello, $name\"");
     debugPanel.waitTextInVariablesPanel("$name=\"man\"");
@@ -214,19 +223,21 @@ public class PhpUserStoryTest {
     debugPanel.clickOnButton(DebugPanel.DebuggerActionButtons.STEP_OUT);
 
     // then
-    editor.waitTabFileWithSavedStatus("index.php");
+    editor.waitTabFileWithSavedStatus(INDEX_FILE);
     debugPanel.waitDebugHighlightedText("echo sayHello(\"man\");");
     debugPanel.waitTextInVariablesPanel("$_GET=array [0]");
+
+    // restore starting state
+    editor.closeAllTabs();
+    editor.waitTabIsNotPresent(INDEX_FILE);
   }
 
-  // @Test(priority = 2)
+  @Test(priority = 3)
   public void checkPhpLsFeatures() {
-    final String checkedFileName = "index.php";
-
     // prepare file for checks
     projectExplorer.waitItem(PROJECT_NAME);
-    projectExplorer.expandPathInProjectExplorerAndOpenFile(PROJECT_NAME, checkedFileName);
-    editor.waitTabIsPresent(checkedFileName);
+    projectExplorer.expandPathInProjectExplorerAndOpenFile(PROJECT_NAME, INDEX_FILE);
+    editor.waitTabIsPresent(INDEX_FILE);
     editor.waitActive();
 
     checkCodeValidation();
@@ -294,12 +305,6 @@ public class PhpUserStoryTest {
     performTextSelecting();
 
     pressControlShiftCommentingCombination();
-  }
-
-  private String getXpathForDebugConfigurationMenuItem() {
-    return String.format(
-        "//*[@id=\"%1$s/%2$s\" or @id=\"topmenu/Run/Debug/Debug '%2$s'\"]",
-        TestMenuCommandsConstants.Run.DEBUG, DEBUG_PROJECT_NAME);
   }
 
   private void performTextSelecting() {
