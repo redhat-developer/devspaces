@@ -13,47 +13,18 @@ package com.redhat.codeready.selenium.dashboard.workspaces;
 
 import static java.util.Arrays.asList;
 import static org.eclipse.che.commons.lang.NameGenerator.generate;
-import static org.eclipse.che.selenium.pageobject.dashboard.NewWorkspace.Stack.ANDROID;
-import static org.eclipse.che.selenium.pageobject.dashboard.NewWorkspace.Stack.BLANK;
-import static org.eclipse.che.selenium.pageobject.dashboard.NewWorkspace.Stack.CAMEL_SPRINGBOOT;
-import static org.eclipse.che.selenium.pageobject.dashboard.NewWorkspace.Stack.CENTOS_BLANK;
-import static org.eclipse.che.selenium.pageobject.dashboard.NewWorkspace.Stack.CENTOS_GO;
-import static org.eclipse.che.selenium.pageobject.dashboard.NewWorkspace.Stack.CENTOS_NODEJS;
-import static org.eclipse.che.selenium.pageobject.dashboard.NewWorkspace.Stack.CENTOS_WILDFLY_SWARM;
-import static org.eclipse.che.selenium.pageobject.dashboard.NewWorkspace.Stack.CEYLON_WITH_JAVA_JAVASCRIPT;
-import static org.eclipse.che.selenium.pageobject.dashboard.NewWorkspace.Stack.CHE_7_PREVIEW;
-import static org.eclipse.che.selenium.pageobject.dashboard.NewWorkspace.Stack.CHE_7_PREVIEW_DEV;
-import static org.eclipse.che.selenium.pageobject.dashboard.NewWorkspace.Stack.CPP;
-import static org.eclipse.che.selenium.pageobject.dashboard.NewWorkspace.Stack.DOT_NET;
-import static org.eclipse.che.selenium.pageobject.dashboard.NewWorkspace.Stack.ECLIPSE_CHE;
-import static org.eclipse.che.selenium.pageobject.dashboard.NewWorkspace.Stack.ECLIPSE_VERTX;
-import static org.eclipse.che.selenium.pageobject.dashboard.NewWorkspace.Stack.GO;
 import static org.eclipse.che.selenium.pageobject.dashboard.NewWorkspace.Stack.JAVA;
-import static org.eclipse.che.selenium.pageobject.dashboard.NewWorkspace.Stack.JAVA_CENTOS;
-import static org.eclipse.che.selenium.pageobject.dashboard.NewWorkspace.Stack.JAVA_MYSQL;
-import static org.eclipse.che.selenium.pageobject.dashboard.NewWorkspace.Stack.JAVA_MYSQL_CENTOS;
-import static org.eclipse.che.selenium.pageobject.dashboard.NewWorkspace.Stack.JAVA_MYSQL_THEIA_ON_KUBERNETES;
-import static org.eclipse.che.selenium.pageobject.dashboard.NewWorkspace.Stack.JAVA_THEIA_DOCKER;
-import static org.eclipse.che.selenium.pageobject.dashboard.NewWorkspace.Stack.JAVA_THEIA_ON_KUBERNETES;
-import static org.eclipse.che.selenium.pageobject.dashboard.NewWorkspace.Stack.JAVA_THEIA_OPENSHIFT;
-import static org.eclipse.che.selenium.pageobject.dashboard.NewWorkspace.Stack.KOTLIN;
-import static org.eclipse.che.selenium.pageobject.dashboard.NewWorkspace.Stack.NODE;
-import static org.eclipse.che.selenium.pageobject.dashboard.NewWorkspace.Stack.PHP;
-import static org.eclipse.che.selenium.pageobject.dashboard.NewWorkspace.Stack.PYTHON;
-import static org.eclipse.che.selenium.pageobject.dashboard.NewWorkspace.Stack.RAILS;
-import static org.eclipse.che.selenium.pageobject.dashboard.NewWorkspace.Stack.SPRING_BOOT;
 import static org.openqa.selenium.Keys.ARROW_DOWN;
 import static org.openqa.selenium.Keys.ARROW_UP;
 import static org.openqa.selenium.Keys.ESCAPE;
 import static org.testng.Assert.assertEquals;
 
 import com.google.inject.Inject;
+import com.redhat.codeready.selenium.pageobject.dashboard.CodereadyNewWorkspace;
+import com.redhat.codeready.selenium.pageobject.dashboard.CodereadyNewWorkspace.CodereadyStacks;
 import java.util.List;
-import org.eclipse.che.selenium.core.SeleniumWebDriver;
-import org.eclipse.che.selenium.core.TestGroup;
 import org.eclipse.che.selenium.core.webdriver.SeleniumWebDriverHelper;
 import org.eclipse.che.selenium.pageobject.dashboard.Dashboard;
-import org.eclipse.che.selenium.pageobject.dashboard.NewWorkspace;
 import org.eclipse.che.selenium.pageobject.dashboard.workspaces.Workspaces;
 import org.openqa.selenium.Keys;
 import org.testng.annotations.BeforeClass;
@@ -67,251 +38,74 @@ public class NewWorkspacePageTest {
   private static final double MAX_RAM_VALUE = 100.0;
   private static final double MIN_RAM_VALUE = 0.5;
   private static final double RAM_CHANGE_STEP = 0.5;
-  private static final String JDK_SUGGESTION_TITLE = "JDK";
-  private static final String JAVA_SUGGESTION_TITLE = "JAVA";
-  private static final String JAVA_1_8_SUGGESTION_TITLE = "JAVA 1.8";
-  private static final String JAVA_TOMCAT_MYSQL_SUGGESTION_TITLE = "JAVA 1.8, TOMCAT 8, MYSQL 5.7";
   private static final String NAME_WITH_ONE_HUNDRED_SYMBOLS = generate("wksp-", 95);
   private static final List<String> NOT_VALID_NAMES =
       asList("wksp-", "-wksp", "wk sp", "wk_sp", "wksp@", "wksp$", "wksp&", "wksp*");
-  private static final String LETTER_FOR_SEARCHING = "j";
-  private static final List<NewWorkspace.Stack> EXPECTED_JDK_STACKS = asList(JAVA, ECLIPSE_CHE);
+  private static final String LETTER_FOR_SEARCHING = "m";
+  private static final String MAKE_SUGGESTION_TITLE = "MAKE";
+  private static final String MAVEN_SUGGESTION_TITLE = "MAVEN";
 
-  private static List<NewWorkspace.Stack> EXPECTED_OPENSHIFT_QUICK_START_STACKS =
+  private static List<CodereadyNewWorkspace.CodereadyStacks> EXPECTED_CODEREADY_QUICK_START_STACKS =
       asList(
-          JAVA,
-          BLANK,
-          DOT_NET,
-          ANDROID,
-          CPP,
-          CHE_7_PREVIEW,
-          CHE_7_PREVIEW_DEV,
-          ECLIPSE_CHE,
-          GO,
-          JAVA_MYSQL_THEIA_ON_KUBERNETES,
-          JAVA_THEIA_ON_KUBERNETES,
-          JAVA_THEIA_OPENSHIFT,
-          NODE,
-          PHP,
-          PYTHON,
-          RAILS);
+          CodereadyStacks.JAVA_EAP,
+          CodereadyStacks.JAVA_DEFAULT,
+          CodereadyStacks.VERTX,
+          CodereadyStacks.SPRING_BOOT,
+          CodereadyStacks.WILD_FLY_SWARM,
+          CodereadyStacks.DOT_NET,
+          CodereadyStacks.CPP,
+          CodereadyStacks.GO,
+          CodereadyStacks.NODE,
+          CodereadyStacks.PHP,
+          CodereadyStacks.PYTHON);
 
-  private static List<NewWorkspace.Stack> EXPECTED_K8S_QUICK_START_STACKS =
-      asList(
-          JAVA,
-          BLANK,
-          DOT_NET,
-          ANDROID,
-          CPP,
-          CHE_7_PREVIEW,
-          CHE_7_PREVIEW_DEV,
-          ECLIPSE_CHE,
-          GO,
-          JAVA_MYSQL_THEIA_ON_KUBERNETES,
-          JAVA_THEIA_ON_KUBERNETES,
-          NODE,
-          PHP,
-          PYTHON,
-          RAILS);
-
-  private static final List<NewWorkspace.Stack> EXPECTED_DOCKER_QUICK_START_STACKS =
-      asList(
-          JAVA,
-          JAVA_MYSQL,
-          BLANK,
-          DOT_NET,
-          ANDROID,
-          CPP,
-          ECLIPSE_CHE,
-          GO,
-          NODE,
-          PHP,
-          PYTHON,
-          RAILS,
-          JAVA_THEIA_DOCKER);
-
-  private static List<NewWorkspace.Stack> EXPECTED_OPENSHIFT_SINGLE_MACHINE_STACKS =
-      asList(
-          JAVA,
-          BLANK,
-          DOT_NET,
-          ANDROID,
-          CAMEL_SPRINGBOOT,
-          CPP,
-          CENTOS_BLANK,
-          CENTOS_GO,
-          CENTOS_NODEJS,
-          CENTOS_WILDFLY_SWARM,
-          CEYLON_WITH_JAVA_JAVASCRIPT,
-          CHE_7_PREVIEW,
-          CHE_7_PREVIEW_DEV,
-          ECLIPSE_CHE,
-          ECLIPSE_VERTX,
-          GO,
-          JAVA_CENTOS,
-          KOTLIN,
-          NODE,
-          PHP,
-          PYTHON,
-          RAILS,
-          SPRING_BOOT);
-
-  private static List<NewWorkspace.Stack> EXPECTED_K8S_SINGLE_MACHINE_STACKS =
-      asList(
-          JAVA,
-          BLANK,
-          DOT_NET,
-          ANDROID,
-          CAMEL_SPRINGBOOT,
-          CPP,
-          CENTOS_BLANK,
-          CENTOS_GO,
-          CENTOS_NODEJS,
-          CENTOS_WILDFLY_SWARM,
-          CEYLON_WITH_JAVA_JAVASCRIPT,
-          CHE_7_PREVIEW,
-          CHE_7_PREVIEW_DEV,
-          ECLIPSE_CHE,
-          ECLIPSE_VERTX,
-          GO,
-          JAVA_CENTOS,
-          KOTLIN,
-          NODE,
-          PHP,
-          PYTHON,
-          RAILS,
-          SPRING_BOOT);
-
-  private static List<NewWorkspace.Stack> EXPECTED_DOCKER_SINGLE_MACHINE_STACKS =
-      asList(
-          JAVA,
-          BLANK,
-          DOT_NET,
-          ANDROID,
-          CAMEL_SPRINGBOOT,
-          CPP,
-          CENTOS_BLANK,
-          CENTOS_GO,
-          CENTOS_NODEJS,
-          CENTOS_WILDFLY_SWARM,
-          CEYLON_WITH_JAVA_JAVASCRIPT,
-          CHE_7_PREVIEW,
-          CHE_7_PREVIEW_DEV,
-          ECLIPSE_CHE,
-          ECLIPSE_VERTX,
-          GO,
-          JAVA_CENTOS,
-          KOTLIN,
-          NODE,
-          PHP,
-          PYTHON,
-          RAILS,
-          SPRING_BOOT);
-
-  private static final List<NewWorkspace.Stack> EXPECTED_OPENSHIFT_MULTI_MACHINE_STACKS =
-      asList(
-          JAVA_MYSQL,
-          JAVA_MYSQL_THEIA_ON_KUBERNETES,
-          JAVA_THEIA_ON_KUBERNETES,
-          JAVA_THEIA_OPENSHIFT,
-          JAVA_MYSQL_CENTOS,
-          JAVA_THEIA_DOCKER);
-
-  private static final List<NewWorkspace.Stack> EXPECTED_K8S_MULTI_MACHINE_STACKS =
-      asList(
-          JAVA_MYSQL,
-          JAVA_MYSQL_THEIA_ON_KUBERNETES,
-          JAVA_THEIA_ON_KUBERNETES,
-          JAVA_THEIA_OPENSHIFT,
-          JAVA_MYSQL_CENTOS,
-          JAVA_THEIA_DOCKER);
-
-  private static final List<NewWorkspace.Stack> EXPECTED_DOCKER_MULTI_MACHINE_STACKS =
-      asList(
-          JAVA_MYSQL,
-          JAVA_MYSQL_THEIA_ON_KUBERNETES,
-          JAVA_THEIA_ON_KUBERNETES,
-          JAVA_THEIA_OPENSHIFT,
-          JAVA_MYSQL_CENTOS,
-          JAVA_THEIA_DOCKER);
-
-  private static final List<NewWorkspace.Stack>
-      EXPECTED_OPENSHIFT_QUICK_START_STACKS_REVERSE_ORDER =
+  private static List<CodereadyNewWorkspace.CodereadyStacks>
+      EXPECTED_CODEREADY_SINGLE_MACHINE_STACKS =
           asList(
-              JAVA,
-              BLANK,
-              RAILS,
-              PYTHON,
-              PHP,
-              NODE,
-              JAVA_THEIA_OPENSHIFT,
-              JAVA_THEIA_ON_KUBERNETES,
-              JAVA_MYSQL_THEIA_ON_KUBERNETES,
-              GO,
-              ECLIPSE_CHE,
-              CHE_7_PREVIEW_DEV,
-              CHE_7_PREVIEW,
-              CPP,
-              ANDROID,
-              DOT_NET);
+              CodereadyStacks.JAVA_DEFAULT,
+              CodereadyStacks.JAVA_EAP,
+              CodereadyStacks.SPRING_BOOT,
+              CodereadyStacks.VERTX,
+              CodereadyStacks.WILD_FLY_SWARM,
+              CodereadyStacks.DOT_NET,
+              CodereadyStacks.CPP,
+              CodereadyStacks.GO,
+              CodereadyStacks.NODE,
+              CodereadyStacks.PHP,
+              CodereadyStacks.PYTHON);
 
-  private static final List<NewWorkspace.Stack> EXPECTED_K8S_QUICK_START_STACKS_REVERSE_ORDER =
+  private static final List<CodereadyNewWorkspace.CodereadyStacks>
+      EXPECTED_CODEREADY_QUICK_START_STACKS_REVERSE_ORDER =
+          asList(
+              CodereadyStacks.JAVA_EAP,
+              CodereadyStacks.JAVA_DEFAULT,
+              CodereadyStacks.VERTX,
+              CodereadyStacks.SPRING_BOOT,
+              CodereadyStacks.WILD_FLY_SWARM,
+              CodereadyStacks.PYTHON,
+              CodereadyStacks.PHP,
+              CodereadyStacks.NODE,
+              CodereadyStacks.GO,
+              CodereadyStacks.CPP,
+              CodereadyStacks.DOT_NET);
+
+  private static final List<CodereadyNewWorkspace.CodereadyStacks> EXPECTED_CODEREADY_JAVA_STACKS =
       asList(
-          JAVA,
-          BLANK,
-          RAILS,
-          PYTHON,
-          PHP,
-          NODE,
-          JAVA_THEIA_ON_KUBERNETES,
-          JAVA_MYSQL_THEIA_ON_KUBERNETES,
-          GO,
-          ECLIPSE_CHE,
-          CHE_7_PREVIEW_DEV,
-          CHE_7_PREVIEW,
-          CPP,
-          ANDROID,
-          DOT_NET);
+          CodereadyStacks.WILD_FLY_SWARM,
+          CodereadyStacks.SPRING_BOOT,
+          CodereadyStacks.JAVA_EAP,
+          CodereadyStacks.JAVA_DEFAULT);
 
-  private static final List<NewWorkspace.Stack> EXPECTED_DOCKER_QUICK_START_STACKS_REVERSE_ORDER =
-      asList(
-          JAVA,
-          JAVA_MYSQL,
-          BLANK,
-          JAVA_THEIA_DOCKER,
-          RAILS,
-          PYTHON,
-          PHP,
-          NODE,
-          GO,
-          ECLIPSE_CHE,
-          CPP,
-          ANDROID,
-          DOT_NET);
-
-  private static final List<NewWorkspace.Stack> EXPECTED_OPENSHIFT_JAVA_STACKS =
-      asList(JAVA, ANDROID, ECLIPSE_CHE, JAVA_THEIA_OPENSHIFT);
-
-  private static final List<NewWorkspace.Stack> EXPECTED_DOCKER_JAVA_STACKS =
-      asList(JAVA, JAVA_MYSQL, ECLIPSE_CHE, ANDROID);
-
-  private static final List<String> EXPECTED_OPENSHIFT_FILTERS_SUGGESTIONS =
-      asList(JAVA_SUGGESTION_TITLE, JDK_SUGGESTION_TITLE, JAVA_1_8_SUGGESTION_TITLE);
-
-  private static final List<String> EXPECTED_K8S_FILTERS_SUGGESTIONS =
-      asList(JAVA_SUGGESTION_TITLE, JDK_SUGGESTION_TITLE);
-
-  private static final List<String> EXPECTED_DOCKER_FILTERS_SUGGESTIONS =
-      asList(JAVA_SUGGESTION_TITLE, JDK_SUGGESTION_TITLE, JAVA_TOMCAT_MYSQL_SUGGESTION_TITLE);
+  private static final List<String> EXPECTED_CODEREADY_FILTERS_SUGGESTIONS =
+      asList(MAVEN_SUGGESTION_TITLE);
 
   private static final List<String> VALID_NAMES =
       asList("Wk-sp", "Wk-sp1", "9wk-sp", "5wk-sp0", "Wk19sp", "Wksp-01");
 
   @Inject private Dashboard dashboard;
   @Inject private Workspaces workspaces;
-  @Inject private NewWorkspace newWorkspace;
+  @Inject private CodereadyNewWorkspace newWorkspace;
   @Inject private SeleniumWebDriverHelper seleniumWebDriverHelper;
-  @Inject private SeleniumWebDriver seleniumWebDriver;
 
   @BeforeClass
   public void setup() {
@@ -368,47 +162,18 @@ public class NewWorkspacePageTest {
     checkValidNames();
   }
 
-  @Test(groups = {TestGroup.OPENSHIFT})
-  public void checkOpenshiftStackButtons() {
+  @Test
+  public void checkCodereadyStackButtons() {
     checkStackButtons(
-        EXPECTED_OPENSHIFT_QUICK_START_STACKS,
-        EXPECTED_OPENSHIFT_SINGLE_MACHINE_STACKS,
-        EXPECTED_OPENSHIFT_MULTI_MACHINE_STACKS,
-        EXPECTED_OPENSHIFT_QUICK_START_STACKS_REVERSE_ORDER);
+        EXPECTED_CODEREADY_QUICK_START_STACKS,
+        EXPECTED_CODEREADY_SINGLE_MACHINE_STACKS,
+        EXPECTED_CODEREADY_QUICK_START_STACKS_REVERSE_ORDER);
   }
 
-  @Test(groups = {TestGroup.K8S})
-  public void checkK8SStackButtons() {
-    checkStackButtons(
-        EXPECTED_K8S_QUICK_START_STACKS,
-        EXPECTED_K8S_SINGLE_MACHINE_STACKS,
-        EXPECTED_K8S_MULTI_MACHINE_STACKS,
-        EXPECTED_K8S_QUICK_START_STACKS_REVERSE_ORDER);
-  }
-
-  @Test(groups = TestGroup.DOCKER)
-  public void checkDockerStackButtons() {
-    checkStackButtons(
-        EXPECTED_DOCKER_QUICK_START_STACKS,
-        EXPECTED_DOCKER_SINGLE_MACHINE_STACKS,
-        EXPECTED_DOCKER_MULTI_MACHINE_STACKS,
-        EXPECTED_DOCKER_QUICK_START_STACKS_REVERSE_ORDER);
-  }
-
-  @Test(groups = {TestGroup.OPENSHIFT})
-  public void checkOpenshiftFiltersButton() {
+  @Test
+  public void checkCodereadyFiltersButton() {
     checkFiltersButton(
-        EXPECTED_OPENSHIFT_FILTERS_SUGGESTIONS, EXPECTED_OPENSHIFT_QUICK_START_STACKS);
-  }
-
-  @Test(groups = {TestGroup.K8S})
-  public void checkK8SFiltersButton() {
-    checkFiltersButton(EXPECTED_K8S_FILTERS_SUGGESTIONS, EXPECTED_K8S_QUICK_START_STACKS);
-  }
-
-  @Test(groups = TestGroup.DOCKER)
-  public void checkDockerFiltersButton() {
-    checkFiltersButton(EXPECTED_DOCKER_FILTERS_SUGGESTIONS, EXPECTED_DOCKER_QUICK_START_STACKS);
+        EXPECTED_CODEREADY_FILTERS_SUGGESTIONS, EXPECTED_CODEREADY_QUICK_START_STACKS);
   }
 
   @Test
@@ -440,14 +205,9 @@ public class NewWorkspacePageTest {
     newWorkspace.waitCreateStackDialogClosing();
   }
 
-  @Test(groups = TestGroup.OPENSHIFT)
-  public void checkOpenshiftSearchField() {
-    checkSearchField(EXPECTED_OPENSHIFT_JAVA_STACKS, EXPECTED_OPENSHIFT_QUICK_START_STACKS);
-  }
-
-  @Test(groups = TestGroup.DOCKER)
-  public void checkDockerSearchField() {
-    checkSearchField(EXPECTED_DOCKER_JAVA_STACKS, EXPECTED_DOCKER_QUICK_START_STACKS);
+  @Test
+  public void checkCodereadySearchField() {
+    checkSearchField(EXPECTED_CODEREADY_JAVA_STACKS, EXPECTED_CODEREADY_QUICK_START_STACKS);
   }
 
   @Test
@@ -503,46 +263,40 @@ public class NewWorkspacePageTest {
   }
 
   private void checkStackButtons(
-      List<NewWorkspace.Stack> expectedQuickStartStacks,
-      List<NewWorkspace.Stack> expectedSingleMachineStacks,
-      List<NewWorkspace.Stack> expectedMultiMachineStacks,
-      List<NewWorkspace.Stack> expectedQuickStartStacksReverseOrder) {
+      List<CodereadyNewWorkspace.CodereadyStacks> expectedQuickStartStacks,
+      List<CodereadyNewWorkspace.CodereadyStacks> expectedSingleMachineStacks,
+      List<CodereadyNewWorkspace.CodereadyStacks> expectedQuickStartStacksReverseOrder) {
 
     newWorkspace.waitPageLoad();
     newWorkspace.waitQuickStartButton();
-    newWorkspace.waitStacks(expectedQuickStartStacks);
-    newWorkspace.waitStacksCount(expectedQuickStartStacks.size());
+    newWorkspace.waitCodereadyStacks(expectedQuickStartStacks);
+    assertEquals(newWorkspace.getCodereadyStacksCount(), expectedQuickStartStacks.size());
 
     // single machine stacks
     newWorkspace.clickOnSingleMachineButton();
-    newWorkspace.waitStacks(expectedSingleMachineStacks);
-    newWorkspace.waitStacksCount(expectedSingleMachineStacks.size());
-
-    // multi-machine stacks
-    newWorkspace.clickOnMultiMachineButton();
-    newWorkspace.waitStacks(expectedMultiMachineStacks);
-    newWorkspace.waitStacksCount(expectedMultiMachineStacks.size());
+    newWorkspace.waitCodereadyStacks(expectedSingleMachineStacks);
+    assertEquals(newWorkspace.getCodereadyStacksCount(), expectedSingleMachineStacks.size());
 
     // check that only expected stacks are displayed and no duplicates are presented and also checks
     // "All" stacks
     newWorkspace.clickOnAllButton();
-    newWorkspace.waitStacks(expectedSingleMachineStacks);
-    newWorkspace.waitStacks(expectedMultiMachineStacks);
-    newWorkspace.waitStacksCount(
-        expectedSingleMachineStacks.size() + expectedMultiMachineStacks.size());
+    newWorkspace.waitCodereadyStacks(expectedSingleMachineStacks);
+    assertEquals(newWorkspace.getCodereadyStacksCount(), expectedSingleMachineStacks.size());
 
     // quick start stacks
     newWorkspace.clickOnQuickStartButton();
-    newWorkspace.waitStacksOrder(expectedQuickStartStacks);
-    newWorkspace.clickNameButton();
-    newWorkspace.waitStacksOrder(expectedQuickStartStacksReverseOrder);
+    newWorkspace.waitCodereadyStacksOrder(expectedQuickStartStacks);
 
     newWorkspace.clickNameButton();
-    newWorkspace.waitStacksOrder(expectedQuickStartStacks);
+    newWorkspace.waitCodereadyStacksOrder(expectedQuickStartStacksReverseOrder);
+
+    newWorkspace.clickNameButton();
+    newWorkspace.waitCodereadyStacksOrder(expectedQuickStartStacks);
   }
 
   private void checkFiltersButton(
-      List<String> expectedSuggestions, List<NewWorkspace.Stack> expectedQuickStartStacks) {
+      List<String> expectedSuggestions,
+      List<CodereadyNewWorkspace.CodereadyStacks> expectedQuickStartStacks) {
     newWorkspace.waitPageLoad();
 
     // close by "Escape" button
@@ -569,20 +323,20 @@ public class NewWorkspacePageTest {
 
     // check navigation by keyboard arrows between suggested tags
     seleniumWebDriverHelper.sendKeys(ARROW_DOWN.toString());
-    newWorkspace.waitSelectedFiltersSuggestion(JDK_SUGGESTION_TITLE);
+    newWorkspace.waitSelectedFiltersSuggestion(MAKE_SUGGESTION_TITLE);
 
     seleniumWebDriverHelper.sendKeys(ARROW_UP.toString());
-    newWorkspace.waitSelectedFiltersSuggestion(JAVA_SUGGESTION_TITLE);
+    newWorkspace.waitSelectedFiltersSuggestion(MAVEN_SUGGESTION_TITLE);
 
     // interaction with suggested tads by mouse clicking
-    newWorkspace.clickOnFiltersSuggestions(JAVA_SUGGESTION_TITLE);
-    newWorkspace.waitSelectedFiltersSuggestion(JAVA_SUGGESTION_TITLE);
+    newWorkspace.clickOnFiltersSuggestions(MAVEN_SUGGESTION_TITLE);
+    newWorkspace.waitSelectedFiltersSuggestion(MAVEN_SUGGESTION_TITLE);
 
-    newWorkspace.clickOnFiltersSuggestions(JDK_SUGGESTION_TITLE);
-    newWorkspace.waitSelectedFiltersSuggestion(JDK_SUGGESTION_TITLE);
+    newWorkspace.clickOnFiltersSuggestions(MAKE_SUGGESTION_TITLE);
+    newWorkspace.waitSelectedFiltersSuggestion(MAKE_SUGGESTION_TITLE);
 
-    newWorkspace.doubleClickOnFiltersSuggestion(JDK_SUGGESTION_TITLE);
-    newWorkspace.waitFiltersInputTags(asList(JDK_SUGGESTION_TITLE));
+    newWorkspace.doubleClickOnFiltersSuggestion(MAKE_SUGGESTION_TITLE);
+    newWorkspace.waitFiltersInputTags(asList(MAKE_SUGGESTION_TITLE));
 
     newWorkspace.deleteLastTagFromInputTagsField();
     newWorkspace.waitFiltersInputIsEmpty();
@@ -591,76 +345,73 @@ public class NewWorkspacePageTest {
     newWorkspace.typeToFiltersInput(LETTER_FOR_SEARCHING);
     newWorkspace.waitFiltersSuggestionsNames(expectedSuggestions);
 
-    newWorkspace.waitSelectedFiltersSuggestion(JAVA_SUGGESTION_TITLE);
-    newWorkspace.doubleClickOnFiltersSuggestion(JAVA_SUGGESTION_TITLE);
-    newWorkspace.waitFiltersInputTags(asList(JAVA_SUGGESTION_TITLE));
-    newWorkspace.deleteTagByRemoveButton(JAVA_SUGGESTION_TITLE);
+    newWorkspace.waitSelectedFiltersSuggestion(MAVEN_SUGGESTION_TITLE);
+    newWorkspace.doubleClickOnFiltersSuggestion(MAVEN_SUGGESTION_TITLE);
+    newWorkspace.waitFiltersInputTags(asList(MAVEN_SUGGESTION_TITLE));
+    newWorkspace.deleteTagByRemoveButton(MAVEN_SUGGESTION_TITLE);
     newWorkspace.waitFiltersInputIsEmpty();
 
     newWorkspace.typeToFiltersInput(LETTER_FOR_SEARCHING);
     newWorkspace.waitFiltersSuggestionsNames(expectedSuggestions);
-    newWorkspace.waitSelectedFiltersSuggestion(JAVA_SUGGESTION_TITLE);
-    newWorkspace.chooseFilterSuggestionByPlusButton(JDK_SUGGESTION_TITLE);
-    newWorkspace.waitFiltersInputTags(asList(JDK_SUGGESTION_TITLE));
-    newWorkspace.clickOnInputFieldTag(JDK_SUGGESTION_TITLE);
+    newWorkspace.waitSelectedFiltersSuggestion(MAVEN_SUGGESTION_TITLE);
+    newWorkspace.chooseFilterSuggestionByPlusButton(MAKE_SUGGESTION_TITLE);
+    newWorkspace.waitFiltersInputTags(asList(MAKE_SUGGESTION_TITLE));
+    newWorkspace.clickOnInputFieldTag(MAKE_SUGGESTION_TITLE);
     seleniumWebDriverHelper.sendKeys(Keys.DELETE.toString());
     newWorkspace.waitFiltersInputIsEmpty();
 
     newWorkspace.typeToFiltersInput(LETTER_FOR_SEARCHING);
     newWorkspace.waitFiltersSuggestionsNames(expectedSuggestions);
-    newWorkspace.waitSelectedFiltersSuggestion(JAVA_SUGGESTION_TITLE);
-    newWorkspace.chooseFilterSuggestionByPlusButton(JAVA_SUGGESTION_TITLE);
-    newWorkspace.waitFiltersInputTags(asList(JAVA_SUGGESTION_TITLE));
-    newWorkspace.clickOnInputFieldTag(JAVA_SUGGESTION_TITLE);
+    newWorkspace.waitSelectedFiltersSuggestion(MAVEN_SUGGESTION_TITLE);
+    newWorkspace.chooseFilterSuggestionByPlusButton(MAVEN_SUGGESTION_TITLE);
+    newWorkspace.waitFiltersInputTags(asList(MAVEN_SUGGESTION_TITLE));
+    newWorkspace.clickOnInputFieldTag(MAVEN_SUGGESTION_TITLE);
     seleniumWebDriverHelper.sendKeys(Keys.DELETE.toString());
     newWorkspace.waitFiltersInputIsEmpty();
     newWorkspace.deleteLastTagFromInputTagsField();
 
     // navigation by "Tab" button
     newWorkspace.typeToFiltersInput(LETTER_FOR_SEARCHING);
-    newWorkspace.waitSelectedFiltersSuggestion(JAVA_SUGGESTION_TITLE);
+    newWorkspace.waitSelectedFiltersSuggestion(MAVEN_SUGGESTION_TITLE);
     seleniumWebDriverHelper.sendKeys(Keys.TAB.toString());
-    newWorkspace.waitSelectedFiltersSuggestion(JDK_SUGGESTION_TITLE);
+    newWorkspace.waitSelectedFiltersSuggestion(MAKE_SUGGESTION_TITLE);
     seleniumWebDriverHelper.sendKeys(Keys.ENTER.toString());
-    newWorkspace.waitFiltersInputTags(asList(JDK_SUGGESTION_TITLE));
+    newWorkspace.waitFiltersInputTags(asList(MAKE_SUGGESTION_TITLE));
     newWorkspace.clickOnTitlePlaceCoordinate();
     newWorkspace.waitFiltersFormClosed();
 
-    newWorkspace.getAvailableStacks();
-    newWorkspace.waitStacks(EXPECTED_JDK_STACKS);
-
     newWorkspace.clickOnFiltersButton();
     newWorkspace.waitFiltersFormOpened();
-    newWorkspace.waitFiltersInputTags(asList(JDK_SUGGESTION_TITLE));
+    newWorkspace.waitFiltersInputTags(asList(MAKE_SUGGESTION_TITLE));
     newWorkspace.deleteLastTagFromInputTagsField();
     newWorkspace.waitFiltersInputIsEmpty();
     newWorkspace.clickOnTitlePlaceCoordinate();
     newWorkspace.waitFiltersFormClosed();
-    newWorkspace.waitStacks(expectedQuickStartStacks);
+    newWorkspace.waitCodereadyStacks(expectedQuickStartStacks);
   }
 
   private void checkSearchField(
-      List<NewWorkspace.Stack> expectedJavaStacks,
-      List<NewWorkspace.Stack> expectedQuickStartStacks) {
+      List<CodereadyNewWorkspace.CodereadyStacks> expectedJavaStacks,
+      List<CodereadyNewWorkspace.CodereadyStacks> expectedQuickStartStacks) {
     newWorkspace.waitPageLoad();
 
     newWorkspace.typeToSearchInput("Java");
-    newWorkspace.waitStacks(expectedJavaStacks);
+    newWorkspace.waitCodereadyStacks(expectedJavaStacks);
 
     newWorkspace.typeToSearchInput("");
-    newWorkspace.waitStacks(expectedQuickStartStacks);
+    newWorkspace.waitCodereadyStacks(expectedQuickStartStacks);
 
     newWorkspace.typeToSearchInput("java");
-    newWorkspace.waitStacks(expectedJavaStacks);
+    newWorkspace.waitCodereadyStacks(expectedJavaStacks);
 
     newWorkspace.typeToSearchInput("");
-    newWorkspace.waitStacks(expectedQuickStartStacks);
+    newWorkspace.waitCodereadyStacks(expectedQuickStartStacks);
 
     newWorkspace.typeToSearchInput("JAVA");
-    newWorkspace.waitStacks(expectedJavaStacks);
+    newWorkspace.waitCodereadyStacks(expectedJavaStacks);
 
     newWorkspace.typeToSearchInput("");
-    newWorkspace.waitStacks(expectedQuickStartStacks);
+    newWorkspace.waitCodereadyStacks(expectedQuickStartStacks);
   }
 
   private void checkNotValidNames() {
