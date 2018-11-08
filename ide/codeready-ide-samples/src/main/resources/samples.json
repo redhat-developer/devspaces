@@ -460,5 +460,26 @@
     "tags": [
       "go"
     ]
+  },
+  {
+    "name": "blank-project",
+    "displayName": "blank-project",
+    "path": "/blank-project",
+    "description": "A blank project example.",
+    "projectType": "blank",
+    "mixins": [],
+    "attributes": {
+    },
+    "modules": [],
+    "problems": [],
+    "source": {
+      "type": "git",
+      "location": "https://github.com/che-samples/blank",
+      "parameters": {}
+    },
+    "commands": [],
+    "links": [],
+    "category": "Samples",
+    "tags": []
   }
 ]
