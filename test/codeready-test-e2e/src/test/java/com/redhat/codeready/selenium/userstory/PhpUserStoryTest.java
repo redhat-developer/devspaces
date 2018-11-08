@@ -197,32 +197,27 @@ public class PhpUserStoryTest {
     editor.closeAllTabs();
     editor.waitTabIsNotPresent(LIB_FILE);
 
-    // when (debug script)
+    // run script debugging
     projectExplorer.openItemByPath(PATH_TO_INDEX_PHP);
     editor.waitTabIsPresent(INDEX_FILE);
     editor.waitTabSelection(0, INDEX_FILE);
     projectExplorer.invokeCommandWithContextMenu(
         DEBUG_GOAL, DEBUG_PROJECT_NAME, DEBUG_PHP_SCRIPT_COMMAND_NAME);
 
+    // check starting debug state
     debugPanel.openDebugPanel();
-
-    // then
     debugPanel.waitDebugHighlightedText("<?php include 'lib.php';?>");
     debugPanel.waitTextInVariablesPanel("$_GET=array [0]");
 
-    // when
+    // check stopping on breakpoint
     debugPanel.clickOnButton(DebugPanel.DebuggerActionButtons.RESUME_BTN_ID);
-
-    // then
     editor.waitTabFileWithSavedStatus(LIB_FILE);
     editor.waitActiveBreakpoint(14);
     debugPanel.waitDebugHighlightedText("return \"Hello, $name\"");
     debugPanel.waitTextInVariablesPanel("$name=\"man\"");
 
-    // when
+    // check "Step Out" button
     debugPanel.clickOnButton(DebugPanel.DebuggerActionButtons.STEP_OUT);
-
-    // then
     editor.waitTabFileWithSavedStatus(INDEX_FILE);
     debugPanel.waitDebugHighlightedText("echo sayHello(\"man\");");
     debugPanel.waitTextInVariablesPanel("$_GET=array [0]");
