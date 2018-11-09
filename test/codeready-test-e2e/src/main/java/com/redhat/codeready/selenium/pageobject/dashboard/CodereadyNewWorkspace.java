@@ -36,7 +36,6 @@ import org.openqa.selenium.By;
 public class CodereadyNewWorkspace extends NewWorkspace {
 
   private SeleniumWebDriverHelper seleniumWebDriverHelper;
-  private WebDriverWaitFactory webDriverWaitFactory;
 
   @Inject
   public CodereadyNewWorkspace(
@@ -52,7 +51,6 @@ public class CodereadyNewWorkspace extends NewWorkspace {
         testWebElementRenderChecker,
         addOrImportForm);
     this.seleniumWebDriverHelper = seleniumWebDriverHelper;
-    this.webDriverWaitFactory = webDriverWaitFactory;
   }
 
   public enum CodereadyStacks {

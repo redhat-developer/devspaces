@@ -40,7 +40,7 @@ import org.testng.annotations.Test;
 public class AddOrImportProjectFormTest {
 
   private static final String NAME_WITH_MAX_AVAILABLE_LENGTH = generate("name", 124);
-  private static final String WORKSPACE_NAME = "test-blank-workspace";
+  private static final String WORKSPACE_NAME = "test-workspace";
   private static final String TEST_JAVA_WORKSPACE_NAME = "test-java-workspace";
   private static final String TEST_JAVA_WORKSPACE_NAME_EDIT = generate("test-java-workspace", 4);
   private static final String NAME_WITH_SPECIAL_CHARACTERS = "@#$%^&*";
