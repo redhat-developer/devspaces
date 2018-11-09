@@ -39,9 +39,9 @@ public class ResolveDependencyAfterRecreateProjectTest {
   private static final String PROJECT_NAME1 = generate("project1", 4);
   private static final String PROJECT_NAME2 = generate("project2", 4);
   private static final String PATH_TO_EXPAND =
-      "/src/main/java/org.jboss.as.quickstarts.kitchensink";
+      "/src/main/java/org.jboss.as.quickstarts.kitchensink/controller";
   private static final String PATH_TO_FILE =
-      "/src/main/java/org/jboss/as.quickstarts/kitchensink/controller/MemberRegistration.java";
+      "/src/main/java/org/jboss/as/quickstarts/kitchensink/controller/MemberRegistration.java";
 
   @Inject private TestWorkspace workspace;
   @Inject private Ide ide;
