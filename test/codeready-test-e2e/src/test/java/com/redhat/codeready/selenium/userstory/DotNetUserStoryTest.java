@@ -41,7 +41,7 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 /** @author Skoryk Serhii */
-public class NETUserStoryTest {
+public class DotNetUserStoryTest {
 
   private static final String WORKSPACE_NAME = generate("workspace", 4);
   private static final String PROJECT_NAME = "dotnet-web-simple";
