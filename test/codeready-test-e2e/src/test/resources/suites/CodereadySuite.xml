@@ -19,6 +19,7 @@
 
     <test name="all">
         <classes>
+            <class name="com.redhat.codeready.selenium.userstory.JavaEapUserStoryTest"/>
             <class name="com.redhat.codeready.selenium.userstory.JavaUserStoryTest"/>
             <class name="com.redhat.codeready.selenium.userstory.NodeJsUserStoryTest"/>
             <class name="com.redhat.codeready.selenium.userstory.PythonUserStoryTest"/>
