@@ -6,6 +6,7 @@ Differences as compared to upstream:
 
 * Customized Dashboard (pics, icons, titles, loaders, links)
 * Samples and Stacks modules
+* Bayesian Language Server and agent
 * Product Info plugin (IDE customizations: pics, titles links)
 * Custom Dockerfile based on official RH OpenJDK image from RHCC
 
