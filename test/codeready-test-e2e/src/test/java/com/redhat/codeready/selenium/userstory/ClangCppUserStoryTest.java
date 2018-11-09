@@ -36,7 +36,7 @@ import org.testng.annotations.Test;
  * @author Skoryk Serhii
  * @author Aleksandr Shmaraiev
  */
-public class ClangUserStoryTest {
+public class ClangCppUserStoryTest {
   private static final String WORKSPACE_NAME = generate("workspace", 4);
   private static final String CONSOLE_CPP_PROJECT = "console-cpp-simple";
   private static final String C_SIMPLE_CONSOLE_PROJECT = "c-simple-console";
@@ -91,7 +91,7 @@ public class ClangUserStoryTest {
   }
 
   @Test(priority = 1)
-  public void checkCSimpleConsoleProjectCommands() {
+  public void checkClangSimpleConsoleProjectCommands() {
     consoles.executeCommandFromProjectExplorer(
         C_SIMPLE_CONSOLE_PROJECT,
         RUN_GOAL,
