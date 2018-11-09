@@ -105,7 +105,6 @@ public class JavaUserStoryTest {
   @Inject private CodereadyFindUsageWidget findUsages;
   @Inject private TestProjectServiceClient projectServiceClient;
 
-  private String appUrl;
   private String tabNameWithImpl = "NativeMethodAccessorImpl";
   private String pomFileText;
   private String pomFileChangedText;
@@ -154,7 +153,7 @@ public class JavaUserStoryTest {
     editor.waitTabSelection(0, fileForDebuggingTabTitle);
     editor.waitActive();
     editor.setBreakPointAndWaitActiveState(30);
-    doGetRequestToApp();
+    final String appUrl = doGetRequestToApp();
 
     // check debug features()
     debugPanel.waitDebugHighlightedText("return members;");
@@ -163,7 +162,7 @@ public class JavaUserStoryTest {
     checkStepOver();
     checkStepOut();
     checkFramesAndVariablesWithResume();
-    checkEndDebugSession();
+    checkEndDebugSession(appUrl);
   }
 
   /**
@@ -351,8 +350,8 @@ public class JavaUserStoryTest {
 
   // do request to test application if debugger for the app. has been set properly,
   // expected http response from the app. will be 504, its ok
-  private void doGetRequestToApp() {
-    appUrl = consoles.getPreviewUrl() + "/index.jsf";
+  private String doGetRequestToApp() {
+    final String appUrl = consoles.getPreviewUrl() + "/index.jsf";
     int responseCode = -1;
 
     try {
@@ -361,7 +360,7 @@ public class JavaUserStoryTest {
       // The "504" response code it is expected
       if (504 == responseCode) {
         LOG.info("Debugger has been set");
-        return;
+        return appUrl;
       }
 
       final String errorMessage =
@@ -369,7 +368,11 @@ public class JavaUserStoryTest {
               "There was a problem with connecting to kitchensink-application for debug on URL '%s'",
               appUrl);
       LOG.error(errorMessage, e);
+
+      return appUrl;
     }
+
+    return appUrl;
   }
 
   private void checkEvaluateExpression() {
@@ -415,7 +418,7 @@ public class JavaUserStoryTest {
 
   // after stopping debug session the test application should be available again.
   // we check this by UI parts and http request, in this case expected request code should be 200
-  private void checkEndDebugSession() throws Exception {
+  private void checkEndDebugSession(String appUrl) throws Exception {
     debugPanel.clickOnButton(BTN_DISCONNECT);
     debugPanel.waitFramesPanelIsEmpty();
     debugPanel.waitVariablesPanelIsEmpty();
