@@ -1,14 +1,14 @@
 /*
- * Copyright (c) 2012-2018 Red Hat, Inc.
- * This program and the accompanying materials are made
- * available under the terms of the Eclipse Public License 2.0
- * which is available at https://www.eclipse.org/legal/epl-2.0/
- *
- * SPDX-License-Identifier: EPL-2.0
- *
- * Contributors:
- *   Red Hat, Inc. - initial API and implementation
- */
+* Copyright (c) 2018 Red Hat, Inc.
+
+* All rights reserved. This program and the accompanying materials
+* are made available under the terms of the Eclipse Public License v1.0
+* which accompanies this distribution, and is available at
+* http://www.eclipse.org/legal/epl-v10.html
+*
+* Contributors:
+*   Red Hat, Inc. - initial API and implementation
+*/
 package com.redhat.codeready.selenium.miscellaneous;
 
 import static org.eclipse.che.commons.lang.NameGenerator.generate;
@@ -16,7 +16,6 @@ import static org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants.W
 import static org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants.Workspace.WORKSPACE;
 import static org.eclipse.che.selenium.core.constant.TestProjectExplorerContextMenuConstants.ContextMenuFirstLevelItems.DELETE;
 import static org.eclipse.che.selenium.pageobject.CodenvyEditor.MarkerLocator.ERROR;
-import static org.eclipse.che.selenium.pageobject.Wizard.SamplesName.WEB_JAVA_SPRING;
 import static org.eclipse.che.selenium.pageobject.Wizard.TypeProject.MAVEN;
 
 import com.google.inject.Inject;
@@ -39,9 +38,10 @@ import org.testng.annotations.Test;
 public class ResolveDependencyAfterRecreateProjectTest {
   private static final String PROJECT_NAME1 = generate("project1", 4);
   private static final String PROJECT_NAME2 = generate("project2", 4);
-  private static final String PATH_TO_EXPAND = "/src/main/java/org.eclipse.che.examples";
+  private static final String PATH_TO_EXPAND =
+      "/src/main/java/org.jboss.as.quickstarts.kitchensink";
   private static final String PATH_TO_FILE =
-      "/src/main/java/org/eclipse/che/examples/GreetingController.java";
+      "/src/main/java/org/jboss/as.quickstarts/kitchensink/controller/MemberRegistration.java";
 
   @Inject private TestWorkspace workspace;
   @Inject private Ide ide;
@@ -96,7 +96,7 @@ public class ResolveDependencyAfterRecreateProjectTest {
   private void createProjectFromUI(String nameOfTheProject) {
     menu.runCommand(WORKSPACE, CREATE_PROJECT);
     wizard.selectTypeProject(MAVEN);
-    wizard.selectSample(WEB_JAVA_SPRING);
+    wizard.selectSample("kitchensink-example");
     wizard.typeProjectNameOnWizard(nameOfTheProject);
     wizard.clickCreateButton();
     wizard.waitCloseProjectConfigForm();
