@@ -46,7 +46,6 @@ public class NETUserStoryTest {
 
   private static final String WORKSPACE_NAME = generate("workspace", 4);
   private static final String PROJECT_NAME = "dotnet-web-simple";
-  private static final String PATH_TO_DOT_NET_FILE = PROJECT_NAME + "/Hello.cs";
 
   private String LANGUAGE_SERVER_INIT_MESSAGE =
       "Initialized language server 'org.eclipse.che.plugin.csharp.languageserver";
@@ -117,15 +116,14 @@ public class NETUserStoryTest {
     initLanguageServer();
 
     checkCodeValidation();
-    checkAutocompletion();
-    checkHoveringFeature();
-    checkCodeCommentFeature();
+    checkAutocompleteFeature();
   }
 
   public void checkHoveringFeature() {
-    String expectedTextInHoverPopUp = "Represent a configured web host.";
+    String expectedTextInHoverPopUp =
+        "Microsoft.AspNetCore.Hosting.IWebHost Represents a configured web host.";
 
-    editor.moveCursorToText("IWebHost");
+    editor.moveCursorToText(" IWebHost ");
     editor.waitTextInHoverPopup(expectedTextInHoverPopUp);
   }
 
@@ -145,12 +143,14 @@ public class NETUserStoryTest {
     editor.typeTextIntoEditor(Keys.BACK_SPACE.toString());
     editor.waitMarkerInPosition(ERROR, 24);
 
-    editor.goToPosition(24, 12);
+    editor.goToPosition(24, 11);
     editor.typeTextIntoEditor(";");
     editor.waitMarkerInvisibility(ERROR, 24);
   }
 
-  private void checkAutocompletion() {
+  private void checkAutocompleteFeature() {
+    editor.deleteCurrentLineAndInsertNew();
+
     editor.goToCursorPositionVisible(23, 49);
     editor.typeTextIntoEditor(".");
     editor.launchAutocomplete();
