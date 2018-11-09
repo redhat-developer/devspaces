@@ -31,7 +31,6 @@ import org.eclipse.che.selenium.pageobject.AssistantFindPanel;
 import org.eclipse.che.selenium.pageobject.CodenvyEditor;
 import org.eclipse.che.selenium.pageobject.Consoles;
 import org.eclipse.che.selenium.pageobject.Ide;
-import org.eclipse.che.selenium.pageobject.Menu;
 import org.eclipse.che.selenium.pageobject.ProjectExplorer;
 import org.eclipse.che.selenium.pageobject.dashboard.CreateWorkspaceHelper;
 import org.eclipse.che.selenium.pageobject.dashboard.Dashboard;
@@ -56,7 +55,6 @@ public class NETUserStoryTest {
   @Inject private Dashboard dashboard;
   @Inject private DefaultTestUser defaultTestUser;
   @Inject private ProjectExplorer projectExplorer;
-  @Inject private Menu menu;
   @Inject private CodenvyEditor editor;
   @Inject private CreateWorkspaceHelper createWorkspaceHelper;
   @Inject private AssistantFindPanel assistantFindPanel;
@@ -137,7 +135,6 @@ public class NETUserStoryTest {
   }
 
   public void checkCodeValidation() {
-    // TODO check code validation
     editor.waitAllMarkersInvisibility(ERROR);
     editor.goToPosition(24, 12);
     editor.typeTextIntoEditor(Keys.BACK_SPACE.toString());
@@ -165,7 +162,6 @@ public class NETUserStoryTest {
 
     projectExplorer.waitItem(PROJECT_NAME + "/obj");
     projectExplorer.waitItem(PROJECT_NAME + "/bin");
-
     consoles.selectProcessByTabName("dev-machine");
     consoles.waitExpectedTextIntoConsole(LANGUAGE_SERVER_INIT_MESSAGE);
 
