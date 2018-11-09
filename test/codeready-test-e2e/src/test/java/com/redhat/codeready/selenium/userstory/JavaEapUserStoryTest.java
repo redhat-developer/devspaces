@@ -38,7 +38,6 @@ import com.redhat.codeready.selenium.pageobject.CodereadyEditor;
 import com.redhat.codeready.selenium.pageobject.dashboard.CodereadyFindUsageWidget;
 import com.redhat.codeready.selenium.pageobject.dashboard.CodereadyNewWorkspace;
 import java.io.IOException;
-import java.net.HttpURLConnection;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.Charset;
@@ -47,12 +46,12 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import javax.ws.rs.HttpMethod;
 import org.eclipse.che.api.core.rest.HttpJsonRequestFactory;
 import org.eclipse.che.selenium.core.client.TestProjectServiceClient;
 import org.eclipse.che.selenium.core.client.TestWorkspaceServiceClient;
 import org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants;
 import org.eclipse.che.selenium.core.user.DefaultTestUser;
+import org.eclipse.che.selenium.core.utils.HttpUtil;
 import org.eclipse.che.selenium.core.webdriver.SeleniumWebDriverHelper;
 import org.eclipse.che.selenium.core.workspace.TestWorkspace;
 import org.eclipse.che.selenium.core.workspace.TestWorkspaceProvider;
@@ -78,7 +77,7 @@ import org.testng.annotations.Test;
 /** @author Musienko Maxim */
 public class JavaEapUserStoryTest {
   private static final Logger LOG = LoggerFactory.getLogger(JavaEapUserStoryTest.class);
-  private final String WORKSPACE = generate("JavaUserStory", 4);
+  private final String WORKSPACE = generate("JavaEapUserStory", 4);
   private final String PROJECT = "kitchensink-example";
   private final String PATH_TO_MAIN_PACKAGE =
       PROJECT + "/src/main/java/org/jboss/as/quickstarts/kitchensink";
@@ -116,7 +115,6 @@ public class JavaEapUserStoryTest {
 
   @BeforeClass
   public void setUp() throws URISyntaxException, IOException {
-
     dashboard.open();
 
     pomFileText =
@@ -135,12 +133,29 @@ public class JavaEapUserStoryTest {
     testWorkspace = createWsFromJavaEAPStackWithTestProject(PROJECT);
   }
 
+  /**
+   * Checks next debugger features:
+   * <li>Debugged text highlighting
+   * <li>Step into
+   * <li>Step over
+   * <li>Step out
+   * <li>Resume
+   * <li>Ending of debug session
+   */
   @Test(priority = 2)
   public void checkMainDebuggerFeatures() throws Exception {
+    final String fileForDebuggingTabTitle = "MemberListProducer";
+
+    // prepare
     setUpDebugMode();
     projectExplorer.openItemByPath(PATH_TO_MAIN_PACKAGE + "/data/MemberListProducer.java");
+    editor.waitTabIsPresent(fileForDebuggingTabTitle);
+    editor.waitTabSelection(0, fileForDebuggingTabTitle);
+    editor.waitActive();
     editor.setBreakPointAndWaitActiveState(30);
     doGetRequestToApp();
+
+    // check debug features()
     debugPanel.waitDebugHighlightedText("return members;");
     checkEvaluateExpression();
     checkStepInto();
@@ -150,6 +165,16 @@ public class JavaEapUserStoryTest {
     checkEndDebugSession();
   }
 
+  /**
+   * Checks next code assistant features:
+   * <li>Go to declaration
+   * <li>Find usages
+   * <li>Find definition
+   * <li>Quick documentation
+   * <li>Code validation
+   * <li>Quick fix
+   * <li>Autocompletion
+   */
   @Test(priority = 3)
   public void checkCodeAssistantFeatures() throws Exception {
     String expectedTextOfInjectClass =
@@ -327,24 +352,23 @@ public class JavaEapUserStoryTest {
   // expected http response from the app. will be 504, its ok
   private void doGetRequestToApp() {
     appUrl = consoles.getPreviewUrl() + "/index.jsf";
-    new Thread(
-            () -> {
-              try {
-                requestFactory.fromUrl(appUrl).useGetMethod().request();
-              } catch (Exception e) {
-                // if we get 504 response code it is expected
-                if (e.getMessage().contains("response code: 504")) {
-                  LOG.info("Debugger has been set");
-                } else {
-                  LOG.error(
-                      String.format(
-                          "There was a problem with connecting to kitchensink-application for debug on URL '%s'",
-                          appUrl),
-                      e);
-                }
-              }
-            })
-        .start();
+    int responseCode = -1;
+
+    try {
+      responseCode = HttpUtil.getUrlResponseCode(appUrl);
+    } catch (Exception e) {
+      // The "504" response code it is expected
+      if (504 == responseCode) {
+        LOG.info("Debugger has been set");
+        return;
+      }
+
+      final String errorMessage =
+          String.format(
+              "There was a problem with connecting to kitchensink-application for debug on URL '%s'",
+              appUrl);
+      LOG.error(errorMessage, e);
+    }
   }
 
   private void checkEvaluateExpression() {
@@ -394,9 +418,9 @@ public class JavaEapUserStoryTest {
     debugPanel.clickOnButton(BTN_DISCONNECT);
     debugPanel.waitFramesPanelIsEmpty();
     debugPanel.waitVariablesPanelIsEmpty();
-    HttpURLConnection httpURLConnection = (HttpURLConnection) new URL(appUrl).openConnection();
-    httpURLConnection.setRequestMethod(HttpMethod.GET);
-    assertEquals(httpURLConnection.getResponseCode(), 200);
+
+    final int responseCode = HttpUtil.getUrlResponseCode(appUrl);
+    assertEquals(responseCode, 200);
   }
 
   private void addTestFileIntoProjectByApi() throws Exception {
