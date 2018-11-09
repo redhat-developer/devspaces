@@ -373,7 +373,6 @@ public class CreateFactoryTest {
     newWorkspace.waitToolbar();
     loader.waitOnClosed();
 
-    // we are selecting 'Java' stack from the 'All Stack' tab for compatibility with OSIO
     newWorkspace.clickOnAllStacksTab();
     newWorkspace.selectStack(JAVA);
     newWorkspace.typeWorkspaceName(workspaceName);
@@ -399,7 +398,6 @@ public class CreateFactoryTest {
     newWorkspace.waitToolbar();
     loader.waitOnClosed();
 
-    // we are selecting 'Java' stack from the 'All Stack' tab for compatibility with OSIO
     newWorkspace.clickOnAllStacksTab();
     newWorkspace.selectStack(JAVA);
     newWorkspace.typeWorkspaceName(workspaceName);

@@ -84,17 +84,16 @@ public class CreateAndDeleteProjectsTest {
     workspaces.clickOnAddWorkspaceBtn();
     newWorkspace.waitToolbar();
 
-    // we are selecting 'Java' stack from the 'All Stack' tab for compatibility with OSIO
     newWorkspace.clickOnAllStacksTab();
     newWorkspace.selectStack(JAVA);
     newWorkspace.typeWorkspaceName(WORKSPACE);
 
-    // create 'web-java-spring' and 'console-java-simple' projects
+    // create 'kitchensink-example' project
     projectSourcePage.clickOnAddOrImportProjectButton();
     projectSourcePage.selectSample(KITCHENSINK_EXAMPLE);
     projectSourcePage.clickOnAddProjectButton();
 
-    // create 'web-java-spring-1' project
+    // create 'kitchensink-example-1' project
     projectSourcePage.clickOnAddOrImportProjectButton();
     projectSourcePage.selectSample(KITCHENSINK_EXAMPLE);
     projectSourcePage.clickOnAddProjectButton();

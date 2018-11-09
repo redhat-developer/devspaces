@@ -12,13 +12,13 @@
 package com.redhat.codeready.selenium.dashboard.workspaces.details;
 
 import static java.util.Arrays.asList;
+import static org.eclipse.che.commons.lang.NameGenerator.generate;
 import static org.eclipse.che.selenium.pageobject.dashboard.NewWorkspace.Stack.DOT_NET;
 import static org.eclipse.che.selenium.pageobject.dashboard.NewWorkspace.Stack.JAVA;
 import static org.openqa.selenium.Keys.ESCAPE;
 
 import com.google.inject.Inject;
 import java.util.List;
-import org.eclipse.che.commons.lang.NameGenerator;
 import org.eclipse.che.selenium.core.webdriver.SeleniumWebDriverHelper;
 import org.eclipse.che.selenium.pageobject.dashboard.AddOrImportForm;
 import org.eclipse.che.selenium.pageobject.dashboard.Dashboard;
@@ -28,13 +28,12 @@ import org.eclipse.che.selenium.pageobject.dashboard.workspaces.Workspaces;
 import org.testng.annotations.Test;
 
 public class WorkspaceDetailsOverviewTest {
-  private static final String WORKSPACE_NAME = NameGenerator.generate("test-workspace", 4);
-  private static final String CHANGED_WORKSPACE_NAME = NameGenerator.generate(WORKSPACE_NAME, 4);
-  private static final String MACHINE_NAME = "dev-machine";
+  private static final String WORKSPACE_NAME = generate("test-workspace", 4);
+  private static final String CHANGED_WORKSPACE_NAME = generate(WORKSPACE_NAME, 4);
   private static final String SAMPLE_NAME = "kitchensink-example";
   private static final String TOO_SHORT_NAME = "wk";
-  private static final String MAX_LONG_NAME = NameGenerator.generate("wksp-", 95);
-  private static final String TOO_LONG_NAME = NameGenerator.generate(MAX_LONG_NAME, 1);
+  private static final String MAX_LONG_NAME = generate("wksp-", 95);
+  private static final String TOO_LONG_NAME = generate(MAX_LONG_NAME, 1);
   private static final String LONG_NAME_ERROR_MESSAGE =
       "The name has to be less than 101 characters long.";
   private static final String MIN_SHORT_NAME = "wks";

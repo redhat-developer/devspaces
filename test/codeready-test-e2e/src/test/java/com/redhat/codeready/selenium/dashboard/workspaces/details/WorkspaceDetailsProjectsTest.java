@@ -11,6 +11,7 @@
  */
 package com.redhat.codeready.selenium.dashboard.workspaces.details;
 
+import static org.eclipse.che.commons.lang.NameGenerator.generate;
 import static org.eclipse.che.selenium.core.project.ProjectTemplates.MAVEN_SPRING;
 import static org.eclipse.che.selenium.pageobject.dashboard.workspaces.WorkspaceDetails.WorkspaceDetailsTab.PROJECTS;
 import static org.eclipse.che.selenium.pageobject.dashboard.workspaces.WorkspaceProjects.BottomButton.APPLY_BUTTON;
@@ -22,7 +23,6 @@ import static org.eclipse.che.selenium.pageobject.dashboard.workspaces.Workspace
 import com.google.inject.Inject;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import org.eclipse.che.commons.lang.NameGenerator;
 import org.eclipse.che.selenium.core.client.TestProjectServiceClient;
 import org.eclipse.che.selenium.core.client.TestWorkspaceServiceClient;
 import org.eclipse.che.selenium.core.user.DefaultTestUser;
@@ -38,10 +38,8 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 public class WorkspaceDetailsProjectsTest {
-  private static final String PROJECT_NAME = NameGenerator.generate("wsDetails", 4);
-  private static final String PROJECT_FOR_SEARCHING_NAME = NameGenerator.generate("searchWs", 4);
-  private static final String SPRING_SAMPLE_NAME = "web-java-spring";
-  private static final String CONSOLE_SAMPLE_NAME = "console-java-simple";
+  private static final String PROJECT_NAME = generate("wsDetails", 4);
+  private static final String PROJECT_FOR_SEARCHING_NAME = generate("searchWs", 4);
   private static final String EXPECTED_SUCCESS_NOTIFICATION = "Success\n" + "Workspace updated.";
   private static final String CHECKING_CHECKBOXES_PROJECT_NAME = "checkboxesProject";
   private static final String CHECKING_CHECKBOXES_NEWEST_PROJECT_NAME = "newestProject";
@@ -94,9 +92,9 @@ public class WorkspaceDetailsProjectsTest {
 
   @Test
   public void mainElementsShouldBePresent() throws Exception {
-    openWoprkspaceDetailsProjectsPage(testWorkspace.getName());
+    openWorkspaceDetailsProjectsPage(testWorkspace.getName());
 
-    addSpringSampleToWorkspace();
+    addKitchensinkSampleToWorkspace();
 
     checkProjectAppearanceAndButtonsState();
 
@@ -104,7 +102,7 @@ public class WorkspaceDetailsProjectsTest {
     workspaceProjects.waitAndClickOn(WorkspaceProjects.BottomButton.CANCEL_BUTTON);
     workspaceProjects.waitProjectIsNotPresent("kitchensink-example");
 
-    addSpringSampleToWorkspace();
+    addKitchensinkSampleToWorkspace();
 
     checkProjectAppearanceAndButtonsState();
 
@@ -118,7 +116,7 @@ public class WorkspaceDetailsProjectsTest {
   public void checkSearchField() throws Exception {
     final String textForSearching = "sea";
 
-    openWoprkspaceDetailsProjectsPage(testWorkspace.getName());
+    openWorkspaceDetailsProjectsPage(testWorkspace.getName());
 
     // check searching
     workspaceProjects.waitSearchField();
@@ -134,7 +132,7 @@ public class WorkspaceDetailsProjectsTest {
 
   @Test(priority = 1)
   public void checkOfCheckboxes() throws Exception {
-    openWoprkspaceDetailsProjectsPage(checkingCheckboxesWorkspace.getName());
+    openWorkspaceDetailsProjectsPage(checkingCheckboxesWorkspace.getName());
 
     // check of default checkboxes state
     workspaceProjects.selectProject(CHECKING_CHECKBOXES_PROJECT_NAME);
@@ -170,7 +168,7 @@ public class WorkspaceDetailsProjectsTest {
     projectExplorer.waitItem(CHECKING_CHECKBOXES_NEWEST_PROJECT_NAME);
   }
 
-  private void addSpringSampleToWorkspace() {
+  private void addKitchensinkSampleToWorkspace() {
     workspaceProjects.clickOnAddNewProjectButton();
     workspaceProjectsSamples.waitSamplesForm();
     workspaceProjectsSamples.waitTabSelected(SAMPLES_BUTTON);
@@ -194,7 +192,7 @@ public class WorkspaceDetailsProjectsTest {
         APPLY_BUTTON, SAVE_BUTTON, WorkspaceProjects.BottomButton.CANCEL_BUTTON);
   }
 
-  private void openWoprkspaceDetailsProjectsPage(String workspaceName) throws Exception {
+  private void openWorkspaceDetailsProjectsPage(String workspaceName) {
     dashboard.selectWorkspacesItemOnDashboard();
     workspaces.waitPageLoading();
     workspaces.selectWorkspaceItemName(workspaceName);

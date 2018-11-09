@@ -71,7 +71,7 @@ public class WorkspacesListTest {
   @Inject private WorkspaceOverview workspaceOverview;
 
   @InjectTestWorkspace(memoryGb = 2, startAfterCreation = false)
-  private TestWorkspace blankWorkspace;
+  private TestWorkspace nodeWorkspace;
 
   @InjectTestWorkspace(memoryGb = 2, startAfterCreation = false)
   private TestWorkspace workspaceToDelete;
@@ -92,10 +92,7 @@ public class WorkspacesListTest {
 
     expectedNodeItem =
         new Workspaces.WorkspaceListItem(
-            defaultTestUser.getName(),
-            blankWorkspace.getName(),
-            NODE_WS_MB,
-            NODE_WS_PROJECTS_COUNT);
+            defaultTestUser.getName(), nodeWorkspace.getName(), NODE_WS_MB, NODE_WS_PROJECTS_COUNT);
 
     expectedJavaItem =
         new Workspaces.WorkspaceListItem(
@@ -135,7 +132,7 @@ public class WorkspacesListTest {
 
   @Test
   public void checkWorkspaceSelectingByCheckbox() throws Exception {
-    String blankWorkspaceName = blankWorkspace.getName();
+    String blankWorkspaceName = nodeWorkspace.getName();
     String javaWorkspaceName = javaWorkspace.getName();
 
     workspaces.waitPageLoading();
