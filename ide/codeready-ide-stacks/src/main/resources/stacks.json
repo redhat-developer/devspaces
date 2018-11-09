@@ -593,7 +593,7 @@
           "type": "custom",
           "commandLine": "cd ${current.project.path} && dotnet run",
           "attributes": {
-            "previewUrl": "${server.dot.net.server}",
+            "previewUrl": "${server.dotnet}",
             "goal": "Run"
           }
         }
