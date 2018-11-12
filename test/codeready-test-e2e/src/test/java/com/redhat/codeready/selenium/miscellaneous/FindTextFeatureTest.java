@@ -13,24 +13,22 @@ package com.redhat.codeready.selenium.miscellaneous;
 
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
+import static org.eclipse.che.commons.lang.NameGenerator.generate;
 import static org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants.Edit.EDIT;
 import static org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants.Edit.FIND;
 import static org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants.Workspace.CREATE_PROJECT;
 import static org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants.Workspace.WORKSPACE;
 import static org.eclipse.che.selenium.core.constant.TestTimeoutsConstants.LOAD_PAGE_TIMEOUT_SEC;
 import static org.eclipse.che.selenium.core.project.ProjectTemplates.MAVEN_SPRING;
-import static org.eclipse.che.selenium.pageobject.Wizard.SamplesName.WEB_JAVA_PETCLINIC;
 import static org.openqa.selenium.Keys.ARROW_DOWN;
 import static org.openqa.selenium.Keys.ARROW_RIGHT;
 import static org.openqa.selenium.Keys.ENTER;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
-import static org.testng.Assert.assertTrue;
 
 import com.google.inject.Inject;
 import java.net.URL;
 import java.nio.file.Paths;
-import org.eclipse.che.commons.lang.NameGenerator;
 import org.eclipse.che.selenium.core.client.TestProjectServiceClient;
 import org.eclipse.che.selenium.core.utils.WaitUtils;
 import org.eclipse.che.selenium.core.workspace.TestWorkspace;
@@ -53,8 +51,7 @@ import org.testng.annotations.Test;
 /** @author Aleksandr Shmaraev */
 public class FindTextFeatureTest {
 
-  private static final String PROJECT_NAME = NameGenerator.generate("project", 4);
-  private static final int SUM_FOUND_OCCURRENCES = 313;
+  private static final String PROJECT_NAME = generate("project", 4);
 
   @Inject private TestWorkspace workspace;
   @Inject private Ide ide;
@@ -420,52 +417,27 @@ public class FindTextFeatureTest {
   @Test
   public void checkTextResultsPagination() {
     SearchFileResult searchFileResult;
-    int sumOfFoundOccurrences = 0;
-    int sumOfFoundFiles = 0;
 
-    // Import the web-java-petclinic project and find all occurrences of 'Str'
+    // Import the kitchensink-example project and find all occurrences of 'import'
     menu.runCommand(WORKSPACE, CREATE_PROJECT);
-    wizard.selectProjectAndCreate(WEB_JAVA_PETCLINIC, "web-java-petclinic");
+    wizard.selectProjectAndCreate("kitchensink-example", "kitchensink-example");
     notificationsPopupPanel.waitProgressPopupPanelClose();
-    projectExplorer.waitItem("web-java-petclinic");
-    projectExplorer.waitAndSelectItem("web-java-petclinic");
+    projectExplorer.waitItem("kitchensink-example");
+    projectExplorer.waitAndSelectItem("kitchensink-example");
 
     findTextPage.launchFindFormByKeyboard();
     findTextPage.waitFindTextMainFormIsOpen();
-    findTextPage.typeTextIntoFindField("Str");
-    findTextPage.waitTextIntoFindField("Str");
+    findTextPage.typeTextIntoFindField("import");
+    findTextPage.waitTextIntoFindField("import");
     findTextPage.clickOnSearchButtonMainForm();
     findTextPage.waitFindInfoPanelIsOpen();
 
-    // Check move page buttons status on the first page
-    findTextPage.sendCommandByKeyboardInFindInfoPanel(ARROW_DOWN.toString());
-    assertTrue(findTextPage.checkNextPageButtonIsEnabled());
+    // Check move page buttons status
+    assertFalse(findTextPage.checkNextPageButtonIsEnabled());
     assertFalse(findTextPage.checkPreviousPageButtonIsEnabled());
     searchFileResult = findTextPage.getResults();
-    sumOfFoundFiles += searchFileResult.getFoundFilesOnPage();
-    sumOfFoundOccurrences += searchFileResult.getFoundOccurrencesOnPage();
-    findTextPage.clickOnNextPageButton();
-
-    // Check move page buttons status on the second page
-    findTextPage.sendCommandByKeyboardInFindInfoPanel(ARROW_DOWN.toString());
-    assertTrue(findTextPage.checkNextPageButtonIsEnabled());
-    assertTrue(findTextPage.checkPreviousPageButtonIsEnabled());
-    searchFileResult = findTextPage.getResults();
-    sumOfFoundFiles += searchFileResult.getFoundFilesOnPage();
-    sumOfFoundOccurrences += searchFileResult.getFoundOccurrencesOnPage();
-    findTextPage.clickOnNextPageButton();
-
-    // Check move page buttons status on the third page
-    findTextPage.sendCommandByKeyboardInFindInfoPanel(ARROW_DOWN.toString());
-    assertFalse(findTextPage.checkNextPageButtonIsEnabled());
-    assertTrue(findTextPage.checkPreviousPageButtonIsEnabled());
-    searchFileResult = findTextPage.getResults();
-    sumOfFoundFiles += searchFileResult.getFoundFilesOnPage();
-    sumOfFoundOccurrences += searchFileResult.getFoundOccurrencesOnPage();
-
-    // Checking that sums of found files and occurrences correct
-    assertEquals(sumOfFoundFiles, findTextPage.getResults().getTotalNumberFoundFiles());
-    assertEquals(sumOfFoundOccurrences, SUM_FOUND_OCCURRENCES);
+    assertEquals(searchFileResult.getFoundFilesOnPage(), 8);
+    assertEquals(searchFileResult.getFoundOccurrencesOnPage(), 79);
   }
 
   private void createFileFromAPI(String path, String fileName, String content) throws Exception {
