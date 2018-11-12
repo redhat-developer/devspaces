@@ -1,0 +1,4 @@
+== How to run Performance tests
+
+Example:
+mvn verify -Pperformance -f ${WORKSPACE}/codeready-workspaces/test/codeready-test-performance -Dcrw.protocol=http -Dcrw.host="codeready-codeready.${IP}.nip.io" -Dcrw.port=80 -Dtest.threads=2

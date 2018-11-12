@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright (c) 2018 Red Hat, Inc.
+
+    All rights reserved. This program and the accompanying materials
+    are made available under the terms of the Eclipse Public License v1.0
+    which accompanies this distribution, and is available at
+    http://www.eclipse.org/legal/epl-v10.html
+
+    Contributors:
+      Red Hat, Inc. - initial API and implementation
+
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <artifactId>codeready-test-parent</artifactId>
+        <groupId>com.redhat</groupId>
+        <version>6.14.0-SNAPSHOT</version>
+    </parent>
+    <artifactId>codeready-test-performance</artifactId>
+    <packaging>jar</packaging>
+    <name>CodeReady Workspaces :: Test :: Performance</name>
+    <properties>
+        <webapp.protocol>${crw.protocol}</webapp.protocol>
+        <webapp.host>${crw.host}</webapp.host>
+        <webapp.port>${crw.port}</webapp.port>
+        <webapp.uris>${project.basedir}/src/test/uris/uris.txt</webapp.uris>
+        <jmeter.analysis.maven.plugin.version>1.0.6</jmeter.analysis.maven.plugin.version>
+        <jmeter-maven-plugin.version>2.8.1</jmeter-maven-plugin.version>
+        <test.duration>1</test.duration>
+        <test.threads>${test.threads}</test.threads>
+    </properties>
+    <profiles>
+        <profile>
+            <id>performance</id>
+            <build>
+                <plugins>
+                    <!-- execute JMeter test -->
+                    <plugin>
+                        <groupId>com.lazerycode.jmeter</groupId>
+                        <artifactId>jmeter-maven-plugin</artifactId>
+                        <version>${jmeter-maven-plugin.version}</version>
+                        <executions>
+                            <execution>
+                                <id>test</id>
+                                <goals>
+                                    <goal>jmeter</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <overrideRootLogLevel>debug</overrideRootLogLevel>
+                            <generateReports>true</generateReports>
+                            <propertiesUser>
+                                <!--number of threads to use-->
+                                <threads>${test.threads}</threads>
+
+
+                                <server>${webapp.host}</server>
+                                <port>${webapp.port}</port>
+                                <protocol>${webapp.protocol}</protocol>
+                            </propertiesUser>
+                            <ignoreResultFailures>true</ignoreResultFailures>
+                        </configuration>
+                        <dependencies>
+                            <dependency>
+                                <groupId>kg.apc</groupId>
+                                <artifactId>jmeter-plugins</artifactId>
+                                <version>1.0.0</version>
+                            </dependency>
+                        </dependencies>
+                    </plugin>
+
+                    <!--<plugin>-->
+                        <!--<groupId>com.lazerycode.jmeter</groupId>-->
+                        <!--<artifactId>jmeter-analysis-maven-plugin</artifactId>-->
+                        <!--<version>${jmeter.analysis.maven.plugin.version}</version>-->
+                        <!--<executions>-->
+                            <!--<execution>-->
+                                <!--<goals>-->
+                                    <!--<goal>analyze</goal>-->
+                                <!--</goals>-->
+                                <!--<phase>post-integration-test</phase>-->
+                            <!--</execution>-->
+                        <!--</executions>-->
+                        <!--<configuration>-->
+                            <!--&lt;!&ndash;-->
+                            <!--source file that contains jmeter result data. Needs to be XML format or a GZIPed XML format-->
+                            <!--&ndash;&gt;-->
+                            <!--<source>${project.build.directory}/jmeter/results/*</source>-->
+
+                            <!--&lt;!&ndash;-->
+                            <!--directory where to store analysis report files. At least a file "summary.txt" will be stored here.-->
+                            <!--&ndash;&gt;-->
+                            <!--<targetDirectory>${project.build.directory}/reports</targetDirectory>-->
+
+                            <!--&lt;!&ndash;-->
+                            <!--Defines groups of requests by URL patterns,-->
+                            <!--e.g. URIs starting with /mock/page are associated with group "pages". All analysis results are-->
+                            <!--If there is no such mapping then the threadgroups from the jmeter.xml are used.-->
+                            <!--&ndash;&gt;-->
+                            <!--&lt;!&ndash;<requestGroups>&ndash;&gt;-->
+                            <!--&lt;!&ndash;<test>/en-US/firefox/**</test>&ndash;&gt;-->
+                            <!--&lt;!&ndash;</requestGroups>&ndash;&gt;-->
+
+                            <!--&lt;!&ndash;-->
+                            <!--Mapping from resource URL to file name. Every resource will be downloaded and stored in 'targetDirectory'-->
+                            <!--with the given filename. Tokens "_FROM_" and "_TO_" can be used as placeholders. These placeholders will-->
+                            <!--be replaced by timestamps of execution interval (formatted as ISO8601, e.g. '20111216T145509+0100').-->
+                            <!--&ndash;&gt;-->
+                            <!--&lt;!&ndash;<remoteResources>&ndash;&gt;-->
+                            <!--&lt;!&ndash;<property>&ndash;&gt;-->
+                            <!--&lt;!&ndash;<name>http://yourhost/path?from=_FROM_&amp;to=_TO_</name>&ndash;&gt;-->
+                            <!--&lt;!&ndash;<value>my_resource.txt</value>&ndash;&gt;-->
+                            <!--&lt;!&ndash;</property>&ndash;&gt;-->
+                            <!--&lt;!&ndash;</remoteResources>&ndash;&gt;-->
+                        <!--</configuration>-->
+                    <!--</plugin>-->
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
+</project>
