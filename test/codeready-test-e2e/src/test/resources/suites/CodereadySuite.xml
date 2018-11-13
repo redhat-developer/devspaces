@@ -29,6 +29,8 @@
             <class name="com.redhat.codeready.selenium.userstory.SpringBootUserStoryTest"/>
             <class name="com.redhat.codeready.selenium.userstory.DotNetUserStoryTest"/>
             <class name="com.redhat.codeready.selenium.userstory.ClangCppUserStoryTest"/>
+
+            <!-- upstream Eclipse Che tests adapted to CodeReady Workspaces -->
             <class name="com.redhat.codeready.selenium.dashboard.CreateAndDeleteProjectsTest"/>
             <class name="com.redhat.codeready.selenium.dashboard.CreateFactoryTest"/>
             <class name="com.redhat.codeready.selenium.dashboard.CreateWorkspaceTest"/>
