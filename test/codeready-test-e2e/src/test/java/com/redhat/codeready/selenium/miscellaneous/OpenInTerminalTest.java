@@ -126,7 +126,7 @@ public class OpenInTerminalTest {
    * </pre>
    */
   @Test
-  public void openFolderInTerminalTest() {
+  public void openFolderInTerminalTest() throws Exception {
     seleniumWebDriver.navigate().refresh();
     projectExplorer.waitProjectExplorer();
     projectExplorer.waitAndSelectItem(PROJECT_NAME);
@@ -136,7 +136,7 @@ public class OpenInTerminalTest {
     projectExplorer.waitContextMenu();
     projectExplorer.clickOnItemInContextMenu(OPEN_IN_TERMINAL);
     terminal.waitTerminalTab(2);
-    terminal.waitTextInTerminal(2, PROJECT_NAME + PATH_TO_EXPAND);
+    terminal.waitTextInTerminal(2, "[jboss@" + workspace.getId() + " java]$");
 
     projectExplorer.waitAndSelectItem(PROJECT_NAME + FILE);
     projectExplorer.openContextMenuByPathSelectedItem(PROJECT_NAME + FILE);

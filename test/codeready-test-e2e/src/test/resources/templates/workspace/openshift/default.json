@@ -23,7 +23,8 @@
           "installers": [
             "org.eclipse.che.exec",
             "org.eclipse.che.terminal",
-            "org.eclipse.che.ws-agent"
+            "org.eclipse.che.ws-agent",
+            "org.eclipse.che.ls.java"
           ],
           "env": {
             "CHE_MACHINE_NAME": "dev-machine"

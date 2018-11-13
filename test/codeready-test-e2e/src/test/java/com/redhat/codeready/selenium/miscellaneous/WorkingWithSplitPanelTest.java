@@ -11,12 +11,10 @@
 */
 package com.redhat.codeready.selenium.miscellaneous;
 
-import static java.util.Arrays.stream;
 import static org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants.Git.GIT;
 import static org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants.Git.STATUS;
 import static org.eclipse.che.selenium.core.constant.TestProjectExplorerContextMenuConstants.ContextMenuCommandGoals.COMMON_GOAL;
 import static org.eclipse.che.selenium.pageobject.MultiSplitPanel.SplitPaneCommands.CLOSE_ALL_TABS;
-import static org.testng.Assert.assertTrue;
 
 import com.google.inject.Inject;
 import java.net.URL;
@@ -48,7 +46,6 @@ public class WorkingWithSplitPanelTest {
 
   private static final String PROJECT_NAME = NameGenerator.generate("MultiSplitPane", 4);
   private static final String BUILD_COMM = "newMaven";
-  private static final String[] checkMcTerminal = {"Left", "File", "Command", "Options", "Right"};
 
   @Inject private TestWorkspace workspace;
   @Inject private Ide ide;
@@ -131,13 +128,10 @@ public class WorkingWithSplitPanelTest {
     multiSplitPanel.waitTabProcessIsPresent(1, "Terminal-2");
     terminal.waitTerminalIsNotEmpty(2); // terminal.waitTerminalIsNotEmpty(2)
     loader.waitOnClosed();
-    terminal.typeIntoActiveTerminal("mc");
+    terminal.typeIntoActiveTerminal("pwd");
     terminal.typeIntoActiveTerminal(Keys.ENTER.toString());
     terminal.waitTerminalIsNotEmpty(3);
     loader.waitOnClosed();
-    String visibleTextFromTerminal = terminal.getVisibleTextFromTerminal(3);
-    stream(checkMcTerminal)
-        .forEach(content -> assertTrue(visibleTextFromTerminal.contains(content)));
     multiSplitPanel.waitTabProcessIsNotPresent(2, BUILD_COMM);
   }
 
