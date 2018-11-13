@@ -18,7 +18,7 @@
           <boolProp name="LoopController.continue_forever">false</boolProp>
           <stringProp name="LoopController.loops">1</stringProp>
         </elementProp>
-        <stringProp name="ThreadGroup.num_threads">2</stringProp>
+        <stringProp name="ThreadGroup.num_threads">${__P(test.threads,1)}</stringProp>
         <stringProp name="ThreadGroup.ramp_time">1</stringProp>
         <boolProp name="ThreadGroup.scheduler">false</boolProp>
         <stringProp name="ThreadGroup.duration"></stringProp>
@@ -35,11 +35,6 @@
             <elementProp name="THRESHOLD_ATTEMPTS" elementType="Argument">
               <stringProp name="Argument.name">THRESHOLD_ATTEMPTS</stringProp>
               <stringProp name="Argument.value">40</stringProp>
-              <stringProp name="Argument.metadata">=</stringProp>
-            </elementProp>
-            <elementProp name="HOST" elementType="Argument">
-              <stringProp name="Argument.name">HOST</stringProp>
-              <stringProp name="Argument.value">172.19.20.137.nip.io</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
             </elementProp>
           </collectionProp>
@@ -97,9 +92,9 @@
               </elementProp>
             </collectionProp>
           </elementProp>
-          <stringProp name="HTTPSampler.domain">rh-sso-codeready.${HOST}</stringProp>
-          <stringProp name="HTTPSampler.port"></stringProp>
-          <stringProp name="HTTPSampler.protocol">http</stringProp>
+          <stringProp name="HTTPSampler.domain">${__P(crw.sso.host,127.0.0.1)}</stringProp>
+          <stringProp name="HTTPSampler.port">${__P(crw.port,80)}</stringProp>
+          <stringProp name="HTTPSampler.protocol">${__P(crw.protocol,http)}</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
           <stringProp name="HTTPSampler.path">/auth/realms/master/protocol/openid-connect/token</stringProp>
           <stringProp name="HTTPSampler.method">POST</stringProp>
@@ -185,9 +180,9 @@
               </elementProp>
             </collectionProp>
           </elementProp>
-          <stringProp name="HTTPSampler.domain">rh-sso-codeready.${HOST}</stringProp>
-          <stringProp name="HTTPSampler.port"></stringProp>
-          <stringProp name="HTTPSampler.protocol">http</stringProp>
+          <stringProp name="HTTPSampler.domain">${__P(crw.sso.host,127.0.0.1)}</stringProp>
+          <stringProp name="HTTPSampler.port">${__P(crw.port,80)}</stringProp>
+          <stringProp name="HTTPSampler.protocol">${__P(crw.protocol,http)}</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
           <stringProp name="HTTPSampler.path">/auth/admin/realms/codeready/users</stringProp>
           <stringProp name="HTTPSampler.method">POST</stringProp>
@@ -251,9 +246,9 @@
               </elementProp>
             </collectionProp>
           </elementProp>
-          <stringProp name="HTTPSampler.domain">rh-sso-codeready.${HOST}</stringProp>
-          <stringProp name="HTTPSampler.port"></stringProp>
-          <stringProp name="HTTPSampler.protocol">http</stringProp>
+          <stringProp name="HTTPSampler.domain">${__P(crw.sso.host,127.0.0.1)}</stringProp>
+          <stringProp name="HTTPSampler.port">${__P(crw.port,80)}</stringProp>
+          <stringProp name="HTTPSampler.protocol">${__P(crw.protocol,http)}</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
           <stringProp name="HTTPSampler.path">/auth/realms/codeready/protocol/openid-connect/token</stringProp>
           <stringProp name="HTTPSampler.method">POST</stringProp>
@@ -346,9 +341,9 @@
               </elementProp>
             </collectionProp>
           </elementProp>
-          <stringProp name="HTTPSampler.domain">codeready-codeready.${HOST}</stringProp>
-          <stringProp name="HTTPSampler.port"></stringProp>
-          <stringProp name="HTTPSampler.protocol">http</stringProp>
+          <stringProp name="HTTPSampler.domain">${__P(crw.sso.host,127.0.0.1)}</stringProp>
+          <stringProp name="HTTPSampler.port">${__P(crw.port,80)}</stringProp>
+          <stringProp name="HTTPSampler.protocol">${__P(crw.protocol,http)}</stringProp>
           <stringProp name="HTTPSampler.contentEncoding">UTF-8</stringProp>
           <stringProp name="HTTPSampler.path">/api/workspace?start-after-create=true</stringProp>
           <stringProp name="HTTPSampler.method">POST</stringProp>

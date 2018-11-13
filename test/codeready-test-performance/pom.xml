@@ -23,14 +23,8 @@
     <packaging>jar</packaging>
     <name>CodeReady Workspaces :: Test :: Performance</name>
     <properties>
-        <webapp.protocol>${crw.protocol}</webapp.protocol>
-        <webapp.host>${crw.host}</webapp.host>
-        <webapp.port>${crw.port}</webapp.port>
-        <webapp.uris>${project.basedir}/src/test/uris/uris.txt</webapp.uris>
         <jmeter.analysis.maven.plugin.version>1.0.6</jmeter.analysis.maven.plugin.version>
         <jmeter-maven-plugin.version>2.8.1</jmeter-maven-plugin.version>
-        <test.duration>1</test.duration>
-        <test.threads>${test.threads}</test.threads>
     </properties>
     <profiles>
         <profile>
@@ -54,13 +48,10 @@
                             <overrideRootLogLevel>debug</overrideRootLogLevel>
                             <generateReports>true</generateReports>
                             <propertiesUser>
-                                <!--number of threads to use-->
-                                <threads>${test.threads}</threads>
-
-
-                                <server>${webapp.host}</server>
-                                <port>${webapp.port}</port>
-                                <protocol>${webapp.protocol}</protocol>
+                                <test.threads>${test.threads}</test.threads>
+                                <crw.protocol>${crw.protocol}</crw.protocol>
+                                <crw.sso.host>${crw.sso.host}</crw.sso.host>
+                                <crw.port>${crw.host}</crw.port>
                             </propertiesUser>
                             <ignoreResultFailures>true</ignoreResultFailures>
                         </configuration>
