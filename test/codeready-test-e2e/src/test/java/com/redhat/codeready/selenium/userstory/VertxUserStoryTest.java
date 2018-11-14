@@ -133,8 +133,8 @@ public class VertxUserStoryTest {
     consoles.waitJDTLSProjectResolveFinishedMessage(VERTX_PROJECT_NAME);
 
     // wait expected message in the progress info bar
-    mavenPluginStatusBar.waitExpectedTextInInfoPanel("Download sources and javadoc:");
-    mavenPluginStatusBar.waitClosingInfoPanel();
+    mavenPluginStatusBar.waitExpectedTextInInfoPanel("Download sources and javadoc:", 620);
+    mavenPluginStatusBar.waitClosingInfoPanel(180);
 
     projectExplorer.expandPathInProjectExplorerAndOpenFile(
         PATH_TO_MAIN_PACKAGE, JAVA_FILE_NAME + ".java");
