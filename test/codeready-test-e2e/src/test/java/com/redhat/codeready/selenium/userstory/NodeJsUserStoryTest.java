@@ -140,7 +140,9 @@ public class NodeJsUserStoryTest {
 
     // open file
     projectExplorer.waitItem(PROJECT);
-    projectExplorer.expandPathInProjectExplorerAndOpenFile(PROJECT, fileName);
+    projectExplorer.scrollAndSelectItem(packageJsonFilePath);
+    projectExplorer.waitItemIsSelected(packageJsonFilePath);
+    projectExplorer.openItemByPath(packageJsonFilePath);
     editor.waitTabIsPresent(fileName);
     editor.waitTabSelection(0, fileName);
     editor.waitActive();
