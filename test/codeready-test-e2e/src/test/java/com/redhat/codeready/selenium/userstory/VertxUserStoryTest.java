@@ -23,6 +23,7 @@ import static org.eclipse.che.selenium.core.constant.TestProjectExplorerContextM
 import static org.eclipse.che.selenium.core.constant.TestProjectExplorerContextMenuConstants.ContextMenuCommandGoals.DEBUG_GOAL;
 import static org.eclipse.che.selenium.core.constant.TestProjectExplorerContextMenuConstants.ContextMenuCommandGoals.RUN_GOAL;
 import static org.eclipse.che.selenium.core.constant.TestTimeoutsConstants.LOADER_TIMEOUT_SEC;
+import static org.eclipse.che.selenium.core.constant.TestTimeoutsConstants.UPDATING_PROJECT_TIMEOUT_SEC;
 import static org.eclipse.che.selenium.pageobject.CodenvyEditor.MarkerLocator.ERROR;
 
 import com.google.inject.Inject;
@@ -133,8 +134,9 @@ public class VertxUserStoryTest {
     consoles.waitJDTLSProjectResolveFinishedMessage(VERTX_PROJECT_NAME);
 
     // wait expected message in the progress info bar
+    // the execution take a lot of time on a local machine, so need a big timeout
     mavenPluginStatusBar.waitExpectedTextInInfoPanel("Download sources and javadoc:", 620);
-    mavenPluginStatusBar.waitClosingInfoPanel(180);
+    mavenPluginStatusBar.waitClosingInfoPanel(UPDATING_PROJECT_TIMEOUT_SEC);
 
     projectExplorer.expandPathInProjectExplorerAndOpenFile(
         PATH_TO_MAIN_PACKAGE, JAVA_FILE_NAME + ".java");
