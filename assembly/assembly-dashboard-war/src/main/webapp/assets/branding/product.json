@@ -12,7 +12,7 @@
   "supportEmail": "wish@codenvy.com",
   "oauthDocs": "Configure OAuth in the che.properties file.",
   "workspace": {
-    "priorityStacks": ["Java EAP", "Java 1.8", "Vert.x", "Spring Boot", "Wildfly Swarm"],
+    "priorityStacks": ["Java EAP", "Java 1.8", "Vert.x", "Spring Boot", "Wildfly Swarm", "Red Hat Fuse"],
     "defaultStack": "eap-default"
   },
   "cli" : {
