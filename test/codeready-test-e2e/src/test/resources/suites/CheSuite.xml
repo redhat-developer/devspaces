@@ -85,15 +85,12 @@
           <class name="org.eclipse.che.selenium.factory.CheckFactoryWithSincePolicyTest"/>
           <class name="org.eclipse.che.selenium.factory.CheckFactoryWithUntilPolicyTest"/>
           <class name="org.eclipse.che.selenium.factory.CreateFactoryFromUiWithKeepDirTest"/>
-          <class name="org.eclipse.che.selenium.factory.CheckOpenFileFeatureTest"/>
-          <class name="org.eclipse.che.selenium.factory.CheckRunCommandFeatureTest"/>
           <class name="org.eclipse.che.selenium.factory.CheckWelcomePanelOnCodenvyTest"/>
           <class name="org.eclipse.che.selenium.factory.DirectUrlFactoryWithRootFolderTest"/>
           <class name="org.eclipse.che.selenium.factory.CheckFactoryWithSparseCheckoutTest"/>
           <class name="org.eclipse.che.selenium.filewatcher.EditFilesWithTabsTest"/>
           <class name="org.eclipse.che.selenium.filewatcher.RemoveFilesWithActiveTabs"/>
           <class name="org.eclipse.che.selenium.filewatcher.UpdateFilesWithoutIDETest"/>
-          <class name="org.eclipse.che.selenium.factory.CreateNamedFactoryFromDashboardTest"/>
           <class name="org.eclipse.che.selenium.filewatcher.CheckDeletingProjectByApiTest"/>
           <class name="org.eclipse.che.selenium.filewatcher.CheckFileWatcherExcludeFeatureTest"/>
           <class name="org.eclipse.che.selenium.git.ImportWizardFormTest"/>
