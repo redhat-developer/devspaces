@@ -118,12 +118,11 @@ public class MacrosCommandsEditorTest {
     commandsEditor.typeTextIntoSearchMacroField("server.");
     commandsEditor.waitTextIntoSearchMacroField("server.");
     String[] macrosItems = {
-      "${server.codeserver}",
+      "${server.eap-debug}",
+      "${server.eap}",
       "${server.exec-agent/http}",
       "${server.exec-agent/ws}",
       "${server.terminal}",
-      "${server.tomcat8-debug}",
-      "${server.tomcat8}",
       "${server.wsagent/http}",
       "${server.wsagent/ws}"
     };
