@@ -100,7 +100,22 @@ export npmDownloadRoot=http://registry.npmjs.org:80/npm/-/
 export npmRegistryURL=http://registry.npmjs.org:80/
 export YARN_REGISTRY=http://registry.yarnpkg.com:80/
 
-npm config set strict-ssl=false
+export NCL_CA="-----BEGIN CERTIFICATE-----
+MIICGzCCAYSgAwIBAgIJAPECUDwVnjyvMA0GCSqGSIb3DQEBCwUAMCUxEDAOBgNV
+BAMMB1Rlc3QgQ0ExETAPBgNVBAoMCFRlc3QgT3JnMB4XDTE4MDkyMTAyMzUzOVoX
+DTI4MDczMDAyMzUzOVowJTEQMA4GA1UEAwwHVGVzdCBDQTERMA8GA1UECgwIVGVz
+dCBPcmcwgZ8wDQYJKoZIhvcNAQEBBQADgY0AMIGJAoGBALzHqk5GpAVKPruIxB7Q
+VnkDdt89IR7OmnlKYTvS9C8lb9vSfpgt25db1pXt+NAQfWUe4iXu/3HXCQE+T2ir
+ONjQRM9fqlVCiUvmECeo+XnBvyI5iJ/TOdbkpSz3fzzokarG5uZoC0C6dfWo3xOg
+FGtdujURgmlUdDGBMzdo+OkTAgMBAAGjUzBRMB0GA1UdDgQWBBSZR9TyL1ih76Ah
+ONFiPGqtao9sSDAfBgNVHSMEGDAWgBSZR9TyL1ih76AhONFiPGqtao9sSDAPBgNV
+HRMBAf8EBTADAQH/MA0GCSqGSIb3DQEBCwUAA4GBALLOjTVPyjzDPST7HHq4jafs
+L9l5WiTJSeEDim8nN4V1ZgK3K+znoR9Ztx8taCPi+QwqpvTEXlEEiezx+hygClzY
+Mo/W0QKYPgMqRlQnJzAhZhb++KWrovtdzk5dUOZa6xfKSB4DoQHYowGr+PO8R7hS
+bvrsD6YFuVn6ZtSb8qkZ
+-----END CERTIFICATE-----"
+
+npm config set strict-ssl false
 npm config set https-proxy ${NCL_PROXY}
 npm config set https_proxy ${NCL_PROXY}
 npm config set proxy ${NCL_PROXY}
@@ -111,6 +126,7 @@ npm config set maxsockets 80
 npm config set fetch-retries 10
 npm config set fetch-retry-mintimeout 60000
 npm config set registry ${npmRegistryURL}
+npm config set ca "${NCL_CA}"
 npm config list
 
 if [[ $includeDashboardFromSource -gt 0 ]]; then
@@ -136,6 +152,7 @@ if [[ $includeDashboardFromSource -gt 0 ]]; then
 
     yarn config set https-proxy false --global
     yarn config set https_proxy false --global
+    yarn config set ca "${NCL_CA}" --global
     yarn config list
     yarn install --frozen-lockfile --no-lockfile --pure-lockfile --ignore-optional --non-interactive --production=false
   popd
@@ -152,8 +169,7 @@ MVNFLAGS="${MVNFLAGS} -Dmdep.analyze.skip=true -Dmaven.javadoc.skip -Dgpg.skip -
 MVNFLAGS="${MVNFLAGS} -Dorg.slf4j.simpleLogger.dateTimeFormat=HH:mm:ss "
 MVNFLAGS="${MVNFLAGS} -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn"
 MVNFLAGS="${MVNFLAGS} -DnodeDownloadRoot=${nodeDownloadRoot} -DnpmDownloadRoot=${npmDownloadRoot}"
-MVNFLAGS="${MVNFLAGS} -DnpmRegistryURL=${npmRegistryURL}"
-MVNFLAGS="${MVNFLAGS} -DYARN_REGISTRY=${YARN_REGISTRY}"
+MVNFLAGS="${MVNFLAGS} -DnpmRegistryURL=${npmRegistryURL} ${MVNFLAGS} -DYARN_REGISTRY=${YARN_REGISTRY}"
 
 ##########################################################################################
 # get dashboard version from Sonatype - works but requires PME flag -DrepoReportingRemoval=false to resolve Sonatype Nexus
