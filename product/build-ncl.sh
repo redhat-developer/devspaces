@@ -11,9 +11,9 @@ includeDashboardFromSource=0
 
 #set version & compute qualifier from best available in Indy
 # or use commandline overrides for version and suffix
-version=6.14.0
+version=6.14.1
 suffix="" # normally we compute this from version of org/eclipse/che/depmgt/maven-depmgt-pom but can override if needed
-upstreamPom=org/eclipse/che/depmgt/maven-depmgt-pom # usually use depmgt/maven-depmgt-pom but can also align to che-parent for codeready-workspaces build
+upstreamPom=org/eclipse/che/depmgt/maven-depmgt-pom # usually use depmgt/maven-depmgt-pom but can also align to org/eclipse/che/parent/maven-parent-pom for codeready-workspaces build
 INDY=""
 doSedReplacements=1
 doDashboardVersionLookup=1
