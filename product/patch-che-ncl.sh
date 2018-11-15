@@ -12,6 +12,6 @@ perl -0777 -p -i -e 's|(\ +<dependency>.*?<\/dependency>)| $1 =~ /<artifactId>ch
 
 # remove assembly-main from the reactor
 # TODO: undo this if we move this out of downstream and need it here
-sed -i -e "s#.*<module>assembly-main</module>.*##" assembly/pom.xml
+#sed -i -e "s#.*<module>assembly-main</module>.*##" assembly/pom.xml
 # remove dep on assembly-main from the root 
-perl -0777 -p -i -e 's|(\ +<dependency>.*?<\/dependency>)| $1 =~ /<artifactId>assembly-main<\/artifactId>/?"":$1|gse' pom.xml
+#perl -0777 -p -i -e 's|(\ +<dependency>.*?<\/dependency>)| $1 =~ /<artifactId>assembly-main<\/artifactId>/?"":$1|gse' pom.xml
