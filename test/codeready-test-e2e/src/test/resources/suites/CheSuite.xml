@@ -117,12 +117,8 @@
           <class name="org.eclipse.che.selenium.git.RevertCommitTest"/>
           <class name="org.eclipse.che.selenium.git.GitResetTest"/>
           <class name="org.eclipse.che.selenium.gwt.CheckSimpleGwtAppTest"/>
-          <class name="org.eclipse.che.selenium.intelligencecommand.MacrosCommandsEditorTest"/>
-          <class name="org.eclipse.che.selenium.intelligencecommand.AutocompleteCommandsEditorTest"/>
           <class name="org.eclipse.che.selenium.intelligencecommand.CheckBasicFunctionalityInCommandsExplorerTest"/>
-          <class name="org.eclipse.che.selenium.intelligencecommand.CheckIntelligenceCommandFromToolbarTest"/>
           <class name="org.eclipse.che.selenium.intelligencecommand.CommandsEditorTest"/>
-          <class name="org.eclipse.che.selenium.intelligencecommand.CommandsPaletteTest"/>
           <class name="org.eclipse.che.selenium.intelligencecommand.PreviewUrlIntoCommandsEditorTest"/>
           <class name="org.eclipse.che.selenium.mavenplugin.CheckGeneratingMavenArchetypeTest"/>
           <class name="org.eclipse.che.selenium.mavenplugin.CheckMavenPluginTest"/>
@@ -236,7 +232,6 @@
           <class name="org.eclipse.che.selenium.refactor.types.TestFailTest"/>
           <class name="org.eclipse.che.selenium.swagger.SwaggerTest"/>
           <class name="org.eclipse.che.selenium.workspaces.CheckStopStartWsTest"/>
-          <class name="org.eclipse.che.selenium.workspaces.CreateWorkspaceOnDashboardTest"/>
           <class name="org.eclipse.che.selenium.workspaces.ProjectStateAfterRefreshTest"/>
           <class name="org.eclipse.che.selenium.workspaces.ProjectStateAfterRenameWorkspaceTest"/>
           <class name="org.eclipse.che.selenium.workspaces.ProjectStateAfterWorkspaceRestartTest"/>
@@ -254,7 +249,6 @@
           <class name="org.eclipse.che.selenium.dashboard.AccountTest"/>
 
           <!-- Next tests can unexpectedly affect on other tests and so should be executed at the end -->
-          <class name="org.eclipse.che.selenium.languageserver.JsonFileEditingTest"/>
         </classes>
     </test>
 
