@@ -366,6 +366,86 @@
     }
   },
   {
+    "id": "fuse-default",
+    "creator": "ide",
+    "name": "Red Hat Fuse",
+    "description": "Red Hat Fuse Stack",
+    "scope": "general",
+    "tags": [
+      "fuse"
+    ],
+    "components": [
+      {
+        "name": "RHEL",
+        "version": "7.4"
+      },
+      {
+        "name": "OpenJDK",
+        "version": "1.8.0_151"
+      },
+      {
+        "name": "Maven",
+        "version": "3.5.0"
+      }
+    ],
+    "workspaceConfig": {
+      "environments": {
+        "default": {
+          "machines": {
+            "dev-machine": {
+              "installers": [
+                "org.eclipse.che.exec",
+                "org.eclipse.che.terminal",
+                "org.eclipse.che.ws-agent",
+                "org.eclipse.che.ls.java",
+                "com.redhat.bayesian.lsp"
+              ],
+              "servers": {
+                "springboot" : {
+                  "port" : "8080",
+                  "protocol" : "http"
+                }
+              },
+              "attributes" : {
+                "memoryLimitBytes": "2147483648"
+              },
+              "volumes": {
+                "m2": {
+                  "path": "/home/jboss/.m2"
+                },
+                "javadata": {
+                  "path": "/home/jboss/jdtls/data"
+                }
+              }
+            }
+          },
+          "recipe": {
+            "content": "docker-registry.engineering.redhat.com/crw/rhel-base-jdk8",
+            "type": "dockerimage"
+          }
+        }
+      },
+      "name": "default",
+      "defaultEnv": "default",
+      "description": null,
+      "commands": [
+        {
+          "commandLine": "MAVEN_OPTS='-Xmx100m' && mvn clean package -f ${current.project.path}/pom.xml",
+          "name": "build",
+          "type": "mvn",
+          "attributes": {
+            "previewUrl": "",
+            "goal": "Build"
+          }
+        }
+      ]
+    },
+    "stackIcon": {
+      "name": "type-fuse.svg",
+      "mediaType": "image/svg+xml"
+    }
+  },
+  {
     "id": "spring-boot-default",
     "creator": "ide",
     "name": "Spring Boot",
