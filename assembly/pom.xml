@@ -27,6 +27,6 @@
       <module>assembly-wsagent-server</module>
       <!-- fork from upstream eclipse/che/assembly/assembly-main, just remove docs -->
       <module>che-assembly-main-no-docs</module>
-      <module>assembly-main</module>
+      <module>codeready-workspaces-assembly-main</module>
   </modules>
 </project>

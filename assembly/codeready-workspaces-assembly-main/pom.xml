@@ -16,7 +16,7 @@
         <groupId>com.redhat</groupId>
         <version>6.14.0-SNAPSHOT</version>
     </parent>
-    <artifactId>assembly-main</artifactId>
+    <artifactId>codeready-workspaces-assembly-main</artifactId>
     <packaging>pom</packaging>
     <name>CodeReady Workspaces :: Tomcat Assembly</name>
     <dependencies>
