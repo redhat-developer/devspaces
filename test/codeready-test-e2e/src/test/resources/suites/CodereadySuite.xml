@@ -55,55 +55,6 @@
             <class name="com.redhat.codeready.selenium.intelligencecommand.MacrosCommandsEditorTest"/>
             <class name="com.redhat.codeready.selenium.languageserver.JsonFileEditingTest"/>
             <class name="com.redhat.codeready.selenium.workspaces.CreateWorkspaceOnDashboardTest"/>
-
-            <!-- Upstream Eclipse Che tests -->
-            <class name="org.eclipse.che.selenium.projectexplorer.CheckAutoSaveForFileWhichAlreadyExistTest"/>
-            <class name="org.eclipse.che.selenium.projectexplorer.CheckCollapseAllNodesProjectTest"/>
-            <class name="org.eclipse.che.selenium.projectexplorer.CheckCopyCutFeaturesForFilesTest"/>
-            <class name="org.eclipse.che.selenium.projectexplorer.CheckErrorMessageWhenCreationDuplicateFolderOrFileTest"/>
-            <class name="org.eclipse.che.selenium.projectexplorer.CheckHiddenFolderAndFileCreatedFromCommandTest"/>
-            <class name="org.eclipse.che.selenium.projectexplorer.CheckOnValidAndInvalidClassNameTest"/>
-            <class name="org.eclipse.che.selenium.projectexplorer.CheckOnValidAndInvalidPackageNameTest"/>
-            <class name="org.eclipse.che.selenium.projectexplorer.CheckRecentFilesAndRevealResourceTest"/>
-            <class name="org.eclipse.che.selenium.projectexplorer.CheckRefreshProjectTreeTest"/>
-            <class name="org.eclipse.che.selenium.projectexplorer.CheckShowHideHiddenFilesTest"/>
-            <class name="org.eclipse.che.selenium.projectexplorer.CheckTreeStructureAfterCloseTest"/>
-            <class name="org.eclipse.che.selenium.projectexplorer.CheckTreeStructureAfterCloseTest"/>
-            <class name="org.eclipse.che.selenium.projectexplorer.ClosingSeveralOpenFilesTest"/>
-            <class name="org.eclipse.che.selenium.projectexplorer.CreateNewFoldersTest"/>
-            <class name="org.eclipse.che.selenium.projectexplorer.CreateNewJavaFilesFromContextMenuTest"/>
-            <class name="org.eclipse.che.selenium.projectexplorer.CreateNewJavaFilesTest"/>
-            <class name="org.eclipse.che.selenium.projectexplorer.CreateNewNotJavaFilesFromContextMenuTest"/>
-            <class name="org.eclipse.che.selenium.projectexplorer.CreateNewNotJavaFilesTest"/>
-            <class name="org.eclipse.che.selenium.projectexplorer.CreateNewPackageFromContextMenuTest"/>
-            <class name="org.eclipse.che.selenium.projectexplorer.CreateNewPackagesWithHelpCreationJavaClassTest"/>
-            <class name="org.eclipse.che.selenium.projectexplorer.CreateProjectInSelectedFolderTest"/>
-            <class name="org.eclipse.che.selenium.projectexplorer.CreateProjectsForArtikPluginTest"/>
-            <class name="org.eclipse.che.selenium.projectexplorer.CreateProjectTest"/>
-            <class name="org.eclipse.che.selenium.projectexplorer.DeleteFilesFromContextMenuTest"/>
-            <class name="org.eclipse.che.selenium.projectexplorer.DeleteFilesTest"/>
-            <class name="org.eclipse.che.selenium.projectexplorer.DeletePackageFromContextMenuTest"/>
-            <class name="org.eclipse.che.selenium.projectexplorer.DeletePackageTest"/>
-            <class name="org.eclipse.che.selenium.projectexplorer.DeletePackageWithOpenedFilesTabTest"/>
-            <class name="org.eclipse.che.selenium.projectexplorer.DeleteProjectsTest"/>
-            <class name="org.eclipse.che.selenium.projectexplorer.dependencies.TransitiveDependencyTest"/>
-            <class name="org.eclipse.che.selenium.projectexplorer.dependencies.UpdateListOfLibraryTest"/>
-            <class name="org.eclipse.che.selenium.projectexplorer.dependencies.OpenExternalLibraryFileAfterRefreshTest"/>
-            <class name="org.eclipse.che.selenium.projectexplorer.FileNotExistIntoEditorAfterDeleteTest"/>
-            <class name="org.eclipse.che.selenium.projectexplorer.FileOpenedAfterCreationTest"/>
-            <class name="org.eclipse.che.selenium.projectexplorer.JustCreatedFileNotExistIntoEditorAfterDeleteTest"/>
-            <class name="org.eclipse.che.selenium.projectexplorer.NavigationByKeyboardTest"/>
-            <class name="org.eclipse.che.selenium.projectexplorer.OpenFileWithHelpContextMenuTest"/>
-            <class name="org.eclipse.che.selenium.projectexplorer.PreviewHtmlFileTest"/>
-            <class name="org.eclipse.che.selenium.projectexplorer.RenamedAlreadyCreatedNotJavaFileTest"/>
-            <class name="org.eclipse.che.selenium.projectexplorer.RenameJustCreatedNotJavaFileTest"/>
-            <class name="org.eclipse.che.selenium.projectexplorer.RenameProjectTest"/>
-            <class name="org.eclipse.che.selenium.projectexplorer.ShowFileReferenceTest"/>
-            <class name="org.eclipse.che.selenium.projectexplorer.CheckDisplayingArtifactIdTest"/>
-            <class name="org.eclipse.che.selenium.projectexplorer.DownloadProjectTest"/>
-            <class name="org.eclipse.che.selenium.projectexplorer.UploadIntoProjectTest"/>
-
-
         </classes>
     </test>
 
