@@ -46,6 +46,15 @@
             <class name="com.redhat.codeready.selenium.miscellaneous.ResolveDependencyAfterRecreateProjectTest"/>
             <class name="com.redhat.codeready.selenium.miscellaneous.WorkingWithSplitPanelTest"/>
             <class name="com.redhat.codeready.selenium.miscellaneous.WorkingWithTerminalTest"/>
+            <class name="com.redhat.codeready.selenium.factory.CheckOpenFileFeatureTest"/>
+            <class name="com.redhat.codeready.selenium.factory.CheckRunCommandFeatureTest"/>
+            <class name="com.redhat.codeready.selenium.factory.CreateNamedFactoryFromDashboardTest"/>
+            <class name="com.redhat.codeready.selenium.intelligencecommand.AutocompleteCommandsEditorTest"/>
+            <class name="com.redhat.codeready.selenium.intelligencecommand.CheckIntelligenceCommandFromToolbarTest"/>
+            <class name="com.redhat.codeready.selenium.intelligencecommand.CommandsPaletteTest"/>
+            <class name="com.redhat.codeready.selenium.intelligencecommand.MacrosCommandsEditorTest"/>
+            <class name="com.redhat.codeready.selenium.languageserver.JsonFileEditingTest"/>
+            <class name="com.redhat.codeready.selenium.workspaces.CreateWorkspaceOnDashboardTest"/>
         </classes>
     </test>
 
