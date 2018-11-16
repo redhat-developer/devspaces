@@ -16,7 +16,7 @@
         }
       },
       "recipe": {
-        "location": "docker-registry.engineering.redhat.com/crw/rhel-c-cpp",
+        "location": "registry.access.redhat.com/codeready-workspaces-beta/stacks-cpp:1.0.0.Beta1",
         "type": "dockerimage"
       }
     }
