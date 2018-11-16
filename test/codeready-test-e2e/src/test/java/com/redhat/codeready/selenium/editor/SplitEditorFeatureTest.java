@@ -1,14 +1,14 @@
 /*
- * Copyright (c) 2012-2018 Red Hat, Inc.
- * This program and the accompanying materials are made
- * available under the terms of the Eclipse Public License 2.0
- * which is available at https://www.eclipse.org/legal/epl-2.0/
- *
- * SPDX-License-Identifier: EPL-2.0
- *
- * Contributors:
- *   Red Hat, Inc. - initial API and implementation
- */
+* Copyright (c) 2018 Red Hat, Inc.
+
+* All rights reserved. This program and the accompanying materials
+* are made available under the terms of the Eclipse Public License v1.0
+* which accompanies this distribution, and is available at
+* http://www.eclipse.org/legal/epl-v10.html
+*
+* Contributors:
+*   Red Hat, Inc. - initial API and implementation
+*/
 package com.redhat.codeready.selenium.editor;
 
 import static org.eclipse.che.selenium.core.constant.TestTimeoutsConstants.LOAD_PAGE_TIMEOUT_SEC;
@@ -72,7 +72,7 @@ public class SplitEditorFeatureTest {
     String javaFileName = "MemberRegistration.java";
     ide.open(workspace);
     createProject(PROJECT_NAME);
-    // consoles.waitJDTLSProjectResolveFinishedMessage(PROJECT_NAME);
+    consoles.waitJDTLSProjectResolveFinishedMessage(PROJECT_NAME);
     projectExplorer.waitAndSelectItem(PROJECT_NAME);
     projectExplorer.expandPathInProjectExplorerAndOpenFile(PATH_TO_PACKAGE, javaFileName);
     editor.waitTabIsPresent(NAME_JAVA_CLASS);
