@@ -34,7 +34,7 @@ COPY entrypoint.sh /entrypoint.sh
 RUN mkdir -p /home/jboss/codeready
 
 # built locally, use ADD
-ADD assembly/assembly-main/target/codeready-6.14.2-SNAPSHOT/codeready-6.14.2-SNAPSHOT /home/jboss/codeready
+ADD assembly/assembly-main/target/codeready-6.14.1-SNAPSHOT/codeready-6.14.1-SNAPSHOT /home/jboss/codeready
 
 # built in Brew, use curl + tar against latest artifact
 # fetched via fetch-artifacts-url.yaml?
