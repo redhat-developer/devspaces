@@ -25,7 +25,7 @@
         }
       },
       "recipe": {
-        "content": "docker-registry.engineering.redhat.com/crw/rhel-python",
+        "content": "registry.access.redhat.com/codeready-workspaces-beta/stacks-python:1.0.0.Beta1",
         "type": "dockerimage"
       }
     }
