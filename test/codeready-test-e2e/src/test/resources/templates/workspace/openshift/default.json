@@ -33,7 +33,7 @@
       },
       "recipe": {
         "type": "dockerimage",
-        "content": "docker-registry.engineering.redhat.com/crw/rhel-base-jdk8"
+        "content": "registry.access.redhat.com/codeready-workspaces/stacks-java:1.0.0"
       }
     }
   },

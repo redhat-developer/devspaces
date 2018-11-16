@@ -30,7 +30,7 @@
         }
       },
       "recipe": {
-        "location": "docker-registry.engineering.redhat.com/crw/rhel-node",
+        "location": "registry.access.redhat.com/codeready-workspaces/stacks-node:1.0.0",
         "type": "dockerimage"
       }
     }
