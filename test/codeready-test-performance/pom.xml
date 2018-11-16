@@ -50,8 +50,9 @@
                             <propertiesUser>
                                 <test.threads>${test.threads}</test.threads>
                                 <crw.protocol>${crw.protocol}</crw.protocol>
+                                <crw.host>${crw.host}</crw.host>
                                 <crw.sso.host>${crw.sso.host}</crw.sso.host>
-                                <crw.port>${crw.host}</crw.port>
+                                <crw.port>${crw.port}</crw.port>
                             </propertiesUser>
                             <ignoreResultFailures>true</ignoreResultFailures>
                         </configuration>

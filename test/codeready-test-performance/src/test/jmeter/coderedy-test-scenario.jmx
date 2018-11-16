@@ -13,9 +13,29 @@
             <stringProp name="Argument.value">null</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
-          <elementProp name="HOST" elementType="Argument">
-            <stringProp name="Argument.name">HOST</stringProp>
-            <stringProp name="Argument.value">null</stringProp>
+          <elementProp name="crw.host" elementType="Argument">
+            <stringProp name="Argument.name">crw.host</stringProp>
+            <stringProp name="Argument.value">${__P(crw.host,127.0.0.1)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="crw.sso.host" elementType="Argument">
+            <stringProp name="Argument.name">crw.sso.host</stringProp>
+            <stringProp name="Argument.value">${__P(crw.sso.host,127.0.0.1)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="crw.protocol" elementType="Argument">
+            <stringProp name="Argument.name">crw.protocol</stringProp>
+            <stringProp name="Argument.value">${__P(crw.protocol,http)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="crw.port" elementType="Argument">
+            <stringProp name="Argument.name">crw.port</stringProp>
+            <stringProp name="Argument.value">${__P(crw.port,80)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="test.threads" elementType="Argument">
+            <stringProp name="Argument.name">test.threads</stringProp>
+            <stringProp name="Argument.value">${__P(test.threads,1)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
         </collectionProp>
@@ -41,7 +61,7 @@
           <boolProp name="LoopController.continue_forever">false</boolProp>
           <stringProp name="LoopController.loops">1</stringProp>
         </elementProp>
-        <stringProp name="ThreadGroup.num_threads">4</stringProp>
+        <stringProp name="ThreadGroup.num_threads">${__P(test.threads,1)}</stringProp>
         <stringProp name="ThreadGroup.ramp_time">1</stringProp>
         <boolProp name="ThreadGroup.scheduler">false</boolProp>
         <stringProp name="ThreadGroup.duration"></stringProp>
@@ -105,9 +125,9 @@
               </elementProp>
             </collectionProp>
           </elementProp>
-          <stringProp name="HTTPSampler.domain">rh-sso-codeready.${HOST}</stringProp>
-          <stringProp name="HTTPSampler.port"></stringProp>
-          <stringProp name="HTTPSampler.protocol">http</stringProp>
+          <stringProp name="HTTPSampler.domain">${crw.sso.host}</stringProp>
+          <stringProp name="HTTPSampler.port">${crw.port}</stringProp>
+          <stringProp name="HTTPSampler.protocol">${crw.protocol}</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
           <stringProp name="HTTPSampler.path">/auth/realms/master/protocol/openid-connect/token</stringProp>
           <stringProp name="HTTPSampler.method">POST</stringProp>
@@ -202,9 +222,9 @@ props.put(&quot;TRANSITION_HOST&quot;, &quot;${HOST}&quot;)</stringProp>
               </elementProp>
             </collectionProp>
           </elementProp>
-          <stringProp name="HTTPSampler.domain">rh-sso-codeready.${HOST}</stringProp>
-          <stringProp name="HTTPSampler.port"></stringProp>
-          <stringProp name="HTTPSampler.protocol">http</stringProp>
+          <stringProp name="HTTPSampler.domain">${crw.sso.host}</stringProp>
+          <stringProp name="HTTPSampler.port">${crw.port}</stringProp>
+          <stringProp name="HTTPSampler.protocol">${crw.protocol}</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
           <stringProp name="HTTPSampler.path">/auth/admin/realms/codeready/users</stringProp>
           <stringProp name="HTTPSampler.method">POST</stringProp>
@@ -239,9 +259,9 @@ props.put(&quot;TRANSITION_HOST&quot;, &quot;${HOST}&quot;)</stringProp>
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" enabled="true">
             <collectionProp name="Arguments.arguments"/>
           </elementProp>
-          <stringProp name="HTTPSampler.domain">rh-sso-codeready.${HOST}</stringProp>
-          <stringProp name="HTTPSampler.port"></stringProp>
-          <stringProp name="HTTPSampler.protocol">http</stringProp>
+          <stringProp name="HTTPSampler.domain">${crw.sso.host}</stringProp>
+          <stringProp name="HTTPSampler.port">${crw.port}</stringProp>
+          <stringProp name="HTTPSampler.protocol">${crw.protocol}</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
           <stringProp name="HTTPSampler.path">/auth/admin/realms/codeready/users?first=0&amp;max=25</stringProp>
           <stringProp name="HTTPSampler.method">GET</stringProp>
@@ -314,9 +334,9 @@ props.put(&quot;TRANSITION_HOST&quot;, &quot;${HOST}&quot;)</stringProp>
               </elementProp>
             </collectionProp>
           </elementProp>
-          <stringProp name="HTTPSampler.domain">rh-sso-codeready.${HOST}</stringProp>
-          <stringProp name="HTTPSampler.port"></stringProp>
-          <stringProp name="HTTPSampler.protocol">http</stringProp>
+          <stringProp name="HTTPSampler.domain">${crw.sso.host}</stringProp>
+          <stringProp name="HTTPSampler.port">${crw.port}</stringProp>
+          <stringProp name="HTTPSampler.protocol">${crw.protocol}</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
           <stringProp name="HTTPSampler.path">/auth/realms/codeready/protocol/openid-connect/token</stringProp>
           <stringProp name="HTTPSampler.method">POST</stringProp>
@@ -410,9 +430,9 @@ props.put(&quot;TRANSITION_HOST&quot;, &quot;${HOST}&quot;)</stringProp>
               </elementProp>
             </collectionProp>
           </elementProp>
-          <stringProp name="HTTPSampler.domain">codeready-codeready.${HOST}</stringProp>
-          <stringProp name="HTTPSampler.port"></stringProp>
-          <stringProp name="HTTPSampler.protocol">http</stringProp>
+          <stringProp name="HTTPSampler.domain">${crw.host}</stringProp>
+          <stringProp name="HTTPSampler.port">${crw.port}</stringProp>
+          <stringProp name="HTTPSampler.protocol">${crw.protocol}</stringProp>
           <stringProp name="HTTPSampler.contentEncoding">UTF-8</stringProp>
           <stringProp name="HTTPSampler.path">/api/workspace?start-after-create=true</stringProp>
           <stringProp name="HTTPSampler.method">POST</stringProp>
@@ -461,9 +481,9 @@ props.put(&quot;TRANSITION_HOST&quot;, &quot;${HOST}&quot;)</stringProp>
             <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" enabled="true">
               <collectionProp name="Arguments.arguments"/>
             </elementProp>
-            <stringProp name="HTTPSampler.domain">codeready-codeready.${HOST}</stringProp>
-            <stringProp name="HTTPSampler.port"></stringProp>
-            <stringProp name="HTTPSampler.protocol">http</stringProp>
+            <stringProp name="HTTPSampler.domain">${crw.host}</stringProp>
+            <stringProp name="HTTPSampler.port">${crw.port}</stringProp>
+            <stringProp name="HTTPSampler.protocol">${crw.protocol}</stringProp>
             <stringProp name="HTTPSampler.contentEncoding">UTF-8</stringProp>
             <stringProp name="HTTPSampler.path">/api/workspace</stringProp>
             <stringProp name="HTTPSampler.method">GET</stringProp>
@@ -556,9 +576,9 @@ AssertionResult.setFailureMessage(&quot;the expected workspace status has been n
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" enabled="true">
             <collectionProp name="Arguments.arguments"/>
           </elementProp>
-          <stringProp name="HTTPSampler.domain">codeready-codeready.${HOST}</stringProp>
-          <stringProp name="HTTPSampler.port"></stringProp>
-          <stringProp name="HTTPSampler.protocol">http</stringProp>
+          <stringProp name="HTTPSampler.domain">${crw.host}</stringProp>
+          <stringProp name="HTTPSampler.port">${crw.port}</stringProp>
+          <stringProp name="HTTPSampler.protocol">${crw.protocol}</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
           <stringProp name="HTTPSampler.path">/api/workspace</stringProp>
           <stringProp name="HTTPSampler.method">GET</stringProp>
@@ -602,9 +622,9 @@ AssertionResult.setFailureMessage(&quot;the expected workspace status has been n
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" enabled="true">
             <collectionProp name="Arguments.arguments"/>
           </elementProp>
-          <stringProp name="HTTPSampler.domain">codeready-codeready.${HOST}</stringProp>
-          <stringProp name="HTTPSampler.port"></stringProp>
-          <stringProp name="HTTPSampler.protocol">http</stringProp>
+          <stringProp name="HTTPSampler.domain">${crw.host}</stringProp>
+          <stringProp name="HTTPSampler.port">${crw.port}</stringProp>
+          <stringProp name="HTTPSampler.protocol">${crw.protocol}</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
           <stringProp name="HTTPSampler.path">/api/workspace</stringProp>
           <stringProp name="HTTPSampler.method">GET</stringProp>
@@ -658,9 +678,9 @@ AssertionResult.setFailureMessage(&quot;the expected workspace status has been n
             <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" enabled="true">
               <collectionProp name="Arguments.arguments"/>
             </elementProp>
-            <stringProp name="HTTPSampler.domain">codeready-codeready.${HOST}</stringProp>
-            <stringProp name="HTTPSampler.port"></stringProp>
-            <stringProp name="HTTPSampler.protocol">http</stringProp>
+          <stringProp name="HTTPSampler.domain">${crw.host}</stringProp>
+          <stringProp name="HTTPSampler.port">${crw.port}</stringProp>
+          <stringProp name="HTTPSampler.protocol">${crw.protocol}</stringProp>
             <stringProp name="HTTPSampler.contentEncoding"></stringProp>
             <stringProp name="HTTPSampler.path">/api/workspace/${CURRENT_WS_ID}/runtime</stringProp>
             <stringProp name="HTTPSampler.method">DELETE</stringProp>
@@ -709,9 +729,9 @@ AssertionResult.setFailureMessage(&quot;the expected workspace status has been n
             <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" enabled="true">
               <collectionProp name="Arguments.arguments"/>
             </elementProp>
-            <stringProp name="HTTPSampler.domain">codeready-codeready.${HOST}</stringProp>
-            <stringProp name="HTTPSampler.port"></stringProp>
-            <stringProp name="HTTPSampler.protocol">http</stringProp>
+          <stringProp name="HTTPSampler.domain">${crw.host}</stringProp>
+          <stringProp name="HTTPSampler.port">${crw.port}</stringProp>
+          <stringProp name="HTTPSampler.protocol">${crw.protocol}</stringProp>
             <stringProp name="HTTPSampler.contentEncoding">UTF-8</stringProp>
             <stringProp name="HTTPSampler.path">/api/workspace</stringProp>
             <stringProp name="HTTPSampler.method">GET</stringProp>
@@ -769,9 +789,9 @@ vars.put(&quot;IS_WORKSPACE_STOPPED&quot;, String.valueOf(IS_WORKSPACE_STOPPED))
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" enabled="true">
             <collectionProp name="Arguments.arguments"/>
           </elementProp>
-          <stringProp name="HTTPSampler.domain">codeready-codeready.${HOST}</stringProp>
-          <stringProp name="HTTPSampler.port"></stringProp>
-          <stringProp name="HTTPSampler.protocol">http</stringProp>
+          <stringProp name="HTTPSampler.domain">${crw.host}</stringProp>
+          <stringProp name="HTTPSampler.port">${crw.port}</stringProp>
+          <stringProp name="HTTPSampler.protocol">${crw.protocol}</stringProp>
           <stringProp name="HTTPSampler.contentEncoding">UTF-8</stringProp>
           <stringProp name="HTTPSampler.path">/api/workspace/${CURRENT_WS_ID}</stringProp>
           <stringProp name="HTTPSampler.method">DELETE</stringProp>
@@ -902,9 +922,9 @@ vars.put(&quot;IS_WORKSPACE_STOPPED&quot;, String.valueOf(IS_WORKSPACE_STOPPED))
                 </elementProp>
               </collectionProp>
             </elementProp>
-            <stringProp name="HTTPSampler.domain">rh-sso-codeready.${HOST}</stringProp>
-            <stringProp name="HTTPSampler.port"></stringProp>
-            <stringProp name="HTTPSampler.protocol">http</stringProp>
+          <stringProp name="HTTPSampler.domain">${crw.sso.host}</stringProp>
+          <stringProp name="HTTPSampler.port">${crw.port}</stringProp>
+          <stringProp name="HTTPSampler.protocol">${crw.protocol}</stringProp>
             <stringProp name="HTTPSampler.contentEncoding"></stringProp>
             <stringProp name="HTTPSampler.path">/auth/realms/master/protocol/openid-connect/token</stringProp>
             <stringProp name="HTTPSampler.method">POST</stringProp>
@@ -954,9 +974,9 @@ vars.put(&quot;IS_WORKSPACE_STOPPED&quot;, String.valueOf(IS_WORKSPACE_STOPPED))
             <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" enabled="true">
               <collectionProp name="Arguments.arguments"/>
             </elementProp>
-            <stringProp name="HTTPSampler.domain">rh-sso-codeready.${HOST}</stringProp>
-            <stringProp name="HTTPSampler.port"></stringProp>
-            <stringProp name="HTTPSampler.protocol">http</stringProp>
+          <stringProp name="HTTPSampler.domain">${crw.sso.host}</stringProp>
+          <stringProp name="HTTPSampler.port">${crw.port}</stringProp>
+          <stringProp name="HTTPSampler.protocol">${crw.protocol}</stringProp>
             <stringProp name="HTTPSampler.contentEncoding"></stringProp>
             <stringProp name="HTTPSampler.path">/auth/admin/realms/codeready/users</stringProp>
             <stringProp name="HTTPSampler.method">GET</stringProp>
@@ -1006,9 +1026,9 @@ vars.put(&quot;IS_WORKSPACE_STOPPED&quot;, String.valueOf(IS_WORKSPACE_STOPPED))
               <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" enabled="true">
                 <collectionProp name="Arguments.arguments"/>
               </elementProp>
-              <stringProp name="HTTPSampler.domain">rh-sso-codeready.${HOST}</stringProp>
-              <stringProp name="HTTPSampler.port"></stringProp>
-              <stringProp name="HTTPSampler.protocol">http</stringProp>
+              <stringProp name="HTTPSampler.domain">${crw.sso.host}</stringProp>
+              <stringProp name="HTTPSampler.port">${crw.port}</stringProp>
+              <stringProp name="HTTPSampler.protocol">${crw.protocol}</stringProp>
               <stringProp name="HTTPSampler.contentEncoding"></stringProp>
               <stringProp name="HTTPSampler.path">/auth/admin/realms/codeready/users/${CURRENT_USER_ID}</stringProp>
               <stringProp name="HTTPSampler.method">GET</stringProp>
@@ -1058,9 +1078,9 @@ vars.put(&quot;IS_WORKSPACE_STOPPED&quot;, String.valueOf(IS_WORKSPACE_STOPPED))
                 <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" enabled="true">
                   <collectionProp name="Arguments.arguments"/>
                 </elementProp>
-                <stringProp name="HTTPSampler.domain">rh-sso-codeready.${HOST}</stringProp>
-                <stringProp name="HTTPSampler.port"></stringProp>
-                <stringProp name="HTTPSampler.protocol">http</stringProp>
+                <stringProp name="HTTPSampler.domain">${crw.sso.host}</stringProp>
+                <stringProp name="HTTPSampler.port">${crw.port}</stringProp>
+                <stringProp name="HTTPSampler.protocol">${crw.protocol}</stringProp>
                 <stringProp name="HTTPSampler.contentEncoding"></stringProp>
                 <stringProp name="HTTPSampler.path">/auth/admin/realms/codeready/users/${CURRENT_USER_ID}</stringProp>
                 <stringProp name="HTTPSampler.method">DELETE</stringProp>
