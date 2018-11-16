@@ -11,7 +11,7 @@
 */
 package com.redhat.codeready.selenium.userstory;
 
-import static com.redhat.codeready.selenium.pageobject.dashboard.CodereadyNewWorkspace.CodereadyStacks.SPRING_BOOT;
+import static com.redhat.codeready.selenium.pageobject.dashboard.CodereadyNewWorkspace.CodereadyStacks.FUSE;
 import static org.eclipse.che.commons.lang.NameGenerator.generate;
 import static org.eclipse.che.selenium.core.constant.TestBuildConstants.BUILD_SUCCESS;
 import static org.eclipse.che.selenium.core.constant.TestBuildConstants.LISTENING_AT_ADDRESS_8000;
@@ -43,18 +43,17 @@ import org.eclipse.che.selenium.pageobject.ProjectExplorer;
 import org.eclipse.che.selenium.pageobject.dashboard.AddOrImportForm;
 import org.eclipse.che.selenium.pageobject.dashboard.Dashboard;
 import org.eclipse.che.selenium.pageobject.dashboard.workspaces.Workspaces;
-import org.openqa.selenium.By;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 /** @author Skoryk Serhii */
-public class SpringBootUserStoryTest {
+public class RedHatFuseUserStoryTest {
 
   private static final String WORKSPACE_NAME = generate("workspace", 4);
-  private static final String PROJECT_NAME = "spring-boot-http-booster";
+  private static final String PROJECT_NAME = "spring-boot-camel";
   private static final String PATH_TO_MAIN_PACKAGE =
-      PROJECT_NAME + "/src/main/java/io/openshift/booster";
+      PROJECT_NAME + "/src/main/java/io/fabric8/quickstarts/camel";
 
   @Inject private Ide ide;
   @Inject private Menu menu;
@@ -83,8 +82,8 @@ public class SpringBootUserStoryTest {
   }
 
   @Test
-  public void createSpringBootWorkspaceWithProjectFromDashBoard() {
-    createWorkspaceFromStackWithProject(SPRING_BOOT, PROJECT_NAME);
+  public void createRedHatFuseWorkspaceWithProjectFromDashBoard() {
+    createWorkspaceFromStackWithProject(FUSE, PROJECT_NAME);
 
     ide.switchToIdeAndWaitWorkspaceIsReadyToUse();
     testWorkspace = testWorkspaceProvider.getWorkspace(WORKSPACE_NAME, defaultTestUser);
@@ -95,9 +94,7 @@ public class SpringBootUserStoryTest {
   }
 
   @Test(priority = 1)
-  public void checkSpringBootHealthCheckBoosterProjectCommands() {
-    By textOnPreviewPage = By.xpath("//h2[text()='HTTP Booster']");
-
+  public void checkSpringBootCamelProjectCommands() {
     consoles.executeCommandFromProjectExplorer(
         PROJECT_NAME, BUILD_GOAL, BUILD_COMMAND, BUILD_SUCCESS);
 
@@ -105,11 +102,7 @@ public class SpringBootUserStoryTest {
         PROJECT_NAME, BUILD_GOAL, BUILD_COMMAND_ITEM.getItem(PROJECT_NAME), BUILD_SUCCESS);
 
     consoles.executeCommandFromProjectExplorer(
-        PROJECT_NAME,
-        RUN_GOAL,
-        RUN_COMMAND_ITEM.getItem(PROJECT_NAME),
-        "INFO: Setting the server's publish address to be /");
-    consoles.checkWebElementVisibilityAtPreviewPage(textOnPreviewPage);
+        PROJECT_NAME, RUN_GOAL, RUN_COMMAND_ITEM.getItem(PROJECT_NAME), "Hello World");
 
     consoles.closeProcessTabWithAskDialog(RUN_COMMAND_ITEM.getItem(PROJECT_NAME));
 
@@ -124,7 +117,7 @@ public class SpringBootUserStoryTest {
   public void checkCodeAssistantFeatures() {
     projectExplorer.quickExpandWithJavaScript();
 
-    projectExplorer.openItemByPath(PATH_TO_MAIN_PACKAGE + "/service/GreetingEndpoint.java");
+    projectExplorer.openItemByPath(PATH_TO_MAIN_PACKAGE + "/Application.java");
     editor.waitActive();
     projectExplorer.openItemByPath(PATH_TO_MAIN_PACKAGE + "/service/Greeting.java");
     editor.waitActive();
