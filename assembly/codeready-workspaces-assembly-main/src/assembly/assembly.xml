@@ -69,7 +69,7 @@
 
     <fileSets>
         <fileSet>
-            <directory>${project.build.directory}/dependency/eclipse-che-${che.version}</directory>
+            <directory>${project.build.directory}/dependency/eclipse-che-${project.version}</directory>
             <outputDirectory></outputDirectory>
             <excludes>
                 <exclude>**/tomcat/webapps/api.war</exclude>
