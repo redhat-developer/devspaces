@@ -11,7 +11,7 @@
 */
 package com.redhat.codeready.selenium.userstory;
 
-import static com.redhat.codeready.selenium.pageobject.dashboard.CodereadyNewWorkspace.CodereadyStacks.SPRING_BOOT;
+import static com.redhat.codeready.selenium.pageobject.dashboard.CodereadyNewWorkspace.CodereadyStacks.FUSE;
 import static org.eclipse.che.commons.lang.NameGenerator.generate;
 import static org.eclipse.che.selenium.core.constant.TestBuildConstants.BUILD_SUCCESS;
 import static org.eclipse.che.selenium.core.constant.TestBuildConstants.LISTENING_AT_ADDRESS_8000;
@@ -20,7 +20,6 @@ import static org.eclipse.che.selenium.core.constant.TestIntelligentCommandsCons
 import static org.eclipse.che.selenium.core.constant.TestIntelligentCommandsConstants.CommandItem.DEBUG_COMMAND_ITEM;
 import static org.eclipse.che.selenium.core.constant.TestIntelligentCommandsConstants.CommandItem.RUN_COMMAND_ITEM;
 import static org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants.Assistant.ASSISTANT;
-import static org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants.Assistant.QUICK_DOCUMENTATION;
 import static org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants.Assistant.QUICK_FIX;
 import static org.eclipse.che.selenium.core.constant.TestProjectExplorerContextMenuConstants.ContextMenuCommandGoals.BUILD_GOAL;
 import static org.eclipse.che.selenium.core.constant.TestProjectExplorerContextMenuConstants.ContextMenuCommandGoals.DEBUG_GOAL;
@@ -43,25 +42,24 @@ import org.eclipse.che.selenium.pageobject.ProjectExplorer;
 import org.eclipse.che.selenium.pageobject.dashboard.AddOrImportForm;
 import org.eclipse.che.selenium.pageobject.dashboard.Dashboard;
 import org.eclipse.che.selenium.pageobject.dashboard.workspaces.Workspaces;
-import org.openqa.selenium.By;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 /** @author Skoryk Serhii */
-public class SpringBootUserStoryTest {
+public class RedHatFuseUserStoryTest {
 
   private static final String WORKSPACE_NAME = generate("workspace", 4);
-  private static final String PROJECT_NAME = "spring-boot-http-booster";
+  private static final String PROJECT_NAME = "spring-boot-camel";
   private static final String PATH_TO_MAIN_PACKAGE =
-      PROJECT_NAME + "/src/main/java/io/openshift/booster";
+      PROJECT_NAME + "/src/main/java/io/fabric8/quickstarts/camel";
 
   @Inject private Ide ide;
   @Inject private Menu menu;
   @Inject private Consoles consoles;
   @Inject private Dashboard dashboard;
-  @Inject private CodereadyEditor editor;
   @Inject private Workspaces workspaces;
+  @Inject private CodereadyEditor editor;
   @Inject private DefaultTestUser defaultTestUser;
   @Inject private ProjectExplorer projectExplorer;
   @Inject private AddOrImportForm addOrImportForm;
@@ -83,8 +81,8 @@ public class SpringBootUserStoryTest {
   }
 
   @Test
-  public void createSpringBootWorkspaceWithProjectFromDashBoard() {
-    createWorkspaceFromStackWithProject(SPRING_BOOT, PROJECT_NAME);
+  public void createRedHatFuseWorkspaceWithProjectFromDashboard() {
+    createWorkspaceFromStackWithProject(FUSE, PROJECT_NAME);
 
     ide.switchToIdeAndWaitWorkspaceIsReadyToUse();
     testWorkspace = testWorkspaceProvider.getWorkspace(WORKSPACE_NAME, defaultTestUser);
@@ -95,9 +93,7 @@ public class SpringBootUserStoryTest {
   }
 
   @Test(priority = 1)
-  public void checkSpringBootHealthCheckBoosterProjectCommands() {
-    By textOnPreviewPage = By.xpath("//h2[text()='HTTP Booster']");
-
+  public void checkSpringBootCamelProjectCommands() {
     consoles.executeCommandFromProjectExplorer(
         PROJECT_NAME, BUILD_GOAL, BUILD_COMMAND, BUILD_SUCCESS);
 
@@ -105,11 +101,7 @@ public class SpringBootUserStoryTest {
         PROJECT_NAME, BUILD_GOAL, BUILD_COMMAND_ITEM.getItem(PROJECT_NAME), BUILD_SUCCESS);
 
     consoles.executeCommandFromProjectExplorer(
-        PROJECT_NAME,
-        RUN_GOAL,
-        RUN_COMMAND_ITEM.getItem(PROJECT_NAME),
-        "INFO: Setting the server's publish address to be /");
-    consoles.checkWebElementVisibilityAtPreviewPage(textOnPreviewPage);
+        PROJECT_NAME, RUN_GOAL, RUN_COMMAND_ITEM.getItem(PROJECT_NAME), "Hello World");
 
     consoles.closeProcessTabWithAskDialog(RUN_COMMAND_ITEM.getItem(PROJECT_NAME));
 
@@ -124,43 +116,31 @@ public class SpringBootUserStoryTest {
   public void checkCodeAssistantFeatures() {
     projectExplorer.quickExpandWithJavaScript();
 
-    projectExplorer.openItemByPath(PATH_TO_MAIN_PACKAGE + "/service/GreetingEndpoint.java");
-    editor.waitActive();
-    projectExplorer.openItemByPath(PATH_TO_MAIN_PACKAGE + "/service/Greeting.java");
+    projectExplorer.openItemByPath(PATH_TO_MAIN_PACKAGE + "/Application.java");
     editor.waitActive();
 
-    checkQuickDocumentationFeature();
     checkGoToDeclarationFeature();
     checkCodeValidationFeature();
   }
 
   private void checkGoToDeclarationFeature() {
-    editor.selectTabByName("GreetingEndpoint");
-    editor.goToPosition(33, 24);
+    editor.selectTabByName("Application");
+    editor.goToPosition(28, 41);
     editor.typeTextIntoEditor(F4.toString());
-    editor.waitActiveTabFileName("Greeting");
-    editor.waitCursorPosition(29, 20);
+    editor.waitActiveTabFileName("RouteBuilder.class");
+    editor.waitCursorPosition(54, 35);
   }
 
   private void checkCodeValidationFeature() {
-    editor.selectTabByName("Greeting");
-    editor.goToPosition(34, 17);
-    editor.typeTextIntoEditor("p");
-    editor.waitMarkerInPosition(ERROR, 34);
+    editor.selectTabByName("Application");
+    editor.goToPosition(32, 27);
+    editor.typeTextIntoEditor("r");
+    editor.waitMarkerInPosition(ERROR, 32);
 
-    editor.goToPosition(34, 17);
+    editor.goToPosition(32, 27);
     menu.runCommand(ASSISTANT, QUICK_FIX);
-    editor.enterTextIntoFixErrorPropByDoubleClick("Change to 'content'");
+    editor.enterTextIntoFixErrorPropByDoubleClick("Change to 'run(..)'");
     editor.waitAllMarkersInvisibility(ERROR);
-  }
-
-  private void checkQuickDocumentationFeature() {
-    editor.selectTabByName("Greeting");
-
-    editor.goToPosition(33, 16);
-    menu.runCommand(ASSISTANT, QUICK_DOCUMENTATION);
-    editor.checkTextToBePresentInCodereadyJavaDocPopUp(
-        "The Java language provides special support for the string concatenation operator ( + ), and for conversion of other objects to strings. ");
   }
 
   private void createWorkspaceFromStackWithProject(CodereadyStacks stackName, String projectName) {
