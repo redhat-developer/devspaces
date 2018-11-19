@@ -57,7 +57,6 @@
           <class name="org.eclipse.che.selenium.debugger.ConditionalBreakpointsTest"/>
           <class name="org.eclipse.che.selenium.editor.autocomplete.AutocompleteFeaturesInEditorTest"/>
           <class name="org.eclipse.che.selenium.editor.autocomplete.AutocompleteJSFilesTest"/>
-          <class name="org.eclipse.che.selenium.editor.autocomplete.AutocompleteProposalJavaDocTest"/>
           <class name="org.eclipse.che.selenium.editor.autocomplete.AutocompleteWithInheritTest"/>
           <class name="org.eclipse.che.selenium.editor.autocomplete.CheckAutocompleteFeaturesInTheTestFolderTest"/>
           <class name="org.eclipse.che.selenium.editor.autocomplete.EditorMemberActiveLineForOpenedTabTest"/>
@@ -74,7 +73,6 @@
           <class name="org.eclipse.che.selenium.editor.CheckWorkingWithTabByUsingTabListTest"/>
           <class name="org.eclipse.che.selenium.editor.CheckWorkingWithTabsByUsingContextMenuTest"/>
           <class name="org.eclipse.che.selenium.editor.ContextMenuEditorTest"/>
-          <class name="org.eclipse.che.selenium.editor.SplitEditorFeatureTest"/>
           <class name="org.eclipse.che.selenium.factory.CheckFactoryWithMultiModuleTest"/>
           <class name="org.eclipse.che.selenium.factory.CheckFactoryWithPerUserCreatePolicyTest"/>
           <class name="org.eclipse.che.selenium.factory.CheckFactoryWithPerClickCreatePolicyTest"/>
@@ -159,7 +157,6 @@
           <class name="org.eclipse.che.selenium.projectexplorer.CheckOnValidAndInvalidPackageNameTest"/>
           <class name="org.eclipse.che.selenium.projectexplorer.CheckRecentFilesAndRevealResourceTest"/>
           <class name="org.eclipse.che.selenium.projectexplorer.CheckRefreshProjectTreeTest"/>
-          <class name="org.eclipse.che.selenium.projectexplorer.CheckShowHideHiddenFilesTest"/>
           <class name="org.eclipse.che.selenium.projectexplorer.CheckTreeStructureAfterCloseTest"/>
           <class name="org.eclipse.che.selenium.projectexplorer.CheckTreeStructureAfterCloseTest"/>
           <class name="org.eclipse.che.selenium.projectexplorer.ClosingSeveralOpenFilesTest"/>
