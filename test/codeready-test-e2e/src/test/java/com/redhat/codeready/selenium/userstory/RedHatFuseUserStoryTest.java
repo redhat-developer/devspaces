@@ -81,7 +81,7 @@ public class RedHatFuseUserStoryTest {
   }
 
   @Test
-  public void createRedHatFuseWorkspaceWithProjectFromDashBoard() {
+  public void createRedHatFuseWorkspaceWithProjectFromDashboard() {
     createWorkspaceFromStackWithProject(FUSE, PROJECT_NAME);
 
     ide.switchToIdeAndWaitWorkspaceIsReadyToUse();
