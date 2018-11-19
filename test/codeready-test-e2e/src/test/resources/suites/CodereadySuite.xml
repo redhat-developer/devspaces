@@ -59,6 +59,9 @@
             <class name="com.redhat.codeready.selenium.intelligencecommand.MacrosCommandsEditorTest"/>
             <class name="com.redhat.codeready.selenium.languageserver.JsonFileEditingTest"/>
             <class name="com.redhat.codeready.selenium.workspaces.CreateWorkspaceOnDashboardTest"/>
+            <class name="com.redhat.codeready.selenium.editor.SplitEditorFeatureTest"/>
+            <class name="com.redhat.codeready.selenium.editor.autocomplete.AutocompleteProposalJavaDocTest"/>
+            <class name="com.redhat.codeready.selenium.projectexplorer.CheckShowHideHiddenFilesTest"/>
         </classes>
     </test>
 
