@@ -231,6 +231,7 @@
                                 </resource>
                             </resources>
                             <overwrite>true</overwrite>
+                            <addDefaultExcludes>false</addDefaultExcludes>
                         </configuration>
                     </execution>
                 </executions>
