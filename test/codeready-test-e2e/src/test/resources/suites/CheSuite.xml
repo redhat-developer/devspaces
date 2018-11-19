@@ -34,15 +34,11 @@
           <class name="org.eclipse.che.selenium.languageserver.ApacheCamelFileEditingTest"/>
           <class name="org.eclipse.che.selenium.languageserver.YamlFileEditingTest"/>
           <class name="org.eclipse.che.selenium.languageserver.GolangFileEditingTest"/>
-          <class name="org.eclipse.che.selenium.dashboard.CreateAndDeleteProjectsTest"/>
           <class name="org.eclipse.che.selenium.dashboard.DeleteRunningWorkspaceTest"/>
           <class name="org.eclipse.che.selenium.dashboard.DeleteStoppingWorkspaceTest"/>
           <class name="org.eclipse.che.selenium.dashboard.ImportMavenProjectFromGitTest"/>
           <class name="org.eclipse.che.selenium.dashboard.ImportProjectFromZipTest"/>
           <class name="org.eclipse.che.selenium.dashboard.RenameWorkspaceTest"/>
-          <class name="org.eclipse.che.selenium.dashboard.workspaces.details.WorkspaceDetailsComposeTest"/>
-          <class name="org.eclipse.che.selenium.dashboard.workspaces.details.WorkspaceDetailsMachinesRamTest"/>
-          <class name="org.eclipse.che.selenium.dashboard.workspaces.details.WorkspaceDetailsMachineActionsTest"/>
           <class name="org.eclipse.che.selenium.dashboard.FactoriesListTest"/>
           <class name="org.eclipse.che.selenium.dashboard.organization.UserEmptyOrganizationTest"/>
           <class name="org.eclipse.che.selenium.debugger.ChangeVariableWithEvaluatingTest"/>
@@ -92,7 +88,6 @@
           <class name="org.eclipse.che.selenium.filewatcher.UpdateFilesWithoutIDETest"/>
           <class name="org.eclipse.che.selenium.filewatcher.CheckDeletingProjectByApiTest"/>
           <class name="org.eclipse.che.selenium.filewatcher.CheckFileWatcherExcludeFeatureTest"/>
-          <class name="org.eclipse.che.selenium.git.ImportWizardFormTest"/>
           <class name="org.eclipse.che.selenium.git.AddFilesToIndexTest"/>
           <class name="org.eclipse.che.selenium.git.AmendCommitTest"/>
           <class name="org.eclipse.che.selenium.factory.DirectUrlFactoryWithSpecificBranchTest"/>
@@ -154,7 +149,6 @@
           <class name="org.eclipse.che.selenium.testrunner.JavaTestPluginTestNgTest"/>
           <class name="org.eclipse.che.selenium.preferences.CheckErrorsWarningsTabTest"/>
           <class name="org.eclipse.che.selenium.preferences.ContributeTabTest"/>
-          <class name="org.eclipse.che.selenium.theia.TheiaBuildPluginTest"/>
           <class name="org.eclipse.che.selenium.projectexplorer.CheckAutoSaveForFileWhichAlreadyExistTest"/>
           <class name="org.eclipse.che.selenium.projectexplorer.CheckCollapseAllNodesProjectTest"/>
           <class name="org.eclipse.che.selenium.projectexplorer.CheckCopyCutFeaturesForFilesTest"/>
@@ -231,13 +225,6 @@
           <class name="org.eclipse.che.selenium.workspaces.ProjectStateAfterRefreshTest"/>
           <class name="org.eclipse.che.selenium.workspaces.ProjectStateAfterRenameWorkspaceTest"/>
           <class name="org.eclipse.che.selenium.workspaces.ProjectStateAfterWorkspaceRestartTest"/>
-          <class name="org.eclipse.che.selenium.theia.Che7PreviewStackStartTest"/>
-          <class name="org.eclipse.che.selenium.stack.CreateWorkspaceFromBlankStackTest"/>
-          <class name="org.eclipse.che.selenium.stack.CreateWorkspaceFromCamelStackTest"/>
-          <class name="org.eclipse.che.selenium.stack.CreateWorkspaceFromJavaStackTest"/>
-          <class name="org.eclipse.che.selenium.stack.CreateWorkspaceFromPythonStackTest"/>
-          <class name="org.eclipse.che.selenium.stack.CreateWorkspaceFromJavaMySqlStackTest"/>
-          <class name="org.eclipse.che.selenium.stack.CreateWorkspaceFromNodeStackTest"/>
           <class name="org.eclipse.che.selenium.stack.CreateWorkspaceFromJavaTheiaOpenshiftStackTest"/>
           <class name="org.eclipse.che.selenium.stack.CreateWorkspaceFromJavaTheiaDockerStackTest"/>
           <class name="org.eclipse.che.selenium.workspaces.WorkspaceFromOfficialUbuntuImageStartTest"/>

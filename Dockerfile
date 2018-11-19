@@ -23,7 +23,7 @@ LABEL summary="$SUMMARY" \
       io.openshift.tags="$PRODNAME,$COMPNAME" \
       com.redhat.component="$PRODNAME-$COMPNAME" \
       name="$PRODNAME/$COMPNAME" \
-      version="1.0.0.Beta1" \
+      version="1.0.0.GA" \
       license="EPLv2" \
       maintainer="Nick Boldt <nboldt@redhat.com>" \
       io.openshift.expose-services="" \
@@ -34,7 +34,7 @@ COPY entrypoint.sh /entrypoint.sh
 RUN mkdir -p /home/jboss/codeready
 
 # built locally, use ADD
-ADD assembly/assembly-main/target/codeready-6.14.0-SNAPSHOT/codeready-6.14.0-SNAPSHOT /home/jboss/codeready
+ADD assembly/codeready-workspaces-assembly-main/target/codeready-6.15.0-SNAPSHOT/codeready-6.15.0-SNAPSHOT /home/jboss/codeready
 
 # built in Brew, use curl + tar against latest artifact
 # fetched via fetch-artifacts-url.yaml?

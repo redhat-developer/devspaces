@@ -12,7 +12,7 @@
     <parent>
         <artifactId>codeready</artifactId>
         <groupId>com.redhat</groupId>
-        <version>6.14.0-SNAPSHOT</version>
+        <version>6.15.0-SNAPSHOT</version>
     </parent>
     <groupId>com.redhat</groupId>
     <artifactId>codeready-assembly-parent</artifactId>
@@ -25,8 +25,8 @@
       <module>assembly-wsmaster-war</module>
       <module>assembly-wsagent-war</module>
       <module>assembly-wsagent-server</module>
-      <module>assembly-main</module>
-
-
+      <!-- fork from upstream eclipse/che/assembly/assembly-main, just remove docs -->
+      <!-- <module>che-assembly-main-no-docs</module> -->
+      <module>codeready-workspaces-assembly-main</module>
   </modules>
 </project>
