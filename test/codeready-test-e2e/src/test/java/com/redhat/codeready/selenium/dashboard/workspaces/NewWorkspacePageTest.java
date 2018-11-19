@@ -52,27 +52,13 @@ public class NewWorkspacePageTest {
           CodereadyStacks.VERTX,
           CodereadyStacks.SPRING_BOOT,
           CodereadyStacks.WILD_FLY_SWARM,
+          CodereadyStacks.FUSE,
           CodereadyStacks.DOT_NET,
           CodereadyStacks.CPP,
           CodereadyStacks.GO,
           CodereadyStacks.NODE,
           CodereadyStacks.PHP,
           CodereadyStacks.PYTHON);
-
-  private static List<CodereadyNewWorkspace.CodereadyStacks>
-      EXPECTED_CODEREADY_SINGLE_MACHINE_STACKS =
-          asList(
-              CodereadyStacks.JAVA_DEFAULT,
-              CodereadyStacks.JAVA_EAP,
-              CodereadyStacks.SPRING_BOOT,
-              CodereadyStacks.VERTX,
-              CodereadyStacks.WILD_FLY_SWARM,
-              CodereadyStacks.DOT_NET,
-              CodereadyStacks.CPP,
-              CodereadyStacks.GO,
-              CodereadyStacks.NODE,
-              CodereadyStacks.PHP,
-              CodereadyStacks.PYTHON);
 
   private static final List<CodereadyNewWorkspace.CodereadyStacks>
       EXPECTED_CODEREADY_QUICK_START_STACKS_REVERSE_ORDER =
@@ -82,12 +68,29 @@ public class NewWorkspacePageTest {
               CodereadyStacks.VERTX,
               CodereadyStacks.SPRING_BOOT,
               CodereadyStacks.WILD_FLY_SWARM,
+              CodereadyStacks.FUSE,
               CodereadyStacks.PYTHON,
               CodereadyStacks.PHP,
               CodereadyStacks.NODE,
               CodereadyStacks.GO,
               CodereadyStacks.CPP,
               CodereadyStacks.DOT_NET);
+
+  private static List<CodereadyNewWorkspace.CodereadyStacks>
+      EXPECTED_CODEREADY_SINGLE_MACHINE_STACKS =
+          asList(
+              CodereadyStacks.JAVA_EAP,
+              CodereadyStacks.JAVA_DEFAULT,
+              CodereadyStacks.VERTX,
+              CodereadyStacks.SPRING_BOOT,
+              CodereadyStacks.WILD_FLY_SWARM,
+              CodereadyStacks.FUSE,
+              CodereadyStacks.DOT_NET,
+              CodereadyStacks.CPP,
+              CodereadyStacks.GO,
+              CodereadyStacks.NODE,
+              CodereadyStacks.PHP,
+              CodereadyStacks.PYTHON);
 
   private static final List<CodereadyNewWorkspace.CodereadyStacks> EXPECTED_CODEREADY_JAVA_STACKS =
       asList(
