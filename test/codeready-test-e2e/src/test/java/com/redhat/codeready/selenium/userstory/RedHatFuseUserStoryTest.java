@@ -20,7 +20,6 @@ import static org.eclipse.che.selenium.core.constant.TestIntelligentCommandsCons
 import static org.eclipse.che.selenium.core.constant.TestIntelligentCommandsConstants.CommandItem.DEBUG_COMMAND_ITEM;
 import static org.eclipse.che.selenium.core.constant.TestIntelligentCommandsConstants.CommandItem.RUN_COMMAND_ITEM;
 import static org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants.Assistant.ASSISTANT;
-import static org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants.Assistant.QUICK_DOCUMENTATION;
 import static org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants.Assistant.QUICK_FIX;
 import static org.eclipse.che.selenium.core.constant.TestProjectExplorerContextMenuConstants.ContextMenuCommandGoals.BUILD_GOAL;
 import static org.eclipse.che.selenium.core.constant.TestProjectExplorerContextMenuConstants.ContextMenuCommandGoals.DEBUG_GOAL;
@@ -59,8 +58,8 @@ public class RedHatFuseUserStoryTest {
   @Inject private Menu menu;
   @Inject private Consoles consoles;
   @Inject private Dashboard dashboard;
-  @Inject private CodereadyEditor editor;
   @Inject private Workspaces workspaces;
+  @Inject private CodereadyEditor editor;
   @Inject private DefaultTestUser defaultTestUser;
   @Inject private ProjectExplorer projectExplorer;
   @Inject private AddOrImportForm addOrImportForm;
@@ -119,41 +118,29 @@ public class RedHatFuseUserStoryTest {
 
     projectExplorer.openItemByPath(PATH_TO_MAIN_PACKAGE + "/Application.java");
     editor.waitActive();
-    projectExplorer.openItemByPath(PATH_TO_MAIN_PACKAGE + "/service/Greeting.java");
-    editor.waitActive();
 
-    checkQuickDocumentationFeature();
     checkGoToDeclarationFeature();
     checkCodeValidationFeature();
   }
 
   private void checkGoToDeclarationFeature() {
-    editor.selectTabByName("GreetingEndpoint");
-    editor.goToPosition(33, 24);
+    editor.selectTabByName("Application");
+    editor.goToPosition(28, 41);
     editor.typeTextIntoEditor(F4.toString());
-    editor.waitActiveTabFileName("Greeting");
-    editor.waitCursorPosition(29, 20);
+    editor.waitActiveTabFileName("RouteBuilder.class");
+    editor.waitCursorPosition(54, 35);
   }
 
   private void checkCodeValidationFeature() {
-    editor.selectTabByName("Greeting");
-    editor.goToPosition(34, 17);
-    editor.typeTextIntoEditor("p");
-    editor.waitMarkerInPosition(ERROR, 34);
+    editor.selectTabByName("Application");
+    editor.goToPosition(32, 27);
+    editor.typeTextIntoEditor("r");
+    editor.waitMarkerInPosition(ERROR, 32);
 
-    editor.goToPosition(34, 17);
+    editor.goToPosition(32, 27);
     menu.runCommand(ASSISTANT, QUICK_FIX);
-    editor.enterTextIntoFixErrorPropByDoubleClick("Change to 'content'");
+    editor.enterTextIntoFixErrorPropByDoubleClick("Change to 'run(..)'");
     editor.waitAllMarkersInvisibility(ERROR);
-  }
-
-  private void checkQuickDocumentationFeature() {
-    editor.selectTabByName("Greeting");
-
-    editor.goToPosition(33, 16);
-    menu.runCommand(ASSISTANT, QUICK_DOCUMENTATION);
-    editor.checkTextToBePresentInCodereadyJavaDocPopUp(
-        "The Java language provides special support for the string concatenation operator ( + ), and for conversion of other objects to strings. ");
   }
 
   private void createWorkspaceFromStackWithProject(CodereadyStacks stackName, String projectName) {
