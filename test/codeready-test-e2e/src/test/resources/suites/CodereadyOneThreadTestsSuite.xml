@@ -20,6 +20,7 @@
         <classes>
             <class name="com.redhat.codeready.selenium.git.AuthorizeOnGithubFromDashboardTest"/>
             <class name="com.redhat.codeready.selenium.git.AuthorizeOnGithubFromPreferencesTest"/>
+            <class name="com.redhat.codeready.selenium.dashboard.workspaces.WorkspacesListTest"/>
         </classes>
     </test>
 </suite>
