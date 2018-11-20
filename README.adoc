@@ -31,7 +31,6 @@ NOTE: Since the build includes GWT compilation it may take more than 3 minutes t
 
 The build artifact used in the Docker image will be in `assembly/assembly-main/target/codeready-${version}/codeready-${version}`
 
-
 ### How to Build Container Image (Locally)
 
 Run the following command in the root of a repository:
@@ -45,7 +44,7 @@ You can then reference this image in your deployment (set image pull policy to I
 Please note, that stacks may reference non-existing images like `docker-registry.default.svc:5000/openshift/rhel-base-jdk8`. These images are built as a post installation step. Once published, they will be in locations like these:
 
 * registry.access.redhat.com/codeready-workspaces-beta/server:1.0.0.Beta1
-* registry.access.redhat.com/codeready-workspaces-beta/apb:1.0.0.Beta1 (TODO: rename to server-apb?)
+* registry.access.redhat.com/codeready-workspaces-beta/server-apb:1.0.0.Beta1
 * registry.access.redhat.com/codeready-workspaces-beta/stacks-cpp:1.0.0.Beta1
 * registry.access.redhat.com/codeready-workspaces-beta/stacks-dotnet:1.0.0.Beta1
 * registry.access.redhat.com/codeready-workspaces-beta/stacks-golang:1.0.0.Beta1
