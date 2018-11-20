@@ -76,7 +76,6 @@ public class StacksListTest {
     assertTrue(stacks.isStackItemExisted("Java 1.8"));
     assertEquals(
         stacks.getStackDescription("Java 1.8"), "Default Java Stack with OpenJDK 1.8, Maven 3.5");
-    assertEquals(stacks.getStackComponents("Java 1.8"), "RHEL, OpenJDK, Maven, EAP");
   }
 
   @Test
