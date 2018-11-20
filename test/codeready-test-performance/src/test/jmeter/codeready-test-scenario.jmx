@@ -43,18 +43,6 @@
       <stringProp name="TestPlan.user_define_classpath"></stringProp>
     </TestPlan>
     <hashTree>
-      <CSVDataSet guiclass="TestBeanGUI" testclass="CSVDataSet" testname="CSV Data Set Config" enabled="true">
-        <stringProp name="filename">/home/mmusiien/Downloads/apache-jmeter-5.0/conf.csv</stringProp>
-        <stringProp name="fileEncoding">UTF-8</stringProp>
-        <stringProp name="variableNames">PROTOCOL, HOST</stringProp>
-        <boolProp name="ignoreFirstLine">false</boolProp>
-        <stringProp name="delimiter">,</stringProp>
-        <boolProp name="quotedData">false</boolProp>
-        <boolProp name="recycle">true</boolProp>
-        <boolProp name="stopThread">false</boolProp>
-        <stringProp name="shareMode">shareMode.all</stringProp>
-      </CSVDataSet>
-      <hashTree/>
       <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Thread Group" enabled="true">
         <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
         <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
@@ -173,15 +161,6 @@
           </JSONPostProcessor>
           <hashTree/>
         </hashTree>
-        <JSR223Sampler guiclass="TestBeanGUI" testclass="JSR223Sampler" testname="store_tokens_to_properties_thread_${__threadNum}" enabled="true">
-          <stringProp name="scriptLanguage">groovy</stringProp>
-          <stringProp name="parameters"></stringProp>
-          <stringProp name="filename"></stringProp>
-          <stringProp name="cacheKey">true</stringProp>
-          <stringProp name="script">props.put(&quot;TRANSITION_ADMIN_TOKEN&quot;, &quot;${ADMIN_TOKEN}&quot;);
-props.put(&quot;TRANSITION_HOST&quot;, &quot;${HOST}&quot;)</stringProp>
-        </JSR223Sampler>
-        <hashTree/>
         <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="create_user_thread_${__threadNum}" enabled="true">
           <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
@@ -525,14 +504,16 @@ props.put(&quot;TRANSITION_HOST&quot;, &quot;${HOST}&quot;)</stringProp>
               <stringProp name="ConstantTimer.delay">1000</stringProp>
             </ConstantTimer>
             <hashTree/>
-            <JSONPathAssertion guiclass="JSONPathAssertionGui" testclass="JSONPathAssertion" testname="JSON Assertion" enabled="true">
-              <stringProp name="JSON_PATH">$.[0].status</stringProp>
-              <stringProp name="EXPECTED_VALUE">STARTING</stringProp>
-              <boolProp name="JSONVALIDATION">true</boolProp>
-              <boolProp name="EXPECT_NULL">false</boolProp>
-              <boolProp name="INVERT">false</boolProp>
-              <boolProp name="ISREGEX">false</boolProp>
-            </JSONPathAssertion>
+            <JSR223Assertion guiclass="TestBeanGUI" testclass="JSR223Assertion" testname="JSR223_Assertion_the_ws_with_expected_status" enabled="true">
+              <stringProp name="scriptLanguage">groovy</stringProp>
+              <stringProp name="parameters"></stringProp>
+              <stringProp name="filename"></stringProp>
+              <stringProp name="cacheKey">true</stringProp>
+              <stringProp name="script">if(vars.get(&quot;WORKSPACE_STATUS&quot;).equals(vars.get(&quot;STARTING&quot;)||vars.get(&quot;WORKSPACE_STATUS&quot;).equals(vars.get(&quot;RUNNING&quot;)))){
+AssertionResult.setFailure(true);
+AssertionResult.setFailureMessage(&quot;The expected WS status should be RUNNING or STARTING but we have &quot;+ vars.get(&quot;WORKSPACE_STATUS&quot;));
+}</stringProp>
+            </JSR223Assertion>
             <hashTree/>
           </hashTree>
           <JSR223Sampler guiclass="TestBeanGUI" testclass="JSR223Sampler" testname="reset_loop_if_WS_stopped_unexpectedly_${__threadNum}" enabled="true">
@@ -576,9 +557,9 @@ AssertionResult.setFailureMessage(&quot;the expected workspace status has been n
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" enabled="true">
             <collectionProp name="Arguments.arguments"/>
           </elementProp>
-          <stringProp name="HTTPSampler.domain">${crw.host}</stringProp>
-          <stringProp name="HTTPSampler.port">${crw.port}</stringProp>
-          <stringProp name="HTTPSampler.protocol">${crw.protocol}</stringProp>
+          <stringProp name="HTTPSampler.domain">codeready-codeready.${HOST}</stringProp>
+          <stringProp name="HTTPSampler.port"></stringProp>
+          <stringProp name="HTTPSampler.protocol">http</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
           <stringProp name="HTTPSampler.path">/api/workspace</stringProp>
           <stringProp name="HTTPSampler.method">GET</stringProp>
@@ -678,9 +659,9 @@ AssertionResult.setFailureMessage(&quot;the expected workspace status has been n
             <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" enabled="true">
               <collectionProp name="Arguments.arguments"/>
             </elementProp>
-          <stringProp name="HTTPSampler.domain">${crw.host}</stringProp>
-          <stringProp name="HTTPSampler.port">${crw.port}</stringProp>
-          <stringProp name="HTTPSampler.protocol">${crw.protocol}</stringProp>
+            <stringProp name="HTTPSampler.domain">${crw.host}</stringProp>
+            <stringProp name="HTTPSampler.port">${crw.port}</stringProp>
+            <stringProp name="HTTPSampler.protocol">${crw.protocol}</stringProp>
             <stringProp name="HTTPSampler.contentEncoding"></stringProp>
             <stringProp name="HTTPSampler.path">/api/workspace/${CURRENT_WS_ID}/runtime</stringProp>
             <stringProp name="HTTPSampler.method">DELETE</stringProp>
@@ -729,9 +710,9 @@ AssertionResult.setFailureMessage(&quot;the expected workspace status has been n
             <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" enabled="true">
               <collectionProp name="Arguments.arguments"/>
             </elementProp>
-          <stringProp name="HTTPSampler.domain">${crw.host}</stringProp>
-          <stringProp name="HTTPSampler.port">${crw.port}</stringProp>
-          <stringProp name="HTTPSampler.protocol">${crw.protocol}</stringProp>
+            <stringProp name="HTTPSampler.domain">${crw.host}</stringProp>
+            <stringProp name="HTTPSampler.port">${crw.port}</stringProp>
+            <stringProp name="HTTPSampler.protocol">${crw.protocol}</stringProp>
             <stringProp name="HTTPSampler.contentEncoding">UTF-8</stringProp>
             <stringProp name="HTTPSampler.path">/api/workspace</stringProp>
             <stringProp name="HTTPSampler.method">GET</stringProp>
@@ -833,43 +814,6 @@ vars.put(&quot;IS_WORKSPACE_STOPPED&quot;, String.valueOf(IS_WORKSPACE_STOPPED))
           </ResponseAssertion>
           <hashTree/>
         </hashTree>
-        <ResultCollector guiclass="SummaryReport" testclass="ResultCollector" testname="Summary Report" enabled="true">
-          <boolProp name="ResultCollector.error_logging">false</boolProp>
-          <objProp>
-            <name>saveConfig</name>
-            <value class="SampleSaveConfiguration">
-              <time>true</time>
-              <latency>true</latency>
-              <timestamp>true</timestamp>
-              <success>true</success>
-              <label>true</label>
-              <code>true</code>
-              <message>true</message>
-              <threadName>true</threadName>
-              <dataType>true</dataType>
-              <encoding>false</encoding>
-              <assertions>true</assertions>
-              <subresults>true</subresults>
-              <responseData>false</responseData>
-              <samplerData>false</samplerData>
-              <xml>false</xml>
-              <fieldNames>true</fieldNames>
-              <responseHeaders>false</responseHeaders>
-              <requestHeaders>false</requestHeaders>
-              <responseDataOnError>false</responseDataOnError>
-              <saveAssertionResultsFailureMessage>true</saveAssertionResultsFailureMessage>
-              <assertionsResultsToSave>0</assertionsResultsToSave>
-              <bytes>true</bytes>
-              <sentBytes>true</sentBytes>
-              <url>true</url>
-              <threadCounts>true</threadCounts>
-              <idleTime>true</idleTime>
-              <connectTime>true</connectTime>
-            </value>
-          </objProp>
-          <stringProp name="filename"></stringProp>
-        </ResultCollector>
-        <hashTree/>
       </hashTree>
       <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="clean_up" enabled="true">
         <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
@@ -922,9 +866,9 @@ vars.put(&quot;IS_WORKSPACE_STOPPED&quot;, String.valueOf(IS_WORKSPACE_STOPPED))
                 </elementProp>
               </collectionProp>
             </elementProp>
-          <stringProp name="HTTPSampler.domain">${crw.sso.host}</stringProp>
-          <stringProp name="HTTPSampler.port">${crw.port}</stringProp>
-          <stringProp name="HTTPSampler.protocol">${crw.protocol}</stringProp>
+            <stringProp name="HTTPSampler.domain">${crw.sso.host}</stringProp>
+            <stringProp name="HTTPSampler.port">${crw.port}</stringProp>
+            <stringProp name="HTTPSampler.protocol">${crw.protocol}</stringProp>
             <stringProp name="HTTPSampler.contentEncoding"></stringProp>
             <stringProp name="HTTPSampler.path">/auth/realms/master/protocol/openid-connect/token</stringProp>
             <stringProp name="HTTPSampler.method">POST</stringProp>
@@ -974,9 +918,9 @@ vars.put(&quot;IS_WORKSPACE_STOPPED&quot;, String.valueOf(IS_WORKSPACE_STOPPED))
             <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" enabled="true">
               <collectionProp name="Arguments.arguments"/>
             </elementProp>
-          <stringProp name="HTTPSampler.domain">${crw.sso.host}</stringProp>
-          <stringProp name="HTTPSampler.port">${crw.port}</stringProp>
-          <stringProp name="HTTPSampler.protocol">${crw.protocol}</stringProp>
+            <stringProp name="HTTPSampler.domain">${crw.sso.host}</stringProp>
+            <stringProp name="HTTPSampler.port">${crw.port}</stringProp>
+            <stringProp name="HTTPSampler.protocol">${crw.protocol}</stringProp>
             <stringProp name="HTTPSampler.contentEncoding"></stringProp>
             <stringProp name="HTTPSampler.path">/auth/admin/realms/codeready/users</stringProp>
             <stringProp name="HTTPSampler.method">GET</stringProp>
@@ -1114,46 +1058,7 @@ vars.put(&quot;IS_WORKSPACE_STOPPED&quot;, String.valueOf(IS_WORKSPACE_STOPPED))
             </hashTree>
           </hashTree>
         </hashTree>
-        <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree" enabled="true">
-          <boolProp name="ResultCollector.error_logging">false</boolProp>
-          <objProp>
-            <name>saveConfig</name>
-            <value class="SampleSaveConfiguration">
-              <time>true</time>
-              <latency>true</latency>
-              <timestamp>true</timestamp>
-              <success>true</success>
-              <label>true</label>
-              <code>true</code>
-              <message>true</message>
-              <threadName>true</threadName>
-              <dataType>true</dataType>
-              <encoding>false</encoding>
-              <assertions>true</assertions>
-              <subresults>true</subresults>
-              <responseData>false</responseData>
-              <samplerData>false</samplerData>
-              <xml>false</xml>
-              <fieldNames>true</fieldNames>
-              <responseHeaders>false</responseHeaders>
-              <requestHeaders>false</requestHeaders>
-              <responseDataOnError>false</responseDataOnError>
-              <saveAssertionResultsFailureMessage>true</saveAssertionResultsFailureMessage>
-              <assertionsResultsToSave>0</assertionsResultsToSave>
-              <bytes>true</bytes>
-              <sentBytes>true</sentBytes>
-              <url>true</url>
-              <threadCounts>true</threadCounts>
-              <idleTime>true</idleTime>
-              <connectTime>true</connectTime>
-            </value>
-          </objProp>
-          <stringProp name="filename"></stringProp>
-        </ResultCollector>
-        <hashTree/>
       </hashTree>
-      <ConfigTestElement guiclass="PropertyControlGui" testclass="ConfigTestElement" testname="Property Display" enabled="true"/>
-      <hashTree/>
     </hashTree>
   </hashTree>
 </jmeterTestPlan>
