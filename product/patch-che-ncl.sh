@@ -9,9 +9,3 @@ sed -i -e "s#.*<module>dashboard</module>.*##" pom.xml
 perl -0777 -p -i -e 's|(\ +<dependency>.*?<\/dependency>)| $1 =~ /<artifactId>che-docs<\/artifactId>/?"":$1|gse' assembly/assembly-main/pom.xml
 perl -0777 -p -i -e 's|(\ +<dependencySet>.*?<\/dependencySet>)| $1 =~ /<include>org.eclipse.che.docs:che-docs<\/include>/?"":$1|gse' assembly/assembly-main/src/assembly/assembly.xml
 perl -0777 -p -i -e 's|(\ +<dependency>.*?<\/dependency>)| $1 =~ /<artifactId>che-docs<\/artifactId>/?"":$1|gse' pom.xml
-
-# remove assembly-main from the reactor
-# TODO: undo this if we move this out of downstream and need it here
-#sed -i -e "s#.*<module>assembly-main</module>.*##" assembly/pom.xml
-# remove dep on assembly-main from the root 
-#perl -0777 -p -i -e 's|(\ +<dependency>.*?<\/dependency>)| $1 =~ /<artifactId>assembly-main<\/artifactId>/?"":$1|gse' pom.xml
