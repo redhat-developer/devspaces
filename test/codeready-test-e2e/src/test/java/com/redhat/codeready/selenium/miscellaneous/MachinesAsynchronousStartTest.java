@@ -52,10 +52,8 @@ public class MachinesAsynchronousStartTest {
       "get event --no-headers=true | grep %s | awk '{print $7 \" \" $8}'";
   private static final String EXPECTED_ERROR_NOTIFICATION_TEXT =
       format(
-          "Unrecoverable event occurred: 'Failed', 'Failed to pull image \"%s\": "
-              + "rpc error: code = Unknown desc = Error response from daemon: "
-              + "manifest for %s:latest not found'",
-          NOT_EXISTED_IMAGE_NAME, NOT_EXISTED_IMAGE_NAME);
+          "Unrecoverable event occurred: 'Failed', 'Failed to pull image \"%s\": rpc error: code = Unknown desc",
+          NOT_EXISTED_IMAGE_NAME);
 
   @Inject private Dashboard dashboard;
   @Inject private Workspaces workspaces;
