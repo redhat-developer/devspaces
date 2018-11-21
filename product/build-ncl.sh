@@ -23,7 +23,8 @@ while [[ "$#" -gt 0 ]]; do
   case $1 in
     '-v') version="$2"; shift 1;; #eg., 6.12.0
     '-s') suffix="$2"; shift 1;; # eg., redhat-00007
-    '-dv') includeDashboardVersion="$2"; shift 1;; # eg., 6.11.1 or 6.13.0-SNAPSHOT
+    '-dv') includeDashboardVersion="$2"; includeDashboardFromSource=0;  shift 1;; # eg., 6.11.1 or 6.13.0-SNAPSHOT; use "NO" to exclude dashboard (NOS-1485: test building it instead of including it)
+    '-idfs') includeDashboardFromSource=1; includeDashboardVersion="NO"; shift 0;;
     '-up') upstreamPom="$2"; shift 1;; # eg., 6.11.1 or 6.13.0-SNAPSHOT
     '-PROFILES') PROFILES="$2"; shift 1;; # override default profiles
     '-MVNFLAGS') MVNFLAGS="$2"; shift 1;; # add more mvn flags
@@ -175,7 +176,7 @@ MVNFLAGS="${MVNFLAGS} -DnpmRegistryURL=${npmRegistryURL} ${MVNFLAGS} -DYARN_REGI
 # get dashboard version from Sonatype - works but requires PME flag -DrepoReportingRemoval=false to resolve Sonatype Nexus
 ##########################################################################################
 
-if [[ $includeDashboardVersion ]]; then
+if [[ $includeDashboardVersion ]] && [[ $includeDashboardVersion != "NO" ]]; then
   if [[ ${includeDashboardVersion} == *"-SNAPSHOT" ]] && [[ ${doDashboardVersionLookup} -gt 0 ]]; then 
     wget --server-response http://oss.sonatype.org/content/repositories/snapshots/org/eclipse/che/dashboard/che-dashboard-war/${includeDashboardVersion}/maven-metadata.xml -O /tmp/mm.xml
     cheDashboardVersion=$(grep value /tmp/mm.xml | tail -1 | sed -e "s#.*<value>\(.\+\)</value>#\1#" && rm -f /tmp/mm.xml)
