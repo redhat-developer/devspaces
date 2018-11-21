@@ -16,13 +16,14 @@ suffix="" # normally we compute this from version of org/eclipse/che/depmgt/mave
 upstreamPom=org/eclipse/che/depmgt/maven-depmgt-pom # usually use depmgt/maven-depmgt-pom but can also align to org/eclipse/che/parent/maven-parent-pom for codeready-workspaces build
 INDY=""
 doSedReplacements=1
-doDashboardVersionLookup=1
+doMavenVersionLookup=1
 
 # read commandline args
 while [[ "$#" -gt 0 ]]; do
   case $1 in
     '-v') version="$2"; shift 1;; #eg., 6.12.0
     '-s') suffix="$2"; shift 1;; # eg., redhat-00007
+    '-lsjdtv') lsjdtVersion="$2"; shift 1;; # eg., 0.0.2 or 0.0.2-SNAPSHOT
     '-dv') includeDashboardVersion="$2"; includeDashboardFromSource=0;  shift 1;; # eg., 6.11.1 or 6.13.0-SNAPSHOT; use "NO" to exclude dashboard (NOS-1485: test building it instead of including it)
     '-idfs') includeDashboardFromSource=1; includeDashboardVersion="NO"; shift 0;;
     '-up') upstreamPom="$2"; shift 1;; # eg., 6.11.1 or 6.13.0-SNAPSHOT
@@ -30,7 +31,7 @@ while [[ "$#" -gt 0 ]]; do
     '-MVNFLAGS') MVNFLAGS="$2"; shift 1;; # add more mvn flags
     '-INDY') INDY="$2"; shift 1;; # override for default INDY URL
     '-ns') doSedReplacements=0; shift 0;; # don't do sed replacements (testing NCL-4195)
-    '-ndbvl') doDashboardVersionLookup=0; shift 0;; # don't check for a version of the dashboard, just use what's given (testing NCL-4195)s
+    '-ndbvl'|'ndmvl') doMavenVersionLookup=0; shift 0;; # don't check for a version of the dashboard, just use what's given (testing NCL-4195)s
     *) OTHER="${OTHER} $1"; shift 0;; 
   esac
   shift 1
@@ -179,12 +180,46 @@ MVNFLAGS="${MVNFLAGS} -DnpmRegistryURL=${npmRegistryURL} ${MVNFLAGS} -DYARN_REGI
 ##########################################################################################
 
 if [[ $includeDashboardVersion ]] && [[ $includeDashboardVersion != "NO" ]]; then
-  if [[ ${includeDashboardVersion} == *"-SNAPSHOT" ]] && [[ ${doDashboardVersionLookup} -gt 0 ]]; then 
+  if [[ ${includeDashboardVersion} == *"-SNAPSHOT" ]] && [[ ${doMavenVersionLookup} -gt 0 ]]; then 
+    # wget way
     wget --server-response http://oss.sonatype.org/content/repositories/snapshots/org/eclipse/che/dashboard/che-dashboard-war/${includeDashboardVersion}/maven-metadata.xml -O /tmp/mm.xml
     cheDashboardVersion=$(grep value /tmp/mm.xml | tail -1 | sed -e "s#.*<value>\(.\+\)</value>#\1#" && rm -f /tmp/mm.xml)
+    # maven way
+    # pushd /tmp
+    # MVN="mvn -U dependency:get -Dtransitive=false -Dmaven.repo.local=/tmp/m2-repo-temp"
+    # MVN="${MVN} -DremoteRepositories=http://oss.sonatype.org/content/repositories/snapshots/"
+    # MVN="${MVN} -Dversion=${includeDashboardVersion} -DgroupId=org.eclipse.che.dashboard"
+    # ${MVN} -DartifactId=che-dashboard-war -Dpackaging=pom | tee /tmp/m2-log.txt
+    # cheDashboardVersion=$(cat /tmp/m2-log.txt | grep ${includeDashboardVersion} | egrep -v "metadata" | grep Downloading | sed -e "s#.\+${includeDashboardVersion}/che-dashboard-war-\(.\+\).pom#\1#")
+    # rm -fr /tmp/m2-log.txt
+    # popd 
   fi
   if [[ ! ${cheDashboardVersion} ]]; then cheDashboardVersion=${includeDashboardVersion}; fi # fallback to 6.13.0-SNAPSHOT if not resolved
   MVNFLAGS="${MVNFLAGS} -Dche.dashboard.version=${cheDashboardVersion}"
+fi
+
+##########################################################################################
+# get jdt.ls deps from Sonatype - works but requires PME flag -DrepoReportingRemoval=false to resolve Sonatype Nexus
+##########################################################################################
+if [[ $lsjdtVersion ]] && [[ $lsjdtVersion != "NO" ]]; then
+if [[ ${lsjdtVersion} == *"-SNAPSHOT" ]] && [[ ${doMavenVersionLookup} -gt 0 ]]; then
+  # wget way
+  wget --server-response http://oss.sonatype.org/content/repositories/snapshots/org/eclipse/che/ls/jdt/jdt.ls.extension.api/${lsjdtVersion}/maven-metadata.xml -O /tmp/mm.xml
+  lsjdtVersionActual=$(grep value /tmp/mm.xml | tail -1 | sed -e "s#.*<value>\(.\+\)</value>#\1#" && rm -f /tmp/mm.xml)
+  # pushd /tmp
+  # MVN="mvn -U dependency:get -Dtransitive=false -Dmaven.repo.local=/tmp/m2-repo-temp"
+  # MVN="${MVN} -DremoteRepositories=http://oss.sonatype.org/content/repositories/snapshots/"
+  # MVN="${MVN} -Dversion=${lsjdtVersion} -DgroupId=org.eclipse.che.ls.jdt"
+
+  # ${MVN} -DartifactId=jdt.ls.extension.api -Dpackaging=pom | tee /tmp/m2-log.txt
+  # lsjdtVersionActual=$(cat /tmp/m2-log.txt | grep ${lsjdtVersion} | egrep -v "metadata" | grep Downloading | sed -e "s#.\+${lsjdtVersion}/jdt.ls.extension.api-\(.\+\).pom#\1#")
+  # rm -fr /tmp/m2-log.txt
+  # # ${MVN} -q -DartifactId=jdt.ls.extension.api
+  # # ${MVN} -q -DartifactId=jdt.ls.extension.api -Dclassifier=sources
+  # # ${MVN} -q -DartifactId=jdt.ls.extension.product -Dpackaging=tar.gz
+  # popd
+  if [[ ! ${lsjdtVersionActual} ]]; then lsjdtVersionActual=${lsjdtVersion}; fi # fallback to 0.2.0-SNAPSHOT if not resolved
+  MVNFLAGS="${MVNFLAGS} -Dche.ls.jdt.version=${lsjdtVersionActual}"
 fi
 
 ##########################################################################################
