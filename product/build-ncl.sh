@@ -202,24 +202,25 @@ fi
 # get jdt.ls deps from Sonatype - works but requires PME flag -DrepoReportingRemoval=false to resolve Sonatype Nexus
 ##########################################################################################
 if [[ $lsjdtVersion ]] && [[ $lsjdtVersion != "NO" ]]; then
-if [[ ${lsjdtVersion} == *"-SNAPSHOT" ]] && [[ ${doMavenVersionLookup} -gt 0 ]]; then
-  # wget way
-  wget --server-response http://oss.sonatype.org/content/repositories/snapshots/org/eclipse/che/ls/jdt/jdt.ls.extension.api/${lsjdtVersion}/maven-metadata.xml -O /tmp/mm.xml
-  lsjdtVersionActual=$(grep value /tmp/mm.xml | tail -1 | sed -e "s#.*<value>\(.\+\)</value>#\1#" && rm -f /tmp/mm.xml)
-  # pushd /tmp
-  # MVN="mvn -U dependency:get -Dtransitive=false -Dmaven.repo.local=/tmp/m2-repo-temp"
-  # MVN="${MVN} -DremoteRepositories=http://oss.sonatype.org/content/repositories/snapshots/"
-  # MVN="${MVN} -Dversion=${lsjdtVersion} -DgroupId=org.eclipse.che.ls.jdt"
+  if [[ ${lsjdtVersion} == *"-SNAPSHOT" ]] && [[ ${doMavenVersionLookup} -gt 0 ]]; then
+    # wget way
+    wget --server-response http://oss.sonatype.org/content/repositories/snapshots/org/eclipse/che/ls/jdt/jdt.ls.extension.api/${lsjdtVersion}/maven-metadata.xml -O /tmp/mm.xml
+    lsjdtVersionActual=$(grep value /tmp/mm.xml | tail -1 | sed -e "s#.*<value>\(.\+\)</value>#\1#" && rm -f /tmp/mm.xml)
+    # pushd /tmp
+    # MVN="mvn -U dependency:get -Dtransitive=false -Dmaven.repo.local=/tmp/m2-repo-temp"
+    # MVN="${MVN} -DremoteRepositories=http://oss.sonatype.org/content/repositories/snapshots/"
+    # MVN="${MVN} -Dversion=${lsjdtVersion} -DgroupId=org.eclipse.che.ls.jdt"
 
-  # ${MVN} -DartifactId=jdt.ls.extension.api -Dpackaging=pom | tee /tmp/m2-log.txt
-  # lsjdtVersionActual=$(cat /tmp/m2-log.txt | grep ${lsjdtVersion} | egrep -v "metadata" | grep Downloading | sed -e "s#.\+${lsjdtVersion}/jdt.ls.extension.api-\(.\+\).pom#\1#")
-  # rm -fr /tmp/m2-log.txt
-  # # ${MVN} -q -DartifactId=jdt.ls.extension.api
-  # # ${MVN} -q -DartifactId=jdt.ls.extension.api -Dclassifier=sources
-  # # ${MVN} -q -DartifactId=jdt.ls.extension.product -Dpackaging=tar.gz
-  # popd
-  if [[ ! ${lsjdtVersionActual} ]]; then lsjdtVersionActual=${lsjdtVersion}; fi # fallback to 0.2.0-SNAPSHOT if not resolved
-  MVNFLAGS="${MVNFLAGS} -Dche.ls.jdt.version=${lsjdtVersionActual}"
+    # ${MVN} -DartifactId=jdt.ls.extension.api -Dpackaging=pom | tee /tmp/m2-log.txt
+    # lsjdtVersionActual=$(cat /tmp/m2-log.txt | grep ${lsjdtVersion} | egrep -v "metadata" | grep Downloading | sed -e "s#.\+${lsjdtVersion}/jdt.ls.extension.api-\(.\+\).pom#\1#")
+    # rm -fr /tmp/m2-log.txt
+    # # ${MVN} -q -DartifactId=jdt.ls.extension.api
+    # # ${MVN} -q -DartifactId=jdt.ls.extension.api -Dclassifier=sources
+    # # ${MVN} -q -DartifactId=jdt.ls.extension.product -Dpackaging=tar.gz
+    # popd
+    if [[ ! ${lsjdtVersionActual} ]]; then lsjdtVersionActual=${lsjdtVersion}; fi # fallback to 0.2.0-SNAPSHOT if not resolved
+    MVNFLAGS="${MVNFLAGS} -Dche.ls.jdt.version=${lsjdtVersionActual}"
+  fi
 fi
 
 ##########################################################################################
