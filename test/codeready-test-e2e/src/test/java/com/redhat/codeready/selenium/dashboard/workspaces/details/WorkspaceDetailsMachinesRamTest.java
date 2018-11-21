@@ -17,6 +17,7 @@ import static org.eclipse.che.selenium.pageobject.dashboard.workspaces.Workspace
 import static org.eclipse.che.selenium.pageobject.dashboard.workspaces.WorkspaceDetails.WorkspaceDetailsTab.MACHINES;
 
 import com.google.inject.Inject;
+import org.eclipse.che.selenium.core.utils.WaitUtils;
 import org.eclipse.che.selenium.core.workspace.TestWorkspace;
 import org.eclipse.che.selenium.pageobject.dashboard.Dashboard;
 import org.eclipse.che.selenium.pageobject.dashboard.workspaces.WorkspaceDetails;
@@ -90,6 +91,8 @@ public class WorkspaceDetailsMachinesRamTest {
     workspaceDetailsMachines.waitRamAmount(MACHINE_NAME, MIN_RAM_VALID_VALUE);
     workspaceDetailsMachines.waitValidRamHighlighting(MACHINE_NAME);
 
+    // we need to wait a little to avoid quick clicking increment/decrement buttons
+    WaitUtils.sleepQuietly(1);
     workspaceDetailsMachines.clickOnIncrementRamButton(MACHINE_NAME);
     workspaceDetailsMachines.waitRamAmount(MACHINE_NAME, "1");
     workspaceDetailsMachines.waitValidRamHighlighting(MACHINE_NAME);
