@@ -16,7 +16,7 @@
     <parent>
         <artifactId>codeready-assembly-parent</artifactId>
         <groupId>com.redhat</groupId>
-        <version>6.14.0-SNAPSHOT</version>
+        <version>6.14.1-SNAPSHOT</version>
     </parent>
     <artifactId>codeready-ide-assembly-ide-war</artifactId>
     <packaging>war</packaging>
@@ -88,6 +88,9 @@
                                 <include>_app/factory-review.svg</include>
                                 <include>_app/factory-contribute.svg</include>
                                 <include>_app/favicon.ico</include>
+                                <include>_app/loader.js</include>
+                                <include>_app/loader.css</include>
+                                <include>_app/loader.html</include>
                                 <include>META-INF/context.xml</include>
                                 <include>WEB-INF/rewrite.config</include>
                                 <include>WEB-INF/web.xml</include>

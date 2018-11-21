@@ -46,8 +46,8 @@ Modes (defines environment to run tests):
 Define tests scope:
     --test=<TEST_CLASS>                 Single test/package to run.
                                         For example: '--test=DialogAboutTest', '--test=org.eclipse.che.selenium.git.**'.
-    --suite=<SUITE>                     Test suite to run, found:
-"$(for x in $(ls -1 src/test/resources/suites); do echo "                                            * "$x; done)"
+    --suite=<SUITE>                     Test suite to run, found ('CodereadySuite.xml' is default one):
+"$(for x in $(ls -1 target/test-classes/suites); do echo "                                            * "$x; done)"
     --exclude=<TEST_GROUPS_TO_EXCLUDE>  Comma-separated list of test groups to exclude from execution.
                                         For example, use '--exclude=github' to exclude GitHub-related tests.
 
@@ -65,10 +65,10 @@ Other options:
                                         Default value is 0, that means that test workspaces are created on demand.
 
 HOW TO of usage:
-    Run tests from CodereadySuite.xml against locally deployed CodeReady Workspaces on OpenShift Origin in grid mode using HTTP protocol:
+    Run tests from 'CodereadySuite.xml' against locally deployed CodeReady Workspaces on OpenShift Origin in grid mode using HTTP protocol:
         ${CALLER}
 
-    Test Eclipse Che assembly and automatically rerun failing tests:
+    Test locally deployed CodeReady Workspaces on OpenShift Origin and automatically rerun failing tests:
         ${CALLER} --rerun [ATTEMPTS]
 
     Run single test or package of tests:

@@ -1,0 +1,36 @@
+{
+  "environments": {
+    "replaced_name": {
+      "machines": {
+        "dev-machine": {
+          "servers": {},
+          "installers": [
+            "org.eclipse.che.terminal",
+            "org.eclipse.che.ws-agent",
+            "org.eclipse.che.exec",
+            "org.eclipse.che.ls.clangd"
+          ],
+          "attributes": {
+            "memoryLimitBytes": "desired_memory_value"
+          }
+        }
+      },
+      "recipe": {
+        "location": "registry.access.redhat.com/codeready-workspaces-beta/stacks-cpp:1.0.0.Beta1",
+        "type": "dockerimage"
+      }
+    }
+  },
+  "defaultEnv": "replaced_name",
+  "commands": [
+    {
+      "commandLine": "cd ${current.project.path} && make && gdbserver :8001 ./a.out",
+      "name": "make and debug",
+      "type": "custom",
+      "attributes": {}
+    }
+  ],
+  "projects": [],
+  "name": "replaced_name",
+  "links": []
+}

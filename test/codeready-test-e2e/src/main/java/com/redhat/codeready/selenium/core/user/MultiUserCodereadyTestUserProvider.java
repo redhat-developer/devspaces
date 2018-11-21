@@ -63,7 +63,6 @@ public class MultiUserCodereadyTestUserProvider implements TestUserProvider {
               adminTestUser.getName(),
               adminTestUser.getEmail(),
               adminTestUser.getPassword(),
-              adminTestUser.getOfflineToken(),
               adminTestUserProvider);
 
       LOG.info(

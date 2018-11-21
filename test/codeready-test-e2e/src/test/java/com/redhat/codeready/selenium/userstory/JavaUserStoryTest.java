@@ -11,13 +11,16 @@
 */
 package com.redhat.codeready.selenium.userstory;
 
-import static com.redhat.codeready.selenium.pageobject.dashboard.CodereadyNewWorkspace.CodereadyStacks.JAVA_EAP;
+import static com.redhat.codeready.selenium.pageobject.dashboard.CodereadyNewWorkspace.CodereadyStacks.JAVA_DEFAULT;
+import static java.nio.file.Files.readAllLines;
+import static java.nio.file.Paths.get;
 import static org.eclipse.che.commons.lang.NameGenerator.generate;
 import static org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants.Assistant.ASSISTANT;
 import static org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants.Assistant.FIND_DEFINITION;
 import static org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants.Assistant.FIND_USAGES;
 import static org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants.Assistant.QUICK_DOCUMENTATION;
 import static org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants.Assistant.QUICK_FIX;
+import static org.eclipse.che.selenium.core.utils.FileUtil.readFileToString;
 import static org.eclipse.che.selenium.pageobject.CodenvyEditor.MarkerLocator.ERROR;
 import static org.eclipse.che.selenium.pageobject.debug.DebugPanel.DebuggerActionButtons.BTN_DISCONNECT;
 import static org.eclipse.che.selenium.pageobject.debug.DebugPanel.DebuggerActionButtons.EVALUATE_EXPRESSIONS;
@@ -28,26 +31,27 @@ import static org.eclipse.che.selenium.pageobject.debug.DebugPanel.DebuggerActio
 import static org.openqa.selenium.Keys.F4;
 import static org.testng.Assert.assertEquals;
 
+import com.google.common.base.Joiner;
 import com.google.inject.Inject;
 import com.redhat.codeready.selenium.pageobject.CodereadyDebuggerPanel;
 import com.redhat.codeready.selenium.pageobject.CodereadyEditor;
 import com.redhat.codeready.selenium.pageobject.dashboard.CodereadyFindUsageWidget;
 import com.redhat.codeready.selenium.pageobject.dashboard.CodereadyNewWorkspace;
-import java.net.HttpURLConnection;
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import javax.ws.rs.HttpMethod;
 import org.eclipse.che.api.core.rest.HttpJsonRequestFactory;
 import org.eclipse.che.selenium.core.client.TestProjectServiceClient;
 import org.eclipse.che.selenium.core.client.TestWorkspaceServiceClient;
 import org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants;
 import org.eclipse.che.selenium.core.user.DefaultTestUser;
+import org.eclipse.che.selenium.core.utils.HttpUtil;
 import org.eclipse.che.selenium.core.webdriver.SeleniumWebDriverHelper;
 import org.eclipse.che.selenium.core.workspace.TestWorkspace;
 import org.eclipse.che.selenium.core.workspace.TestWorkspaceProvider;
@@ -101,15 +105,22 @@ public class JavaUserStoryTest {
   @Inject private CodereadyFindUsageWidget findUsages;
   @Inject private TestProjectServiceClient projectServiceClient;
 
-  private String appUrl;
   private String tabNameWithImpl = "NativeMethodAccessorImpl";
+  private String pomFileText;
+  private String pomFileChangedText;
 
   // it is used to read workspace logs on test failure
   private TestWorkspace testWorkspace;
 
   @BeforeClass
-  public void setUp() {
+  public void setUp() throws URISyntaxException, IOException {
+
     dashboard.open();
+
+    pomFileText =
+        readFileToString(getClass().getResource("/projects/bayesian/pom-file-before.txt"));
+    pomFileChangedText =
+        readFileToString(getClass().getResource("/projects/bayesian/pom-file-after.txt"));
   }
 
   @AfterClass
@@ -119,24 +130,51 @@ public class JavaUserStoryTest {
 
   @Test(priority = 1)
   public void createJavaEAPWorkspaceWithProjectFromDashBoard() throws Exception {
-    testWorkspace = createWsFromJavaEAPStackWithTestProject(PROJECT);
+    testWorkspace = createWsFromJavaStackWithTestProject(PROJECT);
   }
 
+  /**
+   * Checks next debugger features:
+   * <li>Debugged text highlighting
+   * <li>Step into
+   * <li>Step over
+   * <li>Step out
+   * <li>Resume
+   * <li>Ending of debug session
+   */
   @Test(priority = 2)
   public void checkMainDebuggerFeatures() throws Exception {
+    final String fileForDebuggingTabTitle = "MemberListProducer";
+
+    // prepare
     setUpDebugMode();
     projectExplorer.openItemByPath(PATH_TO_MAIN_PACKAGE + "/data/MemberListProducer.java");
+    editor.waitTabIsPresent(fileForDebuggingTabTitle);
+    editor.waitTabSelection(0, fileForDebuggingTabTitle);
+    editor.waitActive();
     editor.setBreakPointAndWaitActiveState(30);
-    doGetRequestToApp();
+    final String appUrl = doGetRequestToApp();
+
+    // check debug features()
     debugPanel.waitDebugHighlightedText("return members;");
     checkEvaluateExpression();
     checkStepInto();
     checkStepOver();
     checkStepOut();
     checkFramesAndVariablesWithResume();
-    checkEndDebugSession();
+    checkEndDebugSession(appUrl);
   }
 
+  /**
+   * Checks next code assistant features:
+   * <li>Go to declaration
+   * <li>Find usages
+   * <li>Find definition
+   * <li>Quick documentation
+   * <li>Code validation
+   * <li>Quick fix
+   * <li>Autocompletion
+   */
   @Test(priority = 3)
   public void checkCodeAssistantFeatures() throws Exception {
     String expectedTextOfInjectClass =
@@ -165,6 +203,37 @@ public class JavaUserStoryTest {
     addTestFileIntoProjectByApi();
     checkQuickFixFeature(expectedTextAfterQuickFix);
     checkAutoCompletionFeature(expectedContentInAutocompleteContainer);
+  }
+
+  @Test(priority = 4)
+  public void checkBayesianLsErrorMarker() throws Exception {
+    final String pomXmlFilePath = PROJECT + "/pom.xml";
+    final String pomXmlEditorTabTitle = "jboss-as-kitchensink";
+
+    final String expectedErrorMarkerText =
+        "Application dependency commons-fileupload:commons-fileupload-1.3 is vulnerable: CVE-2014-0050 CVE-2016-3092 CVE-2016-1000031 CVE-2013-2186. Recommendation: use version 1.3.3";
+
+    // open file
+    projectExplorer.waitItem(PROJECT);
+    projectServiceClient.updateFile(testWorkspace.getId(), pomXmlFilePath, pomFileChangedText);
+    projectExplorer.scrollAndSelectItem(pomXmlFilePath);
+    projectExplorer.waitItemIsSelected(pomXmlFilePath);
+    projectExplorer.openItemByPath(pomXmlFilePath);
+    editor.waitTabIsPresent(pomXmlEditorTabTitle);
+    editor.waitTabSelection(0, pomXmlEditorTabTitle);
+    editor.waitActive();
+
+    // check error marker displaying and description
+    editor.setCursorToLine(62);
+    editor.waitMarkerInPosition(ERROR, 62);
+    editor.clickOnMarker(ERROR, 62);
+    editor.waitTextInToolTipPopup(expectedErrorMarkerText);
+  }
+
+  private String getFileText(String filePath) throws URISyntaxException, IOException {
+    List<String> lines = Files.readAllLines(get(getClass().getResource(filePath).toURI()));
+
+    return Joiner.on('\n').join(lines);
   }
 
   private void checkAutoCompletionFeature(List<String> expectedContentInAutocompleteContainer) {
@@ -254,13 +323,13 @@ public class JavaUserStoryTest {
     consoles.clickOnProcessesButton();
   }
 
-  private TestWorkspace createWsFromJavaEAPStackWithTestProject(String kitchenExampleName)
+  private TestWorkspace createWsFromJavaStackWithTestProject(String kitchenExampleName)
       throws Exception {
     dashboard.selectWorkspacesItemOnDashboard();
     dashboard.waitToolbarTitleName("Workspaces");
     workspaces.clickOnAddWorkspaceBtn();
     newWorkspace.typeWorkspaceName(WORKSPACE);
-    newWorkspace.selectCodereadyStack(JAVA_EAP);
+    newWorkspace.selectCodereadyStack(JAVA_DEFAULT);
     addOrImportForm.clickOnAddOrImportProjectButton();
     addOrImportForm.addSampleToWorkspace(kitchenExampleName);
     newWorkspace.clickOnCreateButtonAndOpenInIDE();
@@ -281,26 +350,29 @@ public class JavaUserStoryTest {
 
   // do request to test application if debugger for the app. has been set properly,
   // expected http response from the app. will be 504, its ok
-  private void doGetRequestToApp() {
-    appUrl = consoles.getPreviewUrl() + "/index.jsf";
-    new Thread(
-            () -> {
-              try {
-                requestFactory.fromUrl(appUrl).useGetMethod().request();
-              } catch (Exception e) {
-                // if we get 504 response code it is expected
-                if (e.getMessage().contains("response code: 504")) {
-                  LOG.info("Debugger has been set");
-                } else {
-                  LOG.error(
-                      String.format(
-                          "There was a problem with connecting to kitchensink-application for debug on URL '%s'",
-                          appUrl),
-                      e);
-                }
-              }
-            })
-        .start();
+  private String doGetRequestToApp() {
+    final String appUrl = consoles.getPreviewUrl() + "/index.jsf";
+    int responseCode = -1;
+
+    try {
+      responseCode = HttpUtil.getUrlResponseCode(appUrl);
+    } catch (Exception e) {
+      // The "504" response code it is expected
+      if (504 == responseCode) {
+        LOG.info("Debugger has been set");
+        return appUrl;
+      }
+
+      final String errorMessage =
+          String.format(
+              "There was a problem with connecting to kitchensink-application for debug on URL '%s'",
+              appUrl);
+      LOG.error(errorMessage, e);
+
+      return appUrl;
+    }
+
+    return appUrl;
   }
 
   private void checkEvaluateExpression() {
@@ -346,19 +418,19 @@ public class JavaUserStoryTest {
 
   // after stopping debug session the test application should be available again.
   // we check this by UI parts and http request, in this case expected request code should be 200
-  private void checkEndDebugSession() throws Exception {
+  private void checkEndDebugSession(String appUrl) throws Exception {
     debugPanel.clickOnButton(BTN_DISCONNECT);
     debugPanel.waitFramesPanelIsEmpty();
     debugPanel.waitVariablesPanelIsEmpty();
-    HttpURLConnection httpURLConnection = (HttpURLConnection) new URL(appUrl).openConnection();
-    httpURLConnection.setRequestMethod(HttpMethod.GET);
-    assertEquals(httpURLConnection.getResponseCode(), 200);
+
+    final int responseCode = HttpUtil.getUrlResponseCode(appUrl);
+    assertEquals(responseCode, 200);
   }
 
   private void addTestFileIntoProjectByApi() throws Exception {
     URL resourcesOut = getClass().getResource("/projects/Decorator.java");
     String content =
-        Files.readAllLines(Paths.get(resourcesOut.toURI()), Charset.forName("UTF-8"))
+        readAllLines(get(resourcesOut.toURI()), Charset.forName("UTF-8"))
             .stream()
             .collect(Collectors.joining());
     String wsId = workspaceServiceClient.getByName(WORKSPACE, defaultTestUser.getName()).getId();

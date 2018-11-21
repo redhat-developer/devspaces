@@ -1,0 +1,26 @@
+{
+  "environments": {
+    "replaced_name": {
+      "machines": {
+        "dev-machine": {
+          "servers": {},
+          "installers": [
+            "org.eclipse.che.exec",
+            "org.eclipse.che.terminal",
+            "org.eclipse.che.ws-agent",
+            "org.eclipse.che.ls.golang"
+          ],
+          "attributes": {
+            "memoryLimitBytes": "desired_memory_value"
+          }
+        }
+      },
+      "recipe": {
+        "type": "dockerimage",
+        "content": "registry.access.redhat.com/codeready-workspaces-beta/stacks-golang:1.0.0.Beta1"
+      }
+    }
+  },
+  "defaultEnv": "replaced_name",
+  "name": "replaced_name"
+}

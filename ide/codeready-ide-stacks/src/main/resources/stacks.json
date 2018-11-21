@@ -37,7 +37,8 @@
                 "org.eclipse.che.exec",
                 "org.eclipse.che.terminal",
                 "org.eclipse.che.ws-agent",
-                "org.eclipse.che.ls.java"
+                "org.eclipse.che.ls.java",
+                "com.redhat.bayesian.lsp"
               ],
               "servers": {
                 "eap" : {
@@ -51,11 +52,19 @@
               },
               "attributes" : {
                 "memoryLimitBytes": "2147483648"
+              },
+              "volumes": {
+                "m2": {
+                  "path": "/home/jboss/.m2"
+                },
+                "javadata": {
+                  "path": "/home/jboss/jdtls/data"
+                }
               }
             }
           },
           "recipe": {
-            "content": "docker-registry.engineering.redhat.com/crw/rhel-base-jdk8",
+            "content": "registry.access.redhat.com/codeready-workspaces-beta/stacks-java:1.0.0.Beta1",
             "type": "dockerimage"
           }
         }
@@ -112,7 +121,8 @@
                 "org.eclipse.che.exec",
                 "org.eclipse.che.terminal",
                 "org.eclipse.che.ws-agent",
-                "org.eclipse.che.ls.java"
+                "org.eclipse.che.ls.java",
+                "com.redhat.bayesian.lsp"
               ],
               "servers": {
                 "vertx" : {
@@ -126,11 +136,19 @@
               },
               "attributes" : {
                 "memoryLimitBytes": "2147483648"
+              },
+              "volumes": {
+                "m2": {
+                  "path": "/home/jboss/.m2"
+                },
+                "javadata": {
+                  "path": "/home/jboss/jdtls/data"
+                }
               }
             }
           },
           "recipe": {
-            "content": "docker-registry.engineering.redhat.com/crw/rhel-base-jdk8",
+            "content": "registry.access.redhat.com/codeready-workspaces-beta/stacks-java:1.0.0.Beta1",
             "type": "dockerimage"
           }
         }
@@ -140,7 +158,7 @@
       "description": null,
       "commands": [
         {
-          "commandLine": "mvn clean install -f ${current.project.path}/pom.xml",
+          "commandLine": "MAVEN_OPTS='-Xmx100m' && mvn clean install -f ${current.project.path}/pom.xml",
           "name": "build",
           "type": "mvn",
           "attributes": {
@@ -148,7 +166,7 @@
             "goal": "Build"
           }
         }, {
-          "commandLine": "mvn compile vertx:run -f ${current.project.path}/pom.xml -Dvertx.disableDnsResolver=true",
+          "commandLine": "MAVEN_OPTS='-Xmx100m' && mvn compile vertx:run -f ${current.project.path}/pom.xml -Dvertx.disableDnsResolver=true",
           "name": "run",
           "type": "custom",
           "attributes": {
@@ -156,7 +174,7 @@
             "goal": "Run"
           }
         }, {
-          "commandLine": "mvn compile vertx:debug -f ${current.project.path}/pom.xml -Dvertx.disableDnsResolver=true",
+          "commandLine": "MAVEN_OPTS='-Xmx100m' && mvn compile vertx:debug -f ${current.project.path}/pom.xml -Dvertx.disableDnsResolver=true",
           "name": "debug",
           "type": "custom",
           "attributes": {
@@ -209,7 +227,8 @@
                 "org.eclipse.che.exec",
                 "org.eclipse.che.terminal",
                 "org.eclipse.che.ws-agent",
-                "org.eclipse.che.ls.java"
+                "org.eclipse.che.ls.java",
+                "com.redhat.bayesian.lsp"
               ],
               "servers": {
                 "eap" : {
@@ -223,11 +242,19 @@
               },
               "attributes" : {
                 "memoryLimitBytes": "2147483648"
+              },
+              "volumes": {
+                "m2": {
+                  "path": "/home/jboss/.m2"
+                },
+                "javadata": {
+                  "path": "/home/jboss/jdtls/data"
+                }
               }
             }
           },
           "recipe": {
-            "content": "docker-registry.engineering.redhat.com/crw/rhel-base-jdk8",
+            "content": "registry.access.redhat.com/codeready-workspaces-beta/stacks-java:1.0.0.Beta1",
             "type": "dockerimage"
           }
         }
@@ -286,7 +313,8 @@
                 "org.eclipse.che.exec",
                 "org.eclipse.che.terminal",
                 "org.eclipse.che.ws-agent",
-                "org.eclipse.che.ls.java"
+                "org.eclipse.che.ls.java",
+                "com.redhat.bayesian.lsp"
               ],
               "servers": {
                 "wildfly" : {
@@ -300,11 +328,19 @@
               },
               "attributes" : {
                 "memoryLimitBytes": "2147483648"
+              },
+              "volumes": {
+                "m2": {
+                  "path": "/home/jboss/.m2"
+                },
+                "javadata": {
+                  "path": "/home/jboss/jdtls/data"
+                }
               }
             }
           },
           "recipe": {
-            "content": "docker-registry.engineering.redhat.com/crw/rhel-base-jdk8",
+            "content": "registry.access.redhat.com/codeready-workspaces-beta/stacks-java:1.0.0.Beta1",
             "type": "dockerimage"
           }
         }
@@ -314,7 +350,7 @@
       "description": null,
       "commands": [
         {
-          "commandLine": "mvn clean install -f ${current.project.path}/pom.xml -DskipTests",
+          "commandLine": "MAVEN_OPTS='-Xmx100m' && mvn clean install -f ${current.project.path}/pom.xml -DskipTests",
           "name": "build",
           "type": "mvn",
           "attributes": {
@@ -326,6 +362,86 @@
     },
     "stackIcon": {
       "name": "type-wildfly-swarm.svg",
+      "mediaType": "image/svg+xml"
+    }
+  },
+  {
+    "id": "fuse-default",
+    "creator": "ide",
+    "name": "Red Hat Fuse",
+    "description": "Red Hat Fuse Stack",
+    "scope": "general",
+    "tags": [
+      "fuse"
+    ],
+    "components": [
+      {
+        "name": "RHEL",
+        "version": "7.4"
+      },
+      {
+        "name": "OpenJDK",
+        "version": "1.8.0_151"
+      },
+      {
+        "name": "Maven",
+        "version": "3.5.0"
+      }
+    ],
+    "workspaceConfig": {
+      "environments": {
+        "default": {
+          "machines": {
+            "dev-machine": {
+              "installers": [
+                "org.eclipse.che.exec",
+                "org.eclipse.che.terminal",
+                "org.eclipse.che.ws-agent",
+                "org.eclipse.che.ls.java",
+                "com.redhat.bayesian.lsp"
+              ],
+              "servers": {
+                "springboot" : {
+                  "port" : "8080",
+                  "protocol" : "http"
+                }
+              },
+              "attributes" : {
+                "memoryLimitBytes": "2147483648"
+              },
+              "volumes": {
+                "m2": {
+                  "path": "/home/jboss/.m2"
+                },
+                "javadata": {
+                  "path": "/home/jboss/jdtls/data"
+                }
+              }
+            }
+          },
+          "recipe": {
+            "content": "registry.access.redhat.com/codeready-workspaces-beta/stacks-java:1.0.0.Beta1",
+            "type": "dockerimage"
+          }
+        }
+      },
+      "name": "default",
+      "defaultEnv": "default",
+      "description": null,
+      "commands": [
+        {
+          "commandLine": "MAVEN_OPTS='-Xmx100m' && mvn clean package -f ${current.project.path}/pom.xml",
+          "name": "build",
+          "type": "mvn",
+          "attributes": {
+            "previewUrl": "",
+            "goal": "Build"
+          }
+        }
+      ]
+    },
+    "stackIcon": {
+      "name": "type-fuse.svg",
       "mediaType": "image/svg+xml"
     }
   },
@@ -363,7 +479,8 @@
                 "org.eclipse.che.exec",
                 "org.eclipse.che.terminal",
                 "org.eclipse.che.ws-agent",
-                "org.eclipse.che.ls.java"
+                "org.eclipse.che.ls.java",
+                "com.redhat.bayesian.lsp"
               ],
               "servers": {
                 "springboot" : {
@@ -373,11 +490,19 @@
               },
               "attributes" : {
                 "memoryLimitBytes": "2147483648"
+              },
+              "volumes": {
+                "m2": {
+                  "path": "/home/jboss/.m2"
+                },
+                "javadata": {
+                  "path": "/home/jboss/jdtls/data"
+                }
               }
             }
           },
           "recipe": {
-            "content": "docker-registry.engineering.redhat.com/crw/rhel-base-jdk8",
+            "content": "registry.access.redhat.com/codeready-workspaces-beta/stacks-java:1.0.0.Beta1",
             "type": "dockerimage"
           }
         }
@@ -387,7 +512,7 @@
       "description": null,
       "commands": [
         {
-          "commandLine": "mvn clean install -f ${current.project.path}/pom.xml",
+          "commandLine": "MAVEN_OPTS='-Xmx100m' && mvn clean install -f ${current.project.path}/pom.xml",
           "name": "build",
           "type": "mvn",
           "attributes": {
@@ -457,7 +582,7 @@
             }
           },
           "recipe": {
-            "content": "docker-registry.default.svc:5000/openshift/rhel-c-cpp",
+            "content": "registry.access.redhat.com/codeready-workspaces-beta/stacks-cpp:1.0.0.Beta1",
             "type": "dockerimage"
           }
         }
@@ -525,7 +650,7 @@
             }
           },
           "recipe": {
-            "content": "docker-registry.default.svc:5000/openshift/rhel-dotnet",
+            "content": "registry.access.redhat.com/codeready-workspaces-beta/stacks-dotnet:1.0.0.Beta1",
             "type": "dockerimage"
           }
         }
@@ -548,7 +673,7 @@
           "type": "custom",
           "commandLine": "cd ${current.project.path} && dotnet run",
           "attributes": {
-            "previewUrl": "${server.dot.net.server}",
+            "previewUrl": "${server.dotnet}",
             "goal": "Run"
           }
         }
@@ -596,7 +721,7 @@
             }
           },
           "recipe": {
-            "content": "docker-registry.default.svc:5000/openshift/rhel-golang",
+            "content": "registry.access.redhat.com/codeready-workspaces-beta/stacks-golang:1.0.0.Beta1",
             "type": "dockerimage"
           }
         }
@@ -652,7 +777,11 @@
           "machines": {
             "dev-machine": {
               "installers": [
-                "org.eclipse.che.exec", "org.eclipse.che.terminal", "org.eclipse.che.ws-agent", "org.eclipse.che.ls.js-ts"
+                "org.eclipse.che.exec",
+                "org.eclipse.che.terminal",
+                "org.eclipse.che.ws-agent",
+                "org.eclipse.che.ls.js-ts",
+                "com.redhat.bayesian.lsp"
               ],
               "servers": {
                 "3000/tcp" : {
@@ -674,7 +803,7 @@
             }
           },
           "recipe": {
-            "content": "docker-registry.engineering.redhat.com/crw/rhel-node",
+            "content": "registry.access.redhat.com/codeready-workspaces-beta/stacks-node:1.0.0.Beta1",
             "type": "dockerimage"
           }
         }
@@ -715,7 +844,10 @@
           "machines": {
             "dev-machine": {
               "installers": [
-                "org.eclipse.che.exec", "org.eclipse.che.terminal", "org.eclipse.che.ws-agent", "org.eclipse.che.ls.php"
+                "org.eclipse.che.exec",
+                "org.eclipse.che.terminal",
+                "org.eclipse.che.ws-agent",
+                "org.eclipse.che.ls.php"
               ],
               "servers": {
                 "8080/tcp": {
@@ -737,7 +869,7 @@
             }
           },
           "recipe": {
-            "content": "docker-registry.default.svc:5000/openshift/rhel-php",
+            "content": "registry.access.redhat.com/codeready-workspaces-beta/stacks-php:1.0.0.Beta1",
             "type": "dockerimage"
           }
         }
@@ -829,7 +961,10 @@
           "machines": {
             "dev-machine": {
               "installers": [
-                "org.eclipse.che.exec", "org.eclipse.che.terminal", "org.eclipse.che.ws-agent", "org.eclipse.che.ls.python"
+                "org.eclipse.che.exec",
+                "org.eclipse.che.terminal",
+                "org.eclipse.che.ws-agent",
+                "org.eclipse.che.ls.python"
               ],
               "servers": {
                 "8080/tcp" : {
@@ -847,7 +982,7 @@
             }
           },
           "recipe": {
-            "content": "docker-registry.default.svc:5000/openshift/rhel-python",
+            "content": "registry.access.redhat.com/codeready-workspaces-beta/stacks-python:1.0.0.Beta1",
             "type": "dockerimage"
           }
         }

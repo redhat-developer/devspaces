@@ -12,7 +12,7 @@
     <parent>
         <artifactId>codeready</artifactId>
         <groupId>com.redhat</groupId>
-        <version>6.14.0-SNAPSHOT</version>
+        <version>6.14.1-SNAPSHOT</version>
     </parent>
     <groupId>com.redhat</groupId>
     <artifactId>codeready-assembly-parent</artifactId>
@@ -23,6 +23,8 @@
       <module>assembly-ide-war</module>
       <module>assembly-dashboard-war</module>
       <module>assembly-wsmaster-war</module>
-      <module>assembly-main</module>
+      <module>assembly-wsagent-war</module>
+      <module>assembly-wsagent-server</module>
+      <module>codeready-workspaces-assembly-main</module>
   </modules>
 </project>

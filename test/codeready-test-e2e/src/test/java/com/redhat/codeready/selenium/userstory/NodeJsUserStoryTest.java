@@ -15,13 +15,8 @@ import static com.redhat.codeready.selenium.pageobject.dashboard.CodereadyNewWor
 import static org.eclipse.che.commons.lang.NameGenerator.generate;
 import static org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants.Assistant.ASSISTANT;
 import static org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants.Assistant.FIND_PROJECT_SYMBOL;
-import static org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants.Assistant.Refactoring.LS_RENAME;
-import static org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants.Assistant.Refactoring.REFACTORING;
-import static org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants.Run.EDIT_DEBUG_CONFIGURATION;
-import static org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants.Run.RUN_MENU;
+import static org.eclipse.che.selenium.core.utils.FileUtil.readFileToString;
 import static org.eclipse.che.selenium.pageobject.CodenvyEditor.MarkerLocator.ERROR;
-import static org.eclipse.che.selenium.pageobject.debug.DebugPanel.DebuggerActionButtons.STEP_INTO;
-import static org.eclipse.che.selenium.pageobject.debug.DebugPanel.DebuggerActionButtons.STEP_OVER;
 import static org.openqa.selenium.Keys.BACK_SPACE;
 
 import com.google.inject.Inject;
@@ -31,11 +26,11 @@ import com.redhat.codeready.selenium.pageobject.dashboard.CodereadyFindUsageWidg
 import com.redhat.codeready.selenium.pageobject.dashboard.CodereadyNewWorkspace;
 import java.io.IOException;
 import java.net.HttpURLConnection;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import java.util.stream.Stream;
 import javax.ws.rs.HttpMethod;
 import javax.ws.rs.core.Response;
 import org.eclipse.che.api.core.rest.HttpJsonRequestFactory;
@@ -60,7 +55,7 @@ import org.eclipse.che.selenium.pageobject.dashboard.Dashboard;
 import org.eclipse.che.selenium.pageobject.dashboard.workspaces.WorkspaceDetails;
 import org.eclipse.che.selenium.pageobject.dashboard.workspaces.WorkspaceOverview;
 import org.eclipse.che.selenium.pageobject.dashboard.workspaces.Workspaces;
-import org.eclipse.che.selenium.pageobject.debug.NodeJsDebugConfig;
+import org.eclipse.che.selenium.pageobject.debug.JavaDebugConfig;
 import org.eclipse.che.selenium.pageobject.intelligent.CommandsPalette;
 import org.openqa.selenium.Keys;
 import org.slf4j.Logger;
@@ -93,7 +88,7 @@ public class NodeJsUserStoryTest {
   @Inject private HttpJsonRequestFactory requestFactory;
   @Inject private Menu menu;
   @Inject private CodereadyDebuggerPanel debugPanel;
-  @Inject private NodeJsDebugConfig debugConfig;
+  @Inject private JavaDebugConfig debugConfig;
   @Inject private Events events;
   @Inject private NotificationsPopupPanel notifications;
   @Inject private CodereadyFindUsageWidget findUsages;
@@ -101,10 +96,17 @@ public class NodeJsUserStoryTest {
   @Inject private SeleniumWebDriver seleniumWebDriver;
   @Inject private AssistantFindPanel assistantFindPanel;
   private TestWorkspace testWorkspace;
+  private String packageJsonText;
+  private String packageJsonEditedText;
 
   @BeforeClass
-  public void setUp() {
+  public void setUp() throws IOException, URISyntaxException {
     dashboard.open();
+
+    packageJsonText =
+        readFileToString(getClass().getResource("/projects/bayesian/package-json-before.txt"));
+    packageJsonEditedText =
+        readFileToString(getClass().getResource("/projects/bayesian/package-json-after.txt"));
   }
 
   @AfterClass
@@ -126,14 +128,34 @@ public class NodeJsUserStoryTest {
   public void checkMainLsFeatures() {
     checkHovering();
     checkCodeValidation();
-    checkRenaming();
     checkFindDefinition();
   }
 
   @Test(priority = 3)
-  public void checkDebuggingFeatures() {
-    setUpDebug();
-    checkDebugging();
+  public void checkBayesianLsErrorMarker() throws Exception {
+    final String fileName = "package.json";
+    final String packageJsonFilePath = PROJECT + "/" + fileName;
+    final String expectedErrorMarkerText =
+        "Application dependency serve-static-1.7.1 is vulnerable: CVE-2015-1164. Recommendation: use version 1.7.2";
+
+    // open file
+    projectExplorer.waitItem(PROJECT);
+    projectExplorer.scrollAndSelectItem(packageJsonFilePath);
+    projectExplorer.waitItemIsSelected(packageJsonFilePath);
+    projectExplorer.openItemByPath(packageJsonFilePath);
+    editor.waitTabIsPresent(fileName);
+    editor.waitTabSelection(0, fileName);
+    editor.waitActive();
+
+    // update file for test
+    projectServiceClient.updateFile(
+        testWorkspace.getId(), packageJsonFilePath, packageJsonEditedText);
+    editor.waitTextIntoEditor(packageJsonEditedText);
+
+    // check error marker displaying and description
+    editor.waitMarkerInPosition(ERROR, 13);
+    editor.clickOnMarker(ERROR, 13);
+    editor.waitTextInToolTipPopup(expectedErrorMarkerText);
   }
 
   private void createWsFromNodeJsStackWithTestProject(String example) {
@@ -154,12 +176,9 @@ public class NodeJsUserStoryTest {
 
   private void runAndCheckHelloWorldApp()
       throws InterruptedException, ExecutionException, TimeoutException {
-    // launch the application from UI
     commandsPalette.openCommandPalette();
     commandsPalette.startCommandByDoubleClick(PROJECT + ":run");
     consoles.waitExpectedTextIntoConsole("Example app listening on port 3000!");
-
-    // check that application is available by http request
     WaitUtils.waitSuccessCondition(
         () -> {
           try {
@@ -199,25 +218,7 @@ public class NodeJsUserStoryTest {
     editor.waitTextInHoverPopup("Used to print to stdout and stderr.");
   }
 
-  private void checkRenaming() {
-    Stream<String> expectedCodeFragmentsAfterRenaming =
-        Stream.of(
-            "var app2 = express();",
-            "app2.get('/', function (newReg, res)",
-            "app2.listen(3000, function ()");
-    editor.goToPosition(6, 26);
-    menu.runCommand(ASSISTANT, REFACTORING, LS_RENAME);
-    editor.doRenamingByLanguageServerField("newReg");
-    editor.waitTextIntoEditor("app.get('/', function (newReg, res)");
-    editor.goToPosition(4, 6);
-    menu.runCommand(ASSISTANT, REFACTORING, LS_RENAME);
-    editor.doRenamingByLanguageServerField("app2");
-    expectedCodeFragmentsAfterRenaming.forEach(e -> editor.waitTextIntoEditor(e));
-  }
-
-  private void checkDebugging() {
-    editor.goToPosition(2, 2);
-  }
+  private void checkRenaming() {}
 
   private void checkFindDefinition() {
     editor.goToPosition(3, 8);
@@ -234,24 +235,5 @@ public class NodeJsUserStoryTest {
     editor.waitTextIntoEditor("function createApplication()");
     editor.waitTabIsPresent("express.js");
     editor.waitCursorPosition(48, 2);
-  }
-
-  private void setUpDebug() {
-    // launch debug configuration widget with menu
-    menu.runCommand(RUN_MENU, EDIT_DEBUG_CONFIGURATION);
-
-    // set up debug
-    debugConfig.expandDebugCategory();
-    debugConfig.setPathToScriptForNodeJs(PROJECT + "/app/app.js");
-    debugConfig.saveConfiguration();
-    debugConfig.clickOnDebugButtonAndWaitClosing();
-    debugPanel.waitDebugHighlightedText("/*eslint-env node*/");
-    debugPanel.clickOnButton(STEP_OVER);
-    debugPanel.clickOnButton(STEP_OVER);
-    debugPanel.clickOnButton(STEP_INTO);
-
-    // check debug highlighter
-    editor.waitTabIsPresent("express.js");
-    debugPanel.waitDebugHighlightedText("var app = function(req, res, next)");
   }
 }

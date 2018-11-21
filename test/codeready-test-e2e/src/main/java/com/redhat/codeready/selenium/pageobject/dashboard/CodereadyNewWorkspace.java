@@ -13,6 +13,7 @@ package com.redhat.codeready.selenium.pageobject.dashboard;
 
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
+import static java.util.stream.Collectors.toList;
 import static org.eclipse.che.selenium.pageobject.dashboard.NewWorkspace.Locators.STACK_ROW_XPATH;
 
 import com.google.inject.Inject;
@@ -55,6 +56,7 @@ public class CodereadyNewWorkspace extends NewWorkspace {
   public enum CodereadyStacks {
     JAVA_EAP("eap-default"),
     JAVA_DEFAULT("java-default"),
+    FUSE("fuse-default"),
     VERTX("vert.x-default"),
     SPRING_BOOT("spring-boot-default"),
     WILD_FLY_SWARM("wildfly-swarm-default"),
@@ -94,5 +96,24 @@ public class CodereadyNewWorkspace extends NewWorkspace {
         stack ->
             seleniumWebDriverHelper.waitPresence(
                 By.xpath(format("//div[@data-stack-id='%s']", stack.getId()))));
+  }
+
+  public int getCodereadyStacksCount() {
+    return seleniumWebDriverHelper
+        .waitPresenceOfAllElements(By.xpath("//div[@data-stack-id]"))
+        .size();
+  }
+
+  public void waitCodereadyStacksOrder(List<CodereadyStacks> expectedOrder) {
+    seleniumWebDriverHelper.waitSuccessCondition(
+        driver -> expectedOrder.equals(getCodereadyAvailableStacks()), 20);
+  }
+
+  public List<CodereadyStacks> getCodereadyAvailableStacks() {
+    return seleniumWebDriverHelper
+        .waitPresenceOfAllElements(By.xpath("//div[@data-stack-id]"))
+        .stream()
+        .map(webElement -> CodereadyStacks.getById(webElement.getAttribute("data-stack-id")))
+        .collect(toList());
   }
 }

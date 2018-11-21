@@ -15,12 +15,16 @@
     <parent>
         <artifactId>codeready-assembly-parent</artifactId>
         <groupId>com.redhat</groupId>
-        <version>6.14.0-SNAPSHOT</version>
+        <version>6.14.1-SNAPSHOT</version>
     </parent>
     <artifactId>assembly-wsmaster-war</artifactId>
     <packaging>war</packaging>
     <name>CodeReady Workspaces :: Workspace Master Assembly</name>
     <dependencies>
+        <dependency>
+            <groupId>com.redhat</groupId>
+            <artifactId>ls-bayesian-agent</artifactId>
+        </dependency>
         <dependency>
             <groupId>org.eclipse.che</groupId>
             <artifactId>assembly-wsmaster-war</artifactId>
