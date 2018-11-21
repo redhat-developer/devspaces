@@ -71,15 +71,17 @@ fi
 # persistent: 6.12.0.redhat-00001-ec28abe6
 # pmeVersionSHA=$(git describe --tags)
 # pmeSuffix=${pmeVersion#${version}.}; echo $suffix
+# replace 6.14.x (.2) with 6.14.1
 if [[ ${suffix} ]] && [[ ${doSedReplacements} -gt 0 ]]; then
-  for d in $(find . -name pom.xml); do sed -i "s#\(version>\)${version}.*\(</version>\)#\1${version}.${suffix}\2#g" $d; done
-  for d in $(find . -name pom.xml); do sed -i "s#\(<che.\+version>\)${version}.*\(</che.\+version>\)#\1${version}.${suffix}\2#g" $d; done
-  for d in $(find . -name pom.xml); do sed -i "s#\(<version>${version}\)-SNAPSHOT#\1.${suffix}#g" $d; done # may not be needed 
-  # not needed - the sed replacements are faster and just as effective
-  #mvn versions:set -DnewVersion=${version}.${suffix}
-  #mvn versions:update-parent "-DparentVersion=${version}.${suffix}" -DallowSnapshots=false
-  for d in $(find . -maxdepth 1 -name pom.xml); do sed -i "s#\(<.\+\.version>.\+\)-SNAPSHOT#\1.${suffix}#g" $d; done # may not be needed 
+  versionRoot=${version%.*}
+  echo "[INFO] Replacing ${versionRoot}.* with ${version}.${suffix} ..."
+  for d in $(find . -name pom.xml); do sed -i "s#\(version>\)${versionRoot}.*\(</version>\)#\1${version}.${suffix}\2#g" $d; done
+  for d in $(find . -name pom.xml); do sed -i "s#\(<che.\+version>\)${versionRoot}.*\(</che.\+version>\)#\1${version}.${suffix}\2#g" $d; done
+  for d in $(find . -name pom.xml); do sed -i "s#\(<version>${versionRoot}.*\)-SNAPSHOT#\1.${suffix}#g" $d; done # may not be needed 
+  for d in $(find . -maxdepth 1 -name pom.xml); do sed -i "s#\(<.\+\.version>.\+\)-SNAPSHOT#\1.${suffix}#g" $d; done # may not be needed
 fi
+cat pom.xml | grep version | egrep -v "}|xml version" 
+echo "[INFO] Replaced ${versionRoot}.* with ${version}.${suffix}"
 
 ##########################################################################################
 # set up npm environment
