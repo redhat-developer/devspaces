@@ -11,16 +11,13 @@
 */
 package com.redhat.codeready.selenium.intelligencecommand;
 
-import static org.eclipse.che.selenium.core.constant.TestBuildConstants.BUILD_SUCCESS;
+import static org.eclipse.che.commons.lang.NameGenerator.generate;
 import static org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants.Workspace.CREATE_PROJECT;
 import static org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants.Workspace.WORKSPACE;
 import static org.eclipse.che.selenium.core.constant.TestTimeoutsConstants.ELEMENT_TIMEOUT_SEC;
-import static org.eclipse.che.selenium.core.constant.TestTimeoutsConstants.EXPECTED_MESS_IN_CONSOLE_SEC;
 import static org.eclipse.che.selenium.core.constant.TestTimeoutsConstants.LOAD_PAGE_TIMEOUT_SEC;
-import static org.openqa.selenium.support.ui.ExpectedConditions.visibilityOfElementLocated;
 
 import com.google.inject.Inject;
-import org.eclipse.che.commons.lang.NameGenerator;
 import org.eclipse.che.selenium.core.SeleniumWebDriver;
 import org.eclipse.che.selenium.core.webdriver.SeleniumWebDriverHelper;
 import org.eclipse.che.selenium.core.workspace.TestWorkspace;
@@ -31,7 +28,7 @@ import org.eclipse.che.selenium.pageobject.ProjectExplorer;
 import org.eclipse.che.selenium.pageobject.Wizard;
 import org.eclipse.che.selenium.pageobject.intelligent.CommandsToolbar;
 import org.openqa.selenium.By;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.annotations.BeforeClass;
@@ -39,7 +36,7 @@ import org.testng.annotations.Test;
 
 /** @author Musienko Maxim */
 public class CheckIntelligenceCommandFromToolbarTest {
-  private static final String PROJECT_NAME = NameGenerator.generate("project", 2);
+  private static final String PROJECT_NAME = generate("project", 2);
   private String currentWindow;
 
   @Inject private TestWorkspace testWorkspace;
@@ -88,7 +85,7 @@ public class CheckIntelligenceCommandFromToolbarTest {
     projectExplorer.waitItem(PROJECT_NAME);
     commandsToolbar.clickExecStopBtn();
 
-    //    checkTestAppByPreviewUrlAndReturnToIde(currentWindow, expectedText);
+    checkTestAppByPreviewUrlAndReturnToIde(currentWindow, expectedText);
     commandsToolbar.clickExecRerunBtn();
     consoles.waitExpectedTextIntoConsole("started in");
     consoles.clickOnPreviewUrl();
@@ -99,9 +96,6 @@ public class CheckIntelligenceCommandFromToolbarTest {
 
     checkTestAppByPreviewButtonAndReturnToIde(currentWindow, "Welcome to JBoss AS 7!");
     commandsToolbar.clickExecStopBtn();
-    commandsToolbar.clickWithHoldAndLaunchDebuCmdFromList(
-        PROJECT_NAME + ": build and run in debug");
-    consoles.waitExpectedTextIntoConsole(BUILD_SUCCESS, EXPECTED_MESS_IN_CONSOLE_SEC);
   }
 
   private void checkTestAppByPreviewUrlAndReturnToIde(String currentWindow, String expectedText) {
@@ -124,25 +118,27 @@ public class CheckIntelligenceCommandFromToolbarTest {
 
   private boolean clickOnPreviewUrlAndCheckTextIsPresentInPageBody(
       String currentWindow, String expectedText) {
-    consoles.waitPreviewUrlIsResponsive(10);
     consoles.clickOnPreviewUrl();
     return switchToOpenedWindowAndCheckTextIsPresent(currentWindow, expectedText);
   }
 
   private boolean clickOnPreviewButtonAndCheckTextIsPresentInPageBody(
       String currentWindow, String expectedText) {
-    commandsToolbar.clickOnPreviewCommandBtnAndSelectUrl(PROJECT_NAME + ": build and run in debug");
+    commandsToolbar.clickOnPreviewCommandBtnAndSelectUrl("dev-machine:eap");
     return switchToOpenedWindowAndCheckTextIsPresent(currentWindow, expectedText);
   }
 
   private boolean switchToOpenedWindowAndCheckTextIsPresent(
       String currentWindow, String expectedText) {
     seleniumWebDriverHelper.switchToNextWindow(currentWindow);
-    boolean result = getBodyText().contains(expectedText);
+    seleniumWebDriverHelper.waitNoExceptions(
+        () -> seleniumWebDriverHelper.waitTextContains(By.tagName("body"), expectedText),
+        StaleElementReferenceException.class);
+
     seleniumWebDriver.close();
     seleniumWebDriver.switchTo().window(currentWindow);
 
-    return result;
+    return true;
   }
 
   private void waitOnAvailablePreviewPage(String currentWindow, String expectedTextOnPreviewPage) {
@@ -167,13 +163,7 @@ public class CheckIntelligenceCommandFromToolbarTest {
     return false;
   }
 
-  private WebElement getBody() {
-    return new WebDriverWait(seleniumWebDriver, LOAD_PAGE_TIMEOUT_SEC)
-        .until(visibilityOfElementLocated(By.tagName("body")));
-  }
-
   private String getBodyText() {
-    return new WebDriverWait(seleniumWebDriver, LOAD_PAGE_TIMEOUT_SEC)
-        .until((ExpectedCondition<String>) driver -> getBody().getText());
+    return seleniumWebDriverHelper.waitVisibilityAndGetText(By.tagName("body"));
   }
 }

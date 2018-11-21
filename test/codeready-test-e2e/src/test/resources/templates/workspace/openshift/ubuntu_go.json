@@ -17,7 +17,7 @@
       },
       "recipe": {
         "type": "dockerimage",
-        "content": "docker-registry.engineering.redhat.com/crw/rhel-golang"
+        "content": "registry.access.redhat.com/codeready-workspaces-beta/stacks-golang:1.0.0.Beta1"
       }
     }
   },

@@ -34,8 +34,8 @@ public class CodereadyKeycloakCliCommandExecutor implements KeycloakCliCommandEx
   @Inject private OpenShiftCliCommandExecutor openShiftCliCommandExecutor;
 
   @Inject(optional = true)
-  @Named("env.openshift.che.namespace")
-  private String openShiftCheNamespace;
+  @Named("che.openshift.project")
+  private String codereadyNamespace;
 
   @Override
   public String execute(String command) throws IOException {
@@ -54,9 +54,7 @@ public class CodereadyKeycloakCliCommandExecutor implements KeycloakCliCommandEx
     String getKeycloakPodNameCommand =
         format(
             "get pod --namespace=%s -l app=rh-sso --no-headers | awk '{print $1}'",
-            openShiftCheNamespace != null
-                ? openShiftCheNamespace
-                : DEFAULT_OPENSHIFT_CHE_NAMESPACE);
+            codereadyNamespace != null ? codereadyNamespace : DEFAULT_OPENSHIFT_CHE_NAMESPACE);
 
     keycloakPodName = openShiftCliCommandExecutor.execute(getKeycloakPodNameCommand);
 
@@ -64,9 +62,7 @@ public class CodereadyKeycloakCliCommandExecutor implements KeycloakCliCommandEx
       String errorMessage =
           format(
               "Keycloak pod is not found at namespace %s at OpenShift instance.",
-              openShiftCheNamespace != null
-                  ? openShiftCheNamespace
-                  : DEFAULT_OPENSHIFT_CHE_NAMESPACE);
+              codereadyNamespace != null ? codereadyNamespace : DEFAULT_OPENSHIFT_CHE_NAMESPACE);
 
       throw new RuntimeException(errorMessage);
     }

@@ -30,19 +30,13 @@
           <class name="org.eclipse.che.selenium.languageserver.python.PythonFileEditingTest"/>
           <class name="org.eclipse.che.selenium.languageserver.python.PythonAssistantFeaturesTest"/>
           <class name="org.eclipse.che.selenium.languageserver.TypeScriptEditingTest"/>
-          <class name="org.eclipse.che.selenium.languageserver.ClangFileEditingTest"/>
           <class name="org.eclipse.che.selenium.languageserver.ApacheCamelFileEditingTest"/>
           <class name="org.eclipse.che.selenium.languageserver.YamlFileEditingTest"/>
-          <class name="org.eclipse.che.selenium.languageserver.GolangFileEditingTest"/>
-          <class name="org.eclipse.che.selenium.dashboard.CreateAndDeleteProjectsTest"/>
           <class name="org.eclipse.che.selenium.dashboard.DeleteRunningWorkspaceTest"/>
           <class name="org.eclipse.che.selenium.dashboard.DeleteStoppingWorkspaceTest"/>
           <class name="org.eclipse.che.selenium.dashboard.ImportMavenProjectFromGitTest"/>
           <class name="org.eclipse.che.selenium.dashboard.ImportProjectFromZipTest"/>
           <class name="org.eclipse.che.selenium.dashboard.RenameWorkspaceTest"/>
-          <class name="org.eclipse.che.selenium.dashboard.workspaces.details.WorkspaceDetailsComposeTest"/>
-          <class name="org.eclipse.che.selenium.dashboard.workspaces.details.WorkspaceDetailsMachinesRamTest"/>
-          <class name="org.eclipse.che.selenium.dashboard.workspaces.details.WorkspaceDetailsMachineActionsTest"/>
           <class name="org.eclipse.che.selenium.dashboard.FactoriesListTest"/>
           <class name="org.eclipse.che.selenium.dashboard.organization.UserEmptyOrganizationTest"/>
           <class name="org.eclipse.che.selenium.debugger.ChangeVariableWithEvaluatingTest"/>
@@ -61,7 +55,6 @@
           <class name="org.eclipse.che.selenium.debugger.ConditionalBreakpointsTest"/>
           <class name="org.eclipse.che.selenium.editor.autocomplete.AutocompleteFeaturesInEditorTest"/>
           <class name="org.eclipse.che.selenium.editor.autocomplete.AutocompleteJSFilesTest"/>
-          <class name="org.eclipse.che.selenium.editor.autocomplete.AutocompleteProposalJavaDocTest"/>
           <class name="org.eclipse.che.selenium.editor.autocomplete.AutocompleteWithInheritTest"/>
           <class name="org.eclipse.che.selenium.editor.autocomplete.CheckAutocompleteFeaturesInTheTestFolderTest"/>
           <class name="org.eclipse.che.selenium.editor.autocomplete.EditorMemberActiveLineForOpenedTabTest"/>
@@ -78,7 +71,6 @@
           <class name="org.eclipse.che.selenium.editor.CheckWorkingWithTabByUsingTabListTest"/>
           <class name="org.eclipse.che.selenium.editor.CheckWorkingWithTabsByUsingContextMenuTest"/>
           <class name="org.eclipse.che.selenium.editor.ContextMenuEditorTest"/>
-          <class name="org.eclipse.che.selenium.editor.SplitEditorFeatureTest"/>
           <class name="org.eclipse.che.selenium.factory.CheckFactoryWithMultiModuleTest"/>
           <class name="org.eclipse.che.selenium.factory.CheckFactoryWithPerUserCreatePolicyTest"/>
           <class name="org.eclipse.che.selenium.factory.CheckFactoryWithPerClickCreatePolicyTest"/>
@@ -154,7 +146,6 @@
           <class name="org.eclipse.che.selenium.testrunner.JavaTestPluginTestNgTest"/>
           <class name="org.eclipse.che.selenium.preferences.CheckErrorsWarningsTabTest"/>
           <class name="org.eclipse.che.selenium.preferences.ContributeTabTest"/>
-          <class name="org.eclipse.che.selenium.theia.TheiaBuildPluginTest"/>
           <class name="org.eclipse.che.selenium.projectexplorer.CheckAutoSaveForFileWhichAlreadyExistTest"/>
           <class name="org.eclipse.che.selenium.projectexplorer.CheckCollapseAllNodesProjectTest"/>
           <class name="org.eclipse.che.selenium.projectexplorer.CheckCopyCutFeaturesForFilesTest"/>
@@ -164,7 +155,6 @@
           <class name="org.eclipse.che.selenium.projectexplorer.CheckOnValidAndInvalidPackageNameTest"/>
           <class name="org.eclipse.che.selenium.projectexplorer.CheckRecentFilesAndRevealResourceTest"/>
           <class name="org.eclipse.che.selenium.projectexplorer.CheckRefreshProjectTreeTest"/>
-          <class name="org.eclipse.che.selenium.projectexplorer.CheckShowHideHiddenFilesTest"/>
           <class name="org.eclipse.che.selenium.projectexplorer.CheckTreeStructureAfterCloseTest"/>
           <class name="org.eclipse.che.selenium.projectexplorer.CheckTreeStructureAfterCloseTest"/>
           <class name="org.eclipse.che.selenium.projectexplorer.ClosingSeveralOpenFilesTest"/>
@@ -231,15 +221,6 @@
           <class name="org.eclipse.che.selenium.workspaces.ProjectStateAfterRefreshTest"/>
           <class name="org.eclipse.che.selenium.workspaces.ProjectStateAfterRenameWorkspaceTest"/>
           <class name="org.eclipse.che.selenium.workspaces.ProjectStateAfterWorkspaceRestartTest"/>
-          <class name="org.eclipse.che.selenium.theia.Che7PreviewStackStartTest"/>
-          <class name="org.eclipse.che.selenium.stack.CreateWorkspaceFromBlankStackTest"/>
-          <class name="org.eclipse.che.selenium.stack.CreateWorkspaceFromCamelStackTest"/>
-          <class name="org.eclipse.che.selenium.stack.CreateWorkspaceFromJavaStackTest"/>
-          <class name="org.eclipse.che.selenium.stack.CreateWorkspaceFromPythonStackTest"/>
-          <class name="org.eclipse.che.selenium.stack.CreateWorkspaceFromJavaMySqlStackTest"/>
-          <class name="org.eclipse.che.selenium.stack.CreateWorkspaceFromNodeStackTest"/>
-          <class name="org.eclipse.che.selenium.stack.CreateWorkspaceFromJavaTheiaOpenshiftStackTest"/>
-          <class name="org.eclipse.che.selenium.stack.CreateWorkspaceFromJavaTheiaDockerStackTest"/>
           <class name="org.eclipse.che.selenium.workspaces.WorkspaceFromOfficialUbuntuImageStartTest"/>
           <class name="org.eclipse.che.selenium.workspaces.CheckStoppingWsByTimeoutTest"/>
           <class name="org.eclipse.che.selenium.dashboard.AccountTest"/>
