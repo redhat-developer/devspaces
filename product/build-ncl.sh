@@ -218,9 +218,9 @@ if [[ $lsjdtVersion ]] && [[ $lsjdtVersion != "NO" ]]; then
     # # ${MVN} -q -DartifactId=jdt.ls.extension.api -Dclassifier=sources
     # # ${MVN} -q -DartifactId=jdt.ls.extension.product -Dpackaging=tar.gz
     # popd
-    if [[ ! ${lsjdtVersionActual} ]]; then lsjdtVersionActual=${lsjdtVersion}; fi # fallback to 0.2.0-SNAPSHOT if not resolved
-    MVNFLAGS="${MVNFLAGS} -Dche.ls.jdt.version=${lsjdtVersionActual}"
   fi
+  if [[ ! ${lsjdtVersionActual} ]]; then lsjdtVersionActual=${lsjdtVersion}; fi # fallback to 0.2.0-SNAPSHOT if not resolved
+  MVNFLAGS="${MVNFLAGS} -Dche.ls.jdt.version=${lsjdtVersionActual}"
 fi
 
 ##########################################################################################
