@@ -18,7 +18,7 @@
     </parent>
     <groupId>com.redhat</groupId>
     <artifactId>codeready</artifactId>
-    <version>6.14.2-SNAPSHOT</version>
+    <version>6.14.1-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>CodeReady :: Parent</name>
     <!--replace with CodeReady product page-->
@@ -31,7 +31,7 @@
         </license>
     </licenses>
     <properties>
-        <che.version>6.14.2-SNAPSHOT</che.version>
+        <che.version>6.14.1</che.version>
         <che.dashboard.version>6.14.1</che.dashboard.version>
     </properties>
     <dependencyManagement>
