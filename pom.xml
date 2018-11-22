@@ -14,11 +14,11 @@
     <parent>
         <artifactId>maven-depmgt-pom</artifactId>
         <groupId>org.eclipse.che.depmgt</groupId>
-        <version>6.14.1-SNAPSHOT</version>
+        <version>6.14.2-SNAPSHOT</version>
     </parent>
     <groupId>com.redhat</groupId>
     <artifactId>codeready</artifactId>
-    <version>6.14.1-SNAPSHOT</version>
+    <version>6.14.2-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>CodeReady :: Parent</name>
     <!--replace with CodeReady product page-->
@@ -31,8 +31,8 @@
         </license>
     </licenses>
     <properties>
-        <che.version>6.14.1-SNAPSHOT</che.version>
-        <che.dashboard.version>6.14.1-SNAPSHOT</che.dashboard.version>
+        <che.version>6.14.2-SNAPSHOT</che.version>
+        <che.dashboard.version>6.14.2-SNAPSHOT</che.dashboard.version>
     </properties>
     <dependencyManagement>
         <dependencies>
