@@ -14,7 +14,7 @@ pushd /tmp
     echo "[INFO] Found jdt.ls.extension.api version ${lsjdtVersionActual} in oss.sonatype.org nexus repo."
     rm -fr /tmp/m2-log.txt /tmp/m2-repo-temp
     echo "[INFO] Fetch artifacts..."
-    time ${MVN} -q -DartifactId=jdt.ls.extension.api -Dversion=${lsjdtVersionActual}
-    time ${MVN} -q -DartifactId=jdt.ls.extension.api -Dclassifier=sources
-    time ${MVN} -q -DartifactId=jdt.ls.extension.product -Dpackaging=tar.gz
+    time ${MVN} deploy -DartifactId=jdt.ls.extension.api -Dversion=${lsjdtVersionActual}
+    time ${MVN} deploy -DartifactId=jdt.ls.extension.api -Dclassifier=sources
+    time ${MVN} deploy -DartifactId=jdt.ls.extension.product -Dpackaging=tar.gz
 popd
