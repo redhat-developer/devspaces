@@ -20,6 +20,7 @@ import static org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants.A
 import static org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants.Assistant.FIND_USAGES;
 import static org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants.Assistant.QUICK_DOCUMENTATION;
 import static org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants.Assistant.QUICK_FIX;
+import static org.eclipse.che.selenium.core.constant.TestTimeoutsConstants.LOADER_TIMEOUT_SEC;
 import static org.eclipse.che.selenium.core.utils.FileUtil.readFileToString;
 import static org.eclipse.che.selenium.pageobject.CodenvyEditor.MarkerLocator.ERROR;
 import static org.eclipse.che.selenium.pageobject.debug.DebugPanel.DebuggerActionButtons.BTN_DISCONNECT;
@@ -68,6 +69,7 @@ import org.eclipse.che.selenium.pageobject.dashboard.workspaces.WorkspaceOvervie
 import org.eclipse.che.selenium.pageobject.dashboard.workspaces.Workspaces;
 import org.eclipse.che.selenium.pageobject.debug.JavaDebugConfig;
 import org.eclipse.che.selenium.pageobject.intelligent.CommandsPalette;
+import org.openqa.selenium.TimeoutException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.annotations.AfterClass;
@@ -197,7 +199,12 @@ public class JavaEapUserStoryTest {
     checkFindUsagesFeature();
     checkPreviousTabFeature(memberRegistrationTabName);
     checkFindDefinitionFeature(expectedTextOfInjectClass);
-    checkQuickDocumentationFeature(memberRegistrationTabName, loggerJavaDocFragment);
+
+    seleniumWebDriverHelper.waitNoExceptions(
+        () -> checkQuickDocumentationFeature(memberRegistrationTabName, loggerJavaDocFragment),
+        LOADER_TIMEOUT_SEC,
+        TimeoutException.class);
+
     checkCodeValidationFeature(memberRegistrationTabName);
     addTestFileIntoProjectByApi();
     checkQuickFixFeature(expectedTextAfterQuickFix);
