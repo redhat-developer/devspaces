@@ -86,6 +86,7 @@
                             <excludes>
                                 <exclude>WEB-INF/lib/che-core-ide-stacks-${che.version}.jar</exclude>
                                 <exclude>WEB-INF/lib/che-core-ide-templates-${che.version}.jar</exclude>
+                                <exclude>WEB-INF/lib/ls-clang-agent-${che.version}.jar</exclude>
                                 <exclude>WEB-INF/classes/che-in-che.json</exclude>
                             </excludes>
                         </overlay>
