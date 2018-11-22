@@ -12,8 +12,16 @@ includeDashboardFromSource=0
 #set version & compute qualifier from best available in Indy
 # or use commandline overrides for version and suffix
 version=6.14.1
+
+# to build che
 suffix="" # normally we compute this from version of org/eclipse/che/depmgt/maven-depmgt-pom but can override if needed
-upstreamPom=org/eclipse/che/depmgt/maven-depmgt-pom # usually use depmgt/maven-depmgt-pom but can also align to org/eclipse/che/parent/maven-parent-pom for codeready-workspaces build
+upstreamPom="org/eclipse/che/depmgt/maven-depmgt-pom" # usually use depmgt/maven-depmgt-pom but can also align to org/eclipse/che/parent/maven-parent-pom for codeready-workspaces build
+
+# to build crw
+isWorkspacesBuild=0 # set to 1 for workspaces build (shortcut to enable upstreamPom2)
+suffix2="" # normally we compute this from version of org/eclipse/che/assembly-main but can override if needed
+upstreamPom2="" # eg., org/eclipse/che/assembly-main
+
 INDY=""
 doSedReplacements=1
 doMavenVersionLookup=1
@@ -21,12 +29,15 @@ doMavenVersionLookup=1
 # read commandline args
 while [[ "$#" -gt 0 ]]; do
   case $1 in
+    '-crw') isWorkspacesBuild=1; upstreamPom2="org/eclipse/che/depmgt/maven-depmgt-pom"; upstreamPom="org/eclipse/che/assembly-main"; shift 0;;
     '-v') version="$2"; shift 1;; #eg., 6.12.0
     '-s') suffix="$2"; shift 1;; # eg., redhat-00007
+    '-s2') suffix2="$2"; shift 1;; # eg., redhat-00007
     '-lsjdtv') lsjdtVersion="$2"; shift 1;; # eg., 0.0.2 or 0.0.2-SNAPSHOT
     '-dv') includeDashboardVersion="$2"; includeDashboardFromSource=0;  shift 1;; # eg., 6.11.1 or 6.13.0-SNAPSHOT; use "NO" to exclude dashboard (NOS-1485: test building it instead of including it)
     '-idfs') includeDashboardFromSource=1; includeDashboardVersion="NO"; shift 0;;
     '-up') upstreamPom="$2"; shift 1;; # eg., 6.11.1 or 6.13.0-SNAPSHOT
+    '-up2') upstreamPom2="$2"; shift 1;; # eg., 6.11.1 or 6.13.0-SNAPSHOT
     '-PROFILES') PROFILES="$2"; shift 1;; # override default profiles
     '-MVNFLAGS') MVNFLAGS="$2"; shift 1;; # add more mvn flags
     '-INDY') INDY="$2"; shift 1;; # override for default INDY URL
@@ -59,6 +70,28 @@ if [[ ! ${suffix} ]]; then # compute it from version of org/eclipse/che/depmgt/m
   rm -f ${tmpfile}
 fi
 
+if [[ ! ${crw} -gt 0 ]] || [[ ${upstreamPom2} ]]; then # compute it
+  tmpfile=/tmp/maven-metadata-${version}.html
+  # external 1: http://indy.cloud.pnc.engineering.redhat.com/api/group/static/org/eclipse/che/depmgt/maven-depmgt-pom/ or /che/che-parent/
+  # external 2: http://indy.cloud.pnc.engineering.redhat.com/api/content/maven/group/builds-untested+shared-imports+public/org/eclipse/che/depmgt/maven-depmgt-pom/
+  UPSTREAM_POM="api/content/maven/group/builds-untested+shared-imports+public/${upstreamPom2}/maven-metadata.xml"
+  if [[ ! ${INDY} ]]; then 
+    INDY=http://indy.project-newcastle.svc.cluster.local
+  fi
+  if [[ ! $(wget ${INDY} -q -S 2>&1 | egrep "200|302|OK") ]]; then
+    INDY=http://pnc-indy-branch-nightly.project-newcastle.svc.cluster.local
+  fi
+  if [[ ! $(wget ${INDY} -q -S 2>&1 | egrep "200|302|OK") ]]; then
+    INDY=http://pnc-indy-master-nightly.project-newcastle.svc.cluster.local
+  fi
+  if [[ ! $(wget ${INDY} -q -S 2>&1 | egrep "200|302|OK") ]]; then
+    echo "[WARNING] Could not load org/eclipse/che/depmgt/maven-depmgt-pom from Indy"
+  fi
+  wget ${INDY}/${UPSTREAM_POM} -O ${tmpfile}
+  suffix2=$(grep ${version} ${tmpfile} | grep "<latest>" | egrep '.redhat-[0-9]{5}' | sed -e "s#.\+>\([0-9.]\+\.\)\(redhat-[0-9]\{5\}\).*#\2#" | sort -r | head -1)
+  rm -f ${tmpfile}
+fi
+
 if [[ ! ${includeDashboardVersion} ]]; then
   includeDashboardVersion=${version}-SNAPSHOT
 fi
@@ -79,10 +112,18 @@ if [[ ${suffix} ]] && [[ ${doSedReplacements} -gt 0 ]]; then
   for d in $(find . -name pom.xml); do sed -i "s#\(version>\)${versionRoot}.*\(</version>\)#\1${version}.${suffix}\2#g" $d; done
   for d in $(find . -name pom.xml); do sed -i "s#\(<che.\+version>\)${versionRoot}.*\(</che.\+version>\)#\1${version}.${suffix}\2#g" $d; done
   for d in $(find . -name pom.xml); do sed -i "s#\(<version>${versionRoot}.*\)-SNAPSHOT#\1.${suffix}#g" $d; done # may not be needed 
-  for d in $(find . -maxdepth 1 -name pom.xml); do sed -i "s#\(<.\+\.version>.\+\)-SNAPSHOT#\1.${suffix}#g" $d; done # may not be needed
+  sed -i "s#\(<.\+\.version>.\+\)-SNAPSHOT#\1.${suffix}#g" $d pom.xml # may not be needed
+  cat pom.xml | grep version | egrep -v "}|xml version" 
+  echo "[INFO] Replaced ${versionRoot}.* with ${version}.${suffix}"
+  if [[ ${suffix2} ]]; then
+    versionRoot=${version%.*}
+    echo "[INFO] Replacing parent version with ${version}.${suffix2} ..."
+    perl -0777 -p -i -e 's|(\ +<parent>.*?<\/parent>)| $1 =~ /(<version>.+<\/version>)/?"    <parent>\n        <artifactId>maven-depmgt-pom</artifactId>\n        <groupId>org.eclipse.che.depmgt</groupId>\n        <version>'"${version}.${suffix2}"'</version>\n    </parent>":$1|gse' pom.xml
+    cat pom.xml | grep version | egrep -v "}|xml version" 
+    echo "[INFO] Replaced parent with ${version}.${suffix2}"
+  fi
 fi
-cat pom.xml | grep version | egrep -v "}|xml version" 
-echo "[INFO] Replaced ${versionRoot}.* with ${version}.${suffix}"
+
 
 ##########################################################################################
 # set up npm environment
