@@ -68,6 +68,7 @@ import org.eclipse.che.selenium.pageobject.dashboard.workspaces.WorkspaceOvervie
 import org.eclipse.che.selenium.pageobject.dashboard.workspaces.Workspaces;
 import org.eclipse.che.selenium.pageobject.debug.JavaDebugConfig;
 import org.eclipse.che.selenium.pageobject.intelligent.CommandsPalette;
+import org.openqa.selenium.TimeoutException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.annotations.AfterClass;
@@ -198,7 +199,12 @@ public class JavaUserStoryTest {
     checkFindUsagesFeature();
     checkPreviousTabFeature(memberRegistrationTabName);
     checkFindDefinitionFeature(expectedTextOfInjectClass);
-    checkQuickDocumentationFeature(memberRegistrationTabName, loggerJavaDocFragment);
+
+    seleniumWebDriverHelper.waitNoExceptions(
+        () -> checkQuickDocumentationFeature(memberRegistrationTabName, loggerJavaDocFragment),
+        60,
+        TimeoutException.class);
+
     checkCodeValidationFeature(memberRegistrationTabName);
     addTestFileIntoProjectByApi();
     checkQuickFixFeature(expectedTextAfterQuickFix);

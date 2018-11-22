@@ -20,7 +20,9 @@ import static org.testng.Assert.assertTrue;
 
 import com.google.inject.Inject;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import org.eclipse.che.selenium.pageobject.dashboard.Dashboard;
 import org.eclipse.che.selenium.pageobject.dashboard.stacks.StackDetails;
 import org.eclipse.che.selenium.pageobject.dashboard.stacks.Stacks;
@@ -31,6 +33,7 @@ import org.testng.annotations.Test;
 
 /** @author Skoryk Serhii */
 public class StacksListTest {
+  List<String> componentList = Arrays.asList("RHEL", "OpenJDK", "Maven", "EAP");
 
   @Inject private StackDetails stackDetails;
   @Inject private Dashboard dashboard;
@@ -76,7 +79,10 @@ public class StacksListTest {
     assertTrue(stacks.isStackItemExisted("Java 1.8"));
     assertEquals(
         stacks.getStackDescription("Java 1.8"), "Default Java Stack with OpenJDK 1.8, Maven 3.5");
-    assertEquals(stacks.getStackComponents("Java 1.8"), "RHEL, OpenJDK, Maven, EAP");
+    componentList.forEach(
+        component -> {
+          assertTrue(stacks.getStackComponents("Java 1.8").contains(component));
+        });
   }
 
   @Test
