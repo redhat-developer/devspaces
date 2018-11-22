@@ -6,7 +6,7 @@ if [[ $1 ]]; then lsjdtVersion=$1; fi
 
 pushd /tmp
     MVN="mvn -U dependency:get -Dtransitive=false"
-    MVN="${MVN} -DremoteRepositories=http://oss.sonatype.org/content/repositories/snapshots/"
+    MVN="${MVN} -DremoteRepositories=https://oss.sonatype.org/content/repositories/snapshots/"
     MVN="${MVN} -Dversion=${lsjdtVersion} -DgroupId=org.eclipse.che.ls.jdt"
 
     ${MVN} -DartifactId=jdt.ls.extension.api -Dpackaging=pom -Dmaven.repo.local=/tmp/m2-repo-temp | tee /tmp/m2-log.txt
