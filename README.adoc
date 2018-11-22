@@ -10,7 +10,7 @@ Differences as compared to upstream:
 * Product Info plugin (IDE customizations: pics, titles links)
 * Custom Dockerfile based on official RH OpenJDK image from RHCC
 
-NOTE: Dockerfiles in this repo are NOT the ones used to build RHCC container images in OSBS. 
+NOTE: Dockerfiles in this repo are NOT the ones used to build RHCC container images in OSBS.
 
 ### How to Build
 
@@ -26,10 +26,10 @@ Run the following command in the root of a repository:
 ```
 mvn clean install
 ```
+
 NOTE: Since the build includes GWT compilation it may take more than 3 minutes to complete.
 
 The build artifact used in the Docker image will be in `assembly/assembly-main/target/codeready-${version}/codeready-${version}`
-
 
 ### How to Build Container Image (Locally)
 
@@ -39,9 +39,21 @@ Run the following command in the root of a repository:
 docker build -t ${REGISTRY}/${REPO} .
 ```
 
-You can then reference this image in your deployment (set umage pull policy to IfNotPresent to avoid pushing the image to a registry).
+You can then reference this image in your deployment (set image pull policy to IfNotPresent to avoid pushing the image to a registry).
 
-Please note, that stacks reference non existing images like `docker-registry.default.svc:5000/openshift/rhel-base-jdk8`. These images are built as a post installation step.
+Please note, that stacks may reference non-existing images like `docker-registry.default.svc:5000/openshift/rhel-base-jdk8`. These images are built as a post installation step. Once published, they will be in locations like these:
+
+* registry.access.redhat.com/codeready-workspaces-beta/server:1.0.0.Beta1
+* registry.access.redhat.com/codeready-workspaces-beta/server-apb:1.0.0.Beta1
+* registry.access.redhat.com/codeready-workspaces-beta/stacks-cpp:1.0.0.Beta1
+* registry.access.redhat.com/codeready-workspaces-beta/stacks-dotnet:1.0.0.Beta1
+* registry.access.redhat.com/codeready-workspaces-beta/stacks-golang:1.0.0.Beta1
+* registry.access.redhat.com/codeready-workspaces-beta/stacks-java:1.0.0.Beta1
+* registry.access.redhat.com/codeready-workspaces-beta/stacks-java-rhel8:1.0.0.Beta1
+* registry.access.redhat.com/codeready-workspaces-beta/stacks-node:1.0.0.Beta1
+* registry.access.redhat.com/codeready-workspaces-beta/stacks-php:1.0.0.Beta1
+* registry.access.redhat.com/codeready-workspaces-beta/stacks-python:1.0.0.Beta1
+
 
 ### How to Build Container Using NCL and OSBS
 

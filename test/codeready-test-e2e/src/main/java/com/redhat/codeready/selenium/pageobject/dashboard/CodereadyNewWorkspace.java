@@ -56,6 +56,7 @@ public class CodereadyNewWorkspace extends NewWorkspace {
   public enum CodereadyStacks {
     JAVA_EAP("eap-default"),
     JAVA_DEFAULT("java-default"),
+    FUSE("fuse-default"),
     VERTX("vert.x-default"),
     SPRING_BOOT("spring-boot-default"),
     WILD_FLY_SWARM("wildfly-swarm-default"),
