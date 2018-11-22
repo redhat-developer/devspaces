@@ -12,6 +12,7 @@
 package com.redhat.codeready.selenium.userstory;
 
 import static org.eclipse.che.commons.lang.NameGenerator.generate;
+import static org.eclipse.che.selenium.core.TestGroup.UNDER_REPAIR;
 import static org.eclipse.che.selenium.core.constant.TestCommandsConstants.RUN_COMMAND;
 import static org.eclipse.che.selenium.core.constant.TestIntelligentCommandsConstants.CommandItem.BUILD_AND_RUN_COMMAND_ITEM;
 import static org.eclipse.che.selenium.core.constant.TestProjectExplorerContextMenuConstants.ContextMenuCommandGoals.RUN_GOAL;
@@ -110,7 +111,7 @@ public class ClangCppUserStoryTest {
         EXPECTED_MESSAGE_IN_CONSOLE);
   }
 
-  @Test(priority = 2)
+  @Test(priority = 2, groups = UNDER_REPAIR)
   public void checkAutocompleteFeature() {
     editor.selectTabByName(CPP_FILE_NAME);
 

@@ -20,6 +20,7 @@ import static org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants.A
 import static org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants.Assistant.FIND_USAGES;
 import static org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants.Assistant.QUICK_DOCUMENTATION;
 import static org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants.Assistant.QUICK_FIX;
+import static org.eclipse.che.selenium.core.constant.TestTimeoutsConstants.LOADER_TIMEOUT_SEC;
 import static org.eclipse.che.selenium.core.utils.FileUtil.readFileToString;
 import static org.eclipse.che.selenium.pageobject.CodenvyEditor.MarkerLocator.ERROR;
 import static org.eclipse.che.selenium.pageobject.debug.DebugPanel.DebuggerActionButtons.BTN_DISCONNECT;
@@ -202,7 +203,7 @@ public class JavaUserStoryTest {
 
     seleniumWebDriverHelper.waitNoExceptions(
         () -> checkQuickDocumentationFeature(memberRegistrationTabName, loggerJavaDocFragment),
-        60,
+        LOADER_TIMEOUT_SEC,
         TimeoutException.class);
 
     checkCodeValidationFeature(memberRegistrationTabName);

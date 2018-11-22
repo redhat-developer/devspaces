@@ -25,6 +25,7 @@ import static org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants.A
 import static org.eclipse.che.selenium.core.constant.TestProjectExplorerContextMenuConstants.ContextMenuCommandGoals.BUILD_GOAL;
 import static org.eclipse.che.selenium.core.constant.TestProjectExplorerContextMenuConstants.ContextMenuCommandGoals.DEBUG_GOAL;
 import static org.eclipse.che.selenium.core.constant.TestProjectExplorerContextMenuConstants.ContextMenuCommandGoals.RUN_GOAL;
+import static org.eclipse.che.selenium.core.constant.TestTimeoutsConstants.LOADER_TIMEOUT_SEC;
 import static org.eclipse.che.selenium.pageobject.CodenvyEditor.MarkerLocator.ERROR;
 import static org.openqa.selenium.Keys.F4;
 
@@ -133,7 +134,7 @@ public class SpringBootUserStoryTest {
     editor.waitActive();
 
     seleniumWebDriverHelper.waitNoExceptions(
-        () -> checkQuickDocumentationFeature(), 60, TimeoutException.class);
+        () -> checkQuickDocumentationFeature(), LOADER_TIMEOUT_SEC, TimeoutException.class);
 
     checkGoToDeclarationFeature();
     checkCodeValidationFeature();

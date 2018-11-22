@@ -79,9 +79,11 @@ public class StacksListTest {
     assertTrue(stacks.isStackItemExisted("Java 1.8"));
     assertEquals(
         stacks.getStackDescription("Java 1.8"), "Default Java Stack with OpenJDK 1.8, Maven 3.5");
+
+    String stackComponents = stacks.getStackComponents("Java 1.8");
     componentList.forEach(
         component -> {
-          assertTrue(stacks.getStackComponents("Java 1.8").contains(component));
+          assertTrue(stackComponents.contains(component));
         });
   }
 
