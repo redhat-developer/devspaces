@@ -276,17 +276,6 @@ public class WorkspacesListTest {
   @Test
   public void checkWorkspaceActions() throws Exception {
     workspaces.waitPageLoading();
-    String mainWindow = seleniumWebDriver.getWindowHandle();
-
-    // check documentation link
-    workspaces.clickOnDocumentationLink();
-    seleniumWebDriverHelper.waitOpenedSomeWin();
-    seleniumWebDriverHelper.switchToNextWindow(mainWindow);
-
-    assertEquals(EXPECTED_DOCUMENTATION_PAGE_TITLE, documentationPage.getTitle());
-
-    seleniumWebDriver.close();
-    seleniumWebDriver.switchTo().window(mainWindow);
 
     // go to workspace details by clicking on item in workspaces list
     workspaces.clickOnAddWorkspaceBtn();
@@ -373,5 +362,21 @@ public class WorkspacesListTest {
 
   private int getWorkspacesCount() throws Exception {
     return testWorkspaceServiceClient.getAll().size();
+  }
+
+  @Test(priority = 1)
+  public void checkDocumentionLink() {
+    workspaces.waitPageLoading();
+    String mainWindow = seleniumWebDriver.getWindowHandle();
+
+    // check documentation link
+    workspaces.clickOnDocumentationLink();
+    seleniumWebDriverHelper.waitOpenedSomeWin();
+    seleniumWebDriverHelper.switchToNextWindow(mainWindow);
+
+    assertEquals(EXPECTED_DOCUMENTATION_PAGE_TITLE, documentationPage.getTitle());
+
+    seleniumWebDriver.close();
+    seleniumWebDriver.switchTo().window(mainWindow);
   }
 }

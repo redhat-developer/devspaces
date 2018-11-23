@@ -90,7 +90,7 @@ public class JsonFileEditingTest {
     pullRequestPanel.waitOpenPanel();
     projectExplorer.openItemByPath(PROJECT_NAME);
     projectExplorer.openItemByPath(PATH_TO_JSON_FILE);
-    editor.waitTabIsPresent(JSON_FILE_NAME);
+    editor.waitTabIsPresent(JSON_FILE_NAME, 20);
 
     // check JSON language server initialized
     consoles.selectProcessByTabName("dev-machine");
