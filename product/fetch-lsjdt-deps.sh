@@ -10,11 +10,10 @@ export http_proxy="${NCL_PROXY}"
 export https_proxy="${NCL_PROXY}"
 
 groupId=org.eclipse.che.ls.jdt
-remoteRepositories=https://oss.sonatype.org/content/repositories/snapshots/
-#tmpRepo=/tmp/m2-repo-temp
-tmpRepo=${HOME}/.m2/repository
+remoteRepositories=http://oss.sonatype.org/content/repositories/snapshots/ # https doesn't work here
+tmpRepo=/tmp/m2-repo-temp
 pushd /tmp
-    rm -fr ${tmpRepo}/org/eclipse/che/ls/jdt/
+    rm -fr ${tmpRepo}/org/eclipse/che/ls/jdt/ ${HOME}/.m2/repository/org/eclipse/che/ls/jdt/
     MVN="mvn -U dependency:get -Dtransitive=false"
     MVN="${MVN} -DremoteRepositories=${remoteRepositories}"
     MVN="${MVN} -DgroupId=${groupId}  -Dversion=${lsjdtVersion}"
