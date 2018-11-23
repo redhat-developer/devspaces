@@ -6,7 +6,8 @@ if [[ $1 ]]; then lsjdtVersion=$1; fi
 
 groupId=org.eclipse.che.ls.jdt
 remoteRepositories=https://oss.sonatype.org/content/repositories/snapshots/
-tmpRepo=/tmp/m2-repo-temp
+#tmpRepo=/tmp/m2-repo-temp
+tmpRepo=${HOME}/.m2/repository
 pushd /tmp
     rm -fr ${tmpRepo}/org/eclipse/che/ls/jdt/
     MVN="mvn -U dependency:get -Dtransitive=false"
@@ -23,10 +24,10 @@ pushd /tmp
     echo "[INFO] Fetch ${artifactId} ${lsjdtVersionActual} ..."
     time ${MVN} -q -DartifactId=${artifactId} -Dmaven.repo.local=${tmpRepo} -Dpackaging=jar
     time mvn install:install-file -Dfile=${tmpRepo}/org/eclipse/che/ls/jdt/${artifactId}/${lsjdtVersion}/${artifactId}-${lsjdtVersionActual}.jar \
-        -DartifactId=${artifactId} -Dversion=${lsjdtVersionActual} -DgroupId=${groupId} -Dpackaging=jar
+        -DartifactId=${artifactId} -Dversion=${lsjdtVersion} -DgroupId=${groupId} -Dpackaging=jar
     time ${MVN} -q -DartifactId=${artifactId} -Dmaven.repo.local=${tmpRepo} -Dclassifier=sources -Dpackaging=jar
     time mvn install:install-file -Dfile=${tmpRepo}/org/eclipse/che/ls/jdt/${artifactId}/${lsjdtVersion}/${artifactId}-${lsjdtVersionActual}-sources.jar \
-        -DartifactId=${artifactId} -Dversion=${lsjdtVersionActual} -DgroupId=${groupId} -Dclassifier=sources -Dpackaging=jar
+        -DartifactId=${artifactId} -Dversion=${lsjdtVersion} -DgroupId=${groupId} -Dclassifier=sources -Dpackaging=jar
 
     artifactId=jdt.ls.extension.product
     ${MVN} -DartifactId=${artifactId} -Dpackaging=pom -Dmaven.repo.local=${tmpRepo} | tee /tmp/m2-log.txt
@@ -38,6 +39,6 @@ pushd /tmp
     echo "[INFO] Fetch ${artifactId} ${lsjdtVersionActual} ..."
     time ${MVN} -q -DartifactId=${artifactId} -Dmaven.repo.local=${tmpRepo} -Dpackaging=tar.gz 
     time mvn install:install-file -Dfile=${tmpRepo}/org/eclipse/che/ls/jdt/${artifactId}/${lsjdtVersion}/${artifactId}-${lsjdtVersionActual}.tar.gz \
-        -DartifactId=${artifactId} -Dversion=${lsjdtVersionActual} -DgroupId=${groupId} -Dpackaging=tar.gz
+        -DartifactId=${artifactId} -Dversion=${lsjdtVersion} -DgroupId=${groupId} -Dpackaging=tar.gz
 
 popd
