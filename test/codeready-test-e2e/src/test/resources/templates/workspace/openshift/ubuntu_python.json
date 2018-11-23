@@ -25,7 +25,7 @@
         }
       },
       "recipe": {
-        "content": "brew-pulp-docker01.web.prod.ext.phx2.redhat.com:8888/codeready-workspaces/stacks-python:1.0.0.Beta1-4",
+        "content": "registry.access.redhat.com/codeready-workspaces-beta/stacks-python:1.0.0.Beta1",
         "type": "dockerimage"
       }
     }
