@@ -19,8 +19,12 @@ pushd /tmp
     MVN="${MVN} -DgroupId=${groupId}  -Dversion=${lsjdtVersion}"
 
     artifactId=jdt.ls.extension.api
-    wget --server-response ${remoteRepositories}org/eclipse/che/ls/jdt/${artifactId}/${lsjdtVersion}/maven-metadata.xml -O /tmp/mm.xml
-    lsjdtVersionActual=$(grep value /tmp/mm.xml | tail -1 | sed -e "s#.*<value>\(.\+\)</value>#\1#" && rm -f /tmp/mm.xml)
+    if [[ ${lsjdtVersion} == *"-SNAPSHOT" ]]; then
+        wget --server-response ${remoteRepositories}org/eclipse/che/ls/jdt/${artifactId}/${lsjdtVersion}/maven-metadata.xml -O /tmp/mm.xml
+        lsjdtVersionActual=$(grep value /tmp/mm.xml | tail -1 | sed -e "s#.*<value>\(.\+\)</value>#\1#" && rm -f /tmp/mm.xml)
+    else
+        lsjdtVersionActual=${lsjdtVersion}
+    fi
 
     echo "[INFO] Fetch ${artifactId} version ${lsjdtVersion} = ${lsjdtVersionActual} from ${remoteRepositories} ..."
     time ${MVN} -DartifactId=${artifactId} -Dmaven.repo.local=${tmpRepo} -Dpackaging=jar
@@ -41,8 +45,12 @@ pushd /tmp
     fi
 
     artifactId=jdt.ls.extension.product
-    wget --server-response ${remoteRepositories}org/eclipse/che/ls/jdt/${artifactId}/${lsjdtVersion}/maven-metadata.xml -O /tmp/mm.xml
-    lsjdtVersionActual=$(grep value /tmp/mm.xml | tail -1 | sed -e "s#.*<value>\(.\+\)</value>#\1#" && rm -f /tmp/mm.xml)
+    if [[ ${lsjdtVersion} == *"-SNAPSHOT" ]]; then
+        wget --server-response ${remoteRepositories}org/eclipse/che/ls/jdt/${artifactId}/${lsjdtVersion}/maven-metadata.xml -O /tmp/mm.xml
+        lsjdtVersionActual=$(grep value /tmp/mm.xml | tail -1 | sed -e "s#.*<value>\(.\+\)</value>#\1#" && rm -f /tmp/mm.xml)
+    else
+        lsjdtVersionActual=${lsjdtVersion}
+    fi
 
     echo "[INFO] Fetch ${artifactId} version ${lsjdtVersion} = ${lsjdtVersionActual} from ${remoteRepositories} ..."
     time ${MVN} -DartifactId=${artifactId} -Dmaven.repo.local=${tmpRepo} -Dpackaging=tar.gz 
