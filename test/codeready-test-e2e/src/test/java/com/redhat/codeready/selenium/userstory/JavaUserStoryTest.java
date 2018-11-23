@@ -20,7 +20,6 @@ import static org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants.A
 import static org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants.Assistant.FIND_USAGES;
 import static org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants.Assistant.QUICK_DOCUMENTATION;
 import static org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants.Assistant.QUICK_FIX;
-import static org.eclipse.che.selenium.core.constant.TestTimeoutsConstants.LOADER_TIMEOUT_SEC;
 import static org.eclipse.che.selenium.core.utils.FileUtil.readFileToString;
 import static org.eclipse.che.selenium.pageobject.CodenvyEditor.MarkerLocator.ERROR;
 import static org.eclipse.che.selenium.pageobject.debug.DebugPanel.DebuggerActionButtons.BTN_DISCONNECT;
@@ -31,6 +30,7 @@ import static org.eclipse.che.selenium.pageobject.debug.DebugPanel.DebuggerActio
 import static org.eclipse.che.selenium.pageobject.debug.DebugPanel.DebuggerActionButtons.STEP_OVER;
 import static org.openqa.selenium.Keys.F4;
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.fail;
 
 import com.google.common.base.Joiner;
 import com.google.inject.Inject;
@@ -200,19 +200,20 @@ public class JavaUserStoryTest {
     checkFindUsagesFeature();
     checkPreviousTabFeature(memberRegistrationTabName);
     checkFindDefinitionFeature(expectedTextOfInjectClass);
-
-    seleniumWebDriverHelper.waitNoExceptions(
-        () -> checkQuickDocumentationFeature(memberRegistrationTabName, loggerJavaDocFragment),
-        LOADER_TIMEOUT_SEC,
-        TimeoutException.class);
-
     checkCodeValidationFeature(memberRegistrationTabName);
     addTestFileIntoProjectByApi();
     checkQuickFixFeature(expectedTextAfterQuickFix);
     checkAutoCompletionFeature(expectedContentInAutocompleteContainer);
+
+    try {
+      checkQuickDocumentationFeature(memberRegistrationTabName, loggerJavaDocFragment);
+    } catch (TimeoutException ex) {
+      // remove try-catch block after issue has been resolved
+      fail("Known random failure https://github.com/eclipse/che/issues/11735");
+    }
   }
 
-  @Test(priority = 4)
+  @Test(priority = 3)
   public void checkBayesianLsErrorMarker() throws Exception {
     final String pomXmlFilePath = PROJECT + "/pom.xml";
     final String pomXmlEditorTabTitle = "jboss-as-kitchensink";
@@ -267,6 +268,7 @@ public class JavaUserStoryTest {
 
   private void checkCodeValidationFeature(String memberRegistrationTabName) {
     editor.selectTabByName(memberRegistrationTabName);
+    editor.goToPosition(28, 17);
     editor.typeTextIntoEditor("2");
     editor.waitMarkerInPosition(ERROR, 28);
     editor.goToPosition(28, 18);

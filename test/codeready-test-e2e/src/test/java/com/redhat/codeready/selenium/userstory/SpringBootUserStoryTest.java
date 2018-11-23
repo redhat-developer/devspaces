@@ -25,9 +25,9 @@ import static org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants.A
 import static org.eclipse.che.selenium.core.constant.TestProjectExplorerContextMenuConstants.ContextMenuCommandGoals.BUILD_GOAL;
 import static org.eclipse.che.selenium.core.constant.TestProjectExplorerContextMenuConstants.ContextMenuCommandGoals.DEBUG_GOAL;
 import static org.eclipse.che.selenium.core.constant.TestProjectExplorerContextMenuConstants.ContextMenuCommandGoals.RUN_GOAL;
-import static org.eclipse.che.selenium.core.constant.TestTimeoutsConstants.LOADER_TIMEOUT_SEC;
 import static org.eclipse.che.selenium.pageobject.CodenvyEditor.MarkerLocator.ERROR;
 import static org.openqa.selenium.Keys.F4;
+import static org.testng.Assert.fail;
 
 import com.google.inject.Inject;
 import com.redhat.codeready.selenium.pageobject.CodereadyEditor;
@@ -133,11 +133,15 @@ public class SpringBootUserStoryTest {
     projectExplorer.openItemByPath(PATH_TO_MAIN_PACKAGE + "/service/Greeting.java");
     editor.waitActive();
 
-    seleniumWebDriverHelper.waitNoExceptions(
-        () -> checkQuickDocumentationFeature(), LOADER_TIMEOUT_SEC, TimeoutException.class);
-
     checkGoToDeclarationFeature();
     checkCodeValidationFeature();
+
+    try {
+      checkQuickDocumentationFeature();
+    } catch (TimeoutException ex) {
+      // remove try-catch block after issue has been resolved
+      fail("Known random failure https://github.com/eclipse/che/issues/11735");
+    }
   }
 
   private void checkGoToDeclarationFeature() {
