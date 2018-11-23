@@ -5,7 +5,7 @@ lsjdtVersion="0.0.2-SNAPSHOT" # don't use LATEST, it's unpredictable
 if [[ $1 ]]; then lsjdtVersion=$1; fi
 
 groupId=org.eclipse.che.ls.jdt
-remoteRepositories=https://oss.sonatype.org/content/repositories/snapshots/
+remoteRepositories=http://oss.sonatype.org/content/repositories/snapshots/
 #tmpRepo=/tmp/m2-repo-temp
 tmpRepo=${HOME}/.m2/repository
 pushd /tmp
@@ -15,13 +15,10 @@ pushd /tmp
     MVN="${MVN} -DgroupId=${groupId}  -Dversion=${lsjdtVersion}"
 
     artifactId=jdt.ls.extension.api
-    ${MVN} -DartifactId=${artifactId} -Dpackaging=pom -Dmaven.repo.local=${tmpRepo} | tee /tmp/m2-log.txt
-    lsjdtVersionActual=$(cat /tmp/m2-log.txt | egrep -v "metadata" | grep Downloading | grep "${artifactId}" | sed -e "s#.\+/${artifactId}-\(.\+\).pom#\1#")
-    rm -fr /tmp/m2-log.txt
-    if [[ $lsjdtVersion == "LATEST" ]] && [[ $lsjdtVersionActual != ${lsjdtVersionActual%%-*} ]]; then lsjdtVersion="${lsjdtVersionActual%%-*}-SNAPSHOT"; fi
-    echo "[INFO] Found ${artifactId} version ${lsjdtVersion} = ${lsjdtVersionActual} in ${remoteRepositories}"
+    wget --server-response ${remoteRepositories}org/eclipse/che/ls/jdt/${artifactId}/${lsjdtVersion}/maven-metadata.xml -O /tmp/mm.xml
+    lsjdtVersionActual=$(grep value /tmp/mm.xml | tail -1 | sed -e "s#.*<value>\(.\+\)</value>#\1#" && rm -f /tmp/mm.xml)
 
-    echo "[INFO] Fetch ${artifactId} ${lsjdtVersionActual} ..."
+    echo "[INFO] Fetch ${artifactId} version ${lsjdtVersion} = ${lsjdtVersionActual} from ${remoteRepositories} ..."
     time ${MVN} -q -DartifactId=${artifactId} -Dmaven.repo.local=${tmpRepo} -Dpackaging=jar
     time mvn install:install-file -Dfile=${tmpRepo}/org/eclipse/che/ls/jdt/${artifactId}/${lsjdtVersion}/${artifactId}-${lsjdtVersionActual}.jar \
         -DartifactId=${artifactId} -Dversion=${lsjdtVersion} -DgroupId=${groupId} -Dpackaging=jar
@@ -30,13 +27,10 @@ pushd /tmp
         -DartifactId=${artifactId} -Dversion=${lsjdtVersion} -DgroupId=${groupId} -Dclassifier=sources -Dpackaging=jar
 
     artifactId=jdt.ls.extension.product
-    ${MVN} -DartifactId=${artifactId} -Dpackaging=pom -Dmaven.repo.local=${tmpRepo} | tee /tmp/m2-log.txt
-    lsjdtVersionActual=$(cat /tmp/m2-log.txt | egrep -v "metadata" | grep Downloading | grep "${artifactId}" | sed -e "s#.\+/${artifactId}-\(.\+\).pom#\1#")
-    rm -fr /tmp/m2-log.txt
-    if [[ $lsjdtVersion == "LATEST" ]] && [[ $lsjdtVersionActual != ${lsjdtVersionActual%%-*} ]]; then lsjdtVersion="${lsjdtVersionActual%%-*}-SNAPSHOT"; fi
-    echo "[INFO] Found ${artifactId} version ${lsjdtVersion} = ${lsjdtVersionActual} in ${remoteRepositories}"
+    wget --server-response ${remoteRepositories}org/eclipse/che/ls/jdt/${artifactId}/${lsjdtVersion}/maven-metadata.xml -O /tmp/mm.xml
+    lsjdtVersionActual=$(grep value /tmp/mm.xml | tail -1 | sed -e "s#.*<value>\(.\+\)</value>#\1#" && rm -f /tmp/mm.xml)
 
-    echo "[INFO] Fetch ${artifactId} ${lsjdtVersionActual} ..."
+    echo "[INFO] Fetch ${artifactId} version ${lsjdtVersion} = ${lsjdtVersionActual} from ${remoteRepositories} ..."
     time ${MVN} -q -DartifactId=${artifactId} -Dmaven.repo.local=${tmpRepo} -Dpackaging=tar.gz 
     time mvn install:install-file -Dfile=${tmpRepo}/org/eclipse/che/ls/jdt/${artifactId}/${lsjdtVersion}/${artifactId}-${lsjdtVersionActual}.tar.gz \
         -DartifactId=${artifactId} -Dversion=${lsjdtVersion} -DgroupId=${groupId} -Dpackaging=tar.gz
