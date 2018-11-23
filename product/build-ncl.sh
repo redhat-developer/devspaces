@@ -160,18 +160,18 @@ Mo/W0QKYPgMqRlQnJzAhZhb++KWrovtdzk5dUOZa6xfKSB4DoQHYowGr+PO8R7hS
 bvrsD6YFuVn6ZtSb8qkZ
 -----END CERTIFICATE-----"
 
+for p in proxy http-proxy http_proxy HTTP_PROXY https-proxy https_proxy HTTPS_PROXY; do npm config set ${p} ${NCL_PROXY}; done
+for r in registry; do npm config set ${r} ${npmRegistryURL}; done
 npm config set strict-ssl false
-npm config set https-proxy ${NCL_PROXY}
-npm config set https_proxy ${NCL_PROXY}
-npm config set proxy ${NCL_PROXY}
-#silent, warn, info, verbose, silly
-npm config set loglevel warn 
+npm config set ca "${NCL_CA}"
+
+# loglevel = silent, warn, info, verbose, silly
 # do not use maxsockets 2 or build will stall & die
+npm config set loglevel warn 
 npm config set maxsockets 80 
 npm config set fetch-retries 10
 npm config set fetch-retry-mintimeout 60000
-npm config set registry ${npmRegistryURL}
-npm config set ca "${NCL_CA}"
+
 npm config list
 
 if [[ $includeDashboardFromSource -gt 0 ]]; then
@@ -188,16 +188,19 @@ if [[ $includeDashboardFromSource -gt 0 ]]; then
 
     time npm install yarn
     PATH=${PATH}:`pwd`/node_modules/yarn/bin
-    yarn config set registry ${YARN_REGISTRY} --global
-    yarn config set YARN_REGISTRY ${YARN_REGISTRY} --global
 
-    yarn config set proxy ${NCL_PROXY} --global
-    yarn config set yarn-proxy ${NCL_PROXY} --global
-    yarn config set yarn_proxy ${NCL_PROXY} --global
-
-    yarn config set https-proxy false --global
-    yarn config set https_proxy false --global
+    for p in proxy http-proxy http_proxy HTTP_PROXY https-proxy https_proxy HTTPS_PROXY yarn-proxy yarn_proxy; do yarn config set ${p} ${NCL_PROXY} --global; done
+    for r in registry YARN_REGISTRY; do yarn config set ${r} ${YARN_REGISTRY} --global; done
+    yarn config set strict-ssl false --global
     yarn config set ca "${NCL_CA}" --global
+
+    # loglevel = silent, warn, info, verbose, silly
+    # do not use maxsockets 2 or build will stall & die
+    yarn config set loglevel warn --global
+    yarn config set maxsockets 80 --global
+    yarn config set fetch-retries 10 --global
+    yarn config set fetch-retry-mintimeout 60000 --global
+
     yarn config list
     yarn install --frozen-lockfile --no-lockfile --pure-lockfile --ignore-optional --non-interactive --production=false
   popd
