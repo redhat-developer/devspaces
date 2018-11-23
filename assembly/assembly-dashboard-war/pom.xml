@@ -76,6 +76,33 @@
                 </executions>
             </plugin>
             <plugin>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>update-docs-link</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <tasks>
+                                <replace token="/docs/factories-getting-started.html"
+                                         dir="${project.build.directory}/source-war/scripts"
+                                         value="https://access.redhat.com/documentation/en-us/red_hat_codeready_workspaces_for_openshift/1.0.0/html/administration_guide/administering_workspaces#factories"
+                                         includes ="**/*.js"/>
+                                <replace token="/docs/organizations.html" dir="${project.build.directory}/source-war/scripts"
+                                         value="https://access.redhat.com/documentation/en-us/red_hat_codeready_workspaces_for_openshift/1.0.0/html/administration_guide/managing_users#organizations"
+                                         includes ="**/*.js"/>
+                                <replace token="/docs"
+                                         dir="${project.build.directory}/source-war/scripts"
+                                         value="https://access.redhat.com/documentation/en-us/red_hat_codeready_workspaces_for_openshift"
+                                         includes ="**/*.js"/>
+                            </tasks>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <executions>
