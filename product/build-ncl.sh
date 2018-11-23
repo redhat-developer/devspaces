@@ -1,17 +1,13 @@
 #!/bin/bash -xe
 # script to build eclipse-che in #projectncl
 
-# TODO NOS-1485 build this in NCL directly
-# don't build dashboard from source; include from upstream binary in http://oss.sonatype.org/content/repositories/snapshots/
-includeDashboardFromSource=0
-
-##########################################################################################
-# enable support for CI builds
-##########################################################################################
-
 #set version & compute qualifier from best available in Indy
 # or use commandline overrides for version and suffix
 version=6.14.1
+
+# TODO NOS-1485 build this in NCL directly
+# don't build dashboard from source; include from upstream binary in http://oss.sonatype.org/content/repositories/snapshots/
+includeDashboardFromSource=0
 
 # to build che
 suffix="" # normally we compute this from version of org/eclipse/che/depmgt/maven-depmgt-pom but can override if needed
@@ -22,10 +18,14 @@ isWorkspacesBuild=0 # set to 1 for workspaces build (shortcut to enable upstream
 suffix2="" # normally we compute this from version of org/eclipse/che/assembly-main but can override if needed
 upstreamPom2="" # eg., org/eclipse/che/assembly-main
 
-INDY=""
 doSedReplacements=1
 doMavenVersionLookup=1
 
+##########################################################################################
+# enable support for CI builds
+##########################################################################################
+
+INDY=""
 # read commandline args
 while [[ "$#" -gt 0 ]]; do
   case $1 in
