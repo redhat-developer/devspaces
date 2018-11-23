@@ -4,6 +4,11 @@
 lsjdtVersion="0.0.2-SNAPSHOT" # don't use LATEST, it's unpredictable
 if [[ $1 ]]; then lsjdtVersion=$1; fi
 
+export NCL_PROXY="http://${buildContentId}+tracking:${accessToken}@${proxyServer}:${proxyPort}"
+# wget proxies
+export http_proxy="${NCL_PROXY}"
+export https_proxy="${NCL_PROXY}"
+
 groupId=org.eclipse.che.ls.jdt
 remoteRepositories=http://oss.sonatype.org/content/repositories/snapshots/
 #tmpRepo=/tmp/m2-repo-temp
