@@ -63,7 +63,7 @@ if [[ ! ${suffix} ]]; then # compute it from version of org/eclipse/che/depmgt/m
     INDY=http://pnc-indy-master-nightly.project-newcastle.svc.cluster.local
   fi
   if [[ ! $(wget ${INDY} -q -S 2>&1 | egrep "200|302|OK") ]]; then
-    echo "[WARNING] Could not load org/eclipse/che/depmgt/maven-depmgt-pom from Indy"
+    echo "[WARNING] Could not load Indy"
   fi
   wget ${INDY}/${UPSTREAM_POM} -O ${tmpfile}
   suffix=$(grep ${version} ${tmpfile} | grep "<latest>" | egrep '.redhat-[0-9]{5}' | sed -e "s#.\+>\([0-9.]\+\.\)\(redhat-[0-9]\{5\}\).*#\2#" | sort -r | head -1)
