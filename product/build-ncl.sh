@@ -70,7 +70,7 @@ if [[ ! ${suffix} ]]; then # compute it from version of org/eclipse/che/depmgt/m
   rm -f ${tmpfile}
 fi
 
-if [[ ! ${crw} -gt 0 ]] || [[ ${upstreamPom2} ]]; then # compute it
+if [[ ${isWorkspacesBuild} -gt 0 ]] || [[ ${upstreamPom2} ]]; then # compute it
   tmpfile=/tmp/maven-metadata-${version}.html
   # external 1: http://indy.cloud.pnc.engineering.redhat.com/api/group/static/org/eclipse/che/depmgt/maven-depmgt-pom/ or /che/che-parent/
   # external 2: http://indy.cloud.pnc.engineering.redhat.com/api/content/maven/group/builds-untested+shared-imports+public/org/eclipse/che/depmgt/maven-depmgt-pom/
