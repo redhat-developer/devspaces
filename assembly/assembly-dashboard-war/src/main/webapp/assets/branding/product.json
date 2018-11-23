@@ -7,10 +7,10 @@
   "loader": "RHD_mark_color_RGB.svg",
   "ideResources": "/_app/",
   "websocketContext": "/api/websocket",
-  "helpPath": "https://www.eclipse.org/che/",
+  "helpPath": "https://access.redhat.com/products/red-hat-codeready-workspaces-for-openshift/",
   "helpTitle": "Support",
-  "supportEmail": "wish@codenvy.com",
-  "oauthDocs": "Configure OAuth in the che.properties file.",
+  "supportEmail": "codeready-workspaces-wish@redhat.com",
+  "oauthDocs": "Configure GitHub OAuth in RH SSO realm settings",
   "workspace": {
     "priorityStacks": ["Java EAP", "Java 1.8", "Vert.x", "Spring Boot", "Wildfly Swarm", "Red Hat Fuse"],
     "defaultStack": "eap-default"
@@ -20,7 +20,7 @@
     "name" : "CHE"
   },
   "docs" : {
-    "stack" : "/docs/creating-starting-workspaces.html",
-    "workspace" : "/docs/what-are-workspaces.html"
+    "stack" : "https://access.redhat.com/documentation/en-us/red_hat_codeready_workspaces_for_openshift/1.0.0/html/administration_guide/administering_workspaces#stacks",
+    "workspace" : "https://access.redhat.com/documentation/en-us/red_hat_codeready_workspaces_for_openshift/1.0.0/html/administration_guide/administering_workspaces/"
   }
 }
