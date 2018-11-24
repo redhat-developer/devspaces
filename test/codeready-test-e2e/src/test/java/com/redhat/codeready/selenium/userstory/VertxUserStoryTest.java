@@ -115,7 +115,8 @@ public class VertxUserStoryTest {
     testWorkspace = testWorkspaceProvider.getWorkspace(WORKSPACE_NAME, defaultTestUser);
 
     // wait expected message in the progress info bar
-    mavenPluginStatusBar.waitExpectedTextInInfoPanel("Refreshing Maven model");
+    // it may take a lot of time when runs on the OCP, so needs big timeout
+    mavenPluginStatusBar.waitExpectedTextInInfoPanel("Refreshing Maven model", LOADER_TIMEOUT_SEC);
     mavenPluginStatusBar.waitClosingInfoPanel();
 
     // check the project is initialized
@@ -134,7 +135,7 @@ public class VertxUserStoryTest {
     consoles.waitJDTLSProjectResolveFinishedMessage(VERTX_PROJECT_NAME);
 
     // wait expected message in the progress info bar
-    // the execution take a lot of time on a local machine, so need a big timeout
+    // the execution takes a lot of time on a local machine, so needs a big timeout
     mavenPluginStatusBar.waitExpectedTextInInfoPanel("Download sources and javadoc:", 620);
     mavenPluginStatusBar.waitClosingInfoPanel(UPDATING_PROJECT_TIMEOUT_SEC);
 
