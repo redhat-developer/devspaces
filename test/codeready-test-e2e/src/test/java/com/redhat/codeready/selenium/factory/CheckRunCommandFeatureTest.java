@@ -75,13 +75,14 @@ public class CheckRunCommandFeatureTest {
 
   @Test
   public void checkRunCommandFeatureTest() throws ExecutionException, InterruptedException {
-    createProject(PROJECT_NAME);
+    // wait the jdt.ls server is started
+    consoles.waitExpectedTextIntoConsole("Started: Ready");
 
+    createProject(PROJECT_NAME);
     projectExplorer.waitProjectExplorer();
     projectExplorer.waitItem(PROJECT_NAME);
 
     dashboard.open();
-
     dashboard.selectFactoriesOnDashbord();
     dashboardFactories.clickOnAddFactoryBtn();
     dashboardFactories.selectWorkspaceForCreation(testWorkspace.getName());
