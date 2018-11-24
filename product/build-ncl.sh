@@ -116,7 +116,6 @@ if [[ ${suffix} ]] && [[ ${doSedReplacements} -gt 0 ]]; then
   cat pom.xml | grep version | egrep -v "}|xml version" 
   echo "[INFO] Replaced ${versionRoot}.* with ${version}.${suffix}"
   if [[ ${suffix2} ]]; then
-    versionRoot=${version%.*}
     echo "[INFO] Replacing parent version with ${version}.${suffix2} ..."
     perl -0777 -p -i -e 's|(\ +<parent>.*?<\/parent>)| $1 =~ /(<version>.+<\/version>)/?"    <parent>\n        <artifactId>maven-depmgt-pom</artifactId>\n        <groupId>org.eclipse.che.depmgt</groupId>\n        <version>'"${version}.${suffix2}"'</version>\n    </parent>":$1|gse' pom.xml
     cat pom.xml | grep version | egrep -v "}|xml version" 
@@ -124,6 +123,19 @@ if [[ ${suffix} ]] && [[ ${doSedReplacements} -gt 0 ]]; then
   fi
 fi
 
+# fix properties mangled by above sed/perl changes or PME: want these to be -SNAPSHOT, not -redhat-0000x
+# #TODO when dashboard is built in NCL, remove from here as it'll use a redhat- version, not SNAPSHOT
+for prop in che.dashboard.version che.ls.jdt.version; do
+  for d in $(find . -name pom.xml); do
+    sed -i "s#\(<${prop}.\+\).redhat-[0-9]\{5\}\(</${prop}>\)#\1-SNAPSHOT\2#g" $d
+    propval=$(grep "<${prop}>" $d | sed -e "s#.*<${prop}>\(.\+\)</${prop}>.*#\1#")
+    if [[ ${propval} ]]; then
+      echo "[INFO] Set ${prop} = ${propval}"
+      MVNFLAGS="${MVNFLAGS} -D${prop}=${propval}"
+      propval=""
+    fi
+  done
+done
 
 ##########################################################################################
 # set up npm environment
@@ -219,59 +231,60 @@ MVNFLAGS="${MVNFLAGS} -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer
 MVNFLAGS="${MVNFLAGS} -DnodeDownloadRoot=${nodeDownloadRoot} -DnpmDownloadRoot=${npmDownloadRoot}"
 MVNFLAGS="${MVNFLAGS} -DnpmRegistryURL=${npmRegistryURL} ${MVNFLAGS} -DYARN_REGISTRY=${YARN_REGISTRY}"
 
-##########################################################################################
-# get dashboard version from Sonatype - works but requires PME flag -DrepoReportingRemoval=false to resolve Sonatype Nexus
-##########################################################################################
+# remove this as we no longer need it - see "fix properties mangled by sed" above
+# ##########################################################################################
+# # get dashboard version from Sonatype - works but requires PME flag -DrepoReportingRemoval=false to resolve Sonatype Nexus
+# ##########################################################################################
 
-if [[ $includeDashboardVersion ]] && [[ $includeDashboardVersion != "NO" ]]; then
-  if [[ ${includeDashboardVersion} == *"-SNAPSHOT" ]] && [[ ${doMavenVersionLookup} -gt 0 ]]; then 
-    # wget way
-    wget --server-response http://oss.sonatype.org/content/repositories/snapshots/org/eclipse/che/dashboard/che-dashboard-war/${includeDashboardVersion}/maven-metadata.xml -O /tmp/mm.xml
-    cheDashboardVersion=$(grep value /tmp/mm.xml | tail -1 | sed -e "s#.*<value>\(.\+\)</value>#\1#" && rm -f /tmp/mm.xml)
-    # maven way
-    # pushd /tmp
-    # MVN="mvn -U dependency:get -Dtransitive=false -Dmaven.repo.local=/tmp/m2-repo-temp"
-    # MVN="${MVN} -DremoteRepositories=http://oss.sonatype.org/content/repositories/snapshots/"
-    # MVN="${MVN} -Dversion=${includeDashboardVersion} -DgroupId=org.eclipse.che.dashboard"
-    # ${MVN} -DartifactId=che-dashboard-war -Dpackaging=pom | tee /tmp/m2-log.txt
-    # cheDashboardVersion=$(cat /tmp/m2-log.txt | grep ${includeDashboardVersion} | egrep -v "metadata" | grep Downloading | sed -e "s#.\+${includeDashboardVersion}/che-dashboard-war-\(.\+\).pom#\1#")
-    # rm -fr /tmp/m2-log.txt
-    # popd 
-  fi
-  if [[ ! ${cheDashboardVersion} ]]; then cheDashboardVersion=${includeDashboardVersion}; fi # fallback to 6.13.0-SNAPSHOT if not resolved
-  MVNFLAGS="${MVNFLAGS} -Dche.dashboard.version=${cheDashboardVersion}"
-fi
+# if [[ $includeDashboardVersion ]] && [[ $includeDashboardVersion != "NO" ]]; then
+#   if [[ ${includeDashboardVersion} == *"-SNAPSHOT" ]] && [[ ${doMavenVersionLookup} -gt 0 ]]; then 
+#     # wget way
+#     wget --server-response http://oss.sonatype.org/content/repositories/snapshots/org/eclipse/che/dashboard/che-dashboard-war/${includeDashboardVersion}/maven-metadata.xml -O /tmp/mm.xml
+#     cheDashboardVersion=$(grep value /tmp/mm.xml | tail -1 | sed -e "s#.*<value>\(.\+\)</value>#\1#" && rm -f /tmp/mm.xml)
+#     # maven way
+#     # pushd /tmp
+#     # MVN="mvn -U dependency:get -Dtransitive=false -Dmaven.repo.local=/tmp/m2-repo-temp"
+#     # MVN="${MVN} -DremoteRepositories=http://oss.sonatype.org/content/repositories/snapshots/"
+#     # MVN="${MVN} -Dversion=${includeDashboardVersion} -DgroupId=org.eclipse.che.dashboard"
+#     # ${MVN} -DartifactId=che-dashboard-war -Dpackaging=pom | tee /tmp/m2-log.txt
+#     # cheDashboardVersion=$(cat /tmp/m2-log.txt | grep ${includeDashboardVersion} | egrep -v "metadata" | grep Downloading | sed -e "s#.\+${includeDashboardVersion}/che-dashboard-war-\(.\+\).pom#\1#")
+#     # rm -fr /tmp/m2-log.txt
+#     # popd 
+#   fi
+#   if [[ ! ${cheDashboardVersion} ]]; then cheDashboardVersion=${includeDashboardVersion}; fi # fallback to 6.13.0-SNAPSHOT if not resolved
+#   MVNFLAGS="${MVNFLAGS} -Dche.dashboard.version=${cheDashboardVersion}"
+# fi
 
-##########################################################################################
-# get jdt.ls deps from Sonatype - works but requires PME flag -DrepoReportingRemoval=false to resolve Sonatype Nexus
-##########################################################################################
-if [[ $lsjdtVersion ]] && [[ $lsjdtVersion != "NO" ]]; then
-  # if [[ ${lsjdtVersion} == *"-SNAPSHOT" ]] && [[ ${doMavenVersionLookup} -gt 0 ]]; then
-  #   
-  #   #### NOTE ####
-  #   # this won't work because the timestamp for extension.api (0.0.2-20181123.075802-48)
-  #                        is not the same as extension.product (0.0.2-20181123.075808-48)
-  #   #### NOTE ####
-  #   
-  #   # wget way
-  #   wget --server-response http://oss.sonatype.org/content/repositories/snapshots/org/eclipse/che/ls/jdt/jdt.ls.extension.product/${lsjdtVersion}/maven-metadata.xml -O /tmp/mm.xml
-  #   lsjdtVersionActual=$(grep value /tmp/mm.xml | tail -1 | sed -e "s#.*<value>\(.\+\)</value>#\1#" && rm -f /tmp/mm.xml)
-  #   # pushd /tmp
-  #   # MVN="mvn -U dependency:get -Dtransitive=false -Dmaven.repo.local=/tmp/m2-repo-temp"
-  #   # MVN="${MVN} -DremoteRepositories=http://oss.sonatype.org/content/repositories/snapshots/"
-  #   # MVN="${MVN} -Dversion=${lsjdtVersion} -DgroupId=org.eclipse.che.ls.jdt"
+# ##########################################################################################
+# # get jdt.ls deps from Sonatype - works but requires PME flag -DrepoReportingRemoval=false to resolve Sonatype Nexus
+# ##########################################################################################
+# if [[ $lsjdtVersion ]] && [[ $lsjdtVersion != "NO" ]]; then
+#   # if [[ ${lsjdtVersion} == *"-SNAPSHOT" ]] && [[ ${doMavenVersionLookup} -gt 0 ]]; then
+#   #   
+#   #   #### NOTE ####
+#   #   # this won't work because the timestamp for extension.api (0.0.2-20181123.075802-48)
+#   #                        is not the same as extension.product (0.0.2-20181123.075808-48)
+#   #   #### NOTE ####
+#   #   
+#   #   # wget way
+#   #   wget --server-response http://oss.sonatype.org/content/repositories/snapshots/org/eclipse/che/ls/jdt/jdt.ls.extension.product/${lsjdtVersion}/maven-metadata.xml -O /tmp/mm.xml
+#   #   lsjdtVersionActual=$(grep value /tmp/mm.xml | tail -1 | sed -e "s#.*<value>\(.\+\)</value>#\1#" && rm -f /tmp/mm.xml)
+#   #   # pushd /tmp
+#   #   # MVN="mvn -U dependency:get -Dtransitive=false -Dmaven.repo.local=/tmp/m2-repo-temp"
+#   #   # MVN="${MVN} -DremoteRepositories=http://oss.sonatype.org/content/repositories/snapshots/"
+#   #   # MVN="${MVN} -Dversion=${lsjdtVersion} -DgroupId=org.eclipse.che.ls.jdt"
 
-  #   # ${MVN} -DartifactId=jdt.ls.extension.api -Dpackaging=pom | tee /tmp/m2-log.txt
-  #   # lsjdtVersionActual=$(cat /tmp/m2-log.txt | grep ${lsjdtVersion} | egrep -v "metadata" | grep Downloading | sed -e "s#.\+${lsjdtVersion}/jdt.ls.extension.api-\(.\+\).pom#\1#")
-  #   # rm -fr /tmp/m2-log.txt
-  #   # # ${MVN} -q -DartifactId=jdt.ls.extension.api
-  #   # # ${MVN} -q -DartifactId=jdt.ls.extension.api -Dclassifier=sources
-  #   # # ${MVN} -q -DartifactId=jdt.ls.extension.product -Dpackaging=tar.gz
-  #   # popd
-  # fi
-  if [[ ! ${lsjdtVersionActual} ]]; then lsjdtVersionActual=${lsjdtVersion}; fi # fallback to 0.0.2-SNAPSHOT if not resolved
-  MVNFLAGS="${MVNFLAGS} -Dche.ls.jdt.version=${lsjdtVersionActual}"
-fi
+#   #   # ${MVN} -DartifactId=jdt.ls.extension.api -Dpackaging=pom | tee /tmp/m2-log.txt
+#   #   # lsjdtVersionActual=$(cat /tmp/m2-log.txt | grep ${lsjdtVersion} | egrep -v "metadata" | grep Downloading | sed -e "s#.\+${lsjdtVersion}/jdt.ls.extension.api-\(.\+\).pom#\1#")
+#   #   # rm -fr /tmp/m2-log.txt
+#   #   # # ${MVN} -q -DartifactId=jdt.ls.extension.api
+#   #   # # ${MVN} -q -DartifactId=jdt.ls.extension.api -Dclassifier=sources
+#   #   # # ${MVN} -q -DartifactId=jdt.ls.extension.product -Dpackaging=tar.gz
+#   #   # popd
+#   # fi
+#   if [[ ! ${lsjdtVersionActual} ]]; then lsjdtVersionActual=${lsjdtVersion}; fi # fallback to 0.0.2-SNAPSHOT if not resolved
+#   MVNFLAGS="${MVNFLAGS} -Dche.ls.jdt.version=${lsjdtVersionActual}"
+# fi
 
 ##########################################################################################
 # run maven build 
