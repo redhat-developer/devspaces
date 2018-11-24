@@ -59,8 +59,11 @@ public class CommandsPaletteTest {
 
   @Test
   public void commandPaletteTest() {
-    // Create a java spring project
+    // wait the jdt.ls server is started
     projectExplorer.waitProjectExplorer();
+    consoles.waitExpectedTextIntoConsole("Started: Ready");
+
+    // Create a java spring project
     menu.runCommand(Workspace.WORKSPACE, Workspace.CREATE_PROJECT);
     wizard.selectProjectAndCreate("kitchensink-example", PROJECT_NAME);
     notificationsPopupPanel.waitProgressPopupPanelClose();
