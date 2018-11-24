@@ -115,7 +115,8 @@ public class VertxUserStoryTest {
     testWorkspace = testWorkspaceProvider.getWorkspace(WORKSPACE_NAME, defaultTestUser);
 
     // wait expected message in the progress info bar
-    mavenPluginStatusBar.waitExpectedTextInInfoPanel("Refreshing Maven model");
+    // the execution takes a lot of time on a local machine, so need a big timeout
+    mavenPluginStatusBar.waitExpectedTextInInfoPanel("Refreshing Maven model", LOADER_TIMEOUT_SEC);
     mavenPluginStatusBar.waitClosingInfoPanel();
 
     // check the project is initialized
