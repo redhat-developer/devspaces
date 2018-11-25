@@ -19,7 +19,6 @@ suffix2="" # normally we compute this from version of org/eclipse/che/assembly-m
 upstreamPom2="" # eg., org/eclipse/che/assembly-main
 
 doSedReplacements=1
-doMavenVersionLookup=1
 
 ##########################################################################################
 # enable support for CI builds
@@ -42,7 +41,6 @@ while [[ "$#" -gt 0 ]]; do
     '-MVNFLAGS') MVNFLAGS="$2"; shift 1;; # add more mvn flags
     '-INDY') INDY="$2"; shift 1;; # override for default INDY URL
     '-ns') doSedReplacements=0; shift 0;; # don't do sed replacements (testing NCL-4195)
-    '-ndbvl'|'ndmvl') doMavenVersionLookup=0; shift 0;; # don't check for a version of the dashboard, just use what's given (testing NCL-4195)s
     *) OTHER="${OTHER} $1"; shift 0;; 
   esac
   shift 1
