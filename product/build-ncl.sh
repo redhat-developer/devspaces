@@ -124,7 +124,11 @@ fi
 
 # TODO when dashboard is built in NCL, remove from here
 # fix properties mangled by above sed/perl changes or PME: want these to be -SNAPSHOT, not -redhat-0000x
-for prop in che.dashboard.version che.ls.jdt.version; do
+propsToFix=che.ls.jdt.version
+if [[ ${includeDashboardFromSource} -lt 1 ]]; then
+  propsToFix="che.dashboard.version che.ls.jdt.version"
+fi
+for prop in ${propsToFix}; do
   for d in $(find . -name pom.xml); do
     sed -i "s#\(<${prop}.\+\).redhat-[0-9]\{5\}\(</${prop}>\)#\1-SNAPSHOT\2#g" $d
     propval=$(grep "<${prop}>" $d | sed -e "s#.*<${prop}>\(.\+\)</${prop}>.*#\1#")
