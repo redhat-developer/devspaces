@@ -21,6 +21,8 @@
             <class name="com.redhat.codeready.selenium.git.AuthorizeOnGithubFromDashboardTest"/>
             <class name="com.redhat.codeready.selenium.git.AuthorizeOnGithubFromPreferencesTest"/>
             <class name="com.redhat.codeready.selenium.dashboard.workspaces.WorkspacesListTest"/>
+            <class name="com.redhat.codeready.selenium.dashboard.organization.ShareWorkspaceOwnerTest"/>
+            <class name="com.redhat.codeready.selenium.dashboard.organization.ShareWorkspaceMemberTest"/>
         </classes>
     </test>
 </suite>
