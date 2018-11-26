@@ -47,6 +47,8 @@ public class CreateAndDeleteProjectsTest {
   private static final String KITCHENSINK_EXAMPLE = "kitchensink-example";
   private static final String SECOND_KINTCHENSINK_PROJECT_NAME = KITCHENSINK_EXAMPLE + "-1";
 
+  private String dashboardWindow;
+
   @Inject private Dashboard dashboard;
   @Inject private WorkspaceProjects workspaceProjects;
   @Inject private WorkspaceDetails workspaceDetails;
@@ -78,7 +80,7 @@ public class CreateAndDeleteProjectsTest {
   }
 
   @Test
-  public void createAndDeleteProjectTest() {
+  public void createProjectTest() {
     dashboard.waitDashboardToolbarTitle();
     dashboard.selectWorkspacesItemOnDashboard();
     workspaces.clickOnAddWorkspaceBtn();
@@ -104,7 +106,7 @@ public class CreateAndDeleteProjectsTest {
     testWorkspace = testWorkspaceProvider.getWorkspace(WORKSPACE, defaultTestUser);
 
     // switch to the IDE and wait for workspace is ready to use
-    String dashboardWindow = seleniumWebDriverHelper.switchToIdeFrameAndWaitAvailability();
+    dashboardWindow = seleniumWebDriverHelper.switchToIdeFrameAndWaitAvailability();
     toastLoader.waitToastLoaderAndClickStartButton();
     ide.waitOpenedWorkspaceIsReadyToUse();
 
@@ -115,7 +117,10 @@ public class CreateAndDeleteProjectsTest {
     mavenPluginStatusBar.waitClosingInfoPanel();
     explorer.waitDefinedTypeOfFolder(KITCHENSINK_EXAMPLE, PROJECT_FOLDER);
     notificationsPopupPanel.waitPopupPanelsAreClosed();
+  }
 
+  @Test
+  public void deleteProjectsFromDashboardTest() {
     // delete projects from workspace details page
     switchToWindow(dashboardWindow);
     dashboard.selectWorkspacesItemOnDashboard();

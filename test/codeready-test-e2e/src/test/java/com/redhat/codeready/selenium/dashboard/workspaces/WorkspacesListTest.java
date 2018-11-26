@@ -364,7 +364,7 @@ public class WorkspacesListTest {
     return testWorkspaceServiceClient.getAll().size();
   }
 
-  @Test(priority = 1)
+  @Test(priority = 1, alwaysRun = true)
   public void checkDocumentionLink() {
     workspaces.waitPageLoading();
     String mainWindow = seleniumWebDriver.getWindowHandle();
