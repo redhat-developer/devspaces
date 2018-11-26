@@ -18,6 +18,12 @@
        thread-count="1">
     <test name="all">
         <classes>
+            <class name="com.redhat.codeready.selenium.git.AuthorizeOnGithubFromDashboardTest"/>
+            <class name="com.redhat.codeready.selenium.git.AuthorizeOnGithubFromPreferencesTest"/>
+            <class name="com.redhat.codeready.selenium.dashboard.workspaces.WorkspacesListTest"/>
+            <class name="com.redhat.codeready.selenium.dashboard.organization.ShareWorkspaceOwnerTest"/>
+            <class name="com.redhat.codeready.selenium.dashboard.organization.ShareWorkspaceMemberTest"/>
+
             <class name="org.eclipse.che.selenium.dashboard.organization.AddWorkspaceToOrganizationTest"/>
             <class name="org.eclipse.che.selenium.dashboard.organization.AdminOfParentOrganizationTest"/>
             <class name="org.eclipse.che.selenium.dashboard.organization.AdminOfSubOrganizationTest"/>

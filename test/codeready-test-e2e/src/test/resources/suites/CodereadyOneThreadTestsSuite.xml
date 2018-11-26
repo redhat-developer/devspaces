@@ -18,9 +18,6 @@
        thread-count="1">
     <test name="all">
         <classes>
-            <class name="com.redhat.codeready.selenium.git.AuthorizeOnGithubFromDashboardTest"/>
-            <class name="com.redhat.codeready.selenium.git.AuthorizeOnGithubFromPreferencesTest"/>
-            <class name="com.redhat.codeready.selenium.dashboard.workspaces.WorkspacesListTest"/>
         </classes>
     </test>
 </suite>
