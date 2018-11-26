@@ -19,6 +19,7 @@ import static org.eclipse.che.selenium.core.constant.TestTimeoutsConstants.LOAD_
 
 import com.google.inject.Inject;
 import org.eclipse.che.selenium.core.SeleniumWebDriver;
+import org.eclipse.che.selenium.core.utils.WaitUtils;
 import org.eclipse.che.selenium.core.webdriver.SeleniumWebDriverHelper;
 import org.eclipse.che.selenium.core.workspace.TestWorkspace;
 import org.eclipse.che.selenium.pageobject.Consoles;
@@ -53,6 +54,7 @@ public class CheckIntelligenceCommandFromToolbarTest {
   public void setUp() throws Exception {
     ide.open(testWorkspace);
     projectExplorer.waitProjectExplorer();
+    consoles.waitExpectedTextIntoConsole("Initialized language server");
     currentWindow = seleniumWebDriver.getWindowHandle();
   }
 
@@ -108,6 +110,7 @@ public class CheckIntelligenceCommandFromToolbarTest {
 
   private void checkTestAppByPreviewButtonAndReturnToIde(
       String currentWindow, String expectedText) {
+    WaitUtils.sleepQuietly(5);
     new WebDriverWait(seleniumWebDriver, LOAD_PAGE_TIMEOUT_SEC)
         .until(
             (ExpectedCondition<Boolean>)
