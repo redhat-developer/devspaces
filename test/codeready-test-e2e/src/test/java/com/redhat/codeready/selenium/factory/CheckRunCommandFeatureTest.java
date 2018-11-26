@@ -76,7 +76,7 @@ public class CheckRunCommandFeatureTest {
   @Test
   public void checkRunCommandFeatureTest() throws ExecutionException, InterruptedException {
     // wait the jdt.ls server is started
-    consoles.waitExpectedTextIntoConsole("Started: Ready");
+    consoles.waitExpectedTextIntoConsole("Initialized language server");
 
     createProject(PROJECT_NAME);
     projectExplorer.waitProjectExplorer();

@@ -61,7 +61,7 @@ public class CommandsPaletteTest {
   public void commandPaletteTest() {
     // wait the jdt.ls server is started
     projectExplorer.waitProjectExplorer();
-    consoles.waitExpectedTextIntoConsole("Started: Ready");
+    consoles.waitExpectedTextIntoConsole("Initialized language server");
 
     // Create a java spring project
     menu.runCommand(Workspace.WORKSPACE, Workspace.CREATE_PROJECT);

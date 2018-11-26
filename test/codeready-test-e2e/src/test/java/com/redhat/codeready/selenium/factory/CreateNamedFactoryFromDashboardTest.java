@@ -25,6 +25,7 @@ import org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants;
 import org.eclipse.che.selenium.core.user.DefaultTestUser;
 import org.eclipse.che.selenium.core.webdriver.SeleniumWebDriverHelper;
 import org.eclipse.che.selenium.core.workspace.TestWorkspace;
+import org.eclipse.che.selenium.pageobject.Consoles;
 import org.eclipse.che.selenium.pageobject.Events;
 import org.eclipse.che.selenium.pageobject.Ide;
 import org.eclipse.che.selenium.pageobject.LoadingBehaviorPage;
@@ -64,11 +65,13 @@ public class CreateNamedFactoryFromDashboardTest {
   @Inject private TestFactoryServiceClient factoryServiceClient;
   @Inject private PullRequestPanel pullRequestPanel;
   @Inject private TestUserPreferencesServiceClient testUserPreferencesServiceClient;
+  @Inject private Consoles consoles;
 
   @BeforeClass
   public void setUp() throws Exception {
     ide.open(testWorkspace);
     ide.waitOpenedWorkspaceIsReadyToUse();
+    consoles.waitExpectedTextIntoConsole("Initialized language server");
 
     menu.runCommand(
         TestMenuCommandsConstants.Workspace.WORKSPACE,
