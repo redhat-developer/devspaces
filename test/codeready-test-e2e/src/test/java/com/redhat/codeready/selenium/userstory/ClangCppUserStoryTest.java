@@ -12,13 +12,11 @@
 package com.redhat.codeready.selenium.userstory;
 
 import static org.eclipse.che.commons.lang.NameGenerator.generate;
-import static org.eclipse.che.selenium.core.TestGroup.UNDER_REPAIR;
 import static org.eclipse.che.selenium.core.constant.TestCommandsConstants.RUN_COMMAND;
 import static org.eclipse.che.selenium.core.constant.TestIntelligentCommandsConstants.CommandItem.BUILD_AND_RUN_COMMAND_ITEM;
 import static org.eclipse.che.selenium.core.constant.TestProjectExplorerContextMenuConstants.ContextMenuCommandGoals.RUN_GOAL;
 import static org.eclipse.che.selenium.pageobject.CodenvyEditor.MarkerLocator.ERROR;
 import static org.eclipse.che.selenium.pageobject.dashboard.NewWorkspace.Stack.CPP;
-import static org.testng.Assert.fail;
 
 import com.google.common.collect.ImmutableList;
 import com.google.inject.Inject;
@@ -33,7 +31,6 @@ import org.eclipse.che.selenium.pageobject.ProjectExplorer;
 import org.eclipse.che.selenium.pageobject.dashboard.CreateWorkspaceHelper;
 import org.eclipse.che.selenium.pageobject.dashboard.Dashboard;
 import org.openqa.selenium.Keys;
-import org.openqa.selenium.TimeoutException;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -111,7 +108,7 @@ public class ClangCppUserStoryTest {
         EXPECTED_MESSAGE_IN_CONSOLE);
   }
 
-  @Test(priority = 2, groups = UNDER_REPAIR)
+  @Test(priority = 2)
   public void checkAutocompleteFeature() {
     editor.selectTabByName(CPP_FILE_NAME);
 
@@ -119,14 +116,7 @@ public class ClangCppUserStoryTest {
     editor.goToPosition(7, 44);
     editor.typeTextIntoEditor(Keys.ENTER.toString());
     editor.typeTextIntoEditor("std::cou");
-
-    try {
-      editor.launchAutocompleteAndWaitContainer();
-    } catch (TimeoutException ex) {
-      // remove try-catch block after issue has been resolved
-      fail("Known permanent failure https://issues.jboss.org/browse/RACHEL-104");
-    }
-
+    editor.launchAutocompleteAndWaitContainer();
     editor.waitProposalIntoAutocompleteContainer("cout ostream");
     editor.waitProposalIntoAutocompleteContainer("wcout wostream");
     editor.closeAutocomplete();
