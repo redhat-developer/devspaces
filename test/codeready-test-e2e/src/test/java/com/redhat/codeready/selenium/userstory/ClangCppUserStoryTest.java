@@ -15,6 +15,7 @@ import static org.eclipse.che.commons.lang.NameGenerator.generate;
 import static org.eclipse.che.selenium.core.constant.TestCommandsConstants.RUN_COMMAND;
 import static org.eclipse.che.selenium.core.constant.TestIntelligentCommandsConstants.CommandItem.BUILD_AND_RUN_COMMAND_ITEM;
 import static org.eclipse.che.selenium.core.constant.TestProjectExplorerContextMenuConstants.ContextMenuCommandGoals.RUN_GOAL;
+import static org.eclipse.che.selenium.core.constant.TestTimeoutsConstants.WIDGET_TIMEOUT_SEC;
 import static org.eclipse.che.selenium.pageobject.CodenvyEditor.MarkerLocator.ERROR;
 import static org.eclipse.che.selenium.pageobject.dashboard.NewWorkspace.Stack.CPP;
 
@@ -162,7 +163,7 @@ public class ClangCppUserStoryTest {
     projectExplorer.waitAndSelectItem(CONSOLE_CPP_PROJECT);
     projectExplorer.openItemByPath(CONSOLE_CPP_PROJECT);
     projectExplorer.openItemByPath(PATH_TO_CPP_FILE);
+    editor.waitActive(WIDGET_TIMEOUT_SEC);
     editor.waitTabIsPresent(CPP_FILE_NAME);
-    editor.waitActive();
   }
 }
