@@ -226,7 +226,7 @@ if [[ $includeDashboardFromSource -gt 0 ]]; then
     yarn config set fetch-retry-mintimeout 60000 --global
 
     yarn config list
-    yarn install --frozen-lockfile --no-lockfile --pure-lockfile --ignore-optional --non-interactive --production=false
+    # yarn install --frozen-lockfile --no-lockfile --pure-lockfile --ignore-optional --non-interactive --production=false
   popd
 fi
 
