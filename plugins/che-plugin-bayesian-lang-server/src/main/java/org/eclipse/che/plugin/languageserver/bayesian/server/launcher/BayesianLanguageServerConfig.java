@@ -24,6 +24,7 @@ import java.util.Set;
 import org.eclipse.che.api.languageserver.DefaultInstanceProvider;
 import org.eclipse.che.api.languageserver.LanguageServerConfig;
 import org.eclipse.che.api.languageserver.ProcessCommunicationProvider;
+import org.eclipse.che.api.project.server.impl.RootDirPathProvider;
 import org.eclipse.che.plugin.json.inject.JsonModule;
 import org.eclipse.che.plugin.languageserver.bayesian.BayesianLanguageServerModule;
 import org.slf4j.Logger;
@@ -37,10 +38,11 @@ public class BayesianLanguageServerConfig implements LanguageServerConfig {
   private static final Logger LOG = getLogger(BayesianLanguageServerConfig.class);
 
   private final Path launchScript;
+  private final RootDirPathProvider rootDirPathProvider;
 
   @Inject
-  public BayesianLanguageServerConfig() {
-
+  public BayesianLanguageServerConfig(RootDirPathProvider rootDirPathProvider) {
+    this.rootDirPathProvider = rootDirPathProvider;
     launchScript = Paths.get(System.getenv("HOME"), "che/ls-bayesian/launch.sh");
   }
 
@@ -98,5 +100,10 @@ public class BayesianLanguageServerConfig implements LanguageServerConfig {
         return isSuccessfullyInstalled() ? null : "Launch script file does not exist";
       }
     };
+  }
+
+  @Override
+  public String getProjectsRoot() {
+    return rootDirPathProvider.get();
   }
 }
