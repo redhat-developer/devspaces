@@ -241,7 +241,7 @@ MVNFLAGS="${MVNFLAGS} -Dmdep.analyze.skip=true -Dmaven.javadoc.skip -Dgpg.skip -
 MVNFLAGS="${MVNFLAGS} -Dorg.slf4j.simpleLogger.dateTimeFormat=HH:mm:ss "
 MVNFLAGS="${MVNFLAGS} -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn"
 MVNFLAGS="${MVNFLAGS} -DnodeDownloadRoot=${nodeDownloadRoot} -DnpmDownloadRoot=${npmDownloadRoot}"
-MVNFLAGS="${MVNFLAGS} -DnpmRegistryURL=${npmRegistryURL} ${MVNFLAGS} -DYARN_REGISTRY=${YARN_REGISTRY}"
+MVNFLAGS="${MVNFLAGS} -DnpmRegistryURL=${npmRegistryURL} -DYARN_REGISTRY=${YARN_REGISTRY}"
 
 ##########################################################################################
 # run maven build 
