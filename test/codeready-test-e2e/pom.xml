@@ -104,11 +104,6 @@
             <version>${che.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.eclipse.che.selenium</groupId>
-            <artifactId>che-selenium-core</artifactId>
-            <version>${che.version}</version>
-        </dependency>
-        <dependency>
             <groupId>org.seleniumhq.selenium</groupId>
             <artifactId>selenium-api</artifactId>
         </dependency>
