@@ -65,7 +65,7 @@
                     <descriptors>
                         <descriptor>${project.basedir}/src/assembly/assembly.xml</descriptor>
                     </descriptors>
-                    <finalName>codeready-${project.version}</finalName>
+                    <finalName>${artifactId}</finalName>
                     <tarLongFileMode>posix</tarLongFileMode>
                 </configuration>
             </plugin>

@@ -12,7 +12,7 @@
     <id>tomcat-zip</id>
     <formats>
         <format>dir</format>
-        <format>zip</format>
+        <!-- <format>zip</format> -->
         <format>tar.gz</format>
     </formats>
     <dependencySets>
