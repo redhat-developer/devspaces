@@ -114,11 +114,13 @@ public class CodereadyKeycloakCliClient {
               userId, email, authPartOfCommand);
       executor.execute(setEmailCommand);
 
-      String addUserRoleToUserCommand =
-          format(
-              "add-roles -r codeready --uusername %s --rolename user %s 2>&1",
-              username, authPartOfCommand);
-      executor.execute(addUserRoleToUserCommand);
+      // TODO ask Maxim Shaposhnik if we reallt need to assign user to role "user" so as CRW
+      // keycloak doesn't have that role "user" itself
+      //      String addUserRoleToUserCommand =
+      //          format(
+      //              "add-roles -r codeready --uusername %s --rolename user %s 2>&1",
+      //              username, authPartOfCommand);
+      //      executor.execute(addUserRoleToUserCommand);
 
       String addReadTokenRoleToUserCommand =
           format(
