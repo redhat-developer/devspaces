@@ -36,8 +36,8 @@ public class NewWorkspacePageTest {
   private static final String EXPECTED_WORKSPACE_NAME_PREFIX = "wksp-";
   private static final String MACHINE_NAME = "dev-machine";
   private static final double MAX_RAM_VALUE = 100.0;
-  private static final double MIN_RAM_VALUE = 0.5;
-  private static final double RAM_CHANGE_STEP = 0.5;
+  private static final double MIN_RAM_VALUE = 0.1;
+  private static final double RAM_CHANGE_STEP = 0.1;
   private static final String NAME_WITH_ONE_HUNDRED_SYMBOLS = generate("wksp-", 95);
   private static final List<String> NOT_VALID_NAMES =
       asList("wksp-", "-wksp", "wk sp", "wk_sp", "wksp@", "wksp$", "wksp&", "wksp*");

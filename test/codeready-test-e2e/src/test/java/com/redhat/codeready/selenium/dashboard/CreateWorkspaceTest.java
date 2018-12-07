@@ -95,11 +95,11 @@ public class CreateWorkspaceTest {
     assertTrue(newWorkspace.isMachineExists(machineName));
     assertEquals(newWorkspace.getRAM(machineName), 2.0);
     newWorkspace.clickOnIncrementMemoryButton(machineName);
-    assertEquals(newWorkspace.getRAM(machineName), 2.5);
+    assertEquals(newWorkspace.getRAM(machineName), 2.1);
     newWorkspace.clickOnDecrementMemoryButton(machineName);
     newWorkspace.clickOnDecrementMemoryButton(machineName);
     newWorkspace.clickOnDecrementMemoryButton(machineName);
-    assertEquals(newWorkspace.getRAM(machineName), 1.0);
+    assertEquals(newWorkspace.getRAM(machineName), 1.8);
 
     // type number of memory in the RAM field
     newWorkspace.setMachineRAM(machineName, 5.0);
