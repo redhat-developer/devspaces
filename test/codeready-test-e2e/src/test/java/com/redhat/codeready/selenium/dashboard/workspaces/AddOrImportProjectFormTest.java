@@ -353,34 +353,28 @@ public class AddOrImportProjectFormTest {
     addOrImportForm.clickOnAddButton();
     addOrImportForm.waitProjectTabAppearance(KITCHENSINCK_EXAMPLE);
 
-    // check closing of "Workspace Is Created" dialog window
-    newWorkspace.clickOnBottomCreateButton();
-    newWorkspace.waitWorkspaceCreatedDialogIsVisible();
-
-    newWorkspace.closeWorkspaceCreatedDialog();
-    newWorkspace.waitWorkspaceCreatedDialogDisappearance();
+    newWorkspace.clickOnCreateButtonAndEditWorkspace();
     workspaceOverview.checkNameWorkspace(WORKSPACE_NAME);
 
     seleniumWebDriver.navigate().back();
 
-    prepareJavaWorkspaceAndOpenCreateDialog(TEST_JAVA_WORKSPACE_NAME);
-    newWorkspace.clickOnEditWorkspaceButton();
+    prepareJavaWorkspace(TEST_JAVA_WORKSPACE_NAME);
+    newWorkspace.clickOnCreateButtonAndEditWorkspace();
     workspaceOverview.checkNameWorkspace(TEST_JAVA_WORKSPACE_NAME);
 
     seleniumWebDriver.navigate().back();
 
-    prepareJavaWorkspaceAndOpenCreateDialog(TEST_JAVA_WORKSPACE_NAME_EDIT);
-    newWorkspace.waitWorkspaceCreatedDialogIsVisible();
-    newWorkspace.clickOnOpenInIDEButton();
+    prepareJavaWorkspace(TEST_JAVA_WORKSPACE_NAME_EDIT);
+    newWorkspace.clickOnTopCreateButton();
 
     // store info about created workspace to make SeleniumTestHandler.captureTestWorkspaceLogs()
     // possible to read logs in case of test failure
     testWorkspace =
         testWorkspaceProvider.getWorkspace(TEST_JAVA_WORKSPACE_NAME_EDIT, defaultTestUser);
 
+    seleniumWebDriverHelper.switchToIdeFrameAndWaitAvailability();
     testWorkspaceServiceClient.waitStatus(
         TEST_JAVA_WORKSPACE_NAME_EDIT, defaultTestUser.getName(), RUNNING);
-    seleniumWebDriverHelper.switchToIdeFrameAndWaitAvailability();
 
     projectExplorer.waitProjectExplorer();
     projectExplorer.waitItem(KITCHENSINCK_EXAMPLE);
@@ -415,7 +409,7 @@ public class AddOrImportProjectFormTest {
     projectOptions.waitSaveButtonDisabling();
   }
 
-  private void prepareJavaWorkspaceAndOpenCreateDialog(String workspaceName) {
+  private void prepareJavaWorkspace(String workspaceName) {
     // prepare workspace
     newWorkspace.waitPageLoad();
     newWorkspace.typeWorkspaceName(workspaceName);
@@ -434,9 +428,5 @@ public class AddOrImportProjectFormTest {
         KITCHENSINCK_EXAMPLE,
         EXPECTED_SAMPLES_WITH_DESCRIPTIONS.get(KITCHENSINCK_EXAMPLE),
         EXPECTED_KITCHENSINC_REPOSITORY_URL);
-
-    // open create dialog
-    newWorkspace.clickOnBottomCreateButton();
-    newWorkspace.waitWorkspaceCreatedDialogIsVisible();
   }
 }
