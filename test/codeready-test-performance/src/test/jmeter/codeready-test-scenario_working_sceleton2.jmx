@@ -10,17 +10,17 @@
         <collectionProp name="Arguments.arguments">
           <elementProp name="ADMIN_TOKEN" elementType="Argument">
             <stringProp name="Argument.name">ADMIN_TOKEN</stringProp>
-            <stringProp name="Argument.value">null</stringProp>
+            <stringProp name="Argument.value">dummy_token</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="crw.host" elementType="Argument">
             <stringProp name="Argument.name">crw.host</stringProp>
-            <stringProp name="Argument.value">${__P(crw.host,127.0.0.1)}</stringProp>
+            <stringProp name="Argument.value">${__P(crw.host,codeready-codeready.your.ip)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="crw.sso.host" elementType="Argument">
             <stringProp name="Argument.name">crw.sso.host</stringProp>
-            <stringProp name="Argument.value">${__P(crw.sso.host,127.0.0.1)}</stringProp>
+            <stringProp name="Argument.value">${__P(crw.sso.host,rh-sso-codeready.sso.ip)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="crw.protocol" elementType="Argument">
@@ -49,7 +49,7 @@
           <boolProp name="LoopController.continue_forever">false</boolProp>
           <stringProp name="LoopController.loops">1</stringProp>
         </elementProp>
-        <stringProp name="ThreadGroup.num_threads">${__P(test.threads,1)}</stringProp>
+        <stringProp name="ThreadGroup.num_threads">${test.threads}</stringProp>
         <stringProp name="ThreadGroup.ramp_time">1</stringProp>
         <boolProp name="ThreadGroup.scheduler">false</boolProp>
         <stringProp name="ThreadGroup.duration"></stringProp>
@@ -65,7 +65,7 @@
             </elementProp>
             <elementProp name="THRESHOLD_ATTEMPTS" elementType="Argument">
               <stringProp name="Argument.name">THRESHOLD_ATTEMPTS</stringProp>
-              <stringProp name="Argument.value">140</stringProp>
+              <stringProp name="Argument.value">180</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
             </elementProp>
           </collectionProp>
@@ -234,7 +234,7 @@
           </HeaderManager>
           <hashTree/>
         </hashTree>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="get_users_namest_thread_${__threadNum}" enabled="true">
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="get_users_names_thread_${__threadNum}" enabled="true">
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" enabled="true">
             <collectionProp name="Arguments.arguments"/>
           </elementProp>
@@ -358,7 +358,7 @@
       &quot;machines&quot;: {&#xd;
         &quot;dev-machine&quot;: {&#xd;
           &quot;attributes&quot;: {&#xd;
-            &quot;memoryLimitBytes&quot;: &quot;2147483648&quot;&#xd;
+            &quot;memoryLimitBytes&quot;: &quot;1610612736&quot;&#xd;
           },&#xd;
           &quot;servers&quot;: {&#xd;
             &quot;eap&quot;: {&#xd;
@@ -377,7 +377,8 @@
             &quot;org.eclipse.che.exec&quot;,&#xd;
             &quot;org.eclipse.che.terminal&quot;,&#xd;
             &quot;org.eclipse.che.ws-agent&quot;,&#xd;
-            &quot;org.eclipse.che.ls.java&quot;&#xd;
+            &quot;org.eclipse.che.ls.java&quot;,&#xd;
+            &quot;com.redhat.bayesian.lsp&quot;&#xd;
           ],&#xd;
           &quot;env&quot;: {}&#xd;
         }&#xd;
@@ -418,7 +419,6 @@
           <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
           <boolProp name="HTTPSampler.use_keepalive">false</boolProp>
           <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
-          <boolProp name="HTTPSampler.BROWSER_COMPATIBLE_MULTIPART">true</boolProp>
           <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
           <stringProp name="HTTPSampler.connect_timeout"></stringProp>
           <stringProp name="HTTPSampler.response_timeout"></stringProp>
@@ -503,101 +503,65 @@
               <stringProp name="ConstantTimer.delay">1000</stringProp>
             </ConstantTimer>
             <hashTree/>
-            <JSR223Assertion guiclass="TestBeanGUI" testclass="JSR223Assertion" testname="JSR223_Assertion_the_ws_with_expected_status" enabled="true">
+            <JSR223Assertion guiclass="TestBeanGUI" testclass="JSR223Assertion" testname="JSR223_assertion" enabled="true">
               <stringProp name="scriptLanguage">groovy</stringProp>
               <stringProp name="parameters"></stringProp>
               <stringProp name="filename"></stringProp>
               <stringProp name="cacheKey">true</stringProp>
-              <stringProp name="script">if(vars.get(&quot;WORKSPACE_STATUS&quot;).equals(vars.get(&quot;STARTING&quot;)||vars.get(&quot;WORKSPACE_STATUS&quot;).equals(vars.get(&quot;RUNNING&quot;)))){
+              <stringProp name="script">def CURRENT_STATUS = (vars.get(&quot;WORKSPACE_STATUS&quot;))
+if(!(CURRENT_STATUS.equals(&quot;RUNNING&quot;)||(CURRENT_STATUS.equals(&quot;STARTING&quot;)))){
+vars.put(&quot;IS_STATUS_RUNNING&quot;, &quot;false&quot;)
 AssertionResult.setFailure(true);
-AssertionResult.setFailureMessage(&quot;The expected WS status should be RUNNING or STARTING but we have &quot;+ vars.get(&quot;WORKSPACE_STATUS&quot;));
+AssertionResult.setFailureMessage(&quot;The just created Workspace has unexpected status &quot; + CURRENT_STATUS);
 }</stringProp>
             </JSR223Assertion>
             <hashTree/>
           </hashTree>
-          <JSR223Sampler guiclass="TestBeanGUI" testclass="JSR223Sampler" testname="reset_loop_if_WS_stopped_unexpectedly_${__threadNum}" enabled="true">
-            <stringProp name="scriptLanguage">groovy</stringProp>
-            <stringProp name="parameters"></stringProp>
-            <stringProp name="filename"></stringProp>
-            <stringProp name="cacheKey">true</stringProp>
-            <stringProp name="script">vars.put(&quot;IS_STATUS_RUNNING&quot;, &quot;false&quot;)</stringProp>
-          </JSR223Sampler>
-          <hashTree/>
           <IfController guiclass="IfControllerPanel" testclass="IfController" testname="If Controller" enabled="true">
-            <stringProp name="IfController.condition">${__groovy(&quot;${WORKSPACE_STATUS}&quot; != &quot;STOPPED&quot;)}</stringProp>
+            <stringProp name="IfController.condition">${__groovy(&quot;${CURRENT_ATTEMPT}&quot; == &quot;${THRESHOLD_ATTEMPTS}&quot;)}</stringProp>
             <boolProp name="IfController.evaluateAll">false</boolProp>
             <boolProp name="IfController.useExpression">true</boolProp>
           </IfController>
           <hashTree>
-            <JSR223Sampler guiclass="TestBeanGUI" testclass="JSR223Sampler" testname="check_running_status_thread_${__threadNum}" enabled="true">
-              <stringProp name="cacheKey">true</stringProp>
-              <stringProp name="filename"></stringProp>
-              <stringProp name="parameters"></stringProp>
-              <stringProp name="script">IS_STATUS_RUNNING=!(vars.get(&apos;WORKSPACE_STATUS&apos;).equals(&apos;RUNNING&apos;) || vars.get(&apos;CURRENT_ATTEMPT&apos;).equals(vars.get(&apos;THRESHOLD_ATTEMPTS&apos;)))
-vars.put(&quot;IS_STATUS_RUNNING&quot;, String.valueOf(IS_STATUS_RUNNING))</stringProp>
+            <JSR223Assertion guiclass="TestBeanGUI" testclass="JSR223Assertion" testname="JSR223 Assertion" enabled="true">
               <stringProp name="scriptLanguage">groovy</stringProp>
+              <stringProp name="parameters"></stringProp>
+              <stringProp name="filename"></stringProp>
+              <stringProp name="cacheKey">true</stringProp>
+              <stringProp name="script">AssertionResult.setFailure(true);
+AssertionResult.setFailureMessage(&quot;the expected workspace status has been not achieved in maximum timeout&quot;);
+
+</stringProp>
+            </JSR223Assertion>
+            <hashTree/>
+          </hashTree>
+          <IfController guiclass="IfControllerPanel" testclass="IfController" testname="If Controller" enabled="true">
+            <stringProp name="IfController.condition">${__groovy(&quot;${WORKSPACE_STATUS}&quot; == &quot;RUNNING&quot;)}</stringProp>
+            <boolProp name="IfController.evaluateAll">false</boolProp>
+            <boolProp name="IfController.useExpression">true</boolProp>
+          </IfController>
+          <hashTree>
+            <JSR223Sampler guiclass="TestBeanGUI" testclass="JSR223Sampler" testname="reset_loop_if_ws_run_successful" enabled="true">
+              <stringProp name="scriptLanguage">groovy</stringProp>
+              <stringProp name="parameters"></stringProp>
+              <stringProp name="filename"></stringProp>
+              <stringProp name="cacheKey">true</stringProp>
+              <stringProp name="script">vars.put(&quot;IS_STATUS_RUNNING&quot;, &quot;false&quot;)</stringProp>
             </JSR223Sampler>
             <hashTree/>
           </hashTree>
-          <JSR223Assertion guiclass="TestBeanGUI" testclass="JSR223Assertion" testname="JSR223 Assertion" enabled="true">
-            <stringProp name="scriptLanguage">groovy</stringProp>
-            <stringProp name="parameters"></stringProp>
-            <stringProp name="filename"></stringProp>
-            <stringProp name="cacheKey">true</stringProp>
-            <stringProp name="script">if(vars.get(&quot;CURRENT_ATTEMPT&quot;).equals(vars.get(&quot;THRESHOLD_ATTEMPTS&quot;))){
-AssertionResult.setFailure(true);
-AssertionResult.setFailureMessage(&quot;the expected workspace status has been not achieved in maximum timeout&quot;);
-
-}</stringProp>
-          </JSR223Assertion>
-          <hashTree/>
         </hashTree>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="is_workspace_running_thread_${__threadNum}" enabled="false">
-          <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" enabled="true">
-            <collectionProp name="Arguments.arguments"/>
-          </elementProp>
-          <stringProp name="HTTPSampler.domain">codeready-codeready.${HOST}</stringProp>
-          <stringProp name="HTTPSampler.port"></stringProp>
-          <stringProp name="HTTPSampler.protocol">http</stringProp>
-          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-          <stringProp name="HTTPSampler.path">/api/workspace</stringProp>
-          <stringProp name="HTTPSampler.method">GET</stringProp>
-          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
-          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
-          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
-          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
-          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
-          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
-          <stringProp name="HTTPSampler.response_timeout"></stringProp>
-        </HTTPSamplerProxy>
-        <hashTree>
-          <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
-            <collectionProp name="HeaderManager.headers">
-              <elementProp name="Content-Type" elementType="Header">
-                <stringProp name="Header.name">Content-Type</stringProp>
-                <stringProp name="Header.value">application/json</stringProp>
-              </elementProp>
-              <elementProp name="User-Agent" elementType="Header">
-                <stringProp name="Header.name">User-Agent</stringProp>
-                <stringProp name="Header.value">Mozilla/5.0 (X11; Fedora; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.77 Safari/537.36</stringProp>
-              </elementProp>
-              <elementProp name="" elementType="Header">
-                <stringProp name="Header.name">Authorization</stringProp>
-                <stringProp name="Header.value">Bearer ${USER_ACCESS_TOKEN}</stringProp>
-              </elementProp>
-            </collectionProp>
-          </HeaderManager>
-          <hashTree/>
-          <JSONPathAssertion guiclass="JSONPathAssertionGui" testclass="JSONPathAssertion" testname="JSON Assertion" enabled="true">
-            <stringProp name="JSON_PATH">$.[0].status</stringProp>
-            <stringProp name="EXPECTED_VALUE">RUNNING</stringProp>
-            <boolProp name="JSONVALIDATION">true</boolProp>
-            <boolProp name="EXPECT_NULL">false</boolProp>
-            <boolProp name="INVERT">false</boolProp>
-            <boolProp name="ISREGEX">false</boolProp>
-          </JSONPathAssertion>
-          <hashTree/>
-        </hashTree>
+        <JSR223Sampler guiclass="TestBeanGUI" testclass="JSR223Sampler" testname="StoreTimeWsCreation" enabled="true">
+          <stringProp name="scriptLanguage">groovy</stringProp>
+          <stringProp name="parameters"></stringProp>
+          <stringProp name="filename"></stringProp>
+          <stringProp name="cacheKey">true</stringProp>
+          <stringProp name="script">def testVar = &quot;WS_TIME_CREATION_BY_USER_&quot;+${__threadNum};
+props.put(testVar, &quot;${CURRENT_ATTEMPT}&quot;);
+log.info(&quot;WS_TIME_CREATION_BY_USER__&quot;+${__threadNum} +&quot;:&quot;+props.get(testVar)+&quot;sec&quot;)
+</stringProp>
+        </JSR223Sampler>
+        <hashTree/>
         <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="get_current_workspace_id_thread_${__threadNum}" enabled="true">
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" enabled="true">
             <collectionProp name="Arguments.arguments"/>
@@ -813,6 +777,43 @@ vars.put(&quot;IS_WORKSPACE_STOPPED&quot;, String.valueOf(IS_WORKSPACE_STOPPED))
           </ResponseAssertion>
           <hashTree/>
         </hashTree>
+        <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree" enabled="true">
+          <boolProp name="ResultCollector.error_logging">false</boolProp>
+          <objProp>
+            <name>saveConfig</name>
+            <value class="SampleSaveConfiguration">
+              <time>true</time>
+              <latency>true</latency>
+              <timestamp>true</timestamp>
+              <success>true</success>
+              <label>true</label>
+              <code>true</code>
+              <message>true</message>
+              <threadName>true</threadName>
+              <dataType>true</dataType>
+              <encoding>false</encoding>
+              <assertions>true</assertions>
+              <subresults>true</subresults>
+              <responseData>false</responseData>
+              <samplerData>false</samplerData>
+              <xml>false</xml>
+              <fieldNames>true</fieldNames>
+              <responseHeaders>false</responseHeaders>
+              <requestHeaders>false</requestHeaders>
+              <responseDataOnError>false</responseDataOnError>
+              <saveAssertionResultsFailureMessage>true</saveAssertionResultsFailureMessage>
+              <assertionsResultsToSave>0</assertionsResultsToSave>
+              <bytes>true</bytes>
+              <sentBytes>true</sentBytes>
+              <url>true</url>
+              <threadCounts>true</threadCounts>
+              <idleTime>true</idleTime>
+              <connectTime>true</connectTime>
+            </value>
+          </objProp>
+          <stringProp name="filename"></stringProp>
+        </ResultCollector>
+        <hashTree/>
       </hashTree>
       <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="clean_up" enabled="true">
         <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
@@ -1056,7 +1057,69 @@ vars.put(&quot;IS_WORKSPACE_STOPPED&quot;, String.valueOf(IS_WORKSPACE_STOPPED))
               </hashTree>
             </hashTree>
           </hashTree>
+          <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree" enabled="true">
+            <boolProp name="ResultCollector.error_logging">false</boolProp>
+            <objProp>
+              <name>saveConfig</name>
+              <value class="SampleSaveConfiguration">
+                <time>true</time>
+                <latency>true</latency>
+                <timestamp>true</timestamp>
+                <success>true</success>
+                <label>true</label>
+                <code>true</code>
+                <message>true</message>
+                <threadName>true</threadName>
+                <dataType>true</dataType>
+                <encoding>false</encoding>
+                <assertions>true</assertions>
+                <subresults>true</subresults>
+                <responseData>false</responseData>
+                <samplerData>false</samplerData>
+                <xml>false</xml>
+                <fieldNames>true</fieldNames>
+                <responseHeaders>false</responseHeaders>
+                <requestHeaders>false</requestHeaders>
+                <responseDataOnError>false</responseDataOnError>
+                <saveAssertionResultsFailureMessage>true</saveAssertionResultsFailureMessage>
+                <assertionsResultsToSave>0</assertionsResultsToSave>
+                <bytes>true</bytes>
+                <sentBytes>true</sentBytes>
+                <url>true</url>
+                <threadCounts>true</threadCounts>
+                <idleTime>true</idleTime>
+                <connectTime>true</connectTime>
+              </value>
+            </objProp>
+            <stringProp name="filename"></stringProp>
+          </ResultCollector>
+          <hashTree/>
         </hashTree>
+        <JSR223Sampler guiclass="TestBeanGUI" testclass="JSR223Sampler" testname="CalculateTime" enabled="true">
+          <stringProp name="scriptLanguage">groovy</stringProp>
+          <stringProp name="parameters"></stringProp>
+          <stringProp name="filename"></stringProp>
+          <stringProp name="cacheKey">true</stringProp>
+          <stringProp name="script">List &lt;Integer&gt; values = new ArrayList();
+Integer sum=0;
+
+for (i = 1; i &lt;=Integer.parseInt(&quot;${test.threads}&quot;); i++) {
+  values.add(Integer.valueOf(props.get(&quot;WS_TIME_CREATION_BY_USER_&quot;+String.valueOf(i))));
+   //Integer.parseInt(props.get(&quot;storeid&quot;+String.valueOf(i)))
+   //log.info(&quot;-----------------&quot;+String.valueOf(props.get(&quot;WS_TIME_CREATION_BY_USER_&quot;+String.valueOf(i))));
+}
+
+ for (Integer val: values){
+ 	sum += val;
+ }
+   log.info(&quot;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;SUM&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&quot;+String.valueOf(sum))
+   log.info(&quot;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;MIN&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&quot;+String.valueOf(Collections.min(values)))
+   log.info(&quot;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;MAX&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&quot;+String.valueOf(Collections.max(values)))
+   log.info(&quot;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;AVER&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&quot;+String.valueOf(sum/values.size()))
+
+</stringProp>
+        </JSR223Sampler>
+        <hashTree/>
       </hashTree>
     </hashTree>
   </hashTree>
