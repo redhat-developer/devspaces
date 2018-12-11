@@ -59,7 +59,7 @@ node("${node}"){ stage 'Build Che Lib'
 			relativeTargetDir: 'che-lib']], 
 		submoduleCfg: [], 
 		userRemoteConfigs: [[url: 'https://github.com/eclipse/che-lib.git']]])
-	dir ('che-lib') { sh 'ls -1art' }
+	// dir ('che-lib') { sh 'ls -1art' }
 	unstash 'stashParent'
 	installNPM()
 	buildMaven()
@@ -76,7 +76,7 @@ node("${node}"){ stage 'Build Che'
 			relativeTargetDir: 'che']], 
 		submoduleCfg: [], 
 		userRemoteConfigs: [[url: 'https://github.com/eclipse/che.git']]])
-	dir ('che') { sh 'ls -lart' }
+	// dir ('che') { sh 'ls -lart' }
 	unstash 'stashLib'
 	installNPM()
 	installGo()
@@ -96,7 +96,7 @@ node("${node}"){ stage 'Build CRW'
 		submoduleCfg: [], 
 		credentialsId: 'devstudio-release',
 		userRemoteConfigs: [[url: 'https://github.com/redhat-developer/codeready-workspaces.git']]])
-	dir ('codeready-workspaces') { sh "ls -lart" }
+	// dir ('codeready-workspaces') { sh "ls -lart" }
 	unstash 'stashChe'
 	buildMaven()
 	sh "mvn clean install ${MVN_FLAGS} -f codeready-workspaces/pom.xml"
