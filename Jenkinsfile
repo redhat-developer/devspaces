@@ -4,6 +4,7 @@
 // node == slave label, eg., rhel7-devstudio-releng-16gb-ram||rhel7-16gb-ram or rhel7-32gb
 // branchToBuild = */master or some branch like 6.16.x
 // branchToBuildDev = refs/tags/19
+// MVN_EXTRA_FLAGS = extra flags, such as to disable a module -pl '!org.eclipse.che.selenium:che-selenium-test'
 
 def installNPM(){
 	def nodeHome = tool 'nodejs-10.9.0'
@@ -38,7 +39,7 @@ timeout(20) {
 			userRemoteConfigs: [[url: 'https://github.com/eclipse/che-dev.git']]])
 		// dir ('che-dev') { sh 'ls -1art' }
 		buildMaven()
-		sh "mvn clean install ${MVN_FLAGS} -f che-dev/pom.xml"
+		sh "mvn clean install ${MVN_FLAGS} -f che-dev/pom.xml ${MVN_EXTRA_FLAGS}"
 		stash name: 'stashDev', includes: findFiles(glob: '.repository/**').join(", ")
 	}
 }
@@ -55,7 +56,7 @@ timeout(20) {
 		// dir ('che-parent') { sh 'ls -1art' }
 		unstash 'stashDev'
 		buildMaven()
-		sh "mvn clean install ${MVN_FLAGS} -f che-parent/pom.xml"
+		sh "mvn clean install ${MVN_FLAGS} -f che-parent/pom.xml ${MVN_EXTRA_FLAGS}"
 		stash name: 'stashParent', includes: findFiles(glob: '.repository/**').join(", ")
 	}
 }
@@ -73,7 +74,7 @@ timeout(20) {
 		unstash 'stashParent'
 		installNPM()
 		buildMaven()
-		sh "mvn clean install ${MVN_FLAGS} -f che-lib/pom.xml"
+		sh "mvn clean install ${MVN_FLAGS} -f che-lib/pom.xml ${MVN_EXTRA_FLAGS}"
 		stash name: 'stashLib', include: findFiles(glob: '.repository/**').join(", ")
 	}
 }
@@ -92,7 +93,7 @@ timeout(20) {
 		installNPM()
 		installGo()
 		buildMaven()
-		sh "mvn clean install -V -U -e -DskipTests -f che-ls-jdt/pom.xml"
+		sh "mvn clean install -V -U -e -DskipTests -f che-ls-jdt/pom.xml ${MVN_EXTRA_FLAGS}"
 		stash name: 'stashLsjdt', include: findFiles(glob: '.repository/**').join(", ")
 		archive includes:"**/target/*.zip, **/target/*.tar.*, **/target/*.ear"
 	}
@@ -112,7 +113,7 @@ timeout(80) {
 		installNPM()
 		installGo()
 		buildMaven()
-		sh "mvn clean install ${MVN_FLAGS} -f che/pom.xml"
+		sh "mvn clean install ${MVN_FLAGS} -f che/pom.xml ${MVN_EXTRA_FLAGS}"
 		stash name: 'stashChe', include: findFiles(glob: '.repository/**').join(", ")
 		archive includes:"**/*.log"
 	}
@@ -131,7 +132,7 @@ timeout(20) {
 		// dir ('codeready-workspaces') { sh "ls -lart" }
 		unstash 'stashChe'
 		buildMaven()
-		sh "mvn clean install ${MVN_FLAGS} -f codeready-workspaces/pom.xml"
+		sh "mvn clean install ${MVN_FLAGS} -f codeready-workspaces/pom.xml ${MVN_EXTRA_FLAGS}"
 		archive includes:"codeready-workspaces/assembly/codeready-workspaces-assembly-main/target/*.tar.*"
 	}
 }
