@@ -38,8 +38,7 @@ timeout(20) {
 		// dir ('che-dev') { sh 'ls -1art' }
 		buildMaven()
 		sh "mvn clean install ${MVN_FLAGS} -f che-dev/pom.xml"
-		def filesDev = findFiles(glob: '.repository/**')
-		stash name: 'stashDev', includes: filesParent.join(", ")
+		stash name: 'stashDev', includes: findFiles(glob: '.repository/**').join(", ")
 	}
 }
 
@@ -56,8 +55,7 @@ timeout(20) {
 		unstash 'stashDev'
 		buildMaven()
 		sh "mvn clean install ${MVN_FLAGS} -f che-parent/pom.xml"
-		def filesParent = findFiles(glob: '.repository/**')
-		stash name: 'stashParent', includes: filesParent.join(", ")
+		stash name: 'stashParent', includes: findFiles(glob: '.repository/**').join(", ")
 	}
 }
 
@@ -75,8 +73,7 @@ timeout(20) {
 		installNPM()
 		buildMaven()
 		sh "mvn clean install ${MVN_FLAGS} -f che-lib/pom.xml"
-		def filesLib = findFiles(glob: '.repository/**')
-		stash name: 'stashLib', include: filesLib.join(", ")
+		stash name: 'stashLib', include: findFiles(glob: '.repository/**').join(", ")
 	}
 }
 
@@ -95,8 +92,7 @@ timeout(80) {
 		installGo()
 		buildMaven()
 		sh "mvn clean install ${MVN_FLAGS} -f che/pom.xml"
-		def filesChe = findFiles(glob: '.repository/**')
-		stash name: 'stashChe', include: filesChe.join(", ")
+		stash name: 'stashChe', include: findFiles(glob: '.repository/**').join(", ")
 		archive includes:"**/*.log"
 	}
 }
