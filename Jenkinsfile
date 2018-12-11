@@ -4,6 +4,7 @@
 // node == slave label, eg., rhel7-devstudio-releng-16gb-ram||rhel7-16gb-ram or rhel7-32gb
 // branchToBuild = */master or some branch
 // branchToBuildDev = */tags/19
+
 def installNPM(){
 	def nodeHome = tool 'nodejs-10.9.0'
 	env.PATH="${env.PATH}:${nodeHome}/bin"
