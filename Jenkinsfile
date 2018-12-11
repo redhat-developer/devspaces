@@ -20,19 +20,36 @@ def buildMaven(){
 	env.PATH="${env.PATH}:${mvnHome}/bin"
 }
 
-node("${node}"){ stage 'Build Che Parent'
-	checkout([$class: 'GitSCM', 
-		branches: [[name: "${branchToBuild}"]], 
-		doGenerateSubmoduleConfigurations: false, 
-		extensions: [[$class: 'RelativeTargetDirectory', 
-			relativeTargetDir: 'che-parent']], 
-		submoduleCfg: [], 
-		userRemoteConfigs: [[url: 'https://github.com/eclipse/che-parent.git']]])
-	// dir ('che-parent') { sh 'ls -1art' }
-	buildMaven()
-	sh "mvn clean install ${MVN_FLAGS} -f che-parent/pom.xml"
-	def filesParent = findFiles(glob: '.repository/**')
-	stash name: 'stashParent', includes: filesParent.join(", ")
+parallel {
+	node("${node}"){ stage 'Build Che Dev'
+		checkout([$class: 'GitSCM', 
+			branches: [[name: "${branchToBuildDev}"]], 
+			doGenerateSubmoduleConfigurations: false, 
+			extensions: [[$class: 'RelativeTargetDirectory', 
+				relativeTargetDir: 'che-dev']], 
+			submoduleCfg: [], 
+			userRemoteConfigs: [[url: 'https://github.com/eclipse/che-dev.git']]])
+		dir ('che-dev') { sh 'ls -1art' }
+		buildMaven()
+		sh "mvn clean install ${MVN_FLAGS} -f che-dev/pom.xml"
+		def filesDev = findFiles(glob: '.repository/**')
+		stash name: 'stashDev', includes: filesParent.join(", ")
+	}
+
+	node("${node}"){ stage 'Build Che Parent'
+		checkout([$class: 'GitSCM', 
+			branches: [[name: "${branchToBuild}"]], 
+			doGenerateSubmoduleConfigurations: false, 
+			extensions: [[$class: 'RelativeTargetDirectory', 
+				relativeTargetDir: 'che-parent']], 
+			submoduleCfg: [], 
+			userRemoteConfigs: [[url: 'https://github.com/eclipse/che-parent.git']]])
+		// dir ('che-parent') { sh 'ls -1art' }
+		buildMaven()
+		sh "mvn clean install ${MVN_FLAGS} -f che-parent/pom.xml"
+		def filesParent = findFiles(glob: '.repository/**')
+		stash name: 'stashParent', includes: filesParent.join(", ")
+	}
 }
 
 node("${node}"){ stage 'Build Che Lib'
@@ -68,6 +85,7 @@ node("${node}"){ stage 'Build Che'
 	sh "mvn clean install ${MVN_FLAGS} -f che/pom.xml"
 	def filesChe = findFiles(glob: '.repository/**')
 	stash name: 'stashChe', include: filesChe.join(", ")
+	archive includes:"**/*.log"
 }
 
 node("${node}"){ stage 'Build CRW'
