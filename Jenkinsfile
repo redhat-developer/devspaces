@@ -1,9 +1,16 @@
 #!/usr/bin/env groovy
 
-def installBuildRequirements(){
+def installNPM(){
 	def nodeHome = tool 'nodejs-10.9.0'
 	env.PATH="${env.PATH}:${nodeHome}/bin"
 	sh "npm install -g yarn"
+	sh "npm version"
+}
+
+def installGo(){
+	def goHome = tool 'go-1.10'
+	env.PATH="${env.PATH}:${goHome}/bin"
+	sh "go version"
 }
 
 def MVN_FLAGS="-Pfast,native -Dmaven.repo.local=.repository/ -V -ff -B -e -Dskip-enforce -DskipTests -Dskip-validate-sources -Dfindbugs.skip -DskipIntegrationTests=true -Dmdep.analyze.skip=true -Dmaven.javadoc.skip -Dgpg.skip -Dorg.slf4j.simpleLogger.showDateTime=true -Dorg.slf4j.simpleLogger.dateTimeFormat=HH:mm:ss -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn"
@@ -38,7 +45,7 @@ node("${node}"){ stage 'Build Che Lib'
 		userRemoteConfigs: [[url: 'https://github.com/eclipse/che-lib.git']]])
 	dir ('che-lib') { sh 'ls -1art' }
 	unstash 'stashParent'
-	installBuildRequirements()
+	installNPM()
 	buildMaven()
 	sh "mvn clean install ${MVN_FLAGS} -f che-lib/pom.xml"
 	def filesLib = findFiles(glob: '.repository/**')
@@ -55,7 +62,8 @@ node("${node}"){ stage 'Build Che'
 		userRemoteConfigs: [[url: 'https://github.com/eclipse/che.git']]])
 	dir ('che') { sh 'ls -lart' }
 	unstash 'stashLib'
-	installBuildRequirements()
+	installNPM()
+	installGo()
 	buildMaven()
 	sh "mvn clean install ${MVN_FLAGS} -f che/pom.xml"
 	def filesChe = findFiles(glob: '.repository/**')
