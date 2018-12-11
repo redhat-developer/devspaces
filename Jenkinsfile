@@ -20,22 +20,21 @@ def buildMaven(){
 	env.PATH="${env.PATH}:${mvnHome}/bin"
 }
 
-parallel {
-	node("${node}"){ stage 'Build Che Dev'
-		checkout([$class: 'GitSCM', 
-			branches: [[name: "${branchToBuildDev}"]], 
-			doGenerateSubmoduleConfigurations: false, 
-			extensions: [[$class: 'RelativeTargetDirectory', 
-				relativeTargetDir: 'che-dev']], 
-			submoduleCfg: [], 
-			userRemoteConfigs: [[url: 'https://github.com/eclipse/che-dev.git']]])
-		dir ('che-dev') { sh 'ls -1art' }
-		buildMaven()
-		sh "mvn clean install ${MVN_FLAGS} -f che-dev/pom.xml"
-		def filesDev = findFiles(glob: '.repository/**')
-		stash name: 'stashDev', includes: filesParent.join(", ")
-	}
-
+// parallel {
+// 	node("${node}"){ stage 'Build Che Dev'
+// 		checkout([$class: 'GitSCM', 
+// 			branches: [[name: "${branchToBuildDev}"]], 
+// 			doGenerateSubmoduleConfigurations: false, 
+// 			extensions: [[$class: 'RelativeTargetDirectory', 
+// 				relativeTargetDir: 'che-dev']], 
+// 			submoduleCfg: [], 
+// 			userRemoteConfigs: [[url: 'https://github.com/eclipse/che-dev.git']]])
+// 		dir ('che-dev') { sh 'ls -1art' }
+// 		buildMaven()
+// 		sh "mvn clean install ${MVN_FLAGS} -f che-dev/pom.xml"
+// 		def filesDev = findFiles(glob: '.repository/**')
+// 		stash name: 'stashDev', includes: filesParent.join(", ")
+// 	}
 	node("${node}"){ stage 'Build Che Parent'
 		checkout([$class: 'GitSCM', 
 			branches: [[name: "${branchToBuild}"]], 
@@ -50,7 +49,7 @@ parallel {
 		def filesParent = findFiles(glob: '.repository/**')
 		stash name: 'stashParent', includes: filesParent.join(", ")
 	}
-}
+// }
 
 node("${node}"){ stage 'Build Che Lib'
 	checkout([$class: 'GitSCM', 
