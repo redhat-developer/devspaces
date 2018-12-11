@@ -95,7 +95,7 @@ node("${node}"){ stage 'Build CRW'
 			relativeTargetDir: 'codeready-workspaces']], 
 		submoduleCfg: [], 
 		credentialsId: 'devstudio-release',
-		userRemoteConfigs: [[url: 'https://github.com/redhat-developer/codeready-workspaces.git']]])
+		userRemoteConfigs: [[url: 'git@github.com:redhat-developer/codeready-workspaces.git']]])
 	// dir ('codeready-workspaces') { sh "ls -lart" }
 	unstash 'stashChe'
 	buildMaven()
