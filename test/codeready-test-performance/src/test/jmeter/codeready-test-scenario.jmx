@@ -15,12 +15,12 @@
           </elementProp>
           <elementProp name="crw.host" elementType="Argument">
             <stringProp name="Argument.name">crw.host</stringProp>
-            <stringProp name="Argument.value">${__P(crw.host,codeready-codeready.your.ip)}</stringProp>
+            <stringProp name="Argument.value">${__P(crw.host,codeready-codeready.172.19.20.240.nip.io)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="crw.sso.host" elementType="Argument">
             <stringProp name="Argument.name">crw.sso.host</stringProp>
-            <stringProp name="Argument.value">${__P(crw.sso.host,rh-sso-codeready.sso.ip)}</stringProp>
+            <stringProp name="Argument.value">${__P(crw.sso.host,rh-sso-codeready.172.19.20.240.nip.io)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="crw.protocol" elementType="Argument">
@@ -35,7 +35,7 @@
           </elementProp>
           <elementProp name="test.threads" elementType="Argument">
             <stringProp name="Argument.name">test.threads</stringProp>
-            <stringProp name="Argument.value">${__P(test.threads,1)}</stringProp>
+            <stringProp name="Argument.value">${__P(test.threads,2)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
         </collectionProp>
@@ -557,8 +557,11 @@ AssertionResult.setFailureMessage(&quot;the expected workspace status has been n
           <stringProp name="filename"></stringProp>
           <stringProp name="cacheKey">true</stringProp>
           <stringProp name="script">def testVar = &quot;WS_TIME_CREATION_BY_USER_&quot;+${__threadNum};
+props.put(&quot;host&quot;, &quot;${crw.protocol}&quot; + &quot;//&quot; + &quot;${crw.host}&quot;);
 props.put(testVar, &quot;${CURRENT_ATTEMPT}&quot;);
-log.info(&quot;WS_TIME_CREATION_BY_USER__&quot;+${__threadNum} +&quot;:&quot;+props.get(testVar)+&quot;sec&quot;)
+props.put(&quot;numberOfThreads&quot;, &quot;${__threadNum}&quot;);
+
+
 </stringProp>
         </JSR223Sampler>
         <hashTree/>
@@ -1095,29 +1098,230 @@ vars.put(&quot;IS_WORKSPACE_STOPPED&quot;, String.valueOf(IS_WORKSPACE_STOPPED))
           </ResultCollector>
           <hashTree/>
         </hashTree>
-        <JSR223Sampler guiclass="TestBeanGUI" testclass="JSR223Sampler" testname="CalculateTime" enabled="true">
+        <JSR223Sampler guiclass="TestBeanGUI" testclass="JSR223Sampler" testname="GenerateReport" enabled="true">
           <stringProp name="scriptLanguage">groovy</stringProp>
           <stringProp name="parameters"></stringProp>
           <stringProp name="filename"></stringProp>
           <stringProp name="cacheKey">true</stringProp>
-          <stringProp name="script">List &lt;Integer&gt; values = new ArrayList();
+          <stringProp name="script">import java.io.FileWriter;
+ 
+StringBuilder stringBuilder = new StringBuilder();
+List &lt;Integer&gt; values = new ArrayList();
+String numberOfThreads = props.get(&quot;numberOfThreads&quot;);
+String host = props.get(&quot;host&quot;);
+String date = &quot;${__time(d-MMM-yyyy hh:mm:ss)}&quot;;
 Integer sum=0;
 
-for (i = 1; i &lt;=Integer.parseInt(&quot;${test.threads}&quot;); i++) {
-  values.add(Integer.valueOf(props.get(&quot;WS_TIME_CREATION_BY_USER_&quot;+String.valueOf(i))));
-   //Integer.parseInt(props.get(&quot;storeid&quot;+String.valueOf(i)))
-   //log.info(&quot;-----------------&quot;+String.valueOf(props.get(&quot;WS_TIME_CREATION_BY_USER_&quot;+String.valueOf(i))));
-}
+String style = &quot;@import url(https://fonts.googleapis.com/css?family=Roboto:400,500,700,300,100);\n&quot; +
+                       &quot;\n&quot; +
+                       &quot;body {\n&quot; +
+                       &quot;  background-color: #3e94ec;\n&quot; +
+                       &quot;  font-family: \&quot;Roboto\&quot;, helvetica, arial, sans-serif;\n&quot; +
+                       &quot;  font-size: 16px;\n&quot; +
+                       &quot;  font-weight: 400;\n&quot; +
+                       &quot;  text-rendering: optimizeLegibility;\n&quot; +
+                       &quot;}\n&quot; +
+                       &quot;\n&quot; +
+                       &quot;div.table-title {\n&quot; +
+                       &quot;   display: block;\n&quot; +
+                       &quot;  margin: auto;\n&quot; +
+                       &quot;  max-width: 800px;\n&quot; +
+                       &quot;  padding:5px;\n&quot; +
+                       &quot;  width: 100%;\n&quot; +
+                       &quot;}\n&quot; +
+                       &quot;\n&quot; +
+                       &quot;.table-title h3 {\n&quot; +
+                       &quot;   color: #fafafa;\n&quot; +
+                       &quot;   font-size: 26px;\n&quot; +
+                       &quot;   font-weight: 400;\n&quot; +
+                       &quot;   font-style:normal;\n&quot; +
+                       &quot;   font-family: \&quot;Roboto\&quot;, helvetica, arial, sans-serif;\n&quot; +
+                       &quot;   text-shadow: -1px -1px 1px rgba(0, 0, 0, 0.1);\n&quot; +
+                       &quot;}\n&quot; +
+                       &quot;\n&quot; +
+                       &quot;\n&quot; +
+                       &quot;/*** Table Styles **/\n&quot; +
+                       &quot;\n&quot; +
+                       &quot;.table-fill {\n&quot; +
+                       &quot;  background: white;\n&quot; +
+                       &quot;  border-radius:3px;\n&quot; +
+                       &quot;  border-collapse: collapse;\n&quot; +
+                       &quot;  height: 0px;\n&quot; +
+                       &quot;  margin: auto;\n&quot; +
+                       &quot;  max-width: 800px;\n&quot; +
+                       &quot;  padding:5px;\n&quot; +
+                       &quot;  width: 100%;\n&quot; +
+                       &quot;  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);\n&quot; +
+                       &quot;  animation: float 5s infinite;\n&quot; +
+                       &quot;}\n&quot; +
+                       &quot; \n&quot; +
+                       &quot;th {\n&quot; +
+                       &quot;  color:#D5DDE5;;\n&quot; +
+                       &quot;  background:#1b1e24;\n&quot; +
+                       &quot;  border-bottom:4px solid #9ea7af;\n&quot; +
+                       &quot;  border-right: 1px solid #343a45;\n&quot; +
+                       &quot;  font-size:16px;\n&quot; +
+                       &quot;  font-weight: 100;\n&quot; +
+                       &quot;  padding:18px;\n&quot; +
+                       &quot;  text-align:center;\n&quot; +
+                       &quot;  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);\n&quot; +
+                       &quot;  vertical-align:middle;\n&quot; +
+                       &quot;}\n&quot; +
+                       &quot;\n&quot; +
+                       &quot;th:first-child {\n&quot; +
+                       &quot;  border-top-left-radius:3px;\n&quot; +
+                       &quot;}\n&quot; +
+                       &quot; \n&quot; +
+                       &quot;th:last-child {\n&quot; +
+                       &quot;  border-top-right-radius:3px;\n&quot; +
+                       &quot;  border-right:none;\n&quot; +
+                       &quot;}\n&quot; +
+                       &quot;  \n&quot; +
+                       &quot;tr {\n&quot; +
+                       &quot;  border-top: 1px solid #C1C3D1;\n&quot; +
+                       &quot;  border-bottom-: 1px solid #C1C3D1;\n&quot; +
+                       &quot;  color:#666B85;\n&quot; +
+                       &quot;  font-size:16px;\n&quot; +
+                       &quot;  font-weight:normal;\n&quot; +
+                       &quot;  text-shadow: 0 1px 1px rgba(256, 256, 256, 0.1);\n&quot; +
+                       &quot;}\n&quot; +
+                       &quot; \n&quot; +
+                       &quot;tr:hover td {\n&quot; +
+                       &quot;  background:#4E5066;\n&quot; +
+                       &quot;  color:#FFFFFF;\n&quot; +
+                       &quot;  border-top: 1px solid #22262e;\n&quot; +
+                       &quot;}\n&quot; +
+                       &quot; \n&quot; +
+                       &quot;tr:first-child {\n&quot; +
+                       &quot;  border-top:none;\n&quot; +
+                       &quot;}\n&quot; +
+                       &quot;\n&quot; +
+                       &quot;tr:last-child {\n&quot; +
+                       &quot;  border-bottom:none;\n&quot; +
+                       &quot;}\n&quot; +
+                       &quot; \n&quot; +
+                       &quot;tr:nth-child(odd) td {\n&quot; +
+                       &quot;  background:#EBEBEB;\n&quot; +
+                       &quot;}\n&quot; +
+                       &quot; \n&quot; +
+                       &quot;tr:nth-child(odd):hover td {\n&quot; +
+                       &quot;  background:#4E5066;\n&quot; +
+                       &quot;}\n&quot; +
+                       &quot;\n&quot; +
+                       &quot;tr:last-child td:first-child {\n&quot; +
+                       &quot;  border-bottom-left-radius:3px;\n&quot; +
+                       &quot;}\n&quot; +
+                       &quot; \n&quot; +
+                       &quot;tr:last-child td:last-child {\n&quot; +
+                       &quot;  border-bottom-right-radius:3px;\n&quot; +
+                       &quot;}\n&quot; +
+                       &quot; \n&quot; +
+                       &quot;td {\n&quot; +
+                       &quot;  background:#FFFFFF;\n&quot; +
+                       &quot;  padding:6px;\n&quot; +
+                       &quot;  text-align:center;\n&quot; +
+                       &quot;  vertical-align:middle;\n&quot; +
+                       &quot;  font-weight:300;\n&quot; +
+                       &quot;  font-size:16px;\n&quot; +
+                       &quot;  text-shadow: -1px -1px 1px rgba(0, 0, 0, 0.1);\n&quot; +
+                       &quot;  border-right: 1px solid #C1C3D1;\n&quot; +
+                       &quot;}\n&quot; +
+                       &quot;\n&quot; +
+                       &quot;td:last-child {\n&quot; +
+                       &quot;  border-right: 0px;\n&quot; +
+                       &quot;}\n&quot; +
+                       &quot;\n&quot; +
+                       &quot;th.text-center {\n&quot; +
+                       &quot;  text-align: center;\n&quot; +
+                       &quot;}\n&quot; +
+                       &quot;\n&quot; +
+                       &quot;th.text-left {\n&quot; +
+                       &quot;  text-align: left;\n&quot; +
+                       &quot;}\n&quot; +
+                       &quot;\n&quot; +
+                       &quot;th.text-right {\n&quot; +
+                       &quot;  text-align: right;\n&quot; +
+                       &quot;}\n&quot; +
+                       &quot;\n&quot; +
+                       &quot;td.text-center {\n&quot; +
+                       &quot;  text-align: center;\n&quot; +
+                       &quot;}\n&quot; +
+                       &quot;\n&quot; +
+                       &quot;td.text-center {\n&quot; +
+                       &quot;  text-align: center;\n&quot; +
+                       &quot;}\n&quot; +
+                       &quot;\n&quot; +
+                       &quot;td.text-right {\n&quot; +
+                       &quot;  text-align: right;\n&quot; +
+                       &quot;}\n\n&quot;;
 
- for (Integer val: values){
- 	sum += val;
- }
-   log.info(&quot;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;SUM&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&quot;+String.valueOf(sum))
-   log.info(&quot;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;MIN&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&quot;+String.valueOf(Collections.min(values)))
-   log.info(&quot;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;MAX&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&quot;+String.valueOf(Collections.max(values)))
-   log.info(&quot;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;AVER&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&quot;+String.valueOf(sum/values.size()))
 
-</stringProp>
+String headerPart =&quot;&lt;html lang=\&quot;en\&quot;&gt;\n&quot; +
+                           &quot;   &lt;head&gt;\n&quot; +
+                           &quot;&lt;style&gt;\n&quot;+
+                           style +
+                           &quot;      &lt;meta charset=\&quot;utf-8\&quot; /&gt;\n&quot; +
+                           &quot;      &lt;title&gt;Table Style&lt;/title&gt;\n&quot; +
+                           &quot;      &lt;meta name=\&quot;viewport\&quot; content=\&quot;initial-scale=1.0; maximum-scale=1.0; width=device-width;\&quot;&gt;\n&quot; +
+                           &quot;      &lt;/style&gt;&quot;+
+                           &quot;   &lt;/head&gt;\n&quot; +
+                           &quot;   &lt;body&gt;\n&quot; +
+                           &quot;      &lt;div class=\&quot;table-title\&quot;&gt;\n&quot; +
+                           &quot;         &lt;h3&gt;Total workspaces tested in parallel threads: &quot; + numberOfThreads + &quot; &lt;/h3&gt;\n&quot; +
+                           &quot;      &lt;/div&gt;\n&quot; +
+                           &quot;      &lt;table class=\&quot;table-fill\&quot;&gt;\n&quot; +
+                           &quot;      &lt;thead&gt;&quot;;
+
+String titleHtmlContent = &quot;&lt;tr&gt;\n&quot; +
+                                  &quot;   &lt;th class=\&quot;text-left\&quot;&gt;Average workspace creation value in sec.:: &lt;/th&gt;\n&quot; +
+                                  &quot;   &lt;th class=\&quot;text-left\&quot;&gt;Minimum workspace creation value in sec.: &lt;/th&gt;\n&quot; +
+                                  &quot;   &lt;th class=\&quot;text-left\&quot;&gt;Maximum workspace creation value in sec.: &lt;/th&gt;\n&quot; +
+                                  &quot;&lt;/tr&gt;\n&quot; +
+                                  &quot;&lt;/thead&gt;\n&quot; +
+                                  &quot;&lt;tbody class=\&quot;table-hover\&quot;&gt;&quot;;
+
+String columnForDataPart = &quot;&lt;tr&gt;\n&quot; +
+                                   &quot;   &lt;td class=\&quot;text-left\&quot;&gt;%s&lt;/td&gt;\n&quot; +
+                                   &quot;   &lt;td class=\&quot;text-left\&quot;&gt;%s&lt;/td&gt;\n&quot; +
+                                   &quot;   &lt;td class=\&quot;text-left\&quot;&gt;%s&lt;/td&gt;\n&quot; +
+                                   &quot;&lt;/tr&gt;\n&quot;;
+
+
+String closingSection = &quot;&lt;/tbody&gt;\n&quot; +
+                                &quot;&lt;/table&gt;\n&quot; +
+                                &quot;&lt;/body&gt;&quot; +
+                                &quot;&lt;div style=&apos;margin:auto; max-width: 800px; padding: 20px; color:#e6eeff&apos;&gt;&quot; +
+                                &quot;host: &quot; + host +  
+                                &quot;&lt;/div&gt;&quot; + 
+                                &quot;&lt;div style=&apos;margin:auto; max-width: 800px; padding: 20px; font-size:10px; color:#e6eeff&apos;&gt;&quot; + date +&quot;&lt;/div&gt;&quot;
+                                &quot;&lt;/html&gt;&quot;;
+
+for (int i = 1; i &lt;=Integer.parseInt(numberOfThreads); i++) {
+            values.add(Integer.valueOf(props.get(&quot;WS_TIME_CREATION_BY_USER_&quot;+String.valueOf(i))));
+		}
+        
+for (Integer val: values) {
+            sum += val;
+	     }
+
+stringBuilder.append(headerPart)
+             .append(titleHtmlContent)
+             .append(
+              String.format(
+              columnForDataPart, 
+              String.valueOf(sum/Integer.parseInt(numberOfThreads)), 
+              String.valueOf(Collections.min(values)), 
+              String.valueOf(Collections.max(values))))
+              .append(closingSection)
+              .toString();
+
+String defaultPathToHtmlReport = &quot;workspace-time-creation.html&quot;
+
+FileWriter fileWriter = new FileWriter(defaultPathToHtmlReport, false);
+
+	fileWriter.append(stringBuilder.toString())
+	fileWriter.flush();
+	fileWriter.close();                              </stringProp>
         </JSR223Sampler>
         <hashTree/>
       </hashTree>
