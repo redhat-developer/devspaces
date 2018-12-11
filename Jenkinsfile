@@ -92,7 +92,7 @@ timeout(20) {
 		installNPM()
 		installGo()
 		buildMaven()
-		sh "mvn clean install ${MVN_FLAGS} -f che-ls-jdt/pom.xml"
+		sh "mvn clean install -V -U -e -DskipTests -f che-ls-jdt/pom.xml"
 		stash name: 'stashLsjdt', include: findFiles(glob: '.repository/**').join(", ")
 		archive includes:"**/target/*.zip, **/target/*.tar.*, **/target/*.ear"
 	}
