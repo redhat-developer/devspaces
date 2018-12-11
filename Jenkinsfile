@@ -77,6 +77,26 @@ timeout(20) {
 	}
 }
 
+timeout(20) {
+	node("${node}"){ stage 'Build Che ls-jdt'
+		checkout([$class: 'GitSCM', 
+			branches: [[name: "${branchToBuild}"]], 
+			doGenerateSubmoduleConfigurations: false, 
+			extensions: [[$class: 'RelativeTargetDirectory', 
+				relativeTargetDir: 'che-ls-jdt']], 
+			submoduleCfg: [], 
+			userRemoteConfigs: [[url: 'https://github.com/eclipse/che-ls-jdt.git']]])
+		// dir ('che-ls-jdt') { sh 'ls -1art' }
+		unstash 'stashLib'
+		installNPM()
+		installGo()
+		buildMaven()
+		sh "mvn clean install ${MVN_FLAGS} -f che-ls-jdt/pom.xml"
+		stash name: 'stashLsjdt', include: findFiles(glob: '.repository/**').join(", ")
+		archive includes:"**/target/*.zip, **/target/*.tar.*, **/target/*.ear"
+	}
+}
+
 timeout(80) {
 	node("${node}"){ stage 'Build Che'
 		checkout([$class: 'GitSCM', 
@@ -87,7 +107,7 @@ timeout(80) {
 			submoduleCfg: [], 
 			userRemoteConfigs: [[url: 'https://github.com/eclipse/che.git']]])
 		// dir ('che') { sh 'ls -lart' }
-		unstash 'stashLib'
+		unstash 'stashLsjdt'
 		installNPM()
 		installGo()
 		buildMaven()
