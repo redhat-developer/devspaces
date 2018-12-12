@@ -31,6 +31,7 @@ import org.eclipse.che.selenium.core.constant.TestCommandsConstants;
 import org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants;
 import org.eclipse.che.selenium.core.project.ProjectTemplates;
 import org.eclipse.che.selenium.core.workspace.TestWorkspace;
+import org.eclipse.che.selenium.debugger.DebuggerUtils;
 import org.eclipse.che.selenium.pageobject.CheTerminal;
 import org.eclipse.che.selenium.pageobject.CodenvyEditor;
 import org.eclipse.che.selenium.pageobject.Consoles;
@@ -58,7 +59,6 @@ public class StepIntoStepOverStepReturnWithChangeVariableTest {
   @Inject private Ide ide;
 
   @Inject private ProjectExplorer projectExplorer;
-  @Inject private DebuggerUtils debuggerUtils;
   @Inject private Consoles consoles;
   @Inject private CodenvyEditor editor;
   @Inject private Menu menu;
