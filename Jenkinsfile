@@ -19,9 +19,7 @@ def installGo(){
 	sh "go version"
 }
 
-def MVN_FLAGS="-Pfast -Dmaven.repo.local=.repository/ -V -ff -B -e -Dskip-enforce -DskipTests -Dskip-validate-sources -Dfindbugs.skip -DskipIntegrationTests=true \
--Dmdep.analyze.skip=true -Dmaven.javadoc.skip -Dgpg.skip -Dorg.slf4j.simpleLogger.showDateTime=true -Dorg.slf4j.simpleLogger.dateTimeFormat=HH:mm:ss \
--Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn"
+def MVN_FLAGS="-Dmaven.repo.local=.repository/ -V -B -e"
 
 def buildMaven(){
 	def mvnHome = tool 'maven-3.5.4'
