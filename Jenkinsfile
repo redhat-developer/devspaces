@@ -1,7 +1,8 @@
 #!/usr/bin/env groovy
 
 // PARAMETERS for this pipeline:
-// node == slave label, eg., rhel7-devstudio-releng-16gb-ram||rhel7-16gb-ram or rhel7-32gb
+// node == slave label, eg., rhel7-devstudio-releng-16gb-ram||rhel7-16gb-ram||rhel7-devstudio-releng||rhel7 or rhel7-32gb||rhel7-16gb||rhel7-8gb
+// nodeBig == slave label, eg., rhel7-devstudio-releng-16gb-ram||rhel7-16gb-ram or rhel7-32gb||rhel7-16gb
 // branchToBuild = */master or some branch like 6.16.x
 // branchToBuildDev = refs/tags/19
 // MVN_EXTRA_FLAGS = extra flags, such as to disable a module -pl '!org.eclipse.che.selenium:che-selenium-test'
@@ -102,7 +103,7 @@ timeout(120) {
 }
 
 timeout(180) {
-	node("${node}"){ stage 'Build Che'
+	node("${nodeBig}"){ stage 'Build Che'
 		checkout([$class: 'GitSCM', 
 			branches: [[name: "${branchToBuild}"]], 
 			doGenerateSubmoduleConfigurations: false, 
