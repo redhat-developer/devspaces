@@ -29,6 +29,7 @@ def buildMaven(){
 
 timeout(120) {
 	node("${node}"){ stage 'Build Che Dev'
+		cleanWs()
 		checkout([$class: 'GitSCM', 
 			branches: [[name: "${branchToBuildDev}"]], 
 			doGenerateSubmoduleConfigurations: false, 
