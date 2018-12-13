@@ -47,6 +47,7 @@ timeout(120) {
 
 timeout(120) {
 	node("${node}"){ stage 'Build Che Parent'
+		cleanWs()
 		checkout([$class: 'GitSCM', 
 			branches: [[name: "${branchToBuild}"]], 
 			doGenerateSubmoduleConfigurations: false, 
@@ -65,6 +66,7 @@ timeout(120) {
 
 timeout(120) {
 	node("${node}"){ stage 'Build Che Lib'
+		cleanWs()
 		checkout([$class: 'GitSCM', 
 			branches: [[name: "${branchToBuild}"]], 
 			doGenerateSubmoduleConfigurations: false, 
@@ -84,6 +86,7 @@ timeout(120) {
 
 timeout(120) {
 	node("${node}"){ stage 'Build Che ls-jdt'
+		cleanWs()
 		checkout([$class: 'GitSCM', 
 			branches: [[name: "${branchToBuild}"]], 
 			doGenerateSubmoduleConfigurations: false, 
@@ -105,6 +108,7 @@ timeout(120) {
 
 timeout(180) {
 	node("${nodeBig}"){ stage 'Build Che'
+		cleanWs()
 		checkout([$class: 'GitSCM', 
 			branches: [[name: "${branchToBuild}"]], 
 			doGenerateSubmoduleConfigurations: false, 
@@ -126,6 +130,7 @@ timeout(180) {
 
 timeout(120) {
 	node("${node}"){ stage 'Build CRW'
+		cleanWs()
 		checkout([$class: 'GitSCM', 
 			branches: [[name: "${branchToBuild}"]], 
 			doGenerateSubmoduleConfigurations: false, 
