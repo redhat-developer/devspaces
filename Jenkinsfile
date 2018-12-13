@@ -26,7 +26,7 @@ def buildMaven(){
 	env.PATH="${env.PATH}:${mvnHome}/bin"
 }
 
-timeout(20) {
+timeout(120) {
 	node("${node}"){ stage 'Build Che Dev'
 		checkout([$class: 'GitSCM', 
 			branches: [[name: "${branchToBuildDev}"]], 
@@ -43,7 +43,7 @@ timeout(20) {
 	}
 }
 
-timeout(20) {
+timeout(120) {
 	node("${node}"){ stage 'Build Che Parent'
 		checkout([$class: 'GitSCM', 
 			branches: [[name: "${branchToBuild}"]], 
@@ -61,7 +61,7 @@ timeout(20) {
 	}
 }
 
-timeout(20) {
+timeout(120) {
 	node("${node}"){ stage 'Build Che Lib'
 		checkout([$class: 'GitSCM', 
 			branches: [[name: "${branchToBuild}"]], 
@@ -80,7 +80,7 @@ timeout(20) {
 	}
 }
 
-timeout(20) {
+timeout(120) {
 	node("${node}"){ stage 'Build Che ls-jdt'
 		checkout([$class: 'GitSCM', 
 			branches: [[name: "${branchToBuild}"]], 
@@ -101,7 +101,7 @@ timeout(20) {
 	}
 }
 
-timeout(80) {
+timeout(180) {
 	node("${node}"){ stage 'Build Che'
 		checkout([$class: 'GitSCM', 
 			branches: [[name: "${branchToBuild}"]], 
@@ -122,7 +122,7 @@ timeout(80) {
 	}
 }
 
-timeout(20) {
+timeout(120) {
 	node("${node}"){ stage 'Build CRW'
 		checkout([$class: 'GitSCM', 
 			branches: [[name: "${branchToBuild}"]], 
