@@ -31,6 +31,7 @@ timeout(20) {
 		checkout([$class: 'GitSCM', 
 			branches: [[name: "${branchToBuildDev}"]], 
 			doGenerateSubmoduleConfigurations: false, 
+			poll: true,
 			extensions: [[$class: 'RelativeTargetDirectory', 
 				relativeTargetDir: 'che-dev']], 
 			submoduleCfg: [], 
@@ -47,6 +48,7 @@ timeout(20) {
 		checkout([$class: 'GitSCM', 
 			branches: [[name: "${branchToBuild}"]], 
 			doGenerateSubmoduleConfigurations: false, 
+			poll: true,
 			extensions: [[$class: 'RelativeTargetDirectory', 
 				relativeTargetDir: 'che-parent']], 
 			submoduleCfg: [], 
@@ -64,6 +66,7 @@ timeout(20) {
 		checkout([$class: 'GitSCM', 
 			branches: [[name: "${branchToBuild}"]], 
 			doGenerateSubmoduleConfigurations: false, 
+			poll: true,
 			extensions: [[$class: 'RelativeTargetDirectory', 
 				relativeTargetDir: 'che-lib']], 
 			submoduleCfg: [], 
@@ -82,6 +85,7 @@ timeout(20) {
 		checkout([$class: 'GitSCM', 
 			branches: [[name: "${branchToBuild}"]], 
 			doGenerateSubmoduleConfigurations: false, 
+			poll: true,
 			extensions: [[$class: 'RelativeTargetDirectory', 
 				relativeTargetDir: 'che-ls-jdt']], 
 			submoduleCfg: [], 
@@ -102,6 +106,7 @@ timeout(80) {
 		checkout([$class: 'GitSCM', 
 			branches: [[name: "${branchToBuild}"]], 
 			doGenerateSubmoduleConfigurations: false, 
+			poll: true,
 			extensions: [[$class: 'RelativeTargetDirectory', 
 				relativeTargetDir: 'che']], 
 			submoduleCfg: [], 
@@ -122,11 +127,13 @@ timeout(20) {
 		checkout([$class: 'GitSCM', 
 			branches: [[name: "${branchToBuild}"]], 
 			doGenerateSubmoduleConfigurations: false, 
+			poll: true,
 			extensions: [[$class: 'RelativeTargetDirectory', 
 				relativeTargetDir: 'codeready-workspaces']], 
-			submoduleCfg: [], 
-			credentialsId: 'devstudio-release',
-			userRemoteConfigs: [[url: 'git@github.com:redhat-developer/codeready-workspaces.git']]])
+				submoduleCfg: [], 
+				credentialsId: 'devstudio-release',
+				userRemoteConfigs: [[url: 'git@github.com:redhat-developer/codeready-workspaces.git']]
+		])
 		// dir ('codeready-workspaces') { sh "ls -lart" }
 		unstash 'stashChe'
 		buildMaven()
