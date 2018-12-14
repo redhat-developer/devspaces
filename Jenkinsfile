@@ -35,8 +35,7 @@ timeout(120) {
 			branches: [[name: "${branchToBuildDev}"]], 
 			doGenerateSubmoduleConfigurations: false, 
 			poll: true,
-			extensions: [[$class: 'RelativeTargetDirectory', 
-				relativeTargetDir: 'che-dev']], 
+			extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'che-dev']], 
 			submoduleCfg: [], 
 			userRemoteConfigs: [[url: 'https://github.com/eclipse/che-dev.git']]])
 		// dir ('che-dev') { sh 'ls -1art' }
@@ -53,8 +52,7 @@ timeout(120) {
 			branches: [[name: "${branchToBuild}"]], 
 			doGenerateSubmoduleConfigurations: false, 
 			poll: true,
-			extensions: [[$class: 'RelativeTargetDirectory', 
-				relativeTargetDir: 'che-parent']], 
+			extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'che-parent']], 
 			submoduleCfg: [], 
 			userRemoteConfigs: [[url: 'https://github.com/eclipse/che-parent.git']]])
 		// dir ('che-parent') { sh 'ls -1art' }
@@ -72,8 +70,7 @@ timeout(120) {
 			branches: [[name: "${branchToBuild}"]], 
 			doGenerateSubmoduleConfigurations: false, 
 			poll: true,
-			extensions: [[$class: 'RelativeTargetDirectory', 
-				relativeTargetDir: 'che-lib']], 
+			extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'che-lib']], 
 			submoduleCfg: [], 
 			userRemoteConfigs: [[url: 'https://github.com/eclipse/che-lib.git']]])
 		// dir ('che-lib') { sh 'ls -1art' }
@@ -95,8 +92,7 @@ timeout(120) {
 			branches: [[name: "${branchToBuildLSJ}"]], 
 			doGenerateSubmoduleConfigurations: false, 
 			poll: true,
-			extensions: [[$class: 'RelativeTargetDirectory', 
-				relativeTargetDir: "${LSJ_path}"]], 
+			extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: "${LSJ_path}"]], 
 			submoduleCfg: [], 
 			userRemoteConfigs: [[url: "https://github.com/eclipse/${LSJ_path}.git"]]])
 		unstash 'stashLib'
@@ -124,8 +120,7 @@ timeout(180) {
 			branches: [[name: "${branchToBuild}"]], 
 			doGenerateSubmoduleConfigurations: false, 
 			poll: true,
-			extensions: [[$class: 'RelativeTargetDirectory', 
-				relativeTargetDir: "${CHE_path}"]], 
+			extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: "${CHE_path}"]], 
 			submoduleCfg: [], 
 			userRemoteConfigs: [[url: "https://github.com/eclipse/${CHE_path}.git"]]])
 		unstash 'stashLSJ'
@@ -147,15 +142,14 @@ def CRW_path = "codeready-workspaces"
 timeout(120) {
 	node("${node}"){ stage 'Build ${CRW_path}'
 		cleanWs()
+		// for private repo, use checkout(credentialsId: 'devstudio-release')
 		checkout([$class: 'GitSCM', 
 			branches: [[name: "${branchToBuild}"]], 
 			doGenerateSubmoduleConfigurations: false, 
 			poll: true,
-			extensions: [[$class: 'RelativeTargetDirectory', 
-				relativeTargetDir: "${CRW_path}"]], 
+			extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: "${CRW_path}"]], 
 			submoduleCfg: [], 
-			credentialsId: 'devstudio-release',
-			userRemoteConfigs: [[url: "git@github.com:redhat-developer/${CRW_path}.git"]]])
+			userRemoteConfigs: [[url: "https://github.com/redhat-developer/${CRW_path}.git"]]])
 		unstash 'stashChe'
 		buildMaven()
 		sh "mvn clean install ${MVN_FLAGS} -f ${CRW_path}/pom.xml ${MVN_EXTRA_FLAGS}"
@@ -173,3 +167,19 @@ timeout(120) {
 	}
 }
 
+// trigger OSBS build
+build(
+  job: 'get-sources-rhpkg-container-build',
+  parameters: [
+    [
+      $class: 'StringParameterValue',
+      name: 'GIT_PATH',
+      value: "containers/codeready-workspaces",
+    ],
+    [
+      $class: 'BooleanParameterValue',
+      name: 'SCRATCH',
+      value: true,
+    ]
+  ]
+)
