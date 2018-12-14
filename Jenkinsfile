@@ -81,87 +81,93 @@ timeout(120) {
 		installNPM()
 		buildMaven()
 		sh "mvn clean install ${MVN_FLAGS} -f che-lib/pom.xml ${MVN_EXTRA_FLAGS}"
-		stash name: 'stashLib', include: findFiles(glob: '.repository/**').join(", ")
+		stash name: 'stashLib', includes: findFiles(glob: '.repository/**').join(", ")
 	}
 }
 
+def LSJ_path = "che-ls-jdt"
 def VER_LSJ = ""
 def SHA_LSJ = ""
 timeout(120) {
-	node("${node}"){ stage 'Build Che ls-jdt'
+	node("${node}"){ stage 'Build ${LSJ_path}'
 		cleanWs()
 		checkout([$class: 'GitSCM', 
 			branches: [[name: "${branchToBuildLSJ}"]], 
 			doGenerateSubmoduleConfigurations: false, 
 			poll: true,
 			extensions: [[$class: 'RelativeTargetDirectory', 
-				relativeTargetDir: 'che-ls-jdt']], 
+				relativeTargetDir: "${LSJ_path}"]], 
 			submoduleCfg: [], 
-			userRemoteConfigs: [[url: 'https://github.com/eclipse/che-ls-jdt.git']]])
-		// dir ('che-ls-jdt') { sh 'ls -1art' }
+			userRemoteConfigs: [[url: "https://github.com/eclipse/${LSJ_path}.git"]]])
 		unstash 'stashLib'
 		installNPM()
 		installGo()
 		buildMaven()
-		sh "mvn clean install -V -U -e -DskipTests -f che-ls-jdt/pom.xml ${MVN_EXTRA_FLAGS}"
-		stash name: 'stashLSJ', include: findFiles(glob: '.repository/**').join(", ")
+		sh "mvn clean install -V -U -e -DskipTests -f ${LSJ_path}/pom.xml ${MVN_EXTRA_FLAGS}"
+		stash name: 'stashLSJ', includes: findFiles(glob: '.repository/**').join(", ")
 		archive includes:"**/target/*.zip, **/target/*.tar.*, **/target/*.ear"
-		VER_LSJ = sh(returnStdout:true,script:'egrep "<version>" che-ls-jdt/pom.xml|head -1|sed -e "s#.*<version>\\(.\\+\\)</version>#\\1#"').trim()
-		SHA_LSJ = sh(returnStdout:true,script:'cd che-ls-jdt/ && git rev-parse HEAD').trim()
-		echo "Built che-ls-jdt from SHA: ${SHA_LSJ} (${VER_LSJ})"
+
+		sh "perl -0777 -p -i -e 's|(\\ +<parent>.*?<\\/parent>)| ${1} =~ /<version>/?\"\":${1}|gse' ${LSJ_path}/pom.xml"
+		VER_LSJ = sh(returnStdout:true,script:"egrep \"<version>\" ${LSJ_path}/pom.xml|head -1|sed -e \"s#.*<version>\\(.\\+\\)</version>#\\1#\"").trim()
+		SHA_LSJ = sh(returnStdout:true,script:"cd ${LSJ_path}/ && git rev-parse HEAD").trim()
+		echo "Built ${LSJ_path} from SHA: ${SHA_LSJ} (${VER_LSJ})"
 	}
 }
 
+def CHE_path = "che"
 def VER_CHE = ""
 def SHA_CHE = ""
 timeout(180) {
-	node("${nodeBig}"){ stage 'Build Che'
+	node("${nodeBig}"){ stage 'Build ${CHE_path}'
 		cleanWs()
 		checkout([$class: 'GitSCM', 
 			branches: [[name: "${branchToBuild}"]], 
 			doGenerateSubmoduleConfigurations: false, 
 			poll: true,
 			extensions: [[$class: 'RelativeTargetDirectory', 
-				relativeTargetDir: 'che']], 
+				relativeTargetDir: "${CHE_path}"]], 
 			submoduleCfg: [], 
-			userRemoteConfigs: [[url: 'https://github.com/eclipse/che.git']]])
-		// dir ('che') { sh 'ls -lart' }
+			userRemoteConfigs: [[url: "https://github.com/eclipse/${CHE_path}.git"]]])
 		unstash 'stashLSJ'
 		installNPM()
 		installGo()
 		buildMaven()
-		sh "mvn clean install ${MVN_FLAGS} -f che/pom.xml ${MVN_EXTRA_FLAGS}"
-		stash name: 'stashChe', include: findFiles(glob: '.repository/**').join(", ")
+		sh "mvn clean install ${MVN_FLAGS} -f ${CHE_path}/pom.xml ${MVN_EXTRA_FLAGS}"
+		stash name: 'stashChe', includes: findFiles(glob: '.repository/**').join(", ")
 		archive includes:"**/*.log"
-		VER_CHE = sh(returnStdout:true,script:'egrep "<version>" che/pom.xml|head -1|sed -e "s#.*<version>\\(.\\+\\)</version>#\\1#"').trim()
-		SHA_CHE = sh(returnStdout:true,script:'cd che/ && git rev-parse HEAD').trim()
-		echo "Built Che from SHA: ${SHA_CHE} (${VER_CHE})"
+
+		sh "perl -0777 -p -i -e 's|(\\ +<parent>.*?<\\/parent>)| ${1} =~ /<version>/?\"\":${1}|gse' ${CHE_path}/pom.xml"
+		VER_CHE = sh(returnStdout:true,script:"egrep \"<version>\" ${CHE_path}/pom.xml|head -1|sed -e \"s#.*<version>\\(.\\+\\)</version>#\\1#\"").trim()
+		SHA_CHE = sh(returnStdout:true,script:"cd ${CHE_path}/ && git rev-parse HEAD").trim()
+		echo "Built ${CHE_path} from SHA: ${SHA_CHE} (${VER_CHE})"
 	}
 }
 
+def CRW_path = "codeready-workspaces"
 timeout(120) {
-	node("${node}"){ stage 'Build CRW'
+	node("${node}"){ stage 'Build ${CRW_path}'
 		cleanWs()
 		checkout([$class: 'GitSCM', 
 			branches: [[name: "${branchToBuild}"]], 
 			doGenerateSubmoduleConfigurations: false, 
 			poll: true,
 			extensions: [[$class: 'RelativeTargetDirectory', 
-				relativeTargetDir: 'codeready-workspaces']], 
-				submoduleCfg: [], 
-				credentialsId: 'devstudio-release',
-				userRemoteConfigs: [[url: 'git@github.com:redhat-developer/codeready-workspaces.git']]
-		])
-		// dir ('codeready-workspaces') { sh "ls -lart" }
+				relativeTargetDir: "${CRW_path}"]], 
+			submoduleCfg: [], 
+			credentialsId: 'devstudio-release',
+			userRemoteConfigs: [[url: "git@github.com:redhat-developer/${CRW_path}.git"]]])
 		unstash 'stashChe'
 		buildMaven()
-		sh "mvn clean install ${MVN_FLAGS} -f codeready-workspaces/pom.xml ${MVN_EXTRA_FLAGS}"
-		archiveArtifacts fingerprint: false, artifacts:'codeready-workspaces/assembly/codeready-workspaces-assembly-main/target/*.tar.*'
+		sh "mvn clean install ${MVN_FLAGS} -f ${CRW_path}/pom.xml ${MVN_EXTRA_FLAGS}"
+		archiveArtifacts fingerprint: false, artifacts:"${CRW_path}/assembly/${CRW_path}-assembly-main/target/*.tar.*"
+
+		sh "perl -0777 -p -i -e 's|(\\ +<parent>.*?<\\/parent>)| ${1} =~ /<version>/?\"\":${1}|gse' ${CRW_path}/pom.xml"
+		VER_CRW = sh(returnStdout:true,script:"egrep \"<version>\" ${CRW_path}/pom.xml|head -1|sed -e \"s#.*<version>\\(.\\+\\)</version>#\\1#\"").trim()
+		SHA_CRW = sh(returnStdout:true,script:"cd ${CRW_path}/ && git rev-parse HEAD").trim()
+		echo "Built ${CRW_path} from SHA: ${SHA_CRW} (${VER_CRW})"
 
 		// sh 'printenv | sort'
-		VER_CRW = sh(returnStdout:true,script:'egrep "<version>" codeready-workspaces/pom.xml|head -1|sed -e "s#.*<version>\\(.\\+\\)</version>#\\1#"').trim()
-		SHA_CRW = sh(returnStdout:true,script:'cd codeready-workspaces/ && git rev-parse HEAD').trim()
-		def descriptString="Build #${BUILD_NUMBER} (${BUILD_TIMESTAMP}) :: ${SHA_LSJ} (${VER_LSJ}):: ${SHA_CHE} (${VER_CHE}):: ${SHA_CRW} (${VER_CRW})"
+		def descriptString="Build #${BUILD_NUMBER} (${BUILD_TIMESTAMP}) <br/> :: ${LSJ_path} @ ${SHA_LSJ} (${VER_LSJ}) <br/> :: ${CHE_path} @ ${SHA_CHE} (${VER_CHE}) <br/> :: ${CRW_path} @ ${SHA_CRW} (${VER_CRW})"
 		echo "${descriptString}"
 		currentBuild.description="${descriptString}"
 	}
