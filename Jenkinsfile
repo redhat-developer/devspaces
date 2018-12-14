@@ -5,6 +5,7 @@
 // nodeBig == slave label, eg., rhel7-devstudio-releng-16gb-ram||rhel7-16gb-ram or rhel7-32gb||rhel7-16gb
 // branchToBuild = */master or some branch like 6.16.x
 // branchToBuildDev = refs/tags/19
+// branchToBuildLSJ = refs/tags/0.0.2 or */master
 // MVN_EXTRA_FLAGS = extra flags, such as to disable a module -pl '!org.eclipse.che.selenium:che-selenium-test'
 
 def installNPM(){
@@ -84,11 +85,13 @@ timeout(120) {
 	}
 }
 
+def VER_LSJ = ""
+def SHA_LSJ = ""
 timeout(120) {
 	node("${node}"){ stage 'Build Che ls-jdt'
 		cleanWs()
 		checkout([$class: 'GitSCM', 
-			branches: [[name: "${branchToBuild}"]], 
+			branches: [[name: "${branchToBuildLSJ}"]], 
 			doGenerateSubmoduleConfigurations: false, 
 			poll: true,
 			extensions: [[$class: 'RelativeTargetDirectory', 
@@ -101,11 +104,16 @@ timeout(120) {
 		installGo()
 		buildMaven()
 		sh "mvn clean install -V -U -e -DskipTests -f che-ls-jdt/pom.xml ${MVN_EXTRA_FLAGS}"
-		stash name: 'stashLsjdt', include: findFiles(glob: '.repository/**').join(", ")
+		stash name: 'stashLSJ', include: findFiles(glob: '.repository/**').join(", ")
 		archive includes:"**/target/*.zip, **/target/*.tar.*, **/target/*.ear"
+		VER_LSJ = sh(returnStdout:true,script:'egrep "<version>" che-ls-jdt/pom.xml|head -1|sed -e "s#.*<version>\\(.\\+\\)</version>#\\1#"').trim()
+		SHA_LSJ = sh(returnStdout:true,script:'cd che-ls-jdt/ && git rev-parse HEAD').trim()
+		echo "Built che-ls-jdt from SHA: ${SHA_LSJ} (${VER_LSJ})"
 	}
 }
 
+def VER_CHE = ""
+def SHA_CHE = ""
 timeout(180) {
 	node("${nodeBig}"){ stage 'Build Che'
 		cleanWs()
@@ -118,13 +126,16 @@ timeout(180) {
 			submoduleCfg: [], 
 			userRemoteConfigs: [[url: 'https://github.com/eclipse/che.git']]])
 		// dir ('che') { sh 'ls -lart' }
-		unstash 'stashLsjdt'
+		unstash 'stashLSJ'
 		installNPM()
 		installGo()
 		buildMaven()
 		sh "mvn clean install ${MVN_FLAGS} -f che/pom.xml ${MVN_EXTRA_FLAGS}"
 		stash name: 'stashChe', include: findFiles(glob: '.repository/**').join(", ")
 		archive includes:"**/*.log"
+		VER_CHE = sh(returnStdout:true,script:'egrep "<version>" che/pom.xml|head -1|sed -e "s#.*<version>\\(.\\+\\)</version>#\\1#"').trim()
+		SHA_CHE = sh(returnStdout:true,script:'cd che/ && git rev-parse HEAD').trim()
+		echo "Built Che from SHA: ${SHA_CHE} (${VER_CHE})"
 	}
 }
 
@@ -148,12 +159,10 @@ timeout(120) {
 		archiveArtifacts fingerprint: false, artifacts:'codeready-workspaces/assembly/codeready-workspaces-assembly-main/target/*.tar.*'
 
 		// sh 'printenv | sort'
-		VER_CHE = sh(returnStdout:true,script:'egrep "<version>" che/pom.xml|head -1|sed -e "s#.*<version>\\(.\\+\\)</version>#\\1#"').trim()
 		VER_CRW = sh(returnStdout:true,script:'egrep "<version>" codeready-workspaces/pom.xml|head -1|sed -e "s#.*<version>\\(.\\+\\)</version>#\\1#"').trim()
-		SHA_CHE = sh(returnStdout:true,script:'cd che/ && git rev-parse HEAD').trim()
 		SHA_CRW = sh(returnStdout:true,script:'cd codeready-workspaces/ && git rev-parse HEAD').trim()
-		def descriptString="Build #${BUILD_NUMBER} (${BUILD_TIMESTAMP}) :: ${SHA_CHE} (${VER_CHE}):: ${SHA_CRW} (${VER_CRW})"
-		echo ${descriptString}
+		def descriptString="Build #${BUILD_NUMBER} (${BUILD_TIMESTAMP}) :: ${SHA_LSJ} (${VER_LSJ}):: ${SHA_CHE} (${VER_CHE}):: ${SHA_CRW} (${VER_CRW})"
+		echo "${descriptString}"
 		currentBuild.description="${descriptString}"
 	}
 }
