@@ -149,9 +149,11 @@ timeout(120) {
 
 		// sh 'printenv | sort'
 		BUILD_VER = sh(returnStdout:true,script:'egrep "<version>" codeready-workspaces/pom.xml|head -1|sed -e "s#.*<version>\\(.\\+\\)</version>#\\1#"').trim()
-		BUILD_SHA = sh(returnStdout:true,script:'cd codeready-workspaces/ && git rev-parse HEAD').trim()
-		echo "Build #${BUILD_NUMBER} :: ${BUILD_VER} :: ${BUILD_SHA} :: ${BUILD_TIMESTAMP}"
-		currentBuild.description="Build #${BUILD_NUMBER} :: ${BUILD_VER} :: ${BUILD_SHA} :: ${BUILD_TIMESTAMP}"
+		BUILD_SHA_CHE = sh(returnStdout:true,script:'cd che/ && git rev-parse HEAD').trim()
+		BUILD_SHA_CRW = sh(returnStdout:true,script:'cd codeready-workspaces/ && git rev-parse HEAD').trim()
+		def descriptString="Build #${BUILD_NUMBER} (${BUILD_TIMESTAMP}) :: ${BUILD_VER} :: ${BUILD_SHA_CHE} :: ${BUILD_SHA_CRW}"
+		echo ${descriptString}
+		currentBuild.description="${descriptString}"
 	}
 }
 
