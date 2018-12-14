@@ -29,7 +29,7 @@ def buildMaven(){
 }
 
 timeout(120) {
-	node("${node}"){ stage 'Build Che Dev'
+	node("${node}"){ stage "Build che-dev"
 		cleanWs()
 		checkout([$class: 'GitSCM', 
 			branches: [[name: "${branchToBuildDev}"]], 
@@ -46,7 +46,7 @@ timeout(120) {
 }
 
 timeout(120) {
-	node("${node}"){ stage 'Build Che Parent'
+	node("${node}"){ stage "Build che-parent"
 		cleanWs()
 		checkout([$class: 'GitSCM', 
 			branches: [[name: "${branchToBuild}"]], 
@@ -64,7 +64,7 @@ timeout(120) {
 }
 
 timeout(120) {
-	node("${node}"){ stage 'Build Che Lib'
+	node("${node}"){ stage "Build che-lib"
 		cleanWs()
 		checkout([$class: 'GitSCM', 
 			branches: [[name: "${branchToBuild}"]], 
@@ -86,7 +86,7 @@ def LSJ_path = "che-ls-jdt"
 def VER_LSJ = ""
 def SHA_LSJ = ""
 timeout(120) {
-	node("${node}"){ stage 'Build ${LSJ_path}'
+	node("${node}"){ stage "Build ${LSJ_path}"
 		cleanWs()
 		checkout([$class: 'GitSCM', 
 			branches: [[name: "${branchToBuildLSJ}"]], 
@@ -114,7 +114,7 @@ def CHE_path = "che"
 def VER_CHE = ""
 def SHA_CHE = ""
 timeout(180) {
-	node("${nodeBig}"){ stage 'Build ${CHE_path}'
+	node("${nodeBig}"){ stage "Build ${CHE_path}"
 		cleanWs()
 		checkout([$class: 'GitSCM', 
 			branches: [[name: "${branchToBuild}"]], 
@@ -140,7 +140,7 @@ timeout(180) {
 
 def CRW_path = "codeready-workspaces"
 timeout(120) {
-	node("${node}"){ stage 'Build ${CRW_path}'
+	node("${node}"){ stage "Build ${CRW_path}"
 		cleanWs()
 		// for private repo, use checkout(credentialsId: 'devstudio-release')
 		checkout([$class: 'GitSCM', 
