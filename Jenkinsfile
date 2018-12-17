@@ -177,6 +177,11 @@ build(
       value: "containers/codeready-workspaces",
     ],
     [
+      $class: 'StringParameterValue',
+      name: 'GIT_BRANCH',
+      value: "codeready-1.0-rhel-7",
+    ],
+    [
       $class: 'BooleanParameterValue',
       name: 'SCRATCH',
       value: true,
