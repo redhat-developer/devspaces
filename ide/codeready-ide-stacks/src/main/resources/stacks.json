@@ -39,10 +39,6 @@
                 "eap" : {
                   "port" : "8080",
                   "protocol" : "http"
-                },
-                "eap-debug" : {
-                  "port" : "8000",
-                  "protocol" : "http"
                 }
               },
               "attributes" : {
@@ -125,16 +121,7 @@
                 "org.eclipse.che.ls.java",
                 "com.redhat.bayesian.lsp"
               ],
-              "servers": {
-                "eap" : {
-                  "port" : "8080",
-                  "protocol" : "http"
-                },
-                "eap-debug" : {
-                  "port" : "8000",
-                  "protocol" : "http"
-                }
-              },
+              "servers": {},
               "attributes" : {
                 "memoryLimitBytes": "2147483648"
               },
