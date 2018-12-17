@@ -1,5 +1,90 @@
 [
   {
+    "id": "rhel8-default",
+    "creator": "ide",
+    "name": "RHEL 8 Beta - Java 1.8",
+    "description": "RHEL8 Java Stack with OpenJDK 1.8, Maven 3.5",
+    "scope": "general",
+    "tags": [
+      "maven",
+      "java"
+    ],
+    "components": [
+      {
+        "name": "RHEL",
+        "version": "8-Beta"
+      },
+      {
+        "name": "OpenJDK",
+        "version": "1.8.0_151"
+      },
+      {
+        "name": "Maven",
+        "version": "3.5.0"
+      }
+    ],
+    "workspaceConfig": {
+      "environments": {
+        "default": {
+          "machines": {
+            "dev-machine": {
+              "installers": [
+                "org.eclipse.che.exec",
+                "org.eclipse.che.terminal",
+                "org.eclipse.che.ws-agent",
+                "org.eclipse.che.ls.java",
+                "com.redhat.bayesian.lsp"
+              ],
+              "servers": {
+                "eap" : {
+                  "port" : "8080",
+                  "protocol" : "http"
+                },
+                "eap-debug" : {
+                  "port" : "8000",
+                  "protocol" : "http"
+                }
+              },
+              "attributes" : {
+                "memoryLimitBytes": "2147483648"
+              },
+              "volumes": {
+                "m2": {
+                  "path": "/home/jboss/.m2"
+                },
+                "javadata": {
+                  "path": "/home/jboss/jdtls/data"
+                }
+              }
+            }
+          },
+          "recipe": {
+            "content": "registry.access.redhat.com/codeready-workspaces/stacks-java-rhel8:1.0.0",
+            "type": "dockerimage"
+          }
+        }
+      },
+      "name": "default",
+      "defaultEnv": "default",
+      "description": null,
+      "commands": [
+        {
+          "commandLine": "mvn clean install -f ${current.project.path}/pom.xml",
+          "name": "build",
+          "type": "mvn",
+          "attributes": {
+            "previewUrl": "",
+            "goal": "Build"
+          }
+        }
+      ]
+    },
+    "stackIcon": {
+      "name": "type-java.svg",
+      "mediaType": "image/svg+xml"
+    }
+  },
+  {
     "id": "java-default",
     "creator": "ide",
     "name": "Java 1.8",
