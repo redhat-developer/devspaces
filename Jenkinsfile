@@ -82,10 +82,10 @@ timeout(120) {
 	}
 }
 
-// disable this until https://github.com/eclipse/che-ls-jdt/pull/94 is fixed
 def LSJ_path = "che-ls-jdt"
-def VER_LSJ = "NONE"
-def SHA_LSJ = "NONE"
+def VER_LSJ = "VER_LSJ"
+def VER_LSJ = "VER_LSJ"
+// TODO: disable until https://github.com/eclipse/che-ls-jdt/pull/94 is fixed
 // timeout(120) {
 // 	node("${node}"){ stage "Build ${LSJ_path}"
 // 		cleanWs()
@@ -124,7 +124,9 @@ timeout(180) {
 			extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: "${CHE_path}"]], 
 			submoduleCfg: [], 
 			userRemoteConfigs: [[url: "https://github.com/eclipse/${CHE_path}.git"]]])
-		unstash 'stashLSJ'
+		// TODO: disable until https://github.com/eclipse/che-ls-jdt/pull/94 is fixed; then re-enable stashLSJ, and remove stashLib
+		// unstash 'stashLSJ'
+		unstash 'stashLib'
 		installNPM()
 		installGo()
 		buildMaven()
