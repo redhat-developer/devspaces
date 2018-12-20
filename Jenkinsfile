@@ -83,8 +83,8 @@ timeout(120) {
 }
 
 def LSJ_path = "che-ls-jdt"
-def VER_LSJ = "NONE"
-def VER_LSJ = "NONE"
+def VER_LSJ = "VER_LSJ"
+def SHA_LSJ = "SHA_LSJ"
 // TODO: disable until https://github.com/eclipse/che-ls-jdt/pull/94 is fixed
 // timeout(120) {
 // 	node("${node}"){ stage "Build ${LSJ_path}"
