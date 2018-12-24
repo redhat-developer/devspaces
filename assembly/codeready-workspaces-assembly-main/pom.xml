@@ -70,7 +70,7 @@
                     <descriptors>
                         <descriptor>${project.basedir}/src/assembly/assembly.xml</descriptor>
                     </descriptors>
-                    <finalName>${artifactId}</finalName>
+                    <finalName>${project.artifactId}</finalName>
                     <tarLongFileMode>posix</tarLongFileMode>
                 </configuration>
             </plugin>

@@ -204,9 +204,9 @@ public class VertxUserStoryTest {
   @Test(priority = 2)
   public void checkFindUsagesFeature() {
     editor.selectTabByName(JAVA_FILE_NAME);
-    editor.goToPosition(19, 5);
+    editor.goToPosition(19, 12);
     menu.runCommand(ASSISTANT, FIND_USAGES);
-    findUsages.waitExpectedOccurences(55);
+    findUsages.waitExpectedOccurences(3);
   }
 
   private void checkApplicationPage(By webElement) {

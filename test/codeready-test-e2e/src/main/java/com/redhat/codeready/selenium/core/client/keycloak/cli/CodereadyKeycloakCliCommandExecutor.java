@@ -53,7 +53,7 @@ public class CodereadyKeycloakCliCommandExecutor implements KeycloakCliCommandEx
     // obtain name of keycloak pod
     String getKeycloakPodNameCommand =
         format(
-            "get pod --namespace=%s -l app=rh-sso --no-headers | awk '{print $1}'",
+            "get pod --namespace=%s -l app=keycloak --no-headers | awk '{print $1}'",
             codereadyNamespace != null ? codereadyNamespace : DEFAULT_OPENSHIFT_CHE_NAMESPACE);
 
     keycloakPodName = openShiftCliCommandExecutor.execute(getKeycloakPodNameCommand);
