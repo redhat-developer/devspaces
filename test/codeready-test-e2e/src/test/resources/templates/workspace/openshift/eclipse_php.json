@@ -55,26 +55,26 @@
       "type": "custom"
     },
     {
-      "commandLine": "service apache2 start && tail -f /var/log/apache2/access.log -f /var/log/apache2/error.log",
-      "name": "start apache",
+      "commandLine": "httpd -k start && tail -f /opt/rh/httpd24/root/etc/httpd/logs/access_log && tail -f /opt/rh/httpd24/root/etc/httpd/logs/error_log",
+      "name": "start httpd",
       "attributes": {
-        "previewUrl": "${server.80/tcp}/${current.project.relpath}"
+        "previewUrl": "${server.8080/tcp}/${current.project.relpath}"
       },
       "type": "custom"
     },
     {
-      "commandLine": "service apache2 stop",
-      "name": "stop apache",
+      "commandLine": "httpd -k stop",
+      "name": "stop httpd",
       "attributes": {
         "previewUrl": ""
       },
       "type": "custom"
     },
     {
-      "commandLine": "service apache2 restart",
-      "name": "restart apache",
+      "commandLine": "httpd -k restart",
+      "name": "restart httpd",
       "attributes": {
-        "previewUrl": "${server.80/tcp}/${current.project.relpath}"
+        "previewUrl": "${server.8080/tcp}/${current.project.relpath}"
       },
       "type": "custom"
     }
