@@ -97,7 +97,7 @@ TESTS_SCOPE="--suite=CodereadySuite.xml"
 CLEAN_GOAL="clean"
 
 IP=$(docker run --net=host eclipse/che-ip:nightly)
-PRODUCT_HOST="codeready-codeready.${IP}.nip.io"
+PRODUCT_HOST="che-codeready.${IP}.nip.io"
 PRODUCT_PORT=80
 
 for var in "$@"; do

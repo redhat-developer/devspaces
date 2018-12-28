@@ -12,7 +12,7 @@
     <id>tomcat-zip</id>
     <formats>
         <format>dir</format>
-        <format>zip</format>
+        <!-- <format>zip</format> -->
         <format>tar.gz</format>
     </formats>
     <dependencySets>
@@ -75,6 +75,7 @@
                 <exclude>**/tomcat/webapps/api.war</exclude>
                 <exclude>**/tomcat/webapps/ROOT.war</exclude>
                 <exclude>**/tomcat/webapps/dashboard.war</exclude>
+                <exclude>**/tomcat/webapps/docs.war</exclude>
                 <exclude>**/templates/**</exclude>
                 <exclude>**/lib/ws-agent.tar.gz</exclude>
             </excludes>

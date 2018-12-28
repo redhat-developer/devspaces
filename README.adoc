@@ -43,16 +43,16 @@ You can then reference this image in your deployment (set image pull policy to I
 
 Please note, that stacks may reference non-existing images like `docker-registry.default.svc:5000/openshift/rhel-base-jdk8`. These images are built as a post installation step. Once published, they will be in locations like these:
 
-* registry.access.redhat.com/codeready-workspaces-beta/server:1.0.0.Beta1
-* registry.access.redhat.com/codeready-workspaces-beta/server-apb:1.0.0.Beta1
-* registry.access.redhat.com/codeready-workspaces-beta/stacks-cpp:1.0.0.Beta1
-* registry.access.redhat.com/codeready-workspaces-beta/stacks-dotnet:1.0.0.Beta1
-* registry.access.redhat.com/codeready-workspaces-beta/stacks-golang:1.0.0.Beta1
-* registry.access.redhat.com/codeready-workspaces-beta/stacks-java:1.0.0.Beta1
-* registry.access.redhat.com/codeready-workspaces-beta/stacks-java-rhel8:1.0.0.Beta1
-* registry.access.redhat.com/codeready-workspaces-beta/stacks-node:1.0.0.Beta1
-* registry.access.redhat.com/codeready-workspaces-beta/stacks-php:1.0.0.Beta1
-* registry.access.redhat.com/codeready-workspaces-beta/stacks-python:1.0.0.Beta1
+* registry.access.redhat.com/codeready-workspaces/server:1.0.0
+* registry.access.redhat.com/codeready-workspaces/server-apb:1.0.0
+* registry.access.redhat.com/codeready-workspaces/stacks-cpp:1.0.0
+* registry.access.redhat.com/codeready-workspaces/stacks-dotnet:1.0.0
+* registry.access.redhat.com/codeready-workspaces/stacks-golang:1.0.0
+* registry.access.redhat.com/codeready-workspaces/stacks-java:1.0.0
+* registry.access.redhat.com/codeready-workspaces/stacks-java-rhel8-beta:1.0.0
+* registry.access.redhat.com/codeready-workspaces/stacks-node:1.0.0
+* registry.access.redhat.com/codeready-workspaces/stacks-php:1.0.0
+* registry.access.redhat.com/codeready-workspaces/stacks-python:1.0.0
 
 
 ### How to Build Container Using NCL and OSBS

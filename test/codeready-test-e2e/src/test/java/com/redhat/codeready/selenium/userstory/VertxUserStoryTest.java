@@ -115,7 +115,8 @@ public class VertxUserStoryTest {
     testWorkspace = testWorkspaceProvider.getWorkspace(WORKSPACE_NAME, defaultTestUser);
 
     // wait expected message in the progress info bar
-    mavenPluginStatusBar.waitExpectedTextInInfoPanel("Refreshing Maven model");
+    // the execution takes a lot of time on a local machine, so need a big timeout
+    mavenPluginStatusBar.waitExpectedTextInInfoPanel("Refreshing Maven model", LOADER_TIMEOUT_SEC);
     mavenPluginStatusBar.waitClosingInfoPanel();
 
     // check the project is initialized
@@ -203,9 +204,9 @@ public class VertxUserStoryTest {
   @Test(priority = 2)
   public void checkFindUsagesFeature() {
     editor.selectTabByName(JAVA_FILE_NAME);
-    editor.goToPosition(19, 5);
+    editor.goToPosition(19, 12);
     menu.runCommand(ASSISTANT, FIND_USAGES);
-    findUsages.waitExpectedOccurences(55);
+    findUsages.waitExpectedOccurences(3);
   }
 
   private void checkApplicationPage(By webElement) {

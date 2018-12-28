@@ -7,8 +7,7 @@
           "installers": [
             "org.eclipse.che.terminal",
             "org.eclipse.che.ws-agent",
-            "org.eclipse.che.exec",
-            "org.eclipse.che.ls.clangd"
+            "org.eclipse.che.exec"
           ],
           "attributes": {
             "memoryLimitBytes": "desired_memory_value"
@@ -16,7 +15,7 @@
         }
       },
       "recipe": {
-        "location": "registry.access.redhat.com/codeready-workspaces-beta/stacks-cpp:1.0.0.Beta1",
+        "location": "brew-pulp-docker01.web.prod.ext.phx2.redhat.com:8888/codeready-workspaces/stacks-cpp",
         "type": "dockerimage"
       }
     }

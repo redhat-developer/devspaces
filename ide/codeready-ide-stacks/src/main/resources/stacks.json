@@ -64,7 +64,7 @@
             }
           },
           "recipe": {
-            "content": "registry.access.redhat.com/codeready-workspaces-beta/stacks-java:1.0.0.Beta1",
+            "content": "brew-pulp-docker01.web.prod.ext.phx2.redhat.com:8888/codeready-workspaces/stacks-java",
             "type": "dockerimage"
           }
         }
@@ -148,7 +148,7 @@
             }
           },
           "recipe": {
-            "content": "registry.access.redhat.com/codeready-workspaces-beta/stacks-java:1.0.0.Beta1",
+            "content": "brew-pulp-docker01.web.prod.ext.phx2.redhat.com:8888/codeready-workspaces/stacks-java",
             "type": "dockerimage"
           }
         }
@@ -254,7 +254,7 @@
             }
           },
           "recipe": {
-            "content": "registry.access.redhat.com/codeready-workspaces-beta/stacks-java:1.0.0.Beta1",
+            "content": "brew-pulp-docker01.web.prod.ext.phx2.redhat.com:8888/codeready-workspaces/stacks-java",
             "type": "dockerimage"
           }
         }
@@ -340,7 +340,7 @@
             }
           },
           "recipe": {
-            "content": "registry.access.redhat.com/codeready-workspaces-beta/stacks-java:1.0.0.Beta1",
+            "content": "brew-pulp-docker01.web.prod.ext.phx2.redhat.com:8888/codeready-workspaces/stacks-java",
             "type": "dockerimage"
           }
         }
@@ -420,7 +420,7 @@
             }
           },
           "recipe": {
-            "content": "registry.access.redhat.com/codeready-workspaces-beta/stacks-java:1.0.0.Beta1",
+            "content": "brew-pulp-docker01.web.prod.ext.phx2.redhat.com:8888/codeready-workspaces/stacks-java",
             "type": "dockerimage"
           }
         }
@@ -502,7 +502,7 @@
             }
           },
           "recipe": {
-            "content": "registry.access.redhat.com/codeready-workspaces-beta/stacks-java:1.0.0.Beta1",
+            "content": "brew-pulp-docker01.web.prod.ext.phx2.redhat.com:8888/codeready-workspaces/stacks-java",
             "type": "dockerimage"
           }
         }
@@ -530,8 +530,8 @@
   {
     "id": "cpp-default",
     "creator": "ide",
-    "name": "C/C++",
-    "description": "Stack with C/CPP developer tools",
+    "name": "Cpp",
+    "description": "Stack with C-CPP developer tools",
     "scope": "general",
     "tags": [
       "c",
@@ -582,7 +582,7 @@
             }
           },
           "recipe": {
-            "content": "registry.access.redhat.com/codeready-workspaces-beta/stacks-cpp:1.0.0.Beta1",
+            "content": "brew-pulp-docker01.web.prod.ext.phx2.redhat.com:8888/codeready-workspaces/stacks-cpp",
             "type": "dockerimage"
           }
         }
@@ -650,7 +650,7 @@
             }
           },
           "recipe": {
-            "content": "registry.access.redhat.com/codeready-workspaces-beta/stacks-dotnet:1.0.0.Beta1",
+            "content": "brew-pulp-docker01.web.prod.ext.phx2.redhat.com:8888/codeready-workspaces/stacks-dotnet",
             "type": "dockerimage"
           }
         }
@@ -721,7 +721,7 @@
             }
           },
           "recipe": {
-            "content": "registry.access.redhat.com/codeready-workspaces-beta/stacks-golang:1.0.0.Beta1",
+            "content": "brew-pulp-docker01.web.prod.ext.phx2.redhat.com:8888/codeready-workspaces/stacks-golang",
             "type": "dockerimage"
           }
         }
@@ -803,7 +803,7 @@
             }
           },
           "recipe": {
-            "content": "registry.access.redhat.com/codeready-workspaces-beta/stacks-node:1.0.0.Beta1",
+            "content": "brew-pulp-docker01.web.prod.ext.phx2.redhat.com:8888/codeready-workspaces/stacks-node",
             "type": "dockerimage"
           }
         }
@@ -869,7 +869,7 @@
             }
           },
           "recipe": {
-            "content": "registry.access.redhat.com/codeready-workspaces-beta/stacks-php:1.0.0.Beta1",
+            "content": "brew-pulp-docker01.web.prod.ext.phx2.redhat.com:8888/codeready-workspaces/stacks-php",
             "type": "dockerimage"
           }
         }
@@ -982,7 +982,7 @@
             }
           },
           "recipe": {
-            "content": "registry.access.redhat.com/codeready-workspaces-beta/stacks-python:1.0.0.Beta1",
+            "content": "brew-pulp-docker01.web.prod.ext.phx2.redhat.com:8888/codeready-workspaces/stacks-python",
             "type": "dockerimage"
           }
         }

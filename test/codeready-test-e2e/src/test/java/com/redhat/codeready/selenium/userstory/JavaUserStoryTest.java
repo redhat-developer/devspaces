@@ -22,6 +22,7 @@ import static org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants.A
 import static org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants.Assistant.QUICK_FIX;
 import static org.eclipse.che.selenium.core.utils.FileUtil.readFileToString;
 import static org.eclipse.che.selenium.pageobject.CodenvyEditor.MarkerLocator.ERROR;
+import static org.eclipse.che.selenium.pageobject.CodenvyEditor.MarkerLocator.ERROR_OVERVIEW;
 import static org.eclipse.che.selenium.pageobject.debug.DebugPanel.DebuggerActionButtons.BTN_DISCONNECT;
 import static org.eclipse.che.selenium.pageobject.debug.DebugPanel.DebuggerActionButtons.EVALUATE_EXPRESSIONS;
 import static org.eclipse.che.selenium.pageobject.debug.DebugPanel.DebuggerActionButtons.RESUME_BTN_ID;
@@ -30,6 +31,7 @@ import static org.eclipse.che.selenium.pageobject.debug.DebugPanel.DebuggerActio
 import static org.eclipse.che.selenium.pageobject.debug.DebugPanel.DebuggerActionButtons.STEP_OVER;
 import static org.openqa.selenium.Keys.F4;
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.fail;
 
 import com.google.common.base.Joiner;
 import com.google.inject.Inject;
@@ -68,6 +70,7 @@ import org.eclipse.che.selenium.pageobject.dashboard.workspaces.WorkspaceOvervie
 import org.eclipse.che.selenium.pageobject.dashboard.workspaces.Workspaces;
 import org.eclipse.che.selenium.pageobject.debug.JavaDebugConfig;
 import org.eclipse.che.selenium.pageobject.intelligent.CommandsPalette;
+import org.openqa.selenium.TimeoutException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.annotations.AfterClass;
@@ -198,14 +201,20 @@ public class JavaUserStoryTest {
     checkFindUsagesFeature();
     checkPreviousTabFeature(memberRegistrationTabName);
     checkFindDefinitionFeature(expectedTextOfInjectClass);
-    checkQuickDocumentationFeature(memberRegistrationTabName, loggerJavaDocFragment);
     checkCodeValidationFeature(memberRegistrationTabName);
     addTestFileIntoProjectByApi();
     checkQuickFixFeature(expectedTextAfterQuickFix);
     checkAutoCompletionFeature(expectedContentInAutocompleteContainer);
+
+    try {
+      checkQuickDocumentationFeature(memberRegistrationTabName, loggerJavaDocFragment);
+    } catch (TimeoutException ex) {
+      // remove try-catch block after issue has been resolved
+      fail("Known random failure https://github.com/eclipse/che/issues/11735");
+    }
   }
 
-  @Test(priority = 4)
+  @Test(priority = 3)
   public void checkBayesianLsErrorMarker() throws Exception {
     final String pomXmlFilePath = PROJECT + "/pom.xml";
     final String pomXmlEditorTabTitle = "jboss-as-kitchensink";
@@ -225,7 +234,7 @@ public class JavaUserStoryTest {
 
     // check error marker displaying and description
     editor.setCursorToLine(62);
-    editor.waitMarkerInPosition(ERROR, 62);
+    editor.waitMarkerInPosition(ERROR_OVERVIEW, 62);
     editor.clickOnMarker(ERROR, 62);
     editor.waitTextInToolTipPopup(expectedErrorMarkerText);
   }
@@ -247,7 +256,7 @@ public class JavaUserStoryTest {
     editor.selectTabByName("Member");
     editor.goToPosition(23, 31);
     editor.typeTextIntoEditor(" DecoratorSample,");
-    editor.waitMarkerInPosition(ERROR, 23);
+    editor.waitMarkerInPosition(ERROR_OVERVIEW, 23);
     editor.goToPosition(23, 34);
     menu.runCommand(ASSISTANT, QUICK_FIX);
     editor.selectFirstItemIntoFixErrorPropByDoubleClick();
@@ -260,12 +269,13 @@ public class JavaUserStoryTest {
 
   private void checkCodeValidationFeature(String memberRegistrationTabName) {
     editor.selectTabByName(memberRegistrationTabName);
+    editor.goToPosition(28, 17);
     editor.typeTextIntoEditor("2");
-    editor.waitMarkerInPosition(ERROR, 28);
+    editor.waitMarkerInPosition(ERROR_OVERVIEW, 28);
     editor.goToPosition(28, 18);
     menu.runCommand(ASSISTANT, QUICK_FIX);
     editor.enterTextIntoFixErrorPropByDoubleClick("Change to 'Logger' (java.util.logging)");
-    editor.waitAllMarkersInvisibility(ERROR);
+    editor.waitAllMarkersInvisibility(ERROR_OVERVIEW);
   }
 
   private void checkQuickDocumentationFeature(

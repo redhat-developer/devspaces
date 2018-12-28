@@ -27,6 +27,7 @@ import static org.eclipse.che.selenium.core.constant.TestProjectExplorerContextM
 import static org.eclipse.che.selenium.core.constant.TestProjectExplorerContextMenuConstants.ContextMenuCommandGoals.RUN_GOAL;
 import static org.eclipse.che.selenium.pageobject.CodenvyEditor.MarkerLocator.ERROR;
 import static org.openqa.selenium.Keys.F4;
+import static org.testng.Assert.fail;
 
 import com.google.inject.Inject;
 import com.redhat.codeready.selenium.pageobject.CodereadyEditor;
@@ -34,6 +35,7 @@ import com.redhat.codeready.selenium.pageobject.dashboard.CodereadyNewWorkspace;
 import com.redhat.codeready.selenium.pageobject.dashboard.CodereadyNewWorkspace.CodereadyStacks;
 import org.eclipse.che.selenium.core.client.TestWorkspaceServiceClient;
 import org.eclipse.che.selenium.core.user.DefaultTestUser;
+import org.eclipse.che.selenium.core.webdriver.SeleniumWebDriverHelper;
 import org.eclipse.che.selenium.core.workspace.TestWorkspace;
 import org.eclipse.che.selenium.core.workspace.TestWorkspaceProvider;
 import org.eclipse.che.selenium.pageobject.Consoles;
@@ -44,6 +46,7 @@ import org.eclipse.che.selenium.pageobject.dashboard.AddOrImportForm;
 import org.eclipse.che.selenium.pageobject.dashboard.Dashboard;
 import org.eclipse.che.selenium.pageobject.dashboard.workspaces.Workspaces;
 import org.openqa.selenium.By;
+import org.openqa.selenium.TimeoutException;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -67,6 +70,7 @@ public class SpringBootUserStoryTest {
   @Inject private AddOrImportForm addOrImportForm;
   @Inject private CodereadyNewWorkspace newWorkspace;
   @Inject private TestWorkspaceProvider testWorkspaceProvider;
+  @Inject private SeleniumWebDriverHelper seleniumWebDriverHelper;
   @Inject private TestWorkspaceServiceClient workspaceServiceClient;
 
   // it is used to read workspace logs on test failure
@@ -129,9 +133,15 @@ public class SpringBootUserStoryTest {
     projectExplorer.openItemByPath(PATH_TO_MAIN_PACKAGE + "/service/Greeting.java");
     editor.waitActive();
 
-    checkQuickDocumentationFeature();
     checkGoToDeclarationFeature();
     checkCodeValidationFeature();
+
+    try {
+      checkQuickDocumentationFeature();
+    } catch (TimeoutException ex) {
+      // remove try-catch block after issue has been resolved
+      fail("Known random failure https://github.com/eclipse/che/issues/11735");
+    }
   }
 
   private void checkGoToDeclarationFeature() {

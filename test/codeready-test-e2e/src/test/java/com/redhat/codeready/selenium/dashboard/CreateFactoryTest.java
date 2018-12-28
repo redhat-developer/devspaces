@@ -196,7 +196,11 @@ public class CreateFactoryTest {
     // create a factory from workspace with a project
     createFactoryFromWorkspaceWithProject(FACTORY_NAME_EXIST);
 
-    openNewFactoryPage();
+    factoryDetails.clickOnBackToFactoriesListButton();
+
+    dashboardFactories.waitAllFactoriesPage();
+    dashboardFactories.clickOnAddFactoryBtn();
+    createFactoryPage.waitToolbarTitle();
 
     // select created workspace from list of workspaces
     createFactoryPage.clickOnWorkspaceFromList(PROJECT_WS_NAME);
@@ -329,8 +333,6 @@ public class CreateFactoryTest {
     // create a new factory from a workspace with a project
     createFactoryFromWorkspaceWithProject(FACTORY_CREATED_FROM_WORKSPACE_NAME);
 
-    factoryDetails.waitFactoryName(FACTORY_CREATED_FROM_WORKSPACE_NAME);
-
     // check present the id url and named url of the factory
     dashboardFactories.waitFactoryIdUrl();
     dashboardFactories.waitFactoryNamedUrl(FACTORY_CREATED_FROM_WORKSPACE_NAME);
@@ -417,7 +419,8 @@ public class CreateFactoryTest {
 
     // check that the Create Factory button is enabled after a workspace selecting
     assertTrue(createFactoryPage.isCreateFactoryButtonEnabled());
-
     createFactoryPage.clickOnCreateFactoryButton();
+
+    factoryDetails.waitFactoryName(factoryName);
   }
 }

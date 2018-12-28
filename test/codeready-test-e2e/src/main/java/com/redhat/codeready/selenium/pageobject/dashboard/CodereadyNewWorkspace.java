@@ -14,6 +14,7 @@ package com.redhat.codeready.selenium.pageobject.dashboard;
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toList;
+import static org.eclipse.che.selenium.core.constant.TestTimeoutsConstants.ELEMENT_TIMEOUT_SEC;
 import static org.eclipse.che.selenium.pageobject.dashboard.NewWorkspace.Locators.STACK_ROW_XPATH;
 
 import com.google.inject.Inject;
@@ -36,6 +37,16 @@ import org.openqa.selenium.By;
 public class CodereadyNewWorkspace extends NewWorkspace {
 
   private SeleniumWebDriverHelper seleniumWebDriverHelper;
+  private final TestWebElementRenderChecker testWebElementRenderChecker;
+
+  private static final String WORKSPACE_CREATED_DIALOG =
+      "//md-dialog/che-popup[@title='Workspace Is Created']";
+  private static final String WORKSPACE_CREATED_DIALOG_CLOSE_BUTTON_XPATH =
+      "//md-dialog/che-popup[@title='Workspace Is Created']//i";
+  private static final String EDIT_WORKSPACE_DIALOG_BUTTON =
+      "//che-button-primary//span[text()='Edit']";
+  private static final String OPEN_IN_IDE_DIALOG_BUTTON =
+      "//che-button-default//span[text()='Open In IDE']";
 
   @Inject
   public CodereadyNewWorkspace(
@@ -51,6 +62,7 @@ public class CodereadyNewWorkspace extends NewWorkspace {
         testWebElementRenderChecker,
         addOrImportForm);
     this.seleniumWebDriverHelper = seleniumWebDriverHelper;
+    this.testWebElementRenderChecker = testWebElementRenderChecker;
   }
 
   public enum CodereadyStacks {
@@ -115,5 +127,28 @@ public class CodereadyNewWorkspace extends NewWorkspace {
         .stream()
         .map(webElement -> CodereadyStacks.getById(webElement.getAttribute("data-stack-id")))
         .collect(toList());
+  }
+
+  public void waitWorkspaceCreatedDialogIsVisible() {
+    testWebElementRenderChecker.waitElementIsRendered(
+        By.xpath(WORKSPACE_CREATED_DIALOG), ELEMENT_TIMEOUT_SEC);
+  }
+
+  public void closeWorkspaceCreatedDialog() {
+    seleniumWebDriverHelper.waitAndClick(By.xpath(WORKSPACE_CREATED_DIALOG_CLOSE_BUTTON_XPATH));
+  }
+
+  public void waitWorkspaceCreatedDialogDisappearance() {
+    seleniumWebDriverHelper.waitInvisibility(
+        By.xpath(WORKSPACE_CREATED_DIALOG), ELEMENT_TIMEOUT_SEC);
+  }
+
+  public void clickOnEditWorkspaceButton() {
+    seleniumWebDriverHelper.waitAndClick(
+        By.xpath(EDIT_WORKSPACE_DIALOG_BUTTON), ELEMENT_TIMEOUT_SEC);
+  }
+
+  public void clickOnOpenInIDEButton() {
+    seleniumWebDriverHelper.waitAndClick(By.xpath(OPEN_IN_IDE_DIALOG_BUTTON), ELEMENT_TIMEOUT_SEC);
   }
 }
