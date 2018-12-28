@@ -33,6 +33,9 @@
           <class name="com.redhat.codeready.selenium.dashboard.workspaces.details.WorkspaceDetailsSingleMachineTest"/>
           <class name="com.redhat.codeready.selenium.dashboard.workspaces.details.WorkspaceDetailsMachineActionsTest"/>
           <class name="com.redhat.codeready.selenium.dashboard.workspaces.details.WorkspaceDetailsMachinesRamTest"/>
+          <class name="com.redhat.codeready.selenium.debugger.CodeReadyCppProjectDebuggingTest"/>
+          <class name="com.redhat.codeready.selenium.debugger.CodeReadyPhpProjectDebuggingTest"/>
+          <class name="com.redhat.codeready.selenium.debugger.CodeReadyStepIntoStepOverStepReturnWithChangeVariableTest"/>
           <class name="com.redhat.codeready.selenium.git.ImportWizardFormTest"/>
           <class name="com.redhat.codeready.selenium.miscellaneous.FindTextFeatureTest"/>
           <class name="com.redhat.codeready.selenium.miscellaneous.OpenInTerminalTest"/>
@@ -77,15 +80,12 @@
           <class name="org.eclipse.che.selenium.dashboard.organization.UserEmptyOrganizationTest"/>
           <class name="org.eclipse.che.selenium.debugger.ChangeVariableWithEvaluatingTest"/>
           <class name="org.eclipse.che.selenium.debugger.CheckBreakPointStateTest"/>
-          <class name="org.eclipse.che.selenium.debugger.CppProjectDebuggingTest"/>
           <class name="org.eclipse.che.selenium.debugger.DebugExternalClassTest"/>
           <class name="org.eclipse.che.selenium.debugger.InnerClassAndLambdaDebuggingTest"/>
           <class name="org.eclipse.che.selenium.debugger.RunToCursorTest"/>
           <class name="org.eclipse.che.selenium.debugger.MultimoduleProjectDebuggingTest"/>
           <class name="org.eclipse.che.selenium.debugger.DebuggerWatchExpressionTest"/>
           <class name="org.eclipse.che.selenium.debugger.NodeJsDebugTest"/>
-          <class name="org.eclipse.che.selenium.debugger.PhpProjectDebuggingTest"/>
-          <class name="org.eclipse.che.selenium.debugger.StepIntoStepOverStepReturnWithChangeVariableTest"/>
           <class name="org.eclipse.che.selenium.debugger.ThreadDumpTest"/>
           <class name="org.eclipse.che.selenium.debugger.BreakpointReorderingTest"/>
           <class name="org.eclipse.che.selenium.debugger.ConditionalBreakpointsTest"/>
