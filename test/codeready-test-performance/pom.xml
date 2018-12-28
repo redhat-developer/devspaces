@@ -64,53 +64,7 @@
                             </dependency>
                         </dependencies>
                     </plugin>
-
-                    <!--<plugin>-->
-                        <!--<groupId>com.lazerycode.jmeter</groupId>-->
-                        <!--<artifactId>jmeter-analysis-maven-plugin</artifactId>-->
-                        <!--<version>${jmeter.analysis.maven.plugin.version}</version>-->
-                        <!--<executions>-->
-                            <!--<execution>-->
-                                <!--<goals>-->
-                                    <!--<goal>analyze</goal>-->
-                                <!--</goals>-->
-                                <!--<phase>post-integration-test</phase>-->
-                            <!--</execution>-->
-                        <!--</executions>-->
-                        <!--<configuration>-->
-                            <!--&lt;!&ndash;-->
-                            <!--source file that contains jmeter result data. Needs to be XML format or a GZIPed XML format-->
-                            <!--&ndash;&gt;-->
-                            <!--<source>${project.build.directory}/jmeter/results/*</source>-->
-
-                            <!--&lt;!&ndash;-->
-                            <!--directory where to store analysis report files. At least a file "summary.txt" will be stored here.-->
-                            <!--&ndash;&gt;-->
-                            <!--<targetDirectory>${project.build.directory}/reports</targetDirectory>-->
-
-                            <!--&lt;!&ndash;-->
-                            <!--Defines groups of requests by URL patterns,-->
-                            <!--e.g. URIs starting with /mock/page are associated with group "pages". All analysis results are-->
-                            <!--If there is no such mapping then the threadgroups from the jmeter.xml are used.-->
-                            <!--&ndash;&gt;-->
-                            <!--&lt;!&ndash;<requestGroups>&ndash;&gt;-->
-                            <!--&lt;!&ndash;<test>/en-US/firefox/**</test>&ndash;&gt;-->
-                            <!--&lt;!&ndash;</requestGroups>&ndash;&gt;-->
-
-                            <!--&lt;!&ndash;-->
-                            <!--Mapping from resource URL to file name. Every resource will be downloaded and stored in 'targetDirectory'-->
-                            <!--with the given filename. Tokens "_FROM_" and "_TO_" can be used as placeholders. These placeholders will-->
-                            <!--be replaced by timestamps of execution interval (formatted as ISO8601, e.g. '20111216T145509+0100').-->
-                            <!--&ndash;&gt;-->
-                            <!--&lt;!&ndash;<remoteResources>&ndash;&gt;-->
-                            <!--&lt;!&ndash;<property>&ndash;&gt;-->
-                            <!--&lt;!&ndash;<name>http://yourhost/path?from=_FROM_&amp;to=_TO_</name>&ndash;&gt;-->
-                            <!--&lt;!&ndash;<value>my_resource.txt</value>&ndash;&gt;-->
-                            <!--&lt;!&ndash;</property>&ndash;&gt;-->
-                            <!--&lt;!&ndash;</remoteResources>&ndash;&gt;-->
-                        <!--</configuration>-->
-                    <!--</plugin>-->
-                </plugins>
+              </plugins>
             </build>
         </profile>
     </profiles>
