@@ -4,8 +4,8 @@ Command to run performance test in 2 threads:
 ```
 export IP=$(docker run --net=host eclipse/che-ip) && mvn clean verify -Pperformance \
 -Dcrw.protocol=http \
--Dcrw.host="codeready-codeready.${IP}.nip.io" \
--Dcrw.sso.host="rh-sso-codeready.${IP}.nip.io" \
+-Dcrw.host="che-codeready.${IP}.nip.io" \
+-Dcrw.sso.host="keycloak-codeready.${IP}.nip.io" \
 -Dcrw.port=80 \
--Dtest.threads=1
+-Dtest.threads=2
 ```
