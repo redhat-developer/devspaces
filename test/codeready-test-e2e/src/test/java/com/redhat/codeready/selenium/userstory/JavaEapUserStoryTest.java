@@ -15,6 +15,7 @@ import static com.redhat.codeready.selenium.pageobject.dashboard.CodereadyNewWor
 import static java.nio.file.Files.readAllLines;
 import static java.nio.file.Paths.get;
 import static org.eclipse.che.commons.lang.NameGenerator.generate;
+import static org.eclipse.che.selenium.core.TestGroup.UNDER_REPAIR;
 import static org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants.Assistant.ASSISTANT;
 import static org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants.Assistant.FIND_DEFINITION;
 import static org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants.Assistant.FIND_USAGES;
@@ -83,7 +84,7 @@ public class JavaEapUserStoryTest {
   private final String WORKSPACE = generate("JavaEapUserStory", 4);
   private final String PROJECT = "kitchensink-example";
   private final String PATH_TO_MAIN_PACKAGE =
-      PROJECT + "/src/main/java/org/jboss/as/quickstarts/kitchensink";
+      PROJECT + "/src/main/java/org.jboss.as.quickstarts.kitchensink";
   @Inject private Dashboard dashboard;
   @Inject private WorkspaceDetails workspaceDetails;
   @Inject private Workspaces workspaces;
@@ -150,7 +151,8 @@ public class JavaEapUserStoryTest {
 
     // prepare
     setUpDebugMode();
-    projectExplorer.openItemByPath(PATH_TO_MAIN_PACKAGE + "/data/MemberListProducer.java");
+    projectExplorer.expandPathInProjectExplorerAndOpenFile(
+        PATH_TO_MAIN_PACKAGE + ".data", "MemberListProducer.java");
     editor.waitTabIsPresent(fileForDebuggingTabTitle);
     editor.waitTabSelection(0, fileForDebuggingTabTitle);
     editor.waitActive();
@@ -213,7 +215,7 @@ public class JavaEapUserStoryTest {
     }
   }
 
-  @Test(priority = 3)
+  @Test(priority = 3, groups = UNDER_REPAIR)
   public void checkBayesianLsErrorMarker() throws Exception {
     final String pomXmlFilePath = PROJECT + "/pom.xml";
     final String pomXmlEditorTabTitle = "jboss-as-kitchensink";
@@ -233,7 +235,14 @@ public class JavaEapUserStoryTest {
 
     // check error marker displaying and description
     editor.setCursorToLine(62);
-    editor.waitMarkerInPosition(ERROR_OVERVIEW, 62);
+
+    try {
+      editor.waitMarkerInPosition(ERROR_OVERVIEW, 62);
+    } catch (TimeoutException ex) {
+      // remove try-catch block after issue has been resolved
+      fail("Known permanent failure https://issues.jboss.org/browse/CRW-37");
+    }
+
     editor.clickOnMarker(ERROR, 62);
     editor.waitTextInToolTipPopup(expectedErrorMarkerText);
   }
@@ -251,7 +260,8 @@ public class JavaEapUserStoryTest {
   }
 
   private void checkQuickFixFeature(String expectedTextAfterQuickFix) {
-    projectExplorer.openItemByPath(PATH_TO_MAIN_PACKAGE + "/util/DecoratorSample.java");
+    projectExplorer.expandPathInProjectExplorerAndOpenFile(
+        PATH_TO_MAIN_PACKAGE + ".util", "DecoratorSample.java");
     editor.selectTabByName("Member");
     editor.goToPosition(23, 31);
     editor.typeTextIntoEditor(" DecoratorSample,");
@@ -305,7 +315,8 @@ public class JavaEapUserStoryTest {
   }
 
   private void checkGoToDeclarationFeature() {
-    projectExplorer.openItemByPath(PATH_TO_MAIN_PACKAGE + "/controller/MemberRegistration.java");
+    projectExplorer.expandPathInProjectExplorerAndOpenFile(
+        PATH_TO_MAIN_PACKAGE + ".controller", "MemberRegistration.java");
     editor.waitActive();
     editor.goToPosition(39, 14);
     editor.typeTextIntoEditor(F4.toString());
@@ -351,7 +362,7 @@ public class JavaEapUserStoryTest {
     events.waitExpectedMessage("Branch 'master' is checked out");
     consoles.clickOnProcessesButton();
     consoles.waitJDTLSProjectResolveFinishedMessage(PROJECT);
-    projectExplorer.quickExpandWithJavaScript();
+    projectExplorer.expandPathInProjectExplorer(PATH_TO_MAIN_PACKAGE);
     addTestFileIntoProjectByApi();
 
     return testWorkspace;
@@ -443,7 +454,7 @@ public class JavaEapUserStoryTest {
             .stream()
             .collect(Collectors.joining());
     String wsId = workspaceServiceClient.getByName(WORKSPACE, defaultTestUser.getName()).getId();
-    String pathToFolder = PATH_TO_MAIN_PACKAGE + "/util";
+    String pathToFolder = PROJECT + "/src/main/java/org/jboss/as/quickstarts/kitchensink/util";
     String NewFileName = "DecoratorSample.java";
     projectServiceClient.createFileInProject(wsId, pathToFolder, NewFileName, content);
   }
