@@ -55,8 +55,8 @@
           <class name="com.redhat.codeready.selenium.languageserver.ClangFileEditingTest"/>
           <class name="com.redhat.codeready.selenium.languageserver.csharp.CSharpFileEditingTest"/>
           <class name="com.redhat.codeready.selenium.workspaces.CreateWorkspaceOnDashboardTest"/>
-          <class name="com.redhat.codeready.selenium.editor.SplitEditorFeatureTest"/>
-          <class name="com.redhat.codeready.selenium.editor.autocomplete.AutocompleteProposalJavaDocTest"/>
+          <class name="com.redhat.codeready.selenium.editor.CodeReadySplitEditorFeatureTest"/>
+          <class name="com.redhat.codeready.selenium.editor.autocomplete.CodeReadyAutocompleteProposalJavaDocTest"/>
           <class name="com.redhat.codeready.selenium.projectexplorer.CheckShowHideHiddenFilesTest"/>
 
           <class name="org.eclipse.che.selenium.assistant.CheckFindActionFeatureInCheTest"/>
