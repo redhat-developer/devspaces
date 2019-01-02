@@ -15,16 +15,16 @@ Default values:
 
 - OPENSHIFT_PASSWORD: "any"
 
-- OPENSHIFT_CHE_NAMESPACE: "codeready"
+- CHE_OPENSHIFT_PROJECT: "codeready"
 
 You can change it by using following system variables
 ```
 export OPENSHIFT_USERNAME=<openshift_web_console_username>;
 export OPENSHIFT_PASSWORD=<openshift_web_console_password>;
 export OPENSHIFT_TOKEN=<openshift_web_console_bearer_auth_token>;
-export OPENSHIFT_CHE_NAMESPACE=<namespace_of_codeready_workspaces_deployed_on_openshift>;
+export CHE_OPENSHIFT_PROJECT=<namespace_of_codeready_workspaces_deployed_on_openshift>;
 ```
-where `OPENSHIFT_TOKEN` is optional and is aimed to replace username/password when OpenShift is configured with oAuth.
+where `CHE_OPENSHIFT_PROJECT` is optional and is aimed to replace username/password when OpenShift is configured with oAuth.
 
 ==== 3. Setup test admin and test user credentials
 Also you can set your own credentials of test user or admin instead of default ones
@@ -45,6 +45,8 @@ Default values:
 - CHE_ADMIN_EMAIL: "admin@admin.com"
 
 - CHE_ADMIN_PASSWORD: "admin"
+
+- CHE_OPENSHIFT_PROJECT: "codeready"
 
 If test user credentials aren't set, tests create random test user.
 

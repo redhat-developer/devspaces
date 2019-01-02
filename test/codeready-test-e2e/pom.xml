@@ -34,10 +34,6 @@
             <version>${che.version}</version>
         </dependency>
         <dependency>
-            <groupId>javax.annotation</groupId>
-            <artifactId>javax.annotation-api</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.eclipse.che.selenium</groupId>
             <artifactId>che-selenium-test</artifactId>
             <version>${che.version}</version>
