@@ -131,10 +131,6 @@
             <scope>runtime</scope>
         </dependency>
         <dependency>
-            <groupId>com.google.inject.extensions</groupId>
-            <artifactId>guice-assistedinject</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.eclipse.che.multiuser</groupId>
             <artifactId>che-multiuser-api-permission</artifactId>
             <scope>runtime</scope>
@@ -260,7 +256,7 @@
                                 </property>
                                 <property>
                                     <name>listener</name>
-                                    <value>com.redhat.codeready.selenium.core.CodereadySeleniumTestHandler</value>
+                                    <value>org.eclipse.che.selenium.core.CheSeleniumTestHandler</value>
                                 </property>
                             </properties>
                             <systemProperties>
