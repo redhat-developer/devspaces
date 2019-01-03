@@ -256,7 +256,7 @@
                                 </property>
                                 <property>
                                     <name>listener</name>
-                                    <value>org.eclipse.che.selenium.core.CheSeleniumTestHandler</value>
+                                    <value>com.redhat.codeready.selenium.core.CodereadySeleniumTestHandler</value>
                                 </property>
                             </properties>
                             <systemProperties>

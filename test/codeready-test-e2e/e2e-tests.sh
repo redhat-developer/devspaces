@@ -130,8 +130,6 @@ export CHE_INFRASTRUCTURE=openshift
 export KEYCLOAK_OPENSHIFT_APP=keycloak
 export KEYCLOAK_CLI_INTERNAL_PATH="/opt/eap/bin/kcadm.sh"
 
-export CHE_OPENSHIFT_POD=che
-
 export CHE_OPENSHIFT_PROJECT=${CHE_OPENSHIFT_PROJECT:-"codeready"}
 
 mvn $CLEAN_GOAL dependency:unpack-dependencies \
