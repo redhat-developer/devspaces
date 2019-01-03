@@ -54,7 +54,8 @@ public class BayesianLanguageServerConfig implements LanguageServerConfig {
         return ImmutableMap.<String, String>builder()
             .put(BayesianLanguageServerModule.TXT_LANGUAGE_ID, ".*requirements\\.txt")
             .put(JsonModule.LANGUAGE_ID, ".*package\\.json")
-            .put("pom", ".*pom\\.xml")
+                // todo revert back to pom.xml when https://github.com/eclipse/che/issues/12329 is solved
+            .put("pom", ".*\\.xml")
             .build();
       }
 
