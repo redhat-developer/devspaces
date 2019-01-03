@@ -14,22 +14,15 @@ package com.redhat.codeready.selenium.core;
 import com.google.inject.Module;
 import java.util.ArrayList;
 import java.util.List;
-import org.eclipse.che.selenium.core.inject.SeleniumTestHandler;
+import org.eclipse.che.selenium.core.CheSeleniumTestHandler;
 
 /** @author Dmytro Nochevnov */
-public class CodereadySeleniumTestHandler extends SeleniumTestHandler {
+public class CodereadySeleniumTestHandler extends CheSeleniumTestHandler {
 
   @Override
   public List<Module> getParentModules() {
     List<Module> modules = new ArrayList<>();
     modules.add(new CodereadySeleniumSuiteModule());
-    return modules;
-  }
-
-  @Override
-  public List<Module> getChildModules() {
-    List<Module> modules = new ArrayList<>();
-    modules.add(new CodereadySeleniumWebDriverRelatedModule());
     return modules;
   }
 }
