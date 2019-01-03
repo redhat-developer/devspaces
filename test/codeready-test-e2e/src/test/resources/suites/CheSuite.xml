@@ -43,9 +43,9 @@
           <class name="com.redhat.codeready.selenium.miscellaneous.WorkingWithSplitPanelTest"/>
           <class name="com.redhat.codeready.selenium.miscellaneous.WorkingWithTerminalTest"/>
           <class name="com.redhat.codeready.selenium.miscellaneous.MachinesAsynchronousStartTest"/>
-          <class name="com.redhat.codeready.selenium.factory.CheckOpenFileFeatureTest"/>
-          <class name="com.redhat.codeready.selenium.factory.CheckRunCommandFeatureTest"/>
-          <class name="com.redhat.codeready.selenium.factory.CreateNamedFactoryFromDashboardTest"/>
+          <class name="com.redhat.codeready.selenium.factory.CodeReadyCheckOpenFileFeatureTest"/>
+          <class name="com.redhat.codeready.selenium.factory.CodeReadyCheckRunCommandFeatureTest"/>
+          <class name="com.redhat.codeready.selenium.factory.CodeReadyCreateNamedFactoryFromDashboardTest"/>
           <class name="com.redhat.codeready.selenium.intelligencecommand.AutocompleteCommandsEditorTest"/>
           <class name="com.redhat.codeready.selenium.intelligencecommand.CheckIntelligenceCommandFromToolbarTest"/>
           <class name="com.redhat.codeready.selenium.intelligencecommand.CommandsPaletteTest"/>
