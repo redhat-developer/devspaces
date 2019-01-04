@@ -15,7 +15,6 @@ import static com.redhat.codeready.selenium.pageobject.dashboard.CodereadyNewWor
 import static java.nio.file.Files.readAllLines;
 import static java.nio.file.Paths.get;
 import static org.eclipse.che.commons.lang.NameGenerator.generate;
-import static org.eclipse.che.selenium.core.TestGroup.UNDER_REPAIR;
 import static org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants.Assistant.ASSISTANT;
 import static org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants.Assistant.FIND_DEFINITION;
 import static org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants.Assistant.FIND_USAGES;
@@ -151,8 +150,10 @@ public class JavaEapUserStoryTest {
 
     // prepare
     setUpDebugMode();
-    projectExplorer.expandPathInProjectExplorerAndOpenFile(
-        PATH_TO_MAIN_PACKAGE + ".data", "MemberListProducer.java");
+    projectExplorer.quickRevealToItemWithJavaScript(
+        PATH_TO_MAIN_PACKAGE + ".data/MemberListProducer.java");
+    projectExplorer.openItemByVisibleNameInExplorer("MemberListProducer.java");
+    editor.waitActive();
     editor.waitTabIsPresent(fileForDebuggingTabTitle);
     editor.waitTabSelection(0, fileForDebuggingTabTitle);
     editor.waitActive();
@@ -215,7 +216,7 @@ public class JavaEapUserStoryTest {
     }
   }
 
-  @Test(priority = 3, groups = UNDER_REPAIR)
+  @Test(priority = 3)
   public void checkBayesianLsErrorMarker() throws Exception {
     final String pomXmlFilePath = PROJECT + "/pom.xml";
     final String pomXmlEditorTabTitle = "jboss-as-kitchensink";
@@ -235,14 +236,7 @@ public class JavaEapUserStoryTest {
 
     // check error marker displaying and description
     editor.setCursorToLine(62);
-
-    try {
-      editor.waitMarkerInPosition(ERROR_OVERVIEW, 62);
-    } catch (TimeoutException ex) {
-      // remove try-catch block after issue has been resolved
-      fail("Known permanent failure https://issues.jboss.org/browse/CRW-37");
-    }
-
+    editor.waitMarkerInPosition(ERROR_OVERVIEW, 62);
     editor.clickOnMarker(ERROR, 62);
     editor.waitTextInToolTipPopup(expectedErrorMarkerText);
   }
@@ -260,8 +254,8 @@ public class JavaEapUserStoryTest {
   }
 
   private void checkQuickFixFeature(String expectedTextAfterQuickFix) {
-    projectExplorer.expandPathInProjectExplorerAndOpenFile(
-        PATH_TO_MAIN_PACKAGE + ".util", "DecoratorSample.java");
+    projectExplorer.quickRevealToItemWithJavaScript(
+        PATH_TO_MAIN_PACKAGE + ".util/DecoratorSample.java");
     editor.selectTabByName("Member");
     editor.goToPosition(23, 31);
     editor.typeTextIntoEditor(" DecoratorSample,");
@@ -315,8 +309,9 @@ public class JavaEapUserStoryTest {
   }
 
   private void checkGoToDeclarationFeature() {
-    projectExplorer.expandPathInProjectExplorerAndOpenFile(
-        PATH_TO_MAIN_PACKAGE + ".controller", "MemberRegistration.java");
+    projectExplorer.quickRevealToItemWithJavaScript(
+        PATH_TO_MAIN_PACKAGE + ".controller/MemberRegistration.java");
+    projectExplorer.openItemByVisibleNameInExplorer("MemberRegistration.java");
     editor.waitActive();
     editor.goToPosition(39, 14);
     editor.typeTextIntoEditor(F4.toString());
@@ -362,7 +357,7 @@ public class JavaEapUserStoryTest {
     events.waitExpectedMessage("Branch 'master' is checked out");
     consoles.clickOnProcessesButton();
     consoles.waitJDTLSProjectResolveFinishedMessage(PROJECT);
-    projectExplorer.expandPathInProjectExplorer(PATH_TO_MAIN_PACKAGE);
+    projectExplorer.quickRevealToItemWithJavaScript(PATH_TO_MAIN_PACKAGE);
     addTestFileIntoProjectByApi();
 
     return testWorkspace;
