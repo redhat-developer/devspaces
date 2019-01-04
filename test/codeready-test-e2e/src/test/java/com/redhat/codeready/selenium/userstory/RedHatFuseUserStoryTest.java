@@ -53,6 +53,8 @@ public class RedHatFuseUserStoryTest {
   private static final String PROJECT_NAME = "spring-boot-camel";
   private static final String PATH_TO_MAIN_PACKAGE =
       PROJECT_NAME + "/src/main/java/io/fabric8/quickstarts/camel";
+  private static final String LS_INIT_MESSAGE =
+      "Initialized language server 'org.eclipse.che.plugin.camel.server.languageserver'";
 
   @Inject private Ide ide;
   @Inject private Menu menu;
@@ -88,6 +90,9 @@ public class RedHatFuseUserStoryTest {
     testWorkspace = testWorkspaceProvider.getWorkspace(WORKSPACE_NAME, defaultTestUser);
 
     projectExplorer.waitProjectInitialization(PROJECT_NAME);
+
+    // check Apache Camel language server initialized
+    consoles.waitExpectedTextIntoConsole(LS_INIT_MESSAGE);
 
     consoles.waitJDTLSProjectResolveFinishedMessage(PROJECT_NAME);
   }
