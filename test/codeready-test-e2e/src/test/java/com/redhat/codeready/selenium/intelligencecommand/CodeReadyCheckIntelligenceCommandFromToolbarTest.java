@@ -63,6 +63,7 @@ public class CodeReadyCheckIntelligenceCommandFromToolbarTest
     waitExpectedTextIntoConsole();
   }
 
+  @Override
   protected void selectProcessByTabName() {
     consoles.selectProcessByTabName(PROJECT_NAME + ": build and run in debug");
   }
