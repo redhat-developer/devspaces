@@ -91,9 +91,10 @@ public class RedHatFuseUserStoryTest {
 
     projectExplorer.waitProjectInitialization(PROJECT_NAME);
 
-    consoles.waitJDTLSProjectResolveFinishedMessage(PROJECT_NAME);
-
+    // check Apache Camel language server initialized
     consoles.waitExpectedTextIntoConsole(LS_INIT_MESSAGE);
+
+    consoles.waitJDTLSProjectResolveFinishedMessage(PROJECT_NAME);
   }
 
   @Test(priority = 1)
