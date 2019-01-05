@@ -50,14 +50,13 @@
           <class name="com.redhat.codeready.selenium.intelligencecommand.CodeReadyCheckIntelligenceCommandFromToolbarTest"/>
           <class name="com.redhat.codeready.selenium.intelligencecommand.CodeReadyCommandsPaletteTest"/>
           <class name="com.redhat.codeready.selenium.intelligencecommand.CodeReadyMacrosCommandsEditorTest"/>
-          <class name="com.redhat.codeready.selenium.languageserver.JsonFileEditingTest"/>
-          <class name="com.redhat.codeready.selenium.languageserver.GolangFileEditingTest"/>
-          <class name="com.redhat.codeready.selenium.languageserver.ClangFileEditingTest"/>
-          <class name="com.redhat.codeready.selenium.languageserver.csharp.CSharpFileEditingTest"/>
+          <class name="com.redhat.codeready.selenium.languageserver.CodeReadyJsonFileEditingTest"/>
+          <class name="com.redhat.codeready.selenium.languageserver.CodeReadyGolangFileEditingTest"/>
+          <class name="com.redhat.codeready.selenium.languageserver.csharp.CodeReadyCSharpFileEditingTest"/>
           <class name="com.redhat.codeready.selenium.workspaces.CreateWorkspaceOnDashboardTest"/>
           <class name="com.redhat.codeready.selenium.editor.CodeReadySplitEditorFeatureTest"/>
           <class name="com.redhat.codeready.selenium.editor.autocomplete.CodeReadyAutocompleteProposalJavaDocTest"/>
-          <class name="com.redhat.codeready.selenium.projectexplorer.CheckShowHideHiddenFilesTest"/>
+          <class name="com.redhat.codeready.selenium.projectexplorer.CodeReadyCheckShowHideHiddenFilesTest"/>
 
           <class name="org.eclipse.che.selenium.assistant.CheckFindActionFeatureInCheTest"/>
           <class name="org.eclipse.che.selenium.assistant.KeyBindingsTest"/>
@@ -69,6 +68,7 @@
           <class name="org.eclipse.che.selenium.languageserver.python.PythonFileEditingTest"/>
           <class name="org.eclipse.che.selenium.languageserver.python.PythonAssistantFeaturesTest"/>
           <class name="org.eclipse.che.selenium.languageserver.TypeScriptEditingTest"/>
+          <class name="org.eclipse.che.selenium.languageserver.ClangFileEditingTest"/>
           <class name="org.eclipse.che.selenium.languageserver.ApacheCamelFileEditingTest"/>
           <class name="org.eclipse.che.selenium.languageserver.YamlFileEditingTest"/>
           <class name="org.eclipse.che.selenium.dashboard.DeleteRunningWorkspaceTest"/>
