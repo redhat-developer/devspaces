@@ -49,6 +49,7 @@ public class CodeReadyStepIntoStepOverStepReturnWithChangeVariableTest
     consoles.closeProcessTabWithAskDialog(START_DEBUG);
   }
 
+  @Override
   protected void waitExpectedTextIntoConsole() {
     consoles.waitExpectedTextIntoConsole("started in");
   }

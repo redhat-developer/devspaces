@@ -15,6 +15,7 @@ import org.eclipse.che.selenium.editor.autocomplete.AutocompleteProposalJavaDocT
 
 public class CodeReadyAutocompleteProposalJavaDocTest extends AutocompleteProposalJavaDocTest {
 
+  @Override
   protected String getExpectedJavadocHtmlText() {
     return "<p>Returns concatination of two strings into one divided by special symbol.</p>\n"
         + "<ul>\n"
