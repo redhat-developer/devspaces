@@ -24,5 +24,5 @@ chmod +x ${LS_LAUNCHER}
 
 NODE="node"
 command -v node >/dev/null 2>&1 || NODE="nodejs"
-
+mkdir -p /workspace_logs/ls-bayesian
 echo "${NODE} ${LS_DIR}/server.js --stdio 2>&1 | tee /workspace_logs/ls-bayesian/bayesian.log" > ${LS_LAUNCHER}
