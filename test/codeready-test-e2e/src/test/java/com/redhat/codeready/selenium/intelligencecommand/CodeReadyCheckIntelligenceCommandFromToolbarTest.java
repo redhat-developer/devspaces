@@ -26,6 +26,7 @@ import org.testng.annotations.Test;
 public class CodeReadyCheckIntelligenceCommandFromToolbarTest
     extends CheckIntelligenceCommandFromToolbarTest {
 
+  @Override
   @Test(priority = 1)
   public void checkButtonsOnToolbarOnOpenshift() {
     checkButtonsOnToolbar("Application is not available");

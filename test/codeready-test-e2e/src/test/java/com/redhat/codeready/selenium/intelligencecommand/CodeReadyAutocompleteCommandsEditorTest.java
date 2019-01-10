@@ -36,6 +36,7 @@ public class CodeReadyAutocompleteCommandsEditorTest extends AutocompleteCommand
     commandsEditor.waitTextIntoDescriptionMacrosForm("Returns address of the eap server");
   }
 
+  @Override
   protected void launchAutocompleteAndWaitText() {
     commandsEditor.typeTextIntoEditor("server.eap-d");
     commandsEditor.launchAutocomplete();

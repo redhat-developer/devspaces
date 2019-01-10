@@ -16,6 +16,7 @@ import org.eclipse.che.selenium.editor.SplitEditorFeatureTest;
 /** @author Aleksandr Shmaraiev */
 public class CodeReadySplitEditorFeatureTest extends SplitEditorFeatureTest {
 
+  @Override
   protected String getJavaFileNameFromTabTitle() {
     return "MemberRegistration";
   }
