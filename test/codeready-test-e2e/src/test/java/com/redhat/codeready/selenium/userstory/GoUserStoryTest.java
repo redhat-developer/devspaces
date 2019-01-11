@@ -44,7 +44,8 @@ public class GoUserStoryTest {
   private static final String WORKSPACE_NAME = generate("GoUserStory", 4);
   private static final String WEB_GO_PROJECT_NAME = "web-go-simple";
   private static final String GO_FILE_NAME = "main.go";
-  private static final String LS_INIT_MESSAGE = "Finished running tool: /usr/bin/go build";
+  private static final String LS_INIT_MESSAGE = "Finished running tool: ";
+  private static final String LS_GO_BUILD_MESAGE = "usr/bin/go build";
   private By textOnPreviewPage = By.xpath("//pre[contains(text(),'Hello there')]");
 
   private List<String> expectedProposals =
@@ -112,6 +113,7 @@ public class GoUserStoryTest {
     // check Golang language sever initialized
     consoles.selectProcessByTabName("dev-machine");
     consoles.waitExpectedTextIntoConsole(LS_INIT_MESSAGE);
+    consoles.waitExpectedTextIntoConsole(LS_GO_BUILD_MESAGE);
   }
 
   @Test(priority = 2)
