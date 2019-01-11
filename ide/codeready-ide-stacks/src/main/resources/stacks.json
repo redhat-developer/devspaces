@@ -72,6 +72,15 @@
             "previewUrl": "",
             "goal": "Build"
           }
+        },
+        {
+          "commandLine": "${HOME}/stack-analysis.sh -f ${current.project.path}/pom.xml -p ${current.project.path}",
+          "name": "dependency_analysis",
+          "attributes": {
+            "goal": "Run",
+            "previewUrl": ""
+          },
+          "type": "custom"
         }
       ]
     },
