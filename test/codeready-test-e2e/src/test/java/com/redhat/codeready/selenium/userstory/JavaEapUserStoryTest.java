@@ -20,6 +20,7 @@ import static org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants.A
 import static org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants.Assistant.FIND_USAGES;
 import static org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants.Assistant.QUICK_DOCUMENTATION;
 import static org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants.Assistant.QUICK_FIX;
+import static org.eclipse.che.selenium.core.constant.TestTimeoutsConstants.LOADER_TIMEOUT_SEC;
 import static org.eclipse.che.selenium.core.utils.FileUtil.readFileToString;
 import static org.eclipse.che.selenium.pageobject.CodenvyEditor.MarkerLocator.ERROR;
 import static org.eclipse.che.selenium.pageobject.CodenvyEditor.MarkerLocator.ERROR_OVERVIEW;
@@ -278,7 +279,7 @@ public class JavaEapUserStoryTest {
     editor.goToPosition(28, 18);
     menu.runCommand(ASSISTANT, QUICK_FIX);
     editor.enterTextIntoFixErrorPropByDoubleClick("Change to 'Logger' (java.util.logging)");
-    editor.waitAllMarkersInvisibility(ERROR_OVERVIEW);
+    editor.waitAllMarkersInvisibility(ERROR_OVERVIEW, LOADER_TIMEOUT_SEC);
   }
 
   private void checkQuickDocumentationFeature(
