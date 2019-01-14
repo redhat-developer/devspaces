@@ -130,8 +130,17 @@
                 "org.eclipse.che.ls.java",
                 "com.redhat.bayesian.lsp"
               ],
-              "servers": {},
-              "attributes" : {
+              "servers": {
+                "eap": {
+                  "port": "8080",
+                  "protocol": "http"
+                },
+                "eap-debug": {
+                  "port": "8000",
+                  "protocol": "http"
+                }
+              },
+              "attributes": {
                 "memoryLimitBytes": "2147483648"
               },
               "volumes": {
@@ -162,6 +171,15 @@
             "previewUrl": "",
             "goal": "Build"
           }
+        },
+        {
+          "commandLine": "${HOME}/stack-analysis.sh -f ${current.project.path}/pom.xml -p ${current.project.path}",
+          "name": "dependency_analysis",
+          "attributes": {
+            "goal": "Run",
+            "previewUrl": ""
+          },
+          "type": "custom"
         }
       ]
     },
@@ -206,16 +224,16 @@
                 "com.redhat.bayesian.lsp"
               ],
               "servers": {
-                "vertx" : {
-                  "port" : "8080",
-                  "protocol" : "http"
+                "vertx": {
+                  "port": "8080",
+                  "protocol": "http"
                 },
-                "vertx-debug" : {
-                  "port" : "5005",
-                  "protocol" : "http"
+                "vertx-debug": {
+                  "port": "5005",
+                  "protocol": "http"
                 }
               },
-              "attributes" : {
+              "attributes": {
                 "memoryLimitBytes": "2147483648"
               },
               "volumes": {
@@ -246,7 +264,8 @@
             "previewUrl": "",
             "goal": "Build"
           }
-        }, {
+        },
+        {
           "commandLine": "MAVEN_OPTS='-Xmx100m' && mvn compile vertx:run -f ${current.project.path}/pom.xml -Dvertx.disableDnsResolver=true",
           "name": "run",
           "type": "custom",
@@ -254,7 +273,8 @@
             "previewUrl": "${server.vertx}",
             "goal": "Run"
           }
-        }, {
+        },
+        {
           "commandLine": "MAVEN_OPTS='-Xmx100m' && mvn compile vertx:debug -f ${current.project.path}/pom.xml -Dvertx.disableDnsResolver=true",
           "name": "debug",
           "type": "custom",
@@ -262,6 +282,15 @@
             "previewUrl": "${server.vertx}",
             "goal": "Debug"
           }
+        },
+        {
+          "commandLine": "${HOME}/stack-analysis.sh -f ${current.project.path}/pom.xml -p ${current.project.path}",
+          "name": "dependency_analysis",
+          "attributes": {
+            "goal": "Run",
+            "previewUrl": ""
+          },
+          "type": "custom"
         }
       ]
     },
@@ -312,16 +341,16 @@
                 "com.redhat.bayesian.lsp"
               ],
               "servers": {
-                "eap" : {
-                  "port" : "8080",
-                  "protocol" : "http"
+                "eap": {
+                  "port": "8080",
+                  "protocol": "http"
                 },
-                "eap-debug" : {
-                  "port" : "8000",
-                  "protocol" : "http"
+                "eap-debug": {
+                  "port": "8000",
+                  "protocol": "http"
                 }
               },
-              "attributes" : {
+              "attributes": {
                 "memoryLimitBytes": "2147483648"
               },
               "volumes": {
@@ -352,6 +381,15 @@
             "previewUrl": "",
             "goal": "Build"
           }
+        },
+        {
+          "commandLine": "${HOME}/stack-analysis.sh -f ${current.project.path}/pom.xml -p ${current.project.path}",
+          "name": "dependency_analysis",
+          "attributes": {
+            "goal": "Run",
+            "previewUrl": ""
+          },
+          "type": "custom"
         }
       ]
     },
@@ -398,16 +436,16 @@
                 "com.redhat.bayesian.lsp"
               ],
               "servers": {
-                "wildfly" : {
-                  "port" : "8080",
-                  "protocol" : "http"
+                "wildfly": {
+                  "port": "8080",
+                  "protocol": "http"
                 },
-                "wildfly-debug" : {
-                  "port" : "8000",
-                  "protocol" : "http"
+                "wildfly-debug": {
+                  "port": "8000",
+                  "protocol": "http"
                 }
               },
-              "attributes" : {
+              "attributes": {
                 "memoryLimitBytes": "2147483648"
               },
               "volumes": {
@@ -438,6 +476,15 @@
             "previewUrl": "",
             "goal": "Build"
           }
+        },
+        {
+          "commandLine": "${HOME}/stack-analysis.sh -f ${current.project.path}/pom.xml -p ${current.project.path}",
+          "name": "dependency_analysis",
+          "attributes": {
+            "goal": "Run",
+            "previewUrl": ""
+          },
+          "type": "custom"
         }
       ]
     },
@@ -483,12 +530,12 @@
                 "com.redhat.bayesian.lsp"
               ],
               "servers": {
-                "springboot" : {
-                  "port" : "8080",
-                  "protocol" : "http"
+                "springboot": {
+                  "port": "8080",
+                  "protocol": "http"
                 }
               },
-              "attributes" : {
+              "attributes": {
                 "memoryLimitBytes": "2147483648"
               },
               "volumes": {
@@ -519,6 +566,15 @@
             "previewUrl": "",
             "goal": "Build"
           }
+        },
+        {
+          "commandLine": "${HOME}/stack-analysis.sh -f ${current.project.path}/pom.xml -p ${current.project.path}",
+          "name": "dependency_analysis",
+          "attributes": {
+            "goal": "Run",
+            "previewUrl": ""
+          },
+          "type": "custom"
         }
       ]
     },
@@ -565,12 +621,12 @@
                 "com.redhat.bayesian.lsp"
               ],
               "servers": {
-                "springboot" : {
-                  "port" : "8080",
-                  "protocol" : "http"
+                "springboot": {
+                  "port": "8080",
+                  "protocol": "http"
                 }
               },
-              "attributes" : {
+              "attributes": {
                 "memoryLimitBytes": "2147483648"
               },
               "volumes": {
@@ -601,6 +657,15 @@
             "previewUrl": "",
             "goal": "Build"
           }
+        },
+        {
+          "commandLine": "${HOME}/stack-analysis.sh -f ${current.project.path}/pom.xml -p ${current.project.path}",
+          "name": "dependency_analysis",
+          "attributes": {
+            "goal": "Run",
+            "previewUrl": ""
+          },
+          "type": "custom"
         }
       ]
     },
@@ -655,10 +720,12 @@
           "machines": {
             "dev-machine": {
               "installers": [
-                "org.eclipse.che.exec", "org.eclipse.che.terminal", "org.eclipse.che.ws-agent"
+                "org.eclipse.che.exec",
+                "org.eclipse.che.terminal",
+                "org.eclipse.che.ws-agent"
               ],
               "servers": {},
-              "attributes" : {
+              "attributes": {
                 "memoryLimitBytes": "2147483648"
               }
             }
@@ -681,6 +748,15 @@
             "previewUrl": "",
             "goal": "Run"
           }
+        },
+        {
+          "commandLine": "${HOME}/stack-analysis.sh -f ${current.project.path}/pom.xml -p ${current.project.path}",
+          "name": "dependency_analysis",
+          "attributes": {
+            "goal": "Run",
+            "previewUrl": ""
+          },
+          "type": "custom"
         }
       ]
     },
@@ -718,15 +794,18 @@
           "machines": {
             "dev-machine": {
               "installers": [
-                "org.eclipse.che.exec", "org.eclipse.che.terminal", "org.eclipse.che.ws-agent", "org.eclipse.che.ls.csharp"
+                "org.eclipse.che.exec",
+                "org.eclipse.che.terminal",
+                "org.eclipse.che.ws-agent",
+                "org.eclipse.che.ls.csharp"
               ],
               "servers": {
-                "dotnet" : {
-                  "port" : "5000",
-                  "protocol" : "http"
+                "dotnet": {
+                  "port": "5000",
+                  "protocol": "http"
                 }
               },
-              "attributes" : {
+              "attributes": {
                 "memoryLimitBytes": "2147483648"
               }
             }
@@ -772,7 +851,9 @@
     "name": "Go",
     "description": "Golang stack",
     "scope": "general",
-    "tags": ["go"],
+    "tags": [
+      "go"
+    ],
     "components": [
       {
         "name": "RHEL",
@@ -789,15 +870,18 @@
           "machines": {
             "dev-machine": {
               "installers": [
-                "org.eclipse.che.exec", "org.eclipse.che.terminal", "org.eclipse.che.ws-agent", "org.eclipse.che.ls.golang"
+                "org.eclipse.che.exec",
+                "org.eclipse.che.terminal",
+                "org.eclipse.che.ws-agent",
+                "org.eclipse.che.ls.golang"
               ],
               "servers": {
-                "8080/tcp" : {
-                  "port" : "8080",
-                  "protocol" : "http"
+                "8080/tcp": {
+                  "port": "8080",
+                  "protocol": "http"
                 }
               },
-              "attributes" : {
+              "attributes": {
                 "memoryLimitBytes": "2147483648"
               }
             }
@@ -828,7 +912,6 @@
       "mediaType": "image/svg+xml"
     }
   },
-
   {
     "id": "node-default",
     "creator": "ide",
@@ -866,20 +949,20 @@
                 "com.redhat.bayesian.lsp"
               ],
               "servers": {
-                "3000/tcp" : {
-                  "port" : "3000",
-                  "protocol" : "http"
+                "3000/tcp": {
+                  "port": "3000",
+                  "protocol": "http"
                 },
-                "5000/tcp" : {
-                  "port" : "5000",
-                  "protocol" : "http"
+                "5000/tcp": {
+                  "port": "5000",
+                  "protocol": "http"
                 },
-                "9000/tcp" : {
-                  "port" : "9000",
-                  "protocol" : "http"
+                "9000/tcp": {
+                  "port": "9000",
+                  "protocol": "http"
                 }
               },
-              "attributes" : {
+              "attributes": {
                 "memoryLimitBytes": "2147483648"
               }
             }
@@ -905,7 +988,9 @@
     "name": "PHP",
     "description": "PHP Stack with PHP 7.1 and most popular extensions",
     "scope": "general",
-    "tags": ["PHP"],
+    "tags": [
+      "PHP"
+    ],
     "components": [
       {
         "name": "RHEL",
@@ -945,7 +1030,7 @@
                   "protocol": "http"
                 }
               },
-              "attributes" : {
+              "attributes": {
                 "memoryLimitBytes": "2147483648"
               }
             }
@@ -1012,7 +1097,6 @@
       "mediaType": "image/svg+xml"
     }
   },
-
   {
     "id": "python-default",
     "creator": "ide",
@@ -1049,16 +1133,16 @@
                 "org.eclipse.che.ls.python"
               ],
               "servers": {
-                "8080/tcp" : {
-                  "port" : "8080",
-                  "protocol" : "http"
+                "8080/tcp": {
+                  "port": "8080",
+                  "protocol": "http"
                 },
-                "8000/tcp" : {
-                  "port" : "8000",
-                  "protocol" : "http"
+                "8000/tcp": {
+                  "port": "8000",
+                  "protocol": "http"
                 }
               },
-              "attributes" : {
+              "attributes": {
                 "memoryLimitBytes": "2147483648"
               }
             }
