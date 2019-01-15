@@ -1,5 +1,95 @@
 [
   {
+    "id": "rhel8-default",
+    "creator": "ide",
+    "name": "RHEL 8 Beta - Java 1.8",
+    "description": "RHEL8 Java Stack with OpenJDK 1.8, Maven 3.5",
+    "scope": "general",
+    "tags": [
+      "maven",
+      "java"
+    ],
+    "components": [
+      {
+        "name": "RHEL",
+        "version": "8-Beta"
+      },
+      {
+        "name": "OpenJDK",
+        "version": "1.8.0_151"
+      },
+      {
+        "name": "Maven",
+        "version": "3.5.0"
+      }
+    ],
+    "workspaceConfig": {
+      "environments": {
+        "default": {
+          "machines": {
+            "dev-machine": {
+              "installers": [
+                "org.eclipse.che.exec",
+                "org.eclipse.che.terminal",
+                "org.eclipse.che.ws-agent",
+                "org.eclipse.che.ls.java",
+                "com.redhat.bayesian.lsp"
+              ],
+              "servers": {
+                "eap" : {
+                  "port" : "8080",
+                  "protocol" : "http"
+                }
+              },
+              "attributes" : {
+                "memoryLimitBytes": "2147483648"
+              },
+              "volumes": {
+                "m2": {
+                  "path": "/home/jboss/.m2"
+                },
+                "javadata": {
+                  "path": "/home/jboss/jdtls/data"
+                }
+              }
+            }
+          },
+          "recipe": {
+            "content": "registry.access.redhat.com/codeready-workspaces/stacks-java-rhel8:1.0.0",
+            "type": "dockerimage"
+          }
+        }
+      },
+      "name": "default",
+      "defaultEnv": "default",
+      "description": null,
+      "commands": [
+        {
+          "commandLine": "mvn clean install -f ${current.project.path}/pom.xml",
+          "name": "build",
+          "type": "mvn",
+          "attributes": {
+            "previewUrl": "",
+            "goal": "Build"
+          }
+        },
+        {
+          "commandLine": "${HOME}/stack-analysis.sh -f ${current.project.path}/pom.xml -p ${current.project.path}",
+          "name": "dependency_analysis",
+          "attributes": {
+            "goal": "Run",
+            "previewUrl": ""
+          },
+          "type": "custom"
+        }
+      ]
+    },
+    "stackIcon": {
+      "name": "type-java.svg",
+      "mediaType": "image/svg+xml"
+    }
+  },
+  {
     "id": "java-default",
     "creator": "ide",
     "name": "Java 1.8",
@@ -41,16 +131,16 @@
                 "com.redhat.bayesian.lsp"
               ],
               "servers": {
-                "eap" : {
-                  "port" : "8080",
-                  "protocol" : "http"
+                "eap": {
+                  "port": "8080",
+                  "protocol": "http"
                 },
-                "eap-debug" : {
-                  "port" : "8000",
-                  "protocol" : "http"
+                "eap-debug": {
+                  "port": "8000",
+                  "protocol": "http"
                 }
               },
-              "attributes" : {
+              "attributes": {
                 "memoryLimitBytes": "2147483648"
               },
               "volumes": {
@@ -64,7 +154,7 @@
             }
           },
           "recipe": {
-            "content": "brew-pulp-docker01.web.prod.ext.phx2.redhat.com:8888/codeready-workspaces/stacks-java",
+            "content": "registry.access.redhat.com/codeready-workspaces/stacks-java",
             "type": "dockerimage"
           }
         }
@@ -81,6 +171,15 @@
             "previewUrl": "",
             "goal": "Build"
           }
+        },
+        {
+          "commandLine": "${HOME}/stack-analysis.sh -f ${current.project.path}/pom.xml -p ${current.project.path}",
+          "name": "dependency_analysis",
+          "attributes": {
+            "goal": "Run",
+            "previewUrl": ""
+          },
+          "type": "custom"
         }
       ]
     },
@@ -125,16 +224,16 @@
                 "com.redhat.bayesian.lsp"
               ],
               "servers": {
-                "vertx" : {
-                  "port" : "8080",
-                  "protocol" : "http"
+                "vertx": {
+                  "port": "8080",
+                  "protocol": "http"
                 },
-                "vertx-debug" : {
-                  "port" : "5005",
-                  "protocol" : "http"
+                "vertx-debug": {
+                  "port": "5005",
+                  "protocol": "http"
                 }
               },
-              "attributes" : {
+              "attributes": {
                 "memoryLimitBytes": "2147483648"
               },
               "volumes": {
@@ -148,7 +247,7 @@
             }
           },
           "recipe": {
-            "content": "brew-pulp-docker01.web.prod.ext.phx2.redhat.com:8888/codeready-workspaces/stacks-java",
+            "content": "registry.access.redhat.com/codeready-workspaces/stacks-java",
             "type": "dockerimage"
           }
         }
@@ -165,7 +264,8 @@
             "previewUrl": "",
             "goal": "Build"
           }
-        }, {
+        },
+        {
           "commandLine": "MAVEN_OPTS='-Xmx100m' && mvn compile vertx:run -f ${current.project.path}/pom.xml -Dvertx.disableDnsResolver=true",
           "name": "run",
           "type": "custom",
@@ -173,7 +273,8 @@
             "previewUrl": "${server.vertx}",
             "goal": "Run"
           }
-        }, {
+        },
+        {
           "commandLine": "MAVEN_OPTS='-Xmx100m' && mvn compile vertx:debug -f ${current.project.path}/pom.xml -Dvertx.disableDnsResolver=true",
           "name": "debug",
           "type": "custom",
@@ -181,6 +282,15 @@
             "previewUrl": "${server.vertx}",
             "goal": "Debug"
           }
+        },
+        {
+          "commandLine": "${HOME}/stack-analysis.sh -f ${current.project.path}/pom.xml -p ${current.project.path}",
+          "name": "dependency_analysis",
+          "attributes": {
+            "goal": "Run",
+            "previewUrl": ""
+          },
+          "type": "custom"
         }
       ]
     },
@@ -231,16 +341,16 @@
                 "com.redhat.bayesian.lsp"
               ],
               "servers": {
-                "eap" : {
-                  "port" : "8080",
-                  "protocol" : "http"
+                "eap": {
+                  "port": "8080",
+                  "protocol": "http"
                 },
-                "eap-debug" : {
-                  "port" : "8000",
-                  "protocol" : "http"
+                "eap-debug": {
+                  "port": "8000",
+                  "protocol": "http"
                 }
               },
-              "attributes" : {
+              "attributes": {
                 "memoryLimitBytes": "2147483648"
               },
               "volumes": {
@@ -254,7 +364,7 @@
             }
           },
           "recipe": {
-            "content": "brew-pulp-docker01.web.prod.ext.phx2.redhat.com:8888/codeready-workspaces/stacks-java",
+            "content": "registry.access.redhat.com/codeready-workspaces/stacks-java",
             "type": "dockerimage"
           }
         }
@@ -271,6 +381,15 @@
             "previewUrl": "",
             "goal": "Build"
           }
+        },
+        {
+          "commandLine": "${HOME}/stack-analysis.sh -f ${current.project.path}/pom.xml -p ${current.project.path}",
+          "name": "dependency_analysis",
+          "attributes": {
+            "goal": "Run",
+            "previewUrl": ""
+          },
+          "type": "custom"
         }
       ]
     },
@@ -317,16 +436,16 @@
                 "com.redhat.bayesian.lsp"
               ],
               "servers": {
-                "wildfly" : {
-                  "port" : "8080",
-                  "protocol" : "http"
+                "wildfly": {
+                  "port": "8080",
+                  "protocol": "http"
                 },
-                "wildfly-debug" : {
-                  "port" : "8000",
-                  "protocol" : "http"
+                "wildfly-debug": {
+                  "port": "8000",
+                  "protocol": "http"
                 }
               },
-              "attributes" : {
+              "attributes": {
                 "memoryLimitBytes": "2147483648"
               },
               "volumes": {
@@ -340,7 +459,7 @@
             }
           },
           "recipe": {
-            "content": "brew-pulp-docker01.web.prod.ext.phx2.redhat.com:8888/codeready-workspaces/stacks-java",
+            "content": "registry.access.redhat.com/codeready-workspaces/stacks-java",
             "type": "dockerimage"
           }
         }
@@ -357,6 +476,15 @@
             "previewUrl": "",
             "goal": "Build"
           }
+        },
+        {
+          "commandLine": "${HOME}/stack-analysis.sh -f ${current.project.path}/pom.xml -p ${current.project.path}",
+          "name": "dependency_analysis",
+          "attributes": {
+            "goal": "Run",
+            "previewUrl": ""
+          },
+          "type": "custom"
         }
       ]
     },
@@ -402,12 +530,12 @@
                 "com.redhat.bayesian.lsp"
               ],
               "servers": {
-                "springboot" : {
-                  "port" : "8080",
-                  "protocol" : "http"
+                "springboot": {
+                  "port": "8080",
+                  "protocol": "http"
                 }
               },
-              "attributes" : {
+              "attributes": {
                 "memoryLimitBytes": "2147483648"
               },
               "volumes": {
@@ -421,7 +549,7 @@
             }
           },
           "recipe": {
-            "content": "brew-pulp-docker01.web.prod.ext.phx2.redhat.com:8888/codeready-workspaces/stacks-java",
+            "content": "registry.access.redhat.com/codeready-workspaces/stacks-java",
             "type": "dockerimage"
           }
         }
@@ -438,6 +566,15 @@
             "previewUrl": "",
             "goal": "Build"
           }
+        },
+        {
+          "commandLine": "${HOME}/stack-analysis.sh -f ${current.project.path}/pom.xml -p ${current.project.path}",
+          "name": "dependency_analysis",
+          "attributes": {
+            "goal": "Run",
+            "previewUrl": ""
+          },
+          "type": "custom"
         }
       ]
     },
@@ -484,12 +621,12 @@
                 "com.redhat.bayesian.lsp"
               ],
               "servers": {
-                "springboot" : {
-                  "port" : "8080",
-                  "protocol" : "http"
+                "springboot": {
+                  "port": "8080",
+                  "protocol": "http"
                 }
               },
-              "attributes" : {
+              "attributes": {
                 "memoryLimitBytes": "2147483648"
               },
               "volumes": {
@@ -503,7 +640,7 @@
             }
           },
           "recipe": {
-            "content": "brew-pulp-docker01.web.prod.ext.phx2.redhat.com:8888/codeready-workspaces/stacks-java",
+            "content": "registry.access.redhat.com/codeready-workspaces/stacks-java",
             "type": "dockerimage"
           }
         }
@@ -520,6 +657,15 @@
             "previewUrl": "",
             "goal": "Build"
           }
+        },
+        {
+          "commandLine": "${HOME}/stack-analysis.sh -f ${current.project.path}/pom.xml -p ${current.project.path}",
+          "name": "dependency_analysis",
+          "attributes": {
+            "goal": "Run",
+            "previewUrl": ""
+          },
+          "type": "custom"
         }
       ]
     },
@@ -574,16 +720,18 @@
           "machines": {
             "dev-machine": {
               "installers": [
-                "org.eclipse.che.exec", "org.eclipse.che.terminal", "org.eclipse.che.ws-agent"
+                "org.eclipse.che.exec",
+                "org.eclipse.che.terminal",
+                "org.eclipse.che.ws-agent"
               ],
               "servers": {},
-              "attributes" : {
+              "attributes": {
                 "memoryLimitBytes": "2147483648"
               }
             }
           },
           "recipe": {
-            "content": "brew-pulp-docker01.web.prod.ext.phx2.redhat.com:8888/codeready-workspaces/stacks-cpp",
+            "content": "registry.access.redhat.com/codeready-workspaces/stacks-cpp",
             "type": "dockerimage"
           }
         }
@@ -600,6 +748,15 @@
             "previewUrl": "",
             "goal": "Run"
           }
+        },
+        {
+          "commandLine": "${HOME}/stack-analysis.sh -f ${current.project.path}/pom.xml -p ${current.project.path}",
+          "name": "dependency_analysis",
+          "attributes": {
+            "goal": "Run",
+            "previewUrl": ""
+          },
+          "type": "custom"
         }
       ]
     },
@@ -637,21 +794,24 @@
           "machines": {
             "dev-machine": {
               "installers": [
-                "org.eclipse.che.exec", "org.eclipse.che.terminal", "org.eclipse.che.ws-agent", "org.eclipse.che.ls.csharp"
+                "org.eclipse.che.exec",
+                "org.eclipse.che.terminal",
+                "org.eclipse.che.ws-agent",
+                "org.eclipse.che.ls.csharp"
               ],
               "servers": {
-                "dotnet" : {
-                  "port" : "5000",
-                  "protocol" : "http"
+                "dotnet": {
+                  "port": "5000",
+                  "protocol": "http"
                 }
               },
-              "attributes" : {
+              "attributes": {
                 "memoryLimitBytes": "2147483648"
               }
             }
           },
           "recipe": {
-            "content": "brew-pulp-docker01.web.prod.ext.phx2.redhat.com:8888/codeready-workspaces/stacks-dotnet",
+            "content": "registry.access.redhat.com/codeready-workspaces/stacks-dotnet",
             "type": "dockerimage"
           }
         }
@@ -691,7 +851,9 @@
     "name": "Go",
     "description": "Golang stack",
     "scope": "general",
-    "tags": ["go"],
+    "tags": [
+      "go"
+    ],
     "components": [
       {
         "name": "RHEL",
@@ -708,21 +870,24 @@
           "machines": {
             "dev-machine": {
               "installers": [
-                "org.eclipse.che.exec", "org.eclipse.che.terminal", "org.eclipse.che.ws-agent", "org.eclipse.che.ls.golang"
+                "org.eclipse.che.exec",
+                "org.eclipse.che.terminal",
+                "org.eclipse.che.ws-agent",
+                "org.eclipse.che.ls.golang"
               ],
               "servers": {
-                "8080/tcp" : {
-                  "port" : "8080",
-                  "protocol" : "http"
+                "8080/tcp": {
+                  "port": "8080",
+                  "protocol": "http"
                 }
               },
-              "attributes" : {
+              "attributes": {
                 "memoryLimitBytes": "2147483648"
               }
             }
           },
           "recipe": {
-            "content": "brew-pulp-docker01.web.prod.ext.phx2.redhat.com:8888/codeready-workspaces/stacks-golang",
+            "content": "registry.access.redhat.com/codeready-workspaces/stacks-golang",
             "type": "dockerimage"
           }
         }
@@ -747,7 +912,6 @@
       "mediaType": "image/svg+xml"
     }
   },
-
   {
     "id": "node-default",
     "creator": "ide",
@@ -785,26 +949,26 @@
                 "com.redhat.bayesian.lsp"
               ],
               "servers": {
-                "3000/tcp" : {
-                  "port" : "3000",
-                  "protocol" : "http"
+                "3000/tcp": {
+                  "port": "3000",
+                  "protocol": "http"
                 },
-                "5000/tcp" : {
-                  "port" : "5000",
-                  "protocol" : "http"
+                "5000/tcp": {
+                  "port": "5000",
+                  "protocol": "http"
                 },
-                "9000/tcp" : {
-                  "port" : "9000",
-                  "protocol" : "http"
+                "9000/tcp": {
+                  "port": "9000",
+                  "protocol": "http"
                 }
               },
-              "attributes" : {
+              "attributes": {
                 "memoryLimitBytes": "2147483648"
               }
             }
           },
           "recipe": {
-            "content": "brew-pulp-docker01.web.prod.ext.phx2.redhat.com:8888/codeready-workspaces/stacks-node",
+            "content": "registry.access.redhat.com/codeready-workspaces/stacks-node",
             "type": "dockerimage"
           }
         }
@@ -824,7 +988,9 @@
     "name": "PHP",
     "description": "PHP Stack with PHP 7.1 and most popular extensions",
     "scope": "general",
-    "tags": ["PHP"],
+    "tags": [
+      "PHP"
+    ],
     "components": [
       {
         "name": "RHEL",
@@ -864,13 +1030,13 @@
                   "protocol": "http"
                 }
               },
-              "attributes" : {
+              "attributes": {
                 "memoryLimitBytes": "2147483648"
               }
             }
           },
           "recipe": {
-            "content": "brew-pulp-docker01.web.prod.ext.phx2.redhat.com:8888/codeready-workspaces/stacks-php",
+            "content": "registry.access.redhat.com/codeready-workspaces/stacks-php",
             "type": "dockerimage"
           }
         }
@@ -931,7 +1097,6 @@
       "mediaType": "image/svg+xml"
     }
   },
-
   {
     "id": "python-default",
     "creator": "ide",
@@ -968,22 +1133,22 @@
                 "org.eclipse.che.ls.python"
               ],
               "servers": {
-                "8080/tcp" : {
-                  "port" : "8080",
-                  "protocol" : "http"
+                "8080/tcp": {
+                  "port": "8080",
+                  "protocol": "http"
                 },
-                "8000/tcp" : {
-                  "port" : "8000",
-                  "protocol" : "http"
+                "8000/tcp": {
+                  "port": "8000",
+                  "protocol": "http"
                 }
               },
-              "attributes" : {
+              "attributes": {
                 "memoryLimitBytes": "2147483648"
               }
             }
           },
           "recipe": {
-            "content": "brew-pulp-docker01.web.prod.ext.phx2.redhat.com:8888/codeready-workspaces/stacks-python",
+            "content": "registry.access.redhat.com/codeready-workspaces/stacks-python",
             "type": "dockerimage"
           }
         }

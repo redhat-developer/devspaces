@@ -33,6 +33,7 @@
     <properties>
         <che.version>6.17.0-SNAPSHOT</che.version>
         <che.dashboard.version>6.17.0-SNAPSHOT</che.dashboard.version>
+        <nightly>false</nightly>
     </properties>
     <dependencyManagement>
         <dependencies>
@@ -176,4 +177,12 @@
         <module>assembly</module>
         <module>test</module>
     </modules>
+    <profiles>
+        <profile>
+            <id>nightly</id>
+            <properties>
+                <nightly>true</nightly>
+            </properties>
+        </profile>
+    </profiles>
 </project>
