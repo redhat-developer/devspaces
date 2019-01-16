@@ -130,8 +130,9 @@ timeout(180) {
 		installNPM()
 		installGo()
 		buildMaven()
+		// TODO: disable until https://github.com/eclipse/che-ls-jdt/issues/98 is fixed
 		// patch - switch che-ls-jdt 0.0.2 to 0.0.3-SNAPSHOT
-		sh "sed -i -e \"s#\\(.*<che.ls.jdt.version>\\)0.0.2\\(</che.ls.jdt.version>.*\\)#\\10.0.3-SNAPSHOT\\2#\" ${CHE_path}/pom.xml"
+		// sh "sed -i -e \"s#\\(.*<che.ls.jdt.version>\\)0.0.2\\(</che.ls.jdt.version>.*\\)#\\10.0.3-SNAPSHOT\\2#\" ${CHE_path}/pom.xml"
 
 		sh "mvn clean install ${MVN_FLAGS} -f ${CHE_path}/pom.xml ${MVN_EXTRA_FLAGS}"
 		stash name: 'stashChe', includes: findFiles(glob: '.repository/**').join(", ")
