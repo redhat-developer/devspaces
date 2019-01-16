@@ -194,6 +194,7 @@ build(
       name: 'GIT_BRANCH',
       value: "codeready-1.0-rhel-7",
     ],
+    [
       $class: 'StringParameterValue',
       name: 'QUAY_REPO_PATHs',
       value: "${QUAY_REPO_PATHs}",
