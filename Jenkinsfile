@@ -148,7 +148,7 @@ timeout(120) {
 		cleanWs()
 		// for private repo, use checkout(credentialsId: 'devstudio-release')
 		checkout([$class: 'GitSCM', 
-			branches: [[name: "${branchToBuild}"]], 
+			branches: [[name: "${branchToBuildCRW}"]], 
 			doGenerateSubmoduleConfigurations: false, 
 			poll: true,
 			extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: "${CRW_path}"]], 
