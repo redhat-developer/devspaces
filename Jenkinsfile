@@ -135,10 +135,10 @@ timeout(180) {
 		// sh "sed -i -e \"s#\\(.*<che.ls.jdt.version>\\)0.0.2\\(</che.ls.jdt.version>.*\\)#\\10.0.3-SNAPSHOT\\2#\" ${CHE_path}/pom.xml"
 
 		// disable docs from assembly main and root pom as we don't need them in CRW
-		sh '''#!/bin/bash
-			perl -0777 -p -i -e 's|(\\ +<dependency>.*?<\\/dependency>)| \${1} =~ /<artifactId>che-docs<\\/artifactId>/?\"\":\${1}|gse' ${CHE_path}/assembly/assembly-main/pom.xml
-			perl -0777 -p -i -e 's|(\\ +<dependencySet>.*?<\\/dependencySet>)| \${1} =~ /<include>org.eclipse.che.docs:che-docs<\\/include>/?\"\":\${1}|gse' ${CHE_path}/assembly/assembly-main/src/assembly/assembly.xml
-			perl -0777 -p -i -e 's|(\\ +<dependency>.*?<\\/dependency>)| \${1} =~ /<artifactId>che-docs<\\/artifactId>/?\"\":\${1}|gse' ${CHE_path}/pom.xml
+		sh '''#!/bin/bash -xe
+			perl -0777 -p -i -e 's|(\\ +<dependency>.*?<\\/dependency>)| ${1} =~ /<artifactId>che-docs<\\/artifactId>/?\"\":${1}|gse' ${CHE_path}/assembly/assembly-main/pom.xml
+			perl -0777 -p -i -e 's|(\\ +<dependencySet>.*?<\\/dependencySet>)| ${1} =~ /<include>org.eclipse.che.docs:che-docs<\\/include>/?\"\":${1}|gse' ${CHE_path}/assembly/assembly-main/src/assembly/assembly.xml
+			perl -0777 -p -i -e 's|(\\ +<dependency>.*?<\\/dependency>)| ${1} =~ /<artifactId>che-docs<\\/artifactId>/?\"\":${1}|gse' ${CHE_path}/pom.xml
 		'''
 
 		sh "mvn clean install ${MVN_FLAGS} -f ${CHE_path}/pom.xml ${MVN_EXTRA_FLAGS}"
