@@ -198,9 +198,9 @@ build(
       value: "${QUAY_REPO_PATHs}",
     ],
     [
-      $class: 'BooleanParameterValue',
+      $class: 'StringParameterValue',
       name: 'SCRATCH',
-      value: ${SCRATCH},
+      value: "${SCRATCH}",
     ]
   ]
 )
