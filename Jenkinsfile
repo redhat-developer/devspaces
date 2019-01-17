@@ -200,7 +200,7 @@ build(
     [
       $class: 'BooleanParameterValue',
       name: 'SCRATCH',
-      value: "${SCRATCH}",
+      value: ${SCRATCH},
     ]
   ]
 )
