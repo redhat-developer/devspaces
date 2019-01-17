@@ -12,16 +12,15 @@
 package com.redhat.codeready.selenium.miscellaneous;
 
 import org.eclipse.che.selenium.miscellaneous.WorkingWithSplitPanelTest;
-import org.openqa.selenium.Keys;
 
 /** @author Aleksandr Shmaraev */
 public class CodeReadyWorkingWithSplitPanelTest extends WorkingWithSplitPanelTest {
 
   @Override
-  protected void typeIntoTerminalAndCheckTerminalIsNotEmpty() {
-    terminal.typeIntoActiveTerminal("pwd");
-    terminal.typeIntoActiveTerminal(Keys.ENTER.toString());
-    terminal.waitTerminalIsNotEmpty(3);
-    loader.waitOnClosed();
+  protected String getCommandToCheckTerminal() {
+    return "pwd";
   }
+
+  @Override
+  protected void checkExpectedTextIsPresent() {}
 }

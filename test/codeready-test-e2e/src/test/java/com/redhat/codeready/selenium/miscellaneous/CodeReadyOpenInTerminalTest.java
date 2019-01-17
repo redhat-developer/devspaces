@@ -17,7 +17,7 @@ import org.eclipse.che.selenium.miscellaneous.OpenInTerminalTest;
 public class CodeReadyOpenInTerminalTest extends OpenInTerminalTest {
 
   @Override
-  protected void waitTextInTerminal() throws Exception {
-    terminal.waitTextInTerminal(2, "[jboss@" + workspace.getId() + " java]$");
+  protected String getExpectedTextInTerminal() throws Exception {
+    return "[jboss@" + workspace.getId() + " java]$";
   }
 }

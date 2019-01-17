@@ -20,14 +20,15 @@ public class CodeReadyMachinesAsynchronousStartTest extends MachinesAsynchronous
 
   @Override
   protected String getImageName() {
-    return "brew-pulp-docker01.web.prod.ext.phx2.redhat.com:8888/codeready-workspaces/stacks-java";
+    return "quay.io/crw/stacks-java";
   }
 
   @Override
-  protected void waitErrorNotificationContainsText() {
+  protected String getExpectedErrorNotificationText() {
     String expectedErrorNotificationText =
         format(
             "Unrecoverable event occurred: 'Failed', 'Failed to pull image \"%s\": rpc error: code = Unknown desc",
             NOT_EXISTED_IMAGE_NAME);
+    return expectedErrorNotificationText;
   }
 }

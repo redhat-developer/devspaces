@@ -18,21 +18,17 @@ public class CodeReadyResolveDependencyAfterRecreateProjectTest
     extends ResolveDependencyAfterRecreateProjectTest {
 
   @Override
-  protected void selectSampleProject() {
-    String sampleProjectName = "kitchensink-example";
-    wizard.selectSample(sampleProjectName);
+  protected String getSampleProjectName() {
+    return "kitchensink-example";
   }
 
   @Override
-  protected void expandPathInProjectExplorer(String projectName) {
-    String pathToExpand = "/src/main/java/org.jboss.as.quickstarts.kitchensink/controller";
-    projectExplorer.expandPathInProjectExplorer(projectName + pathToExpand);
+  protected String getPathToExpand() {
+    return "/src/main/java/org.jboss.as.quickstarts.kitchensink/controller";
   }
 
   @Override
-  protected void openItemByPath(String projectName) {
-    String pathToFile =
-        "/src/main/java/org/jboss/as/quickstarts/kitchensink/controller/MemberRegistration.java";
-    projectExplorer.openItemByPath(projectName + pathToFile);
+  protected String getPathToFile() {
+    return "/src/main/java/org/jboss/as/quickstarts/kitchensink/controller/MemberRegistration.java";
   }
 }

@@ -16,26 +16,22 @@ import org.eclipse.che.selenium.workspaces.CreateWorkspaceOnDashboardTest;
 public class CodeReadyCreateWorkspaceOnDashboardTest extends CreateWorkspaceOnDashboardTest {
 
   @Override
-  protected void selectSampleProject() {
-    String sampleProjectName = "kitchensink-example";
-    wizard.selectProjectAndCreate(sampleProjectName, PROJECT_NAME);
+  protected String getSampleProjectName() {
+    return "kitchensink-example";
   }
 
   @Override
-  protected void expandPathInProjectExplorer() {
-    String pathToExpand = "/src/main/java/org.jboss.as.quickstarts.kitchensink/controller";
-    projectExplorer.expandPathInProjectExplorer(PROJECT_NAME + pathToExpand);
+  protected String getPathToExpand() {
+    return "/src/main/java/org.jboss.as.quickstarts.kitchensink/controller";
   }
 
   @Override
-  protected void openItemByPath() {
-    String pathToMainPackage =
-        "/src/main/java/org/jboss/as/quickstarts/kitchensink/controller/MemberRegistration.java";
-    projectExplorer.openItemByPath(PROJECT_NAME + pathToMainPackage);
+  protected String getPathJavaFile() {
+    return "/src/main/java/org/jboss/as/quickstarts/kitchensink/controller/MemberRegistration.java";
   }
 
   @Override
-  protected void waitTabIsPresent() {
-    editor.waitTabIsPresent("MemberRegistration");
+  protected String getTabName() {
+    return "MemberRegistration";
   }
 }
