@@ -130,6 +130,11 @@ timeout(180) {
 		// patch - switch che-ls-jdt 0.0.2 to 0.0.3-SNAPSHOT
 		sh "sed -i -e \"s#\\(.*<che.ls.jdt.version>\\)0.0.2\\(</che.ls.jdt.version>.*\\)#\\10.0.3-SNAPSHOT\\2#\" ${CHE_path}/pom.xml"
 
+		// disable docs from assembly main and root pom
+		sh "perl -0777 -p -i -e 's|(\\ +<dependency>.*?<\\/dependency>)| \$1 =~ /<artifactId>che-docs<\\/artifactId>/?\"\":\$1|gse' assembly/assembly-main/pom.xml"
+		sh "perl -0777 -p -i -e 's|(\\ +<dependencySet>.*?<\\/dependencySet>)| \$1 =~ /<include>org.eclipse.che.docs:che-docs<\\/include>/?\"\":\$1|gse' assembly/assembly-main/src/assembly/assembly.xml"
+		sh "perl -0777 -p -i -e 's|(\\ +<dependency>.*?<\\/dependency>)| \$1 =~ /<artifactId>che-docs<\\/artifactId>/?\"\":\$1|gse' pom.xml"
+
 		sh "mvn clean install ${MVN_FLAGS} -f ${CHE_path}/pom.xml ${MVN_EXTRA_FLAGS}"
 		stash name: 'stashChe', includes: findFiles(glob: '.repository/**').join(", ")
 		archive includes:"**/*.log"
@@ -148,7 +153,7 @@ timeout(120) {
 		cleanWs()
 		// for private repo, use checkout(credentialsId: 'devstudio-release')
 		checkout([$class: 'GitSCM', 
-			branches: [[name: "${branchToBuild}"]], 
+			branches: [[name: "${branchToBuildCRW}"]], 
 			doGenerateSubmoduleConfigurations: false, 
 			poll: true,
 			extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: "${CRW_path}"]], 
@@ -186,9 +191,14 @@ build(
       value: "codeready-1.0-rhel-7",
     ],
     [
+      $class: 'StringParameterValue',
+      name: 'QUAY_REPO_PATHs',
+      value: "${QUAY_REPO_PATHs}",
+    ],
+    [
       $class: 'BooleanParameterValue',
       name: 'SCRATCH',
-      value: true,
+      value: "${SCRATCH}",
     ]
   ]
 )
