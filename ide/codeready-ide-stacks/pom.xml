@@ -37,6 +37,10 @@
                             <target if="${nightly}">
                                 <echo message="Using images from quay.io"/>
                                 <replace
+                                        token="registry.access.redhat.com/codeready-workspaces-beta"
+                                        file="${project.basedir}/src/main/resources/stacks.json"
+                                        value="quay.io/crw"/>
+                                <replace
                                         token="registry.access.redhat.com/codeready-workspaces"
                                         file="${project.basedir}/src/main/resources/stacks.json"
                                         value="quay.io/crw"/>
@@ -52,6 +56,9 @@
                         <configuration>
                             <target if="${nightly}">
                                 <echo message="Restoring stacks.json"/>
+                                <replace token="quay.io/crw/stacks-java-rhel8"
+                                         file="${project.basedir}/src/main/resources/stacks.json"
+                                         value="registry.access.redhat.com/codeready-workspaces-beta/stacks-java-rhel8"/>
                                 <replace token="quay.io/crw"
                                          file="${project.basedir}/src/main/resources/stacks.json"
                                          value="registry.access.redhat.com/codeready-workspaces"/>
