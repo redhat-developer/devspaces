@@ -132,11 +132,11 @@
         </dependencies>
     </dependencyManagement>
     <repositories>
-        <repository>
+        <!-- <repository>
             <id>ossrh</id>
             <name>central public snapshots</name>
             <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
-        </repository>
+        </repository> -->
         <repository>
             <id>codenvy-public-repo</id>
             <name>codenvy public</name>
@@ -144,11 +144,11 @@
         </repository>
     </repositories>
     <pluginRepositories>
-        <pluginRepository>
+        <!-- <pluginRepository>
             <id>ossrh</id>
             <name>central public snapshots</name>
             <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
-        </pluginRepository>
+        </pluginRepository> -->
     </pluginRepositories>
     <build>
         <plugins>
