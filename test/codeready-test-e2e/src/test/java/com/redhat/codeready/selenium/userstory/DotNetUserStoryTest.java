@@ -18,6 +18,7 @@ import static org.eclipse.che.selenium.core.constant.TestIntelligentCommandsCons
 import static org.eclipse.che.selenium.core.constant.TestIntelligentCommandsConstants.CommandItem.UPDATE_DEPENDENCIES_COMMAND_ITEM;
 import static org.eclipse.che.selenium.core.constant.TestProjectExplorerContextMenuConstants.ContextMenuCommandGoals.BUILD_GOAL;
 import static org.eclipse.che.selenium.core.constant.TestProjectExplorerContextMenuConstants.ContextMenuCommandGoals.RUN_GOAL;
+import static org.eclipse.che.selenium.core.constant.TestTimeoutsConstants.LOADER_TIMEOUT_SEC;
 import static org.eclipse.che.selenium.pageobject.CodenvyEditor.MarkerLocator.ERROR;
 import static org.eclipse.che.selenium.pageobject.CodenvyEditor.MarkerLocator.INFO;
 import static org.eclipse.che.selenium.pageobject.dashboard.NewWorkspace.Stack.DOT_NET;
@@ -135,7 +136,7 @@ public class DotNetUserStoryTest {
   }
 
   public void checkCodeValidation() {
-    editor.waitAllMarkersInvisibility(ERROR);
+    editor.waitAllMarkersInvisibility(ERROR, LOADER_TIMEOUT_SEC);
     editor.goToPosition(24, 12);
     editor.typeTextIntoEditor(Keys.BACK_SPACE.toString());
     editor.waitMarkerInPosition(ERROR, 24);
@@ -153,7 +154,8 @@ public class DotNetUserStoryTest {
     editor.launchAutocomplete();
     editor.enterAutocompleteProposal("Build ");
     editor.typeTextIntoEditor("();");
-    editor.waitAllMarkersInvisibility(ERROR);
+    editor.waitTextIntoEditor("Build();");
+    editor.waitAllMarkersInvisibility(ERROR, LOADER_TIMEOUT_SEC);
   }
 
   private void initLanguageServer() {
