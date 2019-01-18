@@ -181,6 +181,8 @@ timeout(120) {
 // trigger OSBS build
 build(
   job: 'get-sources-rhpkg-container-build',
+  wait: false,
+  propagate: false,
   parameters: [
     [
       $class: 'StringParameterValue',
