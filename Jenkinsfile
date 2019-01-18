@@ -182,31 +182,35 @@ timeout(120) {
 	}
 }
 
-// trigger OSBS build
-build(
-  job: 'get-sources-rhpkg-container-build',
-  wait: false,
-  propagate: false,
-  parameters: [
-    [
-      $class: 'StringParameterValue',
-      name: 'GIT_PATH',
-      value: "containers/codeready-workspaces",
-    ],
-    [
-      $class: 'StringParameterValue',
-      name: 'GIT_BRANCH',
-      value: "codeready-1.0-rhel-7",
-    ],
-    [
-      $class: 'StringParameterValue',
-      name: 'QUAY_REPO_PATHs',
-      value: "${QUAY_REPO_PATHs}",
-    ],
-    [
-      $class: 'StringParameterValue',
-      name: 'SCRATCH',
-      value: "${SCRATCH}",
-    ]
-  ]
-)
+timeout(120) {
+	node("${node}"){ stage "Run get-sources-rhpkg-container-build"
+	// trigger OSBS build
+		build(
+		  job: 'get-sources-rhpkg-container-build',
+		  wait: false,
+		  propagate: false,
+		  parameters: [
+		    [
+		      $class: 'StringParameterValue',
+		      name: 'GIT_PATH',
+		      value: "containers/codeready-workspaces",
+		    ],
+		    [
+		      $class: 'StringParameterValue',
+		      name: 'GIT_BRANCH',
+		      value: "codeready-1.0-rhel-7",
+		    ],
+		    [
+		      $class: 'StringParameterValue',
+		      name: 'QUAY_REPO_PATHs',
+		      value: "${QUAY_REPO_PATHs}",
+		    ],
+		    [
+		      $class: 'StringParameterValue',
+		      name: 'SCRATCH',
+		      value: "${SCRATCH}",
+		    ]
+		  ]
+		)
+	}
+}
