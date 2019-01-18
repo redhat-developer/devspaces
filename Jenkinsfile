@@ -86,30 +86,30 @@ def LSJ_path = "che-ls-jdt"
 def VER_LSJ = "VER_LSJ"
 def SHA_LSJ = "SHA_LSJ"
 // TODO: disable until https://github.com/eclipse/che-ls-jdt/issues/98 is fixed
-timeout(120) {
-	node("${node}"){ stage "Build ${LSJ_path}"
-		cleanWs()
-		checkout([$class: 'GitSCM', 
-			branches: [[name: "${branchToBuildLSJ}"]], 
-			doGenerateSubmoduleConfigurations: false, 
-			poll: true,
-			extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: "${LSJ_path}"]], 
-			submoduleCfg: [], 
-			userRemoteConfigs: [[url: "https://github.com/eclipse/${LSJ_path}.git"]]])
-		unstash 'stashLib'
-		installNPM()
-		installGo()
-		buildMaven()
-		sh "mvn clean install -V -U -e -DskipTests -f ${LSJ_path}/pom.xml ${MVN_EXTRA_FLAGS}"
-		stash name: 'stashLSJ', includes: findFiles(glob: '.repository/**').join(", ")
-		archiveArtifacts fingerprint: false, artifacts:"**/target/*.zip, **/target/*.tar.*, **/target/*.ear"
+// timeout(120) {
+// 	node("${node}"){ stage "Build ${LSJ_path}"
+// 		cleanWs()
+// 		checkout([$class: 'GitSCM', 
+// 			branches: [[name: "${branchToBuildLSJ}"]], 
+// 			doGenerateSubmoduleConfigurations: false, 
+// 			poll: true,
+// 			extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: "${LSJ_path}"]], 
+// 			submoduleCfg: [], 
+// 			userRemoteConfigs: [[url: "https://github.com/eclipse/${LSJ_path}.git"]]])
+// 		unstash 'stashLib'
+// 		installNPM()
+// 		installGo()
+// 		buildMaven()
+// 		sh "mvn clean install -V -U -e -DskipTests -f ${LSJ_path}/pom.xml ${MVN_EXTRA_FLAGS}"
+// 		stash name: 'stashLSJ', includes: findFiles(glob: '.repository/**').join(", ")
+//		archiveArtifacts fingerprint: false, artifacts:"**/target/*.zip, **/target/*.tar.*, **/target/*.ear"
 
-		sh "perl -0777 -p -i -e 's|(\\ +<parent>.*?<\\/parent>)| ${1} =~ /<version>/?\"\":${1}|gse' ${LSJ_path}/pom.xml"
-		VER_LSJ = sh(returnStdout:true,script:"egrep \"<version>\" ${LSJ_path}/pom.xml|head -1|sed -e \"s#.*<version>\\(.\\+\\)</version>#\\1#\"").trim()
-		SHA_LSJ = sh(returnStdout:true,script:"cd ${LSJ_path}/ && git rev-parse HEAD").trim()
-		echo "Built ${LSJ_path} from SHA: ${SHA_LSJ} (${VER_LSJ})"
-	}
-}
+// 		sh "perl -0777 -p -i -e 's|(\\ +<parent>.*?<\\/parent>)| ${1} =~ /<version>/?\"\":${1}|gse' ${LSJ_path}/pom.xml"
+// 		VER_LSJ = sh(returnStdout:true,script:"egrep \"<version>\" ${LSJ_path}/pom.xml|head -1|sed -e \"s#.*<version>\\(.\\+\\)</version>#\\1#\"").trim()
+// 		SHA_LSJ = sh(returnStdout:true,script:"cd ${LSJ_path}/ && git rev-parse HEAD").trim()
+// 		echo "Built ${LSJ_path} from SHA: ${SHA_LSJ} (${VER_LSJ})"
+// 	}
+// }
 
 def CHE_path = "che"
 def VER_CHE = ""
@@ -125,14 +125,14 @@ timeout(180) {
 			submoduleCfg: [], 
 			userRemoteConfigs: [[url: "https://github.com/eclipse/${CHE_path}.git"]]])
 		// TODO: disable until https://github.com/eclipse/che-ls-jdt/issues/98 is fixed; then re-enable stashLSJ, and remove stashLib
-		unstash 'stashLSJ'
-		// unstash 'stashLib'
+		// unstash 'stashLSJ'
+		unstash 'stashLib'
 		installNPM()
 		installGo()
 		buildMaven()
 		// TODO: disable until https://github.com/eclipse/che-ls-jdt/issues/98 is fixed
 		// patch - switch che-ls-jdt 0.0.2 to 0.0.3-SNAPSHOT
-		sh "sed -i -e \"s#\\(.*<che.ls.jdt.version>\\)0.0.2\\(</che.ls.jdt.version>.*\\)#\\10.0.3-SNAPSHOT\\2#\" ${CHE_path}/pom.xml"
+		// sh "sed -i -e \"s#\\(.*<che.ls.jdt.version>\\)0.0.2\\(</che.ls.jdt.version>.*\\)#\\10.0.3-SNAPSHOT\\2#\" ${CHE_path}/pom.xml"
 
 		// disable docs from assembly main and root pom as we don't need them in CRW
 		sh '''#!/bin/bash -xe
