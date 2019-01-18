@@ -25,10 +25,8 @@ public class CodeReadyMachinesAsynchronousStartTest extends MachinesAsynchronous
 
   @Override
   protected String getExpectedErrorNotificationText() {
-    String expectedErrorNotificationText =
-        format(
-            "Unrecoverable event occurred: 'Failed', 'Failed to pull image \"%s\": rpc error: code = Unknown desc",
-            NOT_EXISTED_IMAGE_NAME);
-    return expectedErrorNotificationText;
+    return format(
+        "Unrecoverable event occurred: 'Failed', 'Failed to pull image \"%s\": rpc error: code = Unknown desc",
+        NOT_EXISTED_IMAGE_NAME);
   }
 }

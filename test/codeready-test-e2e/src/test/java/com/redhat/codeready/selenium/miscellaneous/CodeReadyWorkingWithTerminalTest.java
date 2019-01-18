@@ -35,8 +35,7 @@ public class CodeReadyWorkingWithTerminalTest extends WorkingWithTerminalTest {
   public void shouldEditFileIntoMCEdit() {}
 
   @Override
-  protected void waitTextInFirstTerminal() {
-    terminal.waitTextInFirstTerminal("che");
-    terminal.waitTextInFirstTerminal("a.txt");
+  protected String[] getExpectedContent() {
+    return new String[] {"che", "a.txt"};
   }
 }
