@@ -18,11 +18,10 @@
     </parent>
     <groupId>com.redhat</groupId>
     <artifactId>codeready</artifactId>
-    <version>6.17.0</version>
+    <version>6.17.1</version>
     <packaging>pom</packaging>
     <name>CodeReady :: Parent</name>
-    <!--replace with CodeReady product page-->
-    <url>https://www.eclipse.org/che/</url>
+    <url>https://developers.redhat.com/products/codeready-workspaces/overview/</url>
     <licenses>
         <license>
             <name>Eclipse Public License v1.0</name>
@@ -31,8 +30,8 @@
         </license>
     </licenses>
     <properties>
-        <che.version>6.17.0</che.version>
-        <che.dashboard.version>6.17.0</che.dashboard.version>
+        <che.version>6.17.1</che.version>
+        <che.dashboard.version>${che.version}</che.dashboard.version>
         <nightly>false</nightly>
     </properties>
     <dependencyManagement>
