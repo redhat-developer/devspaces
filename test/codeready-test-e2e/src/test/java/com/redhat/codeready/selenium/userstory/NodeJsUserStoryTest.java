@@ -187,7 +187,7 @@ public class NodeJsUserStoryTest {
             throw new RuntimeException(ex.getLocalizedMessage(), ex);
           }
         },
-        TestTimeoutsConstants.LOAD_PAGE_TIMEOUT_SEC,
+        TestTimeoutsConstants.WIDGET_TIMEOUT_SEC,
         TestTimeoutsConstants.MULTIPLE,
         TimeUnit.SECONDS);
     consoles.waitExpectedTextIntoConsole("Example app listening on port 3000!");
