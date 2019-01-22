@@ -26,6 +26,7 @@ import static org.eclipse.che.selenium.core.constant.TestProjectExplorerContextM
 import static org.eclipse.che.selenium.core.constant.TestProjectExplorerContextMenuConstants.ContextMenuCommandGoals.RUN_GOAL;
 import static org.eclipse.che.selenium.pageobject.CodenvyEditor.MarkerLocator.ERROR;
 import static org.openqa.selenium.Keys.F4;
+import static org.testng.Assert.fail;
 
 import com.google.inject.Inject;
 import com.redhat.codeready.selenium.pageobject.CodereadyEditor;
@@ -42,6 +43,7 @@ import org.eclipse.che.selenium.pageobject.ProjectExplorer;
 import org.eclipse.che.selenium.pageobject.dashboard.AddOrImportForm;
 import org.eclipse.che.selenium.pageobject.dashboard.Dashboard;
 import org.eclipse.che.selenium.pageobject.dashboard.workspaces.Workspaces;
+import org.openqa.selenium.TimeoutException;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -119,8 +121,7 @@ public class RedHatFuseUserStoryTest {
 
   @Test(priority = 2)
   public void checkCodeAssistantFeatures() {
-    projectExplorer.quickExpandWithJavaScript();
-
+    projectExplorer.quickRevealToItemWithJavaScript(PATH_TO_MAIN_PACKAGE + "/Application.java");
     projectExplorer.openItemByPath(PATH_TO_MAIN_PACKAGE + "/Application.java");
     editor.waitActive();
 
@@ -144,7 +145,14 @@ public class RedHatFuseUserStoryTest {
 
     editor.goToPosition(32, 27);
     menu.runCommand(ASSISTANT, QUICK_FIX);
-    editor.enterTextIntoFixErrorPropByDoubleClick("Change to 'run(..)'");
+
+    try {
+      editor.enterTextIntoFixErrorPropByDoubleClick("Change to 'run(..)'");
+    } catch (TimeoutException ex) {
+      // remove try-catch block after issue has been resolved
+      fail("Known permanent failure https://issues.jboss.org/browse/CRW-78");
+    }
+
     editor.waitAllMarkersInvisibility(ERROR);
   }
 
