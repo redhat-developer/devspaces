@@ -146,7 +146,7 @@ public class WildFlyUserStoryTest {
     // build and launch application with UI
     commandsPalette.openCommandPalette();
     commandsPalette.startCommandByDoubleClick("wfswarm-rest-http:build");
-    consoles.waitExpectedTextIntoConsole(BUILD_SUCCESS, 240);
+    consoles.waitExpectedTextIntoConsole(BUILD_SUCCESS, 480);
     commandsPalette.openCommandPalette();
     commandsPalette.startCommandByDoubleClick("wfswarm-rest-http:run");
     consoles.waitExpectedTextIntoConsole("Thorntail is Ready");
