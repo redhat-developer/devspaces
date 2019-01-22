@@ -49,7 +49,7 @@ timeout(120) {
 	node("${node}"){ stage "Build che-parent"
 		cleanWs()
 		checkout([$class: 'GitSCM', 
-			branches: [[name: "${branchToBuild}"]], 
+			branches: [[name: "${branchToBuildParent}"]], 
 			doGenerateSubmoduleConfigurations: false, 
 			poll: true,
 			extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'che-parent']], 
@@ -67,7 +67,7 @@ timeout(120) {
 	node("${node}"){ stage "Build che-lib"
 		cleanWs()
 		checkout([$class: 'GitSCM', 
-			branches: [[name: "${branchToBuild}"]], 
+			branches: [[name: "${branchToBuildLib}"]], 
 			doGenerateSubmoduleConfigurations: false, 
 			poll: true,
 			extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'che-lib']], 
@@ -118,7 +118,7 @@ timeout(180) {
 	node("${nodeBig}"){ stage "Build ${CHE_path}"
 		cleanWs()
 		checkout([$class: 'GitSCM', 
-			branches: [[name: "${branchToBuild}"]], 
+			branches: [[name: "${branchToBuildChe}"]], 
 			doGenerateSubmoduleConfigurations: false, 
 			poll: true,
 			extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: "${CHE_path}"]], 
@@ -167,7 +167,7 @@ timeout(120) {
 			userRemoteConfigs: [[url: "https://github.com/redhat-developer/${CRW_path}.git"]]])
 		unstash 'stashChe'
 		buildMaven()
-		sh "mvn clean install ${MVN_FLAGS} -Pnightly -f ${CRW_path}/pom.xml ${MVN_EXTRA_FLAGS}"
+		sh "mvn clean install ${MVN_FLAGS} -f ${CRW_path}/pom.xml ${MVN_EXTRA_FLAGS}"
 		archiveArtifacts fingerprint: false, artifacts:"${CRW_path}/assembly/${CRW_path}-assembly-main/target/*.tar.*"
 
 		sh "perl -0777 -p -i -e 's|(\\ +<parent>.*?<\\/parent>)| ${1} =~ /<version>/?\"\":${1}|gse' ${CRW_path}/pom.xml"
