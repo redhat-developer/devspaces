@@ -53,6 +53,7 @@
           <class name="com.redhat.codeready.selenium.languageserver.CodeReadyJsonFileEditingTest"/>
           <class name="com.redhat.codeready.selenium.languageserver.CodeReadyGolangFileEditingTest"/>
           <class name="com.redhat.codeready.selenium.languageserver.csharp.CodeReadyCSharpFileEditingTest"/>
+          <class name="com.redhat.codeready.selenium.languageserver.php.CodeReadyPhpFileEditingTest"/>
           <class name="com.redhat.codeready.selenium.workspaces.CreateWorkspaceOnDashboardTest"/>
           <class name="com.redhat.codeready.selenium.editor.CodeReadySplitEditorFeatureTest"/>
           <class name="com.redhat.codeready.selenium.editor.autocomplete.CodeReadyAutocompleteProposalJavaDocTest"/>
@@ -63,7 +64,6 @@
           <class name="org.eclipse.che.selenium.assistant.OrganizeImportsTest"/>
           <class name="org.eclipse.che.selenium.languageserver.csharp.CSharpClassRenamingTest"/>
           <class name="org.eclipse.che.selenium.languageserver.csharp.CSharpFileAdvancedOperationsTest"/>
-          <class name="org.eclipse.che.selenium.languageserver.php.PhpFileEditingTest"/>
           <class name="org.eclipse.che.selenium.languageserver.php.PhpAssistantFeaturesTest"/>
           <class name="org.eclipse.che.selenium.languageserver.python.PythonFileEditingTest"/>
           <class name="org.eclipse.che.selenium.languageserver.python.PythonAssistantFeaturesTest"/>
