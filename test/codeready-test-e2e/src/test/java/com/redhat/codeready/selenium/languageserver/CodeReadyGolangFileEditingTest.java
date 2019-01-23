@@ -18,7 +18,7 @@ public class CodeReadyGolangFileEditingTest extends GolangFileEditingTest {
 
   @Override
   protected void waitExpectedTextIntoConsole() {
-    String lsInitMessage = "Finished running tool: /usr/bin/go build";
-    consoles.waitExpectedTextIntoConsole(lsInitMessage);
+    consoles.waitExpectedTextIntoConsole("Finished running tool:");
+    consoles.waitExpectedTextIntoConsole("/usr/bin/go build");
   }
 }
