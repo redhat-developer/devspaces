@@ -29,7 +29,7 @@ import org.testng.annotations.Test;
 public class WorkspaceDetailsMachinesRamTest {
   private static final String MACHINE_NAME = "dev-machine";
   private static final String IMAGE_NAME =
-      "registry.access.redhat.com/codeready-workspaces-beta/stacks-java:1.0.0.Beta1";
+      "brew-pulp-docker01.web.prod.ext.phx2.redhat.com:8888/codeready-workspaces/stacks-java";
   private static final String EXPECTED_RAM_VALUE = "2";
   private static final String MAX_RAM_VALID_VALUE = "100";
   private static final String MIN_RAM_VALID_VALUE = "0.1";
