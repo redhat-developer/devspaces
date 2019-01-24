@@ -35,7 +35,7 @@
           </elementProp>
           <elementProp name="test.threads" elementType="Argument">
             <stringProp name="Argument.name">test.threads</stringProp>
-            <stringProp name="Argument.value">${__P(test.threads,2)}</stringProp>
+            <stringProp name="Argument.value">${__P(test.threads,1)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
         </collectionProp>
@@ -615,6 +615,165 @@ props.put(&quot;numberOfThreads&quot;, &quot;${__threadNum}&quot;);
           </JSONPostProcessor>
           <hashTree/>
         </hashTree>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="get_ws_agent_url" enabled="true">
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" enabled="true">
+            <collectionProp name="Arguments.arguments"/>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain">${crw.host}</stringProp>
+          <stringProp name="HTTPSampler.port"></stringProp>
+          <stringProp name="HTTPSampler.protocol">${crw.protocol}</stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">/api/workspace/${CURRENT_WS_ID}</stringProp>
+          <stringProp name="HTTPSampler.method">GET</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+        </HTTPSamplerProxy>
+        <hashTree>
+          <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
+            <collectionProp name="HeaderManager.headers">
+              <elementProp name="Authorization" elementType="Header">
+                <stringProp name="Header.name">Authorization</stringProp>
+                <stringProp name="Header.value">Bearer ${USER_ACCESS_TOKEN}</stringProp>
+              </elementProp>
+              <elementProp name="Content-Type" elementType="Header">
+                <stringProp name="Header.name">Content-Type</stringProp>
+                <stringProp name="Header.value">application/json</stringProp>
+              </elementProp>
+              <elementProp name="User-Agent" elementType="Header">
+                <stringProp name="Header.name">User-Agent</stringProp>
+                <stringProp name="Header.value">Mozilla/5.0 (X11; Fedora; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.77 Safari/537.36</stringProp>
+              </elementProp>
+            </collectionProp>
+          </HeaderManager>
+          <hashTree/>
+          <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="JSON Extractor" enabled="true">
+            <stringProp name="JSONPostProcessor.referenceNames">WS_AGENT_URL;MACHINE_TOKEN</stringProp>
+            <stringProp name="JSONPostProcessor.jsonPathExprs">.runtime.machines.dev-machine.servers.wsagent/http.url;.runtime.machineToken</stringProp>
+            <stringProp name="JSONPostProcessor.match_numbers"></stringProp>
+            <stringProp name="JSONPostProcessor.defaultValues">NOT_FOUND;NOTFOUND</stringProp>
+          </JSONPostProcessor>
+          <hashTree/>
+        </hashTree>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="upload-content-che-ws" enabled="true">
+          <elementProp name="HTTPsampler.Files" elementType="HTTPFileArgs">
+            <collectionProp name="HTTPFileArgs.files">
+              <elementProp name="/home/mmusiien/tmp/default-spring-project.zip" elementType="HTTPFileArg">
+                <stringProp name="File.path">/home/mmusiien/tmp/default-spring-project.zip</stringProp>
+                <stringProp name="File.paramname"></stringProp>
+                <stringProp name="File.mimetype"></stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" enabled="true">
+            <collectionProp name="Arguments.arguments"/>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain">${crw.sso.host}</stringProp>
+          <stringProp name="HTTPSampler.port"></stringProp>
+          <stringProp name="HTTPSampler.protocol">${crw.protocol}</stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">${WS_AGENT_URL}/project/import/loadMvnBuilding</stringProp>
+          <stringProp name="HTTPSampler.method">POST</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+        </HTTPSamplerProxy>
+        <hashTree>
+          <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
+            <collectionProp name="HeaderManager.headers">
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">Content-Type</stringProp>
+                <stringProp name="Header.value">application/zip</stringProp>
+              </elementProp>
+              <elementProp name="Authorization" elementType="Header">
+                <stringProp name="Header.name">Authorization</stringProp>
+                <stringProp name="Header.value">Bearer ${MACHINE_TOKEN}</stringProp>
+              </elementProp>
+            </collectionProp>
+          </HeaderManager>
+          <hashTree/>
+        </hashTree>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="get-content-file" enabled="true">
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" enabled="true">
+            <collectionProp name="Arguments.arguments"/>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain">${crw.host}</stringProp>
+          <stringProp name="HTTPSampler.port"></stringProp>
+          <stringProp name="HTTPSampler.protocol">${crw.protocol}</stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">${WS_AGENT_URL}/project/file/loadMvnBuilding/pom.xml</stringProp>
+          <stringProp name="HTTPSampler.method">GET</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+        </HTTPSamplerProxy>
+        <hashTree>
+          <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
+            <collectionProp name="HeaderManager.headers">
+              <elementProp name="Authorization" elementType="Header">
+                <stringProp name="Header.name">Authorization</stringProp>
+                <stringProp name="Header.value">Bearer ${MACHINE_TOKEN}</stringProp>
+              </elementProp>
+            </collectionProp>
+          </HeaderManager>
+          <hashTree/>
+          <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Response Assertion" enabled="true">
+            <collectionProp name="Asserion.test_strings">
+              <stringProp name="-762788409">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</stringProp>
+              <stringProp name="-248274907">&lt;project xmlns=&quot;http://maven.apache.org/POM/4.0.0&quot; xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot; xsi:schemaLocation=&quot;http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd&quot;&gt;</stringProp>
+              <stringProp name="-1565327785">&lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;</stringProp>
+              <stringProp name="1672971185">&lt;groupId&gt;groupId&lt;/groupId&gt;</stringProp>
+              <stringProp name="1178637148">&lt;artifactId&gt;artifactId&lt;/artifactId&gt;</stringProp>
+              <stringProp name="1087177855">&lt;packaging&gt;war&lt;/packaging&gt;</stringProp>
+              <stringProp name="-1559562471">&lt;version&gt;1.0-SNAPSHOT&lt;/version&gt;</stringProp>
+              <stringProp name="1069315161">&lt;name&gt;SpringDemo&lt;/name&gt;</stringProp>
+              <stringProp name="512154543">&lt;properties&gt;</stringProp>
+              <stringProp name="64333520">&lt;maven.compiler.source&gt;1.6&lt;/maven.compiler.source&gt;</stringProp>
+              <stringProp name="1785899152">&lt;maven.compiler.target&gt;1.6&lt;/maven.compiler.target&gt;</stringProp>
+              <stringProp name="-1590232040">&lt;/properties&gt;</stringProp>
+              <stringProp name="-1831605895">&lt;dependencies&gt;</stringProp>
+              <stringProp name="-1660004201">&lt;dependency&gt;</stringProp>
+              <stringProp name="-242046236">&lt;groupId&gt;javax.servlet&lt;/groupId&gt;</stringProp>
+              <stringProp name="-635700415">&lt;artifactId&gt;servlet-api&lt;/artifactId&gt;</stringProp>
+              <stringProp name="-1638550096">&lt;version&gt;2.5&lt;/version&gt;</stringProp>
+              <stringProp name="976209958">&lt;scope&gt;provided&lt;/scope&gt;</stringProp>
+              <stringProp name="532576512">&lt;/dependency&gt;</stringProp>
+              <stringProp name="-1660004201">&lt;dependency&gt;</stringProp>
+              <stringProp name="1886170878">&lt;groupId&gt;org.springframework&lt;/groupId&gt;</stringProp>
+              <stringProp name="1542273357">&lt;artifactId&gt;spring-webmvc&lt;/artifactId&gt;</stringProp>
+              <stringProp name="-996817556">&lt;version&gt;3.0.5.RELEASE&lt;/version&gt;</stringProp>
+              <stringProp name="532576512">&lt;/dependency&gt;</stringProp>
+              <stringProp name="-1660004201">&lt;dependency&gt;</stringProp>
+              <stringProp name="1945250725">&lt;groupId&gt;junit&lt;/groupId&gt;</stringProp>
+              <stringProp name="-426473947">&lt;artifactId&gt;junit&lt;/artifactId&gt;</stringProp>
+              <stringProp name="1856161719">&lt;version&gt;3.8.1&lt;/version&gt;</stringProp>
+              <stringProp name="-1320441131">&lt;scope&gt;test&lt;/scope&gt;</stringProp>
+              <stringProp name="532576512">&lt;/dependency&gt;</stringProp>
+              <stringProp name="704484258">&lt;/dependencies&gt;</stringProp>
+              <stringProp name="332589772">&lt;build&gt;</stringProp>
+              <stringProp name="-2114735198">&lt;finalName&gt;greeting&lt;/finalName&gt;</stringProp>
+              <stringProp name="-1125618493">&lt;/build&gt;</stringProp>
+              <stringProp name="1044380856">&lt;/project&gt;</stringProp>
+            </collectionProp>
+            <stringProp name="Assertion.custom_message"></stringProp>
+            <stringProp name="Assertion.test_field">Assertion.response_data</stringProp>
+            <boolProp name="Assertion.assume_success">false</boolProp>
+            <intProp name="Assertion.test_type">16</intProp>
+          </ResponseAssertion>
+          <hashTree/>
+        </hashTree>
         <IfController guiclass="IfControllerPanel" testclass="IfController" testname="If Controller" enabled="true">
           <stringProp name="IfController.condition">${__groovy(&quot;${WS_STATE_BEFORE_STOPPING}&quot;!=&quot;STOPPED&quot;)}</stringProp>
           <boolProp name="IfController.evaluateAll">false</boolProp>
@@ -732,54 +891,12 @@ vars.put(&quot;IS_WORKSPACE_STOPPED&quot;, String.valueOf(IS_WORKSPACE_STOPPED))
           </JSR223Sampler>
           <hashTree/>
         </hashTree>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="remove_worksapce_thread_${__threadNum}" enabled="true">
-          <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" enabled="true">
-            <collectionProp name="Arguments.arguments"/>
-          </elementProp>
-          <stringProp name="HTTPSampler.domain">${crw.host}</stringProp>
-          <stringProp name="HTTPSampler.port">${crw.port}</stringProp>
-          <stringProp name="HTTPSampler.protocol">${crw.protocol}</stringProp>
-          <stringProp name="HTTPSampler.contentEncoding">UTF-8</stringProp>
-          <stringProp name="HTTPSampler.path">/api/workspace/${CURRENT_WS_ID}</stringProp>
-          <stringProp name="HTTPSampler.method">DELETE</stringProp>
-          <boolProp name="HTTPSampler.follow_redirects">false</boolProp>
-          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
-          <boolProp name="HTTPSampler.use_keepalive">false</boolProp>
-          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
-          <boolProp name="HTTPSampler.BROWSER_COMPATIBLE_MULTIPART">true</boolProp>
-          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
-          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
-          <stringProp name="HTTPSampler.response_timeout"></stringProp>
-        </HTTPSamplerProxy>
-        <hashTree>
-          <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
-            <collectionProp name="HeaderManager.headers">
-              <elementProp name="Content-Type" elementType="Header">
-                <stringProp name="Header.name">Content-Type</stringProp>
-                <stringProp name="Header.value">application/json</stringProp>
-              </elementProp>
-              <elementProp name="User-Agent" elementType="Header">
-                <stringProp name="Header.name">User-Agent</stringProp>
-                <stringProp name="Header.value">Mozilla/5.0 (X11; Fedora; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.77 Safari/537.36</stringProp>
-              </elementProp>
-              <elementProp name="" elementType="Header">
-                <stringProp name="Header.name">Authorization</stringProp>
-                <stringProp name="Header.value">Bearer ${USER_ACCESS_TOKEN}</stringProp>
-              </elementProp>
-            </collectionProp>
-          </HeaderManager>
-          <hashTree/>
-          <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Response Assertion - Status" enabled="true">
-            <collectionProp name="Asserion.test_strings">
-              <stringProp name="49590">204</stringProp>
-            </collectionProp>
-            <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
-            <boolProp name="Assertion.assume_success">false</boolProp>
-            <intProp name="Assertion.test_type">2</intProp>
-            <stringProp name="Assertion.custom_message"></stringProp>
-          </ResponseAssertion>
-          <hashTree/>
-        </hashTree>
+        <DebugSampler guiclass="TestBeanGUI" testclass="DebugSampler" testname="Debug Sampler" enabled="true">
+          <boolProp name="displayJMeterProperties">false</boolProp>
+          <boolProp name="displayJMeterVariables">true</boolProp>
+          <boolProp name="displaySystemProperties">false</boolProp>
+        </DebugSampler>
+        <hashTree/>
         <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree" enabled="true">
           <boolProp name="ResultCollector.error_logging">false</boolProp>
           <objProp>
