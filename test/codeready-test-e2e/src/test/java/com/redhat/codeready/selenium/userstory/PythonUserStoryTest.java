@@ -11,6 +11,7 @@
 */
 package com.redhat.codeready.selenium.userstory;
 
+import static com.redhat.codeready.selenium.pageobject.dashboard.CodereadyNewWorkspace.CodereadyStacks.PYTHON;
 import static java.util.Arrays.asList;
 import static org.eclipse.che.commons.lang.NameGenerator.generate;
 import static org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants.Assistant.ASSISTANT;
@@ -18,12 +19,16 @@ import static org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants.A
 import static org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants.Assistant.GO_TO_SYMBOL;
 import static org.eclipse.che.selenium.core.constant.TestProjectExplorerContextMenuConstants.ContextMenuCommandGoals.RUN_GOAL;
 import static org.eclipse.che.selenium.core.constant.TestTimeoutsConstants.ELEMENT_TIMEOUT_SEC;
+import static org.eclipse.che.selenium.core.utils.FileUtil.readFileToString;
 import static org.eclipse.che.selenium.pageobject.CodenvyEditor.MarkerLocator.WARNING;
-import static org.eclipse.che.selenium.pageobject.dashboard.NewWorkspace.Stack.PYTHON;
 import static org.openqa.selenium.Keys.ARROW_LEFT;
 
+import com.google.common.collect.ImmutableList;
 import com.google.inject.Inject;
 import com.redhat.codeready.selenium.pageobject.CodereadyEditor;
+import com.redhat.codeready.selenium.pageobject.dashboard.CodeReadyCreateWorkspaceHelper;
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.List;
 import org.eclipse.che.selenium.core.client.TestProjectServiceClient;
 import org.eclipse.che.selenium.core.client.TestWorkspaceServiceClient;
@@ -35,7 +40,6 @@ import org.eclipse.che.selenium.pageobject.FindReferencesConsoleTab;
 import org.eclipse.che.selenium.pageobject.Ide;
 import org.eclipse.che.selenium.pageobject.Menu;
 import org.eclipse.che.selenium.pageobject.ProjectExplorer;
-import org.eclipse.che.selenium.pageobject.dashboard.CreateWorkspaceHelper;
 import org.eclipse.che.selenium.pageobject.dashboard.Dashboard;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
@@ -74,6 +78,8 @@ public class PythonUserStoryTest {
           + "towers(5, 'X', 'Z', 'Y')\n"
           + "print(\"\\nPuzzle solved in \" + str(counter) + \" steps.\")";
 
+  private List<String> projects = ImmutableList.of(PROJECT_NAME);
+
   @Inject private Ide ide;
   @Inject private Menu menu;
   @Inject private Consoles consoles;
@@ -82,17 +88,19 @@ public class PythonUserStoryTest {
   @Inject private DefaultTestUser defaultTestUser;
   @Inject private ProjectExplorer projectExplorer;
   @Inject private AssistantFindPanel assistantFindPanel;
-  @Inject private CreateWorkspaceHelper createWorkspaceHelper;
   @Inject private TestProjectServiceClient testProjectServiceClient;
   @Inject private FindReferencesConsoleTab findReferencesConsoleTab;
   @Inject private TestWorkspaceServiceClient workspaceServiceClient;
+  @Inject private CodeReadyCreateWorkspaceHelper codeReadyCreateWorkspaceHelper;
 
   // it is used to read workspace logs on test failure
   private TestWorkspace testWorkspace;
+  private String addressImage;
 
   @BeforeClass
-  public void setUp() {
+  public void setUp() throws IOException, URISyntaxException {
     dashboard.open();
+    addressImage = readFileToString(getClass().getResource("/crw-stage-images/python-stack.txt"));
   }
 
   @AfterClass
@@ -103,8 +111,8 @@ public class PythonUserStoryTest {
   @Test
   public void createPythonWorkspaceWithProjectFromDashboard() throws Exception {
     testWorkspace =
-        createWorkspaceHelper.createWorkspaceFromStackWithProject(
-            PYTHON, WORKSPACE_NAME, PROJECT_NAME);
+        codeReadyCreateWorkspaceHelper.createWsFromStackWithTestProject(
+            WORKSPACE_NAME, PYTHON, addressImage, projects);
 
     ide.switchToIdeAndWaitWorkspaceIsReadyToUse();
     projectExplorer.waitProjectInitialization(PROJECT_NAME);

@@ -19,22 +19,21 @@ import static org.eclipse.che.selenium.core.utils.FileUtil.readFileToString;
 import static org.eclipse.che.selenium.pageobject.CodenvyEditor.MarkerLocator.ERROR;
 import static org.openqa.selenium.Keys.BACK_SPACE;
 
+import com.google.common.collect.ImmutableList;
 import com.google.inject.Inject;
-import com.redhat.codeready.selenium.pageobject.CodereadyDebuggerPanel;
 import com.redhat.codeready.selenium.pageobject.CodereadyEditor;
-import com.redhat.codeready.selenium.pageobject.dashboard.CodereadyFindUsageWidget;
+import com.redhat.codeready.selenium.pageobject.dashboard.CodeReadyCreateWorkspaceHelper;
 import com.redhat.codeready.selenium.pageobject.dashboard.CodereadyNewWorkspace;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import javax.ws.rs.HttpMethod;
 import javax.ws.rs.core.Response;
-import org.eclipse.che.api.core.rest.HttpJsonRequestFactory;
-import org.eclipse.che.selenium.core.SeleniumWebDriver;
 import org.eclipse.che.selenium.core.client.TestProjectServiceClient;
 import org.eclipse.che.selenium.core.client.TestWorkspaceServiceClient;
 import org.eclipse.che.selenium.core.constant.TestTimeoutsConstants;
@@ -46,34 +45,27 @@ import org.eclipse.che.selenium.core.workspace.TestWorkspaceProvider;
 import org.eclipse.che.selenium.pageobject.AssistantFindPanel;
 import org.eclipse.che.selenium.pageobject.Consoles;
 import org.eclipse.che.selenium.pageobject.Events;
+import org.eclipse.che.selenium.pageobject.Ide;
 import org.eclipse.che.selenium.pageobject.Menu;
-import org.eclipse.che.selenium.pageobject.NotificationsPopupPanel;
 import org.eclipse.che.selenium.pageobject.ProjectExplorer;
-import org.eclipse.che.selenium.pageobject.Wizard;
 import org.eclipse.che.selenium.pageobject.dashboard.AddOrImportForm;
 import org.eclipse.che.selenium.pageobject.dashboard.Dashboard;
-import org.eclipse.che.selenium.pageobject.dashboard.workspaces.WorkspaceDetails;
-import org.eclipse.che.selenium.pageobject.dashboard.workspaces.WorkspaceOverview;
 import org.eclipse.che.selenium.pageobject.dashboard.workspaces.Workspaces;
-import org.eclipse.che.selenium.pageobject.debug.JavaDebugConfig;
 import org.eclipse.che.selenium.pageobject.intelligent.CommandsPalette;
 import org.openqa.selenium.Keys;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 public class NodeJsUserStoryTest {
-  private static final Logger LOG = LoggerFactory.getLogger(NodeJsUserStoryTest.class);
+
   private final String WORKSPACE = generate("NodeJsUserStoryTest", 4);
   private final String PROJECT = "web-nodejs-simple";
-  private final String PATH_TO_MAIN_PACKAGE =
-      PROJECT + "/src/main/java/org/jboss/as/quickstarts/kitchensink";
+  private List<String> projects = ImmutableList.of(PROJECT);
+
+  @Inject private Ide ide;
   @Inject private Dashboard dashboard;
-  @Inject private WorkspaceDetails workspaceDetails;
   @Inject private Workspaces workspaces;
-  @Inject private WorkspaceOverview workspaceOverview;
   @Inject private CodereadyNewWorkspace newWorkspace;
   @Inject private DefaultTestUser defaultTestUser;
   @Inject private TestWorkspaceProvider testWorkspaceProvider;
@@ -82,20 +74,16 @@ public class NodeJsUserStoryTest {
   @Inject private TestWorkspaceServiceClient workspaceServiceClient;
   @Inject private AddOrImportForm addOrImportForm;
   @Inject private CommandsPalette commandsPalette;
-  @Inject private Wizard wizard;
   @Inject private Consoles consoles;
   @Inject private CodereadyEditor editor;
-  @Inject private HttpJsonRequestFactory requestFactory;
   @Inject private Menu menu;
-  @Inject private CodereadyDebuggerPanel debugPanel;
-  @Inject private JavaDebugConfig debugConfig;
   @Inject private Events events;
-  @Inject private NotificationsPopupPanel notifications;
-  @Inject private CodereadyFindUsageWidget findUsages;
   @Inject private TestProjectServiceClient projectServiceClient;
-  @Inject private SeleniumWebDriver seleniumWebDriver;
   @Inject private AssistantFindPanel assistantFindPanel;
+  @Inject private CodeReadyCreateWorkspaceHelper codeReadyCreateWorkspaceHelper;
+
   private TestWorkspace testWorkspace;
+  private String addressImage;
   private String packageJsonText;
   private String packageJsonEditedText;
 
@@ -103,6 +91,7 @@ public class NodeJsUserStoryTest {
   public void setUp() throws IOException, URISyntaxException {
     dashboard.open();
 
+    addressImage = readFileToString(getClass().getResource("/crw-stage-images/node-stack.txt"));
     packageJsonText =
         readFileToString(getClass().getResource("/projects/bayesian/package-json-before.txt"));
     packageJsonEditedText =
@@ -116,7 +105,14 @@ public class NodeJsUserStoryTest {
 
   @Test
   public void createJavaEAPWorkspaceWithProjectFromDashBoard() {
-    createWsFromNodeJsStackWithTestProject(PROJECT);
+    testWorkspace =
+        codeReadyCreateWorkspaceHelper.createWsFromStackWithTestProject(
+            WORKSPACE, NODE, addressImage, projects);
+
+    ide.switchToIdeAndWaitWorkspaceIsReadyToUse();
+    projectExplorer.waitItem(PROJECT);
+    events.clickEventLogBtn();
+    events.waitExpectedMessage("Branch 'master' is checked out");
   }
 
   @Test(priority = 1)
@@ -156,22 +152,6 @@ public class NodeJsUserStoryTest {
     editor.waitMarkerInPosition(ERROR, 13);
     editor.clickOnMarker(ERROR, 13);
     editor.waitTextInToolTipPopup(expectedErrorMarkerText);
-  }
-
-  private void createWsFromNodeJsStackWithTestProject(String example) {
-    dashboard.selectWorkspacesItemOnDashboard();
-    dashboard.waitToolbarTitleName("Workspaces");
-    workspaces.clickOnAddWorkspaceBtn();
-    newWorkspace.typeWorkspaceName(WORKSPACE);
-    newWorkspace.selectCodereadyStack(NODE);
-    addOrImportForm.clickOnAddOrImportProjectButton();
-    addOrImportForm.addSampleToWorkspace(example);
-    newWorkspace.clickOnCreateButtonAndOpenInIDE();
-    seleniumWebDriverHelper.switchToIdeFrameAndWaitAvailability();
-    projectExplorer.waitItem(example);
-    events.clickEventLogBtn();
-    events.waitExpectedMessage("Branch 'master' is checked out");
-    testWorkspace = testWorkspaceProvider.getWorkspace(WORKSPACE, defaultTestUser);
   }
 
   private void runAndCheckHelloWorldApp()
@@ -217,8 +197,6 @@ public class NodeJsUserStoryTest {
     editor.moveCursorToText("console");
     editor.waitTextInHoverPopup("Used to print to stdout and stderr.");
   }
-
-  private void checkRenaming() {}
 
   private void checkFindDefinition() {
     editor.goToPosition(3, 8);

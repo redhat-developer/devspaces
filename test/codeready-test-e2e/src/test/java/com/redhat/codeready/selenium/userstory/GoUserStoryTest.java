@@ -11,15 +11,19 @@
 */
 package com.redhat.codeready.selenium.userstory;
 
+import static com.redhat.codeready.selenium.pageobject.dashboard.CodereadyNewWorkspace.CodereadyStacks.GO;
 import static org.eclipse.che.commons.lang.NameGenerator.generate;
 import static org.eclipse.che.selenium.core.constant.TestCommandsConstants.RUN_COMMAND;
 import static org.eclipse.che.selenium.core.constant.TestIntelligentCommandsConstants.CommandItem.RUN_COMMAND_ITEM;
 import static org.eclipse.che.selenium.core.constant.TestProjectExplorerContextMenuConstants.ContextMenuCommandGoals.RUN_GOAL;
+import static org.eclipse.che.selenium.core.utils.FileUtil.readFileToString;
 import static org.eclipse.che.selenium.pageobject.CodenvyEditor.MarkerLocator.ERROR;
-import static org.eclipse.che.selenium.pageobject.dashboard.NewWorkspace.Stack.GO;
 
 import com.google.common.collect.ImmutableList;
 import com.google.inject.Inject;
+import com.redhat.codeready.selenium.pageobject.dashboard.CodeReadyCreateWorkspaceHelper;
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.List;
 import org.eclipse.che.selenium.core.client.TestWorkspaceServiceClient;
 import org.eclipse.che.selenium.core.user.DefaultTestUser;
@@ -28,7 +32,6 @@ import org.eclipse.che.selenium.pageobject.CodenvyEditor;
 import org.eclipse.che.selenium.pageobject.Consoles;
 import org.eclipse.che.selenium.pageobject.Ide;
 import org.eclipse.che.selenium.pageobject.ProjectExplorer;
-import org.eclipse.che.selenium.pageobject.dashboard.CreateWorkspaceHelper;
 import org.eclipse.che.selenium.pageobject.dashboard.Dashboard;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
@@ -46,8 +49,9 @@ public class GoUserStoryTest {
   private static final String GO_FILE_NAME = "main.go";
   private static final String LS_INIT_MESSAGE = "Finished running tool: ";
   private static final String LS_GO_BUILD_MESSAGE = "usr/bin/go build";
-  private By textOnPreviewPage = By.xpath("//pre[contains(text(),'Hello there')]");
 
+  private By textOnPreviewPage = By.xpath("//pre[contains(text(),'Hello there')]");
+  private List<String> projects = ImmutableList.of(WEB_GO_PROJECT_NAME);
   private List<String> expectedProposals =
       ImmutableList.of("Fscan", "Fscanf", "Fscanln", "Print", "Println", "Printf");
 
@@ -57,15 +61,17 @@ public class GoUserStoryTest {
   @Inject private Dashboard dashboard;
   @Inject private DefaultTestUser defaultTestUser;
   @Inject private ProjectExplorer projectExplorer;
-  @Inject private CreateWorkspaceHelper createWorkspaceHelper;
   @Inject private TestWorkspaceServiceClient workspaceServiceClient;
+  @Inject private CodeReadyCreateWorkspaceHelper codeReadyCreateWorkspaceHelper;
 
   // it is used to read workspace logs on test failure
   private TestWorkspace testWorkspace;
+  private String addressImage;
 
   @BeforeClass
-  public void setUp() {
+  public void setUp() throws IOException, URISyntaxException {
     dashboard.open();
+    addressImage = readFileToString(getClass().getResource("/crw-stage-images/go-stack.txt"));
   }
 
   @AfterClass
@@ -78,8 +84,8 @@ public class GoUserStoryTest {
     // store info about created workspace to make SeleniumTestHandler.captureTestWorkspaceLogs()
     // possible to read logs in case of test failure
     testWorkspace =
-        createWorkspaceHelper.createWorkspaceFromStackWithProject(
-            GO, WORKSPACE_NAME, WEB_GO_PROJECT_NAME);
+        codeReadyCreateWorkspaceHelper.createWsFromStackWithTestProject(
+            WORKSPACE_NAME, GO, addressImage, projects);
 
     ide.switchToIdeAndWaitWorkspaceIsReadyToUse();
     projectExplorer.waitProjectInitialization(WEB_GO_PROJECT_NAME);

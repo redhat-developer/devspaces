@@ -19,17 +19,23 @@ import static org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants.R
 import static org.eclipse.che.selenium.core.constant.TestProjectExplorerContextMenuConstants.ContextMenuCommandGoals.DEBUG_GOAL;
 import static org.eclipse.che.selenium.core.constant.TestProjectExplorerContextMenuConstants.ContextMenuCommandGoals.RUN_GOAL;
 import static org.eclipse.che.selenium.core.constant.TestTimeoutsConstants.LOADER_TIMEOUT_SEC;
+import static org.eclipse.che.selenium.core.utils.FileUtil.readFileToString;
 import static org.eclipse.che.selenium.pageobject.CodenvyEditor.MarkerLocator.ERROR_OVERVIEW;
 import static org.openqa.selenium.Keys.ARROW_DOWN;
 import static org.openqa.selenium.Keys.LEFT_CONTROL;
 import static org.openqa.selenium.Keys.LEFT_SHIFT;
 
+import com.google.common.collect.ImmutableList;
 import com.google.inject.Inject;
 import com.redhat.codeready.selenium.pageobject.CodereadyEditor;
+import com.redhat.codeready.selenium.pageobject.dashboard.CodeReadyCreateWorkspaceHelper;
 import com.redhat.codeready.selenium.pageobject.dashboard.CodereadyNewWorkspace;
+import java.io.IOException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 import org.eclipse.che.selenium.core.SeleniumWebDriver;
 import org.eclipse.che.selenium.core.client.TestProjectServiceClient;
@@ -41,6 +47,7 @@ import org.eclipse.che.selenium.core.workspace.TestWorkspace;
 import org.eclipse.che.selenium.core.workspace.TestWorkspaceProvider;
 import org.eclipse.che.selenium.pageobject.Consoles;
 import org.eclipse.che.selenium.pageobject.Events;
+import org.eclipse.che.selenium.pageobject.Ide;
 import org.eclipse.che.selenium.pageobject.Menu;
 import org.eclipse.che.selenium.pageobject.NotificationsPopupPanel;
 import org.eclipse.che.selenium.pageobject.ProjectExplorer;
@@ -64,8 +71,9 @@ public class PhpUserStoryTest {
   private static final String INDEX_FILE = "index.php";
   private static final String LIB_FILE = "lib.php";
   private static final String PATH_TO_INDEX_PHP = DEBUG_PROJECT_NAME + "/" + INDEX_FILE;
-  private static final String PATH_TO_LIB_PHP = DEBUG_PROJECT_NAME + "/" + LIB_FILE;
   private static final String DEBUG_PHP_SCRIPT_COMMAND_NAME = "debug php script";
+
+  private List<String> projects = ImmutableList.of(PROJECT_NAME);
 
   private static final String CODE_FOR_TYPING =
       "\nfunction sayHello($name) {\n" + "return \"Hello, $name\";";
@@ -106,6 +114,7 @@ public class PhpUserStoryTest {
           + "//}\n"
           + "sayHello";
 
+  @Inject private Ide ide;
   @Inject private Dashboard dashboard;
   @Inject private Workspaces workspaces;
   @Inject private CodereadyNewWorkspace newWorkspace;
@@ -124,11 +133,15 @@ public class PhpUserStoryTest {
   @Inject private DebugPanel debugPanel;
   @Inject private PhpDebugConfig debugConfig;
   @Inject private NotificationsPopupPanel notificationPopup;
+  @Inject private CodeReadyCreateWorkspaceHelper codeReadyCreateWorkspaceHelper;
+
   private TestWorkspace testWorkspace;
+  private String addressImage;
 
   @BeforeClass
-  public void setUp() {
+  public void setUp() throws IOException, URISyntaxException {
     dashboard.open();
+    addressImage = readFileToString(getClass().getResource("/crw-stage-images/php-stack.txt"));
   }
 
   @AfterClass
@@ -138,21 +151,13 @@ public class PhpUserStoryTest {
 
   @Test
   public void checkCreationPhpStackWithProject() {
-    // go to "New Workspace" page
-    dashboard.selectWorkspacesItemOnDashboard();
-    dashboard.waitToolbarTitleName("Workspaces");
-    workspaces.clickOnAddWorkspaceBtn();
+    // store info about created workspace to make SeleniumTestHandler.captureTestWorkspaceLogs()
+    // possible to read logs in case of test failure
+    testWorkspace =
+        codeReadyCreateWorkspaceHelper.createWsFromStackWithTestProject(
+            WORKSPACE, PHP, addressImage, projects);
 
-    // set configuration and run workspace
-    newWorkspace.typeWorkspaceName(WORKSPACE);
-    newWorkspace.selectCodereadyStack(PHP);
-    addOrImportForm.clickOnAddOrImportProjectButton();
-    addOrImportForm.addSampleToWorkspace(PROJECT_NAME);
-    newWorkspace.clickOnCreateButtonAndOpenInIDE();
-
-    // check workspace creation and readiness
-    seleniumWebDriverHelper.switchToIdeFrameAndWaitAvailability();
-    testWorkspace = testWorkspaceProvider.getWorkspace(WORKSPACE, defaultTestUser);
+    ide.switchToIdeAndWaitWorkspaceIsReadyToUse();
     projectExplorer.waitItem(PROJECT_NAME);
     projectExplorer.waitAndSelectItem(PROJECT_NAME);
     events.clickEventLogBtn();
