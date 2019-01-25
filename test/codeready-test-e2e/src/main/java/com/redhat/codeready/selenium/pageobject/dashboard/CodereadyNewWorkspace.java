@@ -44,9 +44,9 @@ public class CodereadyNewWorkspace extends NewWorkspace {
   private static final String WORKSPACE_CREATED_DIALOG_CLOSE_BUTTON_XPATH =
       "//md-dialog/che-popup[@title='Workspace Is Created']//i";
   private static final String EDIT_WORKSPACE_DIALOG_BUTTON =
-      "//che-button-primary//span[text()='Edit']";
+      "//span[text()='Create & Proceed Editing']";
   private static final String OPEN_IN_IDE_DIALOG_BUTTON =
-      "//che-button-default//span[text()='Open In IDE']";
+      "//che-button-default//span[text()='Open']";
 
   @Inject
   public CodereadyNewWorkspace(
