@@ -24,11 +24,16 @@ import static org.eclipse.che.selenium.core.constant.TestProjectExplorerContextM
 import static org.eclipse.che.selenium.core.constant.TestProjectExplorerContextMenuConstants.ContextMenuCommandGoals.RUN_GOAL;
 import static org.eclipse.che.selenium.core.constant.TestTimeoutsConstants.LOADER_TIMEOUT_SEC;
 import static org.eclipse.che.selenium.core.constant.TestTimeoutsConstants.UPDATING_PROJECT_TIMEOUT_SEC;
+import static org.eclipse.che.selenium.core.utils.FileUtil.readFileToString;
 import static org.eclipse.che.selenium.pageobject.CodenvyEditor.MarkerLocator.ERROR;
 
+import com.google.common.collect.ImmutableList;
 import com.google.inject.Inject;
+import com.redhat.codeready.selenium.pageobject.dashboard.CodeReadyCreateWorkspaceHelper;
 import com.redhat.codeready.selenium.pageobject.dashboard.CodereadyFindUsageWidget;
 import com.redhat.codeready.selenium.pageobject.dashboard.CodereadyNewWorkspace;
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.List;
 import org.eclipse.che.selenium.core.SeleniumWebDriver;
@@ -36,7 +41,6 @@ import org.eclipse.che.selenium.core.client.TestWorkspaceServiceClient;
 import org.eclipse.che.selenium.core.user.DefaultTestUser;
 import org.eclipse.che.selenium.core.webdriver.SeleniumWebDriverHelper;
 import org.eclipse.che.selenium.core.workspace.TestWorkspace;
-import org.eclipse.che.selenium.core.workspace.TestWorkspaceProvider;
 import org.eclipse.che.selenium.pageobject.CodenvyEditor;
 import org.eclipse.che.selenium.pageobject.Consoles;
 import org.eclipse.che.selenium.pageobject.Events;
@@ -61,6 +65,8 @@ public class VertxUserStoryTest {
       VERTX_PROJECT_NAME + "/src/main/java/io.openshift.booster";
   private static final String JAVA_FILE_NAME = "HttpApplication";
 
+  private List<String> projects = ImmutableList.of(VERTX_PROJECT_NAME);
+
   // it is used to read workspace logs on test failure
   @Inject private Ide ide;
   @Inject private Workspaces workspaces;
@@ -78,15 +84,17 @@ public class VertxUserStoryTest {
   @Inject private SeleniumWebDriver seleniumWebDriver;
   @Inject private SeleniumWebDriverHelper seleniumWebDriverHelper;
   @Inject private TestWorkspaceServiceClient workspaceServiceClient;
-  @Inject private TestWorkspaceProvider testWorkspaceProvider;
+  @Inject private CodeReadyCreateWorkspaceHelper codeReadyCreateWorkspaceHelper;
 
   // it is used to read workspace logs on test failure
   private TestWorkspace testWorkspace;
+  private String addressImage;
   private String currentWindow;
 
   @BeforeClass
-  public void setUp() {
+  public void setUp() throws IOException, URISyntaxException {
     dashboard.open();
+    addressImage = readFileToString(getClass().getResource("/crw-stage-images/java-stack.txt"));
   }
 
   @AfterClass
@@ -98,21 +106,12 @@ public class VertxUserStoryTest {
   public void checkWorkspaceCreationFromVertxStack() {
     // store info about created workspace to make SeleniumTestHandler.captureTestWorkspaceLogs()
     // possible to read logs in case of test failure
-    // select the vert.x ready stack to create the workspace
-    dashboard.selectWorkspacesItemOnDashboard();
-    dashboard.waitToolbarTitleName("Workspaces");
-    workspaces.clickOnAddWorkspaceBtn();
-    newWorkspace.typeWorkspaceName(WORKSPACE_NAME);
-    newWorkspace.selectCodereadyStack(VERTX);
-
-    // create the workspace with a template project
-    addOrImportForm.clickOnAddOrImportProjectButton();
-    addOrImportForm.addSampleToWorkspace(VERTX_PROJECT_NAME);
-    newWorkspace.clickOnCreateButtonAndOpenInIDE();
+    testWorkspace =
+        codeReadyCreateWorkspaceHelper.createWsFromStackWithTestProject(
+            WORKSPACE_NAME, VERTX, addressImage, projects);
 
     // switch to the IDE
     currentWindow = ide.switchToIdeAndWaitWorkspaceIsReadyToUse();
-    testWorkspace = testWorkspaceProvider.getWorkspace(WORKSPACE_NAME, defaultTestUser);
 
     // wait expected message in the progress info bar
     // the execution takes a lot of time on a local machine, so need a big timeout

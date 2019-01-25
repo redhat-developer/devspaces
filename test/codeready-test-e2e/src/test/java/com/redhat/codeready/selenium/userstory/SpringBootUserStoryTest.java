@@ -25,19 +25,23 @@ import static org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants.A
 import static org.eclipse.che.selenium.core.constant.TestProjectExplorerContextMenuConstants.ContextMenuCommandGoals.BUILD_GOAL;
 import static org.eclipse.che.selenium.core.constant.TestProjectExplorerContextMenuConstants.ContextMenuCommandGoals.DEBUG_GOAL;
 import static org.eclipse.che.selenium.core.constant.TestProjectExplorerContextMenuConstants.ContextMenuCommandGoals.RUN_GOAL;
+import static org.eclipse.che.selenium.core.utils.FileUtil.readFileToString;
 import static org.eclipse.che.selenium.pageobject.CodenvyEditor.MarkerLocator.ERROR;
 import static org.openqa.selenium.Keys.F4;
 import static org.testng.Assert.fail;
 
+import com.google.common.collect.ImmutableList;
 import com.google.inject.Inject;
 import com.redhat.codeready.selenium.pageobject.CodereadyEditor;
+import com.redhat.codeready.selenium.pageobject.dashboard.CodeReadyCreateWorkspaceHelper;
 import com.redhat.codeready.selenium.pageobject.dashboard.CodereadyNewWorkspace;
 import com.redhat.codeready.selenium.pageobject.dashboard.CodereadyNewWorkspace.CodereadyStacks;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.util.List;
 import org.eclipse.che.selenium.core.client.TestWorkspaceServiceClient;
 import org.eclipse.che.selenium.core.user.DefaultTestUser;
-import org.eclipse.che.selenium.core.webdriver.SeleniumWebDriverHelper;
 import org.eclipse.che.selenium.core.workspace.TestWorkspace;
-import org.eclipse.che.selenium.core.workspace.TestWorkspaceProvider;
 import org.eclipse.che.selenium.pageobject.Consoles;
 import org.eclipse.che.selenium.pageobject.Ide;
 import org.eclipse.che.selenium.pageobject.Menu;
@@ -59,6 +63,8 @@ public class SpringBootUserStoryTest {
   private static final String PATH_TO_MAIN_PACKAGE =
       PROJECT_NAME + "/src/main/java/io/openshift/booster";
 
+  private List<String> projects = ImmutableList.of(PROJECT_NAME);
+
   @Inject private Ide ide;
   @Inject private Menu menu;
   @Inject private Consoles consoles;
@@ -69,16 +75,17 @@ public class SpringBootUserStoryTest {
   @Inject private ProjectExplorer projectExplorer;
   @Inject private AddOrImportForm addOrImportForm;
   @Inject private CodereadyNewWorkspace newWorkspace;
-  @Inject private TestWorkspaceProvider testWorkspaceProvider;
-  @Inject private SeleniumWebDriverHelper seleniumWebDriverHelper;
   @Inject private TestWorkspaceServiceClient workspaceServiceClient;
+  @Inject private CodeReadyCreateWorkspaceHelper codeReadyCreateWorkspaceHelper;
 
   // it is used to read workspace logs on test failure
   private TestWorkspace testWorkspace;
+  private String addressImage;
 
   @BeforeClass
-  public void setUp() {
+  public void setUp() throws IOException, URISyntaxException {
     dashboard.open();
+    addressImage = readFileToString(getClass().getResource("/crw-stage-images/java-stack.txt"));
   }
 
   @AfterClass
@@ -88,11 +95,11 @@ public class SpringBootUserStoryTest {
 
   @Test
   public void createSpringBootWorkspaceWithProjectFromDashBoard() {
-    createWorkspaceFromStackWithProject(SPRING_BOOT, PROJECT_NAME);
+    testWorkspace =
+        codeReadyCreateWorkspaceHelper.createWsFromStackWithTestProject(
+            WORKSPACE_NAME, SPRING_BOOT, addressImage, projects);
 
     ide.switchToIdeAndWaitWorkspaceIsReadyToUse();
-    testWorkspace = testWorkspaceProvider.getWorkspace(WORKSPACE_NAME, defaultTestUser);
-
     projectExplorer.waitProjectInitialization(PROJECT_NAME);
 
     consoles.waitJDTLSProjectResolveFinishedMessage(PROJECT_NAME);
