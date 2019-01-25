@@ -16,12 +16,17 @@ import static org.eclipse.che.selenium.core.constant.TestCommandsConstants.RUN_C
 import static org.eclipse.che.selenium.core.constant.TestIntelligentCommandsConstants.CommandItem.BUILD_AND_RUN_COMMAND_ITEM;
 import static org.eclipse.che.selenium.core.constant.TestProjectExplorerContextMenuConstants.ContextMenuCommandGoals.RUN_GOAL;
 import static org.eclipse.che.selenium.core.constant.TestTimeoutsConstants.WIDGET_TIMEOUT_SEC;
+import static org.eclipse.che.selenium.core.utils.FileUtil.readFileToString;
 import static org.eclipse.che.selenium.pageobject.CodenvyEditor.MarkerLocator.ERROR;
-import static org.eclipse.che.selenium.pageobject.dashboard.NewWorkspace.Stack.CPP;
 
 import com.google.common.collect.ImmutableList;
 import com.google.inject.Inject;
+import com.redhat.codeready.selenium.pageobject.dashboard.CodeReadyCreateWorkspaceHelper;
+import com.redhat.codeready.selenium.pageobject.dashboard.CodereadyNewWorkspace;
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.List;
+import org.eclipse.che.selenium.core.SeleniumWebDriver;
 import org.eclipse.che.selenium.core.client.TestWorkspaceServiceClient;
 import org.eclipse.che.selenium.core.user.DefaultTestUser;
 import org.eclipse.che.selenium.core.workspace.TestWorkspace;
@@ -29,7 +34,6 @@ import org.eclipse.che.selenium.pageobject.CodenvyEditor;
 import org.eclipse.che.selenium.pageobject.Consoles;
 import org.eclipse.che.selenium.pageobject.Ide;
 import org.eclipse.che.selenium.pageobject.ProjectExplorer;
-import org.eclipse.che.selenium.pageobject.dashboard.CreateWorkspaceHelper;
 import org.eclipse.che.selenium.pageobject.dashboard.Dashboard;
 import org.openqa.selenium.Keys;
 import org.testng.annotations.AfterClass;
@@ -47,26 +51,26 @@ public class ClangCppUserStoryTest {
   private static final String CPP_FILE_NAME = "hello.cc";
   private static final String PATH_TO_CPP_FILE = CONSOLE_CPP_PROJECT + "/" + CPP_FILE_NAME;
   private static final String EXPECTED_MESSAGE_IN_CONSOLE = "Hello World";
-  private static final String LS_INIT_MESSAGE =
-      "Initialized language server 'org.eclipse.che.plugin.clangd.languageserver'";
-
   private List<String> projects = ImmutableList.of(CONSOLE_CPP_PROJECT, C_SIMPLE_CONSOLE_PROJECT);
 
   @Inject private Ide ide;
   @Inject private Consoles consoles;
   @Inject private Dashboard dashboard;
   @Inject private CodenvyEditor editor;
+  @Inject private CodeReadyCreateWorkspaceHelper codeReadyCreateWorkspaceHelper;
   @Inject private DefaultTestUser defaultTestUser;
   @Inject private ProjectExplorer projectExplorer;
-  @Inject private CreateWorkspaceHelper createWorkspaceHelper;
   @Inject private TestWorkspaceServiceClient workspaceServiceClient;
+  @Inject private SeleniumWebDriver seleniumWebDriver;
 
   // it is used to read workspace logs on test failure
   private TestWorkspace testWorkspace;
+  private String addressImage;
 
   @BeforeClass
-  public void setUp() {
+  public void setUp() throws IOException, URISyntaxException {
     dashboard.open();
+    addressImage = readFileToString(getClass().getResource("/crw-stage-images/cpp-stack.txt"));
   }
 
   @AfterClass
@@ -79,7 +83,8 @@ public class ClangCppUserStoryTest {
     // store info about created workspace to make SeleniumTestHandler.captureTestWorkspaceLogs()
     // possible to read logs in case of test failure
     testWorkspace =
-        createWorkspaceHelper.createWorkspaceFromStackWithProjects(CPP, WORKSPACE_NAME, projects);
+        codeReadyCreateWorkspaceHelper.createWsFromStackWithTestProject(
+            WORKSPACE_NAME, CodereadyNewWorkspace.CodereadyStacks.CPP, addressImage, projects);
 
     ide.switchToIdeAndWaitWorkspaceIsReadyToUse();
 

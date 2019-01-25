@@ -17,61 +17,55 @@ import static org.eclipse.che.commons.lang.NameGenerator.generate;
 import static org.eclipse.che.selenium.core.constant.TestBuildConstants.BUILD_SUCCESS;
 import static org.eclipse.che.selenium.core.constant.TestTimeoutsConstants.LOAD_PAGE_TIMEOUT_SEC;
 import static org.eclipse.che.selenium.core.constant.TestTimeoutsConstants.MULTIPLE;
+import static org.eclipse.che.selenium.core.utils.FileUtil.readFileToString;
 import static org.eclipse.che.selenium.pageobject.CodenvyEditor.MarkerLocator.ERROR;
 import static org.openqa.selenium.Keys.ENTER;
 
+import com.google.common.collect.ImmutableList;
 import com.google.inject.Inject;
-import com.redhat.codeready.selenium.pageobject.CodereadyDebuggerPanel;
 import com.redhat.codeready.selenium.pageobject.CodereadyEditor;
-import com.redhat.codeready.selenium.pageobject.dashboard.CodereadyFindUsageWidget;
+import com.redhat.codeready.selenium.pageobject.dashboard.CodeReadyCreateWorkspaceHelper;
 import com.redhat.codeready.selenium.pageobject.dashboard.CodereadyNewWorkspace;
 import java.io.IOException;
 import java.net.HttpURLConnection;
+import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 import javax.ws.rs.HttpMethod;
 import javax.ws.rs.core.Response;
-import org.eclipse.che.api.core.rest.HttpJsonRequestFactory;
-import org.eclipse.che.selenium.core.SeleniumWebDriver;
-import org.eclipse.che.selenium.core.client.TestProjectServiceClient;
 import org.eclipse.che.selenium.core.client.TestWorkspaceServiceClient;
 import org.eclipse.che.selenium.core.user.DefaultTestUser;
 import org.eclipse.che.selenium.core.utils.WaitUtils;
 import org.eclipse.che.selenium.core.webdriver.SeleniumWebDriverHelper;
 import org.eclipse.che.selenium.core.workspace.TestWorkspace;
 import org.eclipse.che.selenium.core.workspace.TestWorkspaceProvider;
-import org.eclipse.che.selenium.pageobject.AssistantFindPanel;
 import org.eclipse.che.selenium.pageobject.Consoles;
 import org.eclipse.che.selenium.pageobject.Events;
+import org.eclipse.che.selenium.pageobject.Ide;
 import org.eclipse.che.selenium.pageobject.MavenPluginStatusBar;
 import org.eclipse.che.selenium.pageobject.Menu;
-import org.eclipse.che.selenium.pageobject.NotificationsPopupPanel;
 import org.eclipse.che.selenium.pageobject.ProjectExplorer;
-import org.eclipse.che.selenium.pageobject.Wizard;
 import org.eclipse.che.selenium.pageobject.dashboard.AddOrImportForm;
 import org.eclipse.che.selenium.pageobject.dashboard.Dashboard;
-import org.eclipse.che.selenium.pageobject.dashboard.workspaces.WorkspaceDetails;
-import org.eclipse.che.selenium.pageobject.dashboard.workspaces.WorkspaceOverview;
 import org.eclipse.che.selenium.pageobject.dashboard.workspaces.Workspaces;
-import org.eclipse.che.selenium.pageobject.debug.NodeJsDebugConfig;
 import org.eclipse.che.selenium.pageobject.intelligent.CommandsPalette;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 public class WildFlyUserStoryTest {
-  private static final Logger LOG = LoggerFactory.getLogger(NodeJsUserStoryTest.class);
   private final String WORKSPACE = generate(WildFlyUserStoryTest.class.getSimpleName(), 4);
   private final String PROJECT = "wfswarm-rest-http";
   private final String PATH_TO_MAIN_PACKAGE =
       "wfswarm-rest-http/src/main/java/io/openshift/booster/";
+
+  private List<String> projects = ImmutableList.of(PROJECT);
+
+  @Inject private Ide ide;
   @Inject private Dashboard dashboard;
-  @Inject private WorkspaceDetails workspaceDetails;
   @Inject private Workspaces workspaces;
-  @Inject private WorkspaceOverview workspaceOverview;
   @Inject private CodereadyNewWorkspace newWorkspace;
   @Inject private DefaultTestUser defaultTestUser;
   @Inject private TestWorkspaceProvider testWorkspaceProvider;
@@ -80,25 +74,20 @@ public class WildFlyUserStoryTest {
   @Inject private TestWorkspaceServiceClient workspaceServiceClient;
   @Inject private AddOrImportForm addOrImportForm;
   @Inject private CommandsPalette commandsPalette;
-  @Inject private Wizard wizard;
   @Inject private Consoles consoles;
   @Inject private CodereadyEditor editor;
-  @Inject private HttpJsonRequestFactory requestFactory;
   @Inject private Menu menu;
-  @Inject private CodereadyDebuggerPanel debugPanel;
-  @Inject private NodeJsDebugConfig debugConfig;
   @Inject private Events events;
-  @Inject private NotificationsPopupPanel notifications;
-  @Inject private CodereadyFindUsageWidget findUsages;
-  @Inject private TestProjectServiceClient projectServiceClient;
-  @Inject private SeleniumWebDriver seleniumWebDriver;
-  @Inject private AssistantFindPanel assistantFindPanel;
   @Inject private MavenPluginStatusBar mavenPluginStatusBar;
+  @Inject private CodeReadyCreateWorkspaceHelper codeReadyCreateWorkspaceHelper;
+
   private TestWorkspace testWorkspace;
+  private String addressImage;
 
   @BeforeClass
-  public void setUp() {
+  public void setUp() throws IOException, URISyntaxException {
     dashboard.open();
+    addressImage = readFileToString(getClass().getResource("/crw-stage-images/java-stack.txt"));
   }
 
   @AfterClass
@@ -108,7 +97,17 @@ public class WildFlyUserStoryTest {
 
   @Test
   public void createJavaEAPWorkspaceWithProjectFromDashboard() {
-    createWsFromWildFlyStack();
+    // createWsFromWildFlyStack();
+    testWorkspace =
+        codeReadyCreateWorkspaceHelper.createWsFromStackWithTestProject(
+            WORKSPACE, WILD_FLY_SWARM, addressImage, projects);
+
+    ide.switchToIdeAndWaitWorkspaceIsReadyToUse();
+    projectExplorer.waitItem(PROJECT);
+    events.clickEventLogBtn();
+    events.waitExpectedMessage("Branch 'master' is checked out");
+    consoles.clickOnProcessesButton();
+    consoles.waitJDTLSProjectResolveFinishedMessage(PROJECT);
   }
 
   @Test(priority = 1)
@@ -116,29 +115,6 @@ public class WildFlyUserStoryTest {
       throws InterruptedException, ExecutionException, TimeoutException {
     runAndCheckHelloWorldApp();
     checkMainJavaFeatures();
-  }
-
-  private void createWsFromWildFlyStack() {
-    // create workspace based on WildFly Stack
-    dashboard.selectWorkspacesItemOnDashboard();
-    dashboard.waitToolbarTitleName("Workspaces");
-    workspaces.clickOnAddWorkspaceBtn();
-    newWorkspace.typeWorkspaceName(WORKSPACE);
-    newWorkspace.selectCodereadyStack(WILD_FLY_SWARM);
-
-    // add project from dashboard
-    addOrImportForm.clickOnAddOrImportProjectButton();
-    addOrImportForm.addSampleToWorkspace(PROJECT);
-
-    // create workspace, wait project in the just created workspace, wait JDT initialization
-    newWorkspace.clickOnCreateButtonAndOpenInIDE();
-    seleniumWebDriverHelper.switchToIdeFrameAndWaitAvailability();
-    projectExplorer.waitItem(PROJECT);
-    events.clickEventLogBtn();
-    events.waitExpectedMessage("Branch 'master' is checked out");
-    consoles.clickOnProcessesButton();
-    consoles.waitJDTLSProjectResolveFinishedMessage(PROJECT);
-    testWorkspace = testWorkspaceProvider.getWorkspace(WORKSPACE, defaultTestUser);
   }
 
   private void runAndCheckHelloWorldApp()

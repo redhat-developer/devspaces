@@ -35,9 +35,11 @@ import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.fail;
 
 import com.google.common.base.Joiner;
+import com.google.common.collect.ImmutableList;
 import com.google.inject.Inject;
 import com.redhat.codeready.selenium.pageobject.CodereadyDebuggerPanel;
 import com.redhat.codeready.selenium.pageobject.CodereadyEditor;
+import com.redhat.codeready.selenium.pageobject.dashboard.CodeReadyCreateWorkspaceHelper;
 import com.redhat.codeready.selenium.pageobject.dashboard.CodereadyFindUsageWidget;
 import com.redhat.codeready.selenium.pageobject.dashboard.CodereadyNewWorkspace;
 import java.io.IOException;
@@ -49,7 +51,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.eclipse.che.api.core.rest.HttpJsonRequestFactory;
 import org.eclipse.che.selenium.core.client.TestProjectServiceClient;
 import org.eclipse.che.selenium.core.client.TestWorkspaceServiceClient;
 import org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants;
@@ -63,11 +64,8 @@ import org.eclipse.che.selenium.pageobject.Events;
 import org.eclipse.che.selenium.pageobject.Menu;
 import org.eclipse.che.selenium.pageobject.NotificationsPopupPanel;
 import org.eclipse.che.selenium.pageobject.ProjectExplorer;
-import org.eclipse.che.selenium.pageobject.Wizard;
 import org.eclipse.che.selenium.pageobject.dashboard.AddOrImportForm;
 import org.eclipse.che.selenium.pageobject.dashboard.Dashboard;
-import org.eclipse.che.selenium.pageobject.dashboard.workspaces.WorkspaceDetails;
-import org.eclipse.che.selenium.pageobject.dashboard.workspaces.WorkspaceOverview;
 import org.eclipse.che.selenium.pageobject.dashboard.workspaces.Workspaces;
 import org.eclipse.che.selenium.pageobject.debug.JavaDebugConfig;
 import org.eclipse.che.selenium.pageobject.intelligent.CommandsPalette;
@@ -85,10 +83,11 @@ public class JavaEapUserStoryTest {
   private final String PROJECT = "kitchensink-example";
   private final String PATH_TO_MAIN_PACKAGE =
       PROJECT + "/src/main/java/org.jboss.as.quickstarts.kitchensink";
+
+  private List<String> projects = ImmutableList.of(PROJECT);
+
   @Inject private Dashboard dashboard;
-  @Inject private WorkspaceDetails workspaceDetails;
   @Inject private Workspaces workspaces;
-  @Inject private WorkspaceOverview workspaceOverview;
   @Inject private CodereadyNewWorkspace newWorkspace;
   @Inject private DefaultTestUser defaultTestUser;
   @Inject private TestWorkspaceProvider testWorkspaceProvider;
@@ -97,10 +96,8 @@ public class JavaEapUserStoryTest {
   @Inject private TestWorkspaceServiceClient workspaceServiceClient;
   @Inject private AddOrImportForm addOrImportForm;
   @Inject private CommandsPalette commandsPalette;
-  @Inject private Wizard wizard;
   @Inject private Consoles consoles;
   @Inject private CodereadyEditor editor;
-  @Inject private HttpJsonRequestFactory requestFactory;
   @Inject private Menu menu;
   @Inject private CodereadyDebuggerPanel debugPanel;
   @Inject private JavaDebugConfig debugConfig;
@@ -108,20 +105,20 @@ public class JavaEapUserStoryTest {
   @Inject private NotificationsPopupPanel notifications;
   @Inject private CodereadyFindUsageWidget findUsages;
   @Inject private TestProjectServiceClient projectServiceClient;
+  @Inject private CodeReadyCreateWorkspaceHelper codeReadyCreateWorkspaceHelper;
 
   private String tabNameWithImpl = "NativeMethodAccessorImpl";
-  private String pomFileText;
   private String pomFileChangedText;
 
   // it is used to read workspace logs on test failure
   private TestWorkspace testWorkspace;
+  private String addressImage;
 
   @BeforeClass
   public void setUp() throws URISyntaxException, IOException {
     dashboard.open();
 
-    pomFileText =
-        readFileToString(getClass().getResource("/projects/bayesian/pom-file-before.txt"));
+    addressImage = readFileToString(getClass().getResource("/crw-stage-images/java-stack.txt"));
     pomFileChangedText =
         readFileToString(getClass().getResource("/projects/bayesian/pom-file-after.txt"));
   }
@@ -133,7 +130,17 @@ public class JavaEapUserStoryTest {
 
   @Test(priority = 1)
   public void createJavaEAPWorkspaceWithProjectFromDashBoard() throws Exception {
-    testWorkspace = createWsFromJavaEAPStackWithTestProject(PROJECT);
+    testWorkspace =
+        codeReadyCreateWorkspaceHelper.createWsFromStackWithTestProject(
+            WORKSPACE, JAVA_EAP, addressImage, projects);
+
+    projectExplorer.waitItem(PROJECT);
+    events.clickEventLogBtn();
+    events.waitExpectedMessage("Branch 'master' is checked out");
+    consoles.clickOnProcessesButton();
+    consoles.waitJDTLSProjectResolveFinishedMessage(PROJECT);
+    projectExplorer.quickRevealToItemWithJavaScript(PATH_TO_MAIN_PACKAGE);
+    addTestFileIntoProjectByApi();
   }
 
   /**
@@ -337,31 +344,6 @@ public class JavaEapUserStoryTest {
     events.clickEventLogBtn();
     events.waitExpectedMessage("Remote debugger connected");
     consoles.clickOnProcessesButton();
-  }
-
-  private TestWorkspace createWsFromJavaEAPStackWithTestProject(String kitchenExampleName)
-      throws Exception {
-    dashboard.selectWorkspacesItemOnDashboard();
-    dashboard.waitToolbarTitleName("Workspaces");
-    workspaces.clickOnAddWorkspaceBtn();
-    newWorkspace.typeWorkspaceName(WORKSPACE);
-    newWorkspace.selectCodereadyStack(JAVA_EAP);
-    addOrImportForm.clickOnAddOrImportProjectButton();
-    addOrImportForm.addSampleToWorkspace(kitchenExampleName);
-    newWorkspace.clickOnCreateButtonAndOpenInIDE();
-    seleniumWebDriverHelper.switchToIdeFrameAndWaitAvailability();
-
-    TestWorkspace testWorkspace = testWorkspaceProvider.getWorkspace(WORKSPACE, defaultTestUser);
-
-    projectExplorer.waitItem(kitchenExampleName);
-    events.clickEventLogBtn();
-    events.waitExpectedMessage("Branch 'master' is checked out");
-    consoles.clickOnProcessesButton();
-    consoles.waitJDTLSProjectResolveFinishedMessage(PROJECT);
-    projectExplorer.quickRevealToItemWithJavaScript(PATH_TO_MAIN_PACKAGE);
-    addTestFileIntoProjectByApi();
-
-    return testWorkspace;
   }
 
   // do request to test application if debugger for the app. has been set properly,
