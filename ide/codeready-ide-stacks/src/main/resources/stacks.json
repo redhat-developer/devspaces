@@ -374,7 +374,7 @@
       "description": null,
       "commands": [
         {
-          "commandLine": "mvn clean install -f ${current.project.path}/pom.xml",
+          "commandLine": "export MAVEN_OPTS='-Xms20m'\nmvn clean install -f ${current.project.path}/pom.xml",
           "name": "build",
           "type": "mvn",
           "attributes": {
