@@ -46,10 +46,10 @@ public class AddOrImportProjectFormTest {
   private static final String NAME_WITH_SPECIAL_CHARACTERS = "@#$%^&*";
   private static final String KITCHENSINCK_EXAMPLE = "kitchensink-example";
   private static final String EXPECTED_KITCHENSINC_REPOSITORY_URL =
-      "https://github.com/openshift-quickstart/kitchensink-example.git";
+      "https://github.com/che-samples/kitchensink-example.git";
   private static final String RENAMED_KITCHENSINK_SAMPLE_NAME = "kitchensink";
   private static final String EXPECTED_CONSOLE_REPOSITORY_URL =
-      "https://github.com/openshift-quickstart/kitchensink-example.git";
+      "https://github.com/che-samples/kitchensink-example.git";
   private static final String BLANK_FORM_DESCRIPTION = "example of description";
   private static final String CUSTOM_BLANK_PROJECT_NAME = "blank-project";
   private static final String BLANK_PROJECT_NAME = "blank";
