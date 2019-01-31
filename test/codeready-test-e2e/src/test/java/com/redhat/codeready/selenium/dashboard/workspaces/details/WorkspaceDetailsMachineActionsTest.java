@@ -41,7 +41,7 @@ public class WorkspaceDetailsMachineActionsTest {
   private static final String MACHINE_NAME = "dev-machine";
   private static final String CHANGED_MACHINE_NAME = "test-machine";
   private static final String IMAGE_NAME =
-      "registry.access.stage.redhat.com/codeready-workspaces/stacks-java";
+      "registry.access.redhat.com/codeready-workspaces/stacks-java";
   private static final String EXPECTED_RAM_VALUE = "2";
   private static final String EMPTY_NAME_ERROR_MESSAGE = "Machine's name is required.";
   private static final String SPECIAL_CHARACTERS_ERRORS_MESSAGE =
