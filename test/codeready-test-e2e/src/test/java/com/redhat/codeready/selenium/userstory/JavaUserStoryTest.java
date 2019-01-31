@@ -21,6 +21,7 @@ import static org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants.A
 import static org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants.Assistant.QUICK_DOCUMENTATION;
 import static org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants.Assistant.QUICK_FIX;
 import static org.eclipse.che.selenium.core.constant.TestTimeoutsConstants.LOADER_TIMEOUT_SEC;
+import static org.eclipse.che.selenium.core.constant.TestTimeoutsConstants.WIDGET_TIMEOUT_SEC;
 import static org.eclipse.che.selenium.core.utils.FileUtil.readFileToString;
 import static org.eclipse.che.selenium.pageobject.CodenvyEditor.MarkerLocator.ERROR;
 import static org.eclipse.che.selenium.pageobject.CodenvyEditor.MarkerLocator.ERROR_OVERVIEW;
@@ -40,7 +41,6 @@ import com.redhat.codeready.selenium.pageobject.CodereadyDebuggerPanel;
 import com.redhat.codeready.selenium.pageobject.CodereadyEditor;
 import com.redhat.codeready.selenium.pageobject.dashboard.CodeReadyCreateWorkspaceHelper;
 import com.redhat.codeready.selenium.pageobject.dashboard.CodereadyFindUsageWidget;
-import com.redhat.codeready.selenium.pageobject.dashboard.CodereadyNewWorkspace;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -54,17 +54,14 @@ import org.eclipse.che.selenium.core.client.TestWorkspaceServiceClient;
 import org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants;
 import org.eclipse.che.selenium.core.user.DefaultTestUser;
 import org.eclipse.che.selenium.core.utils.HttpUtil;
-import org.eclipse.che.selenium.core.webdriver.SeleniumWebDriverHelper;
 import org.eclipse.che.selenium.core.workspace.TestWorkspace;
-import org.eclipse.che.selenium.core.workspace.TestWorkspaceProvider;
 import org.eclipse.che.selenium.pageobject.Consoles;
 import org.eclipse.che.selenium.pageobject.Events;
+import org.eclipse.che.selenium.pageobject.Ide;
 import org.eclipse.che.selenium.pageobject.Menu;
 import org.eclipse.che.selenium.pageobject.NotificationsPopupPanel;
 import org.eclipse.che.selenium.pageobject.ProjectExplorer;
-import org.eclipse.che.selenium.pageobject.dashboard.AddOrImportForm;
 import org.eclipse.che.selenium.pageobject.dashboard.Dashboard;
-import org.eclipse.che.selenium.pageobject.dashboard.workspaces.Workspaces;
 import org.eclipse.che.selenium.pageobject.debug.JavaDebugConfig;
 import org.eclipse.che.selenium.pageobject.intelligent.CommandsPalette;
 import org.openqa.selenium.TimeoutException;
@@ -80,18 +77,14 @@ public class JavaUserStoryTest {
   private final String WORKSPACE = generate("JavaUserStory", 4);
   private final String PROJECT = "kitchensink-example";
   private final String PATH_TO_MAIN_PACKAGE =
-      PROJECT + "/src/main/java/org.jboss.as.quickstarts.kitchensink";
+      PROJECT + "/src/main/java/org.jboss.as.quickstarts.kitchensinkjsp";
   private List<String> projects = ImmutableList.of(PROJECT);
 
+  @Inject private Ide ide;
   @Inject private Dashboard dashboard;
-  @Inject private Workspaces workspaces;
-  @Inject private CodereadyNewWorkspace newWorkspace;
   @Inject private DefaultTestUser defaultTestUser;
-  @Inject private TestWorkspaceProvider testWorkspaceProvider;
-  @Inject private SeleniumWebDriverHelper seleniumWebDriverHelper;
   @Inject private ProjectExplorer projectExplorer;
   @Inject private TestWorkspaceServiceClient workspaceServiceClient;
-  @Inject private AddOrImportForm addOrImportForm;
   @Inject private CommandsPalette commandsPalette;
   @Inject private Consoles consoles;
   @Inject private CodereadyEditor editor;
@@ -132,6 +125,7 @@ public class JavaUserStoryTest {
         codeReadyCreateWorkspaceHelper.createWsFromStackWithTestProject(
             WORKSPACE, JAVA_DEFAULT, addressImage, projects);
 
+    ide.switchToIdeAndWaitWorkspaceIsReadyToUse();
     projectExplorer.waitItem(PROJECT);
     events.clickEventLogBtn();
     events.waitExpectedMessage("Branch 'master' is checked out");
@@ -156,6 +150,7 @@ public class JavaUserStoryTest {
 
     // prepare
     setUpDebugMode();
+    projectExplorer.waitItem(PATH_TO_MAIN_PACKAGE);
     projectExplorer.quickRevealToItemWithJavaScript(
         PATH_TO_MAIN_PACKAGE + ".data/MemberListProducer.java");
     projectExplorer.openItemByVisibleNameInExplorer("MemberListProducer.java");
@@ -236,7 +231,7 @@ public class JavaUserStoryTest {
     projectExplorer.scrollAndSelectItem(pomXmlFilePath);
     projectExplorer.waitItemIsSelected(pomXmlFilePath);
     projectExplorer.openItemByPath(pomXmlFilePath);
-    editor.waitTabIsPresent(pomXmlEditorTabTitle);
+    editor.waitTabIsPresent(pomXmlEditorTabTitle, WIDGET_TIMEOUT_SEC);
     editor.waitTabSelection(0, pomXmlEditorTabTitle);
     editor.waitActive();
 
@@ -272,10 +267,10 @@ public class JavaUserStoryTest {
 
   private void checkCodeValidationFeature(String memberRegistrationTabName) {
     editor.selectTabByName(memberRegistrationTabName);
-    editor.goToPosition(28, 17);
+    editor.goToPosition(26, 15);
     editor.typeTextIntoEditor("2");
-    editor.waitMarkerInPosition(ERROR_OVERVIEW, 28);
-    editor.goToPosition(28, 18);
+    editor.waitMarkerInPosition(ERROR_OVERVIEW, 26);
+    editor.goToPosition(26, 15);
     menu.runCommand(ASSISTANT, QUICK_FIX);
     editor.enterTextIntoFixErrorPropByDoubleClick("Change to 'Logger' (java.util.logging)");
     editor.waitAllMarkersInvisibility(ERROR_OVERVIEW, LOADER_TIMEOUT_SEC);
@@ -290,7 +285,7 @@ public class JavaUserStoryTest {
   }
 
   private void checkFindDefinitionFeature(String expectedTextOfInjectClass) {
-    editor.goToPosition(36, 7);
+    editor.goToPosition(31, 7);
     menu.runCommand(ASSISTANT, FIND_DEFINITION);
     editor.waitActiveTabFileName("Inject.class");
     editor.waitCursorPosition(185, 25);
@@ -305,7 +300,7 @@ public class JavaUserStoryTest {
 
   private void checkFindUsagesFeature() {
     menu.runCommand(ASSISTANT, FIND_USAGES);
-    findUsages.waitExpectedOccurences(26);
+    findUsages.waitExpectedOccurences(25);
   }
 
   private void checkGoToDeclarationFeature() {
@@ -313,7 +308,7 @@ public class JavaUserStoryTest {
         PATH_TO_MAIN_PACKAGE + ".controller/MemberRegistration.java");
     projectExplorer.openItemByVisibleNameInExplorer("MemberRegistration.java");
     editor.waitActive();
-    editor.goToPosition(39, 14);
+    editor.goToPosition(34, 14);
     editor.typeTextIntoEditor(F4.toString());
     editor.waitActiveTabFileName("Member");
     editor.waitCursorPosition(23, 20);
@@ -424,7 +419,7 @@ public class JavaUserStoryTest {
             .stream()
             .collect(Collectors.joining());
     String wsId = workspaceServiceClient.getByName(WORKSPACE, defaultTestUser.getName()).getId();
-    String pathToFolder = PROJECT + "/src/main/java/org/jboss/as/quickstarts/kitchensink/util";
+    String pathToFolder = PROJECT + "/src/main/java/org/jboss/as/quickstarts/kitchensinkjsp/util";
     String NewFileName = "DecoratorSample.java";
     projectServiceClient.createFileInProject(wsId, pathToFolder, NewFileName, content);
   }
