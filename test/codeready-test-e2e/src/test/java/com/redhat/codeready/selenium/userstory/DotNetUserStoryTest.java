@@ -11,25 +11,9 @@
 */
 package com.redhat.codeready.selenium.userstory;
 
-import static com.redhat.codeready.selenium.pageobject.dashboard.CodereadyNewWorkspace.CodereadyStacks.DOT_NET;
-import static org.eclipse.che.commons.lang.NameGenerator.generate;
-import static org.eclipse.che.selenium.core.constant.TestCommandsConstants.RUN_COMMAND;
-import static org.eclipse.che.selenium.core.constant.TestCommandsConstants.UPDATE_DEPENDENCIES_COMMAND;
-import static org.eclipse.che.selenium.core.constant.TestIntelligentCommandsConstants.CommandItem.RUN_COMMAND_ITEM;
-import static org.eclipse.che.selenium.core.constant.TestIntelligentCommandsConstants.CommandItem.UPDATE_DEPENDENCIES_COMMAND_ITEM;
-import static org.eclipse.che.selenium.core.constant.TestProjectExplorerContextMenuConstants.ContextMenuCommandGoals.BUILD_GOAL;
-import static org.eclipse.che.selenium.core.constant.TestProjectExplorerContextMenuConstants.ContextMenuCommandGoals.RUN_GOAL;
-import static org.eclipse.che.selenium.core.constant.TestTimeoutsConstants.LOADER_TIMEOUT_SEC;
-import static org.eclipse.che.selenium.core.utils.FileUtil.readFileToString;
-import static org.eclipse.che.selenium.pageobject.CodenvyEditor.MarkerLocator.ERROR;
-import static org.eclipse.che.selenium.pageobject.CodenvyEditor.MarkerLocator.INFO;
-
 import com.google.common.collect.ImmutableList;
 import com.google.inject.Inject;
 import com.redhat.codeready.selenium.pageobject.dashboard.CodeReadyCreateWorkspaceHelper;
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.util.List;
 import org.eclipse.che.selenium.core.client.TestWorkspaceServiceClient;
 import org.eclipse.che.selenium.core.user.DefaultTestUser;
 import org.eclipse.che.selenium.core.workspace.TestWorkspace;
@@ -43,6 +27,20 @@ import org.openqa.selenium.Keys;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+
+import java.util.List;
+
+import static com.redhat.codeready.selenium.pageobject.dashboard.CodereadyNewWorkspace.CodereadyStacks.DOT_NET;
+import static org.eclipse.che.commons.lang.NameGenerator.generate;
+import static org.eclipse.che.selenium.core.constant.TestCommandsConstants.RUN_COMMAND;
+import static org.eclipse.che.selenium.core.constant.TestCommandsConstants.UPDATE_DEPENDENCIES_COMMAND;
+import static org.eclipse.che.selenium.core.constant.TestIntelligentCommandsConstants.CommandItem.RUN_COMMAND_ITEM;
+import static org.eclipse.che.selenium.core.constant.TestIntelligentCommandsConstants.CommandItem.UPDATE_DEPENDENCIES_COMMAND_ITEM;
+import static org.eclipse.che.selenium.core.constant.TestProjectExplorerContextMenuConstants.ContextMenuCommandGoals.BUILD_GOAL;
+import static org.eclipse.che.selenium.core.constant.TestProjectExplorerContextMenuConstants.ContextMenuCommandGoals.RUN_GOAL;
+import static org.eclipse.che.selenium.core.constant.TestTimeoutsConstants.LOADER_TIMEOUT_SEC;
+import static org.eclipse.che.selenium.pageobject.CodenvyEditor.MarkerLocator.ERROR;
+import static org.eclipse.che.selenium.pageobject.CodenvyEditor.MarkerLocator.INFO;
 
 /** @author Skoryk Serhii */
 public class DotNetUserStoryTest {
@@ -66,12 +64,10 @@ public class DotNetUserStoryTest {
 
   // it is used to read workspace logs on test failure
   private TestWorkspace testWorkspace;
-  private String addressImage;
 
   @BeforeClass
-  public void setUp() throws IOException, URISyntaxException {
+  public void setUp() {
     dashboard.open();
-    addressImage = readFileToString(getClass().getResource("/crw-stage-images/dotnet-stack.txt"));
   }
 
   @AfterClass
@@ -85,7 +81,7 @@ public class DotNetUserStoryTest {
     // possible to read logs in case of test failure
     testWorkspace =
         codeReadyCreateWorkspaceHel.createWsFromStackWithTestProject(
-            WORKSPACE_NAME, DOT_NET, addressImage, projects);
+            WORKSPACE_NAME, DOT_NET, projects);
 
     ide.switchToIdeAndWaitWorkspaceIsReadyToUse();
 
