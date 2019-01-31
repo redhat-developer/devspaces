@@ -150,7 +150,7 @@ public class JavaUserStoryTest {
 
     // prepare
     setUpDebugMode();
-    projectExplorer.waitItem(PATH_TO_MAIN_PACKAGE);
+    projectExplorer.waitItem(PROJECT);
     projectExplorer.quickRevealToItemWithJavaScript(
         PATH_TO_MAIN_PACKAGE + ".data/MemberListProducer.java");
     projectExplorer.openItemByVisibleNameInExplorer("MemberListProducer.java");
