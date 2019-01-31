@@ -15,7 +15,7 @@
         }
       },
       "recipe": {
-        "location": "brew-pulp-docker01.web.prod.ext.phx2.redhat.com:8888/codeready-workspaces/stacks-cpp",
+        "location": "registry.access.redhat.com/codeready-workspaces/stacks-cpp",
         "type": "dockerimage"
       }
     }
