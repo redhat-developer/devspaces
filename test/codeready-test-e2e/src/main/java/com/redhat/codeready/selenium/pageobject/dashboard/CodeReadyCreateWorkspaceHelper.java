@@ -45,9 +45,9 @@ public class CodeReadyCreateWorkspaceHelper {
   @Inject private SeleniumWebDriver seleniumWebDriver;
 
   public TestWorkspace createWsFromStackWithTestProject(
-          String workspaceName,
-          CodereadyNewWorkspace.CodereadyStacks stackName,
-          List<String> projectNames) {
+      String workspaceName,
+      CodereadyNewWorkspace.CodereadyStacks stackName,
+      List<String> projectNames) {
 
     // select stack on workspace dashboard
     dashboard.selectWorkspacesItemOnDashboard();
