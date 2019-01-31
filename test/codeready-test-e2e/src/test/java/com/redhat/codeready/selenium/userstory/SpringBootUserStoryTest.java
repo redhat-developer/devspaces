@@ -35,7 +35,6 @@ import com.google.inject.Inject;
 import com.redhat.codeready.selenium.pageobject.CodereadyEditor;
 import com.redhat.codeready.selenium.pageobject.dashboard.CodeReadyCreateWorkspaceHelper;
 import com.redhat.codeready.selenium.pageobject.dashboard.CodereadyNewWorkspace;
-import com.redhat.codeready.selenium.pageobject.dashboard.CodereadyNewWorkspace.CodereadyStacks;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.List;
@@ -178,17 +177,5 @@ public class SpringBootUserStoryTest {
     menu.runCommand(ASSISTANT, QUICK_DOCUMENTATION);
     editor.checkTextToBePresentInCodereadyJavaDocPopUp(
         "The Java language provides special support for the string concatenation operator ( + ), and for conversion of other objects to strings. ");
-  }
-
-  private void createWorkspaceFromStackWithProject(CodereadyStacks stackName, String projectName) {
-    dashboard.selectWorkspacesItemOnDashboard();
-    dashboard.waitToolbarTitleName("Workspaces");
-
-    workspaces.clickOnAddWorkspaceBtn();
-    newWorkspace.typeWorkspaceName(WORKSPACE_NAME);
-    newWorkspace.selectCodereadyStack(stackName);
-    addOrImportForm.clickOnAddOrImportProjectButton();
-    addOrImportForm.addSampleToWorkspace(projectName);
-    newWorkspace.clickOnCreateButtonAndOpenInIDE();
   }
 }
