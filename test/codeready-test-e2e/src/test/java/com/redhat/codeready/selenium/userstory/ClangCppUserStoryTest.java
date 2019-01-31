@@ -11,21 +11,10 @@
 */
 package com.redhat.codeready.selenium.userstory;
 
-import static org.eclipse.che.commons.lang.NameGenerator.generate;
-import static org.eclipse.che.selenium.core.constant.TestCommandsConstants.RUN_COMMAND;
-import static org.eclipse.che.selenium.core.constant.TestIntelligentCommandsConstants.CommandItem.BUILD_AND_RUN_COMMAND_ITEM;
-import static org.eclipse.che.selenium.core.constant.TestProjectExplorerContextMenuConstants.ContextMenuCommandGoals.RUN_GOAL;
-import static org.eclipse.che.selenium.core.constant.TestTimeoutsConstants.WIDGET_TIMEOUT_SEC;
-import static org.eclipse.che.selenium.core.utils.FileUtil.readFileToString;
-import static org.eclipse.che.selenium.pageobject.CodenvyEditor.MarkerLocator.ERROR;
-
 import com.google.common.collect.ImmutableList;
 import com.google.inject.Inject;
 import com.redhat.codeready.selenium.pageobject.dashboard.CodeReadyCreateWorkspaceHelper;
 import com.redhat.codeready.selenium.pageobject.dashboard.CodereadyNewWorkspace;
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.util.List;
 import org.eclipse.che.selenium.core.SeleniumWebDriver;
 import org.eclipse.che.selenium.core.client.TestWorkspaceServiceClient;
 import org.eclipse.che.selenium.core.user.DefaultTestUser;
@@ -39,6 +28,15 @@ import org.openqa.selenium.Keys;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+
+import java.util.List;
+
+import static org.eclipse.che.commons.lang.NameGenerator.generate;
+import static org.eclipse.che.selenium.core.constant.TestCommandsConstants.RUN_COMMAND;
+import static org.eclipse.che.selenium.core.constant.TestIntelligentCommandsConstants.CommandItem.BUILD_AND_RUN_COMMAND_ITEM;
+import static org.eclipse.che.selenium.core.constant.TestProjectExplorerContextMenuConstants.ContextMenuCommandGoals.RUN_GOAL;
+import static org.eclipse.che.selenium.core.constant.TestTimeoutsConstants.WIDGET_TIMEOUT_SEC;
+import static org.eclipse.che.selenium.pageobject.CodenvyEditor.MarkerLocator.ERROR;
 
 /**
  * @author Skoryk Serhii
@@ -65,12 +63,10 @@ public class ClangCppUserStoryTest {
 
   // it is used to read workspace logs on test failure
   private TestWorkspace testWorkspace;
-  private String addressImage;
 
   @BeforeClass
-  public void setUp() throws IOException, URISyntaxException {
+  public void setUp() {
     dashboard.open();
-    addressImage = readFileToString(getClass().getResource("/crw-stage-images/cpp-stack.txt"));
   }
 
   @AfterClass
@@ -84,7 +80,7 @@ public class ClangCppUserStoryTest {
     // possible to read logs in case of test failure
     testWorkspace =
         codeReadyCreateWorkspaceHelper.createWsFromStackWithTestProject(
-            WORKSPACE_NAME, CodereadyNewWorkspace.CodereadyStacks.CPP, addressImage, projects);
+            WORKSPACE_NAME, CodereadyNewWorkspace.CodereadyStacks.CPP, projects);
 
     ide.switchToIdeAndWaitWorkspaceIsReadyToUse();
 
