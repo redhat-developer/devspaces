@@ -19,7 +19,6 @@ import static org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants.R
 import static org.eclipse.che.selenium.core.constant.TestProjectExplorerContextMenuConstants.ContextMenuCommandGoals.DEBUG_GOAL;
 import static org.eclipse.che.selenium.core.constant.TestProjectExplorerContextMenuConstants.ContextMenuCommandGoals.RUN_GOAL;
 import static org.eclipse.che.selenium.core.constant.TestTimeoutsConstants.LOADER_TIMEOUT_SEC;
-import static org.eclipse.che.selenium.core.utils.FileUtil.readFileToString;
 import static org.eclipse.che.selenium.pageobject.CodenvyEditor.MarkerLocator.ERROR_OVERVIEW;
 import static org.openqa.selenium.Keys.ARROW_DOWN;
 import static org.openqa.selenium.Keys.LEFT_CONTROL;
@@ -30,9 +29,7 @@ import com.google.inject.Inject;
 import com.redhat.codeready.selenium.pageobject.CodereadyEditor;
 import com.redhat.codeready.selenium.pageobject.dashboard.CodeReadyCreateWorkspaceHelper;
 import com.redhat.codeready.selenium.pageobject.dashboard.CodereadyNewWorkspace;
-import java.io.IOException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
@@ -136,12 +133,10 @@ public class PhpUserStoryTest {
   @Inject private CodeReadyCreateWorkspaceHelper codeReadyCreateWorkspaceHelper;
 
   private TestWorkspace testWorkspace;
-  private String addressImage;
 
   @BeforeClass
-  public void setUp() throws IOException, URISyntaxException {
+  public void setUp() {
     dashboard.open();
-    addressImage = readFileToString(getClass().getResource("/crw-stage-images/php-stack.txt"));
   }
 
   @AfterClass
@@ -154,8 +149,7 @@ public class PhpUserStoryTest {
     // store info about created workspace to make SeleniumTestHandler.captureTestWorkspaceLogs()
     // possible to read logs in case of test failure
     testWorkspace =
-        codeReadyCreateWorkspaceHelper.createWsFromStackWithTestProject(
-            WORKSPACE, PHP, addressImage, projects);
+        codeReadyCreateWorkspaceHelper.createWsFromStackWithTestProject(WORKSPACE, PHP, projects);
 
     ide.switchToIdeAndWaitWorkspaceIsReadyToUse();
     projectExplorer.waitItem(PROJECT_NAME);

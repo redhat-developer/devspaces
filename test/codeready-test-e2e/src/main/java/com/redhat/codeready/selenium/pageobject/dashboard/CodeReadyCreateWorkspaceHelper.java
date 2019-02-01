@@ -11,9 +11,6 @@
 */
 package com.redhat.codeready.selenium.pageobject.dashboard;
 
-import static org.eclipse.che.selenium.pageobject.dashboard.workspaces.WorkspaceDetails.ActionButton.SAVE_BUTTON;
-import static org.eclipse.che.selenium.pageobject.dashboard.workspaces.WorkspaceDetails.WorkspaceDetailsTab.MACHINES;
-
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import java.util.List;
@@ -29,7 +26,6 @@ import org.eclipse.che.selenium.pageobject.dashboard.workspaces.EditMachineForm;
 import org.eclipse.che.selenium.pageobject.dashboard.workspaces.WorkspaceDetails;
 import org.eclipse.che.selenium.pageobject.dashboard.workspaces.WorkspaceDetailsMachines;
 import org.eclipse.che.selenium.pageobject.dashboard.workspaces.Workspaces;
-import org.openqa.selenium.JavascriptExecutor;
 
 /** @author Aleksandr Shmaraiev */
 @Singleton
@@ -51,11 +47,7 @@ public class CodeReadyCreateWorkspaceHelper {
   public TestWorkspace createWsFromStackWithTestProject(
       String workspaceName,
       CodereadyNewWorkspace.CodereadyStacks stackName,
-      String addressStackImage,
       List<String> projectNames) {
-
-    String machineName = "dev-machine";
-    String successNotificationText = "Workspace updated.";
 
     // select stack on workspace dashboard
     dashboard.selectWorkspacesItemOnDashboard();
@@ -70,33 +62,7 @@ public class CodeReadyCreateWorkspaceHelper {
     projectSourcePage.clickOnAddProjectButton();
 
     // create workspace to edit
-    newWorkspace.clickOnCreateButtonAndEditWorkspace();
-    workspaceDetails.waitToolbarTitleName(workspaceName);
-    workspaceDetails.selectTabInWorkspaceMenu(MACHINES);
-    workspaceDetailsMachines.waitMachineListItem(machineName);
-
-    // edit recipe
-    workspaceDetailsMachines.clickOnEditButton(machineName);
-    editMachineForm.waitForm();
-
-    JavascriptExecutor js = (JavascriptExecutor) seleniumWebDriver;
-    js.executeScript(
-        String.format(
-            "document.querySelector('.edit-machine-form .CodeMirror').CodeMirror.setValue('%s')",
-            addressStackImage));
-
-    // save changes
-    editMachineForm.waitRecipeText(addressStackImage);
-    editMachineForm.waitSaveButtonEnabling();
-    editMachineForm.clickOnSaveButton();
-    editMachineForm.waitFormInvisibility();
-    workspaceDetailsMachines.waitImageNameInMachineListItem(machineName, addressStackImage);
-    workspaceDetails.waitAllEnabled(SAVE_BUTTON);
-    workspaceDetails.clickOnSaveChangesBtn();
-    workspaceDetailsMachines.waitNotificationMessage(successNotificationText);
-
-    codereadyNewWorkspace.clickOnOpenInIDEButton();
-
+    newWorkspace.clickOnCreateButtonAndOpenInIDE();
     return testWorkspaceProvider.getWorkspace(workspaceName, defaultTestUser);
   }
 }

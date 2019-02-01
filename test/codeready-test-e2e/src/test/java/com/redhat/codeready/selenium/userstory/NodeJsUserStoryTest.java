@@ -83,7 +83,6 @@ public class NodeJsUserStoryTest {
   @Inject private CodeReadyCreateWorkspaceHelper codeReadyCreateWorkspaceHelper;
 
   private TestWorkspace testWorkspace;
-  private String addressImage;
   private String packageJsonText;
   private String packageJsonEditedText;
 
@@ -91,7 +90,6 @@ public class NodeJsUserStoryTest {
   public void setUp() throws IOException, URISyntaxException {
     dashboard.open();
 
-    addressImage = readFileToString(getClass().getResource("/crw-stage-images/node-stack.txt"));
     packageJsonText =
         readFileToString(getClass().getResource("/projects/bayesian/package-json-before.txt"));
     packageJsonEditedText =
@@ -106,8 +104,7 @@ public class NodeJsUserStoryTest {
   @Test
   public void createJavaEAPWorkspaceWithProjectFromDashBoard() {
     testWorkspace =
-        codeReadyCreateWorkspaceHelper.createWsFromStackWithTestProject(
-            WORKSPACE, NODE, addressImage, projects);
+        codeReadyCreateWorkspaceHelper.createWsFromStackWithTestProject(WORKSPACE, NODE, projects);
 
     ide.switchToIdeAndWaitWorkspaceIsReadyToUse();
     projectExplorer.waitItem(PROJECT);

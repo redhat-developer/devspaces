@@ -103,14 +103,11 @@ public class JavaEapUserStoryTest {
 
   // it is used to read workspace logs on test failure
   private TestWorkspace testWorkspace;
-  private String addressImage;
 
   @BeforeClass
   public void setUp() throws URISyntaxException, IOException {
 
     dashboard.open();
-
-    addressImage = readFileToString(getClass().getResource("/crw-stage-images/java-stack.txt"));
     pomFileChangedText =
         readFileToString(getClass().getResource("/projects/bayesian/pom-file-after.txt"));
   }
@@ -124,7 +121,7 @@ public class JavaEapUserStoryTest {
   public void createJavaEAPWorkspaceWithProjectFromDashBoard() throws Exception {
     testWorkspace =
         codeReadyCreateWorkspaceHelper.createWsFromStackWithTestProject(
-            WORKSPACE, JAVA_EAP, addressImage, projects);
+            WORKSPACE, JAVA_EAP, projects);
 
     ide.switchToIdeAndWaitWorkspaceIsReadyToUse();
     projectExplorer.waitItem(PROJECT);
@@ -151,7 +148,7 @@ public class JavaEapUserStoryTest {
 
     // prepare
     setUpDebugMode();
-    projectExplorer.waitItem(PATH_TO_MAIN_PACKAGE);
+    projectExplorer.waitItem(PROJECT);
     projectExplorer.quickRevealToItemWithJavaScript(
         PATH_TO_MAIN_PACKAGE + ".data/MemberListProducer.java");
     projectExplorer.openItemByVisibleNameInExplorer("MemberListProducer.java");
