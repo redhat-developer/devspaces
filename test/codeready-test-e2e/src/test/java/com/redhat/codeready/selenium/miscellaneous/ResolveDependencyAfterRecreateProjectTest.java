@@ -15,6 +15,8 @@ import static org.eclipse.che.commons.lang.NameGenerator.generate;
 import static org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants.Workspace.CREATE_PROJECT;
 import static org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants.Workspace.WORKSPACE;
 import static org.eclipse.che.selenium.core.constant.TestProjectExplorerContextMenuConstants.ContextMenuFirstLevelItems.DELETE;
+import static org.eclipse.che.selenium.core.constant.TestTimeoutsConstants.ELEMENT_TIMEOUT_SEC;
+import static org.eclipse.che.selenium.core.constant.TestTimeoutsConstants.UPDATING_PROJECT_TIMEOUT_SEC;
 import static org.eclipse.che.selenium.pageobject.CodenvyEditor.MarkerLocator.ERROR;
 import static org.eclipse.che.selenium.pageobject.Wizard.TypeProject.MAVEN;
 
@@ -23,6 +25,7 @@ import org.eclipse.che.selenium.core.workspace.TestWorkspace;
 import org.eclipse.che.selenium.pageobject.AskDialog;
 import org.eclipse.che.selenium.pageobject.CodenvyEditor;
 import org.eclipse.che.selenium.pageobject.Ide;
+import org.eclipse.che.selenium.pageobject.Loader;
 import org.eclipse.che.selenium.pageobject.MavenPluginStatusBar;
 import org.eclipse.che.selenium.pageobject.Menu;
 import org.eclipse.che.selenium.pageobject.NotificationsPopupPanel;
@@ -39,9 +42,9 @@ public class ResolveDependencyAfterRecreateProjectTest {
   private static final String PROJECT_NAME1 = generate("project1", 4);
   private static final String PROJECT_NAME2 = generate("project2", 4);
   private static final String PATH_TO_EXPAND =
-      "/src/main/java/org.jboss.as.quickstarts.kitchensink/controller";
+      "/src/main/java/org.jboss.as.quickstarts.kitchensinkjsp/controller";
   private static final String PATH_TO_FILE =
-      "/src/main/java/org/jboss/as/quickstarts/kitchensink/controller/MemberRegistration.java";
+      "/src/main/java/org/jboss/as/quickstarts/kitchensinkjsp/controller/MemberRegistration.java";
 
   @Inject private TestWorkspace workspace;
   @Inject private Ide ide;
@@ -52,6 +55,7 @@ public class ResolveDependencyAfterRecreateProjectTest {
   @Inject private MavenPluginStatusBar mavenPluginStatusBar;
   @Inject private NotificationsPopupPanel notificationsPopupPanel;
   @Inject private AskDialog askDialog;
+  @Inject private Loader loader;
 
   @BeforeClass
   public void setUp() throws Exception {
@@ -85,7 +89,7 @@ public class ResolveDependencyAfterRecreateProjectTest {
     askDialog.waitFormToOpen();
     askDialog.clickOkBtn();
     askDialog.waitFormToClose();
-    projectExplorer.waitItemIsNotPresentVisibleArea(PROJECT_NAME1);
+    projectExplorer.waitDisappearItemByPath(PROJECT_NAME1, ELEMENT_TIMEOUT_SEC);
   }
 
   /**
@@ -94,6 +98,7 @@ public class ResolveDependencyAfterRecreateProjectTest {
    * @param nameOfTheProject name of created project
    */
   private void createProjectFromUI(String nameOfTheProject) {
+    loader.waitOnClosed();
     menu.runCommand(WORKSPACE, CREATE_PROJECT);
     wizard.selectTypeProject(MAVEN);
     wizard.selectSample("kitchensink-example");
@@ -102,7 +107,8 @@ public class ResolveDependencyAfterRecreateProjectTest {
     wizard.waitCloseProjectConfigForm();
 
     projectExplorer.waitItem(nameOfTheProject);
-    mavenPluginStatusBar.waitClosingInfoPanel();
+    mavenPluginStatusBar.waitClosingInfoPanel(UPDATING_PROJECT_TIMEOUT_SEC);
     notificationsPopupPanel.waitProgressPopupPanelClose();
+    ide.waitOpenedWorkspaceIsReadyToUse();
   }
 }

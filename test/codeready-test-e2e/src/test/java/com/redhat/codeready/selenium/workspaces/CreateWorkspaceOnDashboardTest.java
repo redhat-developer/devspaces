@@ -43,10 +43,10 @@ public class CreateWorkspaceOnDashboardTest {
   private static final String WS_NAME = generate("workspace", 4);
   private static final String PROJECT_NAME = "kitchensink-example";
   private static final String PATH_TO_EXPAND =
-      "/src/main/java/org.jboss.as.quickstarts.kitchensink/controller";
+      "/src/main/java/org.jboss.as.quickstarts.kitchensinkjsp/controller";
   private static final String PATH_TO_MAIN_PACKAGE =
       PROJECT_NAME
-          + "/src/main/java/org/jboss/as/quickstarts/kitchensink/controller/MemberRegistration.java";
+          + "/src/main/java/org/jboss/as/quickstarts/kitchensinkjsp/controller/MemberRegistration.java";
 
   @Inject private TestWorkspaceServiceClient workspaceServiceClient;
   @Inject private NotificationsPopupPanel notificationsPopupPanel;
