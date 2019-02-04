@@ -45,7 +45,7 @@ import org.openqa.selenium.By;
 import org.testng.annotations.Test;
 
 /** @author Aleksandr Shmaraiev */
-public class   extends AbstractUserStoryTest {
+public class VertxUserStoryTest extends AbstractUserStoryTest {
   private static final String VERTX_PROJECT_NAME = "vertx-http-booster";
   private static final String PATH_TO_MAIN_PACKAGE =
       VERTX_PROJECT_NAME + "/src/main/java/io.openshift.booster";
