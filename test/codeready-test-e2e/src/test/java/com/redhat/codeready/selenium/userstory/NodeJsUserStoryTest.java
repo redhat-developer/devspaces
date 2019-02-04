@@ -18,6 +18,7 @@ import static org.eclipse.che.selenium.core.utils.FileUtil.readFileToString;
 import static org.eclipse.che.selenium.pageobject.CodenvyEditor.MarkerLocator.ERROR;
 import static org.openqa.selenium.Keys.BACK_SPACE;
 
+import com.google.common.collect.ImmutableList;
 import com.google.inject.Inject;
 import com.redhat.codeready.selenium.pageobject.CodereadyEditor;
 import com.redhat.codeready.selenium.pageobject.dashboard.CodereadyNewWorkspace;
@@ -72,7 +73,7 @@ public class NodeJsUserStoryTest extends AbstractUserStoryTest {
 
   @Override
   protected List<String> getProjects() {
-    return null;
+    return ImmutableList.of(PROJECT);
   }
 
   @Override
