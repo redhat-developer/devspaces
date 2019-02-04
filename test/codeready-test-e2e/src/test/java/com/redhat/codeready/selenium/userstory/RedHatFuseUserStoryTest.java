@@ -12,6 +12,7 @@
 package com.redhat.codeready.selenium.userstory;
 
 import static com.redhat.codeready.selenium.pageobject.dashboard.CodereadyNewWorkspace.CodereadyStacks.FUSE;
+import static java.util.Arrays.stream;
 import static org.eclipse.che.commons.lang.NameGenerator.generate;
 import static org.eclipse.che.selenium.core.constant.TestBuildConstants.BUILD_SUCCESS;
 import static org.eclipse.che.selenium.core.constant.TestBuildConstants.LISTENING_AT_ADDRESS_8000;
@@ -42,6 +43,7 @@ import org.eclipse.che.selenium.pageobject.Ide;
 import org.eclipse.che.selenium.pageobject.Menu;
 import org.eclipse.che.selenium.pageobject.ProjectExplorer;
 import org.eclipse.che.selenium.pageobject.dashboard.Dashboard;
+import org.eclipse.che.selenium.pageobject.intelligent.CommandsPalette;
 import org.openqa.selenium.TimeoutException;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
@@ -57,6 +59,15 @@ public class RedHatFuseUserStoryTest {
   private static final String LS_INIT_MESSAGE =
       "Initialized language server 'org.eclipse.che.plugin.camel.server.languageserver'";
 
+  private static final String[] REPORT_DEPENDENCY_ANALYSIS = {
+    "Report for /projects/spring-boot-camel/pom.xml",
+    "1) # of application dependencies : 3",
+    "2) Dependencies with Licenses : ",
+    "3) Suggest adding these dependencies to your application stack:",
+    "4) NO usage outlier application depedencies been found",
+    "5) NO alternative  application depedencies been suggested"
+  };
+
   private List<String> projects = ImmutableList.of(PROJECT_NAME);
 
   @Inject private Ide ide;
@@ -66,6 +77,7 @@ public class RedHatFuseUserStoryTest {
   @Inject private CodereadyEditor editor;
   @Inject private DefaultTestUser defaultTestUser;
   @Inject private ProjectExplorer projectExplorer;
+  @Inject private CommandsPalette commandsPalette;
   @Inject private CodereadyNewWorkspace newWorkspace;
   @Inject private TestWorkspaceServiceClient workspaceServiceClient;
   @Inject private CodeReadyCreateWorkspaceHelper codeReadyCreateWorkspaceHelper;
@@ -95,6 +107,17 @@ public class RedHatFuseUserStoryTest {
     // check Apache Camel language server initialized
     consoles.waitExpectedTextIntoConsole(LS_INIT_MESSAGE);
     consoles.waitJDTLSProjectResolveFinishedMessage(PROJECT_NAME);
+  }
+
+  @Test(priority = 1)
+  public void checkDependencyAnalysisCommand() {
+    ide.waitOpenedWorkspaceIsReadyToUse();
+    commandsPalette.openCommandPalette();
+    commandsPalette.startCommandByDoubleClick("dependency_analysis");
+    consoles.waitExpectedTextIntoConsole(BUILD_SUCCESS);
+
+    stream(REPORT_DEPENDENCY_ANALYSIS)
+        .forEach(partOfContent -> consoles.waitExpectedTextIntoConsole(partOfContent));
   }
 
   @Test(priority = 1)
