@@ -14,7 +14,9 @@ package com.redhat.codeready.selenium.userstory;
 import static com.redhat.codeready.selenium.pageobject.dashboard.CodereadyNewWorkspace.CodereadyStacks.JAVA_EAP;
 import static java.nio.file.Files.readAllLines;
 import static java.nio.file.Paths.get;
+import static java.util.Arrays.stream;
 import static org.eclipse.che.commons.lang.NameGenerator.generate;
+import static org.eclipse.che.selenium.core.constant.TestBuildConstants.BUILD_SUCCESS;
 import static org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants.Assistant.ASSISTANT;
 import static org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants.Assistant.FIND_DEFINITION;
 import static org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants.Assistant.FIND_USAGES;
@@ -79,6 +81,15 @@ public class JavaEapUserStoryTest {
   private final String PATH_TO_MAIN_PACKAGE =
       PROJECT + "/src/main/java/org.jboss.as.quickstarts.kitchensinkjsp";
 
+  private static final String[] REPORT_DEPENDENCY_ANALYSIS = {
+    "Report for /projects/spring-boot-camel/pom.xml",
+    "1) # of application dependencies : 3",
+    "2) Dependencies with Licenses : ",
+    "3) Suggest adding these dependencies to your application stack:",
+    "4) NO usage outlier application depedencies been found",
+    "5) NO alternative  application depedencies been suggested"
+  };
+
   private List<String> projects = ImmutableList.of(PROJECT);
 
   @Inject private Ide ide;
@@ -106,6 +117,7 @@ public class JavaEapUserStoryTest {
 
   @BeforeClass
   public void setUp() throws URISyntaxException, IOException {
+
     dashboard.open();
     pomFileChangedText =
         readFileToString(getClass().getResource("/projects/bayesian/pom-file-after.txt"));
@@ -116,7 +128,7 @@ public class JavaEapUserStoryTest {
     workspaceServiceClient.delete(WORKSPACE, defaultTestUser.getName());
   }
 
-  @Test(priority = 1)
+  @Test
   public void createJavaEAPWorkspaceWithProjectFromDashBoard() throws Exception {
     testWorkspace =
         codeReadyCreateWorkspaceHelper.createWsFromStackWithTestProject(
@@ -132,6 +144,22 @@ public class JavaEapUserStoryTest {
     addTestFileIntoProjectByApi();
   }
 
+  @Test(priority = 1)
+  public void checkDependencyAnalysisCommand() {
+    ide.waitOpenedWorkspaceIsReadyToUse();
+    commandsPalette.openCommandPalette();
+    commandsPalette.startCommandByDoubleClick("dependency_analysis");
+    consoles.waitExpectedTextIntoConsole(BUILD_SUCCESS);
+
+    try {
+      stream(REPORT_DEPENDENCY_ANALYSIS)
+          .forEach(partOfContent -> consoles.waitExpectedTextIntoConsole(partOfContent));
+    } catch (TimeoutException ex) {
+      // remove try-catch block after issue has been resolved
+      fail("Known permanent failure https://issues.jboss.org/browse/CRW-123");
+    }
+  }
+
   /**
    * Checks next debugger features:
    * <li>Debugged text highlighting
@@ -141,7 +169,7 @@ public class JavaEapUserStoryTest {
    * <li>Resume
    * <li>Ending of debug session
    */
-  @Test(priority = 2)
+  @Test(priority = 1)
   public void checkMainDebuggerFeatures() throws Exception {
     final String fileForDebuggingTabTitle = "MemberListProducer";
 
@@ -178,7 +206,7 @@ public class JavaEapUserStoryTest {
    * <li>Quick fix
    * <li>Autocompletion
    */
-  @Test(priority = 3)
+  @Test(priority = 2)
   public void checkCodeAssistantFeatures() throws Exception {
     String expectedTextOfInjectClass =
         "@see javax.inject.Provider\n */\n@Target({ METHOD, CONSTRUCTOR, FIELD })\n@Retention(RUNTIME)\n@Documented\npublic @interface Inject {}";
@@ -214,7 +242,7 @@ public class JavaEapUserStoryTest {
     }
   }
 
-  @Test(priority = 3)
+  @Test(priority = 2)
   public void checkBayesianLsErrorMarker() throws Exception {
     final String pomXmlFilePath = PROJECT + "/pom.xml";
     final String pomXmlEditorTabTitle = "jboss-as-kitchensink";
