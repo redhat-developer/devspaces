@@ -45,7 +45,7 @@ import org.openqa.selenium.By;
 import org.testng.annotations.Test;
 
 /** @author Aleksandr Shmaraiev */
-public class VertxUserStoryTest extends AbstractUserStoryTest {
+public class   extends AbstractUserStoryTest {
   private static final String VERTX_PROJECT_NAME = "vertx-http-booster";
   private static final String PATH_TO_MAIN_PACKAGE =
       VERTX_PROJECT_NAME + "/src/main/java/io.openshift.booster";
@@ -71,8 +71,6 @@ public class VertxUserStoryTest extends AbstractUserStoryTest {
   @Inject private CodereadyFindUsageWidget findUsages;
   @Inject private SeleniumWebDriver seleniumWebDriver;
   @Inject private SeleniumWebDriverHelper seleniumWebDriverHelper;
-
-  private String currentWindow;
 
   @Override
   protected List<String> getProjects() {
@@ -200,13 +198,13 @@ public class VertxUserStoryTest extends AbstractUserStoryTest {
     consoles.waitPreviewUrlIsResponsive(10);
     consoles.clickOnPreviewUrl();
 
-    seleniumWebDriverHelper.switchToNextWindow(currentWindow);
+    seleniumWebDriverHelper.switchToNextWindow(getIdeWindow());
 
     seleniumWebDriver.navigate().refresh();
     seleniumWebDriverHelper.waitVisibility(webElement, LOADER_TIMEOUT_SEC);
 
     seleniumWebDriver.close();
-    seleniumWebDriver.switchTo().window(currentWindow);
+    seleniumWebDriver.switchTo().window(getIdeWindow());
     seleniumWebDriverHelper.switchToIdeFrameAndWaitAvailability();
   }
 }

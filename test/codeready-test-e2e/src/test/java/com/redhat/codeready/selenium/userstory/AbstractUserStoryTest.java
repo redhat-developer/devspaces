@@ -17,6 +17,8 @@ import com.google.inject.Inject;
 import com.redhat.codeready.selenium.pageobject.dashboard.CodeReadyCreateWorkspaceHelper;
 import com.redhat.codeready.selenium.pageobject.dashboard.CodereadyNewWorkspace;
 import java.util.List;
+
+import org.eclipse.che.commons.annotation.Nullable;
 import org.eclipse.che.selenium.core.client.TestWorkspaceServiceClient;
 import org.eclipse.che.selenium.core.user.DefaultTestUser;
 import org.eclipse.che.selenium.core.workspace.TestWorkspace;
@@ -46,6 +48,8 @@ public abstract class AbstractUserStoryTest {
   // it is used to read workspace logs on test failure
   protected TestWorkspace testWorkspace;
 
+  private String currentWindow;
+
   @BeforeClass
   public void setUp() {
     dashboard.open();
@@ -62,11 +66,18 @@ public abstract class AbstractUserStoryTest {
         codeReadyCreateWorkspaceHelper.createWsFromStackWithTestProject(
             WORKSPACE, getStackName(), getProjects());
 
-    ide.switchToIdeAndWaitWorkspaceIsReadyToUse();
+    // switch to the IDE
+    currentWindow = ide.switchToIdeAndWaitWorkspaceIsReadyToUse();
+
     getProjects().forEach(projectExplorer::waitProjectInitialization);
   }
 
   protected abstract CodereadyNewWorkspace.CodereadyStacks getStackName();
 
   protected abstract List<String> getProjects();
+
+  @Nullable
+  protected String getIdeWindow() {
+    return currentWindow;
+  }
 }
