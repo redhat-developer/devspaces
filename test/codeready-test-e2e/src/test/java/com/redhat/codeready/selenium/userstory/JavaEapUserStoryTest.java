@@ -82,12 +82,12 @@ public class JavaEapUserStoryTest {
       PROJECT + "/src/main/java/org.jboss.as.quickstarts.kitchensinkjsp";
 
   private static final String[] REPORT_DEPENDENCY_ANALYSIS = {
-          "Report for /projects/spring-boot-camel/pom.xml",
-          "1) # of application dependencies : 3",
-          "2) Dependencies with Licenses : ",
-          "3) Suggest adding these dependencies to your application stack:",
-          "4) NO usage outlier application depedencies been found",
-          "5) NO alternative  application depedencies been suggested"
+    "Report for /projects/spring-boot-camel/pom.xml",
+    "1) # of application dependencies : 3",
+    "2) Dependencies with Licenses : ",
+    "3) Suggest adding these dependencies to your application stack:",
+    "4) NO usage outlier application depedencies been found",
+    "5) NO alternative  application depedencies been suggested"
   };
 
   private List<String> projects = ImmutableList.of(PROJECT);
@@ -153,7 +153,7 @@ public class JavaEapUserStoryTest {
 
     try {
       stream(REPORT_DEPENDENCY_ANALYSIS)
-              .forEach(partOfContent -> consoles.waitExpectedTextIntoConsole(partOfContent));
+          .forEach(partOfContent -> consoles.waitExpectedTextIntoConsole(partOfContent));
     } catch (TimeoutException ex) {
       // remove try-catch block after issue has been resolved
       fail("Known permanent failure https://issues.jboss.org/browse/CRW-123");
