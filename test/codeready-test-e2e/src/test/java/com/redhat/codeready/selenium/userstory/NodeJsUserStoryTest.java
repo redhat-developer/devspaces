@@ -12,17 +12,14 @@
 package com.redhat.codeready.selenium.userstory;
 
 import static com.redhat.codeready.selenium.pageobject.dashboard.CodereadyNewWorkspace.CodereadyStacks.NODE;
-import static org.eclipse.che.commons.lang.NameGenerator.generate;
 import static org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants.Assistant.ASSISTANT;
 import static org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants.Assistant.FIND_PROJECT_SYMBOL;
 import static org.eclipse.che.selenium.core.utils.FileUtil.readFileToString;
 import static org.eclipse.che.selenium.pageobject.CodenvyEditor.MarkerLocator.ERROR;
 import static org.openqa.selenium.Keys.BACK_SPACE;
 
-import com.google.common.collect.ImmutableList;
 import com.google.inject.Inject;
 import com.redhat.codeready.selenium.pageobject.CodereadyEditor;
-import com.redhat.codeready.selenium.pageobject.dashboard.CodeReadyCreateWorkspaceHelper;
 import com.redhat.codeready.selenium.pageobject.dashboard.CodereadyNewWorkspace;
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -35,44 +32,21 @@ import java.util.concurrent.TimeoutException;
 import javax.ws.rs.HttpMethod;
 import javax.ws.rs.core.Response;
 import org.eclipse.che.selenium.core.client.TestProjectServiceClient;
-import org.eclipse.che.selenium.core.client.TestWorkspaceServiceClient;
 import org.eclipse.che.selenium.core.constant.TestTimeoutsConstants;
-import org.eclipse.che.selenium.core.user.DefaultTestUser;
 import org.eclipse.che.selenium.core.utils.WaitUtils;
-import org.eclipse.che.selenium.core.webdriver.SeleniumWebDriverHelper;
-import org.eclipse.che.selenium.core.workspace.TestWorkspace;
-import org.eclipse.che.selenium.core.workspace.TestWorkspaceProvider;
 import org.eclipse.che.selenium.pageobject.AssistantFindPanel;
 import org.eclipse.che.selenium.pageobject.Consoles;
 import org.eclipse.che.selenium.pageobject.Events;
-import org.eclipse.che.selenium.pageobject.Ide;
 import org.eclipse.che.selenium.pageobject.Menu;
 import org.eclipse.che.selenium.pageobject.ProjectExplorer;
-import org.eclipse.che.selenium.pageobject.dashboard.AddOrImportForm;
-import org.eclipse.che.selenium.pageobject.dashboard.Dashboard;
-import org.eclipse.che.selenium.pageobject.dashboard.workspaces.Workspaces;
 import org.eclipse.che.selenium.pageobject.intelligent.CommandsPalette;
 import org.openqa.selenium.Keys;
-import org.testng.annotations.AfterClass;
-import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-public class NodeJsUserStoryTest {
-
-  private final String WORKSPACE = generate("NodeJsUserStoryTest", 4);
+public class NodeJsUserStoryTest extends AbstractUserStoryTest {
   private final String PROJECT = "web-nodejs-simple";
-  private List<String> projects = ImmutableList.of(PROJECT);
 
-  @Inject private Ide ide;
-  @Inject private Dashboard dashboard;
-  @Inject private Workspaces workspaces;
-  @Inject private CodereadyNewWorkspace newWorkspace;
-  @Inject private DefaultTestUser defaultTestUser;
-  @Inject private TestWorkspaceProvider testWorkspaceProvider;
-  @Inject private SeleniumWebDriverHelper seleniumWebDriverHelper;
   @Inject private ProjectExplorer projectExplorer;
-  @Inject private TestWorkspaceServiceClient workspaceServiceClient;
-  @Inject private AddOrImportForm addOrImportForm;
   @Inject private CommandsPalette commandsPalette;
   @Inject private Consoles consoles;
   @Inject private CodereadyEditor editor;
@@ -80,33 +54,32 @@ public class NodeJsUserStoryTest {
   @Inject private Events events;
   @Inject private TestProjectServiceClient projectServiceClient;
   @Inject private AssistantFindPanel assistantFindPanel;
-  @Inject private CodeReadyCreateWorkspaceHelper codeReadyCreateWorkspaceHelper;
 
-  private TestWorkspace testWorkspace;
   private String packageJsonText;
   private String packageJsonEditedText;
 
-  @BeforeClass
-  public void setUp() throws IOException, URISyntaxException {
-    dashboard.open();
-
+  public NodeJsUserStoryTest() throws IOException, URISyntaxException {
     packageJsonText =
         readFileToString(getClass().getResource("/projects/bayesian/package-json-before.txt"));
     packageJsonEditedText =
         readFileToString(getClass().getResource("/projects/bayesian/package-json-after.txt"));
   }
 
-  @AfterClass
-  public void tearDown() throws Exception {
-    workspaceServiceClient.delete(WORKSPACE, defaultTestUser.getName());
+  @Override
+  protected CodereadyNewWorkspace.CodereadyStacks getStackName() {
+    return NODE;
   }
 
-  @Test
-  public void createJavaEAPWorkspaceWithProjectFromDashBoard() {
-    testWorkspace =
-        codeReadyCreateWorkspaceHelper.createWsFromStackWithTestProject(WORKSPACE, NODE, projects);
+  @Override
+  protected List<String> getProjects() {
+    return null;
+  }
 
-    ide.switchToIdeAndWaitWorkspaceIsReadyToUse();
+  @Override
+  @Test
+  public void createWorkspaceFromDashboard() throws Exception {
+    super.createWorkspaceFromDashboard();
+
     projectExplorer.waitItem(PROJECT);
     events.clickEventLogBtn();
     events.waitExpectedMessage("Branch 'master' is checked out");

@@ -14,7 +14,6 @@ package com.redhat.codeready.selenium.userstory;
 import static com.redhat.codeready.selenium.pageobject.dashboard.CodereadyNewWorkspace.CodereadyStacks.WILD_FLY_SWARM;
 import static java.util.Arrays.stream;
 import static java.util.concurrent.TimeUnit.SECONDS;
-import static org.eclipse.che.commons.lang.NameGenerator.generate;
 import static org.eclipse.che.selenium.core.constant.TestBuildConstants.BUILD_SUCCESS;
 import static org.eclipse.che.selenium.core.constant.TestTimeoutsConstants.LOAD_PAGE_TIMEOUT_SEC;
 import static org.eclipse.che.selenium.core.constant.TestTimeoutsConstants.MULTIPLE;
@@ -24,7 +23,7 @@ import static org.openqa.selenium.Keys.ENTER;
 import com.google.common.collect.ImmutableList;
 import com.google.inject.Inject;
 import com.redhat.codeready.selenium.pageobject.CodereadyEditor;
-import com.redhat.codeready.selenium.pageobject.dashboard.CodeReadyCreateWorkspaceHelper;
+import com.redhat.codeready.selenium.pageobject.dashboard.CodereadyNewWorkspace;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -33,23 +32,16 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 import javax.ws.rs.HttpMethod;
 import javax.ws.rs.core.Response;
-import org.eclipse.che.selenium.core.client.TestWorkspaceServiceClient;
-import org.eclipse.che.selenium.core.user.DefaultTestUser;
 import org.eclipse.che.selenium.core.utils.WaitUtils;
-import org.eclipse.che.selenium.core.workspace.TestWorkspace;
 import org.eclipse.che.selenium.pageobject.Consoles;
 import org.eclipse.che.selenium.pageobject.Events;
 import org.eclipse.che.selenium.pageobject.Ide;
 import org.eclipse.che.selenium.pageobject.MavenPluginStatusBar;
 import org.eclipse.che.selenium.pageobject.ProjectExplorer;
-import org.eclipse.che.selenium.pageobject.dashboard.Dashboard;
 import org.eclipse.che.selenium.pageobject.intelligent.CommandsPalette;
-import org.testng.annotations.AfterClass;
-import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-public class WildFlyUserStoryTest {
-  private final String WORKSPACE = generate(WildFlyUserStoryTest.class.getSimpleName(), 4);
+public class WildFlyUserStoryTest extends AbstractUserStoryTest {
   private final String PROJECT = "wfswarm-rest-http";
   private final String PATH_TO_MAIN_PACKAGE =
       "wfswarm-rest-http/src/main/java/io/openshift/booster/";
@@ -63,40 +55,29 @@ public class WildFlyUserStoryTest {
     "5) NO alternative  application depedencies been suggested"
   };
 
-  private List<String> projects = ImmutableList.of(PROJECT);
-
   @Inject private Ide ide;
-  @Inject private Dashboard dashboard;
-  @Inject private DefaultTestUser defaultTestUser;
-  @Inject private ProjectExplorer projectExplorer;
-  @Inject private TestWorkspaceServiceClient workspaceServiceClient;
   @Inject private CommandsPalette commandsPalette;
+  @Inject private ProjectExplorer projectExplorer;
   @Inject private Consoles consoles;
   @Inject private CodereadyEditor editor;
   @Inject private Events events;
   @Inject private MavenPluginStatusBar mavenPluginStatusBar;
-  @Inject private CodeReadyCreateWorkspaceHelper codeReadyCreateWorkspaceHelper;
 
-  private TestWorkspace testWorkspace;
-
-  @BeforeClass
-  public void setUp() {
-    dashboard.open();
+  @Override
+  protected CodereadyNewWorkspace.CodereadyStacks getStackName() {
+    return WILD_FLY_SWARM;
   }
 
-  @AfterClass
-  public void tearDown() throws Exception {
-    workspaceServiceClient.delete(WORKSPACE, defaultTestUser.getName());
+  @Override
+  protected List<String> getProjects() {
+    return ImmutableList.of(PROJECT);
   }
 
   @Test
-  public void createJavaEAPWorkspaceWithProjectFromDashboard() {
-    // createWsFromWildFlyStack();
-    testWorkspace =
-        codeReadyCreateWorkspaceHelper.createWsFromStackWithTestProject(
-            WORKSPACE, WILD_FLY_SWARM, projects);
+  @Override
+  public void createWorkspaceFromDashboard() throws Exception {
+    super.createWorkspaceFromDashboard();
 
-    ide.switchToIdeAndWaitWorkspaceIsReadyToUse();
     projectExplorer.waitItem(PROJECT);
     events.clickEventLogBtn();
     events.waitExpectedMessage("Branch 'master' is checked out");

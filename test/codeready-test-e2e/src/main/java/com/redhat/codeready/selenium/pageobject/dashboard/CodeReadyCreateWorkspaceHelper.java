@@ -56,10 +56,12 @@ public class CodeReadyCreateWorkspaceHelper {
     newWorkspace.typeWorkspaceName(workspaceName);
     codereadyNewWorkspace.selectCodereadyStack(stackName);
 
-    // select sample project
-    addOrImportForm.clickOnAddOrImportProjectButton();
-    projectNames.forEach(projectSourcePage::selectSample);
-    projectSourcePage.clickOnAddProjectButton();
+    // select sample projects
+    if (projectNames != null && !projectNames.isEmpty()) {
+      addOrImportForm.clickOnAddOrImportProjectButton();
+      projectNames.forEach(projectSourcePage::selectSample);
+      projectSourcePage.clickOnAddProjectButton();
+    }
 
     // create workspace to edit
     newWorkspace.clickOnCreateButtonAndOpenInIDE();
