@@ -11,21 +11,22 @@
 */
 package com.redhat.codeready.selenium.userstory;
 
-import static com.redhat.codeready.selenium.pageobject.dashboard.CodereadyNewWorkspace.CodereadyStacks.JAVA_EAP;
+import static com.redhat.codeready.selenium.pageobject.dashboard.CodereadyNewWorkspace.CodereadyStacks.JAVA_RHEL8;
+import static java.util.Collections.emptyList;
 
 import com.redhat.codeready.selenium.pageobject.dashboard.CodereadyNewWorkspace;
-import java.io.IOException;
-import java.net.URISyntaxException;
+import java.util.List;
 
-/** @author Musienko Maxim */
-public class JavaEapUserStoryTest extends JavaUserStoryTest {
-
-  public JavaEapUserStoryTest() throws IOException, URISyntaxException {
-    super();
-  }
+/** @author Dmytro Nochevnov */
+public class JavaRhel8UserStoryTest extends AbstractUserStoryTest {
 
   @Override
   protected CodereadyNewWorkspace.CodereadyStacks getStackName() {
-    return JAVA_EAP;
+    return JAVA_RHEL8;
+  }
+
+  @Override
+  protected List<String> getProjects() {
+    return emptyList();
   }
 }

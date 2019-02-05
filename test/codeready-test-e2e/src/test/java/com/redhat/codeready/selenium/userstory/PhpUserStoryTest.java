@@ -12,7 +12,6 @@
 package com.redhat.codeready.selenium.userstory;
 
 import static com.redhat.codeready.selenium.pageobject.dashboard.CodereadyNewWorkspace.CodereadyStacks.PHP;
-import static org.eclipse.che.commons.lang.NameGenerator.generate;
 import static org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants.Run.DEBUG;
 import static org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants.Run.EDIT_DEBUG_CONFIGURATION;
 import static org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants.Run.RUN_MENU;
@@ -27,7 +26,6 @@ import static org.openqa.selenium.Keys.LEFT_SHIFT;
 import com.google.common.collect.ImmutableList;
 import com.google.inject.Inject;
 import com.redhat.codeready.selenium.pageobject.CodereadyEditor;
-import com.redhat.codeready.selenium.pageobject.dashboard.CodeReadyCreateWorkspaceHelper;
 import com.redhat.codeready.selenium.pageobject.dashboard.CodereadyNewWorkspace;
 import java.net.URI;
 import java.nio.file.Path;
@@ -36,30 +34,19 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 import org.eclipse.che.selenium.core.SeleniumWebDriver;
 import org.eclipse.che.selenium.core.client.TestProjectServiceClient;
-import org.eclipse.che.selenium.core.client.TestWorkspaceServiceClient;
 import org.eclipse.che.selenium.core.project.ProjectTemplates;
-import org.eclipse.che.selenium.core.user.DefaultTestUser;
 import org.eclipse.che.selenium.core.webdriver.SeleniumWebDriverHelper;
-import org.eclipse.che.selenium.core.workspace.TestWorkspace;
-import org.eclipse.che.selenium.core.workspace.TestWorkspaceProvider;
 import org.eclipse.che.selenium.pageobject.Consoles;
 import org.eclipse.che.selenium.pageobject.Events;
-import org.eclipse.che.selenium.pageobject.Ide;
 import org.eclipse.che.selenium.pageobject.Menu;
 import org.eclipse.che.selenium.pageobject.NotificationsPopupPanel;
 import org.eclipse.che.selenium.pageobject.ProjectExplorer;
-import org.eclipse.che.selenium.pageobject.dashboard.AddOrImportForm;
-import org.eclipse.che.selenium.pageobject.dashboard.Dashboard;
-import org.eclipse.che.selenium.pageobject.dashboard.workspaces.Workspaces;
 import org.eclipse.che.selenium.pageobject.debug.DebugPanel;
 import org.eclipse.che.selenium.pageobject.debug.PhpDebugConfig;
 import org.openqa.selenium.By;
-import org.testng.annotations.AfterClass;
-import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-public class PhpUserStoryTest {
-  private static final String WORKSPACE = generate(PhpUserStoryTest.class.getSimpleName(), 4);
+public class PhpUserStoryTest extends AbstractUserStoryTest {
   private static final String PROJECT_NAME = "web-php-simple";
   private static final String DEBUG_PROJECT_NAME = "debug-php";
   private static final String START_APP_COMMAND_NAME = "start httpd";
@@ -69,8 +56,6 @@ public class PhpUserStoryTest {
   private static final String LIB_FILE = "lib.php";
   private static final String PATH_TO_INDEX_PHP = DEBUG_PROJECT_NAME + "/" + INDEX_FILE;
   private static final String DEBUG_PHP_SCRIPT_COMMAND_NAME = "debug php script";
-
-  private List<String> projects = ImmutableList.of(PROJECT_NAME);
 
   private static final String CODE_FOR_TYPING =
       "\nfunction sayHello($name) {\n" + "return \"Hello, $name\";";
@@ -111,17 +96,9 @@ public class PhpUserStoryTest {
           + "//}\n"
           + "sayHello";
 
-  @Inject private Ide ide;
-  @Inject private Dashboard dashboard;
-  @Inject private Workspaces workspaces;
-  @Inject private CodereadyNewWorkspace newWorkspace;
-  @Inject private DefaultTestUser defaultTestUser;
-  @Inject private TestWorkspaceProvider testWorkspaceProvider;
   @Inject private SeleniumWebDriverHelper seleniumWebDriverHelper;
   @Inject private ProjectExplorer projectExplorer;
-  @Inject private TestWorkspaceServiceClient workspaceServiceClient;
   @Inject private TestProjectServiceClient testProjectServiceClient;
-  @Inject private AddOrImportForm addOrImportForm;
   @Inject private Consoles consoles;
   @Inject private CodereadyEditor editor;
   @Inject private Events events;
@@ -130,28 +107,22 @@ public class PhpUserStoryTest {
   @Inject private DebugPanel debugPanel;
   @Inject private PhpDebugConfig debugConfig;
   @Inject private NotificationsPopupPanel notificationPopup;
-  @Inject private CodeReadyCreateWorkspaceHelper codeReadyCreateWorkspaceHelper;
 
-  private TestWorkspace testWorkspace;
-
-  @BeforeClass
-  public void setUp() {
-    dashboard.open();
+  @Override
+  protected CodereadyNewWorkspace.CodereadyStacks getStackName() {
+    return PHP;
   }
 
-  @AfterClass
-  public void tearDown() throws Exception {
-    workspaceServiceClient.delete(WORKSPACE, defaultTestUser.getName());
+  @Override
+  protected List<String> getProjects() {
+    return ImmutableList.of(PROJECT_NAME);
   }
 
+  @Override
   @Test
-  public void checkCreationPhpStackWithProject() {
-    // store info about created workspace to make SeleniumTestHandler.captureTestWorkspaceLogs()
-    // possible to read logs in case of test failure
-    testWorkspace =
-        codeReadyCreateWorkspaceHelper.createWsFromStackWithTestProject(WORKSPACE, PHP, projects);
+  public void createWorkspaceFromDashboard() throws Exception {
+    super.createWorkspaceFromDashboard();
 
-    ide.switchToIdeAndWaitWorkspaceIsReadyToUse();
     projectExplorer.waitItem(PROJECT_NAME);
     projectExplorer.waitAndSelectItem(PROJECT_NAME);
     events.clickEventLogBtn();
