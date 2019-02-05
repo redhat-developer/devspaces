@@ -57,6 +57,7 @@ public class CodereadyKeycloakHeaderButtons extends KeycloakHeaderButtons {
   }
 
   /** wait until all buttons which placed in the header of the page will be visible */
+  @Override
   public void waitAllHeaderButtonsAreVisible() {
     Arrays.asList(
             Button.ACCOUNT.getXpath(),
