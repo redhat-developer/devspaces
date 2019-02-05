@@ -8,13 +8,13 @@
 #   Red Hat, Inc. - initial API and implementation
 #
 
-FROM registry.access.redhat.com/redhat-openjdk-18/openjdk18-openshift:1.5-14
-# FROM redhat-openjdk-18/openjdk18-openshift:1.5-14
+# https://access.redhat.com/containers/?tab=tags#/registry.access.redhat.com/redhat-openjdk-18/openjdk18-openshift
+FROM redhat-openjdk-18/openjdk18-openshift:1.5-14.1539812388
 
 ENV SUMMARY="Red Hat CodeReady Workspaces container that provides the Red Hat CodeReady Workspaces (Eclipse Che Server)" \
     DESCRIPTION="Red Hat CodeReady Workspaces container that provides the Red Hat CodeReady Workspaces (Eclipse Che Server)" \
     PRODNAME="codeready-workspaces" \
-    COMPNAME="container"
+    COMPNAME="server-container"
 
 LABEL summary="$SUMMARY" \
       description="$DESCRIPTION" \
@@ -23,29 +23,29 @@ LABEL summary="$SUMMARY" \
       io.openshift.tags="$PRODNAME,$COMPNAME" \
       com.redhat.component="$PRODNAME-$COMPNAME" \
       name="$PRODNAME/$COMPNAME" \
-      version="1.0.0.GA" \
+      version="1.0" \
       license="EPLv2" \
       maintainer="Nick Boldt <nboldt@redhat.com>" \
       io.openshift.expose-services="" \
       usage=""
 
+# uncomment to run a local build
+#RUN subscription-manager register --username username --password password --auto-attach
+#RUN subscription-manager repos --enable rhel-7-server-optional-rpms -enable rhel-server-rhscl-7-rpms
+
 USER root
 COPY entrypoint.sh /entrypoint.sh
 RUN mkdir -p /home/jboss/codeready
 
-# built locally, use ADD
-ADD assembly/codeready-workspaces-assembly-main/target/codeready-*/codeready-* /home/jboss/codeready
-
-# built in Brew, use curl + tar against latest artifact
-# fetched via fetch-artifacts-url.yaml?
-# RUN curl -L -s -S http://download-ipv4.eng.brq.redhat.com/brewroot/packages/com.redhat-codeready/1.0.0.Beta1_redhat_00002/1/maven/com/redhat/assembly-main/6.13.0.redhat-00002/assembly-main-6.13.0.redhat-00002.tar.gz > \
-#         /tmp/com.redhat-codeready-assembly-main.tar.gz
-# RUN tar xzf /tmp/com.redhat-codeready-assembly-main.tar.gz --strip-components=1 -C /home/jboss/codeready
-
-RUN cp /etc/pki/java/cacerts /home/jboss/cacerts && \
+# built in Brew, use get-sources.sh to pull latest
+COPY codeready-workspaces-assembly-main.tar.gz /tmp/codeready-workspaces-assembly-main.tar.gz
+RUN tar xzf /tmp/codeready-workspaces-assembly-main.tar.gz --strip-components=1 -C /home/jboss/codeready && \
+    rm -f /tmp/codeready-workspaces-assembly-main.tar.gz && \
+    cp /etc/pki/java/cacerts /home/jboss/cacerts && \
     mkdir -p /logs /data && \
     chgrp -R 0     /home/jboss /data /logs && \
-    chmod -R g+rwX /home/jboss /data /logs
+    chmod -R g+rwX /home/jboss /data /logs && \
+    yum list installed && echo "End Of Installed Packages"
 
 USER jboss
 ENTRYPOINT ["/entrypoint.sh"]
