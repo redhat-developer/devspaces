@@ -12,6 +12,7 @@
 package com.redhat.codeready.selenium.userstory;
 
 import static com.redhat.codeready.selenium.pageobject.dashboard.CodereadyNewWorkspace.CodereadyStacks.VERTX;
+import static java.util.Arrays.stream;
 import static org.eclipse.che.commons.lang.NameGenerator.generate;
 import static org.eclipse.che.selenium.core.constant.TestBuildConstants.BUILD_SUCCESS;
 import static org.eclipse.che.selenium.core.constant.TestCommandsConstants.BUILD_COMMAND;
@@ -30,7 +31,6 @@ import com.google.common.collect.ImmutableList;
 import com.google.inject.Inject;
 import com.redhat.codeready.selenium.pageobject.dashboard.CodeReadyCreateWorkspaceHelper;
 import com.redhat.codeready.selenium.pageobject.dashboard.CodereadyFindUsageWidget;
-import com.redhat.codeready.selenium.pageobject.dashboard.CodereadyNewWorkspace;
 import java.util.Arrays;
 import java.util.List;
 import org.eclipse.che.selenium.core.SeleniumWebDriver;
@@ -45,9 +45,8 @@ import org.eclipse.che.selenium.pageobject.Ide;
 import org.eclipse.che.selenium.pageobject.MavenPluginStatusBar;
 import org.eclipse.che.selenium.pageobject.Menu;
 import org.eclipse.che.selenium.pageobject.ProjectExplorer;
-import org.eclipse.che.selenium.pageobject.dashboard.AddOrImportForm;
 import org.eclipse.che.selenium.pageobject.dashboard.Dashboard;
-import org.eclipse.che.selenium.pageobject.dashboard.workspaces.Workspaces;
+import org.eclipse.che.selenium.pageobject.intelligent.CommandsPalette;
 import org.openqa.selenium.By;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
@@ -62,17 +61,24 @@ public class VertxUserStoryTest {
       VERTX_PROJECT_NAME + "/src/main/java/io.openshift.booster";
   private static final String JAVA_FILE_NAME = "HttpApplication";
 
+  private static final String[] REPORT_DEPENDENCY_ANALYSIS = {
+    "Report for /projects/vertx-http-booster/pom.xml",
+    "1) # of application dependencies : 2",
+    "2) Dependencies with Licenses : ",
+    "3) Suggest adding these dependencies to your application stack:",
+    "4) NO usage outlier application depedencies been found",
+    "5) NO alternative  application depedencies been suggested"
+  };
+
   private List<String> projects = ImmutableList.of(VERTX_PROJECT_NAME);
 
   // it is used to read workspace logs on test failure
   @Inject private Ide ide;
-  @Inject private Workspaces workspaces;
   @Inject private Consoles consoles;
-  @Inject private CodereadyNewWorkspace newWorkspace;
   @Inject private DefaultTestUser defaultTestUser;
   @Inject private Dashboard dashboard;
-  @Inject private AddOrImportForm addOrImportForm;
   @Inject private ProjectExplorer projectExplorer;
+  @Inject private CommandsPalette commandsPalette;
   @Inject private MavenPluginStatusBar mavenPluginStatusBar;
   @Inject private CodenvyEditor editor;
   @Inject private Events events;
@@ -115,6 +121,17 @@ public class VertxUserStoryTest {
 
     // check the project is initialized
     projectExplorer.waitProjectInitialization(VERTX_PROJECT_NAME);
+  }
+
+  @Test(priority = 1)
+  public void checkDependencyAnalysisCommand() {
+    ide.waitOpenedWorkspaceIsReadyToUse();
+    commandsPalette.openCommandPalette();
+    commandsPalette.startCommandByDoubleClick("dependency_analysis");
+    consoles.waitExpectedTextIntoConsole(BUILD_SUCCESS);
+
+    stream(REPORT_DEPENDENCY_ANALYSIS)
+        .forEach(partOfContent -> consoles.waitExpectedTextIntoConsole(partOfContent));
   }
 
   @Test(priority = 1)
