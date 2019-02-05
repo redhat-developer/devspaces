@@ -190,7 +190,7 @@ public class JavaUserStoryTest extends AbstractUserStoryTest {
    * <li>Quick fix
    * <li>Autocompletion
    */
-  @Test(priority = 3)
+  @Test(priority = 2)
   public void checkCodeAssistantFeatures() throws Exception {
     String expectedTextOfInjectClass =
         "@see javax.inject.Provider\n */\n@Target({ METHOD, CONSTRUCTOR, FIELD })\n@Retention(RUNTIME)\n@Documented\npublic @interface Inject {}";
