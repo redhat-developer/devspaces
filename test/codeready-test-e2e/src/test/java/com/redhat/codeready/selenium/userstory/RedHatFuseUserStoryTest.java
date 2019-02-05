@@ -87,7 +87,6 @@ public class RedHatFuseUserStoryTest extends AbstractUserStoryTest {
 
   @Test(priority = 1)
   public void checkDependencyAnalysisCommand() {
-    ide.waitOpenedWorkspaceIsReadyToUse();
     commandsPalette.openCommandPalette();
     commandsPalette.startCommandByDoubleClick("dependency_analysis");
     consoles.waitExpectedTextIntoConsole(BUILD_SUCCESS);

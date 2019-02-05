@@ -57,6 +57,7 @@ public class CodeReadyKeycloakFederatedIdentitiesPage extends KeycloakFederatedI
     String TITLE_XPATH = "//div[@class='col-md-10']//h2[text()='Federated Identities']";
   }
 
+  @Override
   public void open() {
     String identityPageUrl =
         format(

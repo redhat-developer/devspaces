@@ -81,7 +81,7 @@ public class CodereadyNewWorkspace extends NewWorkspace {
     PYTHON("python-default"),
     JAVA_RHEL8("rhel8-default");
 
-    private String id;
+    private final String id;
 
     CodereadyStacks(String id) {
       this.id = id;
