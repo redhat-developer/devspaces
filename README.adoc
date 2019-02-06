@@ -31,32 +31,17 @@ NOTE: Since the build includes GWT compilation it may take more than 3 minutes t
 
 The build artifact used in the Docker image will be in `assembly/assembly-main/target/codeready-${version}/codeready-${version}`
 
+
 ### How to Build Container Image (Locally)
 
-Run the following command in the root of a repository:
+You'll need these files:
 
-```
-docker build -t ${REGISTRY}/${REPO} .
-```
-
-You can then reference this image in your deployment (set image pull policy to IfNotPresent to avoid pushing the image to a registry).
-
-Please note, that stacks may reference non-existing images like `docker-registry.default.svc:5000/openshift/rhel-base-jdk8`. These images are built as a post installation step. Once published, they will be in locations like these:
-
-* registry.access.redhat.com/codeready-workspaces/server:1.0
-* registry.access.redhat.com/codeready-workspaces/server-operator:1.0
-* registry.access.redhat.com/codeready-workspaces/stacks-cpp:1.0
-* registry.access.redhat.com/codeready-workspaces/stacks-dotnet:1.0
-* registry.access.redhat.com/codeready-workspaces/stacks-golang:1.0
-* registry.access.redhat.com/codeready-workspaces/stacks-java:1.0
-* registry.access.redhat.com/codeready-workspaces-beta/stacks-java-rhel8:1.0
-* registry.access.redhat.com/codeready-workspaces/stacks-node:1.0
-* registry.access.redhat.com/codeready-workspaces/stacks-php:1.0
-* registry.access.redhat.com/codeready-workspaces/stacks-python:1.0
+* http://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces/tree/get-sources-jenkins.sh?h=codeready-1.0-rhel-7
+* http://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces/tree/Dockerfile?h=codeready-1.0-rhel-7
 
 
-### How to Build Container Using NCL and OSBS
+### How to Build Container Using Jenkins and OSBS (Brew)
 
 See this document for more on how to use those build systems, in order to publish a container image to Red Hat Container Catalog:
 
-* http://pkgs.devel.redhat.com/cgit/apbs/codeready-workspaces/tree/README.adoc?h=codeready-1.0-rhel-7
+* https://github.com/redhat-developer/codeready-workspaces-productization/blob/master/devdoc/building/osbs-container-builds.adoc
