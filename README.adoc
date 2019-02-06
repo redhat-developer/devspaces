@@ -34,10 +34,18 @@ The build artifact used in the Docker image will be in `assembly/assembly-main/t
 
 ### How to Build Container Image (Locally)
 
-You'll need these files:
+Clone the pkgs.devel repo, then Run the `get-sources-jenkins.sh` script to pull the latest dependency tarball into the local project, and trigger a Brew build.
 
-* http://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces/tree/get-sources-jenkins.sh?h=codeready-1.0-rhel-7
-* http://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces/tree/Dockerfile?h=codeready-1.0-rhel-7
+```
+kinit
+git clone ssh://kerberos-username@pkgs.devel.redhat.com/containers/codeready-workspaces
+cd codeready-workspaces
+./get-sources-jenkins.sh
+```
+
+See also:
+
+* http://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces/tree/README.adoc?h=codeready-1.0-rhel-7
 
 
 ### How to Build Container Using Jenkins and OSBS (Brew)
