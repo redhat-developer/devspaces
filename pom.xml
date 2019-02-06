@@ -30,8 +30,8 @@
         </license>
     </licenses>
     <properties>
-        <che.version>6.18.0-SNAPSHOT</che.version>
-        <che.dashboard.version>${che.version}</che.dashboard.version>
+        <che.version>${project.parent.version}</che.version>
+        <che.dashboard.version>${project.parent.version}</che.dashboard.version>
         <nightly>false</nightly>
     </properties>
     <dependencyManagement>
