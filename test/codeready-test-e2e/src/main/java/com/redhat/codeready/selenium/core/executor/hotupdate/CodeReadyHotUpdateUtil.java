@@ -55,6 +55,7 @@ public class CodeReadyHotUpdateUtil extends HotUpdateUtil {
    * @param masterRevisionBeforeUpdate - revision of the master pod before updating.
    * @throws Exception
    */
+  @Override
   public void waitFullMasterPodUpdate(int masterRevisionBeforeUpdate) throws Exception {
     waitFullMasterPodUpdate(masterRevisionBeforeUpdate, TIMEOUT_FOR_FINISH_UPDATE_IN_SECONDS);
   }
@@ -65,6 +66,7 @@ public class CodeReadyHotUpdateUtil extends HotUpdateUtil {
    * @param expectedRevision revision of the master pod.
    * @param timeoutInSec - waiting time in seconds.
    */
+  @Override
   public void waitMasterPodRevision(int expectedRevision, int timeoutInSec)
       throws TimeoutException, InterruptedException, ExecutionException {
     WaitUtils.waitSuccessCondition(() -> expectedRevision == getMasterPodRevision(), timeoutInSec);
@@ -75,6 +77,7 @@ public class CodeReadyHotUpdateUtil extends HotUpdateUtil {
    *
    * @param expectedRevision master pod revision.
    */
+  @Override
   public void waitMasterPodRevision(int expectedRevision)
       throws TimeoutException, InterruptedException, ExecutionException {
     waitMasterPodRevision(expectedRevision, TIMEOUT_FOR_FINISH_UPDATE_IN_SECONDS);
@@ -85,11 +88,13 @@ public class CodeReadyHotUpdateUtil extends HotUpdateUtil {
    *
    * @throws Exception
    */
+  @Override
   public void executeMasterPodUpdateCommand() throws Exception {
     openShiftCliCommandExecutor.execute(UPDATE_COMMAND_TEMPLATE);
   }
 
   /** Performs GET request to master pod API for checking its availability. */
+  @Override
   public void checkMasterPodAvailabilityByPreferencesRequest() {
     try {
       testUserPreferencesServiceClient.getPreferences();
@@ -103,6 +108,7 @@ public class CodeReadyHotUpdateUtil extends HotUpdateUtil {
    *
    * @return revision of the master pod.
    */
+  @Override
   public int getMasterPodRevision() {
     try {
       return Integer.parseInt(

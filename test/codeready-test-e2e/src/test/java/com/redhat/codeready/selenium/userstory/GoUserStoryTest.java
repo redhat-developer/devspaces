@@ -12,7 +12,6 @@
 package com.redhat.codeready.selenium.userstory;
 
 import static com.redhat.codeready.selenium.pageobject.dashboard.CodereadyNewWorkspace.CodereadyStacks.GO;
-import static org.eclipse.che.commons.lang.NameGenerator.generate;
 import static org.eclipse.che.selenium.core.constant.TestCommandsConstants.RUN_COMMAND;
 import static org.eclipse.che.selenium.core.constant.TestIntelligentCommandsConstants.CommandItem.RUN_COMMAND_ITEM;
 import static org.eclipse.che.selenium.core.constant.TestProjectExplorerContextMenuConstants.ContextMenuCommandGoals.RUN_GOAL;
@@ -20,28 +19,20 @@ import static org.eclipse.che.selenium.pageobject.CodenvyEditor.MarkerLocator.ER
 
 import com.google.common.collect.ImmutableList;
 import com.google.inject.Inject;
-import com.redhat.codeready.selenium.pageobject.dashboard.CodeReadyCreateWorkspaceHelper;
+import com.redhat.codeready.selenium.pageobject.dashboard.CodereadyNewWorkspace;
 import java.util.List;
-import org.eclipse.che.selenium.core.client.TestWorkspaceServiceClient;
-import org.eclipse.che.selenium.core.user.DefaultTestUser;
-import org.eclipse.che.selenium.core.workspace.TestWorkspace;
 import org.eclipse.che.selenium.pageobject.CodenvyEditor;
 import org.eclipse.che.selenium.pageobject.Consoles;
-import org.eclipse.che.selenium.pageobject.Ide;
 import org.eclipse.che.selenium.pageobject.ProjectExplorer;
-import org.eclipse.che.selenium.pageobject.dashboard.Dashboard;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
-import org.testng.annotations.AfterClass;
-import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 /**
  * @author Skoryk Serhii
  * @author Aleksandr Shmaraiev
  */
-public class GoUserStoryTest {
-  private static final String WORKSPACE_NAME = generate("GoUserStory", 4);
+public class GoUserStoryTest extends AbstractUserStoryTest {
   private static final String WEB_GO_PROJECT_NAME = "web-go-simple";
   private static final String GO_FILE_NAME = "main.go";
   private static final String LS_INIT_MESSAGE = "Finished running tool: ";
@@ -52,38 +43,18 @@ public class GoUserStoryTest {
   private List<String> expectedProposals =
       ImmutableList.of("Fscan", "Fscanf", "Fscanln", "Print", "Println", "Printf");
 
-  @Inject private Ide ide;
   @Inject private Consoles consoles;
   @Inject private CodenvyEditor editor;
-  @Inject private Dashboard dashboard;
-  @Inject private DefaultTestUser defaultTestUser;
   @Inject private ProjectExplorer projectExplorer;
-  @Inject private TestWorkspaceServiceClient workspaceServiceClient;
-  @Inject private CodeReadyCreateWorkspaceHelper codeReadyCreateWorkspaceHelper;
 
-  // it is used to read workspace logs on test failure
-  private TestWorkspace testWorkspace;
-
-  @BeforeClass
-  public void setUp() {
-    dashboard.open();
+  @Override
+  protected CodereadyNewWorkspace.CodereadyStacks getStackName() {
+    return GO;
   }
 
-  @AfterClass
-  public void tearDown() throws Exception {
-    workspaceServiceClient.delete(WORKSPACE_NAME, defaultTestUser.getName());
-  }
-
-  @Test
-  public void checkWorkspaceCreationFromGoStack() {
-    // store info about created workspace to make SeleniumTestHandler.captureTestWorkspaceLogs()
-    // possible to read logs in case of test failure
-    testWorkspace =
-        codeReadyCreateWorkspaceHelper.createWsFromStackWithTestProject(
-            WORKSPACE_NAME, GO, projects);
-
-    ide.switchToIdeAndWaitWorkspaceIsReadyToUse();
-    projectExplorer.waitProjectInitialization(WEB_GO_PROJECT_NAME);
+  @Override
+  protected List<String> getProjects() {
+    return ImmutableList.of(WEB_GO_PROJECT_NAME);
   }
 
   @Test(priority = 1)

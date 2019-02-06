@@ -15,7 +15,6 @@ import static com.redhat.codeready.selenium.pageobject.dashboard.CodereadyNewWor
 import static java.nio.file.Files.readAllLines;
 import static java.nio.file.Paths.get;
 import static java.util.Arrays.stream;
-import static org.eclipse.che.commons.lang.NameGenerator.generate;
 import static org.eclipse.che.selenium.core.constant.TestBuildConstants.BUILD_SUCCESS;
 import static org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants.Assistant.ASSISTANT;
 import static org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants.Assistant.FIND_DEFINITION;
@@ -41,8 +40,8 @@ import com.google.common.collect.ImmutableList;
 import com.google.inject.Inject;
 import com.redhat.codeready.selenium.pageobject.CodereadyDebuggerPanel;
 import com.redhat.codeready.selenium.pageobject.CodereadyEditor;
-import com.redhat.codeready.selenium.pageobject.dashboard.CodeReadyCreateWorkspaceHelper;
 import com.redhat.codeready.selenium.pageobject.dashboard.CodereadyFindUsageWidget;
+import com.redhat.codeready.selenium.pageobject.dashboard.CodereadyNewWorkspace;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -56,29 +55,21 @@ import org.eclipse.che.selenium.core.client.TestWorkspaceServiceClient;
 import org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants;
 import org.eclipse.che.selenium.core.user.DefaultTestUser;
 import org.eclipse.che.selenium.core.utils.HttpUtil;
-import org.eclipse.che.selenium.core.workspace.TestWorkspace;
 import org.eclipse.che.selenium.pageobject.Consoles;
 import org.eclipse.che.selenium.pageobject.Events;
 import org.eclipse.che.selenium.pageobject.Ide;
 import org.eclipse.che.selenium.pageobject.Menu;
 import org.eclipse.che.selenium.pageobject.NotificationsPopupPanel;
 import org.eclipse.che.selenium.pageobject.ProjectExplorer;
-import org.eclipse.che.selenium.pageobject.dashboard.Dashboard;
 import org.eclipse.che.selenium.pageobject.debug.JavaDebugConfig;
 import org.eclipse.che.selenium.pageobject.intelligent.CommandsPalette;
 import org.openqa.selenium.TimeoutException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.testng.annotations.AfterClass;
-import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 /** @author Musienko Maxim */
-public class JavaUserStoryTest {
-  private static final Logger LOG = LoggerFactory.getLogger(JavaUserStoryTest.class);
-  private final String WORKSPACE = generate("JavaUserStory", 4);
-  private final String PROJECT = "kitchensink-example";
-  private final String PATH_TO_MAIN_PACKAGE =
+public class JavaUserStoryTest extends AbstractUserStoryTest {
+  private static final String PROJECT = "kitchensink-example";
+  private static final String PATH_TO_MAIN_PACKAGE =
       PROJECT + "/src/main/java/org.jboss.as.quickstarts.kitchensinkjsp";
 
   private static final String[] REPORT_DEPENDENCY_ANALYSIS = {
@@ -90,10 +81,7 @@ public class JavaUserStoryTest {
     "5) NO alternative  application depedencies been suggested"
   };
 
-  private List<String> projects = ImmutableList.of(PROJECT);
-
   @Inject private Ide ide;
-  @Inject private Dashboard dashboard;
   @Inject private DefaultTestUser defaultTestUser;
   @Inject private ProjectExplorer projectExplorer;
   @Inject private TestWorkspaceServiceClient workspaceServiceClient;
@@ -107,33 +95,30 @@ public class JavaUserStoryTest {
   @Inject private NotificationsPopupPanel notifications;
   @Inject private CodereadyFindUsageWidget findUsages;
   @Inject private TestProjectServiceClient projectServiceClient;
-  @Inject private CodeReadyCreateWorkspaceHelper codeReadyCreateWorkspaceHelper;
 
-  private String tabNameWithImpl = "NativeMethodAccessorImpl";
-  private String pomFileChangedText;
+  private final String pomFileChangedText;
+  private static final String TAB_NAME_WITH_IMPL = "NativeMethodAccessorImpl";
 
-  // it is used to read workspace logs on test failure
-  private TestWorkspace testWorkspace;
-
-  @BeforeClass
-  public void setUp() throws URISyntaxException, IOException {
-    dashboard.open();
+  public JavaUserStoryTest() throws IOException, URISyntaxException {
     pomFileChangedText =
         readFileToString(getClass().getResource("/projects/bayesian/pom-file-after.txt"));
   }
 
-  @AfterClass
-  public void tearDown() throws Exception {
-    workspaceServiceClient.delete(WORKSPACE, defaultTestUser.getName());
+  @Override
+  protected CodereadyNewWorkspace.CodereadyStacks getStackName() {
+    return JAVA_DEFAULT;
   }
 
-  @Test
-  public void createJavaWorkspaceWithProjectFromDashBoard() throws Exception {
-    testWorkspace =
-        codeReadyCreateWorkspaceHelper.createWsFromStackWithTestProject(
-            WORKSPACE, JAVA_DEFAULT, projects);
+  @Override
+  protected List<String> getProjects() {
+    return ImmutableList.of(PROJECT);
+  }
 
-    ide.switchToIdeAndWaitWorkspaceIsReadyToUse();
+  @Override
+  @Test
+  public void createWorkspaceFromDashboard() throws Exception {
+    super.createWorkspaceFromDashboard();
+
     projectExplorer.waitItem(PROJECT);
     events.clickEventLogBtn();
     events.waitExpectedMessage("Branch 'master' is checked out");
@@ -144,9 +129,8 @@ public class JavaUserStoryTest {
     addTestFileIntoProjectByApi();
   }
 
-  @Test
+  @Test(priority = 1)
   public void checkDependencyAnalysisCommand() {
-    ide.waitOpenedWorkspaceIsReadyToUse();
     commandsPalette.openCommandPalette();
     commandsPalette.startCommandByDoubleClick("dependency_analysis");
     consoles.waitExpectedTextIntoConsole(BUILD_SUCCESS);
@@ -175,7 +159,7 @@ public class JavaUserStoryTest {
 
     // prepare
     setUpDebugMode();
-    ide.waitOpenedWorkspaceIsReadyToUse();
+    projectExplorer.waitItem(PROJECT);
     projectExplorer.quickRevealToItemWithJavaScript(
         PATH_TO_MAIN_PACKAGE + ".data/MemberListProducer.java");
     projectExplorer.openItemByVisibleNameInExplorer("MemberListProducer.java");
@@ -369,13 +353,13 @@ public class JavaUserStoryTest {
 
     try {
       responseCode = HttpUtil.getUrlResponseCode(appUrl);
-    } catch (Exception e) {
+
       // The "504" response code it is expected
       if (504 == responseCode) {
         LOG.info("Debugger has been set");
         return appUrl;
       }
-
+    } catch (Exception e) {
       final String errorMessage =
           String.format(
               "There was a problem with connecting to kitchensink-application for debug on URL '%s'",
@@ -399,13 +383,13 @@ public class JavaUserStoryTest {
 
   private void checkStepInto() {
     debugPanel.clickOnButton(STEP_INTO);
-    editor.waitTabIsPresent(tabNameWithImpl);
+    editor.waitTabIsPresent(TAB_NAME_WITH_IMPL);
     debugPanel.waitDebugHighlightedText("return invoke0(method, obj, args);");
   }
 
   private void checkStepOver() {
     debugPanel.clickOnButton(STEP_OVER);
-    editor.waitTabIsPresent(tabNameWithImpl);
+    editor.waitTabIsPresent(TAB_NAME_WITH_IMPL);
     debugPanel.waitDebugHighlightedText("return delegate.invoke(obj, args);");
   }
 
