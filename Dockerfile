@@ -42,7 +42,7 @@ RUN mkdir -p /home/jboss/codeready
 # OR, if you intend to build the Che Server tarball locally, 
 # see https://github.com/redhat-developer/codeready-workspaces-productization/blob/master/devdoc/building/building-crw.adoc#make-changes-to-crw-and-re-deploy-to-minishift
 # then copy /home/${USER}/projects/codeready-workspaces/assembly/codeready-workspaces-assembly-main/target/codeready-workspaces-assembly-main.tar.gz into this folder
-COPY assembly/codeready-workspaces-assembly-main/target/codeready-workspaces-assembly-main.tar.gz /tmp/codeready-workspaces-assembly-main.tar.gz
+COPY codeready-workspaces-assembly-main.tar.gz /tmp/codeready-workspaces-assembly-main.tar.gz
 RUN tar xzf /tmp/codeready-workspaces-assembly-main.tar.gz --strip-components=1 -C /home/jboss/codeready && \
     rm -f /tmp/codeready-workspaces-assembly-main.tar.gz && \
     cp /etc/pki/java/cacerts /home/jboss/cacerts && \
