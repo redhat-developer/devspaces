@@ -32,7 +32,42 @@ NOTE: Since the build includes GWT compilation it may take more than 3 minutes t
 The build artifact used in the Docker image will be in `assembly/assembly-main/target/codeready-${version}/codeready-${version}`
 
 
-### How to Build Container Image (Locally)
+### How to Build Container Image Locally
+
+First, build the CRW assembly in this repo:
+
+```
+mvn clean install
+```
+
+Then just use the `Dockerfile` in this repo to build:
+
+```
+docker build --force-rm -t codeready/codeready-workspaces:latest . && \
+docker images | grep codeready/codeready-workspaces | grep latest
+```
+
+You can then reference this image in your deployment (set image pull policy to IfNotPresent to avoid pushing the image to a registry).
+
+[NOTE]
+====
+Stacks may reference non-existing images like `docker-registry.default.svc:5000/openshift/rhel-base-jdk8`. These images are built as a post installation step.
+
+Once published, they will be in locations like these:
+
+* registry.access.redhat.com/codeready-workspaces/server:1.0
+* registry.access.redhat.com/codeready-workspaces/server-operator:1.0
+* registry.access.redhat.com/codeready-workspaces/stacks-cpp:1.0
+* registry.access.redhat.com/codeready-workspaces/stacks-dotnet:1.0
+* registry.access.redhat.com/codeready-workspaces/stacks-golang:1.0
+* registry.access.redhat.com/codeready-workspaces/stacks-java:1.0
+* registry.access.redhat.com/codeready-workspaces-beta/stacks-java-rhel8:1.0
+* registry.access.redhat.com/codeready-workspaces/stacks-node:1.0
+* registry.access.redhat.com/codeready-workspaces/stacks-php:1.0
+* registry.access.redhat.com/codeready-workspaces/stacks-python:1.0
+====
+
+### How to Build Container Using Jenkins and OSBS (Brew)
 
 Clone the pkgs.devel repo, then Run the `get-sources-jenkins.sh` script to pull the latest dependency tarball into the local project, and trigger a Brew build.
 
@@ -47,9 +82,16 @@ See also:
 
 * http://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces/tree/README.adoc?h=codeready-1.0-rhel-7
 
-
-### How to Build Container Using Jenkins and OSBS (Brew)
-
 See this document for more on how to use those build systems, in order to publish a container image to Red Hat Container Catalog:
 
 * https://github.com/redhat-developer/codeready-workspaces-productization/blob/master/devdoc/building/osbs-container-builds.adoc
+
+#### Keeping in sync with upstream
+
+The Dockerfile and entrypoint.sh scripts in this repo are copied from link:http://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces/tree/?h=codeready-1.0-rhel-7[upstream repo] into this one using a link:https://codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/CRW_CI/view/Releng/job/crw_sync-pkgs.devel-to-github/[Jenkins job] which adjusts it so it will work locally.
+
+Upstream: http://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces/tree/?h=codeready-1.0-rhel-7
+
+Job: https://codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/CRW_CI/view/Releng/job/crw_sync-pkgs.devel-to-github/
+
+Therefore any changes to files in this repo which also exist in upstream will be overwritten. Instead, push your changes into the pkgs.devel repo, and run the job to merge them into this one.
