@@ -23,7 +23,7 @@
     </parent>
     <groupId>com.redhat</groupId>
     <artifactId>codeready</artifactId>
-    <version>6.19.0-SNAPSHOT</version>
+    <version>1.0.1.GA</version>
     <packaging>pom</packaging>
     <name>CodeReady :: Parent</name>
     <url>https://developers.redhat.com/products/codeready-workspaces/overview/</url>
@@ -35,8 +35,8 @@
         </license>
     </licenses>
     <properties>
-        <che.version>${project.parent.version}</che.version>
-        <che.dashboard.version>${project.parent.version}</che.dashboard.version>
+        <che.version>6.19.0-SNAPSHOT</che.version>
+        <che.dashboard.version>${che.version}</che.dashboard.version>
         <nightly>false</nightly>
     </properties>
     <dependencyManagement>
@@ -44,54 +44,54 @@
             <dependency>
                 <groupId>com.redhat</groupId>
                 <artifactId>codeready-ide-gwt-app</artifactId>
-                <version>${project.version}</version>
+                <version>1.0.1.GA</version>
                 <type>war</type>
             </dependency>
             <dependency>
                 <groupId>com.redhat</groupId>
                 <artifactId>codeready-product-info</artifactId>
-                <version>${project.version}</version>
+                <version>1.0.1.GA</version>
                 <type>gwt-lib</type>
             </dependency>
             <dependency>
                 <groupId>com.redhat</groupId>
                 <artifactId>codeready-dashboard-war</artifactId>
                 <type>war</type>
-                <version>${project.version}</version>
+                <version>1.0.1.GA</version>
             </dependency>
             <dependency>
                 <groupId>com.redhat</groupId>
                 <artifactId>codeready-ide-assembly-ide-war</artifactId>
                 <type>war</type>
-                <version>${project.version}</version>
+                <version>1.0.1.GA</version>
             </dependency>
             <dependency>
                 <groupId>com.redhat</groupId>
                 <artifactId>codeready-stacks</artifactId>
-                <version>${project.version}</version>
+                <version>1.0.1.GA</version>
             </dependency>
             <dependency>
                 <groupId>com.redhat</groupId>
                 <artifactId>codeready-samples</artifactId>
-                <version>${project.version}</version>
+                <version>1.0.1.GA</version>
             </dependency>
             <dependency>
                 <groupId>com.redhat</groupId>
                 <artifactId>assembly-main</artifactId>
                 <type>tar.gz</type>
-                <version>${project.version}</version>
+                <version>1.0.1.GA</version>
             </dependency>
             <dependency>
                 <groupId>com.redhat</groupId>
                 <artifactId>assembly-main</artifactId>
                 <type>zip</type>
-                <version>${project.version}</version>
+                <version>1.0.1.GA</version>
             </dependency>
             <dependency>
                 <groupId>com.redhat</groupId>
                 <artifactId>assembly-wsmaster-war</artifactId>
                 <type>war</type>
-                <version>${project.version}</version>
+                <version>1.0.1.GA</version>
             </dependency>
             <dependency>
                 <groupId>org.eclipse.che</groupId>
@@ -103,7 +103,7 @@
             <dependency>
                 <groupId>com.redhat</groupId>
                 <artifactId>che-plugin-bayesian-lang-server</artifactId>
-                <version>${project.version}</version>
+                <version>1.0.1.GA</version>
             </dependency>
             <dependency>
                 <groupId>org.eclipse.che</groupId>
@@ -114,23 +114,23 @@
             <dependency>
                 <groupId>com.redhat</groupId>
                 <artifactId>codeready-workspaces-assembly-wsagent-server</artifactId>
-                <version>${project.version}</version>
+                <version>1.0.1.GA</version>
             </dependency>
             <dependency>
                 <groupId>com.redhat</groupId>
                 <artifactId>codeready-workspaces-assembly-wsagent-war</artifactId>
-                <version>${project.version}</version>
+                <version>1.0.1.GA</version>
                 <type>war</type>
             </dependency>
             <dependency>
                 <groupId>com.redhat</groupId>
                 <artifactId>ls-bayesian-agent</artifactId>
-                <version>${project.version}</version>
+                <version>1.0.1.GA</version>
             </dependency>
             <dependency>
                 <groupId>com.redhat</groupId>
                 <artifactId>codeready-workspaces-assembly-wsagent-server</artifactId>
-                <version>${project.version}</version>
+                <version>1.0.1.GA</version>
                 <type>tar.gz</type>
             </dependency>
         </dependencies>

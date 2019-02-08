@@ -18,9 +18,10 @@
     <parent>
         <artifactId>codeready-plugins-parent</artifactId>
         <groupId>com.redhat</groupId>
-        <version>6.19.0-SNAPSHOT</version>
+        <version>1.0.1.GA</version>
     </parent>
     <artifactId>che-plugin-bayesian-lang-server</artifactId>
+    <version>1.0.1.GA</version>
     <packaging>jar</packaging>
     <name>CodeReady Workspaces: Plugins :: Bayesian LSP Integration</name>
     <dependencies>
@@ -31,18 +32,22 @@
         <dependency>
             <groupId>org.eclipse.che.core</groupId>
             <artifactId>che-core-api-languageserver</artifactId>
+            <version>${che.version}</version>
         </dependency>
         <dependency>
             <groupId>org.eclipse.che.core</groupId>
             <artifactId>che-core-api-languageserver-shared</artifactId>
+            <version>${che.version}</version>
         </dependency>
         <dependency>
             <groupId>org.eclipse.che.core</groupId>
             <artifactId>che-core-commons-inject</artifactId>
+            <version>${che.version}</version>
         </dependency>
         <dependency>
             <groupId>org.eclipse.che.plugin</groupId>
             <artifactId>che-plugin-json-server</artifactId>
+            <version>${che.version}</version>
         </dependency>
         <dependency>
             <groupId>org.eclipse.lsp4j</groupId>

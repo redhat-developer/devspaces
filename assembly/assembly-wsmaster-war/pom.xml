@@ -20,7 +20,7 @@
     <parent>
         <artifactId>codeready-assembly-parent</artifactId>
         <groupId>com.redhat</groupId>
-        <version>6.19.0-SNAPSHOT</version>
+        <version>1.0.1.GA</version>
     </parent>
     <artifactId>assembly-wsmaster-war</artifactId>
     <packaging>war</packaging>
@@ -29,19 +29,23 @@
         <dependency>
             <groupId>com.redhat</groupId>
             <artifactId>ls-bayesian-agent</artifactId>
+            <version>1.0.1.GA</version>
         </dependency>
         <dependency>
             <groupId>org.eclipse.che</groupId>
             <artifactId>assembly-wsmaster-war</artifactId>
+            <version>${che.version}</version>
             <type>war</type>
         </dependency>
         <dependency>
             <groupId>com.redhat</groupId>
             <artifactId>codeready-stacks</artifactId>
+            <version>1.0.1.GA</version>
         </dependency>
         <dependency>
             <groupId>com.redhat</groupId>
             <artifactId>codeready-samples</artifactId>
+            <version>1.0.1.GA</version>
         </dependency>
     </dependencies>
     <build>
