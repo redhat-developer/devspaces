@@ -17,7 +17,7 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.google.inject.name.Named;
 import java.io.IOException;
-import org.eclipse.che.selenium.core.client.keycloak.cli.KeycloakCliCommandExecutor;
+import org.eclipse.che.selenium.core.client.keycloak.cli.OpenShiftKeycloakCliCommandExecutor;
 import org.eclipse.che.selenium.core.executor.OpenShiftCliCommandExecutor;
 
 /**
@@ -26,7 +26,8 @@ import org.eclipse.che.selenium.core.executor.OpenShiftCliCommandExecutor;
  * @author Dmytro Nochevnov
  */
 @Singleton
-public class CodeReadyOpenShiftKeycloakCliCommandExecutor implements KeycloakCliCommandExecutor {
+public class CodeReadyOpenShiftKeycloakCliCommandExecutor
+    extends OpenShiftKeycloakCliCommandExecutor {
   private static final String DEFAULT_CHE_OPENSHIFT_PROJECT = "eclipse-che";
   private static final String DEFAULT_KEYCLOAK_APP = "keycloak";
   private static final String DEFAULT_INTERNAL_PATH_TO_KEYCLOAK_CLI =

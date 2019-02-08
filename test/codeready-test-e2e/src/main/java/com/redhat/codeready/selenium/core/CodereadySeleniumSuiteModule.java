@@ -15,7 +15,7 @@ import com.google.inject.AbstractModule;
 import com.redhat.codeready.selenium.core.client.keycloak.cli.CodeReadyOpenShiftKeycloakCliCommandExecutor;
 import com.redhat.codeready.selenium.core.executor.hotupdate.CodeReadyHotUpdateUtil;
 import org.eclipse.che.selenium.core.CheSeleniumSuiteModule;
-import org.eclipse.che.selenium.core.client.keycloak.cli.KeycloakCliCommandExecutor;
+import org.eclipse.che.selenium.core.client.keycloak.cli.OpenShiftKeycloakCliCommandExecutor;
 import org.eclipse.che.selenium.core.executor.hotupdate.HotUpdateUtil;
 
 /**
@@ -27,7 +27,8 @@ public class CodereadySeleniumSuiteModule extends AbstractModule {
 
   @Override
   public void configure() {
-    bind(KeycloakCliCommandExecutor.class).to(CodeReadyOpenShiftKeycloakCliCommandExecutor.class);
+    bind(OpenShiftKeycloakCliCommandExecutor.class)
+        .to(CodeReadyOpenShiftKeycloakCliCommandExecutor.class);
 
     install(new CheSeleniumSuiteModule());
 
