@@ -17,7 +17,7 @@
     <parent>
         <artifactId>codeready-test-parent</artifactId>
         <groupId>com.redhat</groupId>
-        <version>6.18.2</version>
+        <version>1.0.1.GA</version>
     </parent>
     <artifactId>codeready-test-e2e</artifactId>
     <packaging>jar</packaging>
@@ -31,12 +31,10 @@
         <dependency>
             <groupId>org.eclipse.che.selenium</groupId>
             <artifactId>che-selenium-core</artifactId>
-            <version>${che.version}</version>
         </dependency>
         <dependency>
             <groupId>org.eclipse.che.selenium</groupId>
             <artifactId>che-selenium-test</artifactId>
-            <version>${che.version}</version>
         </dependency>
         <dependency>
             <groupId>com.google.guava</groupId>
@@ -61,47 +59,38 @@
         <dependency>
             <groupId>org.eclipse.che.core</groupId>
             <artifactId>che-core-api-core</artifactId>
-            <version>${che.version}</version>
         </dependency>
         <dependency>
             <groupId>org.eclipse.che.core</groupId>
             <artifactId>che-core-api-debug-shared</artifactId>
-            <version>${che.version}</version>
         </dependency>
         <dependency>
             <groupId>org.eclipse.che.core</groupId>
             <artifactId>che-core-api-dto</artifactId>
-            <version>${che.version}</version>
         </dependency>
         <dependency>
             <groupId>org.eclipse.che.core</groupId>
             <artifactId>che-core-api-model</artifactId>
-            <version>${che.version}</version>
         </dependency>
         <dependency>
             <groupId>org.eclipse.che.core</groupId>
             <artifactId>che-core-api-system-shared</artifactId>
-            <version>${che.version}</version>
         </dependency>
         <dependency>
             <groupId>org.eclipse.che.core</groupId>
             <artifactId>che-core-api-workspace</artifactId>
-            <version>${che.version}</version>
         </dependency>
         <dependency>
             <groupId>org.eclipse.che.core</groupId>
             <artifactId>che-core-api-workspace-shared</artifactId>
-            <version>${che.version}</version>
         </dependency>
         <dependency>
             <groupId>org.eclipse.che.core</groupId>
             <artifactId>che-core-commons-json</artifactId>
-            <version>${che.version}</version>
         </dependency>
         <dependency>
             <groupId>org.eclipse.che.core</groupId>
             <artifactId>che-core-commons-lang</artifactId>
-            <version>${che.version}</version>
         </dependency>
         <dependency>
             <groupId>org.seleniumhq.selenium</groupId>
