@@ -9,10 +9,47 @@
 #   Red Hat, Inc. - initial API and implementation
 #
 
-# For the latest released Dockerfile see:
-# https://access.redhat.com/containers/?tab=tags#/registry.access.redhat.com/codeready-workspaces/server
-FROM registry.access.redhat.com/codeready-workspaces/server
+# https://access.redhat.com/containers/?tab=tags#/registry.access.redhat.com/redhat-openjdk-18/openjdk18-openshift
+# NOTE: if building locally, you might need to add registry.access.redhat.com/ prefix to the container path & version
+FROM registry.access.redhat.com/redhat-openjdk-18/openjdk18-openshift:1.5-14.1539812388
 
-# Or build the latest nightly from pulp (RH internal) or quay (public)
-# FROM brew-pulp-docker01.web.prod.ext.phx2.redhat.com:8888/codeready-workspaces/server-container
-# FROM quay.io/crw/server-container
+ENV SUMMARY="Red Hat CodeReady Workspaces container that provides the Red Hat CodeReady Workspaces (Eclipse Che Server)" \
+    DESCRIPTION="Red Hat CodeReady Workspaces container that provides the Red Hat CodeReady Workspaces (Eclipse Che Server)" \
+    PRODNAME="codeready-workspaces" \
+    COMPNAME="server-container"
+
+LABEL summary="$SUMMARY" \
+      description="$DESCRIPTION" \
+      io.k8s.description="$DESCRIPTION" \
+      io.k8s.display-name="Red Hat CodeReady Workspaces for OpenShift - Che Server" \
+      io.openshift.tags="$PRODNAME,$COMPNAME" \
+      com.redhat.component="$PRODNAME-$COMPNAME" \
+      name="$PRODNAME/$COMPNAME" \
+      version="1.0" \
+      license="EPLv2" \
+      maintainer="Nick Boldt <nboldt@redhat.com>" \
+      io.openshift.expose-services="" \
+      usage=""
+
+USER root
+# NOTE: uncomment to run a local build
+#RUN subscription-manager register --username username --password password --auto-attach
+#RUN subscription-manager repos --enable rhel-7-server-rpms -enable rhel-server-rhscl-7-rpms
+COPY entrypoint.sh /entrypoint.sh
+RUN mkdir -p /home/jboss/codeready
+
+# NOTE: if built in Brew, use get-sources-jenkins.sh to pull latest
+# OR, if you intend to build the Che Server tarball locally, 
+# see https://github.com/redhat-developer/codeready-workspaces-productization/blob/master/devdoc/building/building-crw.adoc#make-changes-to-crw-and-re-deploy-to-minishift
+# then copy /home/${USER}/projects/codeready-workspaces/assembly/codeready-workspaces-assembly-main/target/codeready-workspaces-assembly-main.tar.gz into this folder
+COPY assembly/codeready-workspaces-assembly-main/target/codeready-workspaces-assembly-main.tar.gz /tmp/codeready-workspaces-assembly-main.tar.gz
+RUN tar xzf /tmp/codeready-workspaces-assembly-main.tar.gz --strip-components=1 -C /home/jboss/codeready && \
+    rm -f /tmp/codeready-workspaces-assembly-main.tar.gz && \
+    cp /etc/pki/java/cacerts /home/jboss/cacerts && \
+    mkdir -p /logs /data && \
+    chgrp -R 0     /home/jboss /data /logs && \
+    chmod -R g+rwX /home/jboss /data /logs && \
+    yum list installed && echo "End Of Installed Packages"
+
+USER jboss
+ENTRYPOINT ["/entrypoint.sh"]
