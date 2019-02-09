@@ -37,11 +37,11 @@
           <class name="com.redhat.codeready.selenium.debugger.CodeReadyPhpProjectDebuggingTest"/>
           <class name="com.redhat.codeready.selenium.debugger.CodeReadyStepIntoStepOverStepReturnWithChangeVariableTest"/>
           <class name="com.redhat.codeready.selenium.git.ImportWizardFormTest"/>
-          <class name="com.redhat.codeready.selenium.miscellaneous.FindTextFeatureTest"/>
-          <class name="com.redhat.codeready.selenium.miscellaneous.OpenInTerminalTest"/>
-          <class name="com.redhat.codeready.selenium.miscellaneous.ResolveDependencyAfterRecreateProjectTest"/>
-          <class name="com.redhat.codeready.selenium.miscellaneous.WorkingWithSplitPanelTest"/>
-          <class name="com.redhat.codeready.selenium.miscellaneous.WorkingWithTerminalTest"/>
+          <class name="com.redhat.codeready.selenium.miscellaneous.CodeReadyFindTextFeatureTest"/>
+          <class name="com.redhat.codeready.selenium.miscellaneous.CodeReadyOpenInTerminalTest"/>
+          <class name="com.redhat.codeready.selenium.miscellaneous.CodeReadyResolveDependencyAfterRecreateProjectTest"/>
+          <class name="com.redhat.codeready.selenium.miscellaneous.CodeReadyWorkingWithSplitPanelTest"/>
+          <class name="com.redhat.codeready.selenium.miscellaneous.CodeReadyWorkingWithTerminalTest"/>
           <class name="com.redhat.codeready.selenium.miscellaneous.MachinesAsynchronousStartTest"/>
           <class name="com.redhat.codeready.selenium.factory.CodeReadyCheckOpenFileFeatureTest"/>
           <class name="com.redhat.codeready.selenium.factory.CodeReadyCheckRunCommandFeatureTest"/>
@@ -54,7 +54,7 @@
           <class name="com.redhat.codeready.selenium.languageserver.CodeReadyGolangFileEditingTest"/>
           <class name="com.redhat.codeready.selenium.languageserver.csharp.CodeReadyCSharpFileEditingTest"/>
           <class name="com.redhat.codeready.selenium.languageserver.php.CodeReadyPhpFileEditingTest"/>
-          <class name="com.redhat.codeready.selenium.workspaces.CreateWorkspaceOnDashboardTest"/>
+          <class name="com.redhat.codeready.selenium.workspaces.CodeReadyCreateWorkspaceOnDashboardTest"/>
           <class name="com.redhat.codeready.selenium.editor.CodeReadySplitEditorFeatureTest"/>
           <class name="com.redhat.codeready.selenium.editor.autocomplete.CodeReadyAutocompleteProposalJavaDocTest"/>
           <class name="com.redhat.codeready.selenium.projectexplorer.CodeReadyCheckShowHideHiddenFilesTest"/>
