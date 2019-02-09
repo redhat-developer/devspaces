@@ -107,6 +107,7 @@ public class JavaUserStoryTest extends AbstractUserStoryTest {
 
   private final String pomFileChangedText;
   private static final String TAB_NAME_WITH_IMPL = "NativeMethodAccessorImpl";
+  private String appUrl;
 
   public JavaUserStoryTest() throws IOException, URISyntaxException {
     pomFileChangedText =
@@ -179,7 +180,7 @@ public class JavaUserStoryTest extends AbstractUserStoryTest {
     editor.waitTabSelection(0, fileForDebuggingTabTitle);
     editor.waitActive();
     editor.setBreakPointAndWaitActiveState(30);
-    final String appUrl = doGetRequestToApp();
+    doGetRequestToApp();
 
     // check debug features()
     debugPanel.waitDebugHighlightedText("return members;");
@@ -354,16 +355,14 @@ public class JavaUserStoryTest extends AbstractUserStoryTest {
     events.clickEventLogBtn();
     events.waitExpectedMessage("Remote debugger connected");
     consoles.clickOnProcessesButton();
+    appUrl = consoles.getPreviewUrl();
   }
 
   // do request to test application if debugger for the app. has been set properly,
   // expected http response from the app. will be 504, its ok
   private String doGetRequestToApp() {
-    final String appUrl = consoles.getPreviewUrl();
-    int responseCode = -1;
-
     try {
-      responseCode = HttpUtil.getUrlResponseCode(appUrl);
+      int responseCode = HttpUtil.getUrlResponseCode(appUrl);
 
       // The "504" response code it is expected
       if (504 == responseCode) {
@@ -416,6 +415,7 @@ public class JavaUserStoryTest extends AbstractUserStoryTest {
             "em=instance of org.jboss.as.jpa.container.TransactionScopedEntityManager",
             "members=instance of java.util.ArrayList");
     editor.closeAllTabs();
+    doGetRequestToApp();
     debugPanel.clickOnButton(RESUME_BTN_ID);
     editor.waitTabIsPresent("MemberListProducer");
     debugPanel.waitDebugHighlightedText("return members;");
