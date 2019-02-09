@@ -63,7 +63,6 @@ import org.eclipse.che.selenium.pageobject.NotificationsPopupPanel;
 import org.eclipse.che.selenium.pageobject.ProjectExplorer;
 import org.eclipse.che.selenium.pageobject.debug.JavaDebugConfig;
 import org.eclipse.che.selenium.pageobject.intelligent.CommandsPalette;
-import org.eclipse.che.selenium.pageobject.intelligent.CommandsToolbar;
 import org.openqa.selenium.TimeoutException;
 import org.testng.annotations.Test;
 
@@ -97,7 +96,6 @@ public class JavaUserStoryTest extends AbstractUserStoryTest {
   @Inject private CodereadyEditor editor;
   @Inject private Menu menu;
   @Inject private CodereadyDebuggerPanel debugPanel;
-  @Inject private CommandsToolbar commandsToolbar;
   @Inject private JavaDebugConfig debugConfig;
   @Inject private Events events;
   @Inject private NotificationsPopupPanel notifications;
@@ -204,6 +202,7 @@ public class JavaUserStoryTest extends AbstractUserStoryTest {
    */
   @Test(priority = 1)
   public void checkMainCodeAssistantFeatures() throws Exception {
+
     String expectedTextOfInjectClass =
         "@see javax.inject.Provider\n */\n@Target({ METHOD, CONSTRUCTOR, FIELD })\n@Retention(RUNTIME)\n@Documented\npublic @interface Inject {}";
     String memberRegistrationTabName = "MemberRegistration";
@@ -363,7 +362,6 @@ public class JavaUserStoryTest extends AbstractUserStoryTest {
   private String doGetRequestToApp() {
     try {
       int responseCode = HttpUtil.getUrlResponseCode(appUrl);
-
       // The "504" response code it is expected
       if (504 == responseCode) {
         LOG.info("Debugger has been set");
