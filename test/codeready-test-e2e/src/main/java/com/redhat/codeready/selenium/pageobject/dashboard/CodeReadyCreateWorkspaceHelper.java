@@ -11,6 +11,9 @@
 */
 package com.redhat.codeready.selenium.pageobject.dashboard;
 
+import static org.eclipse.che.selenium.pageobject.dashboard.workspaces.WorkspaceDetails.ActionButton.SAVE_BUTTON;
+import static org.eclipse.che.selenium.pageobject.dashboard.workspaces.WorkspaceDetails.WorkspaceDetailsTab.MACHINES;
+
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import java.util.List;
@@ -26,10 +29,14 @@ import org.eclipse.che.selenium.pageobject.dashboard.workspaces.EditMachineForm;
 import org.eclipse.che.selenium.pageobject.dashboard.workspaces.WorkspaceDetails;
 import org.eclipse.che.selenium.pageobject.dashboard.workspaces.WorkspaceDetailsMachines;
 import org.eclipse.che.selenium.pageobject.dashboard.workspaces.Workspaces;
+import org.openqa.selenium.JavascriptExecutor;
 
 /** @author Aleksandr Shmaraiev */
 @Singleton
 public class CodeReadyCreateWorkspaceHelper {
+
+  private static final String PRODUCTION_REGISTRY = "registry.access.redhat.com";
+  private static final String STAGE_REGISTRY = "registry.access.stage.redhat.com";
 
   @Inject private Dashboard dashboard;
   @Inject private Workspaces workspaces;
@@ -49,6 +56,9 @@ public class CodeReadyCreateWorkspaceHelper {
       CodereadyNewWorkspace.CodereadyStacks stackName,
       List<String> projectNames) {
 
+    String machineName = "dev-machine";
+    String successNotificationText = "Workspace updated.";
+
     // select stack on workspace dashboard
     dashboard.selectWorkspacesItemOnDashboard();
     dashboard.waitToolbarTitleName("Workspaces");
@@ -64,7 +74,43 @@ public class CodeReadyCreateWorkspaceHelper {
     }
 
     // create workspace to edit
-    newWorkspace.clickOnCreateButtonAndOpenInIDE();
+    newWorkspace.clickOnCreateButtonAndEditWorkspace();
+    workspaceDetails.waitToolbarTitleName(workspaceName);
+    workspaceDetails.selectTabInWorkspaceMenu(MACHINES);
+    workspaceDetailsMachines.waitMachineListItem(machineName);
+
+    // edit recipe
+    workspaceDetailsMachines.clickOnEditButton(machineName);
+    editMachineForm.waitForm();
+
+    JavascriptExecutor js = (JavascriptExecutor) seleniumWebDriver;
+    String currentStackImageAddress =
+        js.executeScript(
+                "return document.querySelector('.edit-machine-form .CodeMirror').CodeMirror.getValue();")
+            .toString();
+
+    if (currentStackImageAddress != null
+        && currentStackImageAddress.contains(PRODUCTION_REGISTRY)) {
+      String newStackImageAddress =
+          currentStackImageAddress.replace(PRODUCTION_REGISTRY, STAGE_REGISTRY);
+      js.executeScript(
+          String.format(
+              "document.querySelector('.edit-machine-form .CodeMirror').CodeMirror.setValue('%s')",
+              newStackImageAddress));
+
+      // save changes
+      editMachineForm.waitRecipeText(newStackImageAddress);
+      editMachineForm.waitSaveButtonEnabling();
+      editMachineForm.clickOnSaveButton();
+      editMachineForm.waitFormInvisibility();
+      workspaceDetailsMachines.waitImageNameInMachineListItem(machineName, newStackImageAddress);
+      workspaceDetails.waitAllEnabled(SAVE_BUTTON);
+      workspaceDetails.clickOnSaveChangesBtn();
+      workspaceDetailsMachines.waitNotificationMessage(successNotificationText);
+    }
+
+    codereadyNewWorkspace.clickOnOpenInIDEButton();
+
     return testWorkspaceProvider.getWorkspace(workspaceName, defaultTestUser);
   }
 }
