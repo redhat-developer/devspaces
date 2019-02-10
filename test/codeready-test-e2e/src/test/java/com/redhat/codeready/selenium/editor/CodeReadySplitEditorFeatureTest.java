@@ -25,7 +25,7 @@ public class CodeReadySplitEditorFeatureTest extends SplitEditorFeatureTest {
   protected void expandProjectExplorerAndOpenFile() {
     String javaFileName = getJavaFileNameFromTabTitle() + ".java";
     String pathTopackage =
-        PROJECT_NAME + "/src/main/java/org.jboss.as.quickstarts.kitchensink/controller";
+        PROJECT_NAME + "/src/main/java/org.jboss.as.quickstarts.kitchensinkjsp/controller";
 
     projectExplorer.expandPathInProjectExplorerAndOpenFile(pathTopackage, javaFileName);
     editor.waitTabIsPresent(getJavaFileNameFromTabTitle());
@@ -37,7 +37,7 @@ public class CodeReadySplitEditorFeatureTest extends SplitEditorFeatureTest {
   protected void waitAndSelectItem() {
     String pathToJavaFile =
         PROJECT_NAME
-            + "/src/main/java/org/jboss/as/quickstarts/kitchensink/controller/MemberRegistration.java";
+            + "/src/main/java/org/jboss/as/quickstarts/kitchensinkjsp/controller/MemberRegistration.java";
     projectExplorer.waitAndSelectItem(pathToJavaFile);
   }
 

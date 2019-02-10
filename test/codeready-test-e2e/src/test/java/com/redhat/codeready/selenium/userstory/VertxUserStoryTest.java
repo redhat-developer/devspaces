@@ -22,6 +22,7 @@ import static org.eclipse.che.selenium.core.constant.TestProjectExplorerContextM
 import static org.eclipse.che.selenium.core.constant.TestProjectExplorerContextMenuConstants.ContextMenuCommandGoals.DEBUG_GOAL;
 import static org.eclipse.che.selenium.core.constant.TestProjectExplorerContextMenuConstants.ContextMenuCommandGoals.RUN_GOAL;
 import static org.eclipse.che.selenium.core.constant.TestTimeoutsConstants.LOADER_TIMEOUT_SEC;
+import static org.eclipse.che.selenium.core.constant.TestTimeoutsConstants.PREPARING_WS_TIMEOUT_SEC;
 import static org.eclipse.che.selenium.core.constant.TestTimeoutsConstants.UPDATING_PROJECT_TIMEOUT_SEC;
 import static org.eclipse.che.selenium.pageobject.CodenvyEditor.MarkerLocator.ERROR;
 
@@ -89,15 +90,16 @@ public class VertxUserStoryTest extends AbstractUserStoryTest {
 
     // wait expected message in the progress info bar
     // the execution takes a lot of time on a local machine, so need a big timeout
-    mavenPluginStatusBar.waitExpectedTextInInfoPanel("Refreshing Maven model", LOADER_TIMEOUT_SEC);
-    mavenPluginStatusBar.waitClosingInfoPanel();
+    mavenPluginStatusBar.waitExpectedTextInInfoPanel(
+        "Importing Maven project(s)", LOADER_TIMEOUT_SEC);
+    mavenPluginStatusBar.waitClosingInfoPanel(PREPARING_WS_TIMEOUT_SEC);
 
     // check the project is initialized
     projectExplorer.waitProjectInitialization(VERTX_PROJECT_NAME);
   }
 
-  @Test(priority = 1)
-  public void checkDependencyAnalysisCommand() {
+  @Test(priority = 2)
+  public void checkReportDependencyAnalysisCommand() {
     commandsPalette.openCommandPalette();
     commandsPalette.startCommandByDoubleClick("dependency_analysis");
     consoles.waitExpectedTextIntoConsole(BUILD_SUCCESS);
