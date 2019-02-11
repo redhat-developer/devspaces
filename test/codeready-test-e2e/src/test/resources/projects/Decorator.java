@@ -9,7 +9,7 @@
  * Contributors:
  *   Red Hat, Inc. - initial API and implementation
  */
-package org.jboss.as.quickstarts.kitchensink.util;
+package org.jboss.as.quickstarts.kitchensinkjsp.util;
 
 public interface DecoratorSample {
     String decorate(String s);

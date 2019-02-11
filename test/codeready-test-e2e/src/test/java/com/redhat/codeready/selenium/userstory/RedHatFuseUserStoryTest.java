@@ -51,7 +51,7 @@ public class RedHatFuseUserStoryTest extends AbstractUserStoryTest {
 
   private static final String[] REPORT_DEPENDENCY_ANALYSIS = {
     "Report for /projects/spring-boot-camel/pom.xml",
-    "1) # of application dependencies : 3",
+    "1) # of application dependencies : 4",
     "2) Dependencies with Licenses : ",
     "3) Suggest adding these dependencies to your application stack:",
     "4) NO usage outlier application depedencies been found",

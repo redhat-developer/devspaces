@@ -22,12 +22,12 @@ public class CodeReadyCreateWorkspaceOnDashboardTest extends CreateWorkspaceOnDa
 
   @Override
   protected String getPathToExpand() {
-    return "/src/main/java/org.jboss.as.quickstarts.kitchensink/controller";
+    return "/src/main/java/org.jboss.as.quickstarts.kitchensinkjsp/controller";
   }
 
   @Override
   protected String getPathJavaFile() {
-    return "/src/main/java/org/jboss/as/quickstarts/kitchensink/controller/MemberRegistration.java";
+    return "/src/main/java/org/jboss/as/quickstarts/kitchensinkjsp/controller/MemberRegistration.java";
   }
 
   @Override
