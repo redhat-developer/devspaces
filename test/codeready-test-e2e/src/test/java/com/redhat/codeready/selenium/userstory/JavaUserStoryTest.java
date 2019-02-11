@@ -79,7 +79,7 @@ public class JavaUserStoryTest extends AbstractUserStoryTest {
       PROJECT + "/src/main/java/org/jboss/as/quickstarts/kitchensinkjsp/controller";
 
   private static final String[] REPORT_DEPENDENCY_ANALYSIS = {
-    "Report for /projects/spring-boot-camel/pom.xml",
+    "Report for /projects/kitchensink-example/pom.xml",
     "1) # of application dependencies : 0",
     "2) Dependencies with Licenses : ",
     "3) Suggest adding these dependencies to your application stack:",
