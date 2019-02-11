@@ -46,7 +46,7 @@ public class CodeReadyFindTextFeatureTest extends FindTextFeatureTest {
     assertFalse(findTextPage.checkNextPageButtonIsEnabled());
     assertFalse(findTextPage.checkPreviousPageButtonIsEnabled());
     searchFileResult = findTextPage.getResults();
-    assertEquals(searchFileResult.getFoundFilesOnPage(), 8);
-    assertEquals(searchFileResult.getFoundOccurrencesOnPage(), 79);
+    assertEquals(searchFileResult.getFoundFilesOnPage(), 9);
+    assertEquals(searchFileResult.getFoundOccurrencesOnPage(), 73);
   }
 }
