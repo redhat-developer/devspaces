@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jmeterTestPlan version="1.2" properties="5.0" jmeter="5.0 r1840935">
+  <hashTree>
+    <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="get-content-file" enabled="true">
+      <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" enabled="true">
+        <collectionProp name="Arguments.arguments"/>
+      </elementProp>
+      <stringProp name="HTTPSampler.domain">${crw.host}</stringProp>
+      <stringProp name="HTTPSampler.port"></stringProp>
+      <stringProp name="HTTPSampler.protocol">${crw.protocol}</stringProp>
+      <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+      <stringProp name="HTTPSampler.path">${WS_AGENT_URL}/project/file/loadMvnBuilding/pom.xml</stringProp>
+      <stringProp name="HTTPSampler.method">GET</stringProp>
+      <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+      <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+      <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+      <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+      <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+      <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+      <stringProp name="HTTPSampler.response_timeout"></stringProp>
+    </HTTPSamplerProxy>
+    <hashTree>
+      <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
+        <collectionProp name="HeaderManager.headers">
+          <elementProp name="Authorization" elementType="Header">
+            <stringProp name="Header.name">Authorization</stringProp>
+            <stringProp name="Header.value">Bearer ${MACHINE_TOKEN}</stringProp>
+          </elementProp>
+        </collectionProp>
+      </HeaderManager>
+      <hashTree/>
+      <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Response Assertion" enabled="true">
+        <collectionProp name="Asserion.test_strings">
+          <stringProp name="-762788409">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</stringProp>
+          <stringProp name="-248274907">&lt;project xmlns=&quot;http://maven.apache.org/POM/4.0.0&quot; xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot; xsi:schemaLocation=&quot;http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd&quot;&gt;</stringProp>
+          <stringProp name="-1565327785">&lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;</stringProp>
+          <stringProp name="1672971185">&lt;groupId&gt;groupId&lt;/groupId&gt;</stringProp>
+          <stringProp name="1178637148">&lt;artifactId&gt;artifactId&lt;/artifactId&gt;</stringProp>
+          <stringProp name="1087177855">&lt;packaging&gt;war&lt;/packaging&gt;</stringProp>
+          <stringProp name="-1559562471">&lt;version&gt;1.0-SNAPSHOT&lt;/version&gt;</stringProp>
+          <stringProp name="1069315161">&lt;name&gt;SpringDemo&lt;/name&gt;</stringProp>
+          <stringProp name="512154543">&lt;properties&gt;</stringProp>
+          <stringProp name="64333520">&lt;maven.compiler.source&gt;1.6&lt;/maven.compiler.source&gt;</stringProp>
+          <stringProp name="1785899152">&lt;maven.compiler.target&gt;1.6&lt;/maven.compiler.target&gt;</stringProp>
+          <stringProp name="-1590232040">&lt;/properties&gt;</stringProp>
+          <stringProp name="-1831605895">&lt;dependencies&gt;</stringProp>
+          <stringProp name="-1660004201">&lt;dependency&gt;</stringProp>
+          <stringProp name="-242046236">&lt;groupId&gt;javax.servlet&lt;/groupId&gt;</stringProp>
+          <stringProp name="-635700415">&lt;artifactId&gt;servlet-api&lt;/artifactId&gt;</stringProp>
+          <stringProp name="-1638550096">&lt;version&gt;2.5&lt;/version&gt;</stringProp>
+          <stringProp name="976209958">&lt;scope&gt;provided&lt;/scope&gt;</stringProp>
+          <stringProp name="532576512">&lt;/dependency&gt;</stringProp>
+          <stringProp name="-1660004201">&lt;dependency&gt;</stringProp>
+          <stringProp name="1886170878">&lt;groupId&gt;org.springframework&lt;/groupId&gt;</stringProp>
+          <stringProp name="1542273357">&lt;artifactId&gt;spring-webmvc&lt;/artifactId&gt;</stringProp>
+          <stringProp name="-996817556">&lt;version&gt;3.0.5.RELEASE&lt;/version&gt;</stringProp>
+          <stringProp name="532576512">&lt;/dependency&gt;</stringProp>
+          <stringProp name="-1660004201">&lt;dependency&gt;</stringProp>
+          <stringProp name="1945250725">&lt;groupId&gt;junit&lt;/groupId&gt;</stringProp>
+          <stringProp name="-426473947">&lt;artifactId&gt;junit&lt;/artifactId&gt;</stringProp>
+          <stringProp name="1856161719">&lt;version&gt;3.8.1&lt;/version&gt;</stringProp>
+          <stringProp name="-1320441131">&lt;scope&gt;test&lt;/scope&gt;</stringProp>
+          <stringProp name="532576512">&lt;/dependency&gt;</stringProp>
+          <stringProp name="704484258">&lt;/dependencies&gt;</stringProp>
+          <stringProp name="332589772">&lt;build&gt;</stringProp>
+          <stringProp name="-2114735198">&lt;finalName&gt;greeting&lt;/finalName&gt;</stringProp>
+          <stringProp name="-1125618493">&lt;/build&gt;</stringProp>
+          <stringProp name="1044380856">&lt;/project&gt;</stringProp>
+        </collectionProp>
+        <stringProp name="Assertion.custom_message"></stringProp>
+        <stringProp name="Assertion.test_field">Assertion.response_data</stringProp>
+        <boolProp name="Assertion.assume_success">false</boolProp>
+        <intProp name="Assertion.test_type">16</intProp>
+      </ResponseAssertion>
+      <hashTree/>
+    </hashTree>
+  </hashTree>
+</jmeterTestPlan>
