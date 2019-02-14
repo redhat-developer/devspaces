@@ -30,7 +30,7 @@
         }
       },
       "recipe": {
-        "location": "registry.access.stage.redhat.com/codeready-workspaces/stacks-php",
+        "location": "brew-pulp-docker01.web.prod.ext.phx2.redhat.com:8888/codeready-workspaces/stacks-php",
         "type": "dockerimage"
       }
     }

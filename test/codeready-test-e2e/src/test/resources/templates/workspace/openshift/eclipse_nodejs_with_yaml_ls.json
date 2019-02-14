@@ -30,7 +30,7 @@
         }
       },
       "recipe": {
-        "location": "registry.access.stage.redhat.com/codeready-workspaces/stacks-node",
+        "location": "brew-pulp-docker01.web.prod.ext.phx2.redhat.com:8888/codeready-workspaces/stacks-node",
         "type": "dockerimage"
       }
     }

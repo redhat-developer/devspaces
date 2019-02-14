@@ -33,7 +33,7 @@
       },
       "recipe": {
         "type": "dockerimage",
-        "content": "registry.access.stage.redhat.com/codeready-workspaces/stacks-java"
+        "content": "brew-pulp-docker01.web.prod.ext.phx2.redhat.com:8888/codeready-workspaces/stacks-java"
       }
     }
   },
