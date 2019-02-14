@@ -15,7 +15,7 @@
         }
       },
       "recipe": {
-        "location": "registry.access.stage.redhat.com/codeready-workspaces/stacks-cpp",
+        "location": "quay.io/crw/stacks-cpp:1.0-9",
         "type": "dockerimage"
       }
     }

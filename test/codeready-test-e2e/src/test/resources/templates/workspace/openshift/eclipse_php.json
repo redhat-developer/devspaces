@@ -30,7 +30,7 @@
         }
       },
       "recipe": {
-        "location": "registry.access.stage.redhat.com/codeready-workspaces/stacks-php",
+        "location": "quay.io/crw/stacks-php:1.0-12",
         "type": "dockerimage"
       }
     }

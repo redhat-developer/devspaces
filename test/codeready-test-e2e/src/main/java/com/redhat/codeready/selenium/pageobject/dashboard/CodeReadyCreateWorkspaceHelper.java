@@ -16,7 +16,9 @@ import static org.eclipse.che.selenium.pageobject.dashboard.workspaces.Workspace
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.eclipse.che.selenium.core.SeleniumWebDriver;
 import org.eclipse.che.selenium.core.user.DefaultTestUser;
 import org.eclipse.che.selenium.core.workspace.TestWorkspace;
@@ -35,8 +37,41 @@ import org.openqa.selenium.JavascriptExecutor;
 @Singleton
 public class CodeReadyCreateWorkspaceHelper {
 
-  private static final String PRODUCTION_REGISTRY = "registry.access.redhat.com";
-  private static final String STAGE_REGISTRY = "registry.access.stage.redhat.com";
+  private static final String PRODUCTION_REGISTRY =
+      "registry.access.stage.redhat.com/codeready-workspaces";
+  private static final String PRODUCTION_BETA_REGISTRY =
+      "registry.access.stage.redhat.com/codeready-workspaces-beta";
+  private static final String QUAY_REGISTRY = "quay.io/crw";
+
+  private static final HashMap<String, String> REGISTRY_ADDRESS_REPLACEMENT =
+      new HashMap<String, String>() {
+        {
+          put(
+              "registry.access.redhat.com/codeready-workspaces/stacks-java",
+              "quay.io/crw/stacks-java:1.0-17");
+          put(
+              "registry.access.redhat.com/codeready-workspaces/stacks-cpp",
+              "quay.io/crw/stacks-cpp:1.0-9");
+          put(
+              "registry.access.redhat.com/codeready-workspaces/stacks-dotnet",
+              "quay.io/crw/stacks-dotnet:1.0-10");
+          put(
+              "registry.access.redhat.com/codeready-workspaces/stacks-golang",
+              "quay.io/crw/stacks-golang:1.0-10");
+          put(
+              "registry.access.redhat.com/codeready-workspaces-beta/stacks-java-rhel8",
+              "quay.io/crw/stacks-java-rhel8:1.0-12");
+          put(
+              "registry.access.redhat.com/codeready-workspaces/stacks-node",
+              "quay.io/crw/stacks-node:1.0-12");
+          put(
+              "registry.access.redhat.com/codeready-workspaces/stacks-php",
+              "quay.io/crw/stacks-php:1.0-12");
+          put(
+              "registry.access.redhat.com/codeready-workspaces/stacks-python",
+              "quay.io/crw/stacks-python:1.0-10");
+        }
+      };
 
   @Inject private Dashboard dashboard;
   @Inject private Workspaces workspaces;
@@ -89,24 +124,35 @@ public class CodeReadyCreateWorkspaceHelper {
                 "return document.querySelector('.edit-machine-form .CodeMirror').CodeMirror.getValue();")
             .toString();
 
-    if (currentStackImageAddress != null
-        && currentStackImageAddress.contains(PRODUCTION_REGISTRY)) {
-      String newStackImageAddress =
-          currentStackImageAddress.replace(PRODUCTION_REGISTRY, STAGE_REGISTRY);
-      js.executeScript(
-          String.format(
-              "document.querySelector('.edit-machine-form .CodeMirror').CodeMirror.setValue('%s')",
-              newStackImageAddress));
+    boolean isValueFound = false;
 
-      // save changes
-      editMachineForm.waitRecipeText(newStackImageAddress);
-      editMachineForm.waitSaveButtonEnabling();
-      editMachineForm.clickOnSaveButton();
-      editMachineForm.waitFormInvisibility();
-      workspaceDetailsMachines.waitImageNameInMachineListItem(machineName, newStackImageAddress);
-      workspaceDetails.waitAllEnabled(SAVE_BUTTON);
-      workspaceDetails.clickOnSaveChangesBtn();
-      workspaceDetailsMachines.waitNotificationMessage(successNotificationText);
+    for (Map.Entry<String, String> entry : REGISTRY_ADDRESS_REPLACEMENT.entrySet()) {
+      String oldAddress = entry.getKey();
+      String newAddress = entry.getValue();
+
+      if (currentStackImageAddress != null && (currentStackImageAddress.equals(oldAddress))) {
+        js.executeScript(
+            String.format(
+                "document.querySelector('.edit-machine-form .CodeMirror').CodeMirror.setValue('%s')",
+                newAddress));
+
+        // save changes
+        editMachineForm.waitRecipeText(newAddress);
+        editMachineForm.waitSaveButtonEnabling();
+        editMachineForm.clickOnSaveButton();
+        editMachineForm.waitFormInvisibility();
+        workspaceDetailsMachines.waitImageNameInMachineListItem(machineName, newAddress);
+        workspaceDetails.waitAllEnabled(SAVE_BUTTON);
+        workspaceDetails.clickOnSaveChangesBtn();
+        workspaceDetailsMachines.waitNotificationMessage(successNotificationText);
+
+        isValueFound = true;
+        break;
+      }
+    }
+
+    if (!isValueFound) {
+      editMachineForm.clickOnCloseIcon();
     }
 
     codereadyNewWorkspace.clickOnOpenInIDEButton();

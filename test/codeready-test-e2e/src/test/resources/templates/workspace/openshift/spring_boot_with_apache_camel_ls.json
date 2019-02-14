@@ -30,7 +30,7 @@
         }
       },
       "recipe": {
-        "content": "registry.access.stage.redhat.com/codeready-workspaces/stacks-java",
+        "content": "quay.io/crw/stacks-java:1.0-17",
         "type": "dockerimage"
       }
     }
