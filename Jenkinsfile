@@ -6,10 +6,11 @@
 // branchToBuildDev = refs/tags/20
 // branchToBuildParent = refs/tags/6.18.0
 // branchToBuildLib = refs/tags/6.18.0
-// branchToBuildChe = refs/tags/6.18.0 or */*/6.18.x or */master
+// branchToBuildChe = refs/tags/6.18.2 or */*/6.18.x or */master
 // branchToBuildLSJ = refs/tags/0.0.3 or */master or a SHA like 095d753f42dad32c47b1e9ae46a71bf424e98e7e
 // branchToBuildCRW = */6.18.x or */master
-// MVN_EXTRA_FLAGS = extra flags, such as to disable a module -pl '!org.eclipse.che.selenium:che-selenium-test'
+// CRWVersion = 1.0.1.GA (Che 6.18.2)
+// // MVN_EXTRA_FLAGS = extra flags, such as to disable a module -pl '!org.eclipse.che.selenium:che-selenium-test'
 
 def installNPM(){
 	def nodeHome = tool 'nodejs-10.9.0'
@@ -138,6 +139,10 @@ timeout(180) {
 			perl -0777 -p -i -e 's|(\\ +<dependency>.*?<\\/dependency>)| ${1} =~ /<artifactId>che-docs<\\/artifactId>/?\"\":${1}|gse' che/assembly/assembly-main/pom.xml
 			perl -0777 -p -i -e 's|(\\ +<dependencySet>.*?<\\/dependencySet>)| ${1} =~ /<include>org.eclipse.che.docs:che-docs<\\/include>/?\"\":${1}|gse' che/assembly/assembly-main/src/assembly/assembly.xml
 			perl -0777 -p -i -e 's|(\\ +<dependency>.*?<\\/dependency>)| ${1} =~ /<artifactId>che-docs<\\/artifactId>/?\"\":${1}|gse' che/pom.xml
+		'''
+		// set correct version of CRW Dashboard (not Che version)
+		sh '''#!/bin/bash -xe
+			sed -i -e "s#\\(.\\+productVersion = \\).\\+#\\1'${CRWVersion}';#" che/dashboard/src/components/branding/che-branding.factory.ts
 		'''
 
 		sh "mvn clean install ${MVN_FLAGS} -f ${CHE_path}/pom.xml ${MVN_EXTRA_FLAGS}"
