@@ -55,6 +55,9 @@
                                 <crw.port>${crw.port}</crw.port>
                             </propertiesUser>
                             <ignoreResultFailures>true</ignoreResultFailures>
+                            <testFilesIncluded>
+                                <jMeterTestFile>${jmeterScript}</jMeterTestFile>
+                            </testFilesIncluded>
                         </configuration>
                         <dependencies>
                             <dependency>

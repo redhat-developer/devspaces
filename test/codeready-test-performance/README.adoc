@@ -1,11 +1,16 @@
-== How to run Performance tests locally
+== How to run Performance tests with maven
 
 Command to run performance test in 2 threads:
 ```
-export IP=$(docker run --net=host eclipse/che-ip) && mvn clean verify -Pperformance \
--Dcrw.protocol=http \
--Dcrw.host="che-codeready.${IP}.nip.io" \
--Dcrw.sso.host="keycloak-codeready.${IP}.nip.io" \
--Dcrw.port=80 \
--Dtest.threads=2
+ mvn clean verify -Pperformance \
+-Dcrw.protocol=http(s) \
+-Dcrw.host="CRW_HOST" \
+-Dcrw.sso.host="CRW_KEYCLOAK_HOST" \
+-Dcrw.port=CRW_PORT \
+-Dtest.threads=NUM_OD_THREADS(virtualusers)
+-DjmeterScript=FILE_NAME_OF_TEST
 ```
+For instance we have CRW which launched on the next address: http://codeready-codeready-default.apps.iokhrime-ocp.crew
+and keycloak has been deployed here: http://keycloak-codeready-default.apps.iokhrime-ocp.crew. I this case -  we have next command:
+`mvn clean verify -Pperformance -Dcrw.protocol=http -Dcrw.host=codeready-codeready-default.apps.iokhrime-ocp.crew -Dcrw.sso.host=keycloak-codeready-default.apps.iokhrime-ocp.crew -Dcrw.port=80 -Dtest.threads=1 -DjmeterScript=codeready-test-scenario-with-building-project.jmx`
+
