@@ -44,9 +44,9 @@ public class CodereadyNewWorkspace extends NewWorkspace {
   private static final String WORKSPACE_CREATED_DIALOG_CLOSE_BUTTON_XPATH =
       "//md-dialog/che-popup[@title='Workspace Is Created']//i";
   private static final String EDIT_WORKSPACE_DIALOG_BUTTON =
-      "//che-button-primary//span[text()='Edit']";
+      "//span[text()='Create & Proceed Editing']";
   private static final String OPEN_IN_IDE_DIALOG_BUTTON =
-      "//che-button-default//span[text()='Open In IDE']";
+      "//che-button-default//span[text()='Open']";
 
   @Inject
   public CodereadyNewWorkspace(
@@ -78,9 +78,10 @@ public class CodereadyNewWorkspace extends NewWorkspace {
     JAVA_10("java10-default"),
     NODE("node-default"),
     PHP("php-default"),
-    PYTHON("python-default");
+    PYTHON("python-default"),
+    JAVA_RHEL8("rhel8-default");
 
-    private String id;
+    private final String id;
 
     CodereadyStacks(String id) {
       this.id = id;

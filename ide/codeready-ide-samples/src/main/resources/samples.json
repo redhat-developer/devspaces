@@ -15,14 +15,14 @@
     "problems": [],
     "source": {
       "type": "git",
-      "location": "https://github.com/openshift-quickstart/kitchensink-example.git",
+      "location": "https://github.com/che-samples/kitchensink-example.git",
       "parameters": {}
     },
     "commands": [
       {
         "name": "build",
         "type": "mvn",
-        "commandLine": "mvn -f ${current.project.path}/pom.xml clean install",
+        "commandLine": "export MAVEN_OPTS='-Xms20m'\nmvn -f ${current.project.path}/pom.xml clean install",
         "attributes": {
           "previewUrl": "",
           "goal": "Build"
@@ -31,7 +31,7 @@
       {
         "name": "build and run in debug",
         "type": "mvn",
-        "commandLine": "mvn -f ${current.project.path}/pom.xml clean install\ncp ${current.project.path}/target/*.war /opt/eap/standalone/deployments/ROOT.war\nunset JAVA_OPTS\n/opt/eap/bin/standalone.sh -b 0.0.0.0 --debug 8000",
+        "commandLine": "export MAVEN_OPTS='-Xms20m'\nmvn -f ${current.project.path}/pom.xml clean install\ncp ${current.project.path}/target/*.war /opt/eap/standalone/deployments/ROOT.war\nunset JAVA_OPTS\n/opt/eap/bin/standalone.sh -b 0.0.0.0 --debug 8000",
         "attributes": {
           "previewUrl": "${server.eap}",
           "goal": "Run"
@@ -40,7 +40,7 @@
       {
         "name": "hot update",
         "type": "mvn",
-        "commandLine": "mvn -f ${current.project.path}/pom.xml clean install\ncp ${current.project.path}/target/*.war /opt/eap/standalone/deployments/ROOT.war",
+        "commandLine": "export MAVEN_OPTS='-Xms20m'\nmvn -f ${current.project.path}/pom.xml clean install\ncp ${current.project.path}/target/*.war /opt/eap/standalone/deployments/ROOT.war",
         "attributes": {
           "previewUrl": "${server.eap}",
           "goal": "Run"

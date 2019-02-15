@@ -3,7 +3,7 @@
     "id": "rhel8-default",
     "creator": "ide",
     "name": "RHEL 8 Beta - Java 1.8",
-    "description": "RHEL8 Java Stack with OpenJDK 1.8, Maven 3.5",
+    "description": "RHEL 8 Beta Java stack with OpenJDK 1.8 and Maven 3.5",
     "scope": "general",
     "tags": [
       "maven",
@@ -93,7 +93,7 @@
     "id": "java-default",
     "creator": "ide",
     "name": "Java 1.8",
-    "description": "Default Java Stack with OpenJDK 1.8, Maven 3.5",
+    "description": "RHEL 7 Java stack with OpenJDK 1.8 and Maven 3.5",
     "scope": "general",
     "tags": [
       "eap",
@@ -192,7 +192,7 @@
     "id": "vert.x-default",
     "creator": "ide",
     "name": "Vert.x",
-    "description": "Default Vert.x Stack",
+    "description": "Vert.x stack",
     "scope": "general",
     "tags": [
       "vert.x"
@@ -303,7 +303,7 @@
     "id": "eap-default",
     "creator": "ide",
     "name": "Java EAP",
-    "description": "Default Java Stack with OpenJDK 1.8, Maven 3.5 and EAP 7.1",
+    "description": "Java stack with EAP 7.1, OpenJDK 1.8 and Maven 3.5",
     "scope": "general",
     "tags": [
       "eap",
@@ -374,7 +374,7 @@
       "description": null,
       "commands": [
         {
-          "commandLine": "mvn clean install -f ${current.project.path}/pom.xml",
+          "commandLine": "export MAVEN_OPTS='-Xms20m'\nmvn clean install -f ${current.project.path}/pom.xml",
           "name": "build",
           "type": "mvn",
           "attributes": {
@@ -402,7 +402,7 @@
     "id": "wildfly-swarm-default",
     "creator": "ide",
     "name": "Wildfly Swarm",
-    "description": "Default Wildfly Swarm Stack",
+    "description": "Wildfly Swarm stack",
     "scope": "general",
     "tags": [
       "wildfly-swarm",
@@ -497,7 +497,7 @@
     "id": "fuse-default",
     "creator": "ide",
     "name": "Red Hat Fuse",
-    "description": "Red Hat Fuse Stack",
+    "description": "Red Hat Fuse stack",
     "scope": "general",
     "tags": [
       "fuse"
@@ -587,7 +587,7 @@
     "id": "spring-boot-default",
     "creator": "ide",
     "name": "Spring Boot",
-    "description": "Default Spring Boot Stack",
+    "description": "Spring Boot stack",
     "scope": "general",
     "tags": [
       "spring-boot",
@@ -678,7 +678,7 @@
     "id": "cpp-default",
     "creator": "ide",
     "name": "Cpp",
-    "description": "Stack with C-CPP developer tools",
+    "description": "C and C++ Developer Tools stack",
     "scope": "general",
     "tags": [
       "c",
@@ -769,7 +769,7 @@
     "id": "dotnet-default",
     "creator": "ide",
     "name": ".NET",
-    "description": ".NET 2.0 Stack with .NET Core SDK and Runtime",
+    "description": ".NET 2.0 stack with .NET Core SDK and Runtime",
     "scope": "general",
     "tags": [
       "dotnet"
@@ -916,7 +916,7 @@
     "id": "node-default",
     "creator": "ide",
     "name": "Node",
-    "description": "Stack with NodeJS 8x",
+    "description": "NodeJS 8x stack",
     "scope": "general",
     "tags": [
       "nodejs",
@@ -986,7 +986,7 @@
     "id": "php-default",
     "creator": "ide",
     "name": "PHP",
-    "description": "PHP Stack with PHP 7.1 and most popular extensions",
+    "description": "PHP 7.1 stack, including most popular extensions",
     "scope": "general",
     "tags": [
       "PHP"
@@ -1101,7 +1101,7 @@
     "id": "python-default",
     "creator": "ide",
     "name": "Python",
-    "description": "Python Stack with Python 3.6",
+    "description": "Python 3.6 stack",
     "scope": "general",
     "tags": [
       "python",

@@ -11,8 +11,7 @@
 */
 package com.redhat.codeready.selenium.userstory;
 
-import static com.redhat.codeready.selenium.pageobject.dashboard.CodereadyNewWorkspace.CodereadyStacks.VERTX;
-import static org.eclipse.che.commons.lang.NameGenerator.generate;
+import static java.util.Arrays.stream;
 import static org.eclipse.che.selenium.core.constant.TestBuildConstants.BUILD_SUCCESS;
 import static org.eclipse.che.selenium.core.constant.TestCommandsConstants.BUILD_COMMAND;
 import static org.eclipse.che.selenium.core.constant.TestCommandsConstants.DEBUG_COMMAND;
@@ -22,21 +21,19 @@ import static org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants.A
 import static org.eclipse.che.selenium.core.constant.TestProjectExplorerContextMenuConstants.ContextMenuCommandGoals.BUILD_GOAL;
 import static org.eclipse.che.selenium.core.constant.TestProjectExplorerContextMenuConstants.ContextMenuCommandGoals.DEBUG_GOAL;
 import static org.eclipse.che.selenium.core.constant.TestProjectExplorerContextMenuConstants.ContextMenuCommandGoals.RUN_GOAL;
+import static org.eclipse.che.selenium.core.constant.TestTimeoutsConstants.APPLICATION_START_TIMEOUT_SEC;
 import static org.eclipse.che.selenium.core.constant.TestTimeoutsConstants.LOADER_TIMEOUT_SEC;
 import static org.eclipse.che.selenium.core.constant.TestTimeoutsConstants.UPDATING_PROJECT_TIMEOUT_SEC;
 import static org.eclipse.che.selenium.pageobject.CodenvyEditor.MarkerLocator.ERROR;
 
+import com.google.common.collect.ImmutableList;
 import com.google.inject.Inject;
 import com.redhat.codeready.selenium.pageobject.dashboard.CodereadyFindUsageWidget;
 import com.redhat.codeready.selenium.pageobject.dashboard.CodereadyNewWorkspace;
 import java.util.Arrays;
 import java.util.List;
 import org.eclipse.che.selenium.core.SeleniumWebDriver;
-import org.eclipse.che.selenium.core.client.TestWorkspaceServiceClient;
-import org.eclipse.che.selenium.core.user.DefaultTestUser;
 import org.eclipse.che.selenium.core.webdriver.SeleniumWebDriverHelper;
-import org.eclipse.che.selenium.core.workspace.TestWorkspace;
-import org.eclipse.che.selenium.core.workspace.TestWorkspaceProvider;
 import org.eclipse.che.selenium.pageobject.CodenvyEditor;
 import org.eclipse.che.selenium.pageobject.Consoles;
 import org.eclipse.che.selenium.pageobject.Events;
@@ -44,31 +41,29 @@ import org.eclipse.che.selenium.pageobject.Ide;
 import org.eclipse.che.selenium.pageobject.MavenPluginStatusBar;
 import org.eclipse.che.selenium.pageobject.Menu;
 import org.eclipse.che.selenium.pageobject.ProjectExplorer;
-import org.eclipse.che.selenium.pageobject.dashboard.AddOrImportForm;
-import org.eclipse.che.selenium.pageobject.dashboard.Dashboard;
-import org.eclipse.che.selenium.pageobject.dashboard.workspaces.Workspaces;
+import org.eclipse.che.selenium.pageobject.intelligent.CommandsPalette;
 import org.openqa.selenium.By;
-import org.testng.annotations.AfterClass;
-import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 /** @author Aleksandr Shmaraiev */
-public class VertxUserStoryTest {
-
-  private static final String WORKSPACE_NAME = generate("VertxUserStoryWs", 4);
+public class VertxUserStoryTest extends AbstractUserStoryTest {
   private static final String VERTX_PROJECT_NAME = "vertx-http-booster";
   private static final String PATH_TO_MAIN_PACKAGE =
       VERTX_PROJECT_NAME + "/src/main/java/io.openshift.booster";
   private static final String JAVA_FILE_NAME = "HttpApplication";
 
-  // it is used to read workspace logs on test failure
+  private static final String[] REPORT_DEPENDENCY_ANALYSIS = {
+    "Report for /projects/vertx-http-booster/pom.xml",
+    "1) # of application dependencies : 2",
+    "2) Dependencies with Licenses : ",
+    "3) Suggest adding these dependencies to your application stack:",
+    "4) NO usage outlier application depedencies been found",
+    "5) NO alternative  application depedencies been suggested"
+  };
+
   @Inject private Ide ide;
-  @Inject private Workspaces workspaces;
+  @Inject private CommandsPalette commandsPalette;
   @Inject private Consoles consoles;
-  @Inject private CodereadyNewWorkspace newWorkspace;
-  @Inject private DefaultTestUser defaultTestUser;
-  @Inject private Dashboard dashboard;
-  @Inject private AddOrImportForm addOrImportForm;
   @Inject private ProjectExplorer projectExplorer;
   @Inject private MavenPluginStatusBar mavenPluginStatusBar;
   @Inject private CodenvyEditor editor;
@@ -77,50 +72,39 @@ public class VertxUserStoryTest {
   @Inject private CodereadyFindUsageWidget findUsages;
   @Inject private SeleniumWebDriver seleniumWebDriver;
   @Inject private SeleniumWebDriverHelper seleniumWebDriverHelper;
-  @Inject private TestWorkspaceServiceClient workspaceServiceClient;
-  @Inject private TestWorkspaceProvider testWorkspaceProvider;
 
-  // it is used to read workspace logs on test failure
-  private TestWorkspace testWorkspace;
-  private String currentWindow;
-
-  @BeforeClass
-  public void setUp() {
-    dashboard.open();
+  @Override
+  protected List<String> getProjects() {
+    return ImmutableList.of(VERTX_PROJECT_NAME);
   }
 
-  @AfterClass
-  public void tearDown() throws Exception {
-    workspaceServiceClient.delete(WORKSPACE_NAME, defaultTestUser.getName());
+  @Override
+  protected CodereadyNewWorkspace.CodereadyStacks getStackName() {
+    return CodereadyNewWorkspace.CodereadyStacks.VERTX;
   }
 
   @Test
-  public void checkWorkspaceCreationFromVertxStack() {
-    // store info about created workspace to make SeleniumTestHandler.captureTestWorkspaceLogs()
-    // possible to read logs in case of test failure
-    // select the vert.x ready stack to create the workspace
-    dashboard.selectWorkspacesItemOnDashboard();
-    dashboard.waitToolbarTitleName("Workspaces");
-    workspaces.clickOnAddWorkspaceBtn();
-    newWorkspace.typeWorkspaceName(WORKSPACE_NAME);
-    newWorkspace.selectCodereadyStack(VERTX);
-
-    // create the workspace with a template project
-    addOrImportForm.clickOnAddOrImportProjectButton();
-    addOrImportForm.addSampleToWorkspace(VERTX_PROJECT_NAME);
-    newWorkspace.clickOnCreateButtonAndOpenInIDE();
-
-    // switch to the IDE
-    currentWindow = ide.switchToIdeAndWaitWorkspaceIsReadyToUse();
-    testWorkspace = testWorkspaceProvider.getWorkspace(WORKSPACE_NAME, defaultTestUser);
+  @Override
+  public void createWorkspaceFromDashboard() throws Exception {
+    super.createWorkspaceFromDashboard();
 
     // wait expected message in the progress info bar
     // the execution takes a lot of time on a local machine, so need a big timeout
-    mavenPluginStatusBar.waitExpectedTextInInfoPanel("Refreshing Maven model", LOADER_TIMEOUT_SEC);
-    mavenPluginStatusBar.waitClosingInfoPanel();
+    mavenPluginStatusBar.waitInfoPanelIsNotEmpty();
+    mavenPluginStatusBar.waitClosingInfoPanel(APPLICATION_START_TIMEOUT_SEC);
 
     // check the project is initialized
     projectExplorer.waitProjectInitialization(VERTX_PROJECT_NAME);
+  }
+
+  @Test(priority = 2)
+  public void checkReportDependencyAnalysisCommand() {
+    commandsPalette.openCommandPalette();
+    commandsPalette.startCommandByDoubleClick("dependency_analysis");
+    consoles.waitExpectedTextIntoConsole(BUILD_SUCCESS);
+
+    stream(REPORT_DEPENDENCY_ANALYSIS)
+        .forEach(partOfContent -> consoles.waitExpectedTextIntoConsole(partOfContent));
   }
 
   @Test(priority = 1)
@@ -136,7 +120,6 @@ public class VertxUserStoryTest {
 
     // wait expected message in the progress info bar
     // the execution take a lot of time on a local machine, so need a big timeout
-    mavenPluginStatusBar.waitExpectedTextInInfoPanel("Download sources and javadoc:", 620);
     mavenPluginStatusBar.waitClosingInfoPanel(UPDATING_PROJECT_TIMEOUT_SEC);
 
     projectExplorer.expandPathInProjectExplorerAndOpenFile(
@@ -191,6 +174,7 @@ public class VertxUserStoryTest {
 
     // invoke the code assist panel
     editor.goToPosition(20, 15);
+    editor.waitTextIntoEditor("router.set();");
     editor.launchPropositionAssistPanel();
     editor.waitTextIntoFixErrorProposition("Change to 'get(..)'");
     editor.waitTextIntoFixErrorProposition("Add cast to 'router'");
@@ -214,13 +198,13 @@ public class VertxUserStoryTest {
     consoles.waitPreviewUrlIsResponsive(10);
     consoles.clickOnPreviewUrl();
 
-    seleniumWebDriverHelper.switchToNextWindow(currentWindow);
+    seleniumWebDriverHelper.switchToNextWindow(getIdeWindow());
 
     seleniumWebDriver.navigate().refresh();
     seleniumWebDriverHelper.waitVisibility(webElement, LOADER_TIMEOUT_SEC);
 
     seleniumWebDriver.close();
-    seleniumWebDriver.switchTo().window(currentWindow);
+    seleniumWebDriver.switchTo().window(getIdeWindow());
     seleniumWebDriverHelper.switchToIdeFrameAndWaitAvailability();
   }
 }

@@ -9,16 +9,15 @@
 * Contributors:
 *   Red Hat, Inc. - initial API and implementation
 */
-package com.redhat.codeready.selenium.languageserver;
+package com.redhat.codeready.selenium.miscellaneous;
 
-import org.eclipse.che.selenium.languageserver.GolangFileEditingTest;
+import org.eclipse.che.selenium.miscellaneous.OpenInTerminalTest;
 
 /** @author Aleksandr Shmaraev */
-public class CodeReadyGolangFileEditingTest extends GolangFileEditingTest {
+public class CodeReadyOpenInTerminalTest extends OpenInTerminalTest {
 
   @Override
-  protected void waitExpectedTextIntoConsole() {
-    consoles.waitExpectedTextIntoConsole("Finished running tool:");
-    consoles.waitExpectedTextIntoConsole("/usr/bin/go build");
+  protected String getExpectedTextInTerminal() throws Exception {
+    return "[jboss@" + workspace.getId() + " java]$";
   }
 }

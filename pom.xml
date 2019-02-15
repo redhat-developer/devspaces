@@ -1,11 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (c) 2018 Red Hat, Inc.
-    All rights reserved. This program and the accompanying materials
-    are made available under the terms of the Eclipse Public License v1.0
-    which accompanies this distribution, and is available at
-    http://www.eclipse.org/legal/epl-v10.html
+    Copyright (c) 2018-2019 Red Hat, Inc.
+
+    This program and the accompanying materials are made
+    available under the terms of the Eclipse Public License 2.0
+    which is available at https://www.eclipse.org/legal/epl-2.0/
+
+    SPDX-License-Identifier: EPL-2.0
+
+    Contributors:
+      Red Hat, Inc. - initial API and implementation
 
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -14,24 +19,24 @@
     <parent>
         <artifactId>maven-depmgt-pom</artifactId>
         <groupId>org.eclipse.che.depmgt</groupId>
-        <version>6.17.0</version>
+        <version>6.18.0</version>
     </parent>
     <groupId>com.redhat</groupId>
     <artifactId>codeready</artifactId>
-    <version>6.17.1</version>
+    <version>6.18.0</version>
     <packaging>pom</packaging>
     <name>CodeReady :: Parent</name>
     <url>https://developers.redhat.com/products/codeready-workspaces/overview/</url>
     <licenses>
         <license>
-            <name>Eclipse Public License v1.0</name>
-            <url>http://www.eclipse.org/legal/epl-v10.html</url>
+            <name>Eclipse Public License - v 2.0</name>
+            <url>https://www.eclipse.org/legal/epl-2.0/</url>
             <distribution>repo</distribution>
         </license>
     </licenses>
     <properties>
-        <che.version>6.17.1</che.version>
-        <che.dashboard.version>${che.version}</che.dashboard.version>
+        <che.version>${project.parent.version}</che.version>
+        <che.dashboard.version>${project.parent.version}</che.dashboard.version>
         <nightly>false</nightly>
     </properties>
     <dependencyManagement>
@@ -131,11 +136,11 @@
         </dependencies>
     </dependencyManagement>
     <repositories>
-        <!-- <repository>
+        <repository>
             <id>ossrh</id>
             <name>central public snapshots</name>
             <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
-        </repository> -->
+        </repository>
         <repository>
             <id>codenvy-public-repo</id>
             <name>codenvy public</name>
@@ -143,11 +148,11 @@
         </repository>
     </repositories>
     <pluginRepositories>
-        <!-- <pluginRepository>
+        <pluginRepository>
             <id>ossrh</id>
             <name>central public snapshots</name>
             <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
-        </pluginRepository> -->
+        </pluginRepository>
     </pluginRepositories>
     <build>
         <plugins>

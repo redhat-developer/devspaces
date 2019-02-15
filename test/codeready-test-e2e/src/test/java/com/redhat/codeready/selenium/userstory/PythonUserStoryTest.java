@@ -11,40 +11,31 @@
 */
 package com.redhat.codeready.selenium.userstory;
 
+import static com.redhat.codeready.selenium.pageobject.dashboard.CodereadyNewWorkspace.CodereadyStacks.PYTHON;
 import static java.util.Arrays.asList;
-import static org.eclipse.che.commons.lang.NameGenerator.generate;
 import static org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants.Assistant.ASSISTANT;
 import static org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants.Assistant.FIND_REFERENCES;
 import static org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants.Assistant.GO_TO_SYMBOL;
 import static org.eclipse.che.selenium.core.constant.TestProjectExplorerContextMenuConstants.ContextMenuCommandGoals.RUN_GOAL;
 import static org.eclipse.che.selenium.core.constant.TestTimeoutsConstants.ELEMENT_TIMEOUT_SEC;
 import static org.eclipse.che.selenium.pageobject.CodenvyEditor.MarkerLocator.WARNING;
-import static org.eclipse.che.selenium.pageobject.dashboard.NewWorkspace.Stack.PYTHON;
 import static org.openqa.selenium.Keys.ARROW_LEFT;
 
+import com.google.common.collect.ImmutableList;
 import com.google.inject.Inject;
 import com.redhat.codeready.selenium.pageobject.CodereadyEditor;
+import com.redhat.codeready.selenium.pageobject.dashboard.CodereadyNewWorkspace;
 import java.util.List;
 import org.eclipse.che.selenium.core.client.TestProjectServiceClient;
-import org.eclipse.che.selenium.core.client.TestWorkspaceServiceClient;
-import org.eclipse.che.selenium.core.user.DefaultTestUser;
-import org.eclipse.che.selenium.core.workspace.TestWorkspace;
 import org.eclipse.che.selenium.pageobject.AssistantFindPanel;
 import org.eclipse.che.selenium.pageobject.Consoles;
 import org.eclipse.che.selenium.pageobject.FindReferencesConsoleTab;
-import org.eclipse.che.selenium.pageobject.Ide;
 import org.eclipse.che.selenium.pageobject.Menu;
 import org.eclipse.che.selenium.pageobject.ProjectExplorer;
-import org.eclipse.che.selenium.pageobject.dashboard.CreateWorkspaceHelper;
-import org.eclipse.che.selenium.pageobject.dashboard.Dashboard;
-import org.testng.annotations.AfterClass;
-import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 /** @author Skoryk Serhii */
-public class PythonUserStoryTest {
-
-  private static final String WORKSPACE_NAME = generate("PythonUserStory", 4);
+public class PythonUserStoryTest extends AbstractUserStoryTest {
   private static final String PROJECT_NAME = "console-python3-simple";
   private static final String PYTHON_FILE_NAME = "main.py";
   private static final String PATH_TO_FILE = PROJECT_NAME + "/" + PYTHON_FILE_NAME;
@@ -74,40 +65,28 @@ public class PythonUserStoryTest {
           + "towers(5, 'X', 'Z', 'Y')\n"
           + "print(\"\\nPuzzle solved in \" + str(counter) + \" steps.\")";
 
-  @Inject private Ide ide;
   @Inject private Menu menu;
   @Inject private Consoles consoles;
-  @Inject private Dashboard dashboard;
   @Inject private CodereadyEditor editor;
-  @Inject private DefaultTestUser defaultTestUser;
   @Inject private ProjectExplorer projectExplorer;
   @Inject private AssistantFindPanel assistantFindPanel;
-  @Inject private CreateWorkspaceHelper createWorkspaceHelper;
   @Inject private TestProjectServiceClient testProjectServiceClient;
   @Inject private FindReferencesConsoleTab findReferencesConsoleTab;
-  @Inject private TestWorkspaceServiceClient workspaceServiceClient;
 
-  // it is used to read workspace logs on test failure
-  private TestWorkspace testWorkspace;
-
-  @BeforeClass
-  public void setUp() {
-    dashboard.open();
+  @Override
+  protected CodereadyNewWorkspace.CodereadyStacks getStackName() {
+    return PYTHON;
   }
 
-  @AfterClass
-  public void tearDown() throws Exception {
-    workspaceServiceClient.delete(WORKSPACE_NAME, defaultTestUser.getName());
+  @Override
+  protected List<String> getProjects() {
+    return ImmutableList.of(PROJECT_NAME);
   }
 
+  @Override
   @Test
-  public void createPythonWorkspaceWithProjectFromDashboard() throws Exception {
-    testWorkspace =
-        createWorkspaceHelper.createWorkspaceFromStackWithProject(
-            PYTHON, WORKSPACE_NAME, PROJECT_NAME);
-
-    ide.switchToIdeAndWaitWorkspaceIsReadyToUse();
-    projectExplorer.waitProjectInitialization(PROJECT_NAME);
+  public void createWorkspaceFromDashboard() throws Exception {
+    super.createWorkspaceFromDashboard();
 
     consoles.executeCommandFromProjectExplorer(PROJECT_NAME, RUN_GOAL, "run", "Hello, world!");
     consoles.executeCommandFromProjectExplorer(

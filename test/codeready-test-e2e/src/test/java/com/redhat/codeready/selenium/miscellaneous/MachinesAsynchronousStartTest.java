@@ -17,6 +17,7 @@ import static org.eclipse.che.commons.lang.NameGenerator.generate;
 import static org.eclipse.che.selenium.core.TestGroup.OPENSHIFT;
 import static org.eclipse.che.selenium.pageobject.dashboard.workspaces.WorkspaceDetails.ActionButton.SAVE_BUTTON;
 import static org.eclipse.che.selenium.pageobject.dashboard.workspaces.WorkspaceDetails.WorkspaceDetailsTab.MACHINES;
+import static org.testng.Assert.fail;
 
 import com.google.inject.Inject;
 import java.util.List;
@@ -34,6 +35,7 @@ import org.eclipse.che.selenium.pageobject.dashboard.workspaces.WorkspaceDetails
 import org.eclipse.che.selenium.pageobject.dashboard.workspaces.WorkspaceDetailsMachines;
 import org.eclipse.che.selenium.pageobject.dashboard.workspaces.Workspaces;
 import org.openqa.selenium.Keys;
+import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
@@ -44,7 +46,7 @@ public class MachinesAsynchronousStartTest {
   private static final String WORKSPACE_NAME = generate("test-workspace", 4);
   private static final String MACHINE_NAME = "dev-machine";
   private static final String IMAGE_NAME =
-      "registry.access.redhat.com/codeready-workspaces-beta/stacks-java:1.0.0.Beta1";
+      "registry.access.stage.redhat.com/codeready-workspaces/stacks-java";
   private static final String IMAGE_NAME_SUFFIX = generate("", 4);
   private static final String NOT_EXISTED_IMAGE_NAME = IMAGE_NAME + IMAGE_NAME_SUFFIX;
   private static final String SUCCESS_NOTIFICATION_TEST = "Workspace updated.";
@@ -119,7 +121,13 @@ public class MachinesAsynchronousStartTest {
   public void checkWorkspace() {
     // check behavior of the broken workspace
     workspaces.clickOnWorkspaceStopStartButton(WORKSPACE_NAME);
-    workspaces.waitErrorNotificationContainsText(EXPECTED_ERROR_NOTIFICATION_TEXT);
+
+    try {
+      workspaces.waitErrorNotificationContainsText(EXPECTED_ERROR_NOTIFICATION_TEXT);
+    } catch (TimeoutException ex) {
+      // remove try-catch block after issue has been resolved
+      fail("Known permanent failure https://github.com/eclipse/che/issues/12419");
+    }
 
     // check openshift events log
     waitEvent("Failed");
