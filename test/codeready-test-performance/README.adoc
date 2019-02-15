@@ -1,6 +1,7 @@
 == How to run Performance tests with maven
 
-Command to run performance test in 2 threads:
+**Command to run performance test in 2 threads:**
+
 ```
  mvn clean verify -Pperformance \
 -Dcrw.protocol=http(s) \
@@ -13,4 +14,28 @@ Command to run performance test in 2 threads:
 For instance we have CRW which launched on the next address: http://codeready-codeready-default.apps.iokhrime-ocp.crew
 and keycloak has been deployed here: http://keycloak-codeready-default.apps.iokhrime-ocp.crew. I this case -  we have next command:
 `mvn clean verify -Pperformance -Dcrw.protocol=http -Dcrw.host=codeready-codeready-default.apps.iokhrime-ocp.crew -Dcrw.sso.host=keycloak-codeready-default.apps.iokhrime-ocp.crew -Dcrw.port=80 -Dtest.threads=1 -DjmeterScript=codeready-test-scenario-with-building-project.jmx`
-
+------------
+In the **codeready-test-scenario.jmx** file implemented next scenario:
+* Creates virtual user(s)=amount of the treads (-Dtest.threads property)
+* Each virtual user login and create a workspace
+* Each virtual user waits workspace creation (RUNNING) status
+* After creation the virtual user(s) stop the workspace and remove the workspace
+* In the end - performs clean up actions in the separated Thredgroup, remove all users
+----------------
+IIn the **codeready-test-scenario-with-building-project.jmx** file implemented next scenario:
+ * Creates virtual user(s)=amount of the treads (-Dtest.threads property)
+ * Each virtual user login and create a workspace
+ * Each virtual user waits workspace creation (RUNNING) status
+ * Upload the default-spring-project.zip into each workspace
+ * Launch build command in the workspace (run command like: `mvn clen install -f /projects/maven-project/default-spring-project)`
+ * Parse output each 3 sec after finishing building stop and remove the workspace
+------------------
+In the **codeready-test-scenario-with-opening-file.jmx** file implemented next scenario:
+* Creates virtual user(s)=amount of the treads (-Dtest.threads property)
+* Each virtual user login and create a workspace
+* Each virtual user waits workspace creation (RUNNING) status
+* Upload the default-spring-project.zip into each workspace
+* Open the pom.xml file from the current project
+* Check that file has been opened properly (check expected content in the responce)
+* After creation the virtual user(s) stop the workspace and remove the workspace
+* In the end - performs clean up actions in the separated Threadgroup, remove all users

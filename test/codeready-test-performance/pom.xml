@@ -53,6 +53,7 @@
                                 <crw.host>${crw.host}</crw.host>
                                 <crw.sso.host>${crw.sso.host}</crw.sso.host>
                                 <crw.port>${crw.port}</crw.port>
+                                <crw.loopCount>${crw.loopCount}</crw.loopCount>
                             </propertiesUser>
                             <ignoreResultFailures>true</ignoreResultFailures>
                             <testFilesIncluded>
