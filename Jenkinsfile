@@ -4,12 +4,13 @@
 // node == slave label, eg., rhel7-devstudio-releng-16gb-ram||rhel7-16gb-ram||rhel7-devstudio-releng||rhel7 or rhel7-32gb||rhel7-16gb||rhel7-8gb
 // nodeBig == slave label, eg., rhel7-devstudio-releng-16gb-ram||rhel7-16gb-ram or rhel7-32gb||rhel7-16gb
 // branchToBuildDev = refs/tags/20
-// branchToBuildParent = refs/tags/6.18.0
-// branchToBuildLib = refs/tags/6.18.0
-// branchToBuildChe = refs/tags/6.18.0 or */*/6.18.x or */master
+// branchToBuildParent = refs/tags/6.19.0
+// branchToBuildLib = refs/tags/6.19.0
+// branchToBuildChe = refs/tags/6.19.0 or */*/6.19.x or */master
 // branchToBuildLSJ = refs/tags/0.0.3 or */master or a SHA like 095d753f42dad32c47b1e9ae46a71bf424e98e7e
-// branchToBuildCRW = */6.18.x or */master
-// MVN_EXTRA_FLAGS = extra flags, such as to disable a module -pl '!org.eclipse.che.selenium:che-selenium-test'
+// branchToBuildCRW = */6.19.x or */master
+// CRWVersion = 1.1.0.GA (Eclipse Che 6.19.0)
+// // MVN_EXTRA_FLAGS = extra flags, such as to disable a module -pl '!org.eclipse.che.selenium:che-selenium-test'
 
 def installNPM(){
 	def nodeHome = tool 'nodejs-10.9.0'
@@ -138,6 +139,10 @@ timeout(180) {
 			perl -0777 -p -i -e 's|(\\ +<dependency>.*?<\\/dependency>)| ${1} =~ /<artifactId>che-docs<\\/artifactId>/?\"\":${1}|gse' che/assembly/assembly-main/pom.xml
 			perl -0777 -p -i -e 's|(\\ +<dependencySet>.*?<\\/dependencySet>)| ${1} =~ /<include>org.eclipse.che.docs:che-docs<\\/include>/?\"\":${1}|gse' che/assembly/assembly-main/src/assembly/assembly.xml
 			perl -0777 -p -i -e 's|(\\ +<dependency>.*?<\\/dependency>)| ${1} =~ /<artifactId>che-docs<\\/artifactId>/?\"\":${1}|gse' che/pom.xml
+		'''
+		// set correct version of CRW Dashboard (not Che version)
+		sh '''#!/bin/bash -xe
+			sed -i -e "s#\\(.\\+productVersion = \\).\\+#\\1'${CRWVersion}';#" che/dashboard/src/components/branding/che-branding.factory.ts
 		'''
 
 		sh "mvn clean install ${MVN_FLAGS} -f ${CHE_path}/pom.xml ${MVN_EXTRA_FLAGS}"
