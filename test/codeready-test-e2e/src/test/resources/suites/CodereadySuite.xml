@@ -19,19 +19,6 @@
 
     <test name="all">
         <classes>
-            <class name="com.redhat.codeready.selenium.userstory.JavaEapUserStoryTest"/>
-            <class name="com.redhat.codeready.selenium.userstory.JavaUserStoryTest"/>
-            <class name="com.redhat.codeready.selenium.userstory.NodeJsUserStoryTest"/>
-            <class name="com.redhat.codeready.selenium.userstory.PythonUserStoryTest"/>
-            <class name="com.redhat.codeready.selenium.userstory.GoUserStoryTest"/>
-            <class name="com.redhat.codeready.selenium.userstory.PhpUserStoryTest"/>
-            <class name="com.redhat.codeready.selenium.userstory.VertxUserStoryTest"/>
-            <class name="com.redhat.codeready.selenium.userstory.SpringBootUserStoryTest"/>
-            <class name="com.redhat.codeready.selenium.userstory.DotNetUserStoryTest"/>
-            <class name="com.redhat.codeready.selenium.userstory.ClangCppUserStoryTest"/>
-            <class name="com.redhat.codeready.selenium.userstory.RedHatFuseUserStoryTest"/>
-            <class name="com.redhat.codeready.selenium.userstory.WildFlyUserStoryTest"/>
-            <class name="com.redhat.codeready.selenium.userstory.JavaRhel8UserStoryTest"/>
         </classes>
     </test>
 
