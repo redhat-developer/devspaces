@@ -42,7 +42,6 @@ import com.redhat.codeready.selenium.pageobject.CodereadyEditor;
 import com.redhat.codeready.selenium.pageobject.dashboard.CodereadyFindUsageWidget;
 import com.redhat.codeready.selenium.pageobject.dashboard.CodereadyNewWorkspace;
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.Arrays;
@@ -103,14 +102,8 @@ public class JavaUserStoryTest extends AbstractUserStoryTest {
   @Inject private TestProjectServiceClient projectServiceClient;
   @Inject private SeleniumWebDriverHelper seleniumWebDriverHelper;
 
-  private final String pomFileChangedText;
   private static final String TAB_NAME_WITH_IMPL = "NativeMethodAccessorImpl";
   private String appUrl;
-
-  public JavaUserStoryTest() throws IOException, URISyntaxException {
-    pomFileChangedText =
-        readFileToString(getClass().getResource("/projects/bayesian/pom-file-after.txt"));
-  }
 
   @Override
   protected CodereadyNewWorkspace.CodereadyStacks getStackName() {
@@ -243,6 +236,8 @@ public class JavaUserStoryTest extends AbstractUserStoryTest {
     // open file
     seleniumWebDriverHelper.switchToIdeFrameAndWaitAvailability();
     projectExplorer.waitItem(PROJECT);
+    String pomFileChangedText =
+        readFileToString(getClass().getResource("/projects/bayesian/pom-file-after.txt"));
     projectServiceClient.updateFile(testWorkspace.getId(), pomXmlFilePath, pomFileChangedText);
     projectExplorer.scrollAndSelectItem(pomXmlFilePath);
     projectExplorer.waitItemIsSelected(pomXmlFilePath);

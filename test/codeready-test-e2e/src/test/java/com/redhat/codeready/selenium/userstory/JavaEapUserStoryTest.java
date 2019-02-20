@@ -14,15 +14,9 @@ package com.redhat.codeready.selenium.userstory;
 import static com.redhat.codeready.selenium.pageobject.dashboard.CodereadyNewWorkspace.CodereadyStacks.JAVA_EAP;
 
 import com.redhat.codeready.selenium.pageobject.dashboard.CodereadyNewWorkspace;
-import java.io.IOException;
-import java.net.URISyntaxException;
 
 /** @author Musienko Maxim */
 public class JavaEapUserStoryTest extends JavaUserStoryTest {
-
-  public JavaEapUserStoryTest() throws IOException, URISyntaxException {
-    super();
-  }
 
   @Override
   protected CodereadyNewWorkspace.CodereadyStacks getStackName() {
