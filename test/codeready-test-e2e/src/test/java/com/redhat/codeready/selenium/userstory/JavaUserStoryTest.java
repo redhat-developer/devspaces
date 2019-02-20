@@ -138,21 +138,15 @@ public class JavaUserStoryTest extends AbstractUserStoryTest {
   }
 
   @Test(priority = 1)
-  public void checkReportDependencyAnalysisCommand() {
+  public void checkDependencyAnalysisCommand() {
     seleniumWebDriverHelper.switchToIdeFrameAndWaitAvailability();
     projectExplorer.waitAndSelectItem(PROJECT);
     commandsPalette.openCommandPalette();
     commandsPalette.startCommandByDoubleClick("dependency_analysis");
     consoles.waitExpectedTextIntoConsole(BUILD_SUCCESS);
 
-    try {
-      stream(REPORT_DEPENDENCY_ANALYSIS)
-          .forEach(partOfContent -> consoles.waitExpectedTextIntoConsole(partOfContent));
-    } catch (TimeoutException ex) {
-      // remove try-catch block after issue has been resolved
-      seleniumWebDriverHelper.switchToIdeFrameAndWaitAvailability();
-      fail("Known permanent failure https://issues.jboss.org/browse/CRW-123");
-    }
+    stream(REPORT_DEPENDENCY_ANALYSIS)
+        .forEach(partOfContent -> consoles.waitExpectedTextIntoConsole(partOfContent));
   }
 
   /**
@@ -247,6 +241,7 @@ public class JavaUserStoryTest extends AbstractUserStoryTest {
         "Application dependency commons-fileupload:commons-fileupload-1.3 is vulnerable: CVE-2014-0050 CVE-2016-3092 CVE-2016-1000031 CVE-2013-2186. Recommendation: use version 1.3.3";
 
     // open file
+    seleniumWebDriverHelper.switchToIdeFrameAndWaitAvailability();
     projectExplorer.waitItem(PROJECT);
     projectServiceClient.updateFile(testWorkspace.getId(), pomXmlFilePath, pomFileChangedText);
     projectExplorer.scrollAndSelectItem(pomXmlFilePath);
