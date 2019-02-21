@@ -40,7 +40,7 @@ In the **codeready-test-scenario-with-opening-file.jmx** file implemented next s
 * After creation the virtual user(s) stop the workspace and remove the workspace
 * In the end - performs clean up actions in the separated Threadgroup, remove all users
 ------------------
-In the **working-sceletong-perf-test-with-cloning.jmx** file implemented next scenario:
+In the **codeready-test-scenario-cloning-project.jmx** file implemented next scenario:
 * Creates virtual user(s)=amount of the treads (-Dtest.threads property)
 * Each virtual user login and create a workspace
 * Each virtual user waits workspace creation (RUNNING) status
