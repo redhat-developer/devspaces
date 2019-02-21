@@ -15,12 +15,12 @@
           </elementProp>
           <elementProp name="crw.host" elementType="Argument">
             <stringProp name="Argument.name">crw.host</stringProp>
-            <stringProp name="Argument.value">${__P(crw.host,codeready-crw-latest-perf-test.apps.performance-ocp-cluster.crew )}</stringProp>
+            <stringProp name="Argument.value">${__P(crw.host,localhost )}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="crw.sso.host" elementType="Argument">
             <stringProp name="Argument.name">crw.sso.host</stringProp>
-            <stringProp name="Argument.value">${__P(crw.sso.host,keycloak-crw-latest-perf-test.apps.performance-ocp-cluster.crew)}</stringProp>
+            <stringProp name="Argument.value">${__P(crw.sso.host,localhost)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="crw.protocol" elementType="Argument">
@@ -35,7 +35,7 @@
           </elementProp>
           <elementProp name="test.threads" elementType="Argument">
             <stringProp name="Argument.name">test.threads</stringProp>
-            <stringProp name="Argument.value">${__P(test.threads,1)}</stringProp>
+            <stringProp name="Argument.value">${__P(test.threads,16)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="crw.loopCount" elementType="Argument">
@@ -45,7 +45,7 @@
           </elementProp>
           <elementProp name="git.url" elementType="Argument">
             <stringProp name="Argument.name">git.url</stringProp>
-            <stringProp name="Argument.value">${__P(test.threads,https://github.com/musienko-maxim/web-java-spring.git)}</stringProp>
+            <stringProp name="Argument.value">${__P(git.url,https://github.com/musienko-maxim/web-java-spring.git)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
         </collectionProp>
@@ -81,7 +81,12 @@
             </elementProp>
             <elementProp name="THRESHOLD_ATTEMPTS" elementType="Argument">
               <stringProp name="Argument.name">THRESHOLD_ATTEMPTS</stringProp>
-              <stringProp name="Argument.value">240</stringProp>
+              <stringProp name="Argument.value">420</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+            </elementProp>
+            <elementProp name="MAX_ATTEMTS_FINISH_BUILD_WATING" elementType="Argument">
+              <stringProp name="Argument.name">MAX_ATTEMTS_FINISH_BUILD_WATING</stringProp>
+              <stringProp name="Argument.value">30</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
             </elementProp>
           </collectionProp>
@@ -908,7 +913,7 @@ AssertionResult.setFailureMessage(&quot;the expected workspace status has been n
             </JSONPathAssertion>
             <hashTree/>
           </hashTree>
-          <IfController guiclass="IfControllerPanel" testclass="IfController" testname="if_build_finish_or_failed" enabled="true">
+          <IfController guiclass="IfControllerPanel" testclass="IfController" testname="if_clone_finish_or_failed" enabled="true">
             <stringProp name="IfController.condition">${__groovy(vars.get(&quot;EXIT_CODE_STATUS&quot;)==&quot;0&quot;||&quot;${BUILDING_ATTEMP_NUM}&quot;==&quot;${MAX_ATTEMTS_FINISH_BUILD_WATING}&quot;)}</stringProp>
             <boolProp name="IfController.evaluateAll">false</boolProp>
             <boolProp name="IfController.useExpression">true</boolProp>
@@ -928,20 +933,14 @@ AssertionResult.setFailureMessage(&quot;the expected workspace status has been n
           </ConstantTimer>
           <hashTree/>
         </hashTree>
-        <JSR223Sampler guiclass="TestBeanGUI" testclass="JSR223Sampler" testname="return_building_statement_in_beginning_state_${__threadNum}" enabled="true">
+        <JSR223Sampler guiclass="TestBeanGUI" testclass="JSR223Sampler" testname="return_clone_statement_in_beginning_state_${__threadNum}" enabled="true">
           <stringProp name="scriptLanguage">groovy</stringProp>
           <stringProp name="parameters"></stringProp>
           <stringProp name="filename"></stringProp>
           <stringProp name="cacheKey">true</stringProp>
-          <stringProp name="script">vars.remove(&quot;IS_BUILD_FINISH&quot;)
+          <stringProp name="script">vars.remove(&quot;IS_CLONE_FINISH&quot;)
 </stringProp>
         </JSR223Sampler>
-        <hashTree/>
-        <DebugSampler guiclass="TestBeanGUI" testclass="DebugSampler" testname="Debug Sampler" enabled="true">
-          <boolProp name="displayJMeterProperties">false</boolProp>
-          <boolProp name="displayJMeterVariables">true</boolProp>
-          <boolProp name="displaySystemProperties">false</boolProp>
-        </DebugSampler>
         <hashTree/>
         <IfController guiclass="IfControllerPanel" testclass="IfController" testname="if_ws_has_stopped_status" enabled="true">
           <stringProp name="IfController.condition">${__groovy(&quot;${WS_STATE_BEFORE_STOPPING}&quot;!=&quot;STOPPED&quot;)}</stringProp>
@@ -1056,6 +1055,15 @@ AssertionResult.setFailureMessage(&quot;the expected workspace status has been n
           <stringProp name="WhileController.condition">${IS_WORKSPACE_STOPPED}</stringProp>
         </WhileController>
         <hashTree>
+          <CounterConfig guiclass="CounterConfigGui" testclass="CounterConfig" testname="Counter" enabled="true">
+            <stringProp name="CounterConfig.start">1</stringProp>
+            <stringProp name="CounterConfig.end">${THRESHOLD_ATTEMPTS}</stringProp>
+            <stringProp name="CounterConfig.incr">1</stringProp>
+            <stringProp name="CounterConfig.name">CURRENT_ATTEMPT</stringProp>
+            <stringProp name="CounterConfig.format"></stringProp>
+            <boolProp name="CounterConfig.per_user">false</boolProp>
+          </CounterConfig>
+          <hashTree/>
           <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="refresh_user_token_${__threadNum}" enabled="true">
             <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" enabled="true">
               <collectionProp name="Arguments.arguments">
@@ -1202,15 +1210,6 @@ AssertionResult.setFailureMessage(&quot;the expected workspace status has been n
             </JSONPostProcessor>
             <hashTree/>
           </hashTree>
-          <CounterConfig guiclass="CounterConfigGui" testclass="CounterConfig" testname="Counter" enabled="true">
-            <stringProp name="CounterConfig.start">1</stringProp>
-            <stringProp name="CounterConfig.end">${THRESHOLD_ATTEMPTS}</stringProp>
-            <stringProp name="CounterConfig.incr">1</stringProp>
-            <stringProp name="CounterConfig.name">CURRENT_ATTEMPT</stringProp>
-            <stringProp name="CounterConfig.format"></stringProp>
-            <boolProp name="CounterConfig.per_user">false</boolProp>
-          </CounterConfig>
-          <hashTree/>
           <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="get_workspace_status_for_stopping_thread_${__threadNum}" enabled="true">
             <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" enabled="true">
               <collectionProp name="Arguments.arguments"/>
@@ -1252,7 +1251,7 @@ AssertionResult.setFailureMessage(&quot;the expected workspace status has been n
               <stringProp name="JSONPostProcessor.referenceNames">WORKSPACE_STATUS</stringProp>
               <stringProp name="JSONPostProcessor.jsonPathExprs">.status</stringProp>
               <stringProp name="JSONPostProcessor.match_numbers"></stringProp>
-              <stringProp name="JSONPostProcessor.defaultValues">false</stringProp>
+              <stringProp name="JSONPostProcessor.defaultValues">NULL</stringProp>
             </JSONPostProcessor>
             <hashTree/>
             <ConstantTimer guiclass="ConstantTimerGui" testclass="ConstantTimer" testname="Delay_after_request_1sec" enabled="true">
@@ -1324,7 +1323,7 @@ vars.put(&quot;IS_WORKSPACE_STOPPED&quot;, String.valueOf(IS_WORKSPACE_STOPPED))
             </collectionProp>
             <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
             <boolProp name="Assertion.assume_success">false</boolProp>
-            <intProp name="Assertion.test_type">2</intProp>
+            <intProp name="Assertion.test_type">8</intProp>
             <stringProp name="Assertion.custom_message"></stringProp>
           </ResponseAssertion>
           <hashTree/>
@@ -1550,7 +1549,7 @@ vars.put(&quot;IS_WORKSPACE_STOPPED&quot;, String.valueOf(IS_WORKSPACE_STOPPED))
           </hashTree>
         </hashTree>
         <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree" enabled="true">
-          <boolProp name="ResultCollector.error_logging">false</boolProp>
+          <boolProp name="ResultCollector.error_logging">true</boolProp>
           <objProp>
             <name>saveConfig</name>
             <value class="SampleSaveConfiguration">
@@ -1583,7 +1582,7 @@ vars.put(&quot;IS_WORKSPACE_STOPPED&quot;, String.valueOf(IS_WORKSPACE_STOPPED))
               <connectTime>true</connectTime>
             </value>
           </objProp>
-          <stringProp name="filename"></stringProp>
+          <stringProp name="filename">/home/mmusiien/working-sceletong-perf-test-with-cloning.csv</stringProp>
         </ResultCollector>
         <hashTree/>
       </hashTree>
