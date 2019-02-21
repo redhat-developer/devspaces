@@ -15,6 +15,7 @@ import static com.redhat.codeready.selenium.pageobject.dashboard.CodereadyNewWor
 import static java.nio.file.Files.readAllLines;
 import static java.nio.file.Paths.get;
 import static java.util.Arrays.stream;
+import static org.eclipse.che.commons.lang.NameGenerator.generate;
 import static org.eclipse.che.selenium.core.constant.TestBuildConstants.BUILD_SUCCESS;
 import static org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants.Assistant.ASSISTANT;
 import static org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants.Assistant.FIND_DEFINITION;
@@ -39,6 +40,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.inject.Inject;
 import com.redhat.codeready.selenium.pageobject.CodereadyDebuggerPanel;
 import com.redhat.codeready.selenium.pageobject.CodereadyEditor;
+import com.redhat.codeready.selenium.pageobject.dashboard.CodeReadyCreateWorkspaceHelper;
 import com.redhat.codeready.selenium.pageobject.dashboard.CodereadyFindUsageWidget;
 import com.redhat.codeready.selenium.pageobject.dashboard.CodereadyNewWorkspace;
 import java.io.IOException;
@@ -54,19 +56,32 @@ import org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants;
 import org.eclipse.che.selenium.core.user.DefaultTestUser;
 import org.eclipse.che.selenium.core.utils.HttpUtil;
 import org.eclipse.che.selenium.core.webdriver.SeleniumWebDriverHelper;
+import org.eclipse.che.selenium.core.workspace.TestWorkspace;
 import org.eclipse.che.selenium.pageobject.Consoles;
 import org.eclipse.che.selenium.pageobject.Events;
 import org.eclipse.che.selenium.pageobject.Ide;
 import org.eclipse.che.selenium.pageobject.Menu;
 import org.eclipse.che.selenium.pageobject.NotificationsPopupPanel;
 import org.eclipse.che.selenium.pageobject.ProjectExplorer;
+import org.eclipse.che.selenium.pageobject.dashboard.Dashboard;
 import org.eclipse.che.selenium.pageobject.debug.JavaDebugConfig;
 import org.eclipse.che.selenium.pageobject.intelligent.CommandsPalette;
 import org.openqa.selenium.TimeoutException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-/** @author Musienko Maxim */
-public class JavaUserStoryTest extends AbstractUserStoryTest {
+/**
+ * @author Musienko Maxim
+ *     <p>(can't be extened from AbstractUserStoryTest to support proper sequence of test being
+ *     executed (issue CRW-))
+ */
+public class JavaUserStoryTest {
+  protected final Logger LOG = LoggerFactory.getLogger(this.getClass());
+  protected final String WORKSPACE = generate(this.getClass().getSimpleName(), 4);
+
   private static final String PROJECT = "kitchensink-example";
   private static final String PATH_TO_MAIN_PACKAGE =
       PROJECT + "/src/main/java/org.jboss.as.quickstarts.kitchensinkjsp";
@@ -99,26 +114,47 @@ public class JavaUserStoryTest extends AbstractUserStoryTest {
   @Inject private Events events;
   @Inject private NotificationsPopupPanel notifications;
   @Inject private CodereadyFindUsageWidget findUsages;
+  @Inject private Dashboard dashboard;
   @Inject private TestProjectServiceClient projectServiceClient;
   @Inject private SeleniumWebDriverHelper seleniumWebDriverHelper;
+  @Inject private CodeReadyCreateWorkspaceHelper codeReadyCreateWorkspaceHelper;
 
   private static final String TAB_NAME_WITH_IMPL = "NativeMethodAccessorImpl";
   private String appUrl;
 
-  @Override
   protected CodereadyNewWorkspace.CodereadyStacks getStackName() {
     return JAVA_DEFAULT;
   }
 
-  @Override
   protected List<String> getProjects() {
     return ImmutableList.of(PROJECT);
   }
 
-  @Override
+  // it is used to read workspace logs on test failure
+  protected TestWorkspace testWorkspace;
+
+  private String currentWindow;
+
+  @BeforeClass
+  public void setUp() {
+    dashboard.open();
+  }
+
+  @AfterClass
+  public void tearDown() throws Exception {
+    workspaceServiceClient.delete(WORKSPACE, defaultTestUser.getName());
+  }
+
   @Test
   public void createWorkspaceFromDashboard() throws Exception {
-    super.createWorkspaceFromDashboard();
+    testWorkspace =
+        codeReadyCreateWorkspaceHelper.createWsFromStackWithTestProject(
+            WORKSPACE, getStackName(), getProjects());
+
+    // switch to the IDE
+    currentWindow = ide.switchToIdeAndWaitWorkspaceIsReadyToUse();
+
+    getProjects().forEach(projectExplorer::waitProjectInitialization);
 
     projectExplorer.waitItem(PROJECT);
     events.clickEventLogBtn();
