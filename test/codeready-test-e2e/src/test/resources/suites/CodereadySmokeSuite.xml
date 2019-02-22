@@ -19,20 +19,9 @@
 
   <test name="all">
     <classes>
-      <class name="com.redhat.codeready.selenium.userstory.JavaUserStoryTest"/>
-      <class name="com.redhat.codeready.selenium.userstory.NodeJsUserStoryTest"/>
-      <class name="com.redhat.codeready.selenium.userstory.PythonUserStoryTest"/>
-
       <class name="com.redhat.codeready.selenium.dashboard.CreateAndDeleteProjectsTest"/>
       <class name="com.redhat.codeready.selenium.dashboard.CreateFactoryTest"/>
       <class name="com.redhat.codeready.selenium.dashboard.StacksListTest"/>
-
-      <class name="com.redhat.codeready.selenium.intelligencecommand.CodeReadyCommandsPaletteTest"/>
-
-      <class name="org.eclipse.che.selenium.miscellaneous.FileStructureNodesTest"/>
-      <class name="org.eclipse.che.selenium.projectexplorer.CreateNewJavaFilesTest"/>
-
-
     </classes>
   </test>
 </suite>
