@@ -16,7 +16,11 @@ import static com.redhat.codeready.selenium.pageobject.dashboard.CodereadyNewWor
 import com.redhat.codeready.selenium.pageobject.dashboard.CodereadyNewWorkspace;
 import org.testng.annotations.Test;
 
-/** @author Musienko Maxim */
+/**
+ * @author Musienko Maxim
+ *     <p>Note: test are being overrided in class to support proper sequence of tests (issue
+ *     CRW-155).
+ */
 public class JavaEapUserStoryTest extends JavaUserStoryTest {
 
   @Override
@@ -25,26 +29,31 @@ public class JavaEapUserStoryTest extends JavaUserStoryTest {
   }
 
   @Test
+  @Override
   public void createWorkspaceFromDashboard() throws Exception {
     super.createWorkspaceFromDashboard();
   }
 
   @Test(priority = 1)
+  @Override
   public void checkDependencyAnalysisCommand() {
     super.checkDependencyAnalysisCommand();
   }
 
   @Test(priority = 1)
+  @Override
   public void checkDebuggerFeatures() throws Exception {
     super.checkDebuggerFeatures();
   }
 
   @Test(priority = 1)
+  @Override
   public void checkMainCodeAssistantFeatures() throws Exception {
     super.checkMainCodeAssistantFeatures();
   }
 
   @Test(priority = 1)
+  @Override
   public void checkErrorMarkerBayesianLs() throws Exception {
     super.checkErrorMarkerBayesianLs();
   }
