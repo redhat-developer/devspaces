@@ -10,7 +10,6 @@
 #
 
 # https://access.redhat.com/containers/?tab=tags#/registry.access.redhat.com/redhat-openjdk-18/openjdk18-openshift
-# NOTE: if building locally, you might need to add registry.access.redhat.com/ prefix to the container path & version
 FROM registry.access.redhat.com/redhat-openjdk-18/openjdk18-openshift:1.6-15
 
 ENV SUMMARY="Red Hat CodeReady Workspaces container that provides the Red Hat CodeReady Workspaces (Eclipse Che Server)" \
