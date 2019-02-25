@@ -12,8 +12,13 @@
 package com.redhat.codeready.selenium.intelligencecommand;
 
 import org.eclipse.che.selenium.intelligencecommand.MacrosCommandsEditorTest;
+import org.testng.annotations.Test;
 
-/** @author Aleksandr Shmaraev */
+/**
+ * @author Aleksandr Shmaraev
+ *     <p>Note: test are being overrided in class to support proper sequence of tests (issue
+ *     CRW-155).
+ */
 public class CodeReadyMacrosCommandsEditorTest extends MacrosCommandsEditorTest {
 
   @Override
@@ -28,5 +33,17 @@ public class CodeReadyMacrosCommandsEditorTest extends MacrosCommandsEditorTest 
       "${server.wsagent/ws}"
     };
     return macrosItems;
+  }
+
+  @Test(priority = 1)
+  @Override
+  public void checkCommandMacrosIntoCommandLine() {
+    super.checkCommandMacrosIntoCommandLine();
+  }
+
+  @Test(priority = 2)
+  @Override
+  public void checkCommandMacrosIntoPreviewUrl() {
+    super.checkCommandMacrosIntoPreviewUrl();
   }
 }
