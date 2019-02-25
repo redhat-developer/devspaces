@@ -9,7 +9,7 @@ WORKDIR=`pwd`
 buildCommand="echo \"No build triggered: use -c for a container-build (or -s for scratch).\""
 while [[ "$#" -gt 0 ]]; do
   case $1 in
-    '-w') WORKDIR="$1"; shift 1;;
+    '-w') WORKDIR="$2"; shift 1;;
     '-c') buildCommand="rhpkg container-build"; shift 0;; 
     '-s') buildCommand="rhpkg container-build --scratch"; shift 0;; 
     *) OTHER="${OTHER} $1"; shift 0;; 
