@@ -6,7 +6,7 @@
 # thankfully, the https://registry.access.redhat.com is v2 and does not require authentication to query
 
 WORKDIR=`pwd`
-BRANCH=master
+BRANCH=codeready-1.0-rhel-7 # not master
 maxdepth=2
 buildCommand="echo \"No build triggered: use -c for a container-build (or -s for scratch).\""
 while [[ "$#" -gt 0 ]]; do
@@ -53,7 +53,7 @@ for d in $(find ${WORKDIR} -maxdepth ${maxdepth} -name Dockerfile); do
 
 					# commit change and push it
 					if [[ -d ${d%%/Dockerfile} ]]; then pushd ${d%%/Dockerfile} >/dev/null; pushedIn=1; fi
-					git commit -s -m "[update base] update from ${URL} to ${FROMPREFIX}:${LATESTTAG}" Dockerfile && git push
+					git commit -s -m "[update base] update from ${URL} to ${FROMPREFIX}:${LATESTTAG}" Dockerfile && git push origin ${BRANCH}
 					echo "# ${buildCommand} &"
 					${buildCommand} &
 					if [[ ${pushedIn} -eq 1 ]]; then popd >/dev/null; pushedIn=0; fi
