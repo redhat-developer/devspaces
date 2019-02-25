@@ -21,6 +21,7 @@ import static org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants.A
 import static org.eclipse.che.selenium.core.constant.TestProjectExplorerContextMenuConstants.ContextMenuCommandGoals.BUILD_GOAL;
 import static org.eclipse.che.selenium.core.constant.TestProjectExplorerContextMenuConstants.ContextMenuCommandGoals.DEBUG_GOAL;
 import static org.eclipse.che.selenium.core.constant.TestProjectExplorerContextMenuConstants.ContextMenuCommandGoals.RUN_GOAL;
+import static org.eclipse.che.selenium.core.constant.TestTimeoutsConstants.APPLICATION_START_TIMEOUT_SEC;
 import static org.eclipse.che.selenium.core.constant.TestTimeoutsConstants.LOADER_TIMEOUT_SEC;
 import static org.eclipse.che.selenium.core.constant.TestTimeoutsConstants.UPDATING_PROJECT_TIMEOUT_SEC;
 import static org.eclipse.che.selenium.pageobject.CodenvyEditor.MarkerLocator.ERROR;
@@ -89,15 +90,15 @@ public class VertxUserStoryTest extends AbstractUserStoryTest {
 
     // wait expected message in the progress info bar
     // the execution takes a lot of time on a local machine, so need a big timeout
-    mavenPluginStatusBar.waitExpectedTextInInfoPanel("Refreshing Maven model", LOADER_TIMEOUT_SEC);
-    mavenPluginStatusBar.waitClosingInfoPanel();
+    mavenPluginStatusBar.waitInfoPanelIsNotEmpty();
+    mavenPluginStatusBar.waitClosingInfoPanel(APPLICATION_START_TIMEOUT_SEC);
 
     // check the project is initialized
     projectExplorer.waitProjectInitialization(VERTX_PROJECT_NAME);
   }
 
-  @Test(priority = 1)
-  public void checkDependencyAnalysisCommand() {
+  @Test(priority = 2)
+  public void checkReportDependencyAnalysisCommand() {
     commandsPalette.openCommandPalette();
     commandsPalette.startCommandByDoubleClick("dependency_analysis");
     consoles.waitExpectedTextIntoConsole(BUILD_SUCCESS);
@@ -119,7 +120,6 @@ public class VertxUserStoryTest extends AbstractUserStoryTest {
 
     // wait expected message in the progress info bar
     // the execution take a lot of time on a local machine, so need a big timeout
-    mavenPluginStatusBar.waitExpectedTextInInfoPanel("Download sources and javadoc:", 620);
     mavenPluginStatusBar.waitClosingInfoPanel(UPDATING_PROJECT_TIMEOUT_SEC);
 
     projectExplorer.expandPathInProjectExplorerAndOpenFile(
@@ -174,6 +174,7 @@ public class VertxUserStoryTest extends AbstractUserStoryTest {
 
     // invoke the code assist panel
     editor.goToPosition(20, 15);
+    editor.waitTextIntoEditor("router.set();");
     editor.launchPropositionAssistPanel();
     editor.waitTextIntoFixErrorProposition("Change to 'get(..)'");
     editor.waitTextIntoFixErrorProposition("Add cast to 'router'");

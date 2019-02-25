@@ -19,11 +19,11 @@
     <parent>
         <artifactId>maven-depmgt-pom</artifactId>
         <groupId>org.eclipse.che.depmgt</groupId>
-        <version>6.19.0-SNAPSHOT</version>
+        <version>6.18.0</version>
     </parent>
     <groupId>com.redhat</groupId>
     <artifactId>codeready</artifactId>
-    <version>1.1.0.GA</version>
+    <version>1.0.1.GA</version>
     <packaging>pom</packaging>
     <name>CodeReady :: Parent</name>
     <url>https://developers.redhat.com/products/codeready-workspaces/overview/</url>
@@ -35,9 +35,9 @@
         </license>
     </licenses>
     <properties>
-        <che.version>6.19.0-SNAPSHOT</che.version>
+        <che.version>6.18.2</che.version>
         <che.dashboard.version>${che.version}</che.dashboard.version>
-        <crw.version>1.1.0.GA</crw.version>
+        <crw.version>1.0.1.GA</crw.version>
         <nightly>false</nightly>
     </properties>
     <dependencyManagement>

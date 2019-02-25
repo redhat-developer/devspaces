@@ -17,7 +17,7 @@
     <parent>
         <artifactId>codeready-test-parent</artifactId>
         <groupId>com.redhat</groupId>
-        <version>1.1.0.GA</version>
+        <version>1.0.1.GA</version>
     </parent>
     <artifactId>codeready-test-performance</artifactId>
     <packaging>jar</packaging>
@@ -53,8 +53,12 @@
                                 <crw.host>${crw.host}</crw.host>
                                 <crw.sso.host>${crw.sso.host}</crw.sso.host>
                                 <crw.port>${crw.port}</crw.port>
+                                <crw.loopCount>${crw.loopCount}</crw.loopCount>
                             </propertiesUser>
                             <ignoreResultFailures>true</ignoreResultFailures>
+                            <testFilesIncluded>
+                                <jMeterTestFile>${jmeterScript}</jMeterTestFile>
+                            </testFilesIncluded>
                         </configuration>
                         <dependencies>
                             <dependency>

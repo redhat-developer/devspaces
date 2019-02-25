@@ -22,7 +22,6 @@ import static org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants.A
 import static org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants.Assistant.QUICK_DOCUMENTATION;
 import static org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants.Assistant.QUICK_FIX;
 import static org.eclipse.che.selenium.core.constant.TestTimeoutsConstants.LOADER_TIMEOUT_SEC;
-import static org.eclipse.che.selenium.core.constant.TestTimeoutsConstants.WIDGET_TIMEOUT_SEC;
 import static org.eclipse.che.selenium.core.utils.FileUtil.readFileToString;
 import static org.eclipse.che.selenium.pageobject.CodenvyEditor.MarkerLocator.ERROR;
 import static org.eclipse.che.selenium.pageobject.CodenvyEditor.MarkerLocator.ERROR_OVERVIEW;
@@ -43,7 +42,6 @@ import com.redhat.codeready.selenium.pageobject.CodereadyEditor;
 import com.redhat.codeready.selenium.pageobject.dashboard.CodereadyFindUsageWidget;
 import com.redhat.codeready.selenium.pageobject.dashboard.CodereadyNewWorkspace;
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.Arrays;
@@ -55,6 +53,7 @@ import org.eclipse.che.selenium.core.client.TestWorkspaceServiceClient;
 import org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants;
 import org.eclipse.che.selenium.core.user.DefaultTestUser;
 import org.eclipse.che.selenium.core.utils.HttpUtil;
+import org.eclipse.che.selenium.core.webdriver.SeleniumWebDriverHelper;
 import org.eclipse.che.selenium.pageobject.Consoles;
 import org.eclipse.che.selenium.pageobject.Events;
 import org.eclipse.che.selenium.pageobject.Ide;
@@ -72,9 +71,15 @@ public class JavaUserStoryTest extends AbstractUserStoryTest {
   private static final String PATH_TO_MAIN_PACKAGE =
       PROJECT + "/src/main/java/org.jboss.as.quickstarts.kitchensinkjsp";
 
+  private static final String PATH_TO_DATA_PACKAGE =
+      PROJECT + "/src/main/java/org/jboss/as/quickstarts/kitchensinkjsp/data";
+
+  private static final String PATH_TO_CONTROLLER_PACKAGE =
+      PROJECT + "/src/main/java/org/jboss/as/quickstarts/kitchensinkjsp/controller";
+
   private static final String[] REPORT_DEPENDENCY_ANALYSIS = {
-    "Report for /projects/spring-boot-camel/pom.xml",
-    "1) # of application dependencies : 3",
+    "Report for /projects/kitchensink-example/pom.xml",
+    "1) # of application dependencies : 0",
     "2) Dependencies with Licenses : ",
     "3) Suggest adding these dependencies to your application stack:",
     "4) NO usage outlier application depedencies been found",
@@ -95,14 +100,10 @@ public class JavaUserStoryTest extends AbstractUserStoryTest {
   @Inject private NotificationsPopupPanel notifications;
   @Inject private CodereadyFindUsageWidget findUsages;
   @Inject private TestProjectServiceClient projectServiceClient;
+  @Inject private SeleniumWebDriverHelper seleniumWebDriverHelper;
 
-  private final String pomFileChangedText;
   private static final String TAB_NAME_WITH_IMPL = "NativeMethodAccessorImpl";
-
-  public JavaUserStoryTest() throws IOException, URISyntaxException {
-    pomFileChangedText =
-        readFileToString(getClass().getResource("/projects/bayesian/pom-file-after.txt"));
-  }
+  private String appUrl;
 
   @Override
   protected CodereadyNewWorkspace.CodereadyStacks getStackName() {
@@ -124,23 +125,21 @@ public class JavaUserStoryTest extends AbstractUserStoryTest {
     events.waitExpectedMessage("Branch 'master' is checked out");
     consoles.clickOnProcessesButton();
     consoles.waitJDTLSProjectResolveFinishedMessage(PROJECT);
-    projectExplorer.quickRevealToItemWithJavaScript(PATH_TO_MAIN_PACKAGE);
+    ide.waitOpenedWorkspaceIsReadyToUse();
     addTestFileIntoProjectByApi();
+    projectExplorer.quickRevealToItemWithJavaScript(PATH_TO_MAIN_PACKAGE);
   }
 
   @Test(priority = 1)
   public void checkDependencyAnalysisCommand() {
+    seleniumWebDriverHelper.switchToIdeFrameAndWaitAvailability();
+    projectExplorer.waitAndSelectItem(PROJECT);
     commandsPalette.openCommandPalette();
     commandsPalette.startCommandByDoubleClick("dependency_analysis");
     consoles.waitExpectedTextIntoConsole(BUILD_SUCCESS);
 
-    try {
-      stream(REPORT_DEPENDENCY_ANALYSIS)
-          .forEach(partOfContent -> consoles.waitExpectedTextIntoConsole(partOfContent));
-    } catch (TimeoutException ex) {
-      // remove try-catch block after issue has been resolved
-      fail("Known permanent failure https://issues.jboss.org/browse/CRW-123");
-    }
+    stream(REPORT_DEPENDENCY_ANALYSIS)
+        .forEach(partOfContent -> consoles.waitExpectedTextIntoConsole(partOfContent));
   }
 
   /**
@@ -153,21 +152,20 @@ public class JavaUserStoryTest extends AbstractUserStoryTest {
    * <li>Ending of debug session
    */
   @Test(priority = 1)
-  public void checkMainDebuggerFeatures() throws Exception {
+  public void checkDebuggerFeatures() throws Exception {
     final String fileForDebuggingTabTitle = "MemberListProducer";
 
     // prepare
     setUpDebugMode();
     projectExplorer.waitItem(PROJECT);
-    projectExplorer.quickRevealToItemWithJavaScript(
-        PATH_TO_MAIN_PACKAGE + ".data/MemberListProducer.java");
+    projectExplorer.openItemByPath(PATH_TO_DATA_PACKAGE);
     projectExplorer.openItemByVisibleNameInExplorer("MemberListProducer.java");
     editor.waitActive();
     editor.waitTabIsPresent(fileForDebuggingTabTitle);
     editor.waitTabSelection(0, fileForDebuggingTabTitle);
     editor.waitActive();
     editor.setBreakPointAndWaitActiveState(30);
-    final String appUrl = doGetRequestToApp();
+    doGetRequestToApp();
 
     // check debug features()
     debugPanel.waitDebugHighlightedText("return members;");
@@ -189,8 +187,9 @@ public class JavaUserStoryTest extends AbstractUserStoryTest {
    * <li>Quick fix
    * <li>Autocompletion
    */
-  @Test(priority = 2)
-  public void checkCodeAssistantFeatures() throws Exception {
+  @Test(priority = 1)
+  public void checkMainCodeAssistantFeatures() throws Exception {
+
     String expectedTextOfInjectClass =
         "@see javax.inject.Provider\n */\n@Target({ METHOD, CONSTRUCTOR, FIELD })\n@Retention(RUNTIME)\n@Documented\npublic @interface Inject {}";
     String memberRegistrationTabName = "MemberRegistration";
@@ -208,6 +207,7 @@ public class JavaUserStoryTest extends AbstractUserStoryTest {
             "getName() : String Member",
             "Name - java.util.jar.Attributes");
 
+    projectExplorer.scrollAndSelectItem(PROJECT);
     checkGoToDeclarationFeature();
     checkFindUsagesFeature();
     checkPreviousTabFeature(memberRegistrationTabName);
@@ -225,8 +225,8 @@ public class JavaUserStoryTest extends AbstractUserStoryTest {
     }
   }
 
-  @Test(priority = 2)
-  public void checkBayesianLsErrorMarker() throws Exception {
+  @Test(priority = 1)
+  public void checkErrorMarkerBayesianLs() throws Exception {
     final String pomXmlFilePath = PROJECT + "/pom.xml";
     final String pomXmlEditorTabTitle = "jboss-as-kitchensink";
 
@@ -234,12 +234,15 @@ public class JavaUserStoryTest extends AbstractUserStoryTest {
         "Application dependency commons-fileupload:commons-fileupload-1.3 is vulnerable: CVE-2014-0050 CVE-2016-3092 CVE-2016-1000031 CVE-2013-2186. Recommendation: use version 1.3.3";
 
     // open file
+    seleniumWebDriverHelper.switchToIdeFrameAndWaitAvailability();
     projectExplorer.waitItem(PROJECT);
+    String pomFileChangedText =
+        readFileToString(getClass().getResource("/projects/bayesian/pom-file-after.txt"));
     projectServiceClient.updateFile(testWorkspace.getId(), pomXmlFilePath, pomFileChangedText);
     projectExplorer.scrollAndSelectItem(pomXmlFilePath);
     projectExplorer.waitItemIsSelected(pomXmlFilePath);
     projectExplorer.openItemByPath(pomXmlFilePath);
-    editor.waitTabIsPresent(pomXmlEditorTabTitle, WIDGET_TIMEOUT_SEC);
+    editor.waitTabIsPresent(pomXmlEditorTabTitle, LOADER_TIMEOUT_SEC);
     editor.waitTabSelection(0, pomXmlEditorTabTitle);
     editor.waitActive();
 
@@ -266,9 +269,11 @@ public class JavaUserStoryTest extends AbstractUserStoryTest {
     editor.goToPosition(23, 34);
     menu.runCommand(ASSISTANT, QUICK_FIX);
     editor.selectFirstItemIntoFixErrorPropByDoubleClick();
+    editor.waitActive();
     editor.goToPosition(24, 18);
     menu.runCommand(ASSISTANT, QUICK_FIX);
     editor.selectFirstItemIntoFixErrorPropByDoubleClick();
+    editor.waitActive();
     editor.goToPosition(84, 1);
     editor.waitTextIntoEditor(expectedTextAfterQuickFix);
   }
@@ -312,8 +317,7 @@ public class JavaUserStoryTest extends AbstractUserStoryTest {
   }
 
   private void checkGoToDeclarationFeature() {
-    projectExplorer.quickRevealToItemWithJavaScript(
-        PATH_TO_MAIN_PACKAGE + ".controller/MemberRegistration.java");
+    projectExplorer.openItemByPath(PATH_TO_CONTROLLER_PACKAGE);
     projectExplorer.openItemByVisibleNameInExplorer("MemberRegistration.java");
     editor.waitActive();
     editor.goToPosition(34, 14);
@@ -323,6 +327,7 @@ public class JavaUserStoryTest extends AbstractUserStoryTest {
   }
 
   private void setUpDebugMode() {
+    projectExplorer.scrollAndSelectItem(PROJECT);
     commandsPalette.openCommandPalette();
     commandsPalette.startCommandByDoubleClick("kitchensink-example:build and run in debug");
     consoles.waitExpectedTextIntoConsole("started in");
@@ -339,17 +344,14 @@ public class JavaUserStoryTest extends AbstractUserStoryTest {
     events.clickEventLogBtn();
     events.waitExpectedMessage("Remote debugger connected");
     consoles.clickOnProcessesButton();
+    appUrl = consoles.getPreviewUrl();
   }
 
   // do request to test application if debugger for the app. has been set properly,
   // expected http response from the app. will be 504, its ok
   private String doGetRequestToApp() {
-    final String appUrl = consoles.getPreviewUrl() + "/index.jsf";
-    int responseCode = -1;
-
     try {
-      responseCode = HttpUtil.getUrlResponseCode(appUrl);
-
+      int responseCode = HttpUtil.getUrlResponseCode(appUrl);
       // The "504" response code it is expected
       if (504 == responseCode) {
         LOG.info("Debugger has been set");
@@ -395,12 +397,13 @@ public class JavaUserStoryTest extends AbstractUserStoryTest {
     debugPanel.waitDebugHighlightedText("return ma.invoke(obj, args);");
   }
 
-  private void checkFramesAndVariablesWithResume() {
+  private void checkFramesAndVariablesWithResume() throws IOException {
     Stream<String> expectedValuesInVariablesWidget =
         Stream.of(
             "em=instance of org.jboss.as.jpa.container.TransactionScopedEntityManager",
             "members=instance of java.util.ArrayList");
     editor.closeAllTabs();
+    doGetRequestToApp();
     debugPanel.clickOnButton(RESUME_BTN_ID);
     editor.waitTabIsPresent("MemberListProducer");
     debugPanel.waitDebugHighlightedText("return members;");
