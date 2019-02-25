@@ -21,15 +21,6 @@
     <classes>
       <class name="com.redhat.codeready.selenium.userstory.JavaUserStoryTest"/>
       <class name="com.redhat.codeready.selenium.userstory.NodeJsUserStoryTest"/>
-      <class name="com.redhat.codeready.selenium.dashboard.CreateAndDeleteProjectsTest"/>
-      <class name="com.redhat.codeready.selenium.dashboard.CreateFactoryTest"/>
-      <class name="com.redhat.codeready.selenium.dashboard.StacksListTest"/>
-      <class name="com.redhat.codeready.selenium.miscellaneous.CodeReadyFindTextFeatureTest"/>
-      <class name="com.redhat.codeready.selenium.languageserver.php.CodeReadyPhpFileEditingTest"/>
-      <class name="com.redhat.codeready.selenium.intelligencecommand.CodeReadyCommandsPaletteTest"/>
-
-      <class name="org.eclipse.che.selenium.git.GitPullTest"/>
-      <class name="org.eclipse.che.selenium.workspaces.ProjectStateAfterRefreshTest"/>
     </classes>
   </test>
 </suite>
