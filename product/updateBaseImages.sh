@@ -26,6 +26,7 @@ for d in $(find ${WORKDIR} -maxdepth ${maxdepth} -name Dockerfile); do
 	if [[ -f ${d} ]]; then
 		# pull latest commits
 		if [[ -d ${d%%/Dockerfile} ]]; then pushd ${d%%/Dockerfile} >/dev/null; pushedIn=1; fi
+		git branch --set-upstream-to=origin/${BRANCH} ${BRANCH}
 		git checkout ${BRANCH} && git pull -q
 		if [[ ${pushedIn} -eq 1 ]]; then popd >/dev/null; pushedIn=0; fi
 
