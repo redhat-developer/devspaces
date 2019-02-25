@@ -34,7 +34,7 @@ for d in $(find ${WORKDIR} -name Dockerfile); do
 		for URL in $URLs; do
 			# echo "URL=$URL"
 			if [[ $URL == "https"* ]]; then 
-				QUERY="$(echo $URL | sed -e "s#.\+registry.access.redhat.com/#docker run -it docker-ls docker-ls tags --registry https://registry.access.redhat.com #g" | tr '\n' ' ')"
+				QUERY="$(echo $URL | sed -e "s#.\+registry.access.redhat.com/#docker run docker-ls docker-ls tags --registry https://registry.access.redhat.com #g" | tr '\n' ' ')"
 				echo "# $QUERY|grep \"^-\"|egrep -v \"\\\"|latest\"|sort -V|tail -5"
 				FROMPREFIX=$(echo $URL | sed -e "s#.\+registry.access.redhat.com/##g")
 				LATESTTAG=$(${QUERY}|grep "^-"|egrep -v "\"|latest"|sed -e "s#^-##" -e "s#[\n\r\ ]\+##g"|sort -V|tail -1)
@@ -61,9 +61,9 @@ sleep 10s & wait
 
 echo ""
 if [[ $fixedFiles ]]; then
-	echo "Fixed these files:"
+	echo "[update base] Fixed these files:"
 	for d in $fixedFiles; do echo "++ $d"; done
 else
-	echo "No files changed."
+	echo "[update base] No Dockerfiles changed - no new base images found."
 fi
 
