@@ -38,6 +38,7 @@
         <che.version>6.19.0-SNAPSHOT</che.version>
         <che.dashboard.version>${che.version}</che.dashboard.version>
         <crw.version>1.1.0.GA</crw.version>
+        <crw.docs.version>1.1</crw.docs.version>
         <nightly>false</nightly>
     </properties>
     <dependencyManagement>

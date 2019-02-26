@@ -30,6 +30,9 @@
             <type>war</type>
         </dependency>
     </dependencies>
+    <properties>
+        <product.json.file>${project.basedir}/src/main/webapp/assets/branding/product.json</product.json.file>
+    </properties>
     <build>
         <plugins>
             <plugin>
@@ -76,6 +79,23 @@
                         </configuration>
                     </execution>
                     <execution>
+                        <id>update-docs-version-product-json</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <tasks>
+                                <copy overwrite="true" 
+                                         file="${product.json.file}.template" 
+                                         tofile="${product.json.file}"/>
+                                <replace token="@@crw.docs.version@@"
+                                         file="${product.json.file}"
+                                         value="${crw.docs.version}"/>
+                            </tasks>
+                        </configuration>
+                    </execution>
+                    <execution>
                         <id>update-docs-link</id>
                         <phase>prepare-package</phase>
                         <goals>
@@ -85,14 +105,22 @@
                             <tasks>
                                 <replace token="/docs/factories-getting-started.html"
                                          dir="${project.build.directory}/source-war/scripts"
-                                         value="https://access.redhat.com/documentation/en-us/red_hat_codeready_workspaces_for_openshift/1.0.0/html/administration_guide/administering_workspaces#factories"
+                                         value="https://access.redhat.com/documentation/en-us/red_hat_codeready_workspaces_for_openshift/${crw.docs.version}/html/administration_guide/administering_workspaces#factories"
                                          includes ="**/*.js"/>
                                 <replace token="/docs/organizations.html" dir="${project.build.directory}/source-war/scripts"
-                                         value="https://access.redhat.com/documentation/en-us/red_hat_codeready_workspaces_for_openshift/1.0.0/html/administration_guide/managing_users#organizations"
+                                         value="https://access.redhat.com/documentation/en-us/red_hat_codeready_workspaces_for_openshift/${crw.docs.version}/html/administration_guide/managing_users#organizations"
+                                         includes ="**/*.js"/>
+                                <replace token="/docs/getting-started/intro/index.html"
+                                         dir="${project.build.directory}/source-war/scripts"
+                                         value="https://access.redhat.com/documentation/en-us/red_hat_codeready_workspaces_for_openshift/${crw.docs.version}/html/administration_guide/administering_workspaces#workspace"
+                                         includes ="**/*.js"/>
+                                <replace token="/docs/getting-started/runtime-stacks/index.html"
+                                         dir="${project.build.directory}/source-war/scripts"
+                                         value="https://access.redhat.com/documentation/en-us/red_hat_codeready_workspaces_for_openshift/${crw.docs.version}/html/administration_guide/administering_workspaces#stacks"
                                          includes ="**/*.js"/>
                                 <replace token="/docs"
                                          dir="${project.build.directory}/source-war/scripts"
-                                         value="https://access.redhat.com/documentation/en-us/red_hat_codeready_workspaces_for_openshift"
+                                         value="https://access.redhat.com/documentation/en-us/red_hat_codeready_workspaces_for_openshift/${crw.docs.version}/"
                                          includes ="**/*.js"/>
                             </tasks>
                         </configuration>
