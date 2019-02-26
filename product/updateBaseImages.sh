@@ -67,7 +67,7 @@ sleep 10s & wait
 
 echo ""
 if [[ $fixedFiles ]]; then
-	echo -n "[base] Updated:"
+	echo -n "[base] Updated"
 	# if WORKSPACE defined, trim that off; if not, just trim /
 	for d in $fixedFiles; do echo -n " ${d#${WORKSPACE}/}"; done
 	echo ""
