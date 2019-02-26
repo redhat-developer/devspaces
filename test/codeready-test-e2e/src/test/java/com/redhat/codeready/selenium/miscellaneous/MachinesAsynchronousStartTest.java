@@ -45,7 +45,8 @@ import org.testng.annotations.Test;
 public class MachinesAsynchronousStartTest {
   private static final String WORKSPACE_NAME = generate("test-workspace", 4);
   private static final String MACHINE_NAME = "dev-machine";
-  private static final String IMAGE_NAME = "quay.io/crw/stacks-java:1.0-17";
+  private static final String IMAGE_NAME =
+      "registry.access.redhat.com/codeready-workspaces/stacks-java";
   private static final String IMAGE_NAME_SUFFIX = generate("", 4);
   private static final String NOT_EXISTED_IMAGE_NAME = IMAGE_NAME + IMAGE_NAME_SUFFIX;
   private static final String SUCCESS_NOTIFICATION_TEST = "Workspace updated.";

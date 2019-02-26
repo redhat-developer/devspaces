@@ -17,7 +17,7 @@
       },
       "recipe": {
         "type": "dockerimage",
-        "content": "quay.io/crw/stacks-golang:1.0-10"
+        "content": "registry.access.redhat.com/codeready-workspaces/stacks-golang"
       }
     }
   },

@@ -30,7 +30,7 @@
         }
       },
       "recipe": {
-        "location": "quay.io/crw/stacks-node:1.0-12",
+        "location": "registry.access.redhat.com/codeready-workspaces/stacks-node",
         "type": "dockerimage"
       }
     }

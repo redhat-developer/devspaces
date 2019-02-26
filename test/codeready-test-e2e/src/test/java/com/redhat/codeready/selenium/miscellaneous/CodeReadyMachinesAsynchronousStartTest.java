@@ -20,7 +20,7 @@ public class CodeReadyMachinesAsynchronousStartTest extends MachinesAsynchronous
 
   @Override
   protected String getImageName() {
-    return "quay.io/crw/stacks-java";
+    return "registry.access.redhat.com/codeready-workspaces/stacks-java";
   }
 
   @Override

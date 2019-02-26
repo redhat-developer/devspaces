@@ -37,41 +37,8 @@ import org.openqa.selenium.JavascriptExecutor;
 @Singleton
 public class CodeReadyCreateWorkspaceHelper {
 
-  private static final String PRODUCTION_REGISTRY =
-      "registry.access.stage.redhat.com/codeready-workspaces";
-  private static final String PRODUCTION_BETA_REGISTRY =
-      "registry.access.stage.redhat.com/codeready-workspaces-beta";
-  private static final String QUAY_REGISTRY = "quay.io/crw";
-
-  private static final HashMap<String, String> REGISTRY_ADDRESS_REPLACEMENT =
-      new HashMap<String, String>() {
-        {
-          put(
-              "registry.access.redhat.com/codeready-workspaces/stacks-java",
-              "quay.io/crw/stacks-java:1.0-17");
-          put(
-              "registry.access.redhat.com/codeready-workspaces/stacks-cpp",
-              "quay.io/crw/stacks-cpp:1.0-9");
-          put(
-              "registry.access.redhat.com/codeready-workspaces/stacks-dotnet",
-              "quay.io/crw/stacks-dotnet:1.0-10");
-          put(
-              "registry.access.redhat.com/codeready-workspaces/stacks-golang",
-              "quay.io/crw/stacks-golang:1.0-10");
-          put(
-              "registry.access.redhat.com/codeready-workspaces-beta/stacks-java-rhel8",
-              "quay.io/crw/stacks-java-rhel8:1.0-12");
-          put(
-              "registry.access.redhat.com/codeready-workspaces/stacks-node",
-              "quay.io/crw/stacks-node:1.0-12");
-          put(
-              "registry.access.redhat.com/codeready-workspaces/stacks-php",
-              "quay.io/crw/stacks-php:1.0-12");
-          put(
-              "registry.access.redhat.com/codeready-workspaces/stacks-python",
-              "quay.io/crw/stacks-python:1.0-10");
-        }
-      };
+  private static final Map<String, String> REGISTRY_ADDRESS_REPLACEMENT =
+      new HashMap<String, String>() {};
 
   @Inject private Dashboard dashboard;
   @Inject private Workspaces workspaces;
@@ -108,8 +75,21 @@ public class CodeReadyCreateWorkspaceHelper {
       projectSourcePage.clickOnAddProjectButton();
     }
 
+    if (REGISTRY_ADDRESS_REPLACEMENT.isEmpty()) {
+      codereadyNewWorkspace.clickOnOpenInIDEButton();
+
+    } else {
+      newWorkspace.clickOnCreateButtonAndEditWorkspace();
+      fixStackImageAddress(workspaceName, machineName, successNotificationText);
+      codereadyNewWorkspace.clickOnOpenInIDEButton();
+    }
+
+    return testWorkspaceProvider.getWorkspace(workspaceName, defaultTestUser);
+  }
+
+  private void fixStackImageAddress(
+      String workspaceName, String machineName, String successNotificationText) {
     // create workspace to edit
-    newWorkspace.clickOnCreateButtonAndEditWorkspace();
     workspaceDetails.waitToolbarTitleName(workspaceName);
     workspaceDetails.selectTabInWorkspaceMenu(MACHINES);
     workspaceDetailsMachines.waitMachineListItem(machineName);
@@ -154,9 +134,5 @@ public class CodeReadyCreateWorkspaceHelper {
     if (!isValueFound) {
       editMachineForm.clickOnCloseIcon();
     }
-
-    codereadyNewWorkspace.clickOnOpenInIDEButton();
-
-    return testWorkspaceProvider.getWorkspace(workspaceName, defaultTestUser);
   }
 }
