@@ -15,6 +15,11 @@ import org.eclipse.che.selenium.editor.autocomplete.AutocompleteProposalJavaDocT
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+/**
+ * @author Aleksandr Shmaraev
+ *     <p>Note: test are being overrided in class to support proper sequence of tests (issue
+ *     CRW-155).
+ */
 public class CodeReadyAutocompleteProposalJavaDocTest extends AutocompleteProposalJavaDocTest {
 
   @Override

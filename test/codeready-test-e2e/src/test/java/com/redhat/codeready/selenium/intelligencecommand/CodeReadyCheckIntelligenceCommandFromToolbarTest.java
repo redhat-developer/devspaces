@@ -13,7 +13,6 @@ package com.redhat.codeready.selenium.intelligencecommand;
 
 import static org.eclipse.che.selenium.core.constant.TestTimeoutsConstants.ELEMENT_TIMEOUT_SEC;
 import static org.eclipse.che.selenium.core.constant.TestTimeoutsConstants.EXPECTED_MESS_IN_CONSOLE_SEC;
-import static org.eclipse.che.selenium.core.constant.TestTimeoutsConstants.LOAD_PAGE_TIMEOUT_SEC;
 
 import org.eclipse.che.selenium.intelligencecommand.CheckIntelligenceCommandFromToolbarTest;
 import org.openqa.selenium.By;
@@ -36,7 +35,7 @@ public class CodeReadyCheckIntelligenceCommandFromToolbarTest
     projectExplorer.waitItem(PROJECT_NAME);
     commandsToolbar.clickExecStopBtn();
 
-    super.checkTestAppByPreviewUrlAndReturnToIde(currentWindow, expectedText);
+    checkTestAppByPreviewUrlAndReturnToIde(currentWindow, expectedText);
     commandsToolbar.clickExecRerunBtn();
     waitExpectedTextIntoConsole();
     consoles.clickOnPreviewUrl();
@@ -84,7 +83,16 @@ public class CodeReadyCheckIntelligenceCommandFromToolbarTest
   @Override
   protected void checkTestAppByPreviewUrlAndReturnToIde(String currentWindow) {
     String expectedText = "Welcome to JBoss AS 7!";
-    new WebDriverWait(seleniumWebDriver, LOAD_PAGE_TIMEOUT_SEC)
+    new WebDriverWait(seleniumWebDriver, ELEMENT_TIMEOUT_SEC)
+        .until(
+            (ExpectedCondition<Boolean>)
+                driver ->
+                    clickOnPreviewUrlAndCheckTextIsPresentInPageBody(currentWindow, expectedText));
+  }
+
+  @Override
+  protected void checkTestAppByPreviewUrlAndReturnToIde(String currentWindow, String expectedText) {
+    new WebDriverWait(seleniumWebDriver, ELEMENT_TIMEOUT_SEC)
         .until(
             (ExpectedCondition<Boolean>)
                 driver ->
@@ -94,7 +102,7 @@ public class CodeReadyCheckIntelligenceCommandFromToolbarTest
   @Override
   protected void checkTestAppByPreviewButtonAndReturnToIde(String currentWindow) {
     String expectedText = "Welcome to JBoss AS 7!";
-    new WebDriverWait(seleniumWebDriver, LOAD_PAGE_TIMEOUT_SEC)
+    new WebDriverWait(seleniumWebDriver, ELEMENT_TIMEOUT_SEC)
         .until(
             (ExpectedCondition<Boolean>)
                 driver ->

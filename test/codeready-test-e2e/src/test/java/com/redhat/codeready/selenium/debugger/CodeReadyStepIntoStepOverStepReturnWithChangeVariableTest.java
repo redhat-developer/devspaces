@@ -19,7 +19,7 @@ import org.testng.annotations.Test;
 /**
  * @author Dmytro Nochevnov
  * @author Aleksandr Shmaraiev
- *     <p>Note: test are being overrided in class to support proper sequence of tests (issue * *
+ *     <p>Note: test are being overrided in class to support proper sequence of tests (issue
  *     CRW-155).
  */
 public class CodeReadyStepIntoStepOverStepReturnWithChangeVariableTest
