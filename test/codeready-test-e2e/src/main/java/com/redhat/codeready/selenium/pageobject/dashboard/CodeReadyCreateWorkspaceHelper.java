@@ -16,7 +16,9 @@ import static org.eclipse.che.selenium.pageobject.dashboard.workspaces.Workspace
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.eclipse.che.selenium.core.SeleniumWebDriver;
 import org.eclipse.che.selenium.core.user.DefaultTestUser;
 import org.eclipse.che.selenium.core.workspace.TestWorkspace;
@@ -35,8 +37,8 @@ import org.openqa.selenium.JavascriptExecutor;
 @Singleton
 public class CodeReadyCreateWorkspaceHelper {
 
-  private static final String PRODUCTION_REGISTRY = "registry.access.redhat.com";
-  private static final String STAGE_REGISTRY = "registry.access.stage.redhat.com";
+  private static final Map<String, String> REGISTRY_ADDRESS_REPLACEMENT =
+      new HashMap<String, String>() {};
 
   @Inject private Dashboard dashboard;
   @Inject private Workspaces workspaces;
@@ -73,8 +75,21 @@ public class CodeReadyCreateWorkspaceHelper {
       projectSourcePage.clickOnAddProjectButton();
     }
 
+    if (REGISTRY_ADDRESS_REPLACEMENT.isEmpty()) {
+      codereadyNewWorkspace.clickOnOpenInIDEButton();
+
+    } else {
+      newWorkspace.clickOnCreateButtonAndEditWorkspace();
+      fixStackImageAddress(workspaceName, machineName, successNotificationText);
+      codereadyNewWorkspace.clickOnOpenInIDEButton();
+    }
+
+    return testWorkspaceProvider.getWorkspace(workspaceName, defaultTestUser);
+  }
+
+  private void fixStackImageAddress(
+      String workspaceName, String machineName, String successNotificationText) {
     // create workspace to edit
-    newWorkspace.clickOnCreateButtonAndEditWorkspace();
     workspaceDetails.waitToolbarTitleName(workspaceName);
     workspaceDetails.selectTabInWorkspaceMenu(MACHINES);
     workspaceDetailsMachines.waitMachineListItem(machineName);
@@ -89,28 +104,35 @@ public class CodeReadyCreateWorkspaceHelper {
                 "return document.querySelector('.edit-machine-form .CodeMirror').CodeMirror.getValue();")
             .toString();
 
-    if (currentStackImageAddress != null
-        && currentStackImageAddress.contains(PRODUCTION_REGISTRY)) {
-      String newStackImageAddress =
-          currentStackImageAddress.replace(PRODUCTION_REGISTRY, STAGE_REGISTRY);
-      js.executeScript(
-          String.format(
-              "document.querySelector('.edit-machine-form .CodeMirror').CodeMirror.setValue('%s')",
-              newStackImageAddress));
+    boolean isValueFound = false;
 
-      // save changes
-      editMachineForm.waitRecipeText(newStackImageAddress);
-      editMachineForm.waitSaveButtonEnabling();
-      editMachineForm.clickOnSaveButton();
-      editMachineForm.waitFormInvisibility();
-      workspaceDetailsMachines.waitImageNameInMachineListItem(machineName, newStackImageAddress);
-      workspaceDetails.waitAllEnabled(SAVE_BUTTON);
-      workspaceDetails.clickOnSaveChangesBtn();
-      workspaceDetailsMachines.waitNotificationMessage(successNotificationText);
+    for (Map.Entry<String, String> entry : REGISTRY_ADDRESS_REPLACEMENT.entrySet()) {
+      String oldAddress = entry.getKey();
+      String newAddress = entry.getValue();
+
+      if (currentStackImageAddress != null && (currentStackImageAddress.equals(oldAddress))) {
+        js.executeScript(
+            String.format(
+                "document.querySelector('.edit-machine-form .CodeMirror').CodeMirror.setValue('%s')",
+                newAddress));
+
+        // save changes
+        editMachineForm.waitRecipeText(newAddress);
+        editMachineForm.waitSaveButtonEnabling();
+        editMachineForm.clickOnSaveButton();
+        editMachineForm.waitFormInvisibility();
+        workspaceDetailsMachines.waitImageNameInMachineListItem(machineName, newAddress);
+        workspaceDetails.waitAllEnabled(SAVE_BUTTON);
+        workspaceDetails.clickOnSaveChangesBtn();
+        workspaceDetailsMachines.waitNotificationMessage(successNotificationText);
+
+        isValueFound = true;
+        break;
+      }
     }
 
-    codereadyNewWorkspace.clickOnOpenInIDEButton();
-
-    return testWorkspaceProvider.getWorkspace(workspaceName, defaultTestUser);
+    if (!isValueFound) {
+      editMachineForm.clickOnCloseIcon();
+    }
   }
 }
