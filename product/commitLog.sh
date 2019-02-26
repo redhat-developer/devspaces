@@ -25,6 +25,10 @@ done
 
 if [[ ! ${WORKSPACE} ]]; then WORKSPACE=/tmp; fi
 
+if [[ ! -x /usr/bin/brew ]]; then
+	echo "Brew not install in /usr/bin/brew - please install it to continue."; exit 1
+fi
+
 if [[ ! $NVRs ]]; then 
 	NVRs=$(\
 		brew list-tagged --latest codeready-1.0-rhel-8-candidate | egrep -v "java-container" | grep "codeready-workspaces" | \
@@ -37,36 +41,41 @@ fi
 cd ${WORKSPACE}
 for n in $NVRs; do
 	echo ""
+	# use brew buildinfo to get the repo and sha used to build a given NVR
 	repo=$(brew buildinfo $n | grep "Source:" | sed -e "s#Source: git://##")
 	sha=${repo#*#}; sha=${sha:0:7} # echo $sha
 	repo=${repo%#*}; # echo $repo
+
+	# fetch sources so we can see the log
 	if [[ ! -d ${n}_sources ]]; then git clone ssh://${user}@${repo} ${n}_sources -q; fi
-	cd ${WORKSPACE}/${n}_sources && git fetch
-	git checkout $sha -q
-	echo "== $repo @ $sha =="
-	git --no-pager log --graph --pretty=format:'%h - %s'  -${numCommits} > $WORKSPACE/${n}_log.txt
-	while read l; do
-		echo "$l"
-		c_sha=${l#* }; c_sha=${c_sha%% *}; # echo $c_sha
-		if [[ "$l" == *" [sync] Update from "*" @ "* ]]; then 
-			# https://github.com/eclipse/che-operator/commit/9ce11db452b4f62a730311b4108fe9ca6bc0b577
-			# https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces/commit/?id=8a13c2ce4dfdbae7c0ac29198339cc39b6881798
-			lrepo=${l##*Update from }; lrepo=${lrepo%% @ *}; # echo "   >> lrepo = https://github.com/$lrepo"
-			lsha=${l##* @ }
-			echo "                   << https://github.com/${lrepo}/commit/${lsha}"
-			echo "                   >> https://${repo/\///cgit/}/commit/?id=${c_sha}"
-		elif [[ "$l" == *" [base] "?"pdate from "*" to "* ]] || [[ "$l" == *" [update base] "?"pdate from "*" to "* ]]; then 
-			# https://access.redhat.com/containers/#/registry.access.redhat.com/rhel7/images/7.6-151.1550575774
-			loldbase=${l##*pdate from };loldbase=${loldbase%% to *}; loldbase=${loldbase/://images/}
-			lnewbase=${l##* to };lnewbase=${lnewbase/://images/}
-			echo "                   << https://access.redhat.com/containers/#/registry.access.redhat.com/${loldbase}"
-			echo "                   >> https://access.redhat.com/containers/#/registry.access.redhat.com/${lnewbase}"
-			echo "                   >> https://${repo/\///cgit/}/commit/?id=${c_sha}"
-		elif [[ "$l" == *" [get sources] "?"pdate from "* ]]; then 
-			chunks=""
-			# Update from Jenkins Build #246 (2019-02-26 04:23:36 EST) :: che-ls-jdt @ 288b75765175d368480a688c8f3a77ce4758c72d (0.0.3) :: che @ f34f4c6c82de35081351e0b0686b1ae6589735d4 (6.19.0-SNAPSHOT) :: codeready-workspaces @ 184e24bee5bd923b733fa8c9f4b055a9caad40d2 (1.1.0.GA) :: codeready-workspaces-assembly-main.tar.gz
-		fi
-	done < $WORKSPACE/${n}_log.txt
+	cd ${WORKSPACE}/${n}_sources
+		git fetch
+		git checkout $sha -q
+		echo "== $repo @ $sha =="
+		git --no-pager log --graph --pretty=format:'%h - %s'  -${numCommits} > $WORKSPACE/${n}_log.txt
+
+		while read l; do
+			echo "$l"
+			c_sha=${l#* }; c_sha=${c_sha%% *}; # echo $c_sha
+			if [[ "$l" == *" [sync] Update from "*" @ "* ]]; then 
+				# https://github.com/eclipse/che-operator/commit/9ce11db452b4f62a730311b4108fe9ca6bc0b577
+				# https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces/commit/?id=8a13c2ce4dfdbae7c0ac29198339cc39b6881798
+				lrepo=${l##*Update from }; lrepo=${lrepo%% @ *}; # echo "   >> lrepo = https://github.com/$lrepo"
+				lsha=${l##* @ }
+				echo "                   << https://github.com/${lrepo}/commit/${lsha}"
+				echo "                   >> https://${repo/\///cgit/}/commit/?id=${c_sha}"
+			elif [[ "$l" == *" [base] "?"pdate from "*" to "* ]] || [[ "$l" == *" [update base] "?"pdate from "*" to "* ]]; then 
+				# https://access.redhat.com/containers/#/registry.access.redhat.com/rhel7/images/7.6-151.1550575774
+				loldbase=${l##*pdate from };loldbase=${loldbase%% to *}; loldbase=${loldbase/://images/}
+				lnewbase=${l##* to };lnewbase=${lnewbase/://images/}
+				echo "                   << https://access.redhat.com/containers/#/registry.access.redhat.com/${loldbase}"
+				echo "                   >> https://access.redhat.com/containers/#/registry.access.redhat.com/${lnewbase}"
+				echo "                   >> https://${repo/\///cgit/}/commit/?id=${c_sha}"
+			elif [[ "$l" == *" [get sources] "?"pdate from "* ]]; then 
+				chunks=""
+				# Update from Jenkins Build #246 (2019-02-26 04:23:36 EST) :: che-ls-jdt @ 288b75765175d368480a688c8f3a77ce4758c72d (0.0.3) :: che @ f34f4c6c82de35081351e0b0686b1ae6589735d4 (6.19.0-SNAPSHOT) :: codeready-workspaces @ 184e24bee5bd923b733fa8c9f4b055a9caad40d2 (1.1.0.GA) :: codeready-workspaces-assembly-main.tar.gz
+			fi
+		done < $WORKSPACE/${n}_log.txt
 	cd ..
 	echo ""
 done
