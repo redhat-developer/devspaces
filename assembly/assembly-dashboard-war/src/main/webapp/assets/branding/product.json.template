@@ -20,7 +20,7 @@
     "name" : "CHE"
   },
   "docs" : {
-    "stack" : "https://access.redhat.com/documentation/en-us/red_hat_codeready_workspaces_for_openshift/@@crw.docs.version@@/html/administration_guide/administering_workspaces#stacks",
-    "workspace" : "https://access.redhat.com/documentation/en-us/red_hat_codeready_workspaces_for_openshift/@@crw.docs.version@@/html/administration_guide/administering_workspaces/"
+    "stack" : "@@crw.docs.baseurl@@/html/administration_guide/administering_workspaces#stacks",
+    "workspace" : "@@crw.docs.baseurl@@/html/administration_guide/administering_workspaces/"
   }
 }
