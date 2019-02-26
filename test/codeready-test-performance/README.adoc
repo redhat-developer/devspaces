@@ -17,14 +17,14 @@ and keycloak has been deployed here: http://keycloak-codeready-default.apps.iokh
 ------------
 In the **codeready-test-scenario.jmx** file implemented next scenario:
 * Creates virtual user(s)=amount of the treads (-Dtest.threads property)
-* Each virtual user login and create a workspace
+* Each virtual user logins and create a workspace
 * Each virtual user waits workspace creation (RUNNING) status
 * After creation the virtual user(s) stop the workspace and remove the workspace
 * In the end - performs clean up actions in the separated Thredgroup, remove all users
 ----------------
 IIn the **codeready-test-scenario-with-building-project.jmx** file implemented next scenario:
  * Creates virtual user(s)=amount of the treads (-Dtest.threads property)
- * Each virtual user login and create a workspace
+ * Each virtual user logins and create a workspace
  * Each virtual user waits workspace creation (RUNNING) status
  * Upload the default-spring-project.zip into each workspace
  * Launch build command in the workspace (run command like: `mvn clen install -f /projects/maven-project/default-spring-project)`
@@ -32,7 +32,7 @@ IIn the **codeready-test-scenario-with-building-project.jmx** file implemented n
 ------------------
 In the **codeready-test-scenario-with-opening-file.jmx** file implemented next scenario:
 * Creates virtual user(s)=amount of the treads (-Dtest.threads property)
-* Each virtual user login and create a workspace
+* Each virtual user logins and create a workspace
 * Each virtual user waits workspace creation (RUNNING) status
 * Upload the default-spring-project.zip into each workspace
 * Open the pom.xml file from the current project
@@ -47,4 +47,4 @@ In the **codeready-test-scenario-cloning-project.jmx** file implemented next sce
 * Each user runs command like git clone git.url
 * Waiting exec 0 status from EXEC agent (this is mean succesfull cloning)
 * After cloning by user(s), the workspace is stopped  and removed
-* In the end - performs clean up actions in the separated Threadgroup amd all users are removed
+* In the end - performs clean up actions in the separated Threadgroup and all users are removed

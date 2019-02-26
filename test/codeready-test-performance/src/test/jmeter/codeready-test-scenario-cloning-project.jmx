@@ -45,7 +45,7 @@
           </elementProp>
           <elementProp name="git.url" elementType="Argument">
             <stringProp name="Argument.name">git.url</stringProp>
-            <stringProp name="Argument.value">${__P(git.url,https://github.com/musienko-maxim/web-java-spring.git)}</stringProp>
+            <stringProp name="Argument.value">${__P(git.url,https://github.com/che-samples/web-java-spring.git)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
         </collectionProp>
