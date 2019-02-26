@@ -53,7 +53,7 @@ for d in $(find ${WORKDIR} -maxdepth ${maxdepth} -name Dockerfile); do
 
 					# commit change and push it
 					if [[ -d ${d%%/Dockerfile} ]]; then pushd ${d%%/Dockerfile} >/dev/null; pushedIn=1; fi
-					git commit -s -m "[update base] update from ${URL} to ${FROMPREFIX}:${LATESTTAG}" Dockerfile && git push origin ${BRANCH}
+					git commit -s -m "[base] update from ${URL} to ${FROMPREFIX}:${LATESTTAG}" Dockerfile && git push origin ${BRANCH}
 					echo "# ${buildCommand} &"
 					${buildCommand} &
 					if [[ ${pushedIn} -eq 1 ]]; then popd >/dev/null; pushedIn=0; fi
@@ -67,9 +67,10 @@ sleep 10s & wait
 
 echo ""
 if [[ $fixedFiles ]]; then
-	echo "[update base] Fixed these files:"
-	for d in $fixedFiles; do echo "++ $d"; done
+	echo -n "[base] Updated:"
+	for d in $fixedFiles; do echo -n " $d"; done
+	echo ""
 else
-	echo "[update base] No Dockerfiles changed - no new base images found."
+	echo "[base] No Dockerfiles changed - no new base images found."
 fi
 
