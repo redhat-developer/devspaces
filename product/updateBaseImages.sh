@@ -8,7 +8,7 @@
 WORKDIR=`pwd`
 BRANCH=codeready-1.0-rhel-7 # not master
 maxdepth=2
-buildCommand="echo \"No build triggered: use -c for a container-build (or -s for scratch).\""
+buildCommand="echo ''" # By default, no build will be triggered when a change occurs; use -c for a container-build (or -s for scratch).
 while [[ "$#" -gt 0 ]]; do
   case $1 in
     '-w') WORKDIR="$2"; shift 1;;
@@ -53,7 +53,7 @@ for d in $(find ${WORKDIR} -maxdepth ${maxdepth} -name Dockerfile); do
 
 					# commit change and push it
 					if [[ -d ${d%%/Dockerfile} ]]; then pushd ${d%%/Dockerfile} >/dev/null; pushedIn=1; fi
-					git commit -s -m "[base] update from ${URL} to ${FROMPREFIX}:${LATESTTAG}" Dockerfile && git push origin ${BRANCH}
+					git commit -s -m "[base] Update from ${URL} to ${FROMPREFIX}:${LATESTTAG}" Dockerfile && git push origin ${BRANCH}
 					echo "# ${buildCommand} &"
 					${buildCommand} &
 					if [[ ${pushedIn} -eq 1 ]]; then popd >/dev/null; pushedIn=0; fi
