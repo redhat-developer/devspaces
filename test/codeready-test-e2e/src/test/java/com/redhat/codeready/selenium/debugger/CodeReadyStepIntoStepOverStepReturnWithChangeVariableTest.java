@@ -13,10 +13,14 @@ package com.redhat.codeready.selenium.debugger;
 
 import org.eclipse.che.selenium.core.constant.TestCommandsConstants;
 import org.eclipse.che.selenium.debugger.StepIntoStepOverStepReturnWithChangeVariableTest;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.Test;
 
 /**
  * @author Dmytro Nochevnov
  * @author Aleksandr Shmaraiev
+ *     <p>Note: test are being overrided in class to support proper sequence of tests (issue
+ *     CRW-155).
  */
 public class CodeReadyStepIntoStepOverStepReturnWithChangeVariableTest
     extends StepIntoStepOverStepReturnWithChangeVariableTest {
@@ -61,5 +65,23 @@ public class CodeReadyStepIntoStepOverStepReturnWithChangeVariableTest
             .getUrl()
             .replace("tcp", "http")
         + "/spring/guess";
+  }
+
+  @AfterMethod
+  @Override
+  public void shutDownAndCleanWebApp() {
+    super.shutDownAndCleanWebApp();
+  }
+
+  @Test
+  @Override
+  public void changeVariableTest() throws Exception {
+    super.changeVariableTest();
+  }
+
+  @Test(priority = 1)
+  @Override
+  public void shouldOpenDebuggingFile() {
+    super.shouldOpenDebuggingFile();
   }
 }

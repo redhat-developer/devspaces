@@ -16,8 +16,13 @@ import static org.eclipse.che.selenium.core.constant.TestTimeoutsConstants.EXPEC
 
 import org.eclipse.che.selenium.intelligencecommand.CommandsPaletteTest;
 import org.eclipse.che.selenium.pageobject.intelligent.CommandsPalette;
+import org.testng.annotations.Test;
 
-/** @author Aleksandr Shmaraev */
+/**
+ * @author Aleksandr Shmaraev
+ *     <p>Note: test are being overrided in class to support proper sequence of tests (issue
+ *     CRW-155).
+ */
 public class CodeReadyCommandsPaletteTest extends CommandsPaletteTest {
 
   @Override
@@ -44,5 +49,17 @@ public class CodeReadyCommandsPaletteTest extends CommandsPaletteTest {
     commandsPalette.moveAndStartCommand(CommandsPalette.MoveTypes.DOWN, 2);
     consoles.waitTabNameProcessIsPresent(PROJECT_NAME + ": build");
     consoles.waitExpectedTextIntoConsole(BUILD_SUCCESS, EXPECTED_MESS_IN_CONSOLE_SEC);
+  }
+
+  @Test
+  @Override
+  public void commandPaletteTest() {
+    super.commandPaletteTest();
+  }
+
+  @Test(priority = 1)
+  @Override
+  public void newCommandTest() {
+    super.newCommandTest();
   }
 }

@@ -12,7 +12,14 @@
 package com.redhat.codeready.selenium.editor.autocomplete;
 
 import org.eclipse.che.selenium.editor.autocomplete.AutocompleteProposalJavaDocTest;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
 
+/**
+ * @author Aleksandr Shmaraev
+ *     <p>Note: test are being overrided in class to support proper sequence of tests (issue
+ *     CRW-155).
+ */
 public class CodeReadyAutocompleteProposalJavaDocTest extends AutocompleteProposalJavaDocTest {
 
   @Override
@@ -59,5 +66,47 @@ public class CodeReadyAutocompleteProposalJavaDocTest extends AutocompletePropos
         + "</li>\n"
         + "<li><p><strong>See Also:</strong></p>\n"
         + "<ul>\n";
+  }
+
+  @BeforeMethod
+  @Override
+  public void openMainClass() {
+    super.openMainClass();
+  }
+
+  @Test
+  @Override
+  public void shouldDisplayJavaDocOfClassMethod() {
+    super.shouldDisplayJavaDocOfClassMethod();
+  }
+
+  @Test
+  @Override
+  public void shouldWorkAroundAbsentJavaDocOfConstructor() {
+    super.shouldWorkAroundAbsentJavaDocOfConstructor();
+  }
+
+  @Test
+  @Override
+  public void shouldDisplayAnotherModuleClassJavaDoc() {
+    super.shouldDisplayAnotherModuleClassJavaDoc();
+  }
+
+  @Test
+  @Override
+  public void shouldReflectChangesInJavaDoc() {
+    super.shouldReflectChangesInJavaDoc();
+  }
+
+  @Test
+  @Override
+  public void shouldDisplayJavaDocOfJreClass() {
+    super.shouldDisplayJavaDocOfJreClass();
+  }
+
+  @Test
+  @Override
+  public void shouldNotShowJavaDocIfExternalLibDoesNotExist() {
+    super.shouldNotShowJavaDocIfExternalLibDoesNotExist();
   }
 }

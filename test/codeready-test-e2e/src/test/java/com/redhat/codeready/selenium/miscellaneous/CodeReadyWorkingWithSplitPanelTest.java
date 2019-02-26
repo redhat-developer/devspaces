@@ -12,8 +12,13 @@
 package com.redhat.codeready.selenium.miscellaneous;
 
 import org.eclipse.che.selenium.miscellaneous.WorkingWithSplitPanelTest;
+import org.testng.annotations.Test;
 
-/** @author Aleksandr Shmaraev */
+/**
+ * @author Aleksandr Shmaraev
+ *     <p>Note: test are being overrided in class to support proper sequence of tests (issue
+ *     CRW-155).
+ */
 public class CodeReadyWorkingWithSplitPanelTest extends WorkingWithSplitPanelTest {
 
   @Override
@@ -23,4 +28,28 @@ public class CodeReadyWorkingWithSplitPanelTest extends WorkingWithSplitPanelTes
 
   @Override
   protected void checkExpectedTextIsPresent() {}
+
+  @Test
+  @Override
+  public void checkMultiSplitPane() {
+    super.checkMultiSplitPane();
+  }
+
+  @Test(priority = 1)
+  @Override
+  public void checkTerminalAndBuild() {
+    super.checkTerminalAndBuild();
+  }
+
+  @Test(priority = 2)
+  @Override
+  public void checkTabsOnSplitPanel() {
+    super.checkTabsOnSplitPanel();
+  }
+
+  @Test(priority = 3)
+  @Override
+  public void checkSwitchingTabsAndPanels() {
+    super.checkSwitchingTabsAndPanels();
+  }
 }

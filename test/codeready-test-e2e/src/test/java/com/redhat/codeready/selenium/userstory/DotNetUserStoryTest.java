@@ -113,12 +113,13 @@ public class DotNetUserStoryTest extends AbstractUserStoryTest {
   }
 
   private void checkAutocompleteFeature() {
-    editor.deleteCurrentLineAndInsertNew();
+    editor.deleteCurrentLine();
 
     editor.goToCursorPositionVisible(23, 49);
     editor.typeTextIntoEditor(".");
     editor.launchAutocomplete();
     editor.enterAutocompleteProposal("Build ");
+    editor.waitTextIntoEditor("Build");
     editor.typeTextIntoEditor("();");
     editor.waitTextIntoEditor("Build();");
     editor.waitAllMarkersInvisibility(ERROR, LOADER_TIMEOUT_SEC);
