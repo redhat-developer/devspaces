@@ -76,7 +76,7 @@ public class CodeReadyCreateWorkspaceHelper {
     }
 
     if (REGISTRY_ADDRESS_REPLACEMENT.isEmpty()) {
-      codereadyNewWorkspace.clickOnOpenInIDEButton();
+      codereadyNewWorkspace.clickOnCreateButtonAndOpenInIDE();
 
     } else {
       newWorkspace.clickOnCreateButtonAndEditWorkspace();
