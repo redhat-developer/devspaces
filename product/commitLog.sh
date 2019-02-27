@@ -35,15 +35,16 @@ fi
 if [[ ! $NVRs ]]; then
 	echo -n "[INFO] Collect latest codeready-1.0-rhel-7-candidate and codeready-1.0-rhel-8-candidate containers..."
     NVRs=$(\
-        brew list-tagged --latest codeready-1.0-rhel-8-candidate | egrep -v "java-container" | grep "codeready-workspaces" | \
-            sed -e "s#[\ \t]\+codeready-1.0-rhel-8-candidate.\+##" && \
         brew list-tagged --latest codeready-1.0-rhel-7-candidate | grep -v apb | grep "codeready-workspaces" | \
-            sed -e "s#[\ \t]\+codeready-1.0-rhel-7-candidate.\+##"\
+            sed -e "s#[\ \t]\+codeready-1.0-rhel-7-candidate.\+##" && \
+        brew list-tagged --latest codeready-1.0-rhel-8-candidate | egrep -v "java-container" | grep "codeready-workspaces" | \
+            sed -e "s#[\ \t]\+codeready-1.0-rhel-8-candidate.\+##" \
     )
     echo "."
     for n in $NVRs; do
     	echo "       + $n"
     done
+    echo ""
 fi
 
 function parseCommitLog () 
@@ -131,4 +132,6 @@ for n in $NVRs; do
             echo ""
         done < $WORKSPACE/${n}_log.txt
     cd ..
+    #cleanup temp files
+    rm -fr ${WORKSPACE}/${n}*
 done
