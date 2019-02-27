@@ -142,7 +142,7 @@ timeout(180) {
 		'''
 		// set correct version of CRW Dashboard (not Che version)
 		sh '''#!/bin/bash -xe
-			sed -i -e "s#\\(.\\+productVersion = \\).\\+#\\1'${CRWVersion}';#" che/dashboard/src/components/branding/che-branding.factory.ts
+			sed -i -e "s#\\(.\\+productVersion = \\).\\+#\\1'${CRWVersion} - ${JOB_NAME}#${BUILD_NUMBER} @ ${GIT_COMMIT} / ${GIT_BRANCH}';#" che/dashboard/src/components/branding/che-branding.factory.ts
 		'''
 
 		sh "mvn clean install ${MVN_FLAGS} -f ${CHE_path}/pom.xml ${MVN_EXTRA_FLAGS}"
