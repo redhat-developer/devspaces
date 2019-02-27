@@ -167,7 +167,7 @@ timeout(120) {
 			userRemoteConfigs: [[url: "https://github.com/redhat-developer/${CRW_path}.git"]]])
 		unstash 'stashChe'
 		buildMaven()
-		sh "mvn clean install ${MVN_FLAGS} -f ${CRW_path}/pom.xml ${MVN_EXTRA_FLAGS}"
+		sh "mvn clean install ${MVN_FLAGS} -f ${CRW_path}/pom.xml -Dcrw.dashboard.version=\"${CRWVersion}\" ${MVN_EXTRA_FLAGS}"
 		archiveArtifacts fingerprint: false, artifacts:"${CRW_path}/assembly/${CRW_path}-assembly-main/target/*.tar.*"
 
 		sh "perl -0777 -p -i -e 's|(\\ +<parent>.*?<\\/parent>)| ${1} =~ /<version>/?\"\":${1}|gse' ${CRW_path}/pom.xml"
