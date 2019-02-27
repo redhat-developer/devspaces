@@ -66,20 +66,6 @@
                 <version>1.8</version>
                 <executions>
                     <execution>
-                        <id>branding-update</id>
-                        <phase>prepare-package</phase>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                        <configuration>
-                            <tasks>
-                                <copy overwrite="true" todir="${project.build.directory}/source-war">
-                                    <fileset dir="${project.basedir}/src/main/webapp" />
-                                </copy>
-                            </tasks>
-                        </configuration>
-                    </execution>
-                    <execution>
                         <id>update-docs-version-product-json</id>
                         <phase>validate</phase>
                         <goals>
@@ -93,6 +79,42 @@
                                 <replace token="@@crw.docs.baseurl@@"
                                          file="${product.json.file}"
                                          value="${crw.docs.baseurl}"/>
+                            </tasks>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>branding-update</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <tasks>
+                                <copy overwrite="true" todir="${project.build.directory}/source-war">
+                                    <fileset dir="${project.basedir}/src/main/webapp" />
+                                </copy>
+                            </tasks>
+                        </configuration>
+                    </execution>
+                    <!-- apply dashboard version string -->
+                    <execution>
+                        <id>dashboard-version-string-update</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <tasks>
+                                <condition property="productVersion"
+                                    value="${crw.dashboard.version} :: ${JOB_NAME} # ${BUILD_NUMBER} @ ${GIT_COMMIT} / ${GIT_BRANCH}"
+                                    else="${crw.dashboard.version}">
+                                    <isset property="JOB_NAME"/>
+                                </condition>
+                                <!--       this.$rootScope.productVersion = (info && info.implementationVersion) ? info.implementationVersion : ''; -->
+                                <replaceregexp file="${project.build.directory}/source-war/components/branding/che-branding.factory.ts"
+                                               match="(.+productVersion = ).+"
+                                               replace="\1'${productVersion}';"
+                                               byline="true"/>
                             </tasks>
                         </configuration>
                     </execution>
