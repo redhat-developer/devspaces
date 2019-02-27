@@ -35,10 +35,10 @@
         </license>
     </licenses>
     <properties>
-        <che.version>6.19.0-SNAPSHOT</che.version>
+        <che.version>6.19.0</che.version>
         <che.dashboard.version>${che.version}</che.dashboard.version>
-        <crw.version>1.1.0.GA</crw.version>
-        <crw.docs.version>1.1</crw.docs.version>
+        <crw.version>1.2.0.GA</crw.version>
+        <crw.docs.version>1.2</crw.docs.version>
         <crw.dashboard.version>${crw.version} (Eclipse Che ${che.version})</crw.dashboard.version>
         <nightly>false</nightly>
     </properties>
