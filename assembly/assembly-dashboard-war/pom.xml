@@ -97,6 +97,7 @@
                         </configuration>
                     </execution>
                     <!-- apply dashboard version string -->
+                    <!-- note that this should have been set during Jenkins pipeline build when building the Che bits in the first place. See Jenkinsfile for the sed replacement applied there -->
                     <execution>
                         <id>dashboard-version-string-update</id>
                         <phase>prepare-package</phase>
@@ -105,16 +106,29 @@
                         </goals>
                         <configuration>
                             <tasks>
+                                <echo>crw.dashboard.version = ${crw.dashboard.version}</echo>
                                 <condition property="productVersion"
                                     value="${crw.dashboard.version} :: ${JOB_NAME} # ${BUILD_NUMBER} @ ${GIT_COMMIT} / ${GIT_BRANCH}"
                                     else="${crw.dashboard.version}">
-                                    <isset property="JOB_NAME"/>
+                                    <and>
+                                        <isset property="JOB_NAME"/>
+                                        <isset property="BUILD_NUMBER"/>
+                                        <isset property="GIT_COMMIT"/>
+                                        <isset property="GIT_BRANCH"/>
+                                        <not>
+                                            <and>
+                                                <contains string="${crw.dashboard.version}" substring="${JOB_NAME}"/>
+                                                <contains string="${crw.dashboard.version}" substring="${GIT_COMMIT}"/>
+                                            </and>
+                                        </not>
+                                    </and>
                                 </condition>
                                 <!--       this.$rootScope.productVersion = (info && info.implementationVersion) ? info.implementationVersion : ''; -->
                                 <replaceregexp file="${project.build.directory}/source-war/components/branding/che-branding.factory.ts"
                                                match="(.+productVersion = ).+"
                                                replace="\1'${productVersion}';"
                                                byline="true"/>
+                                <echo>productVersion = ${productVersion}</echo>
                             </tasks>
                         </configuration>
                     </execution>

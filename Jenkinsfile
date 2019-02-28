@@ -9,7 +9,7 @@
 // branchToBuildChe = refs/tags/6.19.0 or */*/6.19.x or */master
 // branchToBuildLSJ = refs/tags/0.0.3 or */master or a SHA like 095d753f42dad32c47b1e9ae46a71bf424e98e7e
 // branchToBuildCRW = */6.19.x or */master
-// CRWVersion = 1.1.0.GA (Eclipse Che 6.19.0)
+// CRWVersion = 1.1.0.GA (Eclipse Che 6.19.0) :: ${JOB_NAME} # ${BUILD_NUMBER} @ ${GIT_COMMIT} / ${GIT_BRANCH}
 // // MVN_EXTRA_FLAGS = extra flags, such as to disable a module -pl '!org.eclipse.che.selenium:che-selenium-test'
 
 def installNPM(){
@@ -141,6 +141,12 @@ timeout(180) {
 			perl -0777 -p -i -e 's|(\\ +<dependency>.*?<\\/dependency>)| ${1} =~ /<artifactId>che-docs<\\/artifactId>/?\"\":${1}|gse' che/pom.xml
 		'''
 
+		// set correct version of CRW Dashboard (not Che version) and include Jenkins metadata if desired, eg.
+		// :: ${JOB_NAME} # ${BUILD_NUMBER} @ ${GIT_COMMIT} / ${GIT_BRANCH}
+		sh '''#!/bin/bash -xe
+			sed -i -e "s#\\(.\\+productVersion = \\).\\+#\\1'${CRWVersion}';#" che/dashboard/src/components/branding/che-branding.factory.ts
+		'''
+
 		sh "mvn clean install ${MVN_FLAGS} -f ${CHE_path}/pom.xml ${MVN_EXTRA_FLAGS}"
 		stash name: 'stashChe', includes: findFiles(glob: '.repository/**').join(", ")
 		archiveArtifacts fingerprint: false, artifacts:"**/*.log, **/${CHE_path}/pom.xml, **/${CHE_path}/assembly/assembly-main/pom.xml, **/${CHE_path}/assembly/assembly-main/src/assembly/assembly.xml"
@@ -190,26 +196,26 @@ timeout(120) {
 		  wait: false,
 		  propagate: false,
 		  parameters: [
-		    [
-		      $class: 'StringParameterValue',
-		      name: 'GIT_PATH',
-		      value: "containers/codeready-workspaces",
-		    ],
-		    [
-		      $class: 'StringParameterValue',
-		      name: 'GIT_BRANCH',
-		      value: "codeready-1.0-rhel-7",
-		    ],
-		    [
-		      $class: 'StringParameterValue',
-		      name: 'QUAY_REPO_PATHs',
-		      value: "${QUAY_REPO_PATHs}",
-		    ],
-		    [
-		      $class: 'StringParameterValue',
-		      name: 'SCRATCH',
-		      value: "${SCRATCH}",
-		    ]
+			[
+			  $class: 'StringParameterValue',
+			  name: 'GIT_PATH',
+			  value: "containers/codeready-workspaces",
+			],
+			[
+			  $class: 'StringParameterValue',
+			  name: 'GIT_BRANCH',
+			  value: "codeready-1.0-rhel-7",
+			],
+			[
+			  $class: 'StringParameterValue',
+			  name: 'QUAY_REPO_PATHs',
+			  value: "${QUAY_REPO_PATHs}",
+			],
+			[
+			  $class: 'StringParameterValue',
+			  name: 'SCRATCH',
+			  value: "${SCRATCH}",
+			]
 		  ]
 		)
 	}
