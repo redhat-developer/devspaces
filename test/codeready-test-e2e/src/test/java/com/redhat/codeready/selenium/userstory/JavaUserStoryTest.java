@@ -15,7 +15,7 @@ import static com.redhat.codeready.selenium.pageobject.dashboard.CodereadyNewWor
 import static java.nio.file.Files.readAllLines;
 import static java.nio.file.Paths.get;
 import static java.util.Arrays.stream;
-import static org.eclipse.che.selenium.core.TestGroup.FLAKY;
+import static org.eclipse.che.selenium.core.TestGroup.UNDER_REPAIR;
 import static org.eclipse.che.selenium.core.constant.TestBuildConstants.BUILD_SUCCESS;
 import static org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants.Assistant.ASSISTANT;
 import static org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants.Assistant.FIND_DEFINITION;
@@ -219,7 +219,7 @@ public class JavaUserStoryTest extends AbstractUserStoryTest {
     checkAutoCompletionFeature(expectedContentInAutocompleteContainer);
   }
 
-  @Test(priority = 2, groups = FLAKY)
+  @Test(priority = 2, groups = UNDER_REPAIR)
   public void checkQuickDocumentationFeature() {
     String memberRegistrationTabName = "MemberRegistration";
     String loggerJavaDocFragment =
