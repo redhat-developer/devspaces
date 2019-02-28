@@ -32,57 +32,73 @@ def buildMaven(){
 	env.PATH="${env.PATH}:${mvnHome}/bin"
 }
 
+def DEV_path = "che-dev"
+def VER_DEV = "VER_DEV"
+def SHA_DEV = "SHA_DEV"
 timeout(120) {
-	node("${node}"){ stage "Build che-dev"
+	node("${node}"){ stage "Build ${DEV_path}"
 		cleanWs()
 		checkout([$class: 'GitSCM', 
 			branches: [[name: "${branchToBuildDev}"]], 
 			doGenerateSubmoduleConfigurations: false, 
 			poll: true,
-			extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'che-dev']], 
+			extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: "${DEV_path}"]], 
 			submoduleCfg: [], 
-			userRemoteConfigs: [[url: 'https://github.com/eclipse/che-dev.git']]])
-		// dir ('che-dev') { sh 'ls -1art' }
+			userRemoteConfigs: [[url: "https://github.com/eclipse/${DEV_path}.git"]]])
 		buildMaven()
-		sh "mvn clean install ${MVN_FLAGS} -f che-dev/pom.xml ${MVN_EXTRA_FLAGS}"
+		sh "mvn clean install ${MVN_FLAGS} -f ${DEV_path}/pom.xml ${MVN_EXTRA_FLAGS}"
 		stash name: 'stashDev', includes: findFiles(glob: '.repository/**').join(", ")
+
+		VER_DEV = sh(returnStdout:true,script:"egrep \"<version>\" ${DEV_path}/pom.xml|head -1|sed -e \"s#.*<version>\\(.\\+\\)</version>#\\1#\"").trim()
+		SHA_DEV = sh(returnStdout:true,script:"cd ${DEV_path}/ && git rev-parse HEAD").trim()
 	}
 }
 
+def PAR_path = "che-parent"
+def VER_PAR = "VER_PAR"
+def SHA_PAR = "SHA_PAR"
 timeout(120) {
-	node("${node}"){ stage "Build che-parent"
+	node("${node}"){ stage "Build ${PAR_path}"
 		cleanWs()
 		checkout([$class: 'GitSCM', 
 			branches: [[name: "${branchToBuildParent}"]], 
 			doGenerateSubmoduleConfigurations: false, 
 			poll: true,
-			extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'che-parent']], 
+			extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: "${PAR_path}"]], 
 			submoduleCfg: [], 
-			userRemoteConfigs: [[url: 'https://github.com/eclipse/che-parent.git']]])
-		// dir ('che-parent') { sh 'ls -1art' }
+			userRemoteConfigs: [[url: "https://github.com/eclipse/${PAR_path}.git"]]])
 		unstash 'stashDev'
 		buildMaven()
-		sh "mvn clean install ${MVN_FLAGS} -f che-parent/pom.xml ${MVN_EXTRA_FLAGS}"
+		sh "mvn clean install ${MVN_FLAGS} -f ${PAR_path}/pom.xml ${MVN_EXTRA_FLAGS}"
 		stash name: 'stashParent', includes: findFiles(glob: '.repository/**').join(", ")
+
+		VER_PAR = sh(returnStdout:true,script:"egrep \"<version>\" ${PAR_path}/pom.xml|head -1|sed -e \"s#.*<version>\\(.\\+\\)</version>#\\1#\"").trim()
+		SHA_PAR = sh(returnStdout:true,script:"cd ${PAR_path}/ && git rev-parse HEAD").trim()
 	}
 }
 
+def LIB_path = "che-lib"
+def VER_LIB = "VER_LIB"
+def SHA_LIB = "SHA_LIB"
 timeout(120) {
-	node("${node}"){ stage "Build che-lib"
+	node("${node}"){ stage "Build ${LIB_path}"
 		cleanWs()
 		checkout([$class: 'GitSCM', 
 			branches: [[name: "${branchToBuildLib}"]], 
 			doGenerateSubmoduleConfigurations: false, 
 			poll: true,
-			extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'che-lib']], 
+			extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: "${LIB_path}"]], 
 			submoduleCfg: [], 
-			userRemoteConfigs: [[url: 'https://github.com/eclipse/che-lib.git']]])
-		// dir ('che-lib') { sh 'ls -1art' }
+			userRemoteConfigs: [[url: "https://github.com/eclipse/${LIB_path}.git"]]])
 		unstash 'stashParent'
 		installNPM()
 		buildMaven()
-		sh "mvn clean install ${MVN_FLAGS} -f che-lib/pom.xml ${MVN_EXTRA_FLAGS}"
+		sh "mvn clean install ${MVN_FLAGS} -f ${LIB_path}/pom.xml ${MVN_EXTRA_FLAGS}"
 		stash name: 'stashLib', includes: findFiles(glob: '.repository/**').join(", ")
+
+		sh "perl -0777 -p -i -e 's|(\\ +<parent>.*?<\\/parent>)| ${1} =~ /<version>/?\"\":${1}|gse' ${LIB_path}/pom.xml"
+		VER_LIB = sh(returnStdout:true,script:"egrep \"<version>\" ${LIB_path}/pom.xml|head -1|sed -e \"s#.*<version>\\(.\\+\\)</version>#\\1#\"").trim()
+		SHA_LIB = sh(returnStdout:true,script:"cd ${LIB_path}/ && git rev-parse HEAD").trim()
 	}
 }
 
@@ -114,6 +130,8 @@ timeout(120) {
 	}
 }
 
+def productVersionAdditional=""
+
 def CHE_path = "che"
 def VER_CHE = ""
 def SHA_CHE = ""
@@ -141,10 +159,16 @@ timeout(180) {
 			perl -0777 -p -i -e 's|(\\ +<dependency>.*?<\\/dependency>)| ${1} =~ /<artifactId>che-docs<\\/artifactId>/?\"\":${1}|gse' che/pom.xml
 		'''
 
-		// set correct version of CRW Dashboard (not Che version) and include Jenkins metadata if desired, eg.
-		// :: ${JOB_NAME} # ${BUILD_NUMBER} @ ${GIT_COMMIT} / ${GIT_BRANCH}
+		// set correct version of CRW Dashboard
+		productVersionAdditional="\
+ :: ${DEV_path} @ ${SHA_DEV} (${VER_DEV})\
+ :: ${PAR_path} @ ${SHA_PAR} (${VER_PAR})\
+ :: ${LIB_path} @ ${SHA_LIB} (${VER_LIB})\
+ :: ${LSJ_path} @ ${SHA_LSJ} (${VER_LSJ})\
+ :: ${CHE_path} @ ${SHA_CHE} (${VER_CHE})"
+
 		sh '''#!/bin/bash -xe
-			sed -i -e "s#\\(.\\+productVersion = \\).\\+#\\1'${CRWVersion}';#" che/dashboard/src/components/branding/che-branding.factory.ts
+			sed -i -e "s#\\(.\\+productVersion = \\).\\+#\\1'${CRWVersion}${productVersionAdditional}';#" che/dashboard/src/components/branding/che-branding.factory.ts
 		'''
 
 		sh "mvn clean install ${MVN_FLAGS} -f ${CHE_path}/pom.xml ${MVN_EXTRA_FLAGS}"
@@ -173,7 +197,7 @@ timeout(120) {
 			userRemoteConfigs: [[url: "https://github.com/redhat-developer/${CRW_path}.git"]]])
 		unstash 'stashChe'
 		buildMaven()
-		sh "mvn clean install ${MVN_FLAGS} -f ${CRW_path}/pom.xml -Dcrw.dashboard.version=\"${CRWVersion}\" ${MVN_EXTRA_FLAGS}"
+		sh "mvn clean install ${MVN_FLAGS} -f ${CRW_path}/pom.xml -Dcrw.dashboard.version=\"${CRWVersion}${productVersionAdditional}\" ${MVN_EXTRA_FLAGS}"
 		archiveArtifacts fingerprint: false, artifacts:"${CRW_path}/assembly/${CRW_path}-assembly-main/target/*.tar.*"
 
 		sh "perl -0777 -p -i -e 's|(\\ +<parent>.*?<\\/parent>)| ${1} =~ /<version>/?\"\":${1}|gse' ${CRW_path}/pom.xml"
@@ -181,8 +205,13 @@ timeout(120) {
 		SHA_CRW = sh(returnStdout:true,script:"cd ${CRW_path}/ && git rev-parse HEAD").trim()
 		echo "Built ${CRW_path} from SHA: ${SHA_CRW} (${VER_CRW})"
 
-		// sh 'printenv | sort'
-		def descriptString="Build #${BUILD_NUMBER} (${BUILD_TIMESTAMP}) <br/> :: ${LSJ_path} @ ${SHA_LSJ} (${VER_LSJ}) <br/> :: ${CHE_path} @ ${SHA_CHE} (${VER_CHE}) <br/> :: ${CRW_path} @ ${SHA_CRW} (${VER_CRW})"
+		def descriptString="Build #${BUILD_NUMBER} (${BUILD_TIMESTAMP}) <br/>\
+ :: ${DEV_path} @ ${SHA_DEV} (${VER_DEV}) <br/>\
+ :: ${PAR_path} @ ${SHA_PAR} (${VER_PAR}) <br/>\
+ :: ${LIB_path} @ ${SHA_LIB} (${VER_LIB}) <br/>\
+ :: ${LSJ_path} @ ${SHA_LSJ} (${VER_LSJ}) <br/>\
+ :: ${CHE_path} @ ${SHA_CHE} (${VER_CHE}) <br/>\
+ :: ${CRW_path} @ ${SHA_CRW} (${VER_CRW})"
 		echo "${descriptString}"
 		currentBuild.description="${descriptString}"
 	}
@@ -215,6 +244,11 @@ timeout(120) {
 			  $class: 'StringParameterValue',
 			  name: 'SCRATCH',
 			  value: "${SCRATCH}",
+			],
+			[
+			  $class: 'StringParameterValue',
+			  name: 'JOB_BRANCH',
+			  value: "${JOB_BRANCH}",
 			]
 		  ]
 		)
