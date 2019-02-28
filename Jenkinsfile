@@ -159,26 +159,26 @@ timeout(180) {
 			perl -0777 -p -i -e 's|(\\ +<dependency>.*?<\\/dependency>)| ${1} =~ /<artifactId>che-docs<\\/artifactId>/?\"\":${1}|gse' che/pom.xml
 		'''
 
+		VER_CHE = sh(returnStdout:true,script:"egrep \"<version>\" ${CHE_path}/pom.xml|head -2|tail -1|sed -e \"s#.*<version>\\(.\\+\\)</version>#\\1#\"").trim()
+		SHA_CHE = sh(returnStdout:true,script:"cd ${CHE_path}/ && git rev-parse HEAD").trim()
+
 		// set correct version of CRW Dashboard
-		productVersionAdditional="\
- :: ${DEV_path} @ ${SHA_DEV} (${VER_DEV})\
- :: ${PAR_path} @ ${SHA_PAR} (${VER_PAR})\
- :: ${LIB_path} @ ${SHA_LIB} (${VER_LIB})\
- :: ${LSJ_path} @ ${SHA_LSJ} (${VER_LSJ})\
- :: ${CHE_path} @ ${SHA_CHE} (${VER_CHE})"
+		productVersionAdditional=" \
+:: ${DEV_path} @ ${SHA_DEV} (${VER_DEV}) \
+:: ${PAR_path} @ ${SHA_PAR} (${VER_PAR}) \
+:: ${LIB_path} @ ${SHA_LIB} (${VER_LIB}) \
+:: ${LSJ_path} @ ${SHA_LSJ} (${VER_LSJ}) \
+:: ${CHE_path} @ ${SHA_CHE} (${VER_CHE})"
+		echo "productVersionAdditional = ${productVersionAdditional}"
 
 		sh '''#!/bin/bash -xe
-			sed -i -e "s#\\(.\\+productVersion = \\).\\+#\\1'${CRWVersion}${productVersionAdditional}';#" che/dashboard/src/components/branding/che-branding.factory.ts
+			sed -i -e "s#\\(.\\+productVersion = \\).\\+#\\1'${CRWVersion}${productVersionAdditional}';#g" che/dashboard/src/components/branding/che-branding.factory.ts
 		'''
 
 		sh "mvn clean install ${MVN_FLAGS} -f ${CHE_path}/pom.xml ${MVN_EXTRA_FLAGS}"
 		stash name: 'stashChe', includes: findFiles(glob: '.repository/**').join(", ")
 		archiveArtifacts fingerprint: false, artifacts:"**/*.log, **/${CHE_path}/pom.xml, **/${CHE_path}/assembly/assembly-main/pom.xml, **/${CHE_path}/assembly/assembly-main/src/assembly/assembly.xml"
 
-		// remove the <parent> from the root pom
-		sh "perl -0777 -p -i -e 's|(\\ +<parent>.*?<\\/parent>)| ${1} =~ /<version>/?\"\":${1}|gse' ${CHE_path}/pom.xml"
-		VER_CHE = sh(returnStdout:true,script:"egrep \"<version>\" ${CHE_path}/pom.xml|head -1|sed -e \"s#.*<version>\\(.\\+\\)</version>#\\1#\"").trim()
-		SHA_CHE = sh(returnStdout:true,script:"cd ${CHE_path}/ && git rev-parse HEAD").trim()
 		echo "Built ${CHE_path} from SHA: ${SHA_CHE} (${VER_CHE})"
 	}
 }
@@ -197,12 +197,22 @@ timeout(120) {
 			userRemoteConfigs: [[url: "https://github.com/redhat-developer/${CRW_path}.git"]]])
 		unstash 'stashChe'
 		buildMaven()
+
+		VER_CRW = sh(returnStdout:true,script:"egrep \"<version>\" ${CRW_path}/pom.xml|head -2|tail -1|sed -e \"s#.*<version>\\(.\\+\\)</version>#\\1#\"").trim()
+		SHA_CRW = sh(returnStdout:true,script:"cd ${CRW_path}/ && git rev-parse HEAD").trim()
+
+		productVersionAdditional=" \
+:: ${DEV_path} @ ${SHA_DEV} (${VER_DEV}) \
+:: ${PAR_path} @ ${SHA_PAR} (${VER_PAR}) \
+:: ${LIB_path} @ ${SHA_LIB} (${VER_LIB}) \
+:: ${LSJ_path} @ ${SHA_LSJ} (${VER_LSJ}) \
+:: ${CHE_path} @ ${SHA_CHE} (${VER_CHE}) \
+:: ${CRW_path} @ ${SHA_CRW} (${VER_CRW})"
+		echo "productVersionAdditional = ${productVersionAdditional}"
+
 		sh "mvn clean install ${MVN_FLAGS} -f ${CRW_path}/pom.xml -Dcrw.dashboard.version=\"${CRWVersion}${productVersionAdditional}\" ${MVN_EXTRA_FLAGS}"
 		archiveArtifacts fingerprint: false, artifacts:"${CRW_path}/assembly/${CRW_path}-assembly-main/target/*.tar.*"
 
-		sh "perl -0777 -p -i -e 's|(\\ +<parent>.*?<\\/parent>)| ${1} =~ /<version>/?\"\":${1}|gse' ${CRW_path}/pom.xml"
-		VER_CRW = sh(returnStdout:true,script:"egrep \"<version>\" ${CRW_path}/pom.xml|head -1|sed -e \"s#.*<version>\\(.\\+\\)</version>#\\1#\"").trim()
-		SHA_CRW = sh(returnStdout:true,script:"cd ${CRW_path}/ && git rev-parse HEAD").trim()
 		echo "Built ${CRW_path} from SHA: ${SHA_CRW} (${VER_CRW})"
 
 		def descriptString="Build #${BUILD_NUMBER} (${BUILD_TIMESTAMP}) <br/>\
