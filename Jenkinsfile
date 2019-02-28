@@ -130,7 +130,7 @@ timeout(120) {
 	}
 }
 
-def productVersionAdditional=""
+def CRW_SHAs = ""
 
 def CHE_path = "che"
 def VER_CHE = "VER_CHE"
@@ -163,16 +163,16 @@ timeout(180) {
 		SHA_CHE = sh(returnStdout:true,script:"cd ${CHE_path}/ && git rev-parse HEAD").trim()
 
 		// set correct version of CRW Dashboard
-		productVersionAdditional=" \
+		CRW_SHAs=" \
 :: ${DEV_path} @ ${SHA_DEV} (${VER_DEV}) \
 :: ${PAR_path} @ ${SHA_PAR} (${VER_PAR}) \
 :: ${LIB_path} @ ${SHA_LIB} (${VER_LIB}) \
 :: ${LSJ_path} @ ${SHA_LSJ} (${VER_LSJ}) \
 :: ${CHE_path} @ ${SHA_CHE} (${VER_CHE})"
-		echo "productVersionAdditional = ${productVersionAdditional}"
+		echo "CRW_SHAs = ${CRW_SHAs}"
 
 		sh '''#!/bin/bash -xe
-			sed -i -e "s#\\(.\\+productVersion = \\).\\+#\\1'${CRWVersion}${productVersionAdditional}';#g" che/dashboard/src/components/branding/che-branding.factory.ts
+			sed -i -e "s#\\(.\\+productVersion = \\).\\+#\\1'""${CRWVersion}""${CRW_SHAs}""';#g" ${CHE_path}/dashboard/src/components/branding/che-branding.factory.ts
 		'''
 
 		sh "mvn clean install ${MVN_FLAGS} -f ${CHE_path}/pom.xml ${MVN_EXTRA_FLAGS}"
@@ -203,16 +203,16 @@ timeout(120) {
 		VER_CRW = sh(returnStdout:true,script:"egrep \"<version>\" ${CRW_path}/pom.xml|head -2|tail -1|sed -e \"s#.*<version>\\(.\\+\\)</version>#\\1#\"").trim()
 		SHA_CRW = sh(returnStdout:true,script:"cd ${CRW_path}/ && git rev-parse HEAD").trim()
 
-		productVersionAdditional=" \
+		CRW_SHAs=" \
 :: ${DEV_path} @ ${SHA_DEV} (${VER_DEV}) \
 :: ${PAR_path} @ ${SHA_PAR} (${VER_PAR}) \
 :: ${LIB_path} @ ${SHA_LIB} (${VER_LIB}) \
 :: ${LSJ_path} @ ${SHA_LSJ} (${VER_LSJ}) \
 :: ${CHE_path} @ ${SHA_CHE} (${VER_CHE}) \
 :: ${CRW_path} @ ${SHA_CRW} (${VER_CRW})"
-		echo "productVersionAdditional = ${productVersionAdditional}"
+		echo "CRW_SHAs = ${CRW_SHAs}"
 
-		sh "mvn clean install ${MVN_FLAGS} -f ${CRW_path}/pom.xml -Dcrw.dashboard.version=\"${CRWVersion}${productVersionAdditional}\" ${MVN_EXTRA_FLAGS}"
+		sh "mvn clean install ${MVN_FLAGS} -f ${CRW_path}/pom.xml -Dcrw.dashboard.version=\"${CRWVersion}${CRW_SHAs}\" ${MVN_EXTRA_FLAGS}"
 		archiveArtifacts fingerprint: false, artifacts:"${CRW_path}/assembly/${CRW_path}-assembly-main/target/*.tar.*"
 
 		echo "Built ${CRW_path} from SHA: ${SHA_CRW} (${VER_CRW})"
