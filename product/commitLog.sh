@@ -84,6 +84,9 @@ function parseCommitLog ()
       case $1 in
         'crw_master'|'crw_stable-branch'|'crw-operator-installer-and-ls-deps_'*) JOB_NAME="$1"; shift 2;;
         'Build'*) BUILD_NUMBER="$2"; BUILD_NUMBER=${BUILD_NUMBER#\#}; shift 6;; # trim # from the number, ignore timestamp
+        'che-dev')                         dev_sha="$3"; echo "  << https://github.com/eclipse/${1}/commit/${dev_sha:0:7} $4"; shift 5;;
+        'che-parent')                      par_sha="$3"; echo "  << https://github.com/eclipse/${1}/commit/${par_sha:0:7} $4"; shift 5;;
+        'che-lib')                         lib_sha="$3"; echo "  << https://github.com/eclipse/${1}/commit/${lib_sha:0:7} $4"; shift 5;;
         'che-ls-jdt')                      lsj_sha="$3"; echo "  << https://github.com/eclipse/${1}/commit/${lsj_sha:0:7} $4"; shift 5;;
         'che')                             che_sha="$3"; echo "  << https://github.com/eclipse/${1}/commit/${che_sha:0:7} $4"; shift 5;;
         'codeready-workspaces')            crw_sha="$3"; echo "  << https://github.com/redhat-developer/${1}/commit/${crw_sha:0:7} $4"; shift 5;;
