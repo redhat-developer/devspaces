@@ -133,8 +133,8 @@ timeout(120) {
 def productVersionAdditional=""
 
 def CHE_path = "che"
-def VER_CHE = ""
-def SHA_CHE = ""
+def VER_CHE = "VER_CHE"
+def SHA_CHE = "SHA_CHE"
 timeout(180) {
 	node("${nodeBig}"){ stage "Build ${CHE_path}"
 		cleanWs()
@@ -184,6 +184,8 @@ timeout(180) {
 }
 
 def CRW_path = "codeready-workspaces"
+def VER_CRW = "VER_CRW"
+def SHA_CRW = "SHA_CRW"
 timeout(120) {
 	node("${node}"){ stage "Build ${CRW_path}"
 		cleanWs()
