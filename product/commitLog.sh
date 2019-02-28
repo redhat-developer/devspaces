@@ -3,7 +3,7 @@
 # script to query the Brew BUILD ID for a given list of NVRs, then produce the list of SHAs associated with those builds
 # requires brew CLI to be installed, and an active Kerberos ticket (kinit)
 
-numCommits=10
+numCommits=5
 user="$(whoami)" # default user to fetch sources from pkgs.devel repos
 #jenkinsServer="https://$(host codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com | sed -e "s#.\+has address ##")" # or something else, https://crw-jenkins.redhat.com
 jenkinsServer="https://codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com"
@@ -16,7 +16,7 @@ Usage: ./${0##*/}
 
     --help          | show help
 
-    -c numCommits   | limit query to only n commits (default: 10)
+    -c numCommits   | limit query to only n commits (default: 5)
     -u user         | set kerberos username
 
     --list          | list all NVRs and exit - do not query
@@ -128,6 +128,8 @@ for n in $NVRs; do
         git checkout $sha -q
         echo "== $repo @ $sha =="; echo ""
         git --no-pager log --pretty=format:'%h - %s'  -${numCommits} > $WORKSPACE/${n}_log.txt
+        # add newline so that the last commit in the file is picked up
+        echo "" >> $WORKSPACE/${n}_log.txt 
 
         while read l; do
             c_sha=${l:0:7}; # echo $c_sha
@@ -154,5 +156,5 @@ for n in $NVRs; do
         done < $WORKSPACE/${n}_log.txt
     cd ..
     #cleanup temp files
-    rm -fr ${WORKSPACE}/${n}*
+    # rm -fr ${WORKSPACE}/${n}*
 done
