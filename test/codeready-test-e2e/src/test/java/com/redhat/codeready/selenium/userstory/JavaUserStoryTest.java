@@ -227,13 +227,13 @@ public class JavaUserStoryTest extends AbstractUserStoryTest {
 
     editor.selectTabByName(memberRegistrationTabName);
     editor.goToPosition(28, 17);
-    menu.runCommand(ASSISTANT, QUICK_DOCUMENTATION);
 
     try {
+      menu.runCommand(ASSISTANT, QUICK_DOCUMENTATION);
       editor.checkTextToBePresentInCodereadyJavaDocPopUp(loggerJavaDocFragment);
     } catch (TimeoutException ex) {
       // remove try-catch block after issue has been resolved
-      fail("Known random failure https://github.com/eclipse/che/issues/11735");
+      fail("Known permanent failure https://github.com/eclipse/che/issues/11735");
     }
   }
 
