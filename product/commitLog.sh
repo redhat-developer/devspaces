@@ -11,12 +11,22 @@ allNVRs=0
 htmlMode=0 # TODO implement this
 function usage () 
 {
-    echo "Usage: $0 --help"
-    echo "Usage: $0 --list"
-    echo "Usage: $0 NVR1 NVR2"
-    echo "Usage: $0 -c numCommits -u user -a"
+    echo "
+Usage: ./${0##*/}
+
+    --help          | show help
+
+    -c numCommits   | limit query to only n commits (default: 10)
+    -u user         | set kerberos username
+
+    --list          | list all NVRs and exit - do not query
+    -a              | query all NVRs
+    NVR1 NVR2 ...   | query only specified NVRs, eg., codeready-workspaces-server-container-1.1-7
+    "
+    exit 0
 }
 
+if [[ "$#" -eq 0 ]]; then usage; fi
 while [[ "$#" -gt 0 ]]; do
   case $1 in
     '-c') numCommits="$2"; shift 1;; # eg., 5 or 10 commits to show
