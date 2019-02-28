@@ -3,24 +3,30 @@
 # script to query the Brew BUILD ID for a given list of NVRs, then produce the list of SHAs associated with those builds
 # requires brew CLI to be installed, and an active Kerberos ticket (kinit)
 
-#WORKDIR=`pwd` # NOT USED
-#BRANCH=codeready-1.0-rhel-7 # not master # NOT USED
-
 numCommits=10
 user="$(whoami)" # default user to fetch sources from pkgs.devel repos
-jenkinsServer="https://$(host codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com | sed -e "s#.\+has address ##")" # or something else, https://crw-jenkins.redhat.com
+#jenkinsServer="https://$(host codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com | sed -e "s#.\+has address ##")" # or something else, https://crw-jenkins.redhat.com
+jenkinsServer="https://codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com"
+allNVRs=0
 htmlMode=0 # TODO implement this
+function usage () 
+{
+    echo "Usage: $0 --help"
+    echo "Usage: $0 --list"
+    echo "Usage: $0 NVR1 NVR2"
+    echo "Usage: $0 -c numCommits -u user -a"
+}
 
 while [[ "$#" -gt 0 ]]; do
   case $1 in
-    #'-w') WORKDIR="$2"; shift 1;; # NOT USED
-    #'-b') BRANCH="$2"; shift 1;; # NOT USED 
     '-c') numCommits="$2"; shift 1;; # eg., 5 or 10 commits to show
-    '-n') NVRs="$2"; shift 1;; # eg., codeready-workspaces-server-container-1.1-2
     '-u') user="$2"; shift 1;; # eg., $(whoami), nboldt or crw-build
     '-j') jenkinsServer="$2"; shift 1;; # to make URLs clickable in console, use a shorter URL like https://crw-jenkins.redhat.com
+    '-a') allNVRs=1; shift 0;; # fetch all NVRs
+    '--list') listNVRsOnly=1;;
+    '--help') usage;;
     '--html') htmlMode=1; shift 0;; # TODO implement this
-    *) OTHER="${OTHER} $1"; shift 0;; 
+    *) NVRs="${NVRs} $1"; shift 0;; 
   esac
   shift 1
 done
@@ -32,7 +38,7 @@ if [[ ! -x /usr/bin/brew ]]; then
 fi
 
 # get latest NVRs if non specified
-if [[ ! $NVRs ]]; then
+if [[ ! $NVRs ]] || [[ ${allNVRs} -eq 1 ]]; then
 	echo -n "[INFO] Collect latest codeready-1.0-rhel-7-candidate and codeready-1.0-rhel-8-candidate containers..."
     NVRs=$(\
         brew list-tagged --latest codeready-1.0-rhel-7-candidate | grep -v apb | grep "codeready-workspaces" | \
@@ -46,6 +52,8 @@ if [[ ! $NVRs ]]; then
     done
     echo ""
 fi
+
+if [[ ${listNVRsOnly} -eq 1 ]]; then exit; fi
 
 function parseCommitLog () 
 {
