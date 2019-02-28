@@ -15,6 +15,7 @@ import static com.redhat.codeready.selenium.pageobject.dashboard.CodereadyNewWor
 import static java.nio.file.Files.readAllLines;
 import static java.nio.file.Paths.get;
 import static java.util.Arrays.stream;
+import static org.eclipse.che.selenium.core.TestGroup.UNDER_REPAIR;
 import static org.eclipse.che.selenium.core.constant.TestBuildConstants.BUILD_SUCCESS;
 import static org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants.Assistant.ASSISTANT;
 import static org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants.Assistant.FIND_DEFINITION;
@@ -216,12 +217,23 @@ public class JavaUserStoryTest extends AbstractUserStoryTest {
     addTestFileIntoProjectByApi();
     checkQuickFixFeature(expectedTextAfterQuickFix);
     checkAutoCompletionFeature(expectedContentInAutocompleteContainer);
+  }
+
+  @Test(priority = 2, groups = UNDER_REPAIR)
+  public void checkQuickDocumentationFeature() {
+    String memberRegistrationTabName = "MemberRegistration";
+    String loggerJavaDocFragment =
+        "On each logging call the Logger initially performs a cheap check of the request level (e.g., SEVERE or FINE)";
+
+    editor.selectTabByName(memberRegistrationTabName);
+    editor.goToPosition(28, 17);
 
     try {
-      checkQuickDocumentationFeature(memberRegistrationTabName, loggerJavaDocFragment);
+      menu.runCommand(ASSISTANT, QUICK_DOCUMENTATION);
+      editor.checkTextToBePresentInCodereadyJavaDocPopUp(loggerJavaDocFragment);
     } catch (TimeoutException ex) {
       // remove try-catch block after issue has been resolved
-      fail("Known random failure https://github.com/eclipse/che/issues/11735");
+      fail("Known permanent failure https://github.com/eclipse/che/issues/11735");
     }
   }
 
@@ -287,14 +299,6 @@ public class JavaUserStoryTest extends AbstractUserStoryTest {
     menu.runCommand(ASSISTANT, QUICK_FIX);
     editor.enterTextIntoFixErrorPropByDoubleClick("Change to 'Logger' (java.util.logging)");
     editor.waitAllMarkersInvisibility(ERROR_OVERVIEW, LOADER_TIMEOUT_SEC);
-  }
-
-  private void checkQuickDocumentationFeature(
-      String memberRegistrationTabName, String loggerJavaDocFragment) {
-    editor.selectTabByName(memberRegistrationTabName);
-    editor.goToPosition(28, 17);
-    menu.runCommand(ASSISTANT, QUICK_DOCUMENTATION);
-    editor.checkTextToBePresentInCodereadyJavaDocPopUp(loggerJavaDocFragment);
   }
 
   private void checkFindDefinitionFeature(String expectedTextOfInjectClass) {
