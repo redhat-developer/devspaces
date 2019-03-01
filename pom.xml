@@ -39,7 +39,7 @@
         <che.dashboard.version>${che.version}</che.dashboard.version>
         <crw.version>1.2.0.GA</crw.version>
         <crw.docs.version>1.2</crw.docs.version>
-        <crw.dashboard.version>${crw.version} (Eclipse Che ${che.version})</crw.dashboard.version>
+        <crw.dashboard.version>${crw.version} (Eclipse Che ${che.version}) Pull Request, Yo!</crw.dashboard.version>
         <nightly>false</nightly>
     </properties>
     <dependencyManagement>
