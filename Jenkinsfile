@@ -171,9 +171,7 @@ timeout(180) {
 :: ${CHE_path} @ ${SHA_CHE} (${VER_CHE})"
 		echo "CRW_SHAs = ${CRW_SHAs}"
 
-		sh '''#!/bin/bash -xe
-			sed -i -e "s#\\(.\\+productVersion = \\).\\+#\\1\'${CRW_SHAs}\';#g" ${CHE_path}/dashboard/src/components/branding/che-branding.factory.ts
-		'''
+		sh "sed -i -e \"s#\\(.\\+productVersion = \\).\\+#\\1'${CRW_SHAs}';#g\" che/dashboard/src/components/branding/che-branding.factory.ts"
 
 		sh "mvn clean install ${MVN_FLAGS} -f ${CHE_path}/pom.xml ${MVN_EXTRA_FLAGS}"
 		stash name: 'stashChe', includes: findFiles(glob: '.repository/**').join(", ")
