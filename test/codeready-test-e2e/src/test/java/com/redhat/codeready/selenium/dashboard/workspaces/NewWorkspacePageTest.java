@@ -58,7 +58,8 @@ public class NewWorkspacePageTest {
           CodereadyStacks.GO,
           CodereadyStacks.NODE,
           CodereadyStacks.PHP,
-          CodereadyStacks.PYTHON);
+          CodereadyStacks.PYTHON,
+          CodereadyStacks.JAVA_RHEL8);
 
   private static final List<CodereadyNewWorkspace.CodereadyStacks>
       EXPECTED_CODEREADY_QUICK_START_STACKS_REVERSE_ORDER =
@@ -69,6 +70,7 @@ public class NewWorkspacePageTest {
               CodereadyStacks.SPRING_BOOT,
               CodereadyStacks.WILD_FLY_SWARM,
               CodereadyStacks.FUSE,
+              CodereadyStacks.JAVA_RHEL8,
               CodereadyStacks.PYTHON,
               CodereadyStacks.PHP,
               CodereadyStacks.NODE,
@@ -90,14 +92,16 @@ public class NewWorkspacePageTest {
               CodereadyStacks.GO,
               CodereadyStacks.NODE,
               CodereadyStacks.PHP,
-              CodereadyStacks.PYTHON);
+              CodereadyStacks.PYTHON,
+              CodereadyStacks.JAVA_RHEL8);
 
   private static final List<CodereadyNewWorkspace.CodereadyStacks> EXPECTED_CODEREADY_JAVA_STACKS =
       asList(
           CodereadyStacks.WILD_FLY_SWARM,
           CodereadyStacks.SPRING_BOOT,
           CodereadyStacks.JAVA_EAP,
-          CodereadyStacks.JAVA_DEFAULT);
+          CodereadyStacks.JAVA_DEFAULT,
+          CodereadyStacks.JAVA_RHEL8);
 
   private static final List<String> EXPECTED_CODEREADY_FILTERS_SUGGESTIONS =
       asList(MAVEN_SUGGESTION_TITLE);
