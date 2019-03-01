@@ -9,7 +9,7 @@
 // branchToBuildChe = refs/tags/6.19.0 or */*/6.19.x or */master
 // branchToBuildLSJ = refs/tags/0.0.3 or */master or a SHA like 095d753f42dad32c47b1e9ae46a71bf424e98e7e
 // branchToBuildCRW = */6.19.x or */master
-// CRWVersion = 1.1.0.GA (Eclipse Che 6.19.0) :: ${JOB_NAME} # ${BUILD_NUMBER} @ ${GIT_COMMIT} / ${GIT_BRANCH}
+// CRWVersion = 1.1.0.GA (Eclipse Che 6.19.0)
 // // MVN_EXTRA_FLAGS = extra flags, such as to disable a module -pl '!org.eclipse.che.selenium:che-selenium-test'
 
 def installNPM(){
@@ -163,7 +163,7 @@ timeout(180) {
 		SHA_CHE = sh(returnStdout:true,script:"cd ${CHE_path}/ && git rev-parse HEAD").trim()
 
 		// set correct version of CRW Dashboard
-		CRW_SHAs=" \
+		CRW_SHAs="${CRWVersion} \
 :: ${DEV_path} @ ${SHA_DEV} (${VER_DEV}) \
 :: ${PAR_path} @ ${SHA_PAR} (${VER_PAR}) \
 :: ${LIB_path} @ ${SHA_LIB} (${VER_LIB}) \
@@ -172,7 +172,7 @@ timeout(180) {
 		echo "CRW_SHAs = ${CRW_SHAs}"
 
 		sh '''#!/bin/bash -xe
-			sed -i -e "s#\\(.\\+productVersion = \\).\\+#\\1'""${CRWVersion}""${CRW_SHAs}""';#g" ${CHE_path}/dashboard/src/components/branding/che-branding.factory.ts
+			sed -i -e "s#\\(.\\+productVersion = \\).\\+#\\1'${CRW_SHAs}';#g" ${CHE_path}/dashboard/src/components/branding/che-branding.factory.ts
 		'''
 
 		sh "mvn clean install ${MVN_FLAGS} -f ${CHE_path}/pom.xml ${MVN_EXTRA_FLAGS}"
@@ -203,7 +203,7 @@ timeout(120) {
 		VER_CRW = sh(returnStdout:true,script:"egrep \"<version>\" ${CRW_path}/pom.xml|head -2|tail -1|sed -e \"s#.*<version>\\(.\\+\\)</version>#\\1#\"").trim()
 		SHA_CRW = sh(returnStdout:true,script:"cd ${CRW_path}/ && git rev-parse HEAD").trim()
 
-		CRW_SHAs=" \
+		CRW_SHAs="${CRWVersion} \
 :: ${DEV_path} @ ${SHA_DEV} (${VER_DEV}) \
 :: ${PAR_path} @ ${SHA_PAR} (${VER_PAR}) \
 :: ${LIB_path} @ ${SHA_LIB} (${VER_LIB}) \
@@ -212,7 +212,7 @@ timeout(120) {
 :: ${CRW_path} @ ${SHA_CRW} (${VER_CRW})"
 		echo "CRW_SHAs = ${CRW_SHAs}"
 
-		sh "mvn clean install ${MVN_FLAGS} -f ${CRW_path}/pom.xml -Dcrw.dashboard.version=\"${CRWVersion}${CRW_SHAs}\" ${MVN_EXTRA_FLAGS}"
+		sh "mvn clean install ${MVN_FLAGS} -f ${CRW_path}/pom.xml -Dcrw.dashboard.version=\"${CRW_SHAs}\" ${MVN_EXTRA_FLAGS}"
 		archiveArtifacts fingerprint: false, artifacts:"${CRW_path}/assembly/${CRW_path}-assembly-main/target/*.tar.*"
 
 		echo "Built ${CRW_path} from SHA: ${SHA_CRW} (${VER_CRW})"
