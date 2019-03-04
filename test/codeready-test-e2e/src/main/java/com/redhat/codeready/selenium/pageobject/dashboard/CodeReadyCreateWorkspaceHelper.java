@@ -40,12 +40,8 @@ public class CodeReadyCreateWorkspaceHelper {
   private static final Map<String, String> REGISTRY_ADDRESS_REPLACEMENT =
       new HashMap<String, String>() {
         {
-          put(
-              "registry.access.redhat.com/codeready-workspaces",
-              "brew-pulp-docker01.web.prod.ext.phx2.redhat.com:8888/codeready-workspaces");
-          put(
-              "registry.access.redhat.com/codeready-workspaces-beta",
-              "brew-pulp-docker01.web.prod.ext.phx2.redhat.com:8888/codeready-workspaces");
+          put("registry.access.redhat.com/codeready-workspaces", "quay.io/crw");
+          put("registry.access.redhat.com/codeready-workspaces-beta", "quay.io/crw");
         }
       };
 

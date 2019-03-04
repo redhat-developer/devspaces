@@ -29,7 +29,7 @@
         }
       },
       "recipe": {
-        "content": "brew-pulp-docker01.web.prod.ext.phx2.redhat.com:8888/codeready-workspaces/stacks-dotnet",
+        "content": "quay.io/crw/stacks-dotnet",
         "type": "dockerimage"
       }
     }
