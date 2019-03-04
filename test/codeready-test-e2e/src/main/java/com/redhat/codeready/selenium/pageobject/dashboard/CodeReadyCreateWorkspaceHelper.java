@@ -112,21 +112,24 @@ public class CodeReadyCreateWorkspaceHelper {
     boolean isValueFound = false;
 
     for (Map.Entry<String, String> entry : REGISTRY_ADDRESS_REPLACEMENT.entrySet()) {
-      String oldAddress = entry.getKey();
-      String newAddress = entry.getValue();
+      String oldAddressPrefix = entry.getKey();
+      String newAddressPrefix = entry.getValue();
 
-      if (currentStackImageAddress != null && (currentStackImageAddress.equals(oldAddress))) {
+      if (currentStackImageAddress != null
+          && (currentStackImageAddress.startsWith(oldAddressPrefix))) {
+        String newStackImageAddress =
+            currentStackImageAddress.replace(oldAddressPrefix, newAddressPrefix);
         js.executeScript(
             String.format(
                 "document.querySelector('.edit-machine-form .CodeMirror').CodeMirror.setValue('%s')",
-                newAddress));
+                newStackImageAddress));
 
         // save changes
-        editMachineForm.waitRecipeText(newAddress);
+        editMachineForm.waitRecipeText(newStackImageAddress);
         editMachineForm.waitSaveButtonEnabling();
         editMachineForm.clickOnSaveButton();
         editMachineForm.waitFormInvisibility();
-        workspaceDetailsMachines.waitImageNameInMachineListItem(machineName, newAddress);
+        workspaceDetailsMachines.waitImageNameInMachineListItem(machineName, newStackImageAddress);
         workspaceDetails.waitAllEnabled(SAVE_BUTTON);
         workspaceDetails.clickOnSaveChangesBtn();
         workspaceDetailsMachines.waitNotificationMessage(successNotificationText);
@@ -138,6 +141,7 @@ public class CodeReadyCreateWorkspaceHelper {
 
     if (!isValueFound) {
       editMachineForm.clickOnCloseIcon();
+      editMachineForm.waitFormInvisibility();
     }
   }
 }
