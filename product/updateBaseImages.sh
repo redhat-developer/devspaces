@@ -22,19 +22,19 @@ while [[ "$#" -gt 0 ]]; do
 done
 
 pushedIn=0
-for d in $(find ${WORKDIR} -maxdepth ${maxdepth} -name Dockerfile); do
+for d in $(find ${WORKDIR} -maxdepth ${maxdepth} -name Dockerfile | sort); do
 	if [[ -f ${d} ]]; then
+		echo ""
+		echo "# Checking ${d%/Dockerfile} ..."
 		# pull latest commits
 		if [[ -d ${d%%/Dockerfile} ]]; then pushd ${d%%/Dockerfile} >/dev/null; pushedIn=1; fi
-		git branch --set-upstream-to=origin/${BRANCH} ${BRANCH}
-		git checkout ${BRANCH} && git pull -q
+		git branch --set-upstream-to=origin/${BRANCH} ${BRANCH} -q
+		git checkout ${BRANCH} -q && git pull -q
 		if [[ ${pushedIn} -eq 1 ]]; then popd >/dev/null; pushedIn=0; fi
 
 		QUERY=""
 		FROMPREFIX=""
 		LATESTTAG=""
-		echo ""
-		# echo "# Dockerfile = $d "
 		URLs=$(cat $d | grep FROM -B1);
 		for URL in $URLs; do
 			URL=${URL#registry.access.redhat.com/}
