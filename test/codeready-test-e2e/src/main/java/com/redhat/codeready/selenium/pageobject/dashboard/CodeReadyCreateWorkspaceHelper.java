@@ -16,7 +16,7 @@ import static org.eclipse.che.selenium.pageobject.dashboard.workspaces.Workspace
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import org.eclipse.che.selenium.core.SeleniumWebDriver;
@@ -38,10 +38,10 @@ import org.openqa.selenium.JavascriptExecutor;
 public class CodeReadyCreateWorkspaceHelper {
 
   private static final Map<String, String> REGISTRY_ADDRESS_REPLACEMENT =
-      new HashMap<String, String>() {
+      new LinkedHashMap<String, String>() {
         {
-          put("registry.access.redhat.com/codeready-workspaces", "quay.io/crw");
           put("registry.access.redhat.com/codeready-workspaces-beta", "quay.io/crw");
+          put("registry.access.redhat.com/codeready-workspaces", "quay.io/crw");
         }
       };
 
