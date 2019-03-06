@@ -194,7 +194,7 @@ timeout(120) {
 			poll: true,
 			extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: "${CRW_path}"], [$class: 'LocalBranch']], 
 			submoduleCfg: [], 
-			userRemoteConfigs: [[refspec: "+refs/pull/${params.PR_NUMBER}/head:refs/remotes/origin/PR-${params.PR_NUMBER}", url: "https://github.com/redhat-developer/${CRW_path}.git"]]])
+			userRemoteConfigs: [[refspec: "+refs/pull/${ghprbPullId}/head:refs/remotes/origin/PR-${ghprbPullId}", url: "https://github.com/redhat-developer/${CRW_path}.git"]]])
 		unstash 'stashChe'
 		buildMaven()
 
