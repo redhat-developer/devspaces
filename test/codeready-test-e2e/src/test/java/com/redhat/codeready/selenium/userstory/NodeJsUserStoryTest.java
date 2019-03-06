@@ -175,6 +175,8 @@ public class NodeJsUserStoryTest extends AbstractUserStoryTest {
     assistantFindPanel.waitForm();
     assistantFindPanel.clickOnInputField();
     assistantFindPanel.typeToInputField("a");
+    assistantFindPanel.waitForm();
+    assistantFindPanel.waitInputField();
     assistantFindPanel.waitAllNodes("/web-nodejs-simple/node_modules/express/lib/express.js");
 
     // select item in the find panel by clicking on node

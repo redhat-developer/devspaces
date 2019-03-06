@@ -8,7 +8,9 @@ user="$(whoami)" # default user to fetch sources from pkgs.devel repos
 #jenkinsServer="https://$(host codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com | sed -e "s#.\+has address ##")" # or something else, https://crw-jenkins.redhat.com
 jenkinsServer="https://codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com"
 allNVRs=0
-htmlMode=0 # TODO implement this
+findLatest=0
+generateDockerfileLABELs=0
+LABELs=""
 function usage () 
 {
     echo "
@@ -19,9 +21,12 @@ Usage: ./${0##*/}
     -c numCommits   | limit query to only n commits (default: 5)
     -u user         | set kerberos username
 
-    --list          | list all NVRs and exit - do not query
+    --list          | just list all available NVRs and exit - do not query commit logs
     -a              | query all NVRs
     NVR1 NVR2 ...   | query only specified NVRs, eg., codeready-workspaces-server-container-1.1-7
+    --latest        | check for the latest NVRs for the specified/partial NVRs, eg., 
+                    |   codeready-workspaces-server-container, codeready-workspaces-server-container-1.1
+    -g, --labels    | generate Dockerfile LABELs to commit into the repo; implies '-c 1 --latest'
     "
     exit 0
 }
@@ -29,13 +34,17 @@ Usage: ./${0##*/}
 if [[ "$#" -eq 0 ]]; then usage; fi
 while [[ "$#" -gt 0 ]]; do
   case $1 in
+        # for any NVR (or partial NVR) compute the latest version; eg., for 
+        # codeready-workspaces-server-container or codeready-workspaces-server-container-1.1 or codeready-workspaces-server-container-1.1-4,
+        # use codeready-workspaces-server-container-1.1-7
+    '-l'|'--latest') findLatest=1;; 
+    '-g'|'--labels') generateDockerfileLABELs=1; findLatest=1; numCommits=1;; # implies that we only want to see the latest single commit
     '-c') numCommits="$2"; shift 1;; # eg., 5 or 10 commits to show
     '-u') user="$2"; shift 1;; # eg., $(whoami), nboldt or crw-build
     '-j') jenkinsServer="$2"; shift 1;; # to make URLs clickable in console, use a shorter URL like https://crw-jenkins.redhat.com
     '-a') allNVRs=1; shift 0;; # fetch all NVRs
     '--list') listNVRsOnly=1;;
     '--help') usage;;
-    '--html') htmlMode=1; shift 0;; # TODO implement this
     *) NVRs="${NVRs} $1"; shift 0;; 
   esac
   shift 1
@@ -61,9 +70,51 @@ if [[ ! $NVRs ]] || [[ ${allNVRs} -eq 1 ]]; then
     	echo "       + $n"
     done
     echo ""
+elif [[ ${findLatest} -eq 1 ]]; then
+    inputNVRs="${NVRs}"; NVRs=""
+    for n in $inputNVRs; do
+        if [[ ${n%-container-*} != $n ]]; then 
+            m="${n%-container-*}-container"
+        elif [[ ${n} != *"-container" ]]; then
+            m="${n}-container"
+        else
+            m="${n}"
+        fi
+        # debug
+        # echo "       + $n ... $m"
+        mm=$(brew list-tagged --latest codeready-1.0-rhel-7-candidate $m 2>&1 | grep $m | grep -v apb | grep "codeready-workspaces" | \
+            sed -e "s#[\ \t]\+codeready-1.0-rhel-7-candidate.\+##")
+
+        if [[ "${mm}" == "" ]]; then 
+        # echo "check RHEL8..."
+            mm=$(brew list-tagged --latest codeready-1.0-rhel-8-candidate $m 2>&1 | grep $m | egrep -v "java-container" | grep "codeready-workspaces" | \
+                sed -e "s#[\ \t]\+codeready-1.0-rhel-8-candidate.\+##")
+        fi
+        if [[ "${mm}" == "" ]]; then 
+            echo "[ERROR] Could not find $n in either of these requests: "
+            echo "[ERROR] * \`brew list-tagged --latest codeready-1.0-rhel-7-candidate $m\`"
+            echo "[ERROR] * \`brew list-tagged --latest codeready-1.0-rhel-7-candidate $m\`"
+            exit;
+        fi
+        NVRs="${NVRs} $mm"
+    done
 fi
 
 if [[ ${listNVRsOnly} -eq 1 ]]; then exit; fi
+
+function addLabel () {
+    addLabeln "${1}" "${2}" "${3}"
+    echo ""
+}
+function addLabeln () {
+    LABEL_VAR=$1
+    if [[ "${2}" ]]; then LABEL_VAL=$2; else LABEL_VAL="${!LABEL_VAR}"; fi
+    if [[ "${3}" ]]; then PREFIX=$3; else PREFIX="  << "; fi
+    if [[ ${generateDockerfileLABELs} -eq 1 ]]; then 
+        LABELs="${LABELs} ${LABEL_VAR}=\"${LABEL_VAL}\""
+    fi
+    echo -n "${PREFIX}${LABEL_VAL}"
+}
 
 function parseCommitLog () 
 {
@@ -80,33 +131,33 @@ function parseCommitLog ()
     tarballs=""
     OTHER=""
     JOB_NAME=""
+    GHE="https://github.com/eclipse/"
+    GHR="https://github.com/redhat-developer/"
     while [[ "$#" -gt 0 ]]; do
       case $1 in
         'crw_master'|'crw_stable-branch'|'crw-operator-installer-and-ls-deps_'*) JOB_NAME="$1"; shift 2;;
         'Build'*) BUILD_NUMBER="$2"; BUILD_NUMBER=${BUILD_NUMBER#\#}; shift 6;; # trim # from the number, ignore timestamp
-        'che-dev')                         dev_sha="$3"; echo "  << https://github.com/eclipse/${1}/commit/${dev_sha:0:7} $4"; shift 5;;
-        'che-parent')                      par_sha="$3"; echo "  << https://github.com/eclipse/${1}/commit/${par_sha:0:7} $4"; shift 5;;
-        'che-lib')                         lib_sha="$3"; echo "  << https://github.com/eclipse/${1}/commit/${lib_sha:0:7} $4"; shift 5;;
-        'che-ls-jdt')                      lsj_sha="$3"; echo "  << https://github.com/eclipse/${1}/commit/${lsj_sha:0:7} $4"; shift 5;;
-        'che')                             che_sha="$3"; echo "  << https://github.com/eclipse/${1}/commit/${che_sha:0:7} $4"; shift 5;;
-        'codeready-workspaces')            crw_sha="$3"; echo "  << https://github.com/redhat-developer/${1}/commit/${crw_sha:0:7} $4"; shift 5;;
-        'codeready-workspaces-deprecated') crd_sha="$3"; echo "  << https://github.com/redhat-developer/${1}/commit/${crd_sha:0:7} $4"; shift 5;;
+        'che-dev'|'che-parent'|'che-lib'|'che-ls-jdt'|'che') 
+            sha="$3"; addLabeln "git.commit.eclipse__${1}" "${GHE}${1}/commit/${sha:0:7}"; addLabel "pom.version.eclipse__${1}" "${4:1:-1}" " "; shift 5;;
+        'codeready-workspaces'|'codeready-workspaces-deprecated') 
+            sha="$3"; addLabeln "git.commit.redhat-developer__${1}" "${GHR}${1}/commit/${sha:0:7}"; addLabel "pom.version.redhat-developer__${1}" "${4:1:-1}" " "; shift 5;;
         *'tar.gz') tarballs="${tarballs} $1"; shift 1;;
         *) OTHER="${OTHER} $1"; shift 1;; 
       esac
     done
     if [[ $JOB_NAME ]]; then
-        echo "  << ${jenkinsServer}/view/CRW_CI/view/Pipelines/job/${JOB_NAME}/${BUILD_NUMBER}/"
+        addLabel "jenkins.build.url" "${jenkinsServer}/view/CRW_CI/view/Pipelines/job/${JOB_NAME}/${BUILD_NUMBER}/"
         for t in $tarballs; do
-            echo "     ++ ${jenkinsServer}/view/CRW_CI/view/Pipelines/job/${JOB_NAME}/${BUILD_NUMBER}/artifact/**/${t}"
+            addLabel "jenkins.artifact.url" "${jenkinsServer}/view/CRW_CI/view/Pipelines/job/${JOB_NAME}/${BUILD_NUMBER}/artifact/**/${t}" "     ++ "
         done
     else
-        echo "  << ${jenkinsServer}/view/CRW_CI/view/Pipelines #${BUILD_NUMBER} /${tarballs}"
+        addLabel "jenkins.tarball.url" "${jenkinsServer}/view/CRW_CI/view/Pipelines #${BUILD_NUMBER} /${tarballs}"
     fi
 }
 
 cd ${WORKSPACE}
 for n in $NVRs; do
+    LABELs=""
     echo ""
     # use brew buildinfo to get the repo and sha used to build a given NVR
     repo=$(brew buildinfo $n | grep "Source:" | sed -e "s#Source: git://##")
@@ -114,7 +165,7 @@ for n in $NVRs; do
     repo=${repo%#*}; # echo $repo
 
     if [[ ! $repo ]]; then
-        echo "Brew build not found for $n"; exit 1
+        echo "[ERROR] Brew build not found for $n"; exit 1
     fi
 
     # fetch sources so we can see the log
@@ -140,20 +191,42 @@ for n in $NVRs; do
                 # https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces/commit/?id=8a13c2ce4dfdbae7c0ac29198339cc39b6881798
                 lrepo=${l##*Update from }; lrepo=${lrepo%% @ *}; # echo "   >> lrepo = https://github.com/$lrepo"
                 lsha=${l##* @ }
-                echo "  << https://github.com/${lrepo}/commit/${lsha}"
+                addLabel "git.commit.${lrepo/\//__}" "https://github.com/${lrepo}/commit/${lsha}"
             elif [[ "$l" == *" [base] "?"pdate from "*" to "* ]] || [[ "$l" == *" [update base] "?"pdate from "*" to "* ]] || \
                  [[ "$l" == *" [updateDockerfilesFROM.sh] "?"pdate from "*" to "* ]]; then
                 # https://access.redhat.com/containers/#/registry.access.redhat.com/rhel7/images/7.6-151.1550575774
                 loldbase=${l##*pdate from };loldbase=${loldbase%% to *}; loldbase=${loldbase/://images/}
                 lnewbase=${l##* to };lnewbase=${lnewbase/://images/}
-                echo "  << https://access.redhat.com/containers/#/registry.access.redhat.com/${loldbase}"
-                echo "  >> https://access.redhat.com/containers/#/registry.access.redhat.com/${lnewbase}"
+                addLabel "container.base.old" "https://access.redhat.com/containers/#/registry.access.redhat.com/${loldbase}"
+                addLabel "container.base.new" "https://access.redhat.com/containers/#/registry.access.redhat.com/${lnewbase}" "  >> "
             elif [[ "$l" == *" [get sources] "?"pdate from "* ]]; then
                 parseCommitLog ${l##*\[get sources\]}
             fi
             # echo "  == https://${repo/\///cgit/}/commit/?id=${c_sha}"
             echo ""
         done < $WORKSPACE/${n}_log.txt
+
+        if [[ ${generateDockerfileLABELs} -eq 1 ]] && [[ "${LABELs}" ]]; then
+            echo "[INFO] The following LABELs will be committed to the repo:"
+            for l in $LABELs; do echo " + LABEL ${l}"; done
+
+            git fetch
+            if [[ "${n}" == *"rhel8"* ]]; then
+                if [[ "$(git checkout codeready-1.0-rhel-8 2>&1)" == *"error"* ]]; then
+                    echo "Could not check out the codeready-1.0-rhel-8 branch!"
+                    exit 1
+                fi
+            else
+                git checkout codeready-1.0-rhel-7; git pull origin codeready-1.0-rhel-7
+            fi
+            # trim off the footer of the file
+            mv $WORKSPACE/${n}_sources/Dockerfile $WORKSPACE/${n}_sources/Dockerfile.bak
+            sed '/.*insert generated LABELs below this line.*/q' $WORKSPACE/${n}_sources/Dockerfile.bak > $WORKSPACE/${n}_sources/Dockerfile 
+            for l in $LABELs; do
+                echo "LABEL $l" >> Dockerfile
+            done
+            # TODO actually commit the change here
+        fi
     cd ..
     #cleanup temp files
     # rm -fr ${WORKSPACE}/${n}*

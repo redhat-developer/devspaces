@@ -189,12 +189,12 @@ timeout(120) {
 		cleanWs()
 		// for private repo, use checkout(credentialsId: 'devstudio-release')
 		checkout([$class: 'GitSCM', 
-			branches: [[name: "${branchToBuildCRW}"]], 
+			branches: [[name: "FETCH_HEAD"]], 
 			doGenerateSubmoduleConfigurations: false, 
 			poll: true,
-			extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: "${CRW_path}"]], 
+			extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: "${CRW_path}"], [$class: 'LocalBranch']], 
 			submoduleCfg: [], 
-			userRemoteConfigs: [[url: "https://github.com/redhat-developer/${CRW_path}.git"]]])
+			userRemoteConfigs: [[refspec: "+refs/pull/${ghprbPullId}/head:refs/remotes/origin/PR-${ghprbPullId}", url: "https://github.com/redhat-developer/${CRW_path}.git"]]])
 		unstash 'stashChe'
 		buildMaven()
 
