@@ -155,6 +155,26 @@ function parseCommitLog ()
     fi
 }
 
+function insertLabels () {
+    DOCKERFILE=$1
+    # trim off the footer of the file
+    mv ${DOCKERFILE} ${DOCKERFILE}.bak
+    sed '/.*insert generated LABELs below this line.*/q' ${DOCKERFILE}.bak > ${DOCKERFILE}
+    # insert marker
+    if [[ ! $(cat ${DOCKERFILE}.bak | grep "insert generated LABELs below this line") ]]; then 
+        echo "" >> ${DOCKERFILE}
+        echo "" >> ${DOCKERFILE}
+        echo "# insert generated LABELs below this line" >> ${DOCKERFILE}
+    fi
+    # add new labels
+    echo "LABEL \\" >> ${DOCKERFILE}
+    for l in $LABELs; do
+        echo "      ${l} \\" >> ${DOCKERFILE}
+    done
+    echo "" >> ${DOCKERFILE}
+    rm -f ${DOCKERFILE}.bak
+}
+
 cd ${WORKSPACE}
 for n in $NVRs; do
     LABELs=""
@@ -177,7 +197,7 @@ for n in $NVRs; do
     cd ${WORKSPACE}/${n}_sources
         git fetch
         git checkout $sha -q
-        echo "== $repo @ $sha =="; echo ""
+        echo "== $repo @ $sha / ${n} =="; echo ""
         git --no-pager log --pretty=format:'%h - %s'  -${numCommits} > $WORKSPACE/${n}_log.txt
         # add newline so that the last commit in the file is picked up
         echo "" >> $WORKSPACE/${n}_log.txt 
@@ -211,21 +231,20 @@ for n in $NVRs; do
             for l in $LABELs; do echo " + LABEL ${l}"; done
 
             git fetch
+            git_branch=codeready-1.0-rhel-7
             if [[ "${n}" == *"rhel8"* ]]; then
-                if [[ "$(git checkout codeready-1.0-rhel-8 2>&1)" == *"error"* ]]; then
-                    echo "Could not check out the codeready-1.0-rhel-8 branch!"
+                git_branch=codeready-1.0-rhel-8
+                if [[ "$(git checkout ${git_branch} 2>&1)" == *"error"* ]]; then
+                    echo "Could not check out the ${git_branch} branch!"
                     exit 1
                 fi
             else
-                git checkout codeready-1.0-rhel-7; git pull origin codeready-1.0-rhel-7
+                git checkout ${git_branch}
             fi
-            # trim off the footer of the file
-            mv $WORKSPACE/${n}_sources/Dockerfile $WORKSPACE/${n}_sources/Dockerfile.bak
-            sed '/.*insert generated LABELs below this line.*/q' $WORKSPACE/${n}_sources/Dockerfile.bak > $WORKSPACE/${n}_sources/Dockerfile 
-            for l in $LABELs; do
-                echo "LABEL $l" >> Dockerfile
-            done
-            # TODO actually commit the change here
+            git pull origin ${git_branch}
+            insertLabels $WORKSPACE/${n}_sources/Dockerfile
+            git commit -s -m "[labels] Update generated LABELs in Dockerfile" Dockerfile
+            git push origin ${git_branch}
         fi
     cd ..
     #cleanup temp files

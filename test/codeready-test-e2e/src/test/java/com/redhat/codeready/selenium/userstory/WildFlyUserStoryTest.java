@@ -150,6 +150,7 @@ public class WildFlyUserStoryTest extends AbstractUserStoryTest {
     editor.waitMarkerInPosition(ERROR, 35);
     editor.goToPosition(35, 15);
     editor.typeTextIntoEditor(".to");
+    editor.waitTextIntoEditor("suffix.to");
     editor.launchAutocomplete();
     editor.selectItemIntoAutocompleteAndPerformDoubleClick("CharArray() : char[] ");
     editor.waitTextIntoEditor("suffix.toCharArray()");
