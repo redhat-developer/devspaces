@@ -38,6 +38,7 @@ import org.eclipse.che.selenium.pageobject.dashboard.workspaces.WorkspaceOvervie
 import org.eclipse.che.selenium.pageobject.dashboard.workspaces.WorkspaceProjects;
 import org.eclipse.che.selenium.pageobject.dashboard.workspaces.Workspaces;
 import org.eclipse.che.selenium.pageobject.dashboard.workspaces.Workspaces.Status;
+import org.openqa.selenium.By;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
@@ -366,6 +367,8 @@ public class WorkspacesListTest {
 
   @Test(priority = 1, alwaysRun = true)
   public void checkDocumentionLink() {
+    String documentPageTitleXpath = "//h1[contains(text(),'Administering workspaces')]";
+
     workspaces.waitPageLoading();
     String mainWindow = seleniumWebDriver.getWindowHandle();
 
@@ -374,7 +377,7 @@ public class WorkspacesListTest {
     seleniumWebDriverHelper.waitOpenedSomeWin();
     seleniumWebDriverHelper.switchToNextWindow(mainWindow);
 
-    assertEquals(EXPECTED_DOCUMENTATION_PAGE_TITLE, documentationPage.getTitle());
+    seleniumWebDriverHelper.waitVisibility(By.xpath(documentPageTitleXpath));
 
     seleniumWebDriver.close();
     seleniumWebDriver.switchTo().window(mainWindow);

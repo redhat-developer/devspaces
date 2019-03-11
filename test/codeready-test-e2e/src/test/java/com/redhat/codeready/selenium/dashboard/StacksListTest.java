@@ -78,7 +78,7 @@ public class StacksListTest {
     // check Java 1.8 stack info
     assertTrue(stacks.isStackItemExisted("Java 1.8"));
     assertEquals(
-        stacks.getStackDescription("Java 1.8"), "Default Java Stack with OpenJDK 1.8, Maven 3.5");
+        stacks.getStackDescription("Java 1.8"), "RHEL 7 Java stack with OpenJDK 1.8 and Maven 3.5");
 
     String stackComponents = stacks.getStackComponents("Java 1.8");
     componentList.forEach(
@@ -175,6 +175,7 @@ public class StacksListTest {
 
     dashboard.selectStacksItemOnDashboard();
     stacks.waitToolbarTitleName();
+    stacks.waitStackItem(stack);
     stacks.clickOnDuplicateStackButton(stack);
 
     for (String name : stacks.getStacksNamesList()) {

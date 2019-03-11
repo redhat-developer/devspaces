@@ -12,6 +12,7 @@
 package com.redhat.codeready.selenium.dashboard;
 
 import static org.eclipse.che.commons.lang.NameGenerator.generate;
+import static org.eclipse.che.selenium.core.constant.TestTimeoutsConstants.UPDATING_PROJECT_TIMEOUT_SEC;
 import static org.eclipse.che.selenium.pageobject.ProjectExplorer.FolderTypes.PROJECT_FOLDER;
 import static org.eclipse.che.selenium.pageobject.dashboard.NewWorkspace.Stack.JAVA;
 import static org.eclipse.che.selenium.pageobject.dashboard.workspaces.WorkspaceDetails.WorkspaceDetailsTab.PROJECTS;
@@ -112,7 +113,7 @@ public class CreateAndDeleteProjectsTest {
     explorer.waitItem(KITCHENSINK_EXAMPLE);
     explorer.waitItem(SECOND_KINTCHENSINK_PROJECT_NAME);
     notificationsPopupPanel.waitPopupPanelsAreClosed();
-    mavenPluginStatusBar.waitClosingInfoPanel();
+    mavenPluginStatusBar.waitClosingInfoPanel(UPDATING_PROJECT_TIMEOUT_SEC);
     explorer.waitDefinedTypeOfFolder(KITCHENSINK_EXAMPLE, PROJECT_FOLDER);
     notificationsPopupPanel.waitPopupPanelsAreClosed();
   }
