@@ -11,6 +11,8 @@ allNVRs=0
 findLatest=0
 generateDockerfileLABELs=0
 LABELs=""
+doClean=1
+
 function usage () 
 {
     echo "
@@ -24,9 +26,10 @@ Usage: ./${0##*/}
     --list          | just list all available NVRs and exit - do not query commit logs
     -a              | query all NVRs
     NVR1 NVR2 ...   | query only specified NVRs, eg., codeready-workspaces-server-container-1.1-7
-    --latest        | check for the latest NVRs for the specified/partial NVRs, eg., 
+    -l, --latest    | check for the latest NVRs for the specified/partial NVRs, eg., 
                     |   codeready-workspaces-server-container, codeready-workspaces-server-container-1.1
     -g, --labels    | generate Dockerfile LABELs to commit into the repo; implies '-c 1 --latest'
+    -nc, --noclean  | do not delete temp files when done (allows repeating the script more quickly)
     "
     exit 0
 }
@@ -43,6 +46,7 @@ while [[ "$#" -gt 0 ]]; do
     '-u') user="$2"; shift 1;; # eg., $(whoami), nboldt or crw-build
     '-j') jenkinsServer="$2"; shift 1;; # to make URLs clickable in console, use a shorter URL like https://crw-jenkins.redhat.com
     '-a') allNVRs=1; shift 0;; # fetch all NVRs
+    '-nc'|'--noclean') doClean=0;; 
     '--list') listNVRsOnly=1;;
     '--help') usage;;
     *) NVRs="${NVRs} $1"; shift 0;; 
@@ -245,8 +249,19 @@ for n in $NVRs; do
             insertLabels $WORKSPACE/${n}_sources/Dockerfile
             git commit -s -m "[labels] Update generated LABELs in Dockerfile" Dockerfile
             git push origin ${git_branch}
+
+            # if this is called from within the sync job for codeready-workspaces GH repo -> pkgs.devel server, push this change to upstream too
+            if [[ -f $WORKSPACE/sources/Dockerfile ]]; then
+                pushd $WORKSPACE/sources >/dev/null
+                git commit -s -m "[labels] Update generated LABELs in Dockerfile" Dockerfile
+                git push
+                insertLabels $WORKSPACE/sources/Dockerfile
+                popd >/dev/null
+            fi
         fi
     cd ..
     #cleanup temp files
-    # rm -fr ${WORKSPACE}/${n}*
+    if [[ ${doClean} -eq 1 ]]; then
+      rm -fr ${WORKSPACE}/${n}*
+    fi
 done
