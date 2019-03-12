@@ -50,7 +50,7 @@ timeout(120) {
 		stash name: 'stashDev', includes: findFiles(glob: '.repository/**').join(", ")
 
 		VER_DEV = sh(returnStdout:true,script:"egrep \"<version>\" ${DEV_path}/pom.xml|head -1|sed -e \"s#.*<version>\\(.\\+\\)</version>#\\1#\"").trim()
-		SHA_DEV = sh(returnStdout:true,script:"cd ${DEV_path}/ && git rev-parse HEAD").trim()
+		SHA_DEV = sh(returnStdout:true,script:"cd ${DEV_path}/ && git rev-parse --short=4 HEAD").trim()
 	}
 }
 
@@ -73,7 +73,7 @@ timeout(120) {
 		stash name: 'stashParent', includes: findFiles(glob: '.repository/**').join(", ")
 
 		VER_PAR = sh(returnStdout:true,script:"egrep \"<version>\" ${PAR_path}/pom.xml|head -1|sed -e \"s#.*<version>\\(.\\+\\)</version>#\\1#\"").trim()
-		SHA_PAR = sh(returnStdout:true,script:"cd ${PAR_path}/ && git rev-parse HEAD").trim()
+		SHA_PAR = sh(returnStdout:true,script:"cd ${PAR_path}/ && git rev-parse --short=4 HEAD").trim()
 	}
 }
 
@@ -98,7 +98,7 @@ timeout(120) {
 
 		sh "perl -0777 -p -i -e 's|(\\ +<parent>.*?<\\/parent>)| ${1} =~ /<version>/?\"\":${1}|gse' ${LIB_path}/pom.xml"
 		VER_LIB = sh(returnStdout:true,script:"egrep \"<version>\" ${LIB_path}/pom.xml|head -1|sed -e \"s#.*<version>\\(.\\+\\)</version>#\\1#\"").trim()
-		SHA_LIB = sh(returnStdout:true,script:"cd ${LIB_path}/ && git rev-parse HEAD").trim()
+		SHA_LIB = sh(returnStdout:true,script:"cd ${LIB_path}/ && git rev-parse --short=4 HEAD").trim()
 	}
 }
 
@@ -125,7 +125,7 @@ timeout(120) {
 
 		sh "perl -0777 -p -i -e 's|(\\ +<parent>.*?<\\/parent>)| ${1} =~ /<version>/?\"\":${1}|gse' ${LSJ_path}/pom.xml"
 		VER_LSJ = sh(returnStdout:true,script:"egrep \"<version>\" ${LSJ_path}/pom.xml|head -1|sed -e \"s#.*<version>\\(.\\+\\)</version>#\\1#\"").trim()
-		SHA_LSJ = sh(returnStdout:true,script:"cd ${LSJ_path}/ && git rev-parse HEAD").trim()
+		SHA_LSJ = sh(returnStdout:true,script:"cd ${LSJ_path}/ && git rev-parse --short=4 HEAD").trim()
 		echo "Built ${LSJ_path} from SHA: ${SHA_LSJ} (${VER_LSJ})"
 	}
 }
@@ -160,7 +160,7 @@ timeout(180) {
 		'''
 
 		VER_CHE = sh(returnStdout:true,script:"egrep \"<version>\" ${CHE_path}/pom.xml|head -2|tail -1|sed -e \"s#.*<version>\\(.\\+\\)</version>#\\1#\"").trim()
-		SHA_CHE = sh(returnStdout:true,script:"cd ${CHE_path}/ && git rev-parse HEAD").trim()
+		SHA_CHE = sh(returnStdout:true,script:"cd ${CHE_path}/ && git rev-parse --short=4 HEAD").trim()
 
 		// set correct version of CRW Dashboard
 		CRW_SHAs="${CRWVersion} \
@@ -199,7 +199,7 @@ timeout(120) {
 		buildMaven()
 
 		VER_CRW = sh(returnStdout:true,script:"egrep \"<version>\" ${CRW_path}/pom.xml|head -2|tail -1|sed -e \"s#.*<version>\\(.\\+\\)</version>#\\1#\"").trim()
-		SHA_CRW = sh(returnStdout:true,script:"cd ${CRW_path}/ && git rev-parse HEAD").trim()
+		SHA_CRW = sh(returnStdout:true,script:"cd ${CRW_path}/ && git rev-parse --short=4 HEAD").trim()
 
 		CRW_SHAs="${CRWVersion} \
 :: ${DEV_path} @ ${SHA_DEV} (${VER_DEV}) \
