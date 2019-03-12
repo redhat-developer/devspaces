@@ -253,9 +253,9 @@ for n in $NVRs; do
             # if this is called from within the sync job for codeready-workspaces GH repo -> pkgs.devel server, push this change to upstream too
             if [[ -f $WORKSPACE/sources/Dockerfile ]]; then
                 pushd $WORKSPACE/sources >/dev/null
+                insertLabels $WORKSPACE/sources/Dockerfile
                 git commit -s -m "[labels] Update generated LABELs in Dockerfile" Dockerfile
                 git push
-                insertLabels $WORKSPACE/sources/Dockerfile
                 popd >/dev/null
             fi
         fi
