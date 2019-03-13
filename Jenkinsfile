@@ -175,10 +175,12 @@ timeout(180) {
 		sh "sed -i -e \"s#\\(.\\+productVersion = \\).\\+#\\1'${CRW_SHAs}';#g\" che/dashboard/src/components/branding/che-branding.factory.ts"
 
 		// apply CRW CSS
-		sh "curl -s -S -L --create-dirs \
-		  https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/${branchToBuildCRW}/assembly/assembly-dashboard-war/src/assets/branding/branding-crw.css \
-		  -o che/dashboard/src/assets/branding/branding.css"
-		sh "cat che/dashboard/src/assets/branding/branding.css"
+		sh '''#!/bin/bash -xe
+			rawBranch=${branchToBuildCRW##*/}
+			curl -S -L --create-dirs -o che/dashboard/src/assets/branding/branding.css \
+				https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/${rawBranch}/assembly/assembly-dashboard-war/src/assets/branding/branding-crw.css
+			cat che/dashboard/src/assets/branding/branding.css
+		'''
 
 		sh "mvn clean install ${MVN_FLAGS} -f ${CHE_path}/pom.xml ${MVN_EXTRA_FLAGS}"
 		stash name: 'stashChe', includes: findFiles(glob: '.repository/**').join(", ")
