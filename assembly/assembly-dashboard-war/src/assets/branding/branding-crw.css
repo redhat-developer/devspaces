@@ -2,8 +2,9 @@
 
 This file contains the branding changes needed for CodeReady Workspaces.
 It should override settings in default Che.
+
 Copy this file to https://github.com/eclipse/che/blob/master/dashboard/src/assets/branding/branding.css
-before building Che, to get the reskinned dashboard.
+before building Che, apply these changes to the dashboard war.
 
 Then use that reskinned dashboard war when building CodeReady Workspaces.
 
@@ -14,36 +15,37 @@ See also https://github.com/redhat-developer/codeready-workspaces/blob/master/Je
 /* dashboard background color */
 .left-sidebar-container md-toolbar
 {
-	background-color: #aeaeae; 
+	background-color: #aeaeae;
 	border-right: 1px solid #171717;
 }
 
-./* dashboard text labels */
+/* dashboard text labels */
 .admin-navbar-menu .navbar-header, .admin-navbar-menu .navbar-identity, .admin-navbar-menu section a.md-button span, .navbar-submenu-content a.md-button span
 {
-	background-color: #626262;
+	color: #626262;
 }
 
 /* active selected dashboard item */
 .admin-navbar-menu md-list-item a.md-button.che-navbar-selected .navbar-icon, .admin-navbar-menu md-list-item a.md-button.che-navbar-selected span 
 { 
-	background-color: #626262;
+	color: #626262;
 }
 
 /* headers */
 .admin-navbar-menu .navbar-section.navbar-section-title {
     color: #171717;
 }
+
 /* dashboard icons */
 .admin-navbar-menu section a.md-button .navbar-icon, .navbar-submenu-content a.md-button .navbar-icon
 {
-	background-color: #626262;
+	color: #626262;
 }
 
 /* number of workspaces */
 .admin-navbar-menu md-list-item a.md-button span.navbar-number 
 {
-	background-color: #626262;
+	color: #626262;
 }
 
 /* blue cross (plus / add wksp) */
@@ -57,4 +59,4 @@ See also https://github.com/redhat-developer/codeready-workspaces/blob/master/Je
 {
 	color: #626262;
 }
-/* see also che/dashboard/src/app/navbar/navbar-theme.styl for example,$navbar-backgroud-color = #282E44 */
+

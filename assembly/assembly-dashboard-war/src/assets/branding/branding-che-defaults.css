@@ -3,6 +3,13 @@
 This file contains the default branding in Eclipse Che.
 See branding-crw.css for the overrides to be applied for CodeReady Workspaces.
 
+Copy this file to https://github.com/eclipse/che/blob/master/dashboard/src/assets/branding/branding.css
+before building Che, apply these changes to the dashboard war.
+
+
+There's also https://github.com/eclipse/che/blob/master/dashboard/src/app/navbar/navbar-theme.styl 
+with parameterized color vars, such as $navbar-background-color = #282E44 
+
 */
 
 /* dashboard background color */
@@ -12,7 +19,7 @@ See branding-crw.css for the overrides to be applied for CodeReady Workspaces.
 	border-right: 1px solid #000;
 }
 
-./* dashboard text labels */
+/* dashboard text labels */
 .admin-navbar-menu .navbar-header, .admin-navbar-menu .navbar-identity, .admin-navbar-menu section a.md-button span, .navbar-submenu-content a.md-button span
 {
 	background-color: #d3d3d3;
@@ -28,6 +35,7 @@ See branding-crw.css for the overrides to be applied for CodeReady Workspaces.
 .admin-navbar-menu .navbar-section.navbar-section-title {
     color: #62687c;
 }
+
 /* dashboard icons */
 .admin-navbar-menu section a.md-button .navbar-icon, .navbar-submenu-content a.md-button .navbar-icon
 {
@@ -51,4 +59,4 @@ See branding-crw.css for the overrides to be applied for CodeReady Workspaces.
 {
 	color: #808b9c;
 }
-/* see also che/dashboard/src/app/navbar/navbar-theme.styl for example,$navbar-backgroud-color = #282E44 */
+
