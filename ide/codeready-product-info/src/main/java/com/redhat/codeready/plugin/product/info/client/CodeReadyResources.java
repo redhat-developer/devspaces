@@ -15,9 +15,9 @@ import org.vectomatic.dom.svg.ui.SVGResource;
 
 /** Hosted extension resources. */
 public interface CodeReadyResources extends ClientBundle {
-  @Source("logo/rhd-logo-buildinfo.svg")
+  @Source("logo/CRW_logo-buildinfo.svg")
   SVGResource logo();
 
-  @Source("logo/rhd-logo.svg")
+  @Source("logo/CodeReady_icon.svg")
   SVGResource waterMarkLogo();
 }
