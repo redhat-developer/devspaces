@@ -197,13 +197,23 @@ timeout(120) {
 	node("${node}"){ stage "Build ${CRW_path}"
 		cleanWs()
 		// for private repo, use checkout(credentialsId: 'devstudio-release')
-		checkout([$class: 'GitSCM', 
-			branches: [[name: "${branchToBuildCRW}"]], 
-			doGenerateSubmoduleConfigurations: false, 
-			poll: true,
-			extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: "${CRW_path}"]], 
-			submoduleCfg: [], 
-			userRemoteConfigs: [[url: "https://github.com/redhat-developer/${CRW_path}.git"]]])
+		if (ghprbPullId?.trim()) { 
+			checkout([$class: 'GitSCM', 
+				branches: [[name: "FETCH_HEAD"]], 
+				doGenerateSubmoduleConfigurations: false, 
+				poll: true,
+				extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: "${CRW_path}"], [$class: 'LocalBranch']], 
+				submoduleCfg: [], 
+				userRemoteConfigs: [[refspec: "+refs/pull/${ghprbPullId}/head:refs/remotes/origin/PR-${ghprbPullId}", url: "https://github.com/redhat-developer/${CRW_path}.git"]]])
+		} else {
+			checkout([$class: 'GitSCM', 
+				branches: [[name: "${branchToBuildCRW}"]], 
+				doGenerateSubmoduleConfigurations: false, 
+				poll: true,
+				extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: "${CRW_path}"]], 
+				submoduleCfg: [], 
+				userRemoteConfigs: [[url: "https://github.com/redhat-developer/${CRW_path}.git"]]])
+		}
 		unstash 'stashChe'
 		buildMaven()
 
@@ -224,7 +234,7 @@ timeout(120) {
 
 		echo "[INFO] Built ${CRW_path} :: ${CRW_SHAs}"
 
-		def descriptString=("${SCRATCH}"=="true"?"Scratch ":"") + "Build #${BUILD_NUMBER} (${BUILD_TIMESTAMP}) <br/>\
+		def descriptString=(ghprbPullId?.trim()?"PR-${ghprbPullId}":("${SCRATCH}"=="true"?"Scratch ":"")) + "Build #${BUILD_NUMBER} (${BUILD_TIMESTAMP}) <br/>\
  :: ${DEV_path} @ ${SHA_DEV} (${VER_DEV}) <br/>\
  :: ${PAR_path} @ ${SHA_PAR} (${VER_PAR}) <br/>\
  :: ${LIB_path} @ ${SHA_LIB} (${VER_LIB}) <br/>\
@@ -238,12 +248,13 @@ timeout(120) {
 
 timeout(120) {
 	node("${node}"){ stage "Run get-sources-rhpkg-container-build"
-		def QUAY_REPO_PATHs=("${SCRATCH}"=="true"?"":"server-container")
+		def QUAY_REPO_PATHs=(ghprbPullId?.trim()?"":("${SCRATCH}"=="true"?"":"server-container"))
 
 		def matcher = ( "${JOB_NAME}" =~ /.*_(stable-branch|master).*/ )
 		def JOB_BRANCH= (matcher.matches() ? matcher[0][1] : "master")
 
-		echo "[INFO] Trigger get-sources-rhpkg-container-build with SCRATCH = ${SCRATCH}, QUAY_REPO_PATHs = ${QUAY_REPO_PATHs}, JOB_BRANCH = ${JOB_BRANCH}"
+		echo "[INFO] Trigger get-sources-rhpkg-container-build " + (ghprbPullId?.trim()?"for PR ${ghprbPullId} ":"") + \
+		"with SCRATCH = ${SCRATCH}, QUAY_REPO_PATHs = ${QUAY_REPO_PATHs}, JOB_BRANCH = ${JOB_BRANCH}"
 
 		// trigger OSBS build
 		build(

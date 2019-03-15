@@ -126,7 +126,7 @@ timeout(120) {
 		sh "perl -0777 -p -i -e 's|(\\ +<parent>.*?<\\/parent>)| ${1} =~ /<version>/?\"\":${1}|gse' ${LSJ_path}/pom.xml"
 		VER_LSJ = sh(returnStdout:true,script:"egrep \"<version>\" ${LSJ_path}/pom.xml|head -1|sed -e \"s#.*<version>\\(.\\+\\)</version>#\\1#\"").trim()
 		SHA_LSJ = sh(returnStdout:true,script:"cd ${LSJ_path}/ && git rev-parse --short=4 HEAD").trim()
-		echo "Built ${LSJ_path} from SHA: ${SHA_LSJ} (${VER_LSJ})"
+		echo "[INFO] Built ${LSJ_path} :: ${SHA_LSJ} (${VER_LSJ})"
 	}
 }
 
@@ -169,7 +169,7 @@ timeout(180) {
 :: ${LIB_path} @ ${SHA_LIB} (${VER_LIB}) \
 :: ${LSJ_path} @ ${SHA_LSJ} (${VER_LSJ}) \
 :: ${CHE_path} @ ${SHA_CHE} (${VER_CHE})"
-		echo "CRW_SHAs = ${CRW_SHAs}"
+		// echo "CRW_SHAs = ${CRW_SHAs}"
 
 		// insert a longer version string which includes both CRW and Che, plus build and SHA info
 		sh "sed -i -e \"s#\\(.\\+productVersion = \\).\\+#\\1'${CRW_SHAs}';#g\" che/dashboard/src/components/branding/che-branding.factory.ts"
@@ -186,7 +186,7 @@ timeout(180) {
 		stash name: 'stashChe', includes: findFiles(glob: '.repository/**').join(", ")
 		archiveArtifacts fingerprint: false, artifacts:"**/*.log, **/${CHE_path}/pom.xml, **/${CHE_path}/assembly/assembly-main/pom.xml, **/${CHE_path}/assembly/assembly-main/src/assembly/assembly.xml"
 
-		echo "Built ${CHE_path} from SHA: ${SHA_CHE} (${VER_CHE})"
+		echo "[INFO] Built ${CHE_path} :: ${CRW_SHAs}"
 	}
 }
 
@@ -217,12 +217,12 @@ timeout(120) {
 :: ${LSJ_path} @ ${SHA_LSJ} (${VER_LSJ}) \
 :: ${CHE_path} @ ${SHA_CHE} (${VER_CHE}) \
 :: ${CRW_path} @ ${SHA_CRW} (${VER_CRW})"
-		echo "CRW_SHAs = ${CRW_SHAs}"
+		// echo "CRW_SHAs = ${CRW_SHAs}"
 
 		sh "mvn clean install ${MVN_FLAGS} -f ${CRW_path}/pom.xml -Dcrw.dashboard.version=\"${CRW_SHAs}\" ${MVN_EXTRA_FLAGS}"
 		archiveArtifacts fingerprint: true, artifacts:"${CRW_path}/assembly/${CRW_path}-assembly-main/target/*.tar.*"
 
-		echo "Built ${CRW_path} from SHA: ${SHA_CRW} (${VER_CRW})"
+		echo "[INFO] Built ${CRW_path} :: ${CRW_SHAs}"
 
 		def descriptString="Build #${BUILD_NUMBER} (${BUILD_TIMESTAMP}) <br/>\
  :: ${DEV_path} @ ${SHA_DEV} (${VER_DEV}) <br/>\
