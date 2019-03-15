@@ -224,7 +224,7 @@ timeout(120) {
 
 		echo "Built ${CRW_path} from SHA: ${SHA_CRW} (${VER_CRW})"
 
-		def descriptString="Build #${BUILD_NUMBER} (${BUILD_TIMESTAMP}) <br/>\
+		def descriptString=("${SCRATCH}"=="true"?"Scratch ":"") + "Build #${BUILD_NUMBER} (${BUILD_TIMESTAMP}) <br/>\
  :: ${DEV_path} @ ${SHA_DEV} (${VER_DEV}) <br/>\
  :: ${PAR_path} @ ${SHA_PAR} (${VER_PAR}) <br/>\
  :: ${LIB_path} @ ${SHA_LIB} (${VER_LIB}) <br/>\
