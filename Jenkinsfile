@@ -197,7 +197,9 @@ timeout(120) {
 	node("${node}"){ stage "Build ${CRW_path}"
 		cleanWs()
 		// for private repo, use checkout(credentialsId: 'devstudio-release')
-		if (ghprbPullId?.trim()) { 
+		echo "env.ghprbPullId = ${env.ghprbPullId}"
+		echo "ghprbPullId = ${ghprbPullId}"
+		if (env.ghprbPullId && env.ghprbPullId?.trim()) { 
 			checkout([$class: 'GitSCM', 
 				branches: [[name: "FETCH_HEAD"]], 
 				doGenerateSubmoduleConfigurations: false, 
