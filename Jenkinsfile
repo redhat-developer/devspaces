@@ -263,7 +263,7 @@ timeout(120) {
 		def matcher = ( "${JOB_NAME}" =~ /.*_(stable-branch|master).*/ )
 		def JOB_BRANCH= (matcher.matches() ? matcher[0][1] : "stable-branch")
 
-		echo "[INFO] Trigger get-sources-rhpkg-container-build " + (env.ghprbPullId && env.ghprbPullId?.trim()?"for PR-${env.ghprbPullId} ":"") + \
+		echo "[INFO] Trigger get-sources-rhpkg-container-build " + (env.ghprbPullId && env.ghprbPullId?.trim()?"for PR-${ghprbPullId} ":"") + \
 		"with SCRATCH = ${SCRATCH}, QUAY_REPO_PATHs = ${QUAY_REPO_PATHs}, JOB_BRANCH = ${JOB_BRANCH}"
 
 		// trigger OSBS build
