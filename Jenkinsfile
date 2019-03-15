@@ -234,7 +234,17 @@ timeout(120) {
 
 		echo "[INFO] Built ${CRW_path} :: ${CRW_SHAs}"
 
-		def descriptString=(env.ghprbPullId && env.ghprbPullId?.trim()?"PR-${env.ghprbPullId} ":("${SCRATCH}"=="true"?"Scratch ":"Quay ")) + "Build #${BUILD_NUMBER} (${BUILD_TIMESTAMP}) <br/>\
+		def brewwebQuery = \
+			"https://brewweb.engineering.redhat.com/brew/tasks?method=buildContainer&owner=crw-build/codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com&state=all&view=flat&order=-id"
+		def descriptString=(
+			env.ghprbPullId && env.ghprbPullId?.trim()?\
+				"<a href=https://github.com/redhat-developer/${CRW_path}/pull/${env.ghprbPullId}>PR-${env.ghprbPullId}</a> ":\
+				("${SCRATCH}"=="true"?\
+					"<a href=${brewwebQuery}>Scratch</a> ":\
+					"<a href=https://quay.io/repository/crw/server-container?tab=tags>Quay</a> "\
+				)\
+			)\
+			+ "Build #${BUILD_NUMBER} (${BUILD_TIMESTAMP}) <br/>\
  :: ${DEV_path} @ ${SHA_DEV} (${VER_DEV}) <br/>\
  :: ${PAR_path} @ ${SHA_PAR} (${VER_PAR}) <br/>\
  :: ${LIB_path} @ ${SHA_LIB} (${VER_LIB}) <br/>\
