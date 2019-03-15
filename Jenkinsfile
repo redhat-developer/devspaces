@@ -234,7 +234,7 @@ timeout(120) {
 
 		echo "[INFO] Built ${CRW_path} :: ${CRW_SHAs}"
 
-		def descriptString=(env.ghprbPullId && env.ghprbPullId?.trim()?"PR-${ghprbPullId}":("${SCRATCH}"=="true"?"Scratch ":"")) + "Build #${BUILD_NUMBER} (${BUILD_TIMESTAMP}) <br/>\
+		def descriptString=(env.ghprbPullId && env.ghprbPullId?.trim()?"PR-${ghprbPullId} ":("${SCRATCH}"=="true"?"Scratch ":"Quay ")) + "Build #${BUILD_NUMBER} (${BUILD_TIMESTAMP}) <br/>\
  :: ${DEV_path} @ ${SHA_DEV} (${VER_DEV}) <br/>\
  :: ${PAR_path} @ ${SHA_PAR} (${VER_PAR}) <br/>\
  :: ${LIB_path} @ ${SHA_LIB} (${VER_LIB}) <br/>\
