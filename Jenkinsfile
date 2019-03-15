@@ -234,7 +234,7 @@ timeout(120) {
 
 		echo "[INFO] Built ${CRW_path} :: ${CRW_SHAs}"
 
-		def descriptString=(ghprbPullId?.trim()?"PR-${ghprbPullId}":("${SCRATCH}"=="true"?"Scratch ":"")) + "Build #${BUILD_NUMBER} (${BUILD_TIMESTAMP}) <br/>\
+		def descriptString=(env.ghprbPullId && env.ghprbPullId?.trim()?"PR-${ghprbPullId}":("${SCRATCH}"=="true"?"Scratch ":"")) + "Build #${BUILD_NUMBER} (${BUILD_TIMESTAMP}) <br/>\
  :: ${DEV_path} @ ${SHA_DEV} (${VER_DEV}) <br/>\
  :: ${PAR_path} @ ${SHA_PAR} (${VER_PAR}) <br/>\
  :: ${LIB_path} @ ${SHA_LIB} (${VER_LIB}) <br/>\
@@ -248,12 +248,12 @@ timeout(120) {
 
 timeout(120) {
 	node("${node}"){ stage "Run get-sources-rhpkg-container-build"
-		def QUAY_REPO_PATHs=(ghprbPullId?.trim()?"":("${SCRATCH}"=="true"?"":"server-container"))
+		def QUAY_REPO_PATHs=(env.ghprbPullId && env.ghprbPullId?.trim()?"":("${SCRATCH}"=="true"?"":"server-container"))
 
 		def matcher = ( "${JOB_NAME}" =~ /.*_(stable-branch|master).*/ )
-		def JOB_BRANCH= (matcher.matches() ? matcher[0][1] : "master")
+		def JOB_BRANCH= (matcher.matches() ? matcher[0][1] : "stable-branch")
 
-		echo "[INFO] Trigger get-sources-rhpkg-container-build " + (ghprbPullId?.trim()?"for PR ${ghprbPullId} ":"") + \
+		echo "[INFO] Trigger get-sources-rhpkg-container-build " + (env.ghprbPullId && env.ghprbPullId?.trim()?"for PR-${ghprbPullId} ":"") + \
 		"with SCRATCH = ${SCRATCH}, QUAY_REPO_PATHs = ${QUAY_REPO_PATHs}, JOB_BRANCH = ${JOB_BRANCH}"
 
 		// trigger OSBS build
