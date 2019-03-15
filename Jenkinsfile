@@ -197,8 +197,6 @@ timeout(120) {
 	node("${node}"){ stage "Build ${CRW_path}"
 		cleanWs()
 		// for private repo, use checkout(credentialsId: 'devstudio-release')
-		echo "env.ghprbPullId = ${env.ghprbPullId}"
-		echo "ghprbPullId = ${ghprbPullId}"
 		if (env.ghprbPullId && env.ghprbPullId?.trim()) { 
 			checkout([$class: 'GitSCM', 
 				branches: [[name: "FETCH_HEAD"]], 
@@ -206,7 +204,7 @@ timeout(120) {
 				poll: true,
 				extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: "${CRW_path}"], [$class: 'LocalBranch']], 
 				submoduleCfg: [], 
-				userRemoteConfigs: [[refspec: "+refs/pull/${ghprbPullId}/head:refs/remotes/origin/PR-${ghprbPullId}", url: "https://github.com/redhat-developer/${CRW_path}.git"]]])
+				userRemoteConfigs: [[refspec: "+refs/pull/${env.ghprbPullId}/head:refs/remotes/origin/PR-${env.ghprbPullId}", url: "https://github.com/redhat-developer/${CRW_path}.git"]]])
 		} else {
 			checkout([$class: 'GitSCM', 
 				branches: [[name: "${branchToBuildCRW}"]], 
@@ -236,7 +234,7 @@ timeout(120) {
 
 		echo "[INFO] Built ${CRW_path} :: ${CRW_SHAs}"
 
-		def descriptString=(env.ghprbPullId && env.ghprbPullId?.trim()?"PR-${ghprbPullId} ":("${SCRATCH}"=="true"?"Scratch ":"Quay ")) + "Build #${BUILD_NUMBER} (${BUILD_TIMESTAMP}) <br/>\
+		def descriptString=(env.ghprbPullId && env.ghprbPullId?.trim()?"PR-${env.ghprbPullId} ":("${SCRATCH}"=="true"?"Scratch ":"Quay ")) + "Build #${BUILD_NUMBER} (${BUILD_TIMESTAMP}) <br/>\
  :: ${DEV_path} @ ${SHA_DEV} (${VER_DEV}) <br/>\
  :: ${PAR_path} @ ${SHA_PAR} (${VER_PAR}) <br/>\
  :: ${LIB_path} @ ${SHA_LIB} (${VER_LIB}) <br/>\
@@ -255,7 +253,7 @@ timeout(120) {
 		def matcher = ( "${JOB_NAME}" =~ /.*_(stable-branch|master).*/ )
 		def JOB_BRANCH= (matcher.matches() ? matcher[0][1] : "stable-branch")
 
-		echo "[INFO] Trigger get-sources-rhpkg-container-build " + (env.ghprbPullId && env.ghprbPullId?.trim()?"for PR-${ghprbPullId} ":"") + \
+		echo "[INFO] Trigger get-sources-rhpkg-container-build " + (env.ghprbPullId && env.ghprbPullId?.trim()?"for PR-${env.ghprbPullId} ":"") + \
 		"with SCRATCH = ${SCRATCH}, QUAY_REPO_PATHs = ${QUAY_REPO_PATHs}, JOB_BRANCH = ${JOB_BRANCH}"
 
 		// trigger OSBS build
