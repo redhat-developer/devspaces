@@ -257,7 +257,6 @@ public class JavaUserStoryTest extends AbstractUserStoryTest {
     projectExplorer.waitItemIsSelected(pomXmlFilePath);
     projectExplorer.openItemByPath(pomXmlFilePath);
     editor.waitActive();
-    editor.closeAllTabs();
     consoles.selectProcessByTabName("dev-machine");
     consoles.waitExpectedTextIntoConsole("updating projectconfig for /kitchensink-example");
     editor.closeAllTabs();
