@@ -134,7 +134,9 @@ public class RedHatFuseUserStoryTest extends AbstractUserStoryTest {
   }
 
   private void checkCodeValidationFeature() {
-    editor.selectTabByName("Application");
+    editor.closeAllTabs();
+    projectExplorer.openItemByPath(PATH_TO_MAIN_PACKAGE + "/Application.java");
+    editor.waitActive();
     editor.goToPosition(32, 27);
     editor.typeTextIntoEditor("r");
     editor.waitMarkerInPosition(ERROR, 32);

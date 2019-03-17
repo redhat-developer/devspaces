@@ -147,7 +147,9 @@ public class SpringBootUserStoryTest extends AbstractUserStoryTest {
   }
 
   private void checkCodeValidationFeature() {
-    editor.selectTabByName("Greeting");
+    editor.closeAllTabs();
+    projectExplorer.openItemByPath(PATH_TO_MAIN_PACKAGE + "/service/Greeting.java");
+    editor.waitActive();
     editor.goToPosition(34, 17);
     editor.typeTextIntoEditor("p");
     editor.waitMarkerInPosition(ERROR, 34);

@@ -76,7 +76,8 @@ public class JavaUserStoryTest extends AbstractUserStoryTest {
       PROJECT + "/src/main/java/org/jboss/as/quickstarts/kitchensinkjsp/data";
 
   private static final String PATH_TO_CONTROLLER_PACKAGE =
-      PROJECT + "/src/main/java/org/jboss/as/quickstarts/kitchensinkjsp/controller";
+      PROJECT
+          + "/src/main/java/org/jboss/as/quickstarts/kitchensinkjsp/controller/MemberRegistration.java";
 
   private static final String[] REPORT_DEPENDENCY_ANALYSIS = {
     "Report for /projects/kitchensink-example/pom.xml",
@@ -208,6 +209,7 @@ public class JavaUserStoryTest extends AbstractUserStoryTest {
             "getName() : String Member",
             "Name - java.util.jar.Attributes");
 
+    seleniumWebDriverHelper.switchToIdeFrameAndWaitAvailability();
     projectExplorer.scrollAndSelectItem(PROJECT);
     checkGoToDeclarationFeature();
     checkFindUsagesFeature();
@@ -245,7 +247,7 @@ public class JavaUserStoryTest extends AbstractUserStoryTest {
     final String expectedErrorMarkerText =
         "Application dependency commons-fileupload:commons-fileupload-1.3 is vulnerable: CVE-2014-0050 CVE-2016-3092 CVE-2016-1000031 CVE-2013-2186. Recommendation: use version 1.3.3";
 
-    // open file
+    // update file
     seleniumWebDriverHelper.switchToIdeFrameAndWaitAvailability();
     projectExplorer.waitItem(PROJECT);
     String pomFileChangedText =
@@ -253,6 +255,13 @@ public class JavaUserStoryTest extends AbstractUserStoryTest {
     projectServiceClient.updateFile(testWorkspace.getId(), pomXmlFilePath, pomFileChangedText);
     projectExplorer.scrollAndSelectItem(pomXmlFilePath);
     projectExplorer.waitItemIsSelected(pomXmlFilePath);
+    projectExplorer.openItemByPath(pomXmlFilePath);
+    editor.waitActive();
+    consoles.selectProcessByTabName("dev-machine");
+    consoles.waitExpectedTextIntoConsole("updating projectconfig for /kitchensink-example");
+    editor.closeAllTabs();
+
+    // open file
     projectExplorer.openItemByPath(pomXmlFilePath);
     editor.waitTabIsPresent(pomXmlEditorTabTitle, LOADER_TIMEOUT_SEC);
     editor.waitTabSelection(0, pomXmlEditorTabTitle);
@@ -321,8 +330,8 @@ public class JavaUserStoryTest extends AbstractUserStoryTest {
   }
 
   private void checkGoToDeclarationFeature() {
+    projectExplorer.quickRevealToItemWithJavaScript(PATH_TO_CONTROLLER_PACKAGE);
     projectExplorer.openItemByPath(PATH_TO_CONTROLLER_PACKAGE);
-    projectExplorer.openItemByVisibleNameInExplorer("MemberRegistration.java");
     editor.waitActive();
     editor.goToPosition(34, 14);
     editor.typeTextIntoEditor(F4.toString());
