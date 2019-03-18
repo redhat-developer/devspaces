@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012-2017 Red Hat, Inc.
+ * Copyright (c) 2012-2019 Red Hat, Inc.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -14,6 +14,7 @@ import com.google.inject.Singleton;
 import javax.inject.Inject;
 import org.eclipse.che.ide.api.ProductInfoDataProvider;
 import org.eclipse.che.ide.api.ProductInfoDataProviderImpl;
+import org.eclipse.che.ide.api.theme.ThemeAgent;
 import org.vectomatic.dom.svg.ui.SVGResource;
 
 /** Implementation of {@link ProductInfoDataProvider} */
@@ -21,12 +22,14 @@ import org.vectomatic.dom.svg.ui.SVGResource;
 public class CodeReadyProductInfoDataProvider extends ProductInfoDataProviderImpl {
   private final CodeReadyLocalizationConstant locale;
   private final CodeReadyResources resources;
+  private final ThemeAgent themeAgent;
 
   @Inject
   public CodeReadyProductInfoDataProvider(
-      CodeReadyLocalizationConstant locale, CodeReadyResources resources) {
+      CodeReadyLocalizationConstant locale, CodeReadyResources resources, ThemeAgent themeAgent) {
     this.locale = locale;
     this.resources = resources;
+    this.themeAgent = themeAgent;
   }
 
   @Override
@@ -51,7 +54,11 @@ public class CodeReadyProductInfoDataProvider extends ProductInfoDataProviderImp
 
   @Override
   public SVGResource getLogo() {
-    return resources.logo();
+    if (themeAgent.getCurrentThemeId().equals("LightTheme")) {
+      return resources.logoBlack();
+    } else {
+      return resources.logoWhite();
+    }
   }
 
   @Override
