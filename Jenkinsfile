@@ -178,7 +178,7 @@ timeout(180) {
 		sh '''#!/bin/bash -xe
 			rawBranch=${branchToBuildCRW##*/}
 			curl -S -L --create-dirs -o che/dashboard/src/assets/branding/branding.css \
-				https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/${rawBranch}/assembly/assembly-dashboard-war/src/assets/branding/branding-crw.css
+				https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/${rawBranch}/assembly/assembly-dashboard-war/src/main/webapp/assets/branding/branding-crw.css
 			cat che/dashboard/src/assets/branding/branding.css
 		'''
 
