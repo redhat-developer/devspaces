@@ -40,8 +40,30 @@ public class CodeReadyCreateWorkspaceHelper {
   private static final Map<String, String> REGISTRY_ADDRESS_REPLACEMENT =
       new LinkedHashMap<String, String>() {
         {
-          put("registry.access.redhat.com/codeready-workspaces-beta", "quay.io/crw");
-          put("registry.access.redhat.com/codeready-workspaces", "quay.io/crw");
+          put(
+              "registry.access.redhat.com/codeready-workspaces-beta/stacks-java-rhel8",
+              "quay.io/crw/stacks-java-rhel8:1.0-16");
+          put(
+              "registry.access.redhat.com/codeready-workspaces/stacks-cpp",
+              "quay.io/crw/stacks-cpp:1.1-7");
+          put(
+              "registry.access.redhat.com/codeready-workspaces/stacks-dotnet",
+              "quay.io/crw/stacks-dotnet:1.1-4");
+          put(
+              "registry.access.redhat.com/codeready-workspaces/stacks-golang",
+              "quay.io/crw/stacks-golang:1.0-14");
+          put(
+              "registry.access.redhat.com/codeready-workspaces/stacks-java",
+              "quay.io/crw/stacks-java:1.1-6");
+          put(
+              "registry.access.redhat.com/codeready-workspaces/stacks-node",
+              "quay.io/crw/stacks-node:1.0-16");
+          put(
+              "registry.access.redhat.com/codeready-workspaces/stacks-php",
+              "quay.io/crw/stacks-php:1.0-16");
+          put(
+              "registry.access.redhat.com/codeready-workspaces/stacks-python",
+              "quay.io/crw/stacks-python:1.0-14");
         }
       };
 
