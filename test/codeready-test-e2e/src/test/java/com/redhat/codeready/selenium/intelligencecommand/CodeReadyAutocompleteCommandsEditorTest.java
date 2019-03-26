@@ -12,8 +12,13 @@
 package com.redhat.codeready.selenium.intelligencecommand;
 
 import org.eclipse.che.selenium.intelligencecommand.AutocompleteCommandsEditorTest;
+import org.testng.annotations.Test;
 
-/** @author Aleksandr Shmaraev */
+/**
+ * @author Aleksandr Shmaraev
+ *     <p>Note: test are being overrided in class to support proper sequence of tests (issue
+ *     CRW-155).
+ */
 public class CodeReadyAutocompleteCommandsEditorTest extends AutocompleteCommandsEditorTest {
 
   @Override
@@ -47,5 +52,23 @@ public class CodeReadyAutocompleteCommandsEditorTest extends AutocompleteCommand
   protected void typeTextInEditorAndLaunchAutocomplete() {
     commandsEditor.typeTextIntoEditor("server.wsagent");
     commandsEditor.launchAutocompleteAndWaitContainer();
+  }
+
+  @Test(priority = 1)
+  @Override
+  public void checkAutocompleteCommandLine() {
+    super.checkAutocompleteCommandLine();
+  }
+
+  @Test(priority = 2)
+  @Override
+  public void checkAutocompletePreviewUrl() {
+    super.checkAutocompletePreviewUrl();
+  }
+
+  @Test(priority = 3)
+  @Override
+  public void checkAutocompleteAfterSave() {
+    super.checkAutocompleteAfterSave();
   }
 }

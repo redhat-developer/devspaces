@@ -1,4 +1,4 @@
-### What's inside?
+# What's inside?
 
 This repository hosts CodeReady Workspaces assembly that mainly inherits Eclipse Che artifacts and repackages some of them:
 
@@ -12,14 +12,14 @@ Differences as compared to upstream:
 
 NOTE: Dockerfiles in this repo are NOT the ones used to build RHCC container images in OSBS.
 
-### How to Build
+## How to Build
 
-#### Pre-reqs
+### Pre-reqs
 
 JDK 1.8+
 Maven 3.5+
 
-#### Build Assembly
+### Build Assembly
 
 Run the following command in the root of a repository:
 
@@ -86,7 +86,7 @@ See this document for more on how to use those build systems, in order to publis
 
 * https://github.com/redhat-developer/codeready-workspaces-productization/blob/master/devdoc/building/osbs-container-builds.adoc
 
-#### Keeping in sync with upstream
+### Keeping in sync with upstream
 
 The Dockerfile and entrypoint.sh scripts in this repo are copied from link:http://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces/tree/?h=codeready-1.0-rhel-7[upstream repo] into this one using a link:https://codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/CRW_CI/view/Releng/job/crw_sync-pkgs.devel-to-github/[Jenkins job] which adjusts it so it will work locally.
 
@@ -95,3 +95,25 @@ Upstream: http://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces/tree
 Job: https://codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/CRW_CI/view/Releng/job/crw_sync-pkgs.devel-to-github/
 
 Therefore any changes to files in this repo which also exist in upstream will be overwritten. Instead, push your changes into the pkgs.devel repo, and run the job to merge them into this one.
+
+## Branding
+
+To reskin this assembly, you need to edit the following files:
+
+* link:assembly/assembly-dashboard-war/src/main/webapp/assets/branding/branding-crw.css[assembly/assembly-dashboard-war/src/main/webapp/assets/branding/branding-crw.css] - replacement for link:https://github.com/eclipse/che/blob/master/dashboard/src/assets/branding/branding.css[Che default css], copied via link:https://github.com/redhat-developer/codeready-workspaces/blob/master/Jenkinsfile#L177-L183[Jenkinsfile] during Pipeline build
+
+* link:assembly/assembly-dashboard-war/src/main/webapp/assets/branding/product.json.template[assembly/assembly-dashboard-war/src/main/webapp/assets/branding/product.json.template]
+** link:assembly/assembly-dashboard-war/src/main/webapp/assets/branding/CodeReady.ico[assembly/assembly-dashboard-war/src/main/webapp/assets/branding/CodeReady.ico] - browser tab favicon
+** link:assembly/assembly-dashboard-war/src/main/webapp/assets/branding/CRW_wordmark-bold-white.svg[assembly/assembly-dashboard-war/src/main/webapp/assets/branding/CRW_wordmark-bold-white.svg] - top left wordmark
+** link:assembly/assembly-dashboard-war/src/main/webapp/assets/branding/CodeReady_icon_dashboard_footer.svg[assembly/assembly-dashboard-war/src/main/webapp/assets/branding/CodeReady_icon_dashboard_footer.svg] - bottom left icon
+** link:assembly/assembly-dashboard-war/src/main/webapp/assets/branding/CodeReady_icon_loader.svg[assembly/assembly-dashboard-war/src/main/webapp/assets/branding/CodeReady_icon_loader.svg] - dashboard loading animation
+
+* link:ide/codeready-product-info/src/main/java/com/redhat/codeready/plugin/product/info/client/CodeReadyResources.java[ide/codeready-product-info/src/main/java/com/redhat/codeready/plugin/product/info/client/CodeReadyResources.java] - workspace resource loader
+** link:ide/codeready-product-info/src/main/java/com/redhat/codeready/plugin/product/info/client/CodeReadyProductInfoDataProvider.java[ide/codeready-product-info/src/main/java/com/redhat/codeready/plugin/product/info/client/CodeReadyProductInfoDataProvider.java] - theme controller
+** link:ide/codeready-product-info/src/main/resources/com/redhat/codeready/plugin/product/info/client/logo/CRW_logo-buildinfo.svg[ide/codeready-product-info/src/main/resources/com/redhat/codeready/plugin/product/info/client/logo/CRW_logo-buildinfo.svg] - workspace watermark (when no files open)
+** link:ide/codeready-product-info/src/main/resources/com/redhat/codeready/plugin/product/info/client/logo/CRW_logo-buildinfo-white.svg[ide/codeready-product-info/src/main/resources/com/redhat/codeready/plugin/product/info/client/logo/CRW_logo-buildinfo-white.svg] - About dialog image, Dark Theme
+** link:ide/codeready-product-info/src/main/resources/com/redhat/codeready/plugin/product/info/client/logo/CRW_logo-buildinfo-black.svg[ide/codeready-product-info/src/main/resources/com/redhat/codeready/plugin/product/info/client/logo/CRW_logo-buildinfo-black.svg] - About dialog image, Light Theme
+
+See also SVG assets in link:product/branding/[product/branding/] folder.
+
+NOTE: When saving files in Inkscape, make sure you export as *Plain SVG*, then edit the resulting .svg file to remove any `<metadata>...</metadata>` tags and all their contents. You can also remove the `xmlns:rdf` definition. This will ensure the GWT UI will compile correctly. *Inkscape SVG* files will cause compilation errors every time.

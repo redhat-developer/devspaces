@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012-2017 Red Hat, Inc.
+ * Copyright (c) 2012-2019 Red Hat, Inc.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -15,9 +15,12 @@ import org.vectomatic.dom.svg.ui.SVGResource;
 
 /** Hosted extension resources. */
 public interface CodeReadyResources extends ClientBundle {
-  @Source("logo/rhd-logo-buildinfo.svg")
-  SVGResource logo();
+  @Source("logo/CRW_logo-buildinfo-white.svg")
+  SVGResource logoWhite();
 
-  @Source("logo/rhd-logo.svg")
+  @Source("logo/CRW_logo-buildinfo-black.svg")
+  SVGResource logoBlack();
+
+  @Source("logo/CodeReady_icon.svg")
   SVGResource waterMarkLogo();
 }

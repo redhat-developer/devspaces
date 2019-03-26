@@ -12,8 +12,7 @@
 package com.redhat.codeready.selenium.intelligencecommand;
 
 import static org.eclipse.che.selenium.core.constant.TestTimeoutsConstants.ELEMENT_TIMEOUT_SEC;
-import static org.eclipse.che.selenium.core.constant.TestTimeoutsConstants.LOAD_PAGE_TIMEOUT_SEC;
-import static org.eclipse.che.selenium.core.constant.TestTimeoutsConstants.WIDGET_TIMEOUT_SEC;
+import static org.eclipse.che.selenium.core.constant.TestTimeoutsConstants.EXPECTED_MESS_IN_CONSOLE_SEC;
 
 import org.eclipse.che.selenium.intelligencecommand.CheckIntelligenceCommandFromToolbarTest;
 import org.openqa.selenium.By;
@@ -22,15 +21,13 @@ import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.annotations.Test;
 
-/** @author Aleksandr Shmaraev */
+/**
+ * @author Aleksandr Shmaraev
+ *     <p>Note: test are being overrided in class to support proper sequence of tests (issue
+ *     CRW-155).
+ */
 public class CodeReadyCheckIntelligenceCommandFromToolbarTest
     extends CheckIntelligenceCommandFromToolbarTest {
-
-  @Override
-  @Test(priority = 1)
-  public void checkButtonsOnToolbarOnOpenshift() {
-    checkButtonsOnToolbar("Application is not available");
-  }
 
   @Override
   protected void checkButtonsOnToolbar(String expectedText) {
@@ -71,7 +68,7 @@ public class CodeReadyCheckIntelligenceCommandFromToolbarTest
 
   @Override
   protected void waitExpectedTextIntoConsole() {
-    consoles.waitExpectedTextIntoConsole("started in", WIDGET_TIMEOUT_SEC);
+    consoles.waitExpectedTextIntoConsole("started in", EXPECTED_MESS_IN_CONSOLE_SEC);
   }
 
   @Override
@@ -86,7 +83,16 @@ public class CodeReadyCheckIntelligenceCommandFromToolbarTest
   @Override
   protected void checkTestAppByPreviewUrlAndReturnToIde(String currentWindow) {
     String expectedText = "Welcome to JBoss AS 7!";
-    new WebDriverWait(seleniumWebDriver, LOAD_PAGE_TIMEOUT_SEC)
+    new WebDriverWait(seleniumWebDriver, ELEMENT_TIMEOUT_SEC)
+        .until(
+            (ExpectedCondition<Boolean>)
+                driver ->
+                    clickOnPreviewUrlAndCheckTextIsPresentInPageBody(currentWindow, expectedText));
+  }
+
+  @Override
+  protected void checkTestAppByPreviewUrlAndReturnToIde(String currentWindow, String expectedText) {
+    new WebDriverWait(seleniumWebDriver, ELEMENT_TIMEOUT_SEC)
         .until(
             (ExpectedCondition<Boolean>)
                 driver ->
@@ -96,7 +102,7 @@ public class CodeReadyCheckIntelligenceCommandFromToolbarTest
   @Override
   protected void checkTestAppByPreviewButtonAndReturnToIde(String currentWindow) {
     String expectedText = "Welcome to JBoss AS 7!";
-    new WebDriverWait(seleniumWebDriver, LOAD_PAGE_TIMEOUT_SEC)
+    new WebDriverWait(seleniumWebDriver, ELEMENT_TIMEOUT_SEC)
         .until(
             (ExpectedCondition<Boolean>)
                 driver ->
@@ -128,5 +134,17 @@ public class CodeReadyCheckIntelligenceCommandFromToolbarTest
   @Override
   protected String getBodyText() {
     return seleniumWebDriverHelper.waitVisibilityAndGetText(By.tagName("body"));
+  }
+
+  @Test
+  @Override
+  public void launchClonedWepAppTest() {
+    super.launchClonedWepAppTest();
+  }
+
+  @Test(priority = 1)
+  @Override
+  public void checkButtonsOnToolbarOnOpenshift() {
+    checkButtonsOnToolbar("Application is not available");
   }
 }

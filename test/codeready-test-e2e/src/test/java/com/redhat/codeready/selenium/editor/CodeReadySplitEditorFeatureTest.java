@@ -12,8 +12,13 @@
 package com.redhat.codeready.selenium.editor;
 
 import org.eclipse.che.selenium.editor.SplitEditorFeatureTest;
+import org.testng.annotations.Test;
 
-/** @author Aleksandr Shmaraiev */
+/**
+ * @author Aleksandr Shmaraev
+ *     <p>Note: test are being overrided in class to support proper sequence of tests (issue
+ *     CRW-155).
+ */
 public class CodeReadySplitEditorFeatureTest extends SplitEditorFeatureTest {
 
   @Override
@@ -45,5 +50,29 @@ public class CodeReadySplitEditorFeatureTest extends SplitEditorFeatureTest {
   protected void selectSample() {
     String sampleName = "kitchensink-example";
     wizard.selectSample(sampleName);
+  }
+
+  @Test
+  @Override
+  public void checkSplitEditorWindow() {
+    super.checkSplitEditorWindow();
+  }
+
+  @Test(priority = 1)
+  @Override
+  public void checkFocusInCurrentWindow() {
+    super.checkFocusInCurrentWindow();
+  }
+
+  @Test(priority = 2)
+  @Override
+  public void checkRefactoring() {
+    super.checkRefactoring();
+  }
+
+  @Test(priority = 3)
+  @Override
+  public void checkContentAfterRenameFile() {
+    super.checkContentAfterRenameFile();
   }
 }

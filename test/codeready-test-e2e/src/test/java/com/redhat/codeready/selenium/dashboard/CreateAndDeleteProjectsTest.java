@@ -15,7 +15,6 @@ import static org.eclipse.che.commons.lang.NameGenerator.generate;
 import static org.eclipse.che.selenium.pageobject.ProjectExplorer.FolderTypes.PROJECT_FOLDER;
 import static org.eclipse.che.selenium.pageobject.dashboard.NewWorkspace.Stack.JAVA;
 import static org.eclipse.che.selenium.pageobject.dashboard.workspaces.WorkspaceDetails.WorkspaceDetailsTab.PROJECTS;
-import static org.testng.Assert.fail;
 
 import com.google.inject.Inject;
 import org.eclipse.che.selenium.core.SeleniumWebDriver;
@@ -35,7 +34,6 @@ import org.eclipse.che.selenium.pageobject.dashboard.ProjectSourcePage;
 import org.eclipse.che.selenium.pageobject.dashboard.workspaces.WorkspaceDetails;
 import org.eclipse.che.selenium.pageobject.dashboard.workspaces.WorkspaceProjects;
 import org.eclipse.che.selenium.pageobject.dashboard.workspaces.Workspaces;
-import org.openqa.selenium.TimeoutException;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -119,32 +117,27 @@ public class CreateAndDeleteProjectsTest {
     notificationsPopupPanel.waitPopupPanelsAreClosed();
   }
 
-  @Test
+  @Test(priority = 1)
   public void deleteProjectsFromDashboardTest() {
-    // delete projects from workspace details page
-    switchToWindow(dashboardWindow);
+    seleniumWebDriver.switchTo().window(dashboardWindow);
     dashboard.selectWorkspacesItemOnDashboard();
     workspaces.selectWorkspaceItemName(WORKSPACE);
     workspaceDetails.selectTabInWorkspaceMenu(PROJECTS);
     workspaceProjects.waitProjectIsPresent(KITCHENSINK_EXAMPLE);
+    workspaceProjects.waitProjectIsPresent(SECOND_KINTCHENSINK_PROJECT_NAME);
 
-    openProjectSettings(KITCHENSINK_EXAMPLE);
-    workspaceProjects.clickOnDeleteProject();
-    workspaceProjects.clickOnDeleteItInDialogWindow();
-    workspaceProjects.waitProjectIsNotPresent(KITCHENSINK_EXAMPLE);
+    deleteProject(KITCHENSINK_EXAMPLE);
+
     workspaceProjects.waitProjectIsPresent(SECOND_KINTCHENSINK_PROJECT_NAME);
   }
 
-  private void switchToWindow(String windowHandle) {
-    seleniumWebDriver.switchTo().window(windowHandle);
-  }
+  private void deleteProject(String projectName) {
+    workspaceProjects.waitProjectIsPresent(projectName);
 
-  private void openProjectSettings(String projectName) {
-    try {
-      workspaceProjects.openSettingsForProjectByName(projectName);
-    } catch (TimeoutException ex) {
-      // remove try-catch block after issue has been resolved
-      fail("Known random failure https://github.com/eclipse/che/issues/8931");
-    }
+    workspaceProjects.clickOnCheckbox(projectName);
+    workspaceProjects.clickOnDeleteButton();
+    workspaceDetails.clickOnDeleteButtonInDialogWindow();
+
+    workspaceProjects.waitProjectIsNotPresent(projectName);
   }
 }

@@ -10,8 +10,7 @@
 #
 
 # https://access.redhat.com/containers/?tab=tags#/registry.access.redhat.com/redhat-openjdk-18/openjdk18-openshift
-# NOTE: if building locally, you might need to add registry.access.redhat.com/ prefix to the container path & version
-FROM registry.access.redhat.com/redhat-openjdk-18/openjdk18-openshift:1.6-16
+FROM registry.access.redhat.com/redhat-openjdk-18/openjdk18-openshift:1.6-19
 
 ENV SUMMARY="Red Hat CodeReady Workspaces container that provides the Red Hat CodeReady Workspaces (Eclipse Che Server)" \
     DESCRIPTION="Red Hat CodeReady Workspaces container that provides the Red Hat CodeReady Workspaces (Eclipse Che Server)" \
@@ -21,11 +20,11 @@ ENV SUMMARY="Red Hat CodeReady Workspaces container that provides the Red Hat Co
 LABEL summary="$SUMMARY" \
       description="$DESCRIPTION" \
       io.k8s.description="$DESCRIPTION" \
-      io.k8s.display-name="Red Hat CodeReady Workspaces for OpenShift - Che Server" \
+      io.k8s.display-name="Red Hat CodeReady Workspaces - Che Server" \
       io.openshift.tags="$PRODNAME,$COMPNAME" \
       com.redhat.component="$PRODNAME-$COMPNAME" \
       name="$PRODNAME/$COMPNAME" \
-      version="1.0" \
+      version="1.1" \
       license="EPLv2" \
       maintainer="Nick Boldt <nboldt@redhat.com>" \
       io.openshift.expose-services="" \
