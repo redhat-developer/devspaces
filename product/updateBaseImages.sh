@@ -44,20 +44,42 @@ for d in $(find ${WORKDIR} -maxdepth ${maxdepth} -name Dockerfile | sort); do
 				echo "# $QUERY|grep \"^-\"|egrep -v \"\\\"|latest\"|sort -V|tail -5"
 				FROMPREFIX=$(echo $URL | sed -e "s#.\+registry.access.redhat.com/##g")
 				LATESTTAG=$(${QUERY} 2>/dev/null|grep "^-"|egrep -v "\"|latest"|sed -e "s#^-##" -e "s#[\n\r\ ]\+##g"|sort -V|tail -1)
-				echo "+ ${FROMPREFIX}:${LATESTTAG}"
+				LATE_TAGver=${LATESTTAG%%-*} # 1.0
+				LATE_TAGrev=${LATESTTAG##*-} # 15.1553789946 or 15
+				LATE_TAGrevbase=${LATE_TAGrev%%.*} # 15
+				LATE_TAGrevsuf=${LATE_TAGrev##*.} # 1553789946 or 15
+				#echo "[DEBUG] LATE_TAGver=$LATE_TAGver; LATE_TAGrev=$LATE_TAGrev; LATE_TAGrevbase=$LATE_TAGrevbase; LATE_TAGrevsuf=$LATE_TAGrevsuf"
+				echo "+ ${FROMPREFIX}:${LATESTTAG}" # jboss-eap-7/eap72-openshift:1.0-15
 			elif [[ $URL ]] && [[ $URL == "${FROMPREFIX}:"* ]]; then
-				if [[ ${LATESTTAG} ]] && [[ "${URL}" != "${FROMPREFIX}:${LATESTTAG}" ]]; then # fix the Dockerfile
-					echo "- ${URL}"
-					echo "++ $d "
-					sed -i -e "s#${URL}#${FROMPREFIX}:${LATESTTAG}#g" $d
+				if [[ ${LATESTTAG} ]]; then
+					# CRW-205 Support using unpublished freshmaker builds
+					# Do not replace 1.0-15.1553789946 with "newer" 1.0-15; instead, keep 1.0-15.1553789946 version
+					# URL = jboss-eap-7/eap72-openshift:1.0-15.1553789946
+					CURR_TAGver=${URL##*:}; CURR_TAGver=${CURR_TAGver%%-*} # 1.0
+					CURR_TAGrev=${URL##*-} # 15.1553789946 or 15
+					CURR_TAGrevbase=${CURR_TAGrev%%.*} # 15
+					CURR_TAGrevsuf=${CURR_TAGrev##*.} # 1553789946 or 15
+					#echo "[DEBUG] CURR_TAGver=$CURR_TAGver; CURR_TAGrev=$CURR_TAGrev; CURR_TAGrevbase=$CURR_TAGrevbase; CURR_TAGrevsuf=$CURR_TAGrevsuf"; echo "LATE_TAGver=$LATE_TAGver; LATE_TAGrev=$LATE_TAGrev; LATE_TAGrevbase=$LATE_TAGrevbase; LATE_TAGrevsuf=$LATE_TAGrevsuf"
 
-					# commit change and push it
-					if [[ -d ${d%%/Dockerfile} ]]; then pushd ${d%%/Dockerfile} >/dev/null; pushedIn=1; fi
-					git commit -s -m "[base] Update from ${URL} to ${FROMPREFIX}:${LATESTTAG}" Dockerfile && git push origin ${BRANCH}
-					echo "# ${buildCommand} &"
-					${buildCommand} &
-					if [[ ${pushedIn} -eq 1 ]]; then popd >/dev/null; pushedIn=0; fi
-					fixedFiles="${fixedFiles} $d"
+					if [[ ${LATE_TAGrevsuf} != ${CURR_TAGrevsuf} ]] || [[ "${LATE_TAGver}" != "${CURR_TAGver}" ]] || [[ "${LATE_TAGrevbase}" != "${CURR_TAGrevbase}" ]]; then
+						echo "- ${URL}"
+					fi
+					if [[ "${LATE_TAGver}" != "${CURR_TAGver}" ]] || [[ ${LATE_TAGrevbase} -gt ${CURR_TAGrevbase} ]]; then
+						if [[ ${LATE_TAGrevsuf} -ge ${CURR_TAGrevsuf} ]]; then # fix the Dockerfile
+							echo "++ $d "
+							sed -i -e "s#${URL}#${FROMPREFIX}:${LATESTTAG}#g" $d
+
+							# commit change and push it
+							if [[ -d ${d%%/Dockerfile} ]]; then pushd ${d%%/Dockerfile} >/dev/null; pushedIn=1; fi
+							git commit -s -m "[base] Update from ${URL} to ${FROMPREFIX}:${LATESTTAG}" Dockerfile && git push origin ${BRANCH}
+							echo "# ${buildCommand} &"
+							${buildCommand} &
+							if [[ ${pushedIn} -eq 1 ]]; then popd >/dev/null; pushedIn=0; fi
+							fixedFiles="${fixedFiles} $d"
+						else
+							echo "# No change applied for ${URL} -> ${LATESTTAG}"
+						fi
+					fi
 				fi
 			fi
 		done
