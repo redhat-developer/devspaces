@@ -42,28 +42,28 @@ public class CodeReadyCreateWorkspaceHelper {
         {
           put(
               "registry.access.redhat.com/codeready-workspaces-beta/stacks-java-rhel8",
-              "quay.io/crw/stacks-java-rhel8:1.0-16");
+              "quay.io/crw/stacks-java-rhel8:1.1-1");
           put(
               "registry.access.redhat.com/codeready-workspaces/stacks-cpp",
-              "quay.io/crw/stacks-cpp:1.1-7");
+              "quay.io/crw/stacks-cpp:1.1-9");
           put(
               "registry.access.redhat.com/codeready-workspaces/stacks-dotnet",
-              "quay.io/crw/stacks-dotnet:1.1-4");
+              "quay.io/crw/stacks-dotnet:1.1-5");
           put(
               "registry.access.redhat.com/codeready-workspaces/stacks-golang",
-              "quay.io/crw/stacks-golang:1.0-14");
+              "quay.io/crw/stacks-golang:1.1-1");
           put(
               "registry.access.redhat.com/codeready-workspaces/stacks-java",
-              "quay.io/crw/stacks-java:1.1-6");
+              "quay.io/crw/stacks-java:1.1-11");
           put(
               "registry.access.redhat.com/codeready-workspaces/stacks-node",
-              "quay.io/crw/stacks-node:1.0-16");
+              "quay.io/crw/stacks-node:1.1-8");
           put(
               "registry.access.redhat.com/codeready-workspaces/stacks-php",
-              "quay.io/crw/stacks-php:1.0-16");
+              "quay.io/crw/stacks-php:1.1-1");
           put(
               "registry.access.redhat.com/codeready-workspaces/stacks-python",
-              "quay.io/crw/stacks-python:1.0-14");
+              "quay.io/crw/stacks-python:1.1-3");
         }
       };
 
