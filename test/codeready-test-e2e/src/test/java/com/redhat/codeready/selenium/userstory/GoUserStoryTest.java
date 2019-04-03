@@ -116,7 +116,7 @@ public class GoUserStoryTest extends AbstractUserStoryTest {
     editor.typeTextIntoEditor("p");
     editor.waitMarkerInPosition(ERROR, 1);
     editor.moveToMarkerAndWaitAssistContent(ERROR);
-    editor.waitTextIntoAnnotationAssist("expected 'package', found 'IDENT' ppackage");
+    editor.waitTextIntoAnnotationAssist("expected 'package', found ppackage");
 
     // restore content and check error marker invisibility
     editor.goToCursorPositionVisible(1, 1);
