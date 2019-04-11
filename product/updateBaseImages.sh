@@ -5,6 +5,15 @@
 # 
 # thankfully, the https://registry.access.redhat.com is v2 and does not require authentication to query
 
+if [[ $(docker run docker-ls docker-ls 2>&1) == *"Unable to find image"* ]]; then 
+	echo "Installing docker-ls ..."
+	rm -fr /tmp/docker-ls
+	pushd /tmp >/dev/null
+	git clone -q --depth=1 https://github.com/mayflower/docker-ls && cd docker-ls && docker build -t docker-ls .
+	rm -fr /tmp/docker-ls
+	popd >/dev/null
+fi
+
 WORKDIR=`pwd`
 BRANCH=codeready-1.0-rhel-7 # not master
 maxdepth=2
