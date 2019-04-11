@@ -257,7 +257,6 @@ timeout(120) {
 }
 
 def downstreamJobName = "get-sources-rhpkg-container-build"
-def downstreamJobEnabled = jenkins.model.Jenkins.instance.getItem("${downstreamJobName}").isBuildable();
 timeout(120) {
 	node("${node}"){ stage "Run ${downstreamJobName} if enabled"
 		def QUAY_REPO_PATHs=(env.ghprbPullId && env.ghprbPullId?.trim()?"":("${SCRATCH}"=="true"?"":"server-container"))
@@ -266,57 +265,48 @@ timeout(120) {
 		def JOB_BRANCH= (matcher.matches() ? matcher[0][1] : "stable-branch")
 
 		script {
-			if (downstreamJobEnabled)
+			try
 			{
-				try
-				{
-					echo "[INFO] Trigger job ${downstreamJobName} " + (env.ghprbPullId && env.ghprbPullId?.trim()?"for PR-${ghprbPullId} ":"") + \
-					"with SCRATCH = ${SCRATCH}, QUAY_REPO_PATHs = ${QUAY_REPO_PATHs}, JOB_BRANCH = ${JOB_BRANCH}"
+				echo "[INFO] Trigger job <a href=${downstreamJobName}>downstreamJobName</a> " + (env.ghprbPullId && env.ghprbPullId?.trim()?"for PR-${ghprbPullId} ":"") + \
+				"with SCRATCH = ${SCRATCH}, QUAY_REPO_PATHs = ${QUAY_REPO_PATHs}, JOB_BRANCH = ${JOB_BRANCH}"
 
-					// trigger OSBS build
-					build(
-					  job: "${downstreamJobName}",
-					  wait: false,
-					  propagate: false,
-					  parameters: [
-						[
-						  $class: 'StringParameterValue',
-						  name: 'GIT_PATH',
-						  value: "containers/codeready-workspaces",
-						],
-						[
-						  $class: 'StringParameterValue',
-						  name: 'GIT_BRANCH',
-						  value: "codeready-1.0-rhel-7",
-						],
-						[
-						  $class: 'StringParameterValue',
-						  name: 'QUAY_REPO_PATHs',
-						  value: "${QUAY_REPO_PATHs}",
-						],
-						[
-						  $class: 'StringParameterValue',
-						  name: 'SCRATCH',
-						  value: "${SCRATCH}",
-						],
-						[
-						  $class: 'StringParameterValue',
-						  name: 'JOB_BRANCH',
-						  value: "${JOB_BRANCH}",
-						]
-					  ]
-					)
-				}
-				catch (exc) 
-				{
-					echo "[ERROR] Unable to trigger job ${downstreamJobName}! Is the job enabled?"
-					currentBuild.rawBuild.@result = hudson.model.Result.FAILURE
-				}
+				// trigger OSBS build
+				build(
+				  job: "${downstreamJobName}",
+				  wait: false,
+				  propagate: false,
+				  parameters: [
+					[
+					  $class: 'StringParameterValue',
+					  name: 'GIT_PATH',
+					  value: "containers/codeready-workspaces",
+					],
+					[
+					  $class: 'StringParameterValue',
+					  name: 'GIT_BRANCH',
+					  value: "codeready-1.0-rhel-7",
+					],
+					[
+					  $class: 'StringParameterValue',
+					  name: 'QUAY_REPO_PATHs',
+					  value: "${QUAY_REPO_PATHs}",
+					],
+					[
+					  $class: 'StringParameterValue',
+					  name: 'SCRATCH',
+					  value: "${SCRATCH}",
+					],
+					[
+					  $class: 'StringParameterValue',
+					  name: 'JOB_BRANCH',
+					  value: "${JOB_BRANCH}",
+					]
+				  ]
+				)
 			}
-			else
+			catch (exc) 
 			{
-				echo "[WARNING] Unable to trigger job ${downstreamJobName} - job is not enabled."
-				currentBuild.rawBuild.@result = hudson.model.Result.UNSTABLE
+				echo "[ERROR] Unable to trigger job ${downstreamJobName}! Is the job <a href=${downstreamJobName}>downstreamJobName</a> enabled?"
 			}
 		}
 	}
