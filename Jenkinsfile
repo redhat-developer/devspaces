@@ -6,10 +6,10 @@
 // branchToBuildDev = refs/tags/20
 // branchToBuildParent = refs/tags/6.19.0
 // branchToBuildLib = refs/tags/6.19.0
-// branchToBuildChe = refs/tags/6.19.0 or */*/6.19.x or */master
+// branchToBuildChe = refs/tags/6.19.3 or */*/6.19.x or */master
 // branchToBuildLSJ = refs/tags/0.0.3 or */master or a SHA like 095d753f42dad32c47b1e9ae46a71bf424e98e7e
 // branchToBuildCRW = */6.19.x or */master
-// CRWVersion = 1.1.0.GA (Eclipse Che 6.19.0)
+// CRWVersion = 1.3.0.GA (Eclipse Che 6.19.3)
 // // MVN_EXTRA_FLAGS = extra flags, such as to disable a module -pl '!org.eclipse.che.selenium:che-selenium-test'
 
 def installNPM(){

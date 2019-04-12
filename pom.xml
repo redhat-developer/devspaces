@@ -23,7 +23,7 @@
     </parent>
     <groupId>com.redhat</groupId>
     <artifactId>codeready</artifactId>
-    <version>1.2.0.GA</version>
+    <version>1.3.0.GA</version>
     <packaging>pom</packaging>
     <name>CodeReady :: Parent</name>
     <url>https://developers.redhat.com/products/codeready-workspaces/overview/</url>
@@ -37,8 +37,8 @@
     <properties>
         <che.version>6.19.3</che.version>
         <che.dashboard.version>${che.version}</che.dashboard.version>
-        <crw.version>1.2.0.GA</crw.version>
-        <crw.docs.version>1.2</crw.docs.version>
+        <crw.version>1.3.0.GA</crw.version>
+        <crw.docs.version>1.3</crw.docs.version>
         <crw.dashboard.version>${crw.version} (Eclipse Che ${che.version})</crw.dashboard.version>
         <nightly>false</nightly>
     </properties>
