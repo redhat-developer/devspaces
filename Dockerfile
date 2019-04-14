@@ -12,15 +12,15 @@
 # https://access.redhat.com/containers/?tab=tags#/registry.access.redhat.com/redhat-openjdk-18/openjdk18-openshift
 FROM registry.access.redhat.com/redhat-openjdk-18/openjdk18-openshift:1.6-19.1553789890
 
-ENV SUMMARY="Red Hat CodeReady Workspaces container that provides the Red Hat CodeReady Workspaces (Eclipse Che Server)" \
-    DESCRIPTION="Red Hat CodeReady Workspaces container that provides the Red Hat CodeReady Workspaces (Eclipse Che Server)" \
+ENV SUMMARY="Red Hat CodeReady Workspaces Server container" \
+    DESCRIPTION="Red Hat CodeReady Workspaces server container" \
     PRODNAME="codeready-workspaces" \
     COMPNAME="server-container"
 
 LABEL summary="$SUMMARY" \
       description="$DESCRIPTION" \
       io.k8s.description="$DESCRIPTION" \
-      io.k8s.display-name="Red Hat CodeReady Workspaces - Che Server" \
+      io.k8s.display-name="$DESCRIPTION" \
       io.openshift.tags="$PRODNAME,$COMPNAME" \
       com.redhat.component="$PRODNAME-$COMPNAME" \
       name="$PRODNAME/$COMPNAME" \
@@ -48,6 +48,9 @@ RUN tar xzf /tmp/codeready-workspaces-assembly-main.tar.gz --strip-components=1 
     mkdir -p /logs /data && \
     chgrp -R 0     /home/jboss /data /logs && \
     chmod -R g+rwX /home/jboss /data /logs && \
+    # CVE fix for RHSA-2019:0679-02 https://pipeline.engineering.redhat.com/freshmakerevent/8717
+    # CVE-2019-9636 errata 40636 - update python and python-libs to 2.7.5-77.el7_6
+    yum update -y libssh2 python-libs python && \
     yum list installed && echo "End Of Installed Packages"
 
 USER jboss
