@@ -97,5 +97,6 @@ for URLfrag in $CONTAINERS; do
 			echo "${REGISTRY##*://}/${URLfrag}:${LATESTTAG}"
 		fi
 	done
+	if [[ $NUMTAGS -gt 1 ]]; then echo ""; fi
 done
 echo ""
