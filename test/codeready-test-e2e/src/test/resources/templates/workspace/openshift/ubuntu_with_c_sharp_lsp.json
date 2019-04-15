@@ -29,7 +29,7 @@
         }
       },
       "recipe": {
-        "content": "quay.io/crw/stacks-dotnet:1.1-5",
+        "content": "registry.access.redhat.com/codeready-workspaces/stacks-dotnet",
         "type": "dockerimage"
       }
     }
