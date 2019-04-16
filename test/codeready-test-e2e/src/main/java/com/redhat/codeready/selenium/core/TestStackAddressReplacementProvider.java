@@ -12,6 +12,7 @@
 package com.redhat.codeready.selenium.core;
 
 import static com.google.common.base.Charsets.UTF_8;
+import static java.lang.String.format;
 
 import com.google.gson.reflect.TypeToken;
 import com.google.inject.Inject;
@@ -28,6 +29,8 @@ import org.apache.commons.lang.StringUtils;
 import org.eclipse.che.commons.annotation.Nullable;
 import org.eclipse.che.commons.json.JsonHelper;
 import org.eclipse.che.commons.json.JsonParseException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Provider of Map[stack-image-address-prefix -> new-stack-image-address].
@@ -42,6 +45,9 @@ import org.eclipse.che.commons.json.JsonParseException;
  */
 @Singleton
 public class TestStackAddressReplacementProvider implements Provider<Map<String, String>> {
+  private static final Logger LOG =
+      LoggerFactory.getLogger(TestStackAddressReplacementProvider.class);
+
   private static final String DEFAULT_JAVA_STACK_ADDRESS =
       "registry.access.redhat.com/codeready-workspaces/stacks-java";
 
@@ -89,6 +95,11 @@ public class TestStackAddressReplacementProvider implements Provider<Map<String,
       return JsonHelper.fromJson(
           json, Map.class, new TypeToken<Map<String, String>>() {}.getType());
     } catch (IOException | JsonParseException ex) {
+      LOG.warn(
+          format(
+              "Can't read stack address replacement config file '%s' because of error '%s'.",
+              stackReplacementConfigFile, ex.getMessage()),
+          ex);
       return Collections.emptyMap();
     }
   }
