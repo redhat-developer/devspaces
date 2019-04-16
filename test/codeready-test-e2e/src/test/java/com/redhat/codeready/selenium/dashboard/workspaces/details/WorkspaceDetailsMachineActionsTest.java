@@ -24,7 +24,7 @@ import static org.openqa.selenium.Keys.ARROW_UP;
 import static org.openqa.selenium.Keys.ESCAPE;
 
 import com.google.inject.Inject;
-import com.redhat.codeready.selenium.core.TestStackAddressReplacementProvider;
+import com.redhat.codeready.selenium.core.provider.TestStackAddressReplacementProvider;
 import org.eclipse.che.selenium.core.SeleniumWebDriver;
 import org.eclipse.che.selenium.core.webdriver.SeleniumWebDriverHelper;
 import org.eclipse.che.selenium.core.workspace.TestWorkspace;

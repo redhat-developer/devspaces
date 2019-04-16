@@ -15,7 +15,7 @@ import static java.lang.String.format;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import com.redhat.codeready.selenium.core.TestStackAddressReplacementProvider;
+import com.redhat.codeready.selenium.core.provider.TestStackAddressReplacementProvider;
 import java.util.Optional;
 import org.eclipse.che.api.workspace.shared.dto.EnvironmentDto;
 import org.eclipse.che.api.workspace.shared.dto.WorkspaceConfigDto;

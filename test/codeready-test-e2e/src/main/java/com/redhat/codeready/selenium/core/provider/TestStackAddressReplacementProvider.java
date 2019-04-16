@@ -9,7 +9,7 @@
 * Contributors:
 *   Red Hat, Inc. - initial API and implementation
 */
-package com.redhat.codeready.selenium.core;
+package com.redhat.codeready.selenium.core.provider;
 
 import static com.google.common.base.Charsets.UTF_8;
 import static java.lang.String.format;
@@ -35,11 +35,18 @@ import org.slf4j.LoggerFactory;
 /**
  * Provider of Map[stack-image-address-prefix -> new-stack-image-address].
  *
- * <p>Map has been stored in json file, path to which is read from environment variable
- * "STACK_REPLACEMENT_CONFIG_FILE" with content like the follow: {
- * "registry.access.redhat.com/codeready-workspaces-beta/stacks-java-rhel8":
- * "quay.io/crw/stacks-java-rhel8:1.1-1",
- * "registry.access.redhat.com/codeready-workspaces/stacks-cpp": "quay.io/crw/stacks-cpp:1.1-9" }
+ * <p>To use container path overrides, export this environment variable
+ * <b>STACK_REPLACEMENT_CONFIG_FILE</b>, which should point to a json file with a map of overrides
+ * for the default containers.
+ *
+ * <p>Example of map to quay.io latest tags could be found in here:
+ * test/resources/conf/stack-replacement-quay-latest.json.
+ *
+ * <p>It could be defined as following:
+ *
+ * <p><code>
+ * export STACK_REPLACEMENT_CONFIG_FILE=test/resources/conf/stack-replacement-quay-latest.json
+ * </code>
  *
  * @author Dmytro Nochevnov
  */
@@ -100,6 +107,7 @@ public class TestStackAddressReplacementProvider implements Provider<Map<String,
               "Can't read stack address replacement config file '%s' because of error '%s'.",
               stackReplacementConfigFile, ex.getMessage()),
           ex);
+
       return Collections.emptyMap();
     }
   }

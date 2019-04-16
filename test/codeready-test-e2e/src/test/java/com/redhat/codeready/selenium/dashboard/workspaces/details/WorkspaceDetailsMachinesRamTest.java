@@ -17,7 +17,7 @@ import static org.eclipse.che.selenium.pageobject.dashboard.workspaces.Workspace
 import static org.eclipse.che.selenium.pageobject.dashboard.workspaces.WorkspaceDetails.WorkspaceDetailsTab.MACHINES;
 
 import com.google.inject.Inject;
-import com.redhat.codeready.selenium.core.TestStackAddressReplacementProvider;
+import com.redhat.codeready.selenium.core.provider.TestStackAddressReplacementProvider;
 import org.eclipse.che.selenium.core.utils.WaitUtils;
 import org.eclipse.che.selenium.core.workspace.TestWorkspace;
 import org.eclipse.che.selenium.pageobject.dashboard.Dashboard;
