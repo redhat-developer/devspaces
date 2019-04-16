@@ -20,7 +20,6 @@ import static org.eclipse.che.selenium.pageobject.dashboard.workspaces.Workspace
 import static org.testng.Assert.fail;
 
 import com.google.inject.Inject;
-import com.redhat.codeready.selenium.core.TestStackAddressReplacementProvider;
 import java.util.List;
 import org.eclipse.che.api.core.model.workspace.Workspace;
 import org.eclipse.che.selenium.core.client.TestWorkspaceServiceClient;
@@ -46,12 +45,17 @@ import org.testng.annotations.Test;
 public class MachinesAsynchronousStartTest {
   private static final String WORKSPACE_NAME = generate("test-workspace", 4);
   private static final String MACHINE_NAME = "dev-machine";
+  private static final String IMAGE_NAME =
+      "registry.access.redhat.com/codeready-workspaces/stacks-java";
   private static final String IMAGE_NAME_SUFFIX = generate("", 4);
+  private static final String NOT_EXISTED_IMAGE_NAME = IMAGE_NAME + IMAGE_NAME_SUFFIX;
   private static final String SUCCESS_NOTIFICATION_TEST = "Workspace updated.";
   private static final String GET_WORKSPACE_EVENTS_COMMAND_TEMPLATE =
       "get event --no-headers=true | grep %s | awk '{print $7 \" \" $8}'";
-  private static final String EXPECTED_ERROR_NOTIFICATION_TEXT_TEMPLATE =
-      "Unrecoverable event occurred: 'Failed', 'Failed to pull image \"%s\": rpc error: code = Unknown desc";
+  private static final String EXPECTED_ERROR_NOTIFICATION_TEXT =
+      format(
+          "Unrecoverable event occurred: 'Failed', 'Failed to pull image \"%s\": rpc error: code = Unknown desc",
+          NOT_EXISTED_IMAGE_NAME);
 
   @Inject private Dashboard dashboard;
   @Inject private Workspaces workspaces;
@@ -65,7 +69,6 @@ public class MachinesAsynchronousStartTest {
   @Inject private WorkspaceDetailsMachines workspaceDetailsMachines;
   @Inject private EditMachineForm editMachineForm;
   @Inject private SeleniumWebDriverHelper seleniumWebDriverHelper;
-  @Inject private TestStackAddressReplacementProvider testStackAddressReplacementProvider;
 
   private Workspace brokenWorkspace;
 
@@ -97,16 +100,13 @@ public class MachinesAsynchronousStartTest {
     editMachineForm.waitRecipeCursorVisibility();
     seleniumWebDriverHelper.sendKeys(Keys.END.toString());
     seleniumWebDriverHelper.sendKeys(IMAGE_NAME_SUFFIX);
-    editMachineForm.waitRecipeText(
-        testStackAddressReplacementProvider.getJavaStackReplacement() + IMAGE_NAME_SUFFIX);
+    editMachineForm.waitRecipeText(NOT_EXISTED_IMAGE_NAME);
     editMachineForm.waitSaveButtonEnabling();
     editMachineForm.clickOnSaveButton();
     editMachineForm.waitFormInvisibility();
 
     // save changes
-    workspaceDetailsMachines.waitImageNameInMachineListItem(
-        MACHINE_NAME,
-        testStackAddressReplacementProvider.getJavaStackReplacement() + IMAGE_NAME_SUFFIX);
+    workspaceDetailsMachines.waitImageNameInMachineListItem(MACHINE_NAME, NOT_EXISTED_IMAGE_NAME);
     workspaceDetails.waitAllEnabled(SAVE_BUTTON);
     workspaceDetails.clickOnSaveChangesBtn();
     workspaceDetailsMachines.waitNotificationMessage(SUCCESS_NOTIFICATION_TEST);
@@ -123,10 +123,7 @@ public class MachinesAsynchronousStartTest {
     workspaces.clickOnWorkspaceStopStartButton(WORKSPACE_NAME);
 
     try {
-      workspaces.waitErrorNotificationContainsText(
-          format(
-              EXPECTED_ERROR_NOTIFICATION_TEXT_TEMPLATE,
-              testStackAddressReplacementProvider.getJavaStackReplacement()));
+      workspaces.waitErrorNotificationContainsText(EXPECTED_ERROR_NOTIFICATION_TEXT);
     } catch (TimeoutException ex) {
       // remove try-catch block after issue has been resolved
       fail("Known permanent failure https://github.com/eclipse/che/issues/12419");
