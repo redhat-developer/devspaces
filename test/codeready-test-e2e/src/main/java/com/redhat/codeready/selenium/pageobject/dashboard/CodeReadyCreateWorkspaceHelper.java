@@ -11,14 +11,15 @@
 */
 package com.redhat.codeready.selenium.pageobject.dashboard;
 
+import static java.lang.String.format;
 import static org.eclipse.che.selenium.pageobject.dashboard.workspaces.WorkspaceDetails.ActionButton.SAVE_BUTTON;
 import static org.eclipse.che.selenium.pageobject.dashboard.workspaces.WorkspaceDetails.WorkspaceDetailsTab.MACHINES;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import java.util.LinkedHashMap;
+import com.redhat.codeready.selenium.core.provider.TestStackAddressReplacementProvider;
 import java.util.List;
-import java.util.Map;
+import java.util.Optional;
 import org.eclipse.che.selenium.core.SeleniumWebDriver;
 import org.eclipse.che.selenium.core.user.DefaultTestUser;
 import org.eclipse.che.selenium.core.workspace.TestWorkspace;
@@ -32,40 +33,13 @@ import org.eclipse.che.selenium.pageobject.dashboard.workspaces.WorkspaceDetails
 import org.eclipse.che.selenium.pageobject.dashboard.workspaces.WorkspaceDetailsMachines;
 import org.eclipse.che.selenium.pageobject.dashboard.workspaces.Workspaces;
 import org.openqa.selenium.JavascriptExecutor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /** @author Aleksandr Shmaraiev */
 @Singleton
 public class CodeReadyCreateWorkspaceHelper {
-
-  private static final Map<String, String> REGISTRY_ADDRESS_REPLACEMENT =
-      new LinkedHashMap<String, String>() {
-        {
-          put(
-              "registry.access.redhat.com/codeready-workspaces-beta/stacks-java-rhel8",
-              "quay.io/crw/stacks-java-rhel8:1.1-1");
-          put(
-              "registry.access.redhat.com/codeready-workspaces/stacks-cpp",
-              "quay.io/crw/stacks-cpp:1.1-9");
-          put(
-              "registry.access.redhat.com/codeready-workspaces/stacks-dotnet",
-              "quay.io/crw/stacks-dotnet:1.1-5");
-          put(
-              "registry.access.redhat.com/codeready-workspaces/stacks-golang",
-              "quay.io/crw/stacks-golang:1.1-1");
-          put(
-              "registry.access.redhat.com/codeready-workspaces/stacks-java",
-              "quay.io/crw/stacks-java:1.1-11");
-          put(
-              "registry.access.redhat.com/codeready-workspaces/stacks-node",
-              "quay.io/crw/stacks-node:1.1-8");
-          put(
-              "registry.access.redhat.com/codeready-workspaces/stacks-php",
-              "quay.io/crw/stacks-php:1.1-1");
-          put(
-              "registry.access.redhat.com/codeready-workspaces/stacks-python",
-              "quay.io/crw/stacks-python:1.1-3");
-        }
-      };
+  private static final Logger LOG = LoggerFactory.getLogger(CodeReadyCreateWorkspaceHelper.class);
 
   @Inject private Dashboard dashboard;
   @Inject private Workspaces workspaces;
@@ -79,6 +53,7 @@ public class CodeReadyCreateWorkspaceHelper {
   @Inject private DefaultTestUser defaultTestUser;
   @Inject private TestWorkspaceProvider testWorkspaceProvider;
   @Inject private SeleniumWebDriver seleniumWebDriver;
+  @Inject private TestStackAddressReplacementProvider testStackAddressReplacementProvider;
 
   public TestWorkspace createWsFromStackWithTestProject(
       String workspaceName,
@@ -102,7 +77,7 @@ public class CodeReadyCreateWorkspaceHelper {
       projectSourcePage.clickOnAddProjectButton();
     }
 
-    if (REGISTRY_ADDRESS_REPLACEMENT.isEmpty()) {
+    if (testStackAddressReplacementProvider.get().isEmpty()) {
       codereadyNewWorkspace.clickOnCreateButtonAndOpenInIDE();
 
     } else {
@@ -126,44 +101,39 @@ public class CodeReadyCreateWorkspaceHelper {
     editMachineForm.waitForm();
 
     JavascriptExecutor js = (JavascriptExecutor) seleniumWebDriver;
-    String currentStackImageAddress =
+    String currentStackAddress =
         js.executeScript(
                 "return document.querySelector('.edit-machine-form .CodeMirror').CodeMirror.getValue();")
             .toString();
 
-    boolean isValueFound = false;
+    Optional<String> stackAddressReplacement =
+        testStackAddressReplacementProvider.get(currentStackAddress);
+    if (stackAddressReplacement.isPresent()) {
+      String newStackAddress = stackAddressReplacement.get();
+      js.executeScript(
+          format(
+              "document.querySelector('.edit-machine-form .CodeMirror').CodeMirror.setValue('%s')",
+              newStackAddress));
 
-    for (Map.Entry<String, String> entry : REGISTRY_ADDRESS_REPLACEMENT.entrySet()) {
-      String oldAddressPrefix = entry.getKey();
-      String newAddressPrefix = entry.getValue();
-
-      if (currentStackImageAddress != null
-          && (currentStackImageAddress.startsWith(oldAddressPrefix))) {
-        String newStackImageAddress =
-            currentStackImageAddress.replace(oldAddressPrefix, newAddressPrefix);
-        js.executeScript(
-            String.format(
-                "document.querySelector('.edit-machine-form .CodeMirror').CodeMirror.setValue('%s')",
-                newStackImageAddress));
-
-        // save changes
-        editMachineForm.waitRecipeText(newStackImageAddress);
-        editMachineForm.waitSaveButtonEnabling();
-        editMachineForm.clickOnSaveButton();
-        editMachineForm.waitFormInvisibility();
-        workspaceDetailsMachines.waitImageNameInMachineListItem(machineName, newStackImageAddress);
-        workspaceDetails.waitAllEnabled(SAVE_BUTTON);
-        workspaceDetails.clickOnSaveChangesBtn();
-        workspaceDetailsMachines.waitNotificationMessage(successNotificationText);
-
-        isValueFound = true;
-        break;
-      }
-    }
-
-    if (!isValueFound) {
-      editMachineForm.clickOnCloseIcon();
+      // save changes
+      editMachineForm.waitRecipeText(newStackAddress);
+      editMachineForm.waitSaveButtonEnabling();
+      editMachineForm.clickOnSaveButton();
       editMachineForm.waitFormInvisibility();
+      workspaceDetailsMachines.waitImageNameInMachineListItem(machineName, newStackAddress);
+      workspaceDetails.waitAllEnabled(SAVE_BUTTON);
+      workspaceDetails.clickOnSaveChangesBtn();
+      workspaceDetailsMachines.waitNotificationMessage(successNotificationText);
+
+      LOG.info(
+          format(
+              "Stack address '%s' has been replaced by '%s' in test workspace with name '%s'.",
+              currentStackAddress, newStackAddress, workspaceName));
+
+      return;
     }
+
+    editMachineForm.clickOnCloseIcon();
+    editMachineForm.waitFormInvisibility();
   }
 }

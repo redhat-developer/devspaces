@@ -33,7 +33,7 @@
       },
       "recipe": {
         "type": "dockerimage",
-        "content": "quay.io/crw/stacks-java:1.1-11"
+        "content": "registry.access.redhat.com/codeready-workspaces/stacks-java"
       }
     }
   },
