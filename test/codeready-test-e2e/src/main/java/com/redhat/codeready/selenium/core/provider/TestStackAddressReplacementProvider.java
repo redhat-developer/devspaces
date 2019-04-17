@@ -15,12 +15,11 @@ import static com.google.common.base.Charsets.UTF_8;
 import static java.lang.String.format;
 
 import com.google.gson.reflect.TypeToken;
-import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.google.inject.Singleton;
-import com.google.inject.name.Named;
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
@@ -35,18 +34,10 @@ import org.slf4j.LoggerFactory;
 /**
  * Provider of Map[stack-image-address-prefix -> new-stack-image-address].
  *
- * <p>To use container path overrides, export this environment variable
- * <b>STACK_REPLACEMENT_CONFIG_FILE</b>, which should point to a json file with a map of overrides
- * for the default containers.
+ * <p>Default location of map is "src/test/resources/conf/stack-replacement.json"
  *
  * <p>Example of map to quay.io latest tags could be found in here:
- * test/resources/conf/stack-replacement-quay-latest.json.
- *
- * <p>It could be defined as following:
- *
- * <p><code>
- * export STACK_REPLACEMENT_CONFIG_FILE=test/resources/conf/stack-replacement-quay-latest.json
- * </code>
+ * "src/test/resources/conf/stack-replacement-quay-latest.json."
  *
  * @author Dmytro Nochevnov
  */
@@ -58,11 +49,10 @@ public class TestStackAddressReplacementProvider implements Provider<Map<String,
   private static final String DEFAULT_JAVA_STACK_ADDRESS =
       "registry.access.redhat.com/codeready-workspaces/stacks-java";
 
-  private Map<String, String> stackReplacements;
+  private static final URL PATH_TO_STACK_REPLACEMENT_CONFIG =
+      TestStackAddressReplacementProvider.class.getResource("/conf/stack-replacement.json");
 
-  @Inject(optional = true)
-  @Named("env.stack.replacement.config.file")
-  private String stackReplacementConfigFile;
+  private Map<String, String> stackReplacements;
 
   @Override
   public Map<String, String> get() {
@@ -88,24 +78,20 @@ public class TestStackAddressReplacementProvider implements Provider<Map<String,
 
   @SuppressWarnings("unchecked")
   private Map<String, String> read() {
-    if (stackReplacementConfigFile == null) {
+    if (PATH_TO_STACK_REPLACEMENT_CONFIG == null) {
       return Collections.emptyMap();
     }
 
-    File configFile = new File(stackReplacementConfigFile);
-    if (!configFile.exists()) {
-      return Collections.emptyMap();
-    }
-
+    File stackReplacementConfig = new File(PATH_TO_STACK_REPLACEMENT_CONFIG.getFile());
     try {
-      String json = FileUtils.readFileToString(configFile, UTF_8);
+      String json = FileUtils.readFileToString(stackReplacementConfig, UTF_8);
       return JsonHelper.fromJson(
           json, Map.class, new TypeToken<Map<String, String>>() {}.getType());
     } catch (IOException | JsonParseException ex) {
       LOG.warn(
           format(
               "Can't read stack address replacement config file '%s' because of error '%s'.",
-              stackReplacementConfigFile, ex.getMessage()),
+              stackReplacementConfig, ex.getMessage()),
           ex);
 
       return Collections.emptyMap();
