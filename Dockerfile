@@ -42,15 +42,15 @@ RUN mkdir -p /home/jboss/codeready
 # see https://github.com/redhat-developer/codeready-workspaces-productization/blob/master/devdoc/building/building-crw.adoc#make-changes-to-crw-and-re-deploy-to-minishift
 # then copy /home/${USER}/projects/codeready-workspaces/assembly/codeready-workspaces-assembly-main/target/codeready-workspaces-assembly-main.tar.gz into this folder
 COPY assembly/codeready-workspaces-assembly-main/target/codeready-workspaces-assembly-main.tar.gz /tmp/codeready-workspaces-assembly-main.tar.gz
+# CVE fix for RHSA-2019:0679-02 https://pipeline.engineering.redhat.com/freshmakerevent/8717
+# CVE-2019-9636 errata 40636 - update python and python-libs to 2.7.5-77.el7_6
+# RUN yum update -y libssh2 python-libs python
 RUN tar xzf /tmp/codeready-workspaces-assembly-main.tar.gz --strip-components=1 -C /home/jboss/codeready && \
     rm -f /tmp/codeready-workspaces-assembly-main.tar.gz && \
     cp /etc/pki/java/cacerts /home/jboss/cacerts && \
     mkdir -p /logs /data && \
     chgrp -R 0     /home/jboss /data /logs && \
     chmod -R g+rwX /home/jboss /data /logs && \
-    # CVE fix for RHSA-2019:0679-02 https://pipeline.engineering.redhat.com/freshmakerevent/8717
-    # CVE-2019-9636 errata 40636 - update python and python-libs to 2.7.5-77.el7_6
-    yum update -y libssh2 python-libs python && \
     yum list installed && echo "End Of Installed Packages"
 
 USER jboss
