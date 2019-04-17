@@ -46,7 +46,7 @@ public class MachinesAsynchronousStartTest {
   private static final String WORKSPACE_NAME = generate("test-workspace", 4);
   private static final String MACHINE_NAME = "dev-machine";
   private static final String IMAGE_NAME =
-      "brew-pulp-docker01.web.prod.ext.phx2.redhat.com:8888/codeready-workspaces/stacks-java";
+      "registry.access.redhat.com/codeready-workspaces/stacks-java";
   private static final String IMAGE_NAME_SUFFIX = generate("", 4);
   private static final String NOT_EXISTED_IMAGE_NAME = IMAGE_NAME + IMAGE_NAME_SUFFIX;
   private static final String SUCCESS_NOTIFICATION_TEST = "Workspace updated.";

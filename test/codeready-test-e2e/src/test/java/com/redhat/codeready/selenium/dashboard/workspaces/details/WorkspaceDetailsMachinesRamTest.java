@@ -17,6 +17,7 @@ import static org.eclipse.che.selenium.pageobject.dashboard.workspaces.Workspace
 import static org.eclipse.che.selenium.pageobject.dashboard.workspaces.WorkspaceDetails.WorkspaceDetailsTab.MACHINES;
 
 import com.google.inject.Inject;
+import com.redhat.codeready.selenium.core.provider.TestStackAddressReplacementProvider;
 import org.eclipse.che.selenium.core.utils.WaitUtils;
 import org.eclipse.che.selenium.core.workspace.TestWorkspace;
 import org.eclipse.che.selenium.pageobject.dashboard.Dashboard;
@@ -28,8 +29,6 @@ import org.testng.annotations.Test;
 
 public class WorkspaceDetailsMachinesRamTest {
   private static final String MACHINE_NAME = "dev-machine";
-  private static final String IMAGE_NAME =
-      "brew-pulp-docker01.web.prod.ext.phx2.redhat.com:8888/codeready-workspaces/stacks-java";
   private static final String EXPECTED_RAM_VALUE = "2";
   private static final String MAX_RAM_VALID_VALUE = "100";
   private static final String MIN_RAM_VALID_VALUE = "0.1";
@@ -40,6 +39,7 @@ public class WorkspaceDetailsMachinesRamTest {
   @Inject private TestWorkspace testWorkspace;
   @Inject private WorkspaceDetails workspaceDetails;
   @Inject private WorkspaceDetailsMachines workspaceDetailsMachines;
+  @Inject private TestStackAddressReplacementProvider testStackAddressReplacementProvider;
 
   @BeforeClass
   public void setup() throws Exception {
@@ -56,7 +56,9 @@ public class WorkspaceDetailsMachinesRamTest {
   @Test
   public void checkRamSection() {
     workspaceDetailsMachines.waitMachineListItemWithAttributes(
-        MACHINE_NAME, IMAGE_NAME, EXPECTED_RAM_VALUE);
+        MACHINE_NAME,
+        testStackAddressReplacementProvider.getJavaStackReplacement(),
+        EXPECTED_RAM_VALUE);
 
     // check behavior with invalid RAM value
     workspaceDetailsMachines.typeRamAmount(MACHINE_NAME, "");

@@ -24,6 +24,7 @@ import static org.openqa.selenium.Keys.ARROW_UP;
 import static org.openqa.selenium.Keys.ESCAPE;
 
 import com.google.inject.Inject;
+import com.redhat.codeready.selenium.core.provider.TestStackAddressReplacementProvider;
 import org.eclipse.che.selenium.core.SeleniumWebDriver;
 import org.eclipse.che.selenium.core.webdriver.SeleniumWebDriverHelper;
 import org.eclipse.che.selenium.core.workspace.TestWorkspace;
@@ -40,20 +41,19 @@ import org.testng.annotations.Test;
 public class WorkspaceDetailsMachineActionsTest {
   private static final String MACHINE_NAME = "dev-machine";
   private static final String CHANGED_MACHINE_NAME = "test-machine";
-  private static final String IMAGE_NAME =
-      "brew-pulp-docker01.web.prod.ext.phx2.redhat.com:8888/codeready-workspaces/stacks-java";
   private static final String EXPECTED_RAM_VALUE = "2";
   private static final String EMPTY_NAME_ERROR_MESSAGE = "Machine's name is required.";
   private static final String SPECIAL_CHARACTERS_ERRORS_MESSAGE =
       "The name should not contain special characters like space, dollar, etc.";
   private static final String NAME_WITH_SPECIAL_CHARACTERS = "@#$^&*(!";
-  private static final String MAX_VALID_NAME = generate("max_name", 120);
+  private static final String MAX_VALID_NAME = generate("max-name", 120);
   private static final String TOO_BIG_NAME = generate(MAX_VALID_NAME, 1);
   private static final String TOO_BIG_RAM_SIZE = "1000";
   private static final String MAX_VALID_RAM_VALUE = "100";
-  private static final String NOT_EXISTED_IMAGE = generate("wrong/image", 5);
   private static final String CHANGED_RAM_SIZE = "7";
   private static final String MIN_VALID_RAM_VALUE = "0.1";
+
+  private String javaStackAddressReplacement;
 
   @Inject private Dashboard dashboard;
   @Inject private Workspaces workspaces;
@@ -65,6 +65,7 @@ public class WorkspaceDetailsMachineActionsTest {
   @Inject private WorkspaceInstallers workspaceInstallers;
   @Inject private SeleniumWebDriverHelper seleniumWebDriverHelper;
   @Inject private WorkspaceDetailsMachines workspaceDetailsMachines;
+  @Inject private TestStackAddressReplacementProvider testStackAddressReplacementProvider;
 
   @BeforeMethod
   public void setup() throws Exception {
@@ -76,12 +77,14 @@ public class WorkspaceDetailsMachineActionsTest {
     workspaces.selectWorkspaceItemName(testWorkspace.getName());
     workspaceDetails.waitToolbarTitleName(testWorkspace.getName());
     workspaceDetails.selectTabInWorkspaceMenu(MACHINES);
+
+    javaStackAddressReplacement = testStackAddressReplacementProvider.getJavaStackReplacement();
   }
 
   @Test
   public void checkEditFormClosing() {
     workspaceDetailsMachines.waitMachineListItemWithAttributes(
-        MACHINE_NAME, IMAGE_NAME, EXPECTED_RAM_VALUE);
+        MACHINE_NAME, javaStackAddressReplacement, EXPECTED_RAM_VALUE);
 
     // close form by "ESC" button
     workspaceDetailsMachines.clickOnEditButton(MACHINE_NAME);
@@ -104,12 +107,12 @@ public class WorkspaceDetailsMachineActionsTest {
 
   @Test(groups = {OPENSHIFT, K8S, OSIO})
   public void checkEditMachineNameOpenshift() {
-    checkEditOfMachineName(IMAGE_NAME);
+    checkEditOfMachineName(javaStackAddressReplacement);
   }
 
   @Test(groups = {OPENSHIFT, K8S, OSIO})
   public void checkRamSectionOpenshift() {
-    checkRamSection(IMAGE_NAME);
+    checkRamSection(javaStackAddressReplacement);
   }
 
   private void checkEditOfMachineName(String expectedRecipeText) {
@@ -205,11 +208,11 @@ public class WorkspaceDetailsMachineActionsTest {
     editMachineForm.waitFormInvisibility();
     workspaceDetails.waitAllEnabled(SAVE_BUTTON, APPLY_BUTTON, CANCEL_BUTTON);
     workspaceDetailsMachines.waitMachineListItemWithAttributes(
-        MACHINE_NAME, IMAGE_NAME, CHANGED_RAM_SIZE);
+        MACHINE_NAME, javaStackAddressReplacement, CHANGED_RAM_SIZE);
     workspaceDetails.waitAllEnabled(SAVE_BUTTON, APPLY_BUTTON, CANCEL_BUTTON);
     workspaceDetails.waitAndClickOn(SAVE_BUTTON);
     workspaceDetailsMachines.waitMachineListItemWithAttributes(
-        MACHINE_NAME, IMAGE_NAME, CHANGED_RAM_SIZE);
+        MACHINE_NAME, javaStackAddressReplacement, CHANGED_RAM_SIZE);
   }
 
   @Test
