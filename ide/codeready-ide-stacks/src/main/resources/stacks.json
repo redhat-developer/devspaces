@@ -691,6 +691,33 @@
           }
         },
         {
+          "name": "run",
+          "type": "mvn",
+          "commandLine": "mvn -f ${current.project.path}/pom.xml spring-boot:run",
+          "attributes": {
+            "previewUrl": "${server.springboot}",
+            "goal": "Run"
+          }
+        },
+        {
+          "name": "deploy to OpenShift",
+          "type": "mvn",
+          "commandLine": "mvn -f ${current.project.path}/pom.xml mvn clean -DskipTests fabric8:deploy -Popenshift",
+          "attributes": {
+            "previewUrl": "",
+            "goal": "Run"
+          }
+        },
+        {
+          "name": "debug",
+          "type": "mvn",
+          "commandLine": "mvn -f ${current.project.path}/pom.xml spring-boot:run -Drun.jvmArguments=\"-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005\"",
+          "attributes": {
+            "previewUrl": "${server.springboot}",
+            "goal": "Debug"
+          }
+        },
+        {
           "commandLine": "${HOME}/stack-analysis.sh -f ${current.project.path}/pom.xml -p ${current.project.path}",
           "name": "dependency_analysis",
           "attributes": {
