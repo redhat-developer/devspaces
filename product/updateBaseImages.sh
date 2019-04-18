@@ -37,8 +37,13 @@ for d in $(find ${WORKDIR} -maxdepth ${maxdepth} -name Dockerfile | sort); do
 		echo "# Checking ${d%/Dockerfile} ..."
 		# pull latest commits
 		if [[ -d ${d%%/Dockerfile} ]]; then pushd ${d%%/Dockerfile} >/dev/null; pushedIn=1; fi
-		git branch --set-upstream-to=origin/${BRANCH} ${BRANCH} -q
-		git checkout ${BRANCH} -q && git pull -q
+		if [[ "${d%/Dockerfile}" == *"-rhel8" ]]; then
+			BRANCHUSED=${BRANCH/rhel-7/rhel-8}
+		else
+			BRANCHUSED=${BRANCH}
+		fi
+		git branch --set-upstream-to=origin/${BRANCHUSED} ${BRANCHUSED} -q
+		git checkout ${BRANCHUSED} -q && git pull -q
 		if [[ ${pushedIn} -eq 1 ]]; then popd >/dev/null; pushedIn=0; fi
 
 		QUERY=""
@@ -82,7 +87,7 @@ for d in $(find ${WORKDIR} -maxdepth ${maxdepth} -name Dockerfile | sort); do
 
 							# commit change and push it
 							if [[ -d ${d%%/Dockerfile} ]]; then pushd ${d%%/Dockerfile} >/dev/null; pushedIn=1; fi
-							git commit -s -m "[base] Update from ${URL} to ${FROMPREFIX}:${LATESTTAG}" Dockerfile && git push origin ${BRANCH}
+							git commit -s -m "[base] Update from ${URL} to ${FROMPREFIX}:${LATESTTAG}" Dockerfile && git push origin ${BRANCHUSED}
 							echo "# ${buildCommand} &"
 							${buildCommand} &
 							if [[ ${pushedIn} -eq 1 ]]; then popd >/dev/null; pushedIn=0; fi
