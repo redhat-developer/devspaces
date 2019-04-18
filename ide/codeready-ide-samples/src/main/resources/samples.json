@@ -40,7 +40,7 @@
       {
         "name": "copy-war",
         "type": "mvn",
-        "commandLine": "p ${current.project.path}/target/*.war /opt/eap/standalone/deployments/ROOT.war",
+        "commandLine": "cp ${current.project.path}/target/*.war /opt/eap/standalone/deployments/ROOT.war",
         "attributes": {
           "goal": "Run"
         }
