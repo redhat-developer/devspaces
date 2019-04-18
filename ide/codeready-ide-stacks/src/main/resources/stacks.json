@@ -115,7 +115,7 @@
       },
       {
         "name": "EAP",
-        "version": "7.1"
+        "version": "7.2"
       }
     ],
     "workspaceConfig": {
@@ -204,7 +204,7 @@
       },
       {
         "name": "OpenJDK",
-        "version": "1.8.0_151"
+        "version": "1.8.0_201"
       },
       {
         "name": "Maven",
@@ -257,7 +257,7 @@
       "description": null,
       "commands": [
         {
-          "commandLine": "MAVEN_OPTS='-Xmx100m' && mvn clean install -f ${current.project.path}/pom.xml",
+          "commandLine": "MAVEN_OPTS='-Xmx200m' && mvn clean install -f ${current.project.path}/pom.xml",
           "name": "build",
           "type": "mvn",
           "attributes": {
@@ -266,7 +266,7 @@
           }
         },
         {
-          "commandLine": "MAVEN_OPTS='-Xmx100m' && mvn compile vertx:run -f ${current.project.path}/pom.xml -Dvertx.disableDnsResolver=true",
+          "commandLine": "MAVEN_OPTS='-Xmx200m' && mvn vertx:run -f ${current.project.path}/pom.xml -Dvertx.disableDnsResolver=true",
           "name": "run",
           "type": "custom",
           "attributes": {
@@ -275,7 +275,7 @@
           }
         },
         {
-          "commandLine": "MAVEN_OPTS='-Xmx100m' && mvn compile vertx:debug -f ${current.project.path}/pom.xml -Dvertx.disableDnsResolver=true",
+          "commandLine": "MAVEN_OPTS='-Xmx200m' && mvn vertx:debug -f ${current.project.path}/pom.xml -Dvertx.disableDnsResolver=true",
           "name": "debug",
           "type": "custom",
           "attributes": {
@@ -317,7 +317,7 @@
       },
       {
         "name": "OpenJDK",
-        "version": "1.8.0_151"
+        "version": "1.8.0_201"
       },
       {
         "name": "Maven",
@@ -325,7 +325,7 @@
       },
       {
         "name": "EAP",
-        "version": "7.1"
+        "version": "7.2"
       }
     ],
     "workspaceConfig": {
@@ -374,7 +374,7 @@
       "description": null,
       "commands": [
         {
-          "commandLine": "export MAVEN_OPTS='-Xms20m'\nmvn clean install -f ${current.project.path}/pom.xml",
+          "commandLine": "export MAVEN_OPTS='-Xms200m'\nmvn clean install -f ${current.project.path}/pom.xml",
           "name": "build",
           "type": "mvn",
           "attributes": {
@@ -399,13 +399,13 @@
     }
   },
   {
-    "id": "wildfly-swarm-default",
+    "id": "thorntail-default",
     "creator": "ide",
-    "name": "Wildfly Swarm",
-    "description": "Wildfly Swarm stack",
+    "name": "Thorntail",
+    "description": "Thorntail stack",
     "scope": "general",
     "tags": [
-      "wildfly-swarm",
+      "thorntail",
       "maven",
       "java"
     ],
@@ -416,7 +416,7 @@
       },
       {
         "name": "OpenJDK",
-        "version": "1.8.0_151"
+        "version": "1.8.0_201"
       },
       {
         "name": "Maven",
@@ -436,12 +436,8 @@
                 "com.redhat.bayesian.lsp"
               ],
               "servers": {
-                "wildfly": {
+                "thorntail": {
                   "port": "8080",
-                  "protocol": "http"
-                },
-                "wildfly-debug": {
-                  "port": "8000",
                   "protocol": "http"
                 }
               },
@@ -469,8 +465,44 @@
       "description": null,
       "commands": [
         {
-          "commandLine": "MAVEN_OPTS='-Xmx100m' && mvn clean install -f ${current.project.path}/pom.xml -DskipTests",
+          "commandLine": "MAVEN_OPTS='-Xmx200m' && mvn clean install -f ${current.project.path}/pom.xml -DskipTests",
           "name": "build",
+          "type": "mvn",
+          "attributes": {
+            "previewUrl": "",
+            "goal": "Build"
+          }
+        },
+        {
+          "commandLine": "MAVEN_OPTS='-Xmx200m' && mvn verify -f ${current.project.path}/pom.xml -DskipTests",
+          "name": "test",
+          "type": "mvn",
+          "attributes": {
+            "previewUrl": "",
+            "goal": "Build"
+          }
+        },
+        {
+          "name": "run",
+          "type": "custom",
+          "attributes": {
+            "previewUrl": "${server.thorntail}",
+            "goal": "Run"
+          },
+          "commandLine": "export MAVEN_OPTS='-Xms200m' && mvn clean install -f ${current.project.path}/pom.xml -DskipTests && cd ${current.project.path} && java -jar target/*.jar -Djava.net.preferIPv4Stack=true"
+        },
+        {
+          "name": "debug",
+          "type": "custom",
+          "attributes": {
+            "previewUrl": "${server.thorntail}",
+            "goal": "Run"
+          },
+          "commandLine": "export MAVEN_OPTS='-Xms200m' && mvn clean install -f ${current.project.path}/pom.xml -DskipTests && MAVEN_OPTS='-Xmx200m' && cd ${current.project.path} && java -agentlib:jdwp=transport=dt_socket,address=5005,server=y,suspend=n -jar target/*.jar -Djava.net.preferIPv4Stack=true"
+        },
+        {
+          "commandLine": "MAVEN_OPTS='-Xmx200m' && mvn fabric8:deploy -Popenshift -DskipTests -f ${current.project.path}/pom.xml",
+          "name": "deploy to OpenShift",
           "type": "mvn",
           "attributes": {
             "previewUrl": "",
@@ -489,7 +521,7 @@
       ]
     },
     "stackIcon": {
-      "name": "type-wildfly-swarm.svg",
+      "name": "type-thorntail.svg",
       "mediaType": "image/svg+xml"
     }
   },
@@ -509,7 +541,7 @@
       },
       {
         "name": "OpenJDK",
-        "version": "1.8.0_151"
+        "version": "1.8.0_201"
       },
       {
         "name": "Maven",
@@ -559,7 +591,7 @@
       "description": null,
       "commands": [
         {
-          "commandLine": "MAVEN_OPTS='-Xmx100m' && mvn clean package -f ${current.project.path}/pom.xml",
+          "commandLine": "MAVEN_OPTS='-Xmx200m' && mvn clean package -f ${current.project.path}/pom.xml",
           "name": "build",
           "type": "mvn",
           "attributes": {
@@ -601,7 +633,7 @@
       },
       {
         "name": "OpenJDK",
-        "version": "1.8.0_151"
+        "version": "1.8.0_201"
       },
       {
         "name": "Maven",
@@ -650,7 +682,7 @@
       "description": null,
       "commands": [
         {
-          "commandLine": "MAVEN_OPTS='-Xmx100m' && mvn clean install -f ${current.project.path}/pom.xml",
+          "commandLine": "MAVEN_OPTS='-Xmx200m' && mvn clean install -f ${current.project.path}/pom.xml",
           "name": "build",
           "type": "mvn",
           "attributes": {
