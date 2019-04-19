@@ -37,8 +37,13 @@ for d in $(find ${WORKDIR} -maxdepth ${maxdepth} -name Dockerfile | sort); do
 		echo "# Checking ${d%/Dockerfile} ..."
 		# pull latest commits
 		if [[ -d ${d%%/Dockerfile} ]]; then pushd ${d%%/Dockerfile} >/dev/null; pushedIn=1; fi
-		git branch --set-upstream-to=origin/${BRANCH} ${BRANCH} -q
-		git checkout ${BRANCH} -q && git pull -q
+		if [[ "${d%/Dockerfile}" == *"-rhel8" ]]; then
+			BRANCHUSED=${BRANCH/rhel-7/rhel-8}
+		else
+			BRANCHUSED=${BRANCH}
+		fi
+		git branch --set-upstream-to=origin/${BRANCHUSED} ${BRANCHUSED} -q
+		git checkout ${BRANCHUSED} -q && git pull -q
 		if [[ ${pushedIn} -eq 1 ]]; then popd >/dev/null; pushedIn=0; fi
 
 		QUERY=""
@@ -68,19 +73,21 @@ for d in $(find ${WORKDIR} -maxdepth ${maxdepth} -name Dockerfile | sort); do
 					CURR_TAGrev=${URL##*-} # 15.1553789946 or 15
 					CURR_TAGrevbase=${CURR_TAGrev%%.*} # 15
 					CURR_TAGrevsuf=${CURR_TAGrev##*.} # 1553789946 or 15
-					#echo "[DEBUG] CURR_TAGver=$CURR_TAGver; CURR_TAGrev=$CURR_TAGrev; CURR_TAGrevbase=$CURR_TAGrevbase; CURR_TAGrevsuf=$CURR_TAGrevsuf"; echo "LATE_TAGver=$LATE_TAGver; LATE_TAGrev=$LATE_TAGrev; LATE_TAGrevbase=$LATE_TAGrevbase; LATE_TAGrevsuf=$LATE_TAGrevsuf"
+					#echo "[DEBUG] 
+#CURR_TAGver=$CURR_TAGver; CURR_TAGrev=$CURR_TAGrev; CURR_TAGrevbase=$CURR_TAGrevbase; CURR_TAGrevsuf=$CURR_TAGrevsuf
+#LATE_TAGver=$LATE_TAGver; LATE_TAGrev=$LATE_TAGrev; LATE_TAGrevbase=$LATE_TAGrevbase; LATE_TAGrevsuf=$LATE_TAGrevsuf"
 
 					if [[ ${LATE_TAGrevsuf} != ${CURR_TAGrevsuf} ]] || [[ "${LATE_TAGver}" != "${CURR_TAGver}" ]] || [[ "${LATE_TAGrevbase}" != "${CURR_TAGrevbase}" ]]; then
 						echo "- ${URL}"
 					fi
-					if [[ "${LATE_TAGver}" != "${CURR_TAGver}" ]] || [[ ${LATE_TAGrevbase} -gt ${CURR_TAGrevbase} ]]; then
+					if [[ "${LATE_TAGver}" != "${CURR_TAGver}" ]] || [[ ${LATE_TAGrevbase} -gt ${CURR_TAGrevbase} ]] || [[ ${LATE_TAGrevsuf} -gt ${CURR_TAGrevsuf} ]]; then
 						if [[ ${LATE_TAGrevsuf} -ge ${CURR_TAGrevsuf} ]]; then # fix the Dockerfile
 							echo "++ $d "
 							sed -i -e "s#${URL}#${FROMPREFIX}:${LATESTTAG}#g" $d
 
 							# commit change and push it
 							if [[ -d ${d%%/Dockerfile} ]]; then pushd ${d%%/Dockerfile} >/dev/null; pushedIn=1; fi
-							git commit -s -m "[base] Update from ${URL} to ${FROMPREFIX}:${LATESTTAG}" Dockerfile && git push origin ${BRANCH}
+							git commit -s -m "[base] Update from ${URL} to ${FROMPREFIX}:${LATESTTAG}" Dockerfile && git push origin ${BRANCHUSED}
 							echo "# ${buildCommand} &"
 							${buildCommand} &
 							if [[ ${pushedIn} -eq 1 ]]; then popd >/dev/null; pushedIn=0; fi
