@@ -102,7 +102,7 @@
       {
         "name": "deploy to OpenShift",
         "type": "mvn",
-        "commandLine": "mvn -f ${current.project.path}/pom.xml mvn clean -DskipTests fabric8:deploy -Popenshift",
+        "commandLine": "mvn -f ${current.project.path}/pom.xml fabric8:deploy -Popenshift -DskipTests",
         "attributes": {
           "previewUrl": "",
           "goal": "Run"
