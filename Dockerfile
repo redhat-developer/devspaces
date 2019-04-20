@@ -10,7 +10,7 @@
 #
 
 # https://access.redhat.com/containers/?tab=tags#/registry.access.redhat.com/redhat-openjdk-18/openjdk18-openshift
-FROM registry.access.redhat.com/redhat-openjdk-18/openjdk18-openshift:1.6-19.1554788590
+FROM registry.access.redhat.com/redhat-openjdk-18/openjdk18-openshift:1.6-19.1553789890
 
 ENV SUMMARY="Red Hat CodeReady Workspaces Server container" \
     DESCRIPTION="Red Hat CodeReady Workspaces server container" \
