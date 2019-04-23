@@ -72,7 +72,7 @@ done
 if [[ ${REGISTRY} != "" ]]; then 
 	REGISTRYSTRING="--registry ${REGISTRY}"
 	REGISTRYPRE="${REGISTRY##*://}/"
-	if [[ ${REGISTRY} == *"brew-pulp-docker01"* ]]; then CONTAINERS="${CRW_CONTAINERS_PULP}"; fi
+	if [[ ${REGISTRY} == *"brew-pulp-docker01"* ]] && [[ ${CONTAINERS} == "" ]]; then CONTAINERS="${CRW_CONTAINERS_PULP}"; fi
 else
 	REGISTRYSTRING=""
 	REGISTRYPRE=""
