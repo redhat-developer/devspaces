@@ -11,7 +11,7 @@
 */
 package com.redhat.codeready.selenium.userstory;
 
-import static com.redhat.codeready.selenium.pageobject.dashboard.CodereadyNewWorkspace.CodereadyStacks.WILD_FLY_SWARM;
+import static com.redhat.codeready.selenium.pageobject.dashboard.CodereadyNewWorkspace.CodereadyStacks.THORNTAIL;
 import static java.util.Arrays.stream;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.eclipse.che.selenium.core.constant.TestBuildConstants.BUILD_SUCCESS;
@@ -41,14 +41,13 @@ import org.eclipse.che.selenium.pageobject.ProjectExplorer;
 import org.eclipse.che.selenium.pageobject.intelligent.CommandsPalette;
 import org.testng.annotations.Test;
 
-public class WildFlyUserStoryTest extends AbstractUserStoryTest {
-  private final String PROJECT = "wfswarm-rest-http";
-  private final String PATH_TO_MAIN_PACKAGE =
-      "wfswarm-rest-http/src/main/java/io/openshift/booster/";
+public class ThorntailUserStoryTest extends AbstractUserStoryTest {
+  private final String PROJECT = "thorntail-rest-http";
+  private final String PATH_TO_MAIN_PACKAGE = PROJECT + "/src/main/java/io/openshift/booster/";
 
   private static final String[] REPORT_DEPENDENCY_ANALYSIS = {
-    "Report for /projects/wfswarm-rest-http/pom.xml",
-    "1) # of application dependencies : 2",
+    "Report for /projects/thorntail-rest-http/pom.xml",
+    "1) # of application dependencies : 0",
     "2) Dependencies with Licenses : ",
     "3) Suggest adding these dependencies to your application stack:",
     "4) NO usage outlier application depedencies been found",
@@ -65,7 +64,7 @@ public class WildFlyUserStoryTest extends AbstractUserStoryTest {
 
   @Override
   protected CodereadyNewWorkspace.CodereadyStacks getStackName() {
-    return WILD_FLY_SWARM;
+    return THORNTAIL;
   }
 
   @Override
@@ -106,10 +105,10 @@ public class WildFlyUserStoryTest extends AbstractUserStoryTest {
       throws InterruptedException, ExecutionException, TimeoutException {
     // build and launch application with UI
     commandsPalette.openCommandPalette();
-    commandsPalette.startCommandByDoubleClick("wfswarm-rest-http:build");
+    commandsPalette.startCommandByDoubleClick("thorntail-rest-http:build");
     consoles.waitExpectedTextIntoConsole(BUILD_SUCCESS, 480);
     commandsPalette.openCommandPalette();
-    commandsPalette.startCommandByDoubleClick("wfswarm-rest-http:run");
+    commandsPalette.startCommandByDoubleClick("thorntail-rest-http:run");
     consoles.waitExpectedTextIntoConsole("Thorntail is Ready");
 
     // check that application is available

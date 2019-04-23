@@ -22,7 +22,7 @@
       {
         "name": "build",
         "type": "mvn",
-        "commandLine": "export MAVEN_OPTS='-Xms20m'\nmvn -f ${current.project.path}/pom.xml clean install",
+        "commandLine": "export MAVEN_OPTS='-Xms200m'\nmvn -f ${current.project.path}/pom.xml clean install",
         "attributes": {
           "previewUrl": "",
           "goal": "Build"
@@ -31,16 +31,24 @@
       {
         "name": "build and run in debug",
         "type": "mvn",
-        "commandLine": "export MAVEN_OPTS='-Xms20m'\nmvn -f ${current.project.path}/pom.xml clean install\ncp ${current.project.path}/target/*.war /opt/eap/standalone/deployments/ROOT.war\nunset JAVA_OPTS\n/opt/eap/bin/standalone.sh -b 0.0.0.0 --debug 8000",
+        "commandLine": "export MAVEN_OPTS='-Xms200m'\nmvn -f ${current.project.path}/pom.xml clean install\ncp ${current.project.path}/target/*.war /opt/eap/standalone/deployments/ROOT.war\nexport JAVA_OPTS= && export JAVA_OPTS_APPEND=-Dsun.util.logging.disableCallerCheck=true && /opt/eap/bin/standalone.sh -b 0.0.0.0 --debug 8000",
         "attributes": {
           "previewUrl": "${server.eap}",
           "goal": "Run"
         }
       },
       {
+        "name": "copy-war",
+        "type": "mvn",
+        "commandLine": "cp ${current.project.path}/target/*.war /opt/eap/standalone/deployments/ROOT.war",
+        "attributes": {
+          "goal": "Run"
+        }
+      },
+      {
         "name": "hot update",
         "type": "mvn",
-        "commandLine": "export MAVEN_OPTS='-Xms20m'\nmvn -f ${current.project.path}/pom.xml clean install\ncp ${current.project.path}/target/*.war /opt/eap/standalone/deployments/ROOT.war",
+        "commandLine": "export MAVEN_OPTS='-Xms200m'\nmvn -f ${current.project.path}/pom.xml clean install\ncp ${current.project.path}/target/*.war /opt/eap/standalone/deployments/ROOT.war",
         "attributes": {
           "previewUrl": "${server.eap}",
           "goal": "Run"
@@ -54,10 +62,10 @@
     ]
   },
   {
-    "name": "spring-boot-camel",
-    "displayName": "spring-boot-camel",
-    "path": "/spring-boot-camel",
-    "description": "The quickstart uses Spring Boot to configure a little application that includes a Camel route that triggers a message every 5th second, and routes the message to a log",
+    "name": "fuse-rest-http-booster",
+    "displayName": "fuse-rest-http-booster",
+    "path": "/fuse-rest-http-booster",
+    "description": "This booster introduces the mechanics of interacting with a remote (exposed by Apache Camel) service using the HTTP protocol.",
     "projectType": "maven",
     "mixins": [],
     "attributes": {
@@ -69,14 +77,14 @@
     "problems": [],
     "source": {
       "type": "git",
-      "location": "https://github.com/fabric8-quickstarts/spring-boot-camel",
+      "location": "https://github.com/jboss-fuse/fuse-rest-http-booster/",
       "parameters": {}
     },
     "commands": [
       {
         "name": "build",
         "type": "mvn",
-        "commandLine": "MAVEN_OPTS='-Xmx100m' && mvn -f ${current.project.path}/pom.xml clean package",
+        "commandLine": "MAVEN_OPTS='-Xmx200m' && mvn -f ${current.project.path}/pom.xml clean package",
         "attributes": {
           "previewUrl": "",
           "goal": "Build"
@@ -87,6 +95,15 @@
         "type": "mvn",
         "commandLine": "mvn -f ${current.project.path}/pom.xml spring-boot:run",
         "attributes": {
+          "previewUrl": "${server.springboot}",
+          "goal": "Run"
+        }
+      },
+      {
+        "name": "deploy to OpenShift",
+        "type": "mvn",
+        "commandLine": "mvn -f ${current.project.path}/pom.xml fabric8:deploy -Popenshift -DskipTests",
+        "attributes": {
           "previewUrl": "",
           "goal": "Run"
         }
@@ -94,9 +111,9 @@
       {
         "name": "debug",
         "type": "mvn",
-        "commandLine": "mvn -f ${current.project.path}/pom.xml spring-boot:run -Drun.jvmArguments=\"-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000\"",
+        "commandLine": "mvn -f ${current.project.path}/pom.xml spring-boot:run -Drun.jvmArguments=\"-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005\"",
         "attributes": {
-          "previewUrl": "",
+          "previewUrl": "${server.springboot}",
           "goal": "Debug"
         }
       }
@@ -130,7 +147,16 @@
       {
         "name": "build",
         "type": "mvn",
-        "commandLine": "MAVEN_OPTS='-Xmx100m' && mvn -f ${current.project.path}/pom.xml clean install",
+        "commandLine": "MAVEN_OPTS='-Xmx200m' && mvn -f ${current.project.path}/pom.xml clean install",
+        "attributes": {
+          "previewUrl": "",
+          "goal": "Build"
+        }
+      },
+      {
+        "name": "test",
+        "type": "mvn",
+        "commandLine": "MAVEN_OPTS='-Xmx200m' && mvn -f ${current.project.path}/pom.xml verify -DskipTests",
         "attributes": {
           "previewUrl": "",
           "goal": "Build"
@@ -140,6 +166,15 @@
         "name": "run",
         "type": "mvn",
         "commandLine": "mvn -f ${current.project.path}/pom.xml spring-boot:run",
+        "attributes": {
+          "previewUrl": "${server.springboot}",
+          "goal": "Run"
+        }
+      },
+      {
+        "name": "deploy to OpenShift",
+        "type": "mvn",
+        "commandLine": "mvn -f ${current.project.path}/pom.xml fabric8:deploy -Popenshift -DskipTests",
         "attributes": {
           "previewUrl": "${server.springboot}",
           "goal": "Run"
@@ -162,10 +197,10 @@
     ]
   },
   {
-    "name": "wfswarm-rest-http",
-    "displayName": "wfswarm-rest-http",
-    "path": "/wfswarm-rest-http",
-    "description": "Quickstart to expose a REST Greeting endpoint using Wildfly Swarm",
+    "name": "thorntail-rest-http",
+    "displayName": "thorntail-rest-http",
+    "path": "/thorntail-rest-http",
+    "description": "Quickstart to expose a REST Greeting endpoint using Thorntail",
     "projectType": "maven",
     "mixins": [],
     "attributes": {
@@ -177,7 +212,7 @@
     "problems": [],
     "source": {
       "type": "git",
-      "location": "https://github.com/wildfly-swarm-openshiftio-boosters/wfswarm-rest-http",
+      "location": "https://github.com/thorntail-examples/rest-http-redhat",
       "parameters": {}
     },
     "commands": [
@@ -188,22 +223,31 @@
           "previewUrl": "",
           "goal": "Build"
         },
-        "commandLine": "export MAVEN_OPTS='-Xms20m'\nmvn clean install -f ${current.project.path}/pom.xml -DskipTests"
+        "commandLine": "export MAVEN_OPTS='-Xms200m'\nmvn clean install -f ${current.project.path}/pom.xml -DskipTests"
       },
       {
         "name": "run",
         "type": "custom",
         "attributes": {
-          "previewUrl": "${server.wildfly}",
+          "previewUrl": "${server.thorntail}",
           "goal": "Run"
         },
-        "commandLine": "cd ${current.project.path}\njava -jar target/*-thorntail.jar -Djava.net.preferIPv4Stack=true"
+        "commandLine": "export MAVEN_OPTS='-Xms200m' && mvn clean install -f ${current.project.path}/pom.xml -DskipTests && cd ${current.project.path} && java -jar target/*.jar -Djava.net.preferIPv4Stack=true"
+      },
+      {
+        "name": "debug",
+        "type": "custom",
+        "attributes": {
+          "previewUrl": "${server.thorntail}",
+          "goal": "Debug"
+        },
+        "commandLine": "export MAVEN_OPTS='-Xms200m' && mvn clean install -f ${current.project.path}/pom.xml -DskipTests && MAVEN_OPTS='-Xmx200m' && cd ${current.project.path} && java -agentlib:jdwp=transport=dt_socket,address=5005,server=y,suspend=n -jar target/*.jar -Djava.net.preferIPv4Stack=true"
       }
     ],
     "links": [],
     "category": "Samples",
     "tags": [
-      "wildfly-swarm"
+      "thorntail"
     ]
   },
   {
@@ -225,7 +269,52 @@
       "location": "https://github.com/openshiftio-vertx-boosters/vertx-http-booster",
       "parameters": {}
     },
-    "commands": [],
+    "commands": [
+      {
+        "commandLine": "MAVEN_OPTS='-Xmx200m' && mvn clean install -f ${current.project.path}/pom.xml",
+        "name": "build",
+        "type": "mvn",
+        "attributes": {
+          "previewUrl": "",
+          "goal": "Build"
+        }
+      },
+      {
+        "commandLine": "MAVEN_OPTS='-Xmx200m' && mvn verify -f ${current.project.path}/pom.xml -DskipTests",
+        "name": "test",
+        "type": "mvn",
+        "attributes": {
+          "previewUrl": "",
+          "goal": "Build"
+        }
+      },
+      {
+        "commandLine": "MAVEN_OPTS='-Xmx200m' && mvn vertx:run -f ${current.project.path}/pom.xml -Dvertx.disableDnsResolver=true",
+        "name": "run",
+        "type": "custom",
+        "attributes": {
+          "previewUrl": "${server.vertx}",
+          "goal": "Run"
+        }
+      },
+      {
+        "commandLine": "MAVEN_OPTS='-Xmx200m' && mvn vertx:debug -f ${current.project.path}/pom.xml -Dvertx.disableDnsResolver=true",
+        "name": "debug",
+        "type": "custom",
+        "attributes": {
+          "previewUrl": "${server.vertx}",
+          "goal": "Debug"
+        }
+      },
+      {
+        "commandLine": "MAVEN_OPTS='-Xmx200m' &&  mvn fabric8:deploy -Popenshift -DskipTests -f ${current.project.path}/pom.xml -Dvertx.disableDnsResolver=true",
+        "name": "deploy to OpenShift",
+        "type": "custom",
+        "attributes": {
+          "goal": "Run"
+        }
+      }
+    ],
     "links": [],
     "category": "Samples",
     "tags": [
