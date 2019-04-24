@@ -2,8 +2,8 @@
   {
     "id": "rhel8-default",
     "creator": "ide",
-    "name": "RHEL 8 Beta - Java 1.8",
-    "description": "RHEL 8 Beta Java stack with OpenJDK 1.8 and Maven 3.5",
+    "name": "RHEL 8 - Java 1.8",
+    "description": "RHEL 8 Java stack with OpenJDK 1.8 and Maven 3.5",
     "scope": "general",
     "tags": [
       "maven",
@@ -12,11 +12,11 @@
     "components": [
       {
         "name": "RHEL",
-        "version": "8-Beta"
+        "version": "8.0"
       },
       {
         "name": "OpenJDK",
-        "version": "1.8.0_151"
+        "version": "1.8.0_181"
       },
       {
         "name": "Maven",
@@ -103,11 +103,11 @@
     "components": [
       {
         "name": "RHEL",
-        "version": "7.4"
+        "version": "7.6.4"
       },
       {
         "name": "OpenJDK",
-        "version": "1.8.0_151"
+        "version": "1.8.0_212"
       },
       {
         "name": "Maven",
@@ -200,11 +200,11 @@
     "components": [
       {
         "name": "RHEL",
-        "version": "7.4"
+        "version": "7.6.4"
       },
       {
         "name": "OpenJDK",
-        "version": "1.8.0_201"
+        "version": "1.8.0_212"
       },
       {
         "name": "Maven",
@@ -303,7 +303,7 @@
     "id": "eap-default",
     "creator": "ide",
     "name": "Java EAP",
-    "description": "Java stack with EAP 7.1, OpenJDK 1.8 and Maven 3.5",
+    "description": "Java stack with EAP 7.2, OpenJDK 1.8 and Maven 3.5",
     "scope": "general",
     "tags": [
       "eap",
@@ -313,11 +313,11 @@
     "components": [
       {
         "name": "RHEL",
-        "version": "7.4"
+        "version": "7.6.4"
       },
       {
         "name": "OpenJDK",
-        "version": "1.8.0_201"
+        "version": "1.8.0_212"
       },
       {
         "name": "Maven",
@@ -412,11 +412,11 @@
     "components": [
       {
         "name": "RHEL",
-        "version": "7.4"
+        "version": "7.6.4"
       },
       {
         "name": "OpenJDK",
-        "version": "1.8.0_201"
+        "version": "1.8.0_212"
       },
       {
         "name": "Maven",
@@ -537,11 +537,11 @@
     "components": [
       {
         "name": "RHEL",
-        "version": "7.4"
+        "version": "7.6.4"
       },
       {
         "name": "OpenJDK",
-        "version": "1.8.0_201"
+        "version": "1.8.0_212"
       },
       {
         "name": "Maven",
@@ -629,11 +629,11 @@
     "components": [
       {
         "name": "RHEL",
-        "version": "7.4"
+        "version": "7.6.4"
       },
       {
         "name": "OpenJDK",
-        "version": "1.8.0_201"
+        "version": "1.8.0_212"
       },
       {
         "name": "Maven",
@@ -750,7 +750,7 @@
     "components": [
       {
         "name": "RHEL",
-        "version": "7.4"
+        "version": "7.6.4"
       },
       {
         "name": "make",
@@ -836,15 +836,15 @@
     "components": [
       {
         "name": "RHEL",
-        "version": "7.4"
+        "version": "7.6.4"
       },
       {
         "name": ".NET Runtime",
-        "version": "2.0.3"
+        "version": "2.1.506"
       },
       {
         "name": ".NET SDK",
-        "version": "2.0.3"
+        "version": "2.1.506"
       }
     ],
     "workspaceConfig": {
@@ -916,11 +916,11 @@
     "components": [
       {
         "name": "RHEL",
-        "version": "7.4"
+        "version": "7.6.4"
       },
       {
         "name": "Golang",
-        "version": "1.9.4"
+        "version": "1.11.5"
       }
     ],
     "workspaceConfig": {
@@ -984,15 +984,15 @@
     "components": [
       {
         "name": "RHEL",
-        "version": "7.4"
+        "version": "7.6.4"
       },
       {
         "name": "NodeJS",
-        "version": "8.9.4"
+        "version": "8.15.1"
       },
       {
         "name": "NPM",
-        "version": "5.6.0"
+        "version": "6.4.1"
       }
     ],
     "workspaceConfig": {
@@ -1173,15 +1173,15 @@
     "components": [
       {
         "name": "RHEL",
-        "version": "7.4"
+        "version": "7.6.4"
       },
       {
         "name": "Python",
         "version": "3.6.3"
       },
       {
-        "name": "PIP",
-        "version": "10.0.1"
+        "name": "pip",
+        "version": "9.0.1"
       }
     ],
     "workspaceConfig": {
