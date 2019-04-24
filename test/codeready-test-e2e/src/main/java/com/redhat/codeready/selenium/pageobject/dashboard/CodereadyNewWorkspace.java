@@ -66,7 +66,7 @@ public class CodereadyNewWorkspace extends NewWorkspace {
   }
 
   public enum CodereadyStacks {
-    JAVA_EAP("eap-default"),
+    JBOSS_EAP("eap-default"),
     JAVA_DEFAULT("java-default"),
     FUSE("fuse-default"),
     VERTX("vert.x-default"),
