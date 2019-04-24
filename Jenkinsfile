@@ -132,6 +132,35 @@ timeout(120) {
 
 def CRW_SHAs = ""
 
+def CRW_path = "codeready-workspaces"
+def VER_CRW = "VER_CRW"
+def SHA_CRW = "SHA_CRW"
+timeout(120) {
+	node("${node}"){ stage "Get ${CRW_path} version"
+		cleanWs()
+		// for private repo, use checkout(credentialsId: 'devstudio-release')
+		if (env.ghprbPullId && env.ghprbPullId?.trim()) { 
+			checkout([$class: 'GitSCM', 
+				branches: [[name: "FETCH_HEAD"]], 
+				doGenerateSubmoduleConfigurations: false, 
+				poll: true,
+				extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: "${CRW_path}"], [$class: 'LocalBranch']], 
+				submoduleCfg: [], 
+				userRemoteConfigs: [[refspec: "+refs/pull/${env.ghprbPullId}/head:refs/remotes/origin/PR-${env.ghprbPullId}", url: "https://github.com/redhat-developer/${CRW_path}.git"]]])
+		} else {
+			checkout([$class: 'GitSCM', 
+				branches: [[name: "${branchToBuildCRW}"]], 
+				doGenerateSubmoduleConfigurations: false, 
+				poll: true,
+				extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: "${CRW_path}"]], 
+				submoduleCfg: [], 
+				userRemoteConfigs: [[url: "https://github.com/redhat-developer/${CRW_path}.git"]]])
+		}
+		VER_CRW = sh(returnStdout:true,script:"egrep \"<version>\" ${CRW_path}/pom.xml|head -2|tail -1|sed -e \"s#.*<version>\\(.\\+\\)</version>#\\1#\"").trim()
+		SHA_CRW = sh(returnStdout:true,script:"cd ${CRW_path}/ && git rev-parse --short=4 HEAD").trim()
+	}
+}
+
 def CHE_path = "che"
 def VER_CHE = "VER_CHE"
 def SHA_CHE = "SHA_CHE"
@@ -163,12 +192,13 @@ timeout(180) {
 		SHA_CHE = sh(returnStdout:true,script:"cd ${CHE_path}/ && git rev-parse --short=4 HEAD").trim()
 
 		// set correct version of CRW Dashboard
-		CRW_SHAs="${CRWVersion} \
+		CRW_SHAs="${VER_CRW} :: ${BUILDINFO} \
 :: ${DEV_path} @ ${SHA_DEV} (${VER_DEV}) \
 :: ${PAR_path} @ ${SHA_PAR} (${VER_PAR}) \
 :: ${LIB_path} @ ${SHA_LIB} (${VER_LIB}) \
 :: ${LSJ_path} @ ${SHA_LSJ} (${VER_LSJ}) \
-:: ${CHE_path} @ ${SHA_CHE} (${VER_CHE})"
+:: ${CHE_path} @ ${SHA_CHE} (${VER_CHE}) \
+:: ${CRW_path} @ ${SHA_CRW} (${VER_CRW})"
 		// echo "CRW_SHAs = ${CRW_SHAs}"
 
 		// insert a longer version string which includes both CRW and Che, plus build and SHA info
@@ -190,9 +220,6 @@ timeout(180) {
 	}
 }
 
-def CRW_path = "codeready-workspaces"
-def VER_CRW = "VER_CRW"
-def SHA_CRW = "SHA_CRW"
 timeout(120) {
 	node("${node}"){ stage "Build ${CRW_path}"
 		cleanWs()
@@ -216,9 +243,6 @@ timeout(120) {
 		}
 		unstash 'stashChe'
 		buildMaven()
-
-		VER_CRW = sh(returnStdout:true,script:"egrep \"<version>\" ${CRW_path}/pom.xml|head -2|tail -1|sed -e \"s#.*<version>\\(.\\+\\)</version>#\\1#\"").trim()
-		SHA_CRW = sh(returnStdout:true,script:"cd ${CRW_path}/ && git rev-parse --short=4 HEAD").trim()
 
 		CRW_SHAs="${VER_CRW} :: ${BUILDINFO} \
 :: ${DEV_path} @ ${SHA_DEV} (${VER_DEV}) \
