@@ -48,7 +48,7 @@ public class NewWorkspacePageTest {
   private static List<CodereadyNewWorkspace.CodereadyStacks> EXPECTED_CODEREADY_QUICK_START_STACKS =
       asList(
           CodereadyStacks.JAVA_DEFAULT,
-          CodereadyStacks.JAVA_EAP,
+          CodereadyStacks.JBOSS_EAP,
           CodereadyStacks.FUSE,
           CodereadyStacks.SPRING_BOOT,
           CodereadyStacks.VERTX,
@@ -67,7 +67,7 @@ public class NewWorkspacePageTest {
               CodereadyStacks.VERTX,
               CodereadyStacks.SPRING_BOOT,
               CodereadyStacks.FUSE,
-              CodereadyStacks.JAVA_EAP,
+              CodereadyStacks.JBOSS_EAP,
               CodereadyStacks.JAVA_DEFAULT,
               CodereadyStacks.THORNTAIL,
               CodereadyStacks.JAVA_RHEL8,
@@ -82,7 +82,7 @@ public class NewWorkspacePageTest {
       EXPECTED_CODEREADY_SINGLE_MACHINE_STACKS =
           asList(
               CodereadyStacks.JAVA_DEFAULT,
-              CodereadyStacks.JAVA_EAP,
+              CodereadyStacks.JBOSS_EAP,
               CodereadyStacks.FUSE,
               CodereadyStacks.SPRING_BOOT,
               CodereadyStacks.VERTX,
@@ -99,7 +99,7 @@ public class NewWorkspacePageTest {
       asList(
           CodereadyStacks.THORNTAIL,
           CodereadyStacks.SPRING_BOOT,
-          CodereadyStacks.JAVA_EAP,
+          CodereadyStacks.JBOSS_EAP,
           CodereadyStacks.JAVA_DEFAULT,
           CodereadyStacks.JAVA_RHEL8);
 

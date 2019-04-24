@@ -11,7 +11,7 @@
 */
 package com.redhat.codeready.selenium.userstory;
 
-import static com.redhat.codeready.selenium.pageobject.dashboard.CodereadyNewWorkspace.CodereadyStacks.JAVA_EAP;
+import static com.redhat.codeready.selenium.pageobject.dashboard.CodereadyNewWorkspace.CodereadyStacks.JBOSS_EAP;
 
 import com.redhat.codeready.selenium.pageobject.dashboard.CodereadyNewWorkspace;
 import org.testng.annotations.Test;
@@ -21,11 +21,11 @@ import org.testng.annotations.Test;
  *     <p>Note: test are being overrided in class to support proper sequence of tests (issue
  *     CRW-155).
  */
-public class JavaEapUserStoryTest extends JavaUserStoryTest {
+public class JBossEapUserStoryTest extends JavaUserStoryTest {
 
   @Override
   protected CodereadyNewWorkspace.CodereadyStacks getStackName() {
-    return JAVA_EAP;
+    return JBOSS_EAP;
   }
 
   @Test
