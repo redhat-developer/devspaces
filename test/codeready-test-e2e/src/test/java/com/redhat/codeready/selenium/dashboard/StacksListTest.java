@@ -111,18 +111,18 @@ public class StacksListTest {
     // search stacks by a full name
     stacks.typeToSearchInput("java");
     assertTrue(stacks.isStackItemExisted("Java 1.8"));
-    assertTrue(stacks.isStackItemExisted("Java EAP"));
+    assertTrue(stacks.isStackItemExisted("JBoss EAP"));
     assertFalse(stacks.isStackItemExisted(NODE.getName()));
 
     stacks.typeToSearchInput("node");
     assertTrue(stacks.isStackItemExisted(NODE.getName()));
-    assertFalse(stacks.isStackItemExisted("Java EAP"));
+    assertFalse(stacks.isStackItemExisted("JBoss EAP"));
     assertFalse(stacks.isStackItemExisted("Java 1.8"));
 
     // search stacks by a part name
     stacks.typeToSearchInput("ne");
     assertTrue(stacks.isStackItemExisted(DOTNET.getName()));
-    assertFalse(stacks.isStackItemExisted("Java EAP"));
+    assertFalse(stacks.isStackItemExisted("JBoss EAP"));
     assertFalse(stacks.isStackItemExisted("Java 1.8"));
   }
 
