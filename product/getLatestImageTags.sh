@@ -44,7 +44,7 @@ Usage:
   $0 -c 'rhoar-nodejs/nodejs-10 jboss-eap-7/eap72-openshift' | use specific list of RHCC images
   $0 -c ubi7 -c ubi8:8.0 --pulp -n 5                         | check pulp registry; show 8.0* tags; show 5 tags per container
   $0 -c pivotaldata/centos --docker --dockerfile             | check docker registry; show Dockerfile contents (requires dfimage)
-  $0 -crw --pulp --nvr                                       | check for latest images in pulp; output NVRs can be copied to Errata
+  $0 --crw --pulp --nvr                                      | check for latest images in pulp; output NVRs can be copied to Errata
 "
 	exit
 }
