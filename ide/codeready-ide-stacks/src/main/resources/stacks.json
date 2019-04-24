@@ -975,6 +975,76 @@
     "id": "node-default",
     "creator": "ide",
     "name": "Node",
+    "description": "NodeJS 10x stack",
+    "scope": "general",
+    "tags": [
+      "nodejs",
+      "npm"
+    ],
+    "components": [
+      {
+        "name": "RHEL",
+        "version": "7.6.4"
+      },
+      {
+        "name": "NodeJS",
+        "version": "10.15.3"
+      },
+      {
+        "name": "NPM",
+        "version": "6.4.1"
+      }
+    ],
+    "workspaceConfig": {
+      "environments": {
+        "default": {
+          "machines": {
+            "dev-machine": {
+              "installers": [
+                "org.eclipse.che.exec",
+                "org.eclipse.che.terminal",
+                "org.eclipse.che.ws-agent",
+                "org.eclipse.che.ls.js-ts",
+                "com.redhat.bayesian.lsp"
+              ],
+              "servers": {
+                "3000/tcp": {
+                  "port": "3000",
+                  "protocol": "http"
+                },
+                "5000/tcp": {
+                  "port": "5000",
+                  "protocol": "http"
+                },
+                "9000/tcp": {
+                  "port": "9000",
+                  "protocol": "http"
+                }
+              },
+              "attributes": {
+                "memoryLimitBytes": "2147483648"
+              }
+            }
+          },
+          "recipe": {
+            "content": "registry.access.redhat.com/codeready-workspaces/stacks-node-rhel8",
+            "type": "dockerimage"
+          }
+        }
+      },
+      "name": "default",
+      "defaultEnv": "default",
+      "description": null
+    },
+    "stackIcon": {
+      "name": "type-node.svg",
+      "mediaType": "image/svg+xml"
+    }
+  },
+  {
+    "id": "node-default",
+    "creator": "ide",
+    "name": "Node",
     "description": "NodeJS 8x stack",
     "scope": "general",
     "tags": [
