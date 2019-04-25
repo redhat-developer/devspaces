@@ -20,7 +20,7 @@ services:
       - selenium_grid_internal
 
   chromenode:
-    image: selenium/node-chrome${NODE_CHROME_DEBUG_SUFFIX}:3.14.0-curium
+    image: selenium/node-chrome${NODE_CHROME_DEBUG_SUFFIX}
     depends_on:
       - selenium_hub
     environment:
