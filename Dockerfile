@@ -44,7 +44,7 @@ RUN mkdir -p /home/jboss/codeready
 COPY assembly/codeready-workspaces-assembly-main/target/codeready-workspaces-assembly-main.tar.gz /tmp/codeready-workspaces-assembly-main.tar.gz
 # CVE fix for RHSA-2019:0679-02 https://pipeline.engineering.redhat.com/freshmakerevent/8717
 # CVE-2019-9636 errata 40636 - update python and python-libs to 2.7.5-77.el7_6
-# RUN yum update -y libssh2 python-libs python && yum clean all && rm -rf /var/cache/yum
+# RUN yum update -y libssh2 python-libs python java-1.8.0-openjdk java-1.8.0-openjdk-devel java-1.8.0-openjdk-headless && yum clean all && rm -rf /var/cache/yum
 RUN tar xzf /tmp/codeready-workspaces-assembly-main.tar.gz --strip-components=1 -C /home/jboss/codeready && \
     rm -f /tmp/codeready-workspaces-assembly-main.tar.gz && \
     cp /etc/pki/java/cacerts /home/jboss/cacerts && \
