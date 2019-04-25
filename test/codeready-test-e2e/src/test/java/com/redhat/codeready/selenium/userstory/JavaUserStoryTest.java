@@ -231,7 +231,7 @@ public class JavaUserStoryTest extends AbstractUserStoryTest {
     final String pomXmlEditorTabTitle = "jboss-as-kitchensink";
 
     final String expectedErrorMarkerText =
-        "Application dependency commons-fileupload:commons-fileupload-1.3 is vulnerable: CVE-2014-0050 CVE-2016-3092 CVE-2016-1000031 CVE-2013-2186. Recommendation: use version 1.3.3";
+        "Application dependency commons-fileupload:commons-fileupload-1.3 is vulnerable: CVE-2014-0050 CVE-2016-3092 CVE-2016-1000031 CVE-2013-2186. Recommendation: use version";
 
     // open file
     seleniumWebDriverHelper.switchToIdeFrameAndWaitAvailability();

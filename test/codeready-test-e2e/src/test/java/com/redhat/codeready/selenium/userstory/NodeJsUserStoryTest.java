@@ -103,7 +103,7 @@ public class NodeJsUserStoryTest extends AbstractUserStoryTest {
     final String fileName = "package.json";
     final String packageJsonFilePath = PROJECT + "/" + fileName;
     final String expectedErrorMarkerText =
-        "Application dependency serve-static-1.7.1 is vulnerable: CVE-2015-1164. Recommendation: use version 1.7.2";
+        "Application dependency serve-static-1.7.1 is vulnerable: CVE-2015-1164. Recommendation: use version";
 
     // open file
     projectExplorer.waitItem(PROJECT);
