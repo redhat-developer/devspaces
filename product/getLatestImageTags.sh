@@ -40,9 +40,11 @@ SHOWNVR=0; # show NVR format instead of repo/container:tag format
 usage () {
 	echo "
 Usage: 
-  $0 --crw                                                   | use default list of CRW images in RHCC
+  $0 --crw                                                   | use default list of CRW images in RHCC Prod
+  $0 --crw -r registry.access.stage.redhat.com               | use default list of CRW images in RHCC Stage
   $0 -c 'rhoar-nodejs/nodejs-10 jboss-eap-7/eap72-openshift' | use specific list of RHCC images
   $0 -c ubi7 -c ubi8:8.0 --pulp -n 5                         | check pulp registry; show 8.0* tags; show 5 tags per container
+  $0 -c ubi7 -c ubi8:8.0 --stage -n 5                        | check RHCC stage registry; show 8.0* tags; show 5 tags per container
   $0 -c pivotaldata/centos --docker --dockerfile             | check docker registry; show Dockerfile contents (requires dfimage)
   $0 --crw --pulp --nvr                                      | check for latest images in pulp; output NVRs can be copied to Errata
 "
@@ -60,6 +62,7 @@ while [[ "$#" -gt 0 ]]; do
     '-q') QUIET=1; shift 0;;
     '-v') QUIET=0; VERBOSE=1; shift 0;;
     '-r') REGISTRY="$2"; shift 1;;
+    '--stage') REGISTRY="http://registry.access.stage.redhat.com"; shift 1;;
     '-p'|'--pulp') REGISTRY="http://brew-pulp-docker01.web.prod.ext.phx2.redhat.com:8888"; EXCLUDES="candidate|guest|containers"; shift 0;;
     '-d'|'--docker') REGISTRY=""; shift 0;;
     '-n') NUMTAGS="$2"; shift 1;;
@@ -115,17 +118,20 @@ for URLfrag in $CONTAINERS; do
 	for LATESTTAG in ${LATESTTAGs}; do
 		if [[ "$REGISTRY" = *"registry.access.redhat.com"* ]]; then
 			if [[ $QUIET -eq 1 ]]; then
-				echo "${URLfrag}:${LATESTTAG}"
+				echo "${URLfrag%%:*}:${LATESTTAG}"
 			else
-				echo "* ${URLfrag}:${LATESTTAG} :: https://access.redhat.com/containers/#/registry.access.redhat.com/${URLfrag}/images/${LATESTTAG}"
+				echo "* ${URLfrag%%:*}:${LATESTTAG} :: https://access.redhat.com/containers/#/registry.access.redhat.com/${URLfrag}/images/${LATESTTAG}"
 			fi
 		elif [[ "${REGISTRY}" != "" ]]; then
 			if [[ $VERBOSE -eq 1 ]]; then 
-				echo "${REGISTRYPRE}${URLfrag}:${LATESTTAG}"
+				echo "${REGISTRYPRE}${URLfrag%%:*}:${LATESTTAG}"
 			elif [[ ${SHOWNVR} -eq 1 ]]; then
-				echo "${URLfrag/\//-}-container-${LATESTTAG}"
+				ufrag=${URLfrag%%:*}; ufrag=${ufrag/\//-}
+				echo "${ufrag}-container-${LATESTTAG}"
+			elif [[ $QUIET -eq 1 ]]; then
+				echo "${URLfrag%%:*}:${LATESTTAG}"
 			else
-				echo "${URLfrag}:${LATESTTAG}"
+				echo "${URLfrag%%:*}:${LATESTTAG} :: ${REGISTRY}"
 			fi
 		else
 			echo "${URLfrag}:${LATESTTAG}"
