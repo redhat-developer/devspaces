@@ -304,7 +304,7 @@ timeout(120) {
 			[
 			  $class: 'StringParameterValue',
 			  name: 'GIT_BRANCH',
-			  value: "codeready-1.0-rhel-7",
+			  value: "crw-1.2-rhel-8",
 			],
 			[
 			  $class: 'StringParameterValue',
