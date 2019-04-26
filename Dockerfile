@@ -15,7 +15,7 @@ FROM registry.access.redhat.com/redhat-openjdk-18/openjdk18-openshift:1.6-19.155
 ENV SUMMARY="Red Hat CodeReady Workspaces Server container" \
     DESCRIPTION="Red Hat CodeReady Workspaces server container" \
     PRODNAME="codeready-workspaces" \
-    COMPNAME="server-container"
+    COMPNAME="server-rhel8"
 
 LABEL summary="$SUMMARY" \
       description="$DESCRIPTION" \
