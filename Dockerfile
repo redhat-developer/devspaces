@@ -9,6 +9,7 @@
 #   Red Hat, Inc. - initial API and implementation
 #
 
+# TODO: switch to RHEL 8 based openjdk or EAP 7.2.1/7.3
 # https://access.redhat.com/containers/?tab=tags#/registry.access.redhat.com/redhat-openjdk-18/openjdk18-openshift
 FROM registry.access.redhat.com/redhat-openjdk-18/openjdk18-openshift:1.6-20
 
