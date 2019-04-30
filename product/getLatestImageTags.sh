@@ -16,17 +16,17 @@ fi
 
 # default list of CRW containers to query
 CRW_CONTAINERS_RHCC="\
-codeready-workspaces/server codeready-workspaces/server-operator \
-codeready-workspaces/stacks-java codeready-workspaces/stacks-node \
-codeready-workspaces/stacks-cpp codeready-workspaces/stacks-dotnet codeready-workspaces/stacks-golang \
-codeready-workspaces/stacks-php codeready-workspaces/stacks-python \
-codeready-workspaces-beta/stacks-java-rhel8"
+codeready-workspaces/server-rhel8 codeready-workspaces/server-operator-rhel8 \
+codeready-workspaces/stacks-java-rhel8 codeready-workspaces/stacks-node-rhel8 \
+codeready-workspaces/stacks-cpp-rhel8 codeready-workspaces/stacks-dotnet-rhel8 codeready-workspaces/stacks-golang-rhel8 \
+codeready-workspaces/stacks-php-rhel8 codeready-workspaces/stacks-python-rhel8 \
+codeready-workspaces/stacks-node"
 CRW_CONTAINERS_PULP="\
-codeready-workspaces/server codeready-workspaces/operator \
-codeready-workspaces/stacks-java codeready-workspaces/stacks-node \
-codeready-workspaces/stacks-cpp codeready-workspaces/stacks-dotnet codeready-workspaces/stacks-golang \
-codeready-workspaces/stacks-php codeready-workspaces/stacks-python \
-codeready-workspaces-beta/stacks-java-rhel8"
+codeready-workspaces/server-rhel8 codeready-workspaces/operator-rhel8 \
+codeready-workspaces/stacks-java-rhel8 codeready-workspaces/stacks-node-rhel8 \
+codeready-workspaces/stacks-cpp-rhel8 codeready-workspaces/stacks-dotnet-rhel8 codeready-workspaces/stacks-golang-rhel8 \
+codeready-workspaces/stacks-php-rhel8 codeready-workspaces/stacks-python-rhel8 \
+codeready-workspaces/stacks-node"
 
 # regex pattern of container versions/names to exclude, eg., Beta1 (because version sort thinks 1.0.0.Beta1 > 1.0-12)
 EXCLUDES="\^" 

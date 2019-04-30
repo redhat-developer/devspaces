@@ -55,7 +55,7 @@
             }
           },
           "recipe": {
-            "content": "registry.access.redhat.com/codeready-workspaces-beta/stacks-java-rhel8",
+            "content": "registry.access.redhat.com/codeready-workspaces/stacks-java-rhel8",
             "type": "dockerimage"
           }
         }
@@ -154,7 +154,7 @@
             }
           },
           "recipe": {
-            "content": "registry.access.redhat.com/codeready-workspaces/stacks-java",
+            "content": "registry.access.redhat.com/codeready-workspaces/stacks-java-rhel8",
             "type": "dockerimage"
           }
         }
@@ -247,7 +247,7 @@
             }
           },
           "recipe": {
-            "content": "registry.access.redhat.com/codeready-workspaces/stacks-java",
+            "content": "registry.access.redhat.com/codeready-workspaces/stacks-java-rhel8",
             "type": "dockerimage"
           }
         }
@@ -364,7 +364,7 @@
             }
           },
           "recipe": {
-            "content": "registry.access.redhat.com/codeready-workspaces/stacks-java",
+            "content": "registry.access.redhat.com/codeready-workspaces/stacks-java-rhel8",
             "type": "dockerimage"
           }
         }
@@ -455,7 +455,7 @@
             }
           },
           "recipe": {
-            "content": "registry.access.redhat.com/codeready-workspaces/stacks-java",
+            "content": "registry.access.redhat.com/codeready-workspaces/stacks-java-rhel8",
             "type": "dockerimage"
           }
         }
@@ -581,7 +581,7 @@
             }
           },
           "recipe": {
-            "content": "registry.access.redhat.com/codeready-workspaces/stacks-java",
+            "content": "registry.access.redhat.com/codeready-workspaces/stacks-java-rhel8",
             "type": "dockerimage"
           }
         }
@@ -672,7 +672,7 @@
             }
           },
           "recipe": {
-            "content": "registry.access.redhat.com/codeready-workspaces/stacks-java",
+            "content": "registry.access.redhat.com/codeready-workspaces/stacks-java-rhel8",
             "type": "dockerimage"
           }
         }
@@ -790,7 +790,7 @@
             }
           },
           "recipe": {
-            "content": "registry.access.redhat.com/codeready-workspaces/stacks-cpp",
+            "content": "registry.access.redhat.com/codeready-workspaces/stacks-cpp-rhel8",
             "type": "dockerimage"
           }
         }
@@ -870,7 +870,7 @@
             }
           },
           "recipe": {
-            "content": "registry.access.redhat.com/codeready-workspaces/stacks-dotnet",
+            "content": "registry.access.redhat.com/codeready-workspaces/stacks-dotnet-rhel8",
             "type": "dockerimage"
           }
         }
@@ -946,7 +946,7 @@
             }
           },
           "recipe": {
-            "content": "registry.access.redhat.com/codeready-workspaces/stacks-golang",
+            "content": "registry.access.redhat.com/codeready-workspaces/stacks-golang-rhel8",
             "type": "dockerimage"
           }
         }
@@ -1169,7 +1169,7 @@
             }
           },
           "recipe": {
-            "content": "registry.access.redhat.com/codeready-workspaces/stacks-php",
+            "content": "registry.access.redhat.com/codeready-workspaces/stacks-php-rhel8",
             "type": "dockerimage"
           }
         }
@@ -1281,7 +1281,7 @@
             }
           },
           "recipe": {
-            "content": "registry.access.redhat.com/codeready-workspaces/stacks-python",
+            "content": "registry.access.redhat.com/codeready-workspaces/stacks-python-rhel8",
             "type": "dockerimage"
           }
         }
