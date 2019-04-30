@@ -1,8 +1,8 @@
 [
   {
-    "id": "rhel8-default",
+    "id": "java-rhel8-default",
     "creator": "ide",
-    "name": "RHEL 8 - Java 1.8",
+    "name": "Java 1.8 on RHEL 8",
     "description": "RHEL 8 Java stack with OpenJDK 1.8 and Maven 3.5",
     "scope": "general",
     "tags": [
@@ -93,7 +93,7 @@
     "id": "java-default",
     "creator": "ide",
     "name": "Java 1.8",
-    "description": "RHEL 7 Java stack with OpenJDK 1.8 and Maven 3.5",
+    "description": "RHEL 7 Java stack with EAP 7.2, OpenJDK 1.8 and Maven 3.5",
     "scope": "general",
     "tags": [
       "eap",
@@ -154,7 +154,7 @@
             }
           },
           "recipe": {
-            "content": "registry.access.redhat.com/codeready-workspaces/stacks-java-rhel8",
+            "content": "registry.access.redhat.com/codeready-workspaces/stacks-java",
             "type": "dockerimage"
           }
         }
@@ -247,7 +247,7 @@
             }
           },
           "recipe": {
-            "content": "registry.access.redhat.com/codeready-workspaces/stacks-java-rhel8",
+            "content": "registry.access.redhat.com/codeready-workspaces/stacks-java",
             "type": "dockerimage"
           }
         }
@@ -303,7 +303,7 @@
     "id": "eap-default",
     "creator": "ide",
     "name": "JBoss EAP",
-    "description": "Java stack with EAP 7.2, OpenJDK 1.8 and Maven 3.5",
+    "description": "RHEL 7 Java stack with EAP 7.2, OpenJDK 1.8 and Maven 3.5",
     "scope": "general",
     "tags": [
       "eap",
@@ -364,7 +364,7 @@
             }
           },
           "recipe": {
-            "content": "registry.access.redhat.com/codeready-workspaces/stacks-java-rhel8",
+            "content": "registry.access.redhat.com/codeready-workspaces/stacks-java",
             "type": "dockerimage"
           }
         }
@@ -455,7 +455,7 @@
             }
           },
           "recipe": {
-            "content": "registry.access.redhat.com/codeready-workspaces/stacks-java-rhel8",
+            "content": "registry.access.redhat.com/codeready-workspaces/stacks-java",
             "type": "dockerimage"
           }
         }
@@ -581,7 +581,7 @@
             }
           },
           "recipe": {
-            "content": "registry.access.redhat.com/codeready-workspaces/stacks-java-rhel8",
+            "content": "registry.access.redhat.com/codeready-workspaces/stacks-java",
             "type": "dockerimage"
           }
         }
@@ -672,7 +672,7 @@
             }
           },
           "recipe": {
-            "content": "registry.access.redhat.com/codeready-workspaces/stacks-java-rhel8",
+            "content": "registry.access.redhat.com/codeready-workspaces/stacks-java",
             "type": "dockerimage"
           }
         }
