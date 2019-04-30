@@ -55,16 +55,16 @@ Stacks may reference non-existing images like `docker-registry.default.svc:5000/
 
 Once published, they will be in locations like these:
 
-* registry.access.redhat.com/codeready-workspaces/server:1.0
-* registry.access.redhat.com/codeready-workspaces/server-operator:1.0
-* registry.access.redhat.com/codeready-workspaces/stacks-cpp:1.0
-* registry.access.redhat.com/codeready-workspaces/stacks-dotnet:1.0
-* registry.access.redhat.com/codeready-workspaces/stacks-golang:1.0
-* registry.access.redhat.com/codeready-workspaces/stacks-java:1.0
-* registry.access.redhat.com/codeready-workspaces-beta/stacks-java-rhel8:1.0
-* registry.access.redhat.com/codeready-workspaces/stacks-node:1.0
-* registry.access.redhat.com/codeready-workspaces/stacks-php:1.0
-* registry.access.redhat.com/codeready-workspaces/stacks-python:1.0
+* registry.access.redhat.com/codeready-workspaces/server-rhel8:1.2
+* registry.access.redhat.com/codeready-workspaces/server-operator-rhel8:1.2
+* registry.access.redhat.com/codeready-workspaces/stacks-cpp-rhel8:1.2
+* registry.access.redhat.com/codeready-workspaces/stacks-dotnet-rhel8:1.2
+* registry.access.redhat.com/codeready-workspaces/stacks-golang-rhel8:1.2
+* registry.access.redhat.com/codeready-workspaces/stacks-java-rhel8:1.2
+* registry.access.redhat.com/codeready-workspaces/stacks-node-rhel8:1.2
+* registry.access.redhat.com/codeready-workspaces/stacks-php-rhel8:1.2
+* registry.access.redhat.com/codeready-workspaces/stacks-python-rhel8:1.2
+* registry.access.redhat.com/codeready-workspaces/stacks-node:1.2
 ====
 
 ### How to Build Container Using Jenkins and OSBS (Brew)
