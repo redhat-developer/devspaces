@@ -196,6 +196,8 @@
     "scope": "general",
     "tags": [
       "vert.x"
+      "maven",
+      "java"
     ],
     "components": [
       {
@@ -533,6 +535,8 @@
     "scope": "general",
     "tags": [
       "fuse"
+      "maven",
+      "java"
     ],
     "components": [
       {
@@ -911,7 +915,8 @@
     "description": "Golang stack",
     "scope": "general",
     "tags": [
-      "go"
+      "go",
+      "golang"
     ],
     "components": [
       {
@@ -978,6 +983,7 @@
     "description": "NodeJS 10x stack",
     "scope": "general",
     "tags": [
+      "nodejs10",
       "nodejs",
       "npm"
     ],
@@ -1048,6 +1054,7 @@
     "description": "NodeJS 8x stack",
     "scope": "general",
     "tags": [
+      "nodejs8",
       "nodejs",
       "npm"
     ],
@@ -1118,7 +1125,7 @@
     "description": "PHP 7.2 stack, including most popular extensions",
     "scope": "general",
     "tags": [
-      "PHP"
+      "php"
     ],
     "components": [
       {
