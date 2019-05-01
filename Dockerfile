@@ -53,7 +53,7 @@ RUN yum clean all && rm -rf /var/cache/yum && \
     mkdir -p /logs /data && \
     chgrp -R 0     /home/jboss /data /logs && \
     chmod -R g+rwX /home/jboss /data /logs && \
-    rpm -qa | sort -V && echo "End Of Installed Packages"
+    echo "Installed Packages" && rpm -qa | sort -V && echo "End Of Installed Packages"
 
 USER jboss
 ENTRYPOINT ["/entrypoint.sh"]
