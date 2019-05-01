@@ -16,15 +16,15 @@ fi
 
 # default list of CRW containers to query
 CRW_CONTAINERS_RHCC="\
-codeready-workspaces/server-rhel8 codeready-workspaces/server-operator-rhel8 \
-codeready-workspaces/stacks-java-rhel8 codeready-workspaces/stacks-node-rhel8 \
+codeready-workspaces/server-operator-rhel8 codeready-workspaces/server-rhel8 \
 codeready-workspaces/stacks-cpp-rhel8 codeready-workspaces/stacks-dotnet-rhel8 codeready-workspaces/stacks-golang-rhel8 \
+codeready-workspaces/stacks-java-rhel8 codeready-workspaces/stacks-node-rhel8 \
 codeready-workspaces/stacks-php-rhel8 codeready-workspaces/stacks-python-rhel8 \
 codeready-workspaces/stacks-node"
 CRW_CONTAINERS_PULP="\
-codeready-workspaces/server-rhel8 codeready-workspaces/operator-rhel8 \
-codeready-workspaces/stacks-java-rhel8 codeready-workspaces/stacks-node-rhel8 \
+codeready-workspaces/operator-rhel8 codeready-workspaces/server-rhel8 \
 codeready-workspaces/stacks-cpp-rhel8 codeready-workspaces/stacks-dotnet-rhel8 codeready-workspaces/stacks-golang-rhel8 \
+codeready-workspaces/stacks-java-rhel8 codeready-workspaces/stacks-node-rhel8 \
 codeready-workspaces/stacks-php-rhel8 codeready-workspaces/stacks-python-rhel8 \
 codeready-workspaces/stacks-node"
 
@@ -75,7 +75,9 @@ done
 if [[ ${REGISTRY} != "" ]]; then 
 	REGISTRYSTRING="--registry ${REGISTRY}"
 	REGISTRYPRE="${REGISTRY##*://}/"
-	if [[ ${REGISTRY} == *"brew-pulp-docker01"* ]] && [[ ${CONTAINERS} == "" ]]; then CONTAINERS="${CRW_CONTAINERS_PULP}"; fi
+	if [[ ${REGISTRY} == *"brew-pulp-docker01"* ]]; then
+		if [[ ${CONTAINERS} == "${CRW_CONTAINERS_RHCC}" ]] || [[ ${CONTAINERS} == "" ]]; then CONTAINERS="${CRW_CONTAINERS_PULP}"; fi
+	fi
 else
 	REGISTRYSTRING=""
 	REGISTRYPRE=""
@@ -90,6 +92,15 @@ if [[ $SHOWHISTORY -eq 1 ]]; then
 fi
 
 if [[ ${CONTAINERS} == "" ]]; then usage; fi
+
+# special case!
+if [[ ${REGISTRY} == "http://brew-pulp-docker01.web.prod.ext.phx2.redhat.com:8888" ]] && [[ ${CONTAINERS} == "${CRW_CONTAINERS_PULP}" ]] && [[ ${SHOWNVR} -eq 1 ]]; then
+	for containername in ${CONTAINERS}; do
+		if [[ $containername == "codeready-workspaces/stacks-node" ]]; then canditateTag="codeready-1.0-rhel-7-candidate"; else canditateTag="crw-1.2-rhel-8-candidate"; fi
+		brew list-tagged ${canditateTag} | grep "${containername/\//-}" | sort -V | tail -${NUMTAGS} | sed -e "s#[\ \t]\+${canditateTag}.\+##"
+	done
+	exit
+fi
 
 echo ""
 for URLfrag in $CONTAINERS; do
