@@ -20,7 +20,8 @@
     <test name="all">
         <classes>
             <class name="com.redhat.codeready.selenium.userstory.JavaUserStoryTest"/>
-            <class name="com.redhat.codeready.selenium.userstory.NodeJsUserStoryTest"/>
+            <class name="com.redhat.codeready.selenium.userstory.Node8UserStoryTest"/>
+            <class name="com.redhat.codeready.selenium.userstory.Node10UserStoryTest"/>
             <class name="com.redhat.codeready.selenium.userstory.PythonUserStoryTest"/>
             <class name="com.redhat.codeready.selenium.userstory.GoUserStoryTest"/>
             <class name="com.redhat.codeready.selenium.userstory.PhpUserStoryTest"/>

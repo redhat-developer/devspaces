@@ -11,7 +11,7 @@
 */
 package com.redhat.codeready.selenium.userstory;
 
-import static com.redhat.codeready.selenium.pageobject.dashboard.CodereadyNewWorkspace.CodereadyStacks.NODE;
+import static com.redhat.codeready.selenium.pageobject.dashboard.CodereadyNewWorkspace.CodereadyStacks.NODE8;
 import static org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants.Assistant.ASSISTANT;
 import static org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants.Assistant.FIND_PROJECT_SYMBOL;
 import static org.eclipse.che.selenium.core.utils.FileUtil.readFileToString;
@@ -44,7 +44,7 @@ import org.eclipse.che.selenium.pageobject.intelligent.CommandsPalette;
 import org.openqa.selenium.Keys;
 import org.testng.annotations.Test;
 
-public class NodeJsUserStoryTest extends AbstractUserStoryTest {
+public class Node8UserStoryTest extends AbstractUserStoryTest {
   private final String PROJECT = "web-nodejs-simple";
 
   @Inject private ProjectExplorer projectExplorer;
@@ -59,7 +59,7 @@ public class NodeJsUserStoryTest extends AbstractUserStoryTest {
   private String packageJsonText;
   private String packageJsonEditedText;
 
-  public NodeJsUserStoryTest() throws IOException, URISyntaxException {
+  public Node8UserStoryTest() throws IOException, URISyntaxException {
     packageJsonText =
         readFileToString(getClass().getResource("/projects/bayesian/package-json-before.txt"));
     packageJsonEditedText =
@@ -68,7 +68,7 @@ public class NodeJsUserStoryTest extends AbstractUserStoryTest {
 
   @Override
   protected CodereadyNewWorkspace.CodereadyStacks getStackName() {
-    return NODE;
+    return NODE8;
   }
 
   @Override
