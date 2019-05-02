@@ -76,7 +76,8 @@ public class CodereadyNewWorkspace extends NewWorkspace {
     CPP("cpp-default"),
     GO("go-default"),
     JAVA_10("java10-default"),
-    NODE("node-default"),
+    NODE8("node-default"),
+    NODE10("node10-default"),
     PHP("php-default"),
     PYTHON("python-default"),
     JAVA_RHEL8("rhel8-default");
