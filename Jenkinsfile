@@ -177,7 +177,6 @@ timeout(180) {
 		unstash 'stashLSJ'
 		installNPM()
 		installGo()
-		sh "sed -i 's@executable=\"npm\"@executable=\"yarn\"@' ${CHE_path}/workspace-loader/pom.xml"
 		buildMaven()
 		// patch - switch che-ls-jdt version to a different one
 		// sh "sed -i -e \"s#\\(.*<che.ls.jdt.version>\\)0.0.3\\(</che.ls.jdt.version>.*\\)#\\10.0.4-SNAPSHOT\\2#\" ${CHE_path}/pom.xml"
@@ -188,6 +187,9 @@ timeout(180) {
 			perl -0777 -p -i -e 's|(\\ +<dependencySet>.*?<\\/dependencySet>)| ${1} =~ /<include>org.eclipse.che.docs:che-docs<\\/include>/?\"\":${1}|gse' che/assembly/assembly-main/src/assembly/assembly.xml
 			perl -0777 -p -i -e 's|(\\ +<dependency>.*?<\\/dependency>)| ${1} =~ /<artifactId>che-docs<\\/artifactId>/?\"\":${1}|gse' che/pom.xml
 		'''
+
+		// switch to yarn instead of npm, to fix https://issues.jboss.org/browse/CRW-256 - Type 'Timeout' is not assignable to type 'number'.
+		sh "sed -i 's@executable=\"npm\"@executable=\"yarn\"@' ${CHE_path}/workspace-loader/pom.xml"
 
 		VER_CHE = sh(returnStdout:true,script:"egrep \"<version>\" ${CHE_path}/pom.xml|head -2|tail -1|sed -e \"s#.*<version>\\(.\\+\\)</version>#\\1#\"").trim()
 		SHA_CHE = sh(returnStdout:true,script:"cd ${CHE_path}/ && git rev-parse --short=4 HEAD").trim()
