@@ -43,15 +43,15 @@ import org.testng.annotations.Test;
 
 public class ThorntailUserStoryTest extends AbstractUserStoryTest {
   private final String PROJECT = "thorntail-rest-http";
-  private final String PATH_TO_MAIN_PACKAGE = PROJECT + "/src/main/java/io/openshift/booster/";
+  private final String PATH_TO_MAIN_PACKAGE = PROJECT + "/src/main/java/io/thorntail/example/";
 
   private static final String[] REPORT_DEPENDENCY_ANALYSIS = {
     "Report for /projects/thorntail-rest-http/pom.xml",
     "1) # of application dependencies : 0",
     "2) Dependencies with Licenses : ",
     "3) Suggest adding these dependencies to your application stack:",
-    "4) NO usage outlier application depedencies been found",
-    "5) NO alternative  application depedencies been suggested"
+    "4) No usage outlier application depedencies found",
+    "5) No alternative  application depedencies suggested"
   };
 
   @Inject private Ide ide;
@@ -95,7 +95,7 @@ public class ThorntailUserStoryTest extends AbstractUserStoryTest {
   }
 
   @Test(priority = 1)
-  public void runAndCheckWildFlyApp()
+  public void runAndCheckThorntailApp()
       throws InterruptedException, ExecutionException, TimeoutException {
     runAndCheckHelloWorldApp();
     checkMainJavaFeatures();
@@ -139,20 +139,21 @@ public class ThorntailUserStoryTest extends AbstractUserStoryTest {
     projectExplorer.openItemByPath(pathToFile);
     editor.waitActive();
     mavenPluginStatusBar.waitClosingInfoPanel();
-    editor.goToPosition(34, 55);
+    editor.goToPosition(33, 87);
     editor.typeTextIntoEditor(ENTER.toString());
-    editor.typeTextIntoEditor("suf");
-    editor.launchAutocomplete();
-    editor.waitTextIntoEditor("\"World\";\n        suffix");
+    editor.typeTextIntoEditor("n");
+    editor.launchAutocompleteAndWaitContainer();
+    editor.enterAutocompleteProposal("ame : String");
+    editor.waitTextIntoEditor("name\n        return new Greeting");
 
     // check codevalidation with autocompletion
-    editor.waitMarkerInPosition(ERROR, 35);
-    editor.goToPosition(35, 15);
+    editor.waitMarkerInPosition(ERROR, 34);
+    editor.goToPosition(34, 13);
     editor.typeTextIntoEditor(".to");
-    editor.waitTextIntoEditor("suffix.to");
-    editor.launchAutocomplete();
-    editor.selectItemIntoAutocompleteAndPerformDoubleClick("CharArray() : char[] ");
-    editor.waitTextIntoEditor("suffix.toCharArray()");
+    editor.waitTextIntoEditor("name.to");
+    editor.launchAutocompleteAndWaitContainer();
+    editor.selectItemIntoAutocompleteAndPerformDoubleClick("String() : String ");
+    editor.waitTextIntoEditor("name.toString()");
     editor.typeTextIntoEditor(";");
     editor.waitAllMarkersInvisibility(ERROR);
   }
