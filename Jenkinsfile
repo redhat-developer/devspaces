@@ -177,6 +177,7 @@ timeout(180) {
 		unstash 'stashLSJ'
 		installNPM()
 		installGo()
+		sh "sed -i 's@executable=\"npm\"@executable=\"yarn\"@' ${CHE_path}/workspace-loader/pom.xml"
 		buildMaven()
 		// patch - switch che-ls-jdt version to a different one
 		// sh "sed -i -e \"s#\\(.*<che.ls.jdt.version>\\)0.0.3\\(</che.ls.jdt.version>.*\\)#\\10.0.4-SNAPSHOT\\2#\" ${CHE_path}/pom.xml"
