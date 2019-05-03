@@ -30,6 +30,54 @@ while [[ "$#" -gt 0 ]]; do
   shift 1
 done
 
+# as seen on https://stackoverflow.com/questions/4023830/how-to-compare-two-strings-in-dot-separated-version-format-in-bash
+vercomp () {
+    if [[ $1 == $2 ]]
+    then
+        vercomp_return=0; return 0
+    fi
+    local IFS=.
+    local i ver1=($1) ver2=($2)
+    # fill empty fields in ver1 with zeros
+    for ((i=${#ver1[@]}; i<${#ver2[@]}; i++))
+    do
+        ver1[i]=0
+    done
+    for ((i=0; i<${#ver1[@]}; i++))
+    do
+        if [[ -z ${ver2[i]} ]]
+        then
+            # fill empty fields in ver2 with zeros
+            ver2[i]=0
+        fi
+        if ((10#${ver1[i]} > 10#${ver2[i]}))
+        then
+            vercomp_return=1; return 0
+        fi
+        if ((10#${ver1[i]} < 10#${ver2[i]}))
+        then
+            vercomp_return=2; return 0
+        fi
+    done
+    vercomp_return=0; return 0
+}
+
+testvercomp () {
+    vercomp $1 $3
+    # echo "[DEBUG] vercomp_return=$vercomp_return"
+    case $vercomp_return in
+        0) op='=';;
+        1) op='>';;
+        2) op='<';;
+    esac
+    if [[ $op != $2 ]]
+    then
+        testvercomp_return="false"
+    else
+        testvercomp_return="true"
+    fi
+}
+
 pushedIn=0
 for d in $(find ${WORKDIR} -maxdepth ${maxdepth} -name Dockerfile | sort); do
 	if [[ -f ${d} ]]; then
@@ -80,8 +128,10 @@ for d in $(find ${WORKDIR} -maxdepth ${maxdepth} -name Dockerfile | sort); do
 					if [[ ${LATE_TAGrevsuf} != ${CURR_TAGrevsuf} ]] || [[ "${LATE_TAGver}" != "${CURR_TAGver}" ]] || [[ "${LATE_TAGrevbase}" != "${CURR_TAGrevbase}" ]]; then
 						echo "- ${URL}"
 					fi
+					# TODO: try using testvercomp against the full tag versions w/ suffixes, eg., 8.16.0-0 ">" 8.15.1-1.1554788812
 					if [[ "${LATE_TAGver}" != "${CURR_TAGver}" ]] || [[ ${LATE_TAGrevbase} -gt ${CURR_TAGrevbase} ]] || [[ ${LATE_TAGrevsuf} -gt ${CURR_TAGrevsuf} ]]; then
-						if [[ ${LATE_TAGrevsuf} -ge ${CURR_TAGrevsuf} ]]; then # fix the Dockerfile
+						testvercomp "${LATE_TAGver}" ">" "${CURR_TAGver}"
+						if [[ "${testvercomp_return}" == "true" ]] || [[ ${LATE_TAGrevsuf} -ge ${CURR_TAGrevsuf} ]] || [[ ${LATE_TAGrevbase} -gt ${CURR_TAGrevbase} ]]; then # fix the Dockerfile
 							echo "++ $d "
 							sed -i -e "s#${URL}#${FROMPREFIX}:${LATESTTAG}#g" $d
 

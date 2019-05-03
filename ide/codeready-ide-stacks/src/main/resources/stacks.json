@@ -1,8 +1,8 @@
 [
   {
-    "id": "rhel8-default",
+    "id": "java-rhel8-default",
     "creator": "ide",
-    "name": "RHEL 8 - Java 1.8",
+    "name": "Java 1.8 on RHEL 8",
     "description": "RHEL 8 Java stack with OpenJDK 1.8 and Maven 3.5",
     "scope": "general",
     "tags": [
@@ -55,7 +55,7 @@
             }
           },
           "recipe": {
-            "content": "registry.access.redhat.com/codeready-workspaces-beta/stacks-java-rhel8",
+            "content": "registry.access.redhat.com/codeready-workspaces/stacks-java-rhel8",
             "type": "dockerimage"
           }
         }
@@ -93,7 +93,7 @@
     "id": "java-default",
     "creator": "ide",
     "name": "Java 1.8",
-    "description": "RHEL 7 Java stack with OpenJDK 1.8 and Maven 3.5",
+    "description": "RHEL 7 Java stack with EAP 7.2, OpenJDK 1.8 and Maven 3.5",
     "scope": "general",
     "tags": [
       "eap",
@@ -196,6 +196,8 @@
     "scope": "general",
     "tags": [
       "vert.x"
+      "maven",
+      "java"
     ],
     "components": [
       {
@@ -303,7 +305,7 @@
     "id": "eap-default",
     "creator": "ide",
     "name": "JBoss EAP",
-    "description": "Java stack with EAP 7.2, OpenJDK 1.8 and Maven 3.5",
+    "description": "RHEL 7 Java stack with EAP 7.2, OpenJDK 1.8 and Maven 3.5",
     "scope": "general",
     "tags": [
       "eap",
@@ -533,6 +535,8 @@
     "scope": "general",
     "tags": [
       "fuse"
+      "maven",
+      "java"
     ],
     "components": [
       {
@@ -790,7 +794,7 @@
             }
           },
           "recipe": {
-            "content": "registry.access.redhat.com/codeready-workspaces/stacks-cpp",
+            "content": "registry.access.redhat.com/codeready-workspaces/stacks-cpp-rhel8",
             "type": "dockerimage"
           }
         }
@@ -870,7 +874,7 @@
             }
           },
           "recipe": {
-            "content": "registry.access.redhat.com/codeready-workspaces/stacks-dotnet",
+            "content": "registry.access.redhat.com/codeready-workspaces/stacks-dotnet-rhel8",
             "type": "dockerimage"
           }
         }
@@ -911,7 +915,8 @@
     "description": "Golang stack",
     "scope": "general",
     "tags": [
-      "go"
+      "go",
+      "golang"
     ],
     "components": [
       {
@@ -946,7 +951,7 @@
             }
           },
           "recipe": {
-            "content": "registry.access.redhat.com/codeready-workspaces/stacks-golang",
+            "content": "registry.access.redhat.com/codeready-workspaces/stacks-golang-rhel8",
             "type": "dockerimage"
           }
         }
@@ -972,12 +977,13 @@
     }
   },
   {
-    "id": "node-default",
+    "id": "node10-default",
     "creator": "ide",
-    "name": "Node",
+    "name": "Node10",
     "description": "NodeJS 10x stack",
     "scope": "general",
     "tags": [
+      "nodejs10",
       "nodejs",
       "npm"
     ],
@@ -1048,6 +1054,7 @@
     "description": "NodeJS 8x stack",
     "scope": "general",
     "tags": [
+      "nodejs8",
       "nodejs",
       "npm"
     ],
@@ -1118,7 +1125,7 @@
     "description": "PHP 7.2 stack, including most popular extensions",
     "scope": "general",
     "tags": [
-      "PHP"
+      "php"
     ],
     "components": [
       {
@@ -1169,7 +1176,7 @@
             }
           },
           "recipe": {
-            "content": "registry.access.redhat.com/codeready-workspaces/stacks-php",
+            "content": "registry.access.redhat.com/codeready-workspaces/stacks-php-rhel8",
             "type": "dockerimage"
           }
         }
@@ -1281,7 +1288,7 @@
             }
           },
           "recipe": {
-            "content": "registry.access.redhat.com/codeready-workspaces/stacks-python",
+            "content": "registry.access.redhat.com/codeready-workspaces/stacks-python-rhel8",
             "type": "dockerimage"
           }
         }
