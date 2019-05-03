@@ -55,8 +55,8 @@ public class RedHatFuseUserStoryTest extends AbstractUserStoryTest {
     "1) # of application dependencies : ",
     "2) Dependencies with Licenses : ",
     "3) Suggest adding these dependencies to your application stack:",
-    "4) NO usage outlier application depedencies been found",
-    "5) NO alternative  application depedencies been suggested"
+    "4) No usage outlier application depedencies found",
+    "5) No alternative  application depedencies suggested"
   };
 
   private By textOnPreviewPage =
