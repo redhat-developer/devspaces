@@ -45,6 +45,11 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
+                <groupId>org.glassfish.jaxb</groupId>
+                <artifactId>jaxb-runtime</artifactId>
+                <version>2.4.0-b180830.0438</version>
+            </dependency>
+            <dependency>
                 <groupId>com.redhat</groupId>
                 <artifactId>codeready-ide-gwt-app</artifactId>
                 <version>${crw.version}</version>

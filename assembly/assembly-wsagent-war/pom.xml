@@ -23,6 +23,11 @@
     <artifactId>codeready-workspaces-assembly-wsagent-war</artifactId>
     <packaging>war</packaging>
     <name>CodeReady Workspaces :: Workspace Agent</name>
+    <properties>
+        <java.version>11</java.version>
+        <maven.compiler.source>${java.version}</maven.compiler.source>
+        <maven.compiler.target>${java.version}</maven.compiler.target>
+    </properties>
     <dependencies>
         <dependency>
             <groupId>com.redhat</groupId>
@@ -32,6 +37,10 @@
             <groupId>org.eclipse.che</groupId>
             <artifactId>assembly-wsagent-war</artifactId>
             <type>war</type>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.jaxb</groupId>
+            <artifactId>jaxb-runtime</artifactId>
         </dependency>
     </dependencies>
     <build>
