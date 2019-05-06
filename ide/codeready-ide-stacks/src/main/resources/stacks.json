@@ -3,9 +3,10 @@
     "id": "java-rhel8-default",
     "creator": "ide",
     "name": "Java 1.8 on RHEL 8",
-    "description": "RHEL 8 Java stack with OpenJDK 1.8 and Maven 3.5",
+    "description": "RHEL 8 Java stack with EAP 7.2, OpenJDK 11 and Maven 3.5",
     "scope": "general",
     "tags": [
+      "eap",
       "maven",
       "java"
     ],
@@ -21,6 +22,10 @@
       {
         "name": "Maven",
         "version": "3.5.0"
+      },
+      {
+        "name": "EAP",
+        "version": "7.2"
       }
     ],
     "workspaceConfig": {
@@ -39,6 +44,10 @@
                 "eap" : {
                   "port" : "8080",
                   "protocol" : "http"
+                },
+                "eap-debug": {
+                  "port": "8000",
+                  "protocol": "http"
                 }
               },
               "attributes" : {
