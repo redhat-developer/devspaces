@@ -1206,7 +1206,7 @@
         {
           "name": "start httpd",
           "type": "custom",
-          "commandLine": "httpd -k start\ntail -f /opt/rh/httpd24/root/etc/httpd/logs/access_log &\ntail -f /opt/rh/httpd24/root/etc/httpd/logs/error_log",
+          "commandLine": "httpd -k start\ntail -f /etc/httpd/logs/access_log &\ntail -f /etc/httpd/logs/error_log",
           "attributes": {
             "previewUrl": "${server.8080/tcp}/${current.project.relpath}",
             "goal": "Run"
