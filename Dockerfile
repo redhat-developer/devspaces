@@ -9,7 +9,9 @@
 #   Red Hat, Inc. - initial API and implementation
 #
 
-# TODO: switch to RHEL 8 based openjdk or EAP 7.2.1/7.3
+# TODO: switch to RHEL 8 based openjdk once live in RHCC
+# https://access.redhat.com/containers/?tab=tags#/registry.access.redhat.com/openjdk/openjdk-1.8-rhel8
+# ## registry.access.redhat.com/openjdk/openjdk-1.8-rhel8:1.0-2
 # https://access.redhat.com/containers/?tab=tags#/registry.access.redhat.com/redhat-openjdk-18/openjdk18-openshift
 FROM registry.access.redhat.com/redhat-openjdk-18/openjdk18-openshift:1.6-20
 
@@ -49,9 +51,6 @@ RUN tar xzf /tmp/codeready-workspaces-assembly-main.tar.gz --strip-components=1 
     mkdir -p /logs /data && \
     chgrp -R 0     /home/jboss /data /logs && \
     chmod -R g+rwX /home/jboss /data /logs
-# CVE fix for RHSA-2019:0679-02 https://pipeline.engineering.redhat.com/freshmakerevent/8717
-# CVE-2019-9636 errata 40636 - update python and python-libs to 2.7.5-77.el7_6
-# cannot apply CVEs when using -rhel8 suffix as yum will try to resolve .el8 rpms # RUN yum update -y libssh2 python-libs python java-1.8.0-openjdk java-1.8.0-openjdk-devel java-1.8.0-openjdk-headless && yum updateinfo list && 
 # NOTE: Can not run yum commands in upstream image -- fails due to lack of subscription / entitlement
 # RUN yum clean all && rm -rf /var/cache/yum && echo "Installed Packages" && rpm -qa | sort -V && echo "End Of Installed Packages"
 
