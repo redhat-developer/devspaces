@@ -268,7 +268,7 @@ timeout(120) {
 				"<a href=https://github.com/redhat-developer/${CRW_path}/pull/${env.ghprbPullId}>PR-${env.ghprbPullId}</a> ":\
 				("${SCRATCH}"=="true"?\
 					"<a href=${brewwebQuery}>Scratch</a> ":\
-					"<a href=https://quay.io/repository/crw/server-container?tab=tags>Quay</a> "\
+					"<a href=https://quay.io/repository/crw/server-rhel8?tab=tags>Quay</a> "\
 				)\
 			)\
 			+ "Build #${BUILD_NUMBER} (${BUILD_TIMESTAMP}) <br/>\
@@ -285,7 +285,7 @@ timeout(120) {
 
 timeout(120) {
 	node("${node}"){ stage "Run get-sources-rhpkg-container-build"
-		def QUAY_REPO_PATHs=(env.ghprbPullId && env.ghprbPullId?.trim()?"":("${SCRATCH}"=="true"?"":"server-container"))
+		def QUAY_REPO_PATHs=(env.ghprbPullId && env.ghprbPullId?.trim()?"":("${SCRATCH}"=="true"?"":"server-rhel8"))
 
 		def matcher = ( "${JOB_NAME}" =~ /.*_(stable-branch|master).*/ )
 		def JOB_BRANCH= (matcher.matches() ? matcher[0][1] : "stable-branch")
