@@ -55,7 +55,7 @@
       "type": "custom"
     },
     {
-      "commandLine": "httpd -k start && tail -f /opt/rh/httpd24/root/etc/httpd/logs/access_log && tail -f /opt/rh/httpd24/root/etc/httpd/logs/error_log",
+      "commandLine": "httpd -k start && tail -f /etc/httpd/logs/access_log && tail -f /etc/httpd/logs/error_log",
       "name": "start httpd",
       "attributes": {
         "previewUrl": "${server.8080/tcp}/${current.project.relpath}"
