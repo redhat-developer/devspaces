@@ -77,6 +77,29 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.8</version>
+                <executions>
+                    <execution>
+                        <id>remove-add-modules-from-JAVA_OPTS</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <tasks>
+                                <!-- comment out lines with add-modules -->
+                                <replaceregexp file="${project.build.directory}/dependency/bin/setenv.sh"
+                                               match="(.+ --add-modules .+)"
+                                               replace="# COMMENTED OUT TO SUPPORT JDK 8 and 11 :: \1"
+                                               byline="true"/>
+                            </tasks>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 </project>

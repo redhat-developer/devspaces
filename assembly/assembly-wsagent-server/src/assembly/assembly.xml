@@ -41,7 +41,7 @@
     </fileSets>
     <files>
         <file>
-            <source>${project.basedir}/src/assembly/setenv.sh</source>
+            <source>${project.build.directory}/dependency/bin/setenv.sh</source>
             <outputDirectory>bin</outputDirectory>
             <destName>setenv.sh</destName>
             <fileMode>755</fileMode>
