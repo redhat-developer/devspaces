@@ -15,12 +15,12 @@
           </elementProp>
           <elementProp name="crw.host" elementType="Argument">
             <stringProp name="Argument.name">crw.host</stringProp>
-            <stringProp name="Argument.value">${__P(crw.host,codeready-performance-testing.apps.ocp311.crw)}</stringProp>
+            <stringProp name="Argument.value">${__P(crw.host,localhost)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="crw.sso.host" elementType="Argument">
             <stringProp name="Argument.name">crw.sso.host</stringProp>
-            <stringProp name="Argument.value">${__P(crw.sso.host,keycloak-performance-testing.apps.ocp311.crw)}</stringProp>
+            <stringProp name="Argument.value">${__P(crw.sso.host,localhost)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="crw.protocol" elementType="Argument">
