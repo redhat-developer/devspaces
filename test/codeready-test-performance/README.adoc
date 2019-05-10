@@ -45,6 +45,6 @@ In the **codeready-test-scenario-cloning-project.jmx** file implemented next sce
 * Each virtual user logins and creates a workspace
 * Each virtual user waits workspace creation (RUNNING) status
 * Each user runs command like git clone git.url
-* Waiting exec 0 status from EXEC agent (this is mean succesfull cloning)
+* Waiting exec 0 status from EXEC agent (it does mean succesfull cloning)
 * After cloning by user(s), the workspace is stopped  and removed
 * In the end - performs clean up actions in the separated Threadgroup and all users are removed
