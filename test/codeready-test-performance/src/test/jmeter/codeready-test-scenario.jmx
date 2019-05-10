@@ -15,12 +15,12 @@
           </elementProp>
           <elementProp name="crw.host" elementType="Argument">
             <stringProp name="Argument.name">crw.host</stringProp>
-            <stringProp name="Argument.value">${__P(crw.host,172.0.1)}</stringProp>
+            <stringProp name="Argument.value">${__P(crw.host,codeready-codeready.172.19.20.240.nip.io)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="crw.sso.host" elementType="Argument">
             <stringProp name="Argument.name">crw.sso.host</stringProp>
-            <stringProp name="Argument.value">${__P(crw.sso.host,172.0.1)}</stringProp>
+            <stringProp name="Argument.value">${__P(crw.sso.host,rh-sso-codeready.172.19.20.240.nip.io)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="crw.protocol" elementType="Argument">
@@ -35,17 +35,7 @@
           </elementProp>
           <elementProp name="test.threads" elementType="Argument">
             <stringProp name="Argument.name">test.threads</stringProp>
-            <stringProp name="Argument.value">${__P(test.threads,1)}</stringProp>
-            <stringProp name="Argument.metadata">=</stringProp>
-          </elementProp>
-          <elementProp name="CONFIG_PATH" elementType="Argument">
-            <stringProp name="Argument.name">CONFIG_PATH</stringProp>
-            <stringProp name="Argument.value">${__BeanShell(import org.apache.jmeter.services.FileServer; FileServer.getFileServer().getBaseDir();)}</stringProp>
-            <stringProp name="Argument.metadata">=</stringProp>
-          </elementProp>
-          <elementProp name="crw.loopCount" elementType="Argument">
-            <stringProp name="Argument.name">crw.loopCount</stringProp>
-            <stringProp name="Argument.value">1</stringProp>
+            <stringProp name="Argument.value">${__P(test.threads,2)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
         </collectionProp>
@@ -57,7 +47,7 @@
         <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
         <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
           <boolProp name="LoopController.continue_forever">false</boolProp>
-          <stringProp name="LoopController.loops">${crw.loopCount}</stringProp>
+          <stringProp name="LoopController.loops">1</stringProp>
         </elementProp>
         <stringProp name="ThreadGroup.num_threads">${test.threads}</stringProp>
         <stringProp name="ThreadGroup.ramp_time">1</stringProp>
@@ -66,12 +56,6 @@
         <stringProp name="ThreadGroup.delay"></stringProp>
       </ThreadGroup>
       <hashTree>
-        <DNSCacheManager guiclass="DNSCachePanel" testclass="DNSCacheManager" testname="DNS Cache Manager" enabled="true">
-          <collectionProp name="DNSCacheManager.servers"/>
-          <boolProp name="DNSCacheManager.clearEachIteration">false</boolProp>
-          <boolProp name="DNSCacheManager.isCustomResolver">false</boolProp>
-        </DNSCacheManager>
-        <hashTree/>
         <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="User_Defined_Variables" enabled="true">
           <collectionProp name="Arguments.arguments">
             <elementProp name="WORKSPACE_NAME" elementType="Argument">
@@ -81,12 +65,7 @@
             </elementProp>
             <elementProp name="THRESHOLD_ATTEMPTS" elementType="Argument">
               <stringProp name="Argument.name">THRESHOLD_ATTEMPTS</stringProp>
-              <stringProp name="Argument.value">60</stringProp>
-              <stringProp name="Argument.metadata">=</stringProp>
-            </elementProp>
-            <elementProp name="MAX_ATTEMTS_FINISH_BUILD_WATING" elementType="Argument">
-              <stringProp name="Argument.name">MAX_ATTEMTS_FINISH_BUILD_WATING</stringProp>
-              <stringProp name="Argument.value">10</stringProp>
+              <stringProp name="Argument.value">180</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
             </elementProp>
           </collectionProp>
@@ -174,7 +153,7 @@
             </collectionProp>
           </HeaderManager>
           <hashTree/>
-          <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="extract_admin_token" enabled="true">
+          <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="JSON Extractor" enabled="true">
             <stringProp name="JSONPostProcessor.referenceNames">ADMIN_TOKEN</stringProp>
             <stringProp name="JSONPostProcessor.jsonPathExprs">access_token</stringProp>
             <stringProp name="JSONPostProcessor.match_numbers"></stringProp>
@@ -191,7 +170,7 @@
                 <stringProp name="Argument.value">{&#xd;
     &quot;id&quot; : &quot;b07e3a58-ed50-4a6e-be17-fcf49ff8b242&quot;,&#xd;
     &quot;createdTimestamp&quot; : 1498139671076,&#xd;
-    &quot;username&quot; : &quot;user${__threadNum}&quot;,&#xd;
+    &quot;username&quot; : &quot;user${NUM_USER}&quot;,&#xd;
     &quot;enabled&quot; : true,&#xd;
     &quot;totp&quot; : false,&#xd;
     &quot;emailVerified&quot; : false,&#xd;
@@ -291,7 +270,7 @@
             </collectionProp>
           </HeaderManager>
           <hashTree/>
-          <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="extract_user_name" enabled="true">
+          <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="JSON Extractor" enabled="true">
             <stringProp name="JSONPostProcessor.referenceNames">USER_NAME</stringProp>
             <stringProp name="JSONPostProcessor.jsonPathExprs">.username</stringProp>
             <stringProp name="JSONPostProcessor.match_numbers">-1</stringProp>
@@ -313,7 +292,7 @@
               </elementProp>
               <elementProp name="username" elementType="HTTPArgument">
                 <boolProp name="HTTPArgument.always_encode">false</boolProp>
-                <stringProp name="Argument.value">user${__threadNum}</stringProp>
+                <stringProp name="Argument.value">user${NUM_USER}</stringProp>
                 <stringProp name="Argument.metadata">=</stringProp>
                 <boolProp name="HTTPArgument.use_equals">true</boolProp>
                 <stringProp name="Argument.name">username</stringProp>
@@ -358,12 +337,11 @@
             </collectionProp>
           </HeaderManager>
           <hashTree/>
-          <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="extract_user_access_token" enabled="true">
+          <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="JSON Extractor" enabled="true">
             <stringProp name="JSONPostProcessor.referenceNames">USER_ACCESS_TOKEN</stringProp>
             <stringProp name="JSONPostProcessor.jsonPathExprs">.access_token</stringProp>
             <stringProp name="JSONPostProcessor.match_numbers"></stringProp>
             <stringProp name="JSONPostProcessor.defaultValues">false</stringProp>
-            <boolProp name="JSONPostProcessor.compute_concat">true</boolProp>
           </JSONPostProcessor>
           <hashTree/>
         </hashTree>
@@ -399,7 +377,8 @@
             &quot;org.eclipse.che.exec&quot;,&#xd;
             &quot;org.eclipse.che.terminal&quot;,&#xd;
             &quot;org.eclipse.che.ws-agent&quot;,&#xd;
-            &quot;org.eclipse.che.ls.java&quot;&#xd;
+            &quot;org.eclipse.che.ls.java&quot;,&#xd;
+            &quot;com.redhat.bayesian.lsp&quot;&#xd;
           ],&#xd;
           &quot;env&quot;: {}&#xd;
         }&#xd;
@@ -467,7 +446,7 @@
           <stringProp name="WhileController.condition">${IS_STATUS_RUNNING}</stringProp>
         </WhileController>
         <hashTree>
-          <CounterConfig guiclass="CounterConfigGui" testclass="CounterConfig" testname="count_attemps_for_waitng_run_workspaces" enabled="true">
+          <CounterConfig guiclass="CounterConfigGui" testclass="CounterConfig" testname="Counter" enabled="true">
             <stringProp name="CounterConfig.start">1</stringProp>
             <stringProp name="CounterConfig.end">${THRESHOLD_ATTEMPTS}</stringProp>
             <stringProp name="CounterConfig.incr">1</stringProp>
@@ -513,18 +492,18 @@
               </collectionProp>
             </HeaderManager>
             <hashTree/>
-            <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="extract_current_status_of_workspace" enabled="true">
+            <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="JSON Extractor" enabled="true">
               <stringProp name="JSONPostProcessor.referenceNames">WORKSPACE_STATUS</stringProp>
               <stringProp name="JSONPostProcessor.jsonPathExprs">.status</stringProp>
               <stringProp name="JSONPostProcessor.match_numbers"></stringProp>
               <stringProp name="JSONPostProcessor.defaultValues">false</stringProp>
             </JSONPostProcessor>
             <hashTree/>
-            <ConstantTimer guiclass="ConstantTimerGui" testclass="ConstantTimer" testname="delay_after_request_1sec" enabled="true">
+            <ConstantTimer guiclass="ConstantTimerGui" testclass="ConstantTimer" testname="Delay_after_request_1sec" enabled="true">
               <stringProp name="ConstantTimer.delay">1000</stringProp>
             </ConstantTimer>
             <hashTree/>
-            <JSR223Assertion guiclass="TestBeanGUI" testclass="JSR223Assertion" testname="check_conditions_of_workspace_JSR223_assertion" enabled="true">
+            <JSR223Assertion guiclass="TestBeanGUI" testclass="JSR223Assertion" testname="JSR223_assertion" enabled="true">
               <stringProp name="scriptLanguage">groovy</stringProp>
               <stringProp name="parameters"></stringProp>
               <stringProp name="filename"></stringProp>
@@ -544,7 +523,7 @@ AssertionResult.setFailureMessage(&quot;The just created Workspace has unexpecte
             <boolProp name="IfController.useExpression">true</boolProp>
           </IfController>
           <hashTree>
-            <JSR223Assertion guiclass="TestBeanGUI" testclass="JSR223Assertion" testname="set_failure_if_threshold_is_achieved_${__threadNum}" enabled="true">
+            <JSR223Assertion guiclass="TestBeanGUI" testclass="JSR223Assertion" testname="JSR223 Assertion" enabled="true">
               <stringProp name="scriptLanguage">groovy</stringProp>
               <stringProp name="parameters"></stringProp>
               <stringProp name="filename"></stringProp>
@@ -562,7 +541,7 @@ AssertionResult.setFailureMessage(&quot;the expected workspace status has been n
             <boolProp name="IfController.useExpression">true</boolProp>
           </IfController>
           <hashTree>
-            <JSR223Sampler guiclass="TestBeanGUI" testclass="JSR223Sampler" testname="reset_loop_if_ws_run_successful_${__threadNum}" enabled="true">
+            <JSR223Sampler guiclass="TestBeanGUI" testclass="JSR223Sampler" testname="reset_loop_if_ws_run_successful" enabled="true">
               <stringProp name="scriptLanguage">groovy</stringProp>
               <stringProp name="parameters"></stringProp>
               <stringProp name="filename"></stringProp>
@@ -572,12 +551,17 @@ AssertionResult.setFailureMessage(&quot;the expected workspace status has been n
             <hashTree/>
           </hashTree>
         </hashTree>
-        <JSR223Sampler guiclass="TestBeanGUI" testclass="JSR223Sampler" testname="return_running_statement_in_beginning_state_${__threadNum}" enabled="true">
+        <JSR223Sampler guiclass="TestBeanGUI" testclass="JSR223Sampler" testname="StoreTimeWsCreation" enabled="true">
           <stringProp name="scriptLanguage">groovy</stringProp>
           <stringProp name="parameters"></stringProp>
           <stringProp name="filename"></stringProp>
           <stringProp name="cacheKey">true</stringProp>
-          <stringProp name="script">vars.remove(&quot;IS_STATUS_RUNNING&quot;)
+          <stringProp name="script">def testVar = &quot;WS_TIME_CREATION_BY_USER_&quot;+${__threadNum};
+props.put(&quot;host&quot;, &quot;${crw.protocol}&quot; + &quot;//&quot; + &quot;${crw.host}&quot;);
+props.put(testVar, &quot;${CURRENT_ATTEMPT}&quot;);
+props.put(&quot;numberOfThreads&quot;, &quot;${__threadNum}&quot;);
+
+
 </stringProp>
         </JSR223Sampler>
         <hashTree/>
@@ -617,92 +601,27 @@ AssertionResult.setFailureMessage(&quot;the expected workspace status has been n
             </collectionProp>
           </HeaderManager>
           <hashTree/>
-          <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="exctract_current_ws_id" enabled="true">
+          <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="JSON_Extractor_current_ws_id" enabled="true">
             <stringProp name="JSONPostProcessor.referenceNames">CURRENT_WS_ID</stringProp>
             <stringProp name="JSONPostProcessor.jsonPathExprs">.id</stringProp>
             <stringProp name="JSONPostProcessor.match_numbers"></stringProp>
             <stringProp name="JSONPostProcessor.defaultValues">false</stringProp>
           </JSONPostProcessor>
           <hashTree/>
-          <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="extract_current_ws_state" enabled="true">
+          <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="JSON Extractor_current_ws_state" enabled="true">
             <stringProp name="JSONPostProcessor.referenceNames">WS_STATE_BEFORE_STOPPING</stringProp>
             <stringProp name="JSONPostProcessor.jsonPathExprs">.status</stringProp>
             <stringProp name="JSONPostProcessor.match_numbers"></stringProp>
           </JSONPostProcessor>
           <hashTree/>
         </hashTree>
-        <IfController guiclass="IfControllerPanel" testclass="IfController" testname="if_ws_has_stopped_status" enabled="true">
+        <IfController guiclass="IfControllerPanel" testclass="IfController" testname="If Controller" enabled="true">
           <stringProp name="IfController.condition">${__groovy(&quot;${WS_STATE_BEFORE_STOPPING}&quot;!=&quot;STOPPED&quot;)}</stringProp>
           <boolProp name="IfController.evaluateAll">false</boolProp>
           <boolProp name="IfController.useExpression">true</boolProp>
         </IfController>
         <hashTree>
-          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="refresh_user_token_${__threadNum}" enabled="true">
-            <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" enabled="true">
-              <collectionProp name="Arguments.arguments">
-                <elementProp name="client_id" elementType="HTTPArgument">
-                  <boolProp name="HTTPArgument.always_encode">false</boolProp>
-                  <stringProp name="Argument.value">codeready-public</stringProp>
-                  <stringProp name="Argument.metadata">=</stringProp>
-                  <boolProp name="HTTPArgument.use_equals">true</boolProp>
-                  <stringProp name="Argument.name">client_id</stringProp>
-                </elementProp>
-                <elementProp name="username" elementType="HTTPArgument">
-                  <boolProp name="HTTPArgument.always_encode">false</boolProp>
-                  <stringProp name="Argument.value">user${__threadNum}</stringProp>
-                  <stringProp name="Argument.metadata">=</stringProp>
-                  <boolProp name="HTTPArgument.use_equals">true</boolProp>
-                  <stringProp name="Argument.name">username</stringProp>
-                </elementProp>
-                <elementProp name="password" elementType="HTTPArgument">
-                  <boolProp name="HTTPArgument.always_encode">false</boolProp>
-                  <stringProp name="Argument.value">admin</stringProp>
-                  <stringProp name="Argument.metadata">=</stringProp>
-                  <boolProp name="HTTPArgument.use_equals">true</boolProp>
-                  <stringProp name="Argument.name">password</stringProp>
-                </elementProp>
-                <elementProp name="grant_type" elementType="HTTPArgument">
-                  <boolProp name="HTTPArgument.always_encode">false</boolProp>
-                  <stringProp name="Argument.value">password</stringProp>
-                  <stringProp name="Argument.metadata">=</stringProp>
-                  <boolProp name="HTTPArgument.use_equals">true</boolProp>
-                  <stringProp name="Argument.name">grant_type</stringProp>
-                </elementProp>
-              </collectionProp>
-            </elementProp>
-            <stringProp name="HTTPSampler.domain">${crw.sso.host}</stringProp>
-            <stringProp name="HTTPSampler.port">${crw.port}</stringProp>
-            <stringProp name="HTTPSampler.protocol">${crw.protocol}</stringProp>
-            <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-            <stringProp name="HTTPSampler.path">/auth/realms/codeready/protocol/openid-connect/token</stringProp>
-            <stringProp name="HTTPSampler.method">POST</stringProp>
-            <boolProp name="HTTPSampler.follow_redirects">false</boolProp>
-            <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
-            <boolProp name="HTTPSampler.use_keepalive">false</boolProp>
-            <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
-            <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
-            <stringProp name="HTTPSampler.connect_timeout"></stringProp>
-            <stringProp name="HTTPSampler.response_timeout"></stringProp>
-          </HTTPSamplerProxy>
-          <hashTree>
-            <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
-              <collectionProp name="HeaderManager.headers">
-                <elementProp name="User-Agent" elementType="Header">
-                  <stringProp name="Header.name">User-Agent</stringProp>
-                  <stringProp name="Header.value">Mozilla/5.0 (X11; Fedora; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.77 Safari/537.36</stringProp>
-                </elementProp>
-              </collectionProp>
-            </HeaderManager>
-            <hashTree/>
-            <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="extract_user_token" enabled="true">
-              <stringProp name="JSONPostProcessor.referenceNames">USER_ACCESS_TOKEN</stringProp>
-              <stringProp name="JSONPostProcessor.jsonPathExprs">.access_token</stringProp>
-              <stringProp name="JSONPostProcessor.match_numbers"></stringProp>
-              <stringProp name="JSONPostProcessor.defaultValues">false</stringProp>
-            </JSONPostProcessor>
-            <hashTree/>
-          </hashTree>
-          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="stop_wokspace_${__threadNum}" enabled="true">
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="stop_workspace_thread_${__threadNum}" enabled="true">
             <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" enabled="true">
               <collectionProp name="Arguments.arguments"/>
             </elementProp>
@@ -744,159 +663,13 @@ AssertionResult.setFailureMessage(&quot;the expected workspace status has been n
           <stringProp name="WhileController.condition">${IS_WORKSPACE_STOPPED}</stringProp>
         </WhileController>
         <hashTree>
-          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="refresh_user_token_${__threadNum}" enabled="true">
-            <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" enabled="true">
-              <collectionProp name="Arguments.arguments">
-                <elementProp name="client_id" elementType="HTTPArgument">
-                  <boolProp name="HTTPArgument.always_encode">false</boolProp>
-                  <stringProp name="Argument.value">codeready-public</stringProp>
-                  <stringProp name="Argument.metadata">=</stringProp>
-                  <boolProp name="HTTPArgument.use_equals">true</boolProp>
-                  <stringProp name="Argument.name">client_id</stringProp>
-                </elementProp>
-                <elementProp name="username" elementType="HTTPArgument">
-                  <boolProp name="HTTPArgument.always_encode">false</boolProp>
-                  <stringProp name="Argument.value">user${__threadNum}</stringProp>
-                  <stringProp name="Argument.metadata">=</stringProp>
-                  <boolProp name="HTTPArgument.use_equals">true</boolProp>
-                  <stringProp name="Argument.name">username</stringProp>
-                </elementProp>
-                <elementProp name="password" elementType="HTTPArgument">
-                  <boolProp name="HTTPArgument.always_encode">false</boolProp>
-                  <stringProp name="Argument.value">admin</stringProp>
-                  <stringProp name="Argument.metadata">=</stringProp>
-                  <boolProp name="HTTPArgument.use_equals">true</boolProp>
-                  <stringProp name="Argument.name">password</stringProp>
-                </elementProp>
-                <elementProp name="grant_type" elementType="HTTPArgument">
-                  <boolProp name="HTTPArgument.always_encode">false</boolProp>
-                  <stringProp name="Argument.value">password</stringProp>
-                  <stringProp name="Argument.metadata">=</stringProp>
-                  <boolProp name="HTTPArgument.use_equals">true</boolProp>
-                  <stringProp name="Argument.name">grant_type</stringProp>
-                </elementProp>
-              </collectionProp>
-            </elementProp>
-            <stringProp name="HTTPSampler.domain">${crw.sso.host}</stringProp>
-            <stringProp name="HTTPSampler.port">${crw.port}</stringProp>
-            <stringProp name="HTTPSampler.protocol">${crw.protocol}</stringProp>
-            <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-            <stringProp name="HTTPSampler.path">/auth/realms/codeready/protocol/openid-connect/token</stringProp>
-            <stringProp name="HTTPSampler.method">POST</stringProp>
-            <boolProp name="HTTPSampler.follow_redirects">false</boolProp>
-            <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
-            <boolProp name="HTTPSampler.use_keepalive">false</boolProp>
-            <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
-            <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
-            <stringProp name="HTTPSampler.connect_timeout"></stringProp>
-            <stringProp name="HTTPSampler.response_timeout"></stringProp>
-          </HTTPSamplerProxy>
-          <hashTree>
-            <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
-              <collectionProp name="HeaderManager.headers">
-                <elementProp name="User-Agent" elementType="Header">
-                  <stringProp name="Header.name">User-Agent</stringProp>
-                  <stringProp name="Header.value">Mozilla/5.0 (X11; Fedora; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.77 Safari/537.36</stringProp>
-                </elementProp>
-              </collectionProp>
-            </HeaderManager>
-            <hashTree/>
-            <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="JSON Extractor" enabled="true">
-              <stringProp name="JSONPostProcessor.referenceNames">USER_ACCESS_TOKEN</stringProp>
-              <stringProp name="JSONPostProcessor.jsonPathExprs">.access_token</stringProp>
-              <stringProp name="JSONPostProcessor.match_numbers"></stringProp>
-              <stringProp name="JSONPostProcessor.defaultValues">false</stringProp>
-            </JSONPostProcessor>
-            <hashTree/>
-          </hashTree>
-          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="refresh_token_thread_${__threadNum}" enabled="true">
-            <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" enabled="true">
-              <collectionProp name="Arguments.arguments">
-                <elementProp name="client_id" elementType="HTTPArgument">
-                  <boolProp name="HTTPArgument.always_encode">false</boolProp>
-                  <stringProp name="Argument.value">admin-cli</stringProp>
-                  <stringProp name="Argument.metadata">=</stringProp>
-                  <boolProp name="HTTPArgument.use_equals">true</boolProp>
-                  <stringProp name="Argument.name">client_id</stringProp>
-                </elementProp>
-                <elementProp name="username" elementType="HTTPArgument">
-                  <boolProp name="HTTPArgument.always_encode">false</boolProp>
-                  <stringProp name="Argument.value">admin</stringProp>
-                  <stringProp name="Argument.metadata">=</stringProp>
-                  <boolProp name="HTTPArgument.use_equals">true</boolProp>
-                  <stringProp name="Argument.name">username</stringProp>
-                </elementProp>
-                <elementProp name="password" elementType="HTTPArgument">
-                  <boolProp name="HTTPArgument.always_encode">false</boolProp>
-                  <stringProp name="Argument.value">admin</stringProp>
-                  <stringProp name="Argument.metadata">=</stringProp>
-                  <boolProp name="HTTPArgument.use_equals">true</boolProp>
-                  <stringProp name="Argument.name">password</stringProp>
-                </elementProp>
-                <elementProp name="grant_type" elementType="HTTPArgument">
-                  <boolProp name="HTTPArgument.always_encode">false</boolProp>
-                  <stringProp name="Argument.value">password</stringProp>
-                  <stringProp name="Argument.metadata">=</stringProp>
-                  <boolProp name="HTTPArgument.use_equals">true</boolProp>
-                  <stringProp name="Argument.name">grant_type</stringProp>
-                </elementProp>
-              </collectionProp>
-            </elementProp>
-            <stringProp name="HTTPSampler.domain">${crw.sso.host}</stringProp>
-            <stringProp name="HTTPSampler.port">${crw.port}</stringProp>
-            <stringProp name="HTTPSampler.protocol">${crw.protocol}</stringProp>
-            <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-            <stringProp name="HTTPSampler.path">/auth/realms/master/protocol/openid-connect/token</stringProp>
-            <stringProp name="HTTPSampler.method">POST</stringProp>
-            <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
-            <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
-            <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
-            <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
-            <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
-            <stringProp name="HTTPSampler.connect_timeout"></stringProp>
-            <stringProp name="HTTPSampler.response_timeout"></stringProp>
-          </HTTPSamplerProxy>
-          <hashTree>
-            <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
-              <collectionProp name="HeaderManager.headers">
-                <elementProp name="Accept-Language" elementType="Header">
-                  <stringProp name="Header.name">Accept-Language</stringProp>
-                  <stringProp name="Header.value">ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7</stringProp>
-                </elementProp>
-                <elementProp name="Upgrade-Insecure-Requests" elementType="Header">
-                  <stringProp name="Header.name">Upgrade-Insecure-Requests</stringProp>
-                  <stringProp name="Header.value">1</stringProp>
-                </elementProp>
-                <elementProp name="Accept-Encoding" elementType="Header">
-                  <stringProp name="Header.name">Accept-Encoding</stringProp>
-                  <stringProp name="Header.value">gzip, deflate</stringProp>
-                </elementProp>
-                <elementProp name="User-Agent" elementType="Header">
-                  <stringProp name="Header.name">User-Agent</stringProp>
-                  <stringProp name="Header.value">Mozilla/5.0 (X11; Fedora; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.77 Safari/537.36</stringProp>
-                </elementProp>
-                <elementProp name="Accept" elementType="Header">
-                  <stringProp name="Header.name">Accept</stringProp>
-                  <stringProp name="Header.value">text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8</stringProp>
-                </elementProp>
-              </collectionProp>
-            </HeaderManager>
-            <hashTree/>
-            <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="JSON Extractor" enabled="true">
-              <stringProp name="JSONPostProcessor.referenceNames">ADMIN_TOKEN</stringProp>
-              <stringProp name="JSONPostProcessor.jsonPathExprs">access_token</stringProp>
-              <stringProp name="JSONPostProcessor.match_numbers"></stringProp>
-              <stringProp name="JSONPostProcessor.defaultValues">null</stringProp>
-            </JSONPostProcessor>
-            <hashTree/>
-          </hashTree>
           <CounterConfig guiclass="CounterConfigGui" testclass="CounterConfig" testname="Counter" enabled="true">
             <stringProp name="CounterConfig.start">1</stringProp>
             <stringProp name="CounterConfig.end">${THRESHOLD_ATTEMPTS}</stringProp>
             <stringProp name="CounterConfig.incr">1</stringProp>
             <stringProp name="CounterConfig.name">CURRENT_ATTEMPT</stringProp>
             <stringProp name="CounterConfig.format"></stringProp>
-            <boolProp name="CounterConfig.per_user">false</boolProp>
+            <boolProp name="CounterConfig.per_user">true</boolProp>
           </CounterConfig>
           <hashTree/>
           <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="get_workspace_status_for_stopping_thread_${__threadNum}" enabled="true">
@@ -954,21 +727,11 @@ AssertionResult.setFailureMessage(&quot;the expected workspace status has been n
             <stringProp name="parameters"></stringProp>
             <stringProp name="script">boolean IS_WORKSPACE_STOPPED=false
 IS_WORKSPACE_STOPPED=!(vars.get(&apos;WORKSPACE_STATUS&apos;).equals(&apos;STOPPED&apos;) || vars.get(&apos;CURRENT_ATTEMPT&apos;).equals(vars.get(&apos;THRESHOLD_ATTEMPTS&apos;)))
-vars.put(&quot;IS_WORKSPACE_STOPPED&quot;, String.valueOf(IS_WORKSPACE_STOPPED))
-</stringProp>
+vars.put(&quot;IS_WORKSPACE_STOPPED&quot;, String.valueOf(IS_WORKSPACE_STOPPED))</stringProp>
             <stringProp name="scriptLanguage">groovy</stringProp>
           </JSR223Sampler>
           <hashTree/>
         </hashTree>
-        <JSR223Sampler guiclass="TestBeanGUI" testclass="JSR223Sampler" testname="return_stopping_statement_in_beginning_state_${__threadNum}" enabled="true">
-          <stringProp name="scriptLanguage">groovy</stringProp>
-          <stringProp name="parameters"></stringProp>
-          <stringProp name="filename"></stringProp>
-          <stringProp name="cacheKey">true</stringProp>
-          <stringProp name="script">vars.remove(&quot;IS_WORKSPACE_STOPPED&quot;)
-</stringProp>
-        </JSR223Sampler>
-        <hashTree/>
         <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="remove_worksapce_thread_${__threadNum}" enabled="true">
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" enabled="true">
             <collectionProp name="Arguments.arguments"/>
@@ -1006,7 +769,7 @@ vars.put(&quot;IS_WORKSPACE_STOPPED&quot;, String.valueOf(IS_WORKSPACE_STOPPED))
             </collectionProp>
           </HeaderManager>
           <hashTree/>
-          <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="check_response_status_after_removing_request" enabled="true">
+          <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Response Assertion - Status" enabled="true">
             <collectionProp name="Asserion.test_strings">
               <stringProp name="49590">204</stringProp>
             </collectionProp>
@@ -1016,226 +779,6 @@ vars.put(&quot;IS_WORKSPACE_STOPPED&quot;, String.valueOf(IS_WORKSPACE_STOPPED))
             <stringProp name="Assertion.custom_message"></stringProp>
           </ResponseAssertion>
           <hashTree/>
-        </hashTree>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="get_current_workspace_id_thread_${__threadNum}" enabled="true">
-          <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" enabled="true">
-            <collectionProp name="Arguments.arguments"/>
-          </elementProp>
-          <stringProp name="HTTPSampler.domain">${crw.host}</stringProp>
-          <stringProp name="HTTPSampler.port">${crw.port}</stringProp>
-          <stringProp name="HTTPSampler.protocol">${crw.protocol}</stringProp>
-          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-          <stringProp name="HTTPSampler.path">/api/workspace</stringProp>
-          <stringProp name="HTTPSampler.method">GET</stringProp>
-          <boolProp name="HTTPSampler.follow_redirects">false</boolProp>
-          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
-          <boolProp name="HTTPSampler.use_keepalive">false</boolProp>
-          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
-          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
-          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
-          <stringProp name="HTTPSampler.response_timeout"></stringProp>
-        </HTTPSamplerProxy>
-        <hashTree>
-          <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
-            <collectionProp name="HeaderManager.headers">
-              <elementProp name="Content-Type" elementType="Header">
-                <stringProp name="Header.name">Content-Type</stringProp>
-                <stringProp name="Header.value">application/json</stringProp>
-              </elementProp>
-              <elementProp name="User-Agent" elementType="Header">
-                <stringProp name="Header.name">User-Agent</stringProp>
-                <stringProp name="Header.value">Mozilla/5.0 (X11; Fedora; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.77 Safari/537.36</stringProp>
-              </elementProp>
-              <elementProp name="" elementType="Header">
-                <stringProp name="Header.name">Authorization</stringProp>
-                <stringProp name="Header.value">Bearer ${USER_ACCESS_TOKEN}</stringProp>
-              </elementProp>
-            </collectionProp>
-          </HeaderManager>
-          <hashTree/>
-          <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="JSON_Extractor_current_ws_id" enabled="true">
-            <stringProp name="JSONPostProcessor.referenceNames">CURRENT_WS_ID</stringProp>
-            <stringProp name="JSONPostProcessor.jsonPathExprs">.id</stringProp>
-            <stringProp name="JSONPostProcessor.match_numbers"></stringProp>
-            <stringProp name="JSONPostProcessor.defaultValues">false</stringProp>
-          </JSONPostProcessor>
-          <hashTree/>
-          <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="JSON Extractor_current_ws_state" enabled="true">
-            <stringProp name="JSONPostProcessor.referenceNames">WS_STATE_BEFORE_STOPPING</stringProp>
-            <stringProp name="JSONPostProcessor.jsonPathExprs">.status</stringProp>
-            <stringProp name="JSONPostProcessor.match_numbers"></stringProp>
-          </JSONPostProcessor>
-          <hashTree/>
-        </hashTree>
-        <TransactionController guiclass="TransactionControllerGui" testclass="TransactionController" testname="delete_user" enabled="true">
-          <boolProp name="TransactionController.includeTimers">false</boolProp>
-          <boolProp name="TransactionController.parent">false</boolProp>
-        </TransactionController>
-        <hashTree>
-          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="refresh_token_thread__${__threadNum}" enabled="true">
-            <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" enabled="true">
-              <collectionProp name="Arguments.arguments">
-                <elementProp name="client_id" elementType="HTTPArgument">
-                  <boolProp name="HTTPArgument.always_encode">false</boolProp>
-                  <stringProp name="Argument.value">admin-cli</stringProp>
-                  <stringProp name="Argument.metadata">=</stringProp>
-                  <boolProp name="HTTPArgument.use_equals">true</boolProp>
-                  <stringProp name="Argument.name">client_id</stringProp>
-                </elementProp>
-                <elementProp name="username" elementType="HTTPArgument">
-                  <boolProp name="HTTPArgument.always_encode">false</boolProp>
-                  <stringProp name="Argument.value">admin</stringProp>
-                  <stringProp name="Argument.metadata">=</stringProp>
-                  <boolProp name="HTTPArgument.use_equals">true</boolProp>
-                  <stringProp name="Argument.name">username</stringProp>
-                </elementProp>
-                <elementProp name="password" elementType="HTTPArgument">
-                  <boolProp name="HTTPArgument.always_encode">false</boolProp>
-                  <stringProp name="Argument.value">admin</stringProp>
-                  <stringProp name="Argument.metadata">=</stringProp>
-                  <boolProp name="HTTPArgument.use_equals">true</boolProp>
-                  <stringProp name="Argument.name">password</stringProp>
-                </elementProp>
-                <elementProp name="grant_type" elementType="HTTPArgument">
-                  <boolProp name="HTTPArgument.always_encode">false</boolProp>
-                  <stringProp name="Argument.value">password</stringProp>
-                  <stringProp name="Argument.metadata">=</stringProp>
-                  <boolProp name="HTTPArgument.use_equals">true</boolProp>
-                  <stringProp name="Argument.name">grant_type</stringProp>
-                </elementProp>
-              </collectionProp>
-            </elementProp>
-            <stringProp name="HTTPSampler.domain">${crw.sso.host}</stringProp>
-            <stringProp name="HTTPSampler.port">${crw.port}</stringProp>
-            <stringProp name="HTTPSampler.protocol">${crw.protocol}</stringProp>
-            <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-            <stringProp name="HTTPSampler.path">/auth/realms/master/protocol/openid-connect/token</stringProp>
-            <stringProp name="HTTPSampler.method">POST</stringProp>
-            <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
-            <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
-            <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
-            <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
-            <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
-            <stringProp name="HTTPSampler.connect_timeout"></stringProp>
-            <stringProp name="HTTPSampler.response_timeout"></stringProp>
-          </HTTPSamplerProxy>
-          <hashTree>
-            <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
-              <collectionProp name="HeaderManager.headers">
-                <elementProp name="Accept-Language" elementType="Header">
-                  <stringProp name="Header.name">Accept-Language</stringProp>
-                  <stringProp name="Header.value">ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7</stringProp>
-                </elementProp>
-                <elementProp name="Upgrade-Insecure-Requests" elementType="Header">
-                  <stringProp name="Header.name">Upgrade-Insecure-Requests</stringProp>
-                  <stringProp name="Header.value">1</stringProp>
-                </elementProp>
-                <elementProp name="Accept-Encoding" elementType="Header">
-                  <stringProp name="Header.name">Accept-Encoding</stringProp>
-                  <stringProp name="Header.value">gzip, deflate</stringProp>
-                </elementProp>
-                <elementProp name="User-Agent" elementType="Header">
-                  <stringProp name="Header.name">User-Agent</stringProp>
-                  <stringProp name="Header.value">Mozilla/5.0 (X11; Fedora; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.77 Safari/537.36</stringProp>
-                </elementProp>
-                <elementProp name="Accept" elementType="Header">
-                  <stringProp name="Header.name">Accept</stringProp>
-                  <stringProp name="Header.value">text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8</stringProp>
-                </elementProp>
-              </collectionProp>
-            </HeaderManager>
-            <hashTree/>
-            <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="JSON Extractor" enabled="true">
-              <stringProp name="JSONPostProcessor.referenceNames">ADMIN_TOKEN</stringProp>
-              <stringProp name="JSONPostProcessor.jsonPathExprs">access_token</stringProp>
-              <stringProp name="JSONPostProcessor.match_numbers"></stringProp>
-              <stringProp name="JSONPostProcessor.defaultValues">null</stringProp>
-            </JSONPostProcessor>
-            <hashTree/>
-          </hashTree>
-          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="get_user_id_thread__${__threadNum}" enabled="true">
-            <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" enabled="true">
-              <collectionProp name="Arguments.arguments"/>
-            </elementProp>
-            <stringProp name="HTTPSampler.domain">${crw.sso.host}</stringProp>
-            <stringProp name="HTTPSampler.port">${crw.port}</stringProp>
-            <stringProp name="HTTPSampler.protocol">${crw.protocol}</stringProp>
-            <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-            <stringProp name="HTTPSampler.path">/auth/admin/realms/codeready/users?search=user${__threadNum}</stringProp>
-            <stringProp name="HTTPSampler.method">GET</stringProp>
-            <boolProp name="HTTPSampler.follow_redirects">false</boolProp>
-            <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
-            <boolProp name="HTTPSampler.use_keepalive">false</boolProp>
-            <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
-            <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
-            <stringProp name="HTTPSampler.connect_timeout"></stringProp>
-            <stringProp name="HTTPSampler.response_timeout"></stringProp>
-          </HTTPSamplerProxy>
-          <hashTree>
-            <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
-              <collectionProp name="HeaderManager.headers">
-                <elementProp name="Authorization" elementType="Header">
-                  <stringProp name="Header.name">Authorization</stringProp>
-                  <stringProp name="Header.value">Bearer ${ADMIN_TOKEN}</stringProp>
-                </elementProp>
-                <elementProp name="Content-Type" elementType="Header">
-                  <stringProp name="Header.name">Content-Type</stringProp>
-                  <stringProp name="Header.value">application/json</stringProp>
-                </elementProp>
-                <elementProp name="User-Agent" elementType="Header">
-                  <stringProp name="Header.name">User-Agent</stringProp>
-                  <stringProp name="Header.value">Mozilla/5.0 (X11; Fedora; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.77 Safari/537.36</stringProp>
-                </elementProp>
-              </collectionProp>
-            </HeaderManager>
-            <hashTree/>
-            <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="JSON Extractor" enabled="true">
-              <stringProp name="JSONPostProcessor.referenceNames">USER_ID</stringProp>
-              <stringProp name="JSONPostProcessor.jsonPathExprs">.id</stringProp>
-              <stringProp name="JSONPostProcessor.match_numbers"></stringProp>
-              <stringProp name="Sample.scope">all</stringProp>
-              <stringProp name="JSONPostProcessor.defaultValues">false</stringProp>
-              <boolProp name="JSONPostProcessor.compute_concat">true</boolProp>
-            </JSONPostProcessor>
-            <hashTree/>
-          </hashTree>
-          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="delete_user_thread_${__threadNum}" enabled="true">
-            <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" enabled="true">
-              <collectionProp name="Arguments.arguments"/>
-            </elementProp>
-            <stringProp name="HTTPSampler.domain">${crw.sso.host}</stringProp>
-            <stringProp name="HTTPSampler.port">${crw.port}</stringProp>
-            <stringProp name="HTTPSampler.protocol">${crw.protocol}</stringProp>
-            <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-            <stringProp name="HTTPSampler.path">/auth/admin/realms/codeready/users/${USER_ID}</stringProp>
-            <stringProp name="HTTPSampler.method">DELETE</stringProp>
-            <boolProp name="HTTPSampler.follow_redirects">false</boolProp>
-            <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
-            <boolProp name="HTTPSampler.use_keepalive">false</boolProp>
-            <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
-            <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
-            <stringProp name="HTTPSampler.connect_timeout"></stringProp>
-            <stringProp name="HTTPSampler.response_timeout"></stringProp>
-          </HTTPSamplerProxy>
-          <hashTree>
-            <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
-              <collectionProp name="HeaderManager.headers">
-                <elementProp name="Authorization" elementType="Header">
-                  <stringProp name="Header.name">Authorization</stringProp>
-                  <stringProp name="Header.value">Bearer ${ADMIN_TOKEN}</stringProp>
-                </elementProp>
-                <elementProp name="Content-Type" elementType="Header">
-                  <stringProp name="Header.name">Content-Type</stringProp>
-                  <stringProp name="Header.value">application/json</stringProp>
-                </elementProp>
-                <elementProp name="User-Agent" elementType="Header">
-                  <stringProp name="Header.name">User-Agent</stringProp>
-                  <stringProp name="Header.value">Mozilla/5.0 (X11; Fedora; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.77 Safari/537.36</stringProp>
-                </elementProp>
-              </collectionProp>
-            </HeaderManager>
-            <hashTree/>
-          </hashTree>
         </hashTree>
         <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree" enabled="true">
           <boolProp name="ResultCollector.error_logging">false</boolProp>
@@ -1420,99 +963,12 @@ vars.put(&quot;IS_WORKSPACE_STOPPED&quot;, String.valueOf(IS_WORKSPACE_STOPPED))
             </JSONPostProcessor>
             <hashTree/>
           </hashTree>
-          <DebugSampler guiclass="TestBeanGUI" testclass="DebugSampler" testname="Debug Sampler" enabled="true">
-            <boolProp name="displayJMeterProperties">false</boolProp>
-            <boolProp name="displayJMeterVariables">true</boolProp>
-            <boolProp name="displaySystemProperties">false</boolProp>
-          </DebugSampler>
-          <hashTree/>
           <ForeachController guiclass="ForeachControlPanel" testclass="ForeachController" testname="delete_users" enabled="true">
             <stringProp name="ForeachController.inputVal">USER_ID</stringProp>
             <stringProp name="ForeachController.returnVal">CURRENT_USER_ID</stringProp>
             <boolProp name="ForeachController.useSeparator">true</boolProp>
           </ForeachController>
           <hashTree>
-            <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="refresh_token_thread" enabled="true">
-              <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" enabled="true">
-                <collectionProp name="Arguments.arguments">
-                  <elementProp name="client_id" elementType="HTTPArgument">
-                    <boolProp name="HTTPArgument.always_encode">false</boolProp>
-                    <stringProp name="Argument.value">admin-cli</stringProp>
-                    <stringProp name="Argument.metadata">=</stringProp>
-                    <boolProp name="HTTPArgument.use_equals">true</boolProp>
-                    <stringProp name="Argument.name">client_id</stringProp>
-                  </elementProp>
-                  <elementProp name="username" elementType="HTTPArgument">
-                    <boolProp name="HTTPArgument.always_encode">false</boolProp>
-                    <stringProp name="Argument.value">admin</stringProp>
-                    <stringProp name="Argument.metadata">=</stringProp>
-                    <boolProp name="HTTPArgument.use_equals">true</boolProp>
-                    <stringProp name="Argument.name">username</stringProp>
-                  </elementProp>
-                  <elementProp name="password" elementType="HTTPArgument">
-                    <boolProp name="HTTPArgument.always_encode">false</boolProp>
-                    <stringProp name="Argument.value">admin</stringProp>
-                    <stringProp name="Argument.metadata">=</stringProp>
-                    <boolProp name="HTTPArgument.use_equals">true</boolProp>
-                    <stringProp name="Argument.name">password</stringProp>
-                  </elementProp>
-                  <elementProp name="grant_type" elementType="HTTPArgument">
-                    <boolProp name="HTTPArgument.always_encode">false</boolProp>
-                    <stringProp name="Argument.value">password</stringProp>
-                    <stringProp name="Argument.metadata">=</stringProp>
-                    <boolProp name="HTTPArgument.use_equals">true</boolProp>
-                    <stringProp name="Argument.name">grant_type</stringProp>
-                  </elementProp>
-                </collectionProp>
-              </elementProp>
-              <stringProp name="HTTPSampler.domain">${crw.sso.host}</stringProp>
-              <stringProp name="HTTPSampler.port">${crw.port}</stringProp>
-              <stringProp name="HTTPSampler.protocol">${crw.protocol}</stringProp>
-              <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-              <stringProp name="HTTPSampler.path">/auth/realms/master/protocol/openid-connect/token</stringProp>
-              <stringProp name="HTTPSampler.method">POST</stringProp>
-              <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
-              <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
-              <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
-              <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
-              <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
-              <stringProp name="HTTPSampler.connect_timeout"></stringProp>
-              <stringProp name="HTTPSampler.response_timeout"></stringProp>
-            </HTTPSamplerProxy>
-            <hashTree>
-              <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
-                <collectionProp name="HeaderManager.headers">
-                  <elementProp name="Accept-Language" elementType="Header">
-                    <stringProp name="Header.name">Accept-Language</stringProp>
-                    <stringProp name="Header.value">ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7</stringProp>
-                  </elementProp>
-                  <elementProp name="Upgrade-Insecure-Requests" elementType="Header">
-                    <stringProp name="Header.name">Upgrade-Insecure-Requests</stringProp>
-                    <stringProp name="Header.value">1</stringProp>
-                  </elementProp>
-                  <elementProp name="Accept-Encoding" elementType="Header">
-                    <stringProp name="Header.name">Accept-Encoding</stringProp>
-                    <stringProp name="Header.value">gzip, deflate</stringProp>
-                  </elementProp>
-                  <elementProp name="User-Agent" elementType="Header">
-                    <stringProp name="Header.name">User-Agent</stringProp>
-                    <stringProp name="Header.value">Mozilla/5.0 (X11; Fedora; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.77 Safari/537.36</stringProp>
-                  </elementProp>
-                  <elementProp name="Accept" elementType="Header">
-                    <stringProp name="Header.name">Accept</stringProp>
-                    <stringProp name="Header.value">text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8</stringProp>
-                  </elementProp>
-                </collectionProp>
-              </HeaderManager>
-              <hashTree/>
-              <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="JSON Extractor" enabled="true">
-                <stringProp name="JSONPostProcessor.referenceNames">ADMIN_TOKEN</stringProp>
-                <stringProp name="JSONPostProcessor.jsonPathExprs">access_token</stringProp>
-                <stringProp name="JSONPostProcessor.match_numbers"></stringProp>
-                <stringProp name="JSONPostProcessor.defaultValues">null</stringProp>
-              </JSONPostProcessor>
-              <hashTree/>
-            </hashTree>
             <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="get_user-role_thread" enabled="true">
               <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" enabled="true">
                 <collectionProp name="Arguments.arguments"/>
@@ -1604,7 +1060,7 @@ vars.put(&quot;IS_WORKSPACE_STOPPED&quot;, String.valueOf(IS_WORKSPACE_STOPPED))
               </hashTree>
             </hashTree>
           </hashTree>
-          <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree" enabled="false">
+          <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree" enabled="true">
             <boolProp name="ResultCollector.error_logging">false</boolProp>
             <objProp>
               <name>saveConfig</name>
@@ -1642,6 +1098,232 @@ vars.put(&quot;IS_WORKSPACE_STOPPED&quot;, String.valueOf(IS_WORKSPACE_STOPPED))
           </ResultCollector>
           <hashTree/>
         </hashTree>
+        <JSR223Sampler guiclass="TestBeanGUI" testclass="JSR223Sampler" testname="GenerateReport" enabled="true">
+          <stringProp name="scriptLanguage">groovy</stringProp>
+          <stringProp name="parameters"></stringProp>
+          <stringProp name="filename"></stringProp>
+          <stringProp name="cacheKey">true</stringProp>
+          <stringProp name="script">import java.io.FileWriter;
+ 
+StringBuilder stringBuilder = new StringBuilder();
+List &lt;Integer&gt; values = new ArrayList();
+String numberOfThreads = props.get(&quot;numberOfThreads&quot;);
+String host = props.get(&quot;host&quot;);
+String date = &quot;${__time(d-MMM-yyyy hh:mm:ss)}&quot;;
+Integer sum=0;
+
+String style = &quot;@import url(https://fonts.googleapis.com/css?family=Roboto:400,500,700,300,100);\n&quot; +
+                       &quot;\n&quot; +
+                       &quot;body {\n&quot; +
+                       &quot;  background-color: #3e94ec;\n&quot; +
+                       &quot;  font-family: \&quot;Roboto\&quot;, helvetica, arial, sans-serif;\n&quot; +
+                       &quot;  font-size: 16px;\n&quot; +
+                       &quot;  font-weight: 400;\n&quot; +
+                       &quot;  text-rendering: optimizeLegibility;\n&quot; +
+                       &quot;}\n&quot; +
+                       &quot;\n&quot; +
+                       &quot;div.table-title {\n&quot; +
+                       &quot;   display: block;\n&quot; +
+                       &quot;  margin: auto;\n&quot; +
+                       &quot;  max-width: 800px;\n&quot; +
+                       &quot;  padding:5px;\n&quot; +
+                       &quot;  width: 100%;\n&quot; +
+                       &quot;}\n&quot; +
+                       &quot;\n&quot; +
+                       &quot;.table-title h3 {\n&quot; +
+                       &quot;   color: #fafafa;\n&quot; +
+                       &quot;   font-size: 26px;\n&quot; +
+                       &quot;   font-weight: 400;\n&quot; +
+                       &quot;   font-style:normal;\n&quot; +
+                       &quot;   font-family: \&quot;Roboto\&quot;, helvetica, arial, sans-serif;\n&quot; +
+                       &quot;   text-shadow: -1px -1px 1px rgba(0, 0, 0, 0.1);\n&quot; +
+                       &quot;}\n&quot; +
+                       &quot;\n&quot; +
+                       &quot;\n&quot; +
+                       &quot;/*** Table Styles **/\n&quot; +
+                       &quot;\n&quot; +
+                       &quot;.table-fill {\n&quot; +
+                       &quot;  background: white;\n&quot; +
+                       &quot;  border-radius:3px;\n&quot; +
+                       &quot;  border-collapse: collapse;\n&quot; +
+                       &quot;  height: 0px;\n&quot; +
+                       &quot;  margin: auto;\n&quot; +
+                       &quot;  max-width: 800px;\n&quot; +
+                       &quot;  padding:5px;\n&quot; +
+                       &quot;  width: 100%;\n&quot; +
+                       &quot;  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);\n&quot; +
+                       &quot;  animation: float 5s infinite;\n&quot; +
+                       &quot;}\n&quot; +
+                       &quot; \n&quot; +
+                       &quot;th {\n&quot; +
+                       &quot;  color:#D5DDE5;;\n&quot; +
+                       &quot;  background:#1b1e24;\n&quot; +
+                       &quot;  border-bottom:4px solid #9ea7af;\n&quot; +
+                       &quot;  border-right: 1px solid #343a45;\n&quot; +
+                       &quot;  font-size:16px;\n&quot; +
+                       &quot;  font-weight: 100;\n&quot; +
+                       &quot;  padding:18px;\n&quot; +
+                       &quot;  text-align:center;\n&quot; +
+                       &quot;  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);\n&quot; +
+                       &quot;  vertical-align:middle;\n&quot; +
+                       &quot;}\n&quot; +
+                       &quot;\n&quot; +
+                       &quot;th:first-child {\n&quot; +
+                       &quot;  border-top-left-radius:3px;\n&quot; +
+                       &quot;}\n&quot; +
+                       &quot; \n&quot; +
+                       &quot;th:last-child {\n&quot; +
+                       &quot;  border-top-right-radius:3px;\n&quot; +
+                       &quot;  border-right:none;\n&quot; +
+                       &quot;}\n&quot; +
+                       &quot;  \n&quot; +
+                       &quot;tr {\n&quot; +
+                       &quot;  border-top: 1px solid #C1C3D1;\n&quot; +
+                       &quot;  border-bottom-: 1px solid #C1C3D1;\n&quot; +
+                       &quot;  color:#666B85;\n&quot; +
+                       &quot;  font-size:16px;\n&quot; +
+                       &quot;  font-weight:normal;\n&quot; +
+                       &quot;  text-shadow: 0 1px 1px rgba(256, 256, 256, 0.1);\n&quot; +
+                       &quot;}\n&quot; +
+                       &quot; \n&quot; +
+                       &quot;tr:hover td {\n&quot; +
+                       &quot;  background:#4E5066;\n&quot; +
+                       &quot;  color:#FFFFFF;\n&quot; +
+                       &quot;  border-top: 1px solid #22262e;\n&quot; +
+                       &quot;}\n&quot; +
+                       &quot; \n&quot; +
+                       &quot;tr:first-child {\n&quot; +
+                       &quot;  border-top:none;\n&quot; +
+                       &quot;}\n&quot; +
+                       &quot;\n&quot; +
+                       &quot;tr:last-child {\n&quot; +
+                       &quot;  border-bottom:none;\n&quot; +
+                       &quot;}\n&quot; +
+                       &quot; \n&quot; +
+                       &quot;tr:nth-child(odd) td {\n&quot; +
+                       &quot;  background:#EBEBEB;\n&quot; +
+                       &quot;}\n&quot; +
+                       &quot; \n&quot; +
+                       &quot;tr:nth-child(odd):hover td {\n&quot; +
+                       &quot;  background:#4E5066;\n&quot; +
+                       &quot;}\n&quot; +
+                       &quot;\n&quot; +
+                       &quot;tr:last-child td:first-child {\n&quot; +
+                       &quot;  border-bottom-left-radius:3px;\n&quot; +
+                       &quot;}\n&quot; +
+                       &quot; \n&quot; +
+                       &quot;tr:last-child td:last-child {\n&quot; +
+                       &quot;  border-bottom-right-radius:3px;\n&quot; +
+                       &quot;}\n&quot; +
+                       &quot; \n&quot; +
+                       &quot;td {\n&quot; +
+                       &quot;  background:#FFFFFF;\n&quot; +
+                       &quot;  padding:6px;\n&quot; +
+                       &quot;  text-align:center;\n&quot; +
+                       &quot;  vertical-align:middle;\n&quot; +
+                       &quot;  font-weight:300;\n&quot; +
+                       &quot;  font-size:16px;\n&quot; +
+                       &quot;  text-shadow: -1px -1px 1px rgba(0, 0, 0, 0.1);\n&quot; +
+                       &quot;  border-right: 1px solid #C1C3D1;\n&quot; +
+                       &quot;}\n&quot; +
+                       &quot;\n&quot; +
+                       &quot;td:last-child {\n&quot; +
+                       &quot;  border-right: 0px;\n&quot; +
+                       &quot;}\n&quot; +
+                       &quot;\n&quot; +
+                       &quot;th.text-center {\n&quot; +
+                       &quot;  text-align: center;\n&quot; +
+                       &quot;}\n&quot; +
+                       &quot;\n&quot; +
+                       &quot;th.text-left {\n&quot; +
+                       &quot;  text-align: left;\n&quot; +
+                       &quot;}\n&quot; +
+                       &quot;\n&quot; +
+                       &quot;th.text-right {\n&quot; +
+                       &quot;  text-align: right;\n&quot; +
+                       &quot;}\n&quot; +
+                       &quot;\n&quot; +
+                       &quot;td.text-center {\n&quot; +
+                       &quot;  text-align: center;\n&quot; +
+                       &quot;}\n&quot; +
+                       &quot;\n&quot; +
+                       &quot;td.text-center {\n&quot; +
+                       &quot;  text-align: center;\n&quot; +
+                       &quot;}\n&quot; +
+                       &quot;\n&quot; +
+                       &quot;td.text-right {\n&quot; +
+                       &quot;  text-align: right;\n&quot; +
+                       &quot;}\n\n&quot;;
+
+
+String headerPart =&quot;&lt;html lang=\&quot;en\&quot;&gt;\n&quot; +
+                           &quot;   &lt;head&gt;\n&quot; +
+                           &quot;&lt;style&gt;\n&quot;+
+                           style +
+                           &quot;      &lt;meta charset=\&quot;utf-8\&quot; /&gt;\n&quot; +
+                           &quot;      &lt;title&gt;Table Style&lt;/title&gt;\n&quot; +
+                           &quot;      &lt;meta name=\&quot;viewport\&quot; content=\&quot;initial-scale=1.0; maximum-scale=1.0; width=device-width;\&quot;&gt;\n&quot; +
+                           &quot;      &lt;/style&gt;&quot;+
+                           &quot;   &lt;/head&gt;\n&quot; +
+                           &quot;   &lt;body&gt;\n&quot; +
+                           &quot;      &lt;div class=\&quot;table-title\&quot;&gt;\n&quot; +
+                           &quot;         &lt;h3&gt;Total workspaces tested in parallel threads: &quot; + numberOfThreads + &quot; &lt;/h3&gt;\n&quot; +
+                           &quot;      &lt;/div&gt;\n&quot; +
+                           &quot;      &lt;table class=\&quot;table-fill\&quot;&gt;\n&quot; +
+                           &quot;      &lt;thead&gt;&quot;;
+
+String titleHtmlContent = &quot;&lt;tr&gt;\n&quot; +
+                                  &quot;   &lt;th class=\&quot;text-left\&quot;&gt;Average workspace creation value in sec.:: &lt;/th&gt;\n&quot; +
+                                  &quot;   &lt;th class=\&quot;text-left\&quot;&gt;Minimum workspace creation value in sec.: &lt;/th&gt;\n&quot; +
+                                  &quot;   &lt;th class=\&quot;text-left\&quot;&gt;Maximum workspace creation value in sec.: &lt;/th&gt;\n&quot; +
+                                  &quot;&lt;/tr&gt;\n&quot; +
+                                  &quot;&lt;/thead&gt;\n&quot; +
+                                  &quot;&lt;tbody class=\&quot;table-hover\&quot;&gt;&quot;;
+
+String columnForDataPart = &quot;&lt;tr&gt;\n&quot; +
+                                   &quot;   &lt;td class=\&quot;text-left\&quot;&gt;%s&lt;/td&gt;\n&quot; +
+                                   &quot;   &lt;td class=\&quot;text-left\&quot;&gt;%s&lt;/td&gt;\n&quot; +
+                                   &quot;   &lt;td class=\&quot;text-left\&quot;&gt;%s&lt;/td&gt;\n&quot; +
+                                   &quot;&lt;/tr&gt;\n&quot;;
+
+
+String closingSection = &quot;&lt;/tbody&gt;\n&quot; +
+                                &quot;&lt;/table&gt;\n&quot; +
+                                &quot;&lt;/body&gt;&quot; +
+                                &quot;&lt;div style=&apos;margin:auto; max-width: 800px; padding: 20px; color:#e6eeff&apos;&gt;&quot; +
+                                &quot;host: &quot; + host +  
+                                &quot;&lt;/div&gt;&quot; + 
+                                &quot;&lt;div style=&apos;margin:auto; max-width: 800px; padding: 20px; font-size:10px; color:#e6eeff&apos;&gt;&quot; + date +&quot;&lt;/div&gt;&quot;
+                                &quot;&lt;/html&gt;&quot;;
+
+for (int i = 1; i &lt;=Integer.parseInt(numberOfThreads); i++) {
+            values.add(Integer.valueOf(props.get(&quot;WS_TIME_CREATION_BY_USER_&quot;+String.valueOf(i))));
+		}
+        
+for (Integer val: values) {
+            sum += val;
+	     }
+
+stringBuilder.append(headerPart)
+             .append(titleHtmlContent)
+             .append(
+              String.format(
+              columnForDataPart, 
+              String.valueOf(sum/Integer.parseInt(numberOfThreads)), 
+              String.valueOf(Collections.min(values)), 
+              String.valueOf(Collections.max(values))))
+              .append(closingSection)
+              .toString();
+
+String defaultPathToHtmlReport = &quot;workspace-time-creation.html&quot;
+
+FileWriter fileWriter = new FileWriter(defaultPathToHtmlReport, false);
+
+	fileWriter.append(stringBuilder.toString())
+	fileWriter.flush();
+	fileWriter.close();                              </stringProp>
+        </JSR223Sampler>
+        <hashTree/>
       </hashTree>
     </hashTree>
   </hashTree>
