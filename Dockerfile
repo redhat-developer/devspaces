@@ -18,14 +18,14 @@ FROM registry.access.redhat.com/redhat-openjdk-18/openjdk18-openshift:1.6-20
 ENV SUMMARY="Red Hat CodeReady Workspaces Server container" \
     DESCRIPTION="Red Hat CodeReady Workspaces server container" \
     PRODNAME="codeready-workspaces" \
-    COMPNAME="server-rhel8"
+    COMPNAME="server"
 
 LABEL summary="$SUMMARY" \
       description="$DESCRIPTION" \
       io.k8s.description="$DESCRIPTION" \
       io.k8s.display-name="$DESCRIPTION" \
       io.openshift.tags="$PRODNAME,$COMPNAME" \
-      com.redhat.component="$PRODNAME-$COMPNAME" \
+      com.redhat.component="$PRODNAME-$COMPNAME-container" \
       name="$PRODNAME/$COMPNAME" \
       version="1.3" \
       license="EPLv2" \
