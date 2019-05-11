@@ -78,7 +78,8 @@ public class StacksListTest {
     // check Java 1.8 stack info
     assertTrue(stacks.isStackItemExisted("Java 1.8"));
     assertEquals(
-        stacks.getStackDescription("Java 1.8"), "RHEL 7 Java stack with OpenJDK 1.8 and Maven 3.5");
+        stacks.getStackDescription("Java 1.8"),
+        "RHEL 7 Java stack with EAP 7.2, OpenJDK 1.8 and Maven 3.5");
 
     String stackComponents = stacks.getStackComponents("Java 1.8");
     componentList.forEach(
@@ -111,18 +112,18 @@ public class StacksListTest {
     // search stacks by a full name
     stacks.typeToSearchInput("java");
     assertTrue(stacks.isStackItemExisted("Java 1.8"));
-    assertTrue(stacks.isStackItemExisted("JBoss EAP"));
+    assertTrue(stacks.isStackItemExisted("Java 1.8 on RHEL 8"));
     assertFalse(stacks.isStackItemExisted(NODE.getName()));
 
     stacks.typeToSearchInput("node");
     assertTrue(stacks.isStackItemExisted(NODE.getName()));
-    assertFalse(stacks.isStackItemExisted("JBoss EAP"));
+    assertFalse(stacks.isStackItemExisted("Java 1.8 on RHEL 8"));
     assertFalse(stacks.isStackItemExisted("Java 1.8"));
 
     // search stacks by a part name
     stacks.typeToSearchInput("ne");
     assertTrue(stacks.isStackItemExisted(DOTNET.getName()));
-    assertFalse(stacks.isStackItemExisted("JBoss EAP"));
+    assertFalse(stacks.isStackItemExisted("Java 1.8 on RHEL 8"));
     assertFalse(stacks.isStackItemExisted("Java 1.8"));
   }
 
