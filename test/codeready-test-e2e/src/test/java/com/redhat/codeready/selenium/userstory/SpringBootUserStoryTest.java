@@ -123,11 +123,14 @@ public class SpringBootUserStoryTest extends AbstractUserStoryTest {
   @Test(priority = 1)
   public void checkMainCodeAssistantFeatures() {
     seleniumWebDriverHelper.switchToIdeFrameAndWaitAvailability();
-    projectExplorer.quickExpandWithJavaScript();
+    projectExplorer.quickRevealToItemWithJavaScript(
+        PATH_TO_MAIN_PACKAGE + "/service/Greeting.java");
+    projectExplorer.quickRevealToItemWithJavaScript(
+        PATH_TO_MAIN_PACKAGE + "/service/GreetingEndpoint.java");
 
-    projectExplorer.openItemByPath(PATH_TO_MAIN_PACKAGE + "/service/GreetingEndpoint.java");
-    editor.waitActive();
     projectExplorer.openItemByPath(PATH_TO_MAIN_PACKAGE + "/service/Greeting.java");
+    editor.waitActive();
+    projectExplorer.openItemByPath(PATH_TO_MAIN_PACKAGE + "/service/GreetingEndpoint.java");
     editor.waitActive();
 
     checkGoToDeclarationFeature();
@@ -142,7 +145,7 @@ public class SpringBootUserStoryTest extends AbstractUserStoryTest {
   }
 
   private void checkGoToDeclarationFeature() {
-    editor.selectTabByName("GreetingEndpoint");
+    editor.waitTabVisibilityAndCheckFocus("GreetingEndpoint");
     editor.goToPosition(33, 24);
     editor.typeTextIntoEditor(F4.toString());
     editor.waitActiveTabFileName("Greeting");
