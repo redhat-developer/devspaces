@@ -138,7 +138,7 @@ public class ThorntailUserStoryTest extends AbstractUserStoryTest {
     projectExplorer.quickRevealToItemWithJavaScript(pathToFile);
     projectExplorer.openItemByPath(pathToFile);
     editor.waitActive();
-    mavenPluginStatusBar.waitClosingInfoPanel();
+    mavenPluginStatusBar.waitClosingInfoPanel(400);
     editor.goToPosition(33, 87);
     editor.typeTextIntoEditor(ENTER.toString());
     editor.typeTextIntoEditor("n");
