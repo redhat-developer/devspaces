@@ -55,10 +55,11 @@ public class NewWorkspacePageTest {
           CodereadyStacks.DOT_NET,
           CodereadyStacks.CPP,
           CodereadyStacks.GO,
+          CodereadyStacks.JAVA_RHEL8,
           CodereadyStacks.NODE8,
+          CodereadyStacks.NODE10,
           CodereadyStacks.PHP,
           CodereadyStacks.PYTHON,
-          CodereadyStacks.JAVA_RHEL8,
           CodereadyStacks.THORNTAIL);
 
   private static final List<CodereadyNewWorkspace.CodereadyStacks>
@@ -70,10 +71,11 @@ public class NewWorkspacePageTest {
               CodereadyStacks.JBOSS_EAP,
               CodereadyStacks.JAVA_DEFAULT,
               CodereadyStacks.THORNTAIL,
-              CodereadyStacks.JAVA_RHEL8,
               CodereadyStacks.PYTHON,
               CodereadyStacks.PHP,
+              CodereadyStacks.NODE10,
               CodereadyStacks.NODE8,
+              CodereadyStacks.JAVA_RHEL8,
               CodereadyStacks.GO,
               CodereadyStacks.CPP,
               CodereadyStacks.DOT_NET);
@@ -89,10 +91,11 @@ public class NewWorkspacePageTest {
               CodereadyStacks.DOT_NET,
               CodereadyStacks.CPP,
               CodereadyStacks.GO,
+              CodereadyStacks.JAVA_RHEL8,
               CodereadyStacks.NODE8,
+              CodereadyStacks.NODE10,
               CodereadyStacks.PHP,
               CodereadyStacks.PYTHON,
-              CodereadyStacks.JAVA_RHEL8,
               CodereadyStacks.THORNTAIL);
 
   private static final List<CodereadyNewWorkspace.CodereadyStacks> EXPECTED_CODEREADY_JAVA_STACKS =

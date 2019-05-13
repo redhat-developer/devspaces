@@ -367,7 +367,7 @@ public class WorkspacesListTest {
 
   @Test(priority = 1, alwaysRun = true)
   public void checkDocumentionLink() {
-    String documentPageTitleXpath = "//h1[contains(text(),'Administering workspaces')]";
+    String documentPageTitleId = "header-nav";
 
     workspaces.waitPageLoading();
     String mainWindow = seleniumWebDriver.getWindowHandle();
@@ -377,7 +377,7 @@ public class WorkspacesListTest {
     seleniumWebDriverHelper.waitOpenedSomeWin();
     seleniumWebDriverHelper.switchToNextWindow(mainWindow);
 
-    seleniumWebDriverHelper.waitVisibility(By.xpath(documentPageTitleXpath));
+    seleniumWebDriverHelper.waitVisibility(By.id(documentPageTitleId));
 
     seleniumWebDriver.close();
     seleniumWebDriver.switchTo().window(mainWindow);
