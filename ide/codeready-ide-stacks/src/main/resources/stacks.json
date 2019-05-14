@@ -948,6 +948,10 @@
                   "port": "5000",
                   "protocol": "http"
                 },
+                "8080/tcp": {
+                  "port": "8080",
+                  "protocol": "http"
+                },
                 "9000/tcp": {
                   "port": "9000",
                   "protocol": "http"
@@ -1017,6 +1021,10 @@
                 },
                 "5000/tcp": {
                   "port": "5000",
+                  "protocol": "http"
+                },
+                "8080/tcp": {
+                  "port": "8080",
                   "protocol": "http"
                 },
                 "9000/tcp": {
