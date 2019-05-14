@@ -15,7 +15,7 @@ if [[ $(docker run docker-ls docker-ls 2>&1) == *"Unable to find image"* ]]; the
 fi
 
 WORKDIR=`pwd`
-BRANCH=codeready-1.0-rhel-7 # not master
+BRANCH=crw-1.2-rhel-8 # not master
 maxdepth=2
 buildCommand="echo ''" # By default, no build will be triggered when a change occurs; use -c for a container-build (or -s for scratch).
 while [[ "$#" -gt 0 ]]; do
@@ -102,7 +102,10 @@ for d in $(find ${WORKDIR} -maxdepth ${maxdepth} -name Dockerfile | sort); do
 			URL=${URL#registry.access.redhat.com/}
 			# echo "URL=$URL"
 			if [[ $URL == "https"* ]]; then 
-				QUERY="$(echo $URL | sed -e "s#.\+registry.access.redhat.com/#docker run docker-ls docker-ls tags --registry https://registry.access.redhat.com #g" | tr '\n' ' ')"
+				QUERY="$(echo $URL | \
+							sed -e "s#.\+registry.redhat.io/#docker run docker-ls docker-ls tags --registry https://registry.redhat.io #g" | \
+							sed -e "s#.\+registry.access.redhat.com/#docker run docker-ls docker-ls tags --registry https://registry.access.redhat.com #g" | \
+							tr '\n' ' ')"
 				echo "# $QUERY|grep \"^-\"|egrep -v \"\\\"|latest\"|sort -V|tail -5"
 				FROMPREFIX=$(echo $URL | sed -e "s#.\+registry.access.redhat.com/##g")
 				LATESTTAG=$(${QUERY} 2>/dev/null|grep "^-"|egrep -v "\"|latest"|sed -e "s#^-##" -e "s#[\n\r\ ]\+##g"|sort -V|tail -1)
