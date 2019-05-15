@@ -3,7 +3,7 @@
     "id": "java-default",
     "creator": "ide",
     "name": "Java 1.8",
-    "description": "RHEL 8 Java stack with EAP 7.2, OpenJDK 8 and Maven 3.5",
+    "description": "RHEL 8 Java stack with EAP 7.2, OpenJDK 1.8 and Maven 3.5",
     "scope": "general",
     "tags": [
       "eap",
@@ -981,7 +981,7 @@
     "id": "node-default",
     "creator": "ide",
     "name": "Node",
-    "description": "NodeJS 8x stack",
+    "description": "NodeJS 8x stack on RHEL 7",
     "scope": "general",
     "tags": [
       "nodejs8",
