@@ -47,7 +47,7 @@ public class TestStackAddressReplacementProvider implements Provider<Map<String,
       LoggerFactory.getLogger(TestStackAddressReplacementProvider.class);
 
   private static final String DEFAULT_JAVA_STACK_ADDRESS =
-      "registry.access.redhat.com/codeready-workspaces/stacks-java-rhel8";
+      "registry.redhat.io/codeready-workspaces/stacks-java-rhel8";
 
   private static final URL PATH_TO_STACK_REPLACEMENT_CONFIG =
       TestStackAddressReplacementProvider.class.getResource("/conf/stack-replacement.json");
