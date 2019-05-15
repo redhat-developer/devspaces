@@ -29,21 +29,25 @@ public class Node10UserStoryTest extends Node8UserStoryTest {
   }
 
   @Test
+  @Override
   public void createWorkspaceFromDashboard() throws Exception {
     super.createWorkspaceFromDashboard();
   }
 
   @Test(priority = 1)
+  @Override
   public void runAndCheckNodeJsApp() throws Exception {
     super.runAndCheckNodeJsApp();
   }
 
   @Test(priority = 2)
+  @Override
   public void checkMainLsFeatures() {
     super.checkMainLsFeatures();
   }
 
   @Test(priority = 3)
+  @Override
   public void checkBayesianLsErrorMarker() throws Exception {
     super.checkBayesianLsErrorMarker();
   }

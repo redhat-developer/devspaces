@@ -21,6 +21,6 @@ public class CodeReadyCppProjectDebuggingTest extends CppProjectDebuggingTest {
 
   @Override
   protected void waitTextInVariablesPanel() {
-    debugPanel.waitTextInVariablesPanel("name=");
+    debugPanel.waitTextInVariablesPanel("name");
   }
 }
