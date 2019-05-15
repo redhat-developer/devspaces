@@ -1,9 +1,9 @@
 [
   {
-    "id": "java-rhel8-default",
+    "id": "java-default",
     "creator": "ide",
-    "name": "Java 11 on RHEL 8",
-    "description": "RHEL 8 Java stack with EAP 7.2, OpenJDK 11 and Maven 3.5",
+    "name": "Java 1.8",
+    "description": "RHEL 8 Java stack with EAP 7.2, OpenJDK 1.8 and Maven 3.5",
     "scope": "general",
     "tags": [
       "eap",
@@ -17,7 +17,7 @@
       },
       {
         "name": "OpenJDK",
-        "version": "11.0.2"
+        "version": "1.8.0_212"
       },
       {
         "name": "Maven",
@@ -99,105 +99,6 @@
     }
   },
   {
-    "id": "java-default",
-    "creator": "ide",
-    "name": "Java 1.8",
-    "description": "RHEL 7 Java stack with EAP 7.2, OpenJDK 1.8 and Maven 3.5",
-    "scope": "general",
-    "tags": [
-      "eap",
-      "maven",
-      "java"
-    ],
-    "components": [
-      {
-        "name": "RHEL",
-        "version": "7.6.4"
-      },
-      {
-        "name": "OpenJDK",
-        "version": "1.8.0_212"
-      },
-      {
-        "name": "Maven",
-        "version": "3.5.4-5"
-      },
-      {
-        "name": "EAP",
-        "version": "7.2.1"
-      }
-    ],
-    "workspaceConfig": {
-      "environments": {
-        "default": {
-          "machines": {
-            "dev-machine": {
-              "installers": [
-                "org.eclipse.che.exec",
-                "org.eclipse.che.terminal",
-                "org.eclipse.che.ws-agent",
-                "org.eclipse.che.ls.java",
-                "com.redhat.bayesian.lsp"
-              ],
-              "servers": {
-                "eap": {
-                  "port": "8080",
-                  "protocol": "http"
-                },
-                "eap-debug": {
-                  "port": "8000",
-                  "protocol": "http"
-                }
-              },
-              "attributes": {
-                "memoryLimitBytes": "2147483648"
-              },
-              "volumes": {
-                "m2": {
-                  "path": "/home/jboss/.m2"
-                },
-                "javadata": {
-                  "path": "/home/jboss/jdtls/data"
-                }
-              }
-            }
-          },
-          "recipe": {
-            "content": "registry.access.redhat.com/codeready-workspaces/stacks-java",
-            "type": "dockerimage"
-          }
-        }
-      },
-      "name": "default",
-      "defaultEnv": "default",
-      "description": null,
-      "commands": [
-        {
-          "commandLine": "mvn clean install -f ${current.project.path}/pom.xml",
-          "name": "build",
-          "type": "mvn",
-          "attributes": {
-            "previewUrl": "",
-            "goal": "Build"
-          }
-        },
-        {
-          "commandLine": "${HOME}/stack-analysis.sh -f ${current.project.path}/pom.xml -p ${current.project.path}",
-          "name": "dependency_analysis",
-          "attributes": {
-            "goal": "Run",
-            "previewUrl": ""
-          },
-          "type": "custom"
-        }
-      ]
-    },
-    "stackIcon": {
-      "name": "type-java.svg",
-      "mediaType": "image/svg+xml"
-    }
-  },
-  {
     "id": "vert.x-default",
     "creator": "ide",
     "name": "Vert.x",
@@ -215,7 +116,7 @@
       },
       {
         "name": "OpenJDK",
-        "version": "11.0.2"
+        "version": "1.8.0_212"
       },
       {
         "name": "Maven",
@@ -318,7 +219,7 @@
     "id": "eap-default",
     "creator": "ide",
     "name": "JBoss EAP",
-    "description": "RHEL 8 Java stack with EAP 7.2, OpenJDK 11 and Maven 3.5",
+    "description": "RHEL 8 Java stack with EAP 7.2, OpenJDK 1.8 and Maven 3.5",
     "scope": "general",
     "tags": [
       "eap",
@@ -332,7 +233,7 @@
       },
       {
         "name": "OpenJDK",
-        "version": "11.0.2"
+        "version": "1.8.0_212"
       },
       {
         "name": "Maven",
@@ -431,7 +332,7 @@
       },
       {
         "name": "OpenJDK",
-        "version": "11.0.2"
+        "version": "1.8.0_212"
       },
       {
         "name": "Maven",
@@ -562,7 +463,7 @@
       },
       {
         "name": "OpenJDK",
-        "version": "11.0.2"
+        "version": "1.8.0_212"
       },
       {
         "name": "Maven",
@@ -658,7 +559,7 @@
       },
       {
         "name": "OpenJDK",
-        "version": "11.0.2"
+        "version": "1.8.0_212"
       },
       {
         "name": "Maven",
@@ -1047,6 +948,10 @@
                   "port": "5000",
                   "protocol": "http"
                 },
+                "8080/tcp": {
+                  "port": "8080",
+                  "protocol": "http"
+                },
                 "9000/tcp": {
                   "port": "9000",
                   "protocol": "http"
@@ -1076,7 +981,7 @@
     "id": "node-default",
     "creator": "ide",
     "name": "Node",
-    "description": "NodeJS 8x stack",
+    "description": "NodeJS 8x stack on RHEL 7",
     "scope": "general",
     "tags": [
       "nodejs8",
@@ -1116,6 +1021,10 @@
                 },
                 "5000/tcp": {
                   "port": "5000",
+                  "protocol": "http"
+                },
+                "8080/tcp": {
+                  "port": "8080",
                   "protocol": "http"
                 },
                 "9000/tcp": {

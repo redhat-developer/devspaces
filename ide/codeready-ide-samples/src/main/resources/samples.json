@@ -569,6 +569,42 @@
     ]
   },
   {
+    "name": "nodejs-rest-http-redhat",
+    "displayName": "nodejs-rest-http-redhat",
+    "path": "/nodejs-rest-http-redhat",
+    "description": "Simple HTTP Rest example using express",
+    "projectType": "node-js",
+    "mixins": [],
+    "attributes": {
+      "language": [
+        "javascript"
+      ]
+    },
+    "modules": [],
+    "problems": [],
+    "source": {
+      "type": "git",
+      "location": "https://github.com/nodeshift-starters/nodejs-rest-http-redhat/",
+      "parameters": {}
+    },
+    "commands": [
+      {
+        "name": "run",
+        "type": "custom",
+        "commandLine": "cd ${current.project.path} && npm i && npm i @types/node && node ./bin/www",
+        "attributes": {
+          "previewUrl": "${server.8080/tcp}",
+          "goal": "Run"
+        }
+      }
+    ],
+    "links": [],
+    "category": "Samples",
+    "tags": [
+      "nodejs"
+    ]
+  },
+  {
     "name": "web-go-simple",
     "displayName": "web-go-simple",
     "path": "/web-go-simple",

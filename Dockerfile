@@ -9,16 +9,13 @@
 #   Red Hat, Inc. - initial API and implementation
 #
 
-# TODO: switch to RHEL 8 based openjdk once live in RHCC
-# https://access.redhat.com/containers/?tab=tags#/registry.access.redhat.com/openjdk/openjdk-1.8-rhel8
-# ## registry.access.redhat.com/openjdk/openjdk-1.8-rhel8:1.0-2
-# https://access.redhat.com/containers/?tab=tags#/registry.access.redhat.com/redhat-openjdk-18/openjdk18-openshift
-FROM registry.access.redhat.com/redhat-openjdk-18/openjdk18-openshift:1.6-20
+# https://access.redhat.com/containers/?tab=tags#/registry.access.redhat.com/openjdk/openjdk-8-rhel8
+FROM registry.redhat.io/openjdk/openjdk-8-rhel8:1.0-1
 
 ENV SUMMARY="Red Hat CodeReady Workspaces Server container" \
     DESCRIPTION="Red Hat CodeReady Workspaces server container" \
     PRODNAME="codeready-workspaces" \
-    COMPNAME="server"
+    COMPNAME="server-rhel8"
 
 LABEL summary="$SUMMARY" \
       description="$DESCRIPTION" \
@@ -34,9 +31,10 @@ LABEL summary="$SUMMARY" \
       usage=""
 
 USER root
-# NOTE: uncomment to run a local build
-#RUN subscription-manager register --username username --password password --auto-attach
-#RUN subscription-manager repos --enable rhel-7-server-rpms -enable rhel-server-rhscl-7-rpms
+
+# NOTE: uncomment for local build. Must also set full registry path in FROM to registry.access.redhat.com or registry.redhat.io
+# COPY content_sets.repo /etc/yum.repos.d/
+
 COPY entrypoint.sh /entrypoint.sh
 RUN mkdir -p /home/jboss/codeready
 

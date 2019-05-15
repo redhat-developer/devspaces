@@ -5,6 +5,12 @@
 # 
 # thankfully, the https://registry.access.redhat.com is v2 and does not require authentication to query
 
+if [[ ! -x /usr/bin/brew ]]; then 
+	echo "Brew is required. Please install brewkoji rpm from one of these repos:";
+	echo " * http://download.devel.redhat.com/rel-eng/RCMTOOLS/latest-RCMTOOLS-2-F-27/compose/Everything/x86_64/os/"
+	echo " * http://download.devel.redhat.com/rel-eng/RCMTOOLS/latest-RCMTOOLS-2-RHEL-7/compose/Workstation/x86_64/os/"
+fi
+
 if [[ ! $(docker images | grep  docker-ls) ]]; then 
 	echo "Installing docker-ls ..."
 	rm -fr /tmp/docker-ls
