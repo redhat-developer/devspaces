@@ -591,7 +591,7 @@
       {
         "name": "run",
         "type": "custom",
-        "commandLine": "cd ${current.project.path} && npm install && node ./bin/www",
+        "commandLine": "cd ${current.project.path} && npm i && npm i @types/node && node ./bin/www",
         "attributes": {
           "previewUrl": "${server.8080/tcp}",
           "goal": "Run"
