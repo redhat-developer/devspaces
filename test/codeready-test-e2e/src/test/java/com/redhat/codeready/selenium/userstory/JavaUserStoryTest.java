@@ -343,13 +343,7 @@ public class JavaUserStoryTest extends AbstractUserStoryTest {
     projectExplorer.scrollAndSelectItem(PROJECT);
     commandsPalette.openCommandPalette();
     commandsPalette.startCommandByDoubleClick("kitchensink-example:build and run in debug");
-
-    try {
-      consoles.waitExpectedTextIntoConsole("started in");
-    } catch (TimeoutException ex) {
-      // remove try-catch block after issue has been resolved
-      fail("Known permanent failure https://issues.jboss.org/browse/CRW-259");
-    }
+    consoles.waitExpectedTextIntoConsole("started in");
 
     menu.runCommand(
         TestMenuCommandsConstants.Run.RUN_MENU,
