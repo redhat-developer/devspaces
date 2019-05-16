@@ -1,9 +1,10 @@
 #!/bin/bash
 #
 # script to query latest tags for a given list of imags in RHCC
-# requires docker-ls container to be built locally -- see https://github.com/mayflower/docker-ls
+# requires brew for pulp queries, skopeo (for authenticated registry queries) and jq to do json queries
 # 
-# thankfully, the https://registry.access.redhat.com is v2 and does not require authentication to query
+# https://registry.redhat.io is v2 and requires authentication to query, so login in first like this:
+# docker login registry.redhat.io -u=USERNAME -p=PASSWORD
 
 if [[ ! -x /usr/bin/brew ]]; then 
 	echo "Brew is required. Please install brewkoji rpm from one of these repos:";
@@ -11,13 +12,14 @@ if [[ ! -x /usr/bin/brew ]]; then
 	echo " * http://download.devel.redhat.com/rel-eng/RCMTOOLS/latest-RCMTOOLS-2-RHEL-7/compose/Workstation/x86_64/os/"
 fi
 
-if [[ ! $(docker images | grep  docker-ls) ]]; then 
-	echo "Installing docker-ls ..."
-	rm -fr /tmp/docker-ls
-	pushd /tmp >/dev/null
-	git clone -q --depth=1 https://github.com/mayflower/docker-ls && cd docker-ls && docker build -t docker-ls .
-	rm -fr /tmp/docker-ls
-	popd >/dev/null
+if [[ ! -x /usr/bin/skopeo ]]; then 
+	echo "This script requires skopeo. Please install it."
+	exit 1
+fi
+
+if [[ ! -x /usr/bin/jq ]]; then 
+	echo "This script requires jq. Please install it."
+	exit 1
 fi
 
 # default list of CRW containers to query
@@ -58,7 +60,7 @@ Usage:
 }
 if [[ $# -lt 1 ]]; then usage; fi
 
-REGISTRY="https://registry.access.redhat.com" # or http://brew-pulp-docker01.web.prod.ext.phx2.redhat.com:8888 or https://registry-1.docker.io
+REGISTRY="https://registry.redhat.io" # or http://brew-pulp-docker01.web.prod.ext.phx2.redhat.com:8888 or https://registry-1.docker.io or https://registry.access.redhat.com
 CONTAINERS=""
 while [[ "$#" -gt 0 ]]; do
   case $1 in
@@ -68,7 +70,7 @@ while [[ "$#" -gt 0 ]]; do
     '-q') QUIET=1; shift 0;;
     '-v') QUIET=0; VERBOSE=1; shift 0;;
     '-r') REGISTRY="$2"; shift 1;;
-    '--stage') REGISTRY="http://registry.access.stage.redhat.com"; shift 1;;
+    '--stage') REGISTRY="http://registry.stage.redhat.io"; shift 1;;
     '-p'|'--pulp') REGISTRY="http://brew-pulp-docker01.web.prod.ext.phx2.redhat.com:8888"; EXCLUDES="candidate|guest|containers"; shift 0;;
     '-d'|'--docker') REGISTRY=""; shift 0;;
            '--quay') REGISTRY="http://quay.io"; shift 0;;
@@ -123,18 +125,18 @@ for URLfrag in $CONTAINERS; do
 		URL="https://access.redhat.com/containers/?tab=tags#/registry.access.redhat.com/${URLfrag%%:*}"
 		URLfragtag="^- ${URLfragtag}"
 	fi
-	# echo "URL=$URL"
-	QUERY="$(echo ${URL} | sed -e "s#.\+registry.access.redhat.com/#docker run docker-ls docker-ls tags --allow-insecure ${REGISTRYSTRING} #g" | tr '\n' ' ')"
+	# if [[ $VERBOSE -eq 1 ]]; then echo "URL=$URL"; fi
+	QUERY="$(echo $URL | sed -e "s#.\+\(registry.redhat.io\|registry.access.redhat.com\)/#skopeo inspect docker://\1/#g")"
 	if [[ $VERBOSE -eq 1 ]]; then 
-		echo ""; echo "# $QUERY|grep \"${URLfragtag}\"|egrep -v \"\\\"|latest\"|egrep -v \"${EXCLUDES}\"|sort -V|tail"; 
+		echo ""; echo "# $QUERY| jq .RepoTags| egrep -v \"\[|\]|latest\" | sed -e 's#.*\"\(.\+\)\",*#- \1#' | sort -V|tail -5"
 	fi
-	LATESTTAGs=$(${QUERY} 2>/dev/null|grep "${URLfragtag}"|egrep -v "\"|latest"|egrep -v "${EXCLUDES}"|sed -e "s#^-##" -e "s#[\n\r\ ]\+##g"|sort -V|tail -${NUMTAGS})
+	LATESTTAGs=$(${QUERY} 2>/dev/null| jq .RepoTags| egrep -v "\[|\]|latest" | sed -e 's#.*\"\(.\+\)\",*#- \1#' | sort -V |grep "${URLfragtag}"|egrep -v "\"|latest"|egrep -v "${EXCLUDES}"|sed -e "s#^-##" -e "s#[\n\r\ ]\+##g"|tail -${NUMTAGS})
 	if [[ ! ${LATESTTAGs} ]]; then # try again with -container suffix
-		QUERY="$(echo ${URL}-container | sed -e "s#.\+registry.access.redhat.com/#docker run docker-ls docker-ls tags --allow-insecure ${REGISTRYSTRING} #g" | tr '\n' ' ')"
+		QUERY="$(echo ${URL}-container | sed -e "s#.\+\(registry.redhat.io\|registry.access.redhat.com\)/#skopeo inspect docker://\1/#g")"
 		if [[ $VERBOSE -eq 1 ]]; then 
-			echo ""; echo "# $QUERY|grep \"${URLfragtag}\"|egrep -v \"\\\"|latest\"|egrep -v \"${EXCLUDES}\"|sort -V|tail"; 
+			echo ""; echo "# $QUERY| jq .RepoTags| egrep -v \"\[|\]|latest\" | sed -e 's#.*\"\(.\+\)\",*#- \1#' | sort -V|tail -5" 
 		fi
-		LATESTTAGs=$(${QUERY} 2>/dev/null|grep "${URLfragtag}"|egrep -v "\"|latest"|egrep -v "${EXCLUDES}"|sed -e "s#^-##" -e "s#[\n\r\ ]\+##g"|sort -V|tail -${NUMTAGS})
+		LATESTTAGs=$(${QUERY} 2>/dev/null| jq .RepoTags| egrep -v "\[|\]|latest" | sed -e 's#.*\"\(.\+\)\",*#- \1#' | sort -V|grep "${URLfragtag}"|egrep -v "\"|latest"|egrep -v "${EXCLUDES}"|sed -e "s#^-##" -e "s#[\n\r\ ]\+##g"|tail -${NUMTAGS})
 	fi
 
 	for LATESTTAG in ${LATESTTAGs}; do

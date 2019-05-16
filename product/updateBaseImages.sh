@@ -1,17 +1,19 @@
 #!/bin/bash -e
 #
 # script to query latest tags of the FROM repos, and update Dockerfiles using the latest base images
-# requires docker-ls container to be built locally -- see https://github.com/mayflower/docker-ls
+# requires skopeo (for authenticated registry queries) and jq to do json queries
 # 
-# thankfully, the https://registry.access.redhat.com is v2 and does not require authentication to query
+# https://registry.redhat.io is v2 and requires authentication to query, so login in first like this:
+# docker login registry.redhat.io -u=USERNAME -p=PASSWORD
 
-if [[ $(docker run docker-ls docker-ls 2>&1) == *"Unable to find image"* ]]; then 
-	echo "Installing docker-ls ..."
-	rm -fr /tmp/docker-ls
-	pushd /tmp >/dev/null
-	git clone -q --depth=1 https://github.com/mayflower/docker-ls && cd docker-ls && docker build -t docker-ls .
-	rm -fr /tmp/docker-ls
-	popd >/dev/null
+if [[ ! -x /usr/bin/skopeo ]]; then 
+	echo "This script requires skopeo. Please install it."
+	exit 1
+fi
+
+if [[ ! -x /usr/bin/jq ]]; then 
+	echo "This script requires jq. Please install it."
+	exit 1
 fi
 
 WORKDIR=`pwd`
@@ -100,15 +102,13 @@ for d in $(find ${WORKDIR} -maxdepth ${maxdepth} -name Dockerfile | sort); do
 		URLs=$(cat $d | grep FROM -B1);
 		for URL in $URLs; do
 			URL=${URL#registry.access.redhat.com/}
+			URL=${URL#registry.redhat.io/}
 			# echo "URL=$URL"
 			if [[ $URL == "https"* ]]; then 
-				QUERY="$(echo $URL | \
-							sed -e "s#.\+registry.redhat.io/#docker run docker-ls docker-ls tags --registry https://registry.redhat.io #g" | \
-							sed -e "s#.\+registry.access.redhat.com/#docker run docker-ls docker-ls tags --registry https://registry.access.redhat.com #g" | \
-							tr '\n' ' ')"
-				echo "# $QUERY|grep \"^-\"|egrep -v \"\\\"|latest\"|sort -V|tail -5"
+				QUERY="$(echo $URL | sed -e "s#.\+\(registry.redhat.io\|registry.access.redhat.com\)/#skopeo inspect docker://\1/#g")"
+				echo "# $QUERY| jq .RepoTags| egrep -v \"\[|\]|latest\" | sed -e 's#.*\"\(.\+\)\",*#- \1#' | sort -V|tail -5"
 				FROMPREFIX=$(echo $URL | sed -e "s#.\+registry.access.redhat.com/##g")
-				LATESTTAG=$(${QUERY} 2>/dev/null|grep "^-"|egrep -v "\"|latest"|sed -e "s#^-##" -e "s#[\n\r\ ]\+##g"|sort -V|tail -1)
+				LATESTTAG=$(${QUERY} 2>/dev/null|| egrep -v "\[|\]|latest" | sed -e 's#.*\"\(.\+\)\",*#- \1#' | sort -V|tail -1)
 				LATE_TAGver=${LATESTTAG%%-*} # 1.0
 				LATE_TAGrev=${LATESTTAG##*-} # 15.1553789946 or 15
 				LATE_TAGrevbase=${LATE_TAGrev%%.*} # 15
