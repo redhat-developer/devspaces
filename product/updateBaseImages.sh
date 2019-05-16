@@ -16,10 +16,13 @@ if [[ ! -x /usr/bin/jq ]]; then
 	exit 1
 fi
 
+QUIET=0 	# less output - omit container tag URLs
+VERBOSE=0	# more output
 WORKDIR=`pwd`
 BRANCH=crw-1.2-rhel-8 # not master
 maxdepth=2
-buildCommand="echo ''" # By default, no build will be triggered when a change occurs; use -c for a container-build (or -s for scratch).
+docommit=1 # by default DO commit the change and push it
+buildCommand="echo" # By default, no build will be triggered when a change occurs; use -c for a container-build (or -s for scratch).
 while [[ "$#" -gt 0 ]]; do
   case $1 in
     '-w') WORKDIR="$2"; shift 1;;
@@ -27,6 +30,9 @@ while [[ "$#" -gt 0 ]]; do
     '-maxdepth') maxdepth="$2"; shift 1;;
     '-c') buildCommand="rhpkg container-build"; shift 0;;
     '-s') buildCommand="rhpkg container-build --scratch"; shift 0;;
+    '-n'|'--nocommit') docommit=0; shift 0;;
+    '-q') QUIET=1; shift 0;;
+    '-v') QUIET=0; VERBOSE=1; shift 0;;
     *) OTHER="${OTHER} $1"; shift 0;; 
   esac
   shift 1
@@ -103,17 +109,17 @@ for d in $(find ${WORKDIR} -maxdepth ${maxdepth} -name Dockerfile | sort); do
 		for URL in $URLs; do
 			URL=${URL#registry.access.redhat.com/}
 			URL=${URL#registry.redhat.io/}
-			# echo "URL=$URL"
+			if [[ $VERBOSE -eq 1 ]]; then echo "[DEBUG] URL=$URL"; fi
 			if [[ $URL == "https"* ]]; then 
-				QUERY="$(echo $URL | sed -e "s#.\+\(registry.redhat.io\|registry.access.redhat.com\)/#skopeo inspect docker://\1/#g")"
-				echo "# $QUERY| jq .RepoTags| egrep -v \"\[|\]|latest\" | sed -e 's#.*\"\(.\+\)\",*#- \1#' | sort -V|tail -5"
+				QUERY="$(echo $URL | sed -e "s#.\+\(registry.redhat.io\|registry.access.redhat.com\)/#skopeo inspect docker://registry.redhat.io/#g")"
+				echo "# $QUERY| jq .RepoTags| egrep -v \"\[|\]|latest\"|sed -e 's#.*\"\(.\+\)\",*#- \1#'|sort -V|tail -5"
 				FROMPREFIX=$(echo $URL | sed -e "s#.\+registry.access.redhat.com/##g")
-				LATESTTAG=$(${QUERY} 2>/dev/null|| egrep -v "\[|\]|latest" | sed -e 's#.*\"\(.\+\)\",*#- \1#' | sort -V|tail -1)
+				LATESTTAG=$(${QUERY} 2>/dev/null| jq .RepoTags|egrep -v "\[|\]|latest"|sed -e 's#.*\"\(.\+\)\",*#\1#'|sort -V|tail -1)
 				LATE_TAGver=${LATESTTAG%%-*} # 1.0
 				LATE_TAGrev=${LATESTTAG##*-} # 15.1553789946 or 15
 				LATE_TAGrevbase=${LATE_TAGrev%%.*} # 15
 				LATE_TAGrevsuf=${LATE_TAGrev##*.} # 1553789946 or 15
-				#echo "[DEBUG] LATE_TAGver=$LATE_TAGver; LATE_TAGrev=$LATE_TAGrev; LATE_TAGrevbase=$LATE_TAGrevbase; LATE_TAGrevsuf=$LATE_TAGrevsuf"
+				if [[ $VERBOSE -eq 1 ]]; then echo "[DEBUG] LATE_TAGver=$LATE_TAGver; LATE_TAGrev=$LATE_TAGrev; LATE_TAGrevbase=$LATE_TAGrevbase; LATE_TAGrevsuf=$LATE_TAGrevsuf"; fi
 				echo "+ ${FROMPREFIX}:${LATESTTAG}" # jboss-eap-7/eap72-openshift:1.0-15
 			elif [[ $URL ]] && [[ $URL == "${FROMPREFIX}:"* ]]; then
 				if [[ ${LATESTTAG} ]]; then
@@ -124,9 +130,9 @@ for d in $(find ${WORKDIR} -maxdepth ${maxdepth} -name Dockerfile | sort); do
 					CURR_TAGrev=${URL##*-} # 15.1553789946 or 15
 					CURR_TAGrevbase=${CURR_TAGrev%%.*} # 15
 					CURR_TAGrevsuf=${CURR_TAGrev##*.} # 1553789946 or 15
-					#echo "[DEBUG] 
+					if [[ $VERBOSE -eq 1 ]]; then echo "[DEBUG] 
 #CURR_TAGver=$CURR_TAGver; CURR_TAGrev=$CURR_TAGrev; CURR_TAGrevbase=$CURR_TAGrevbase; CURR_TAGrevsuf=$CURR_TAGrevsuf
-#LATE_TAGver=$LATE_TAGver; LATE_TAGrev=$LATE_TAGrev; LATE_TAGrevbase=$LATE_TAGrevbase; LATE_TAGrevsuf=$LATE_TAGrevsuf"
+#LATE_TAGver=$LATE_TAGver; LATE_TAGrev=$LATE_TAGrev; LATE_TAGrevbase=$LATE_TAGrevbase; LATE_TAGrevsuf=$LATE_TAGrevsuf"; fi
 
 					if [[ ${LATE_TAGrevsuf} != ${CURR_TAGrevsuf} ]] || [[ "${LATE_TAGver}" != "${CURR_TAGver}" ]] || [[ "${LATE_TAGrevbase}" != "${CURR_TAGrevbase}" ]]; then
 						echo "- ${URL}"
@@ -140,8 +146,10 @@ for d in $(find ${WORKDIR} -maxdepth ${maxdepth} -name Dockerfile | sort); do
 
 							# commit change and push it
 							if [[ -d ${d%%/Dockerfile} ]]; then pushd ${d%%/Dockerfile} >/dev/null; pushedIn=1; fi
-							git commit -s -m "[base] Update from ${URL} to ${FROMPREFIX}:${LATESTTAG}" Dockerfile && git push origin ${BRANCHUSED}
-							echo "# ${buildCommand} &"
+							if [[ ${docommit} -eq 1 ]]; then 
+								git commit -s -m "[base] Update from ${URL} to ${FROMPREFIX}:${LATESTTAG}" Dockerfile && git push origin ${BRANCHUSED}
+							fi
+							if [[ ${buildCommand} != "echo" ]] || [[ $VERBOSE -eq 1 ]]; then echo "# ${buildCommand}"; fi
 							${buildCommand} &
 							if [[ ${pushedIn} -eq 1 ]]; then popd >/dev/null; pushedIn=0; fi
 							fixedFiles="${fixedFiles} $d"
