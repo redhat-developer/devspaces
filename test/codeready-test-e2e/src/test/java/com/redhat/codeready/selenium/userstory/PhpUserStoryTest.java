@@ -22,6 +22,7 @@ import static org.eclipse.che.selenium.pageobject.CodenvyEditor.MarkerLocator.ER
 import static org.openqa.selenium.Keys.ARROW_DOWN;
 import static org.openqa.selenium.Keys.LEFT_CONTROL;
 import static org.openqa.selenium.Keys.LEFT_SHIFT;
+import static org.testng.Assert.fail;
 
 import com.google.common.collect.ImmutableList;
 import com.google.inject.Inject;
@@ -44,6 +45,7 @@ import org.eclipse.che.selenium.pageobject.ProjectExplorer;
 import org.eclipse.che.selenium.pageobject.debug.DebugPanel;
 import org.eclipse.che.selenium.pageobject.debug.PhpDebugConfig;
 import org.openqa.selenium.By;
+import org.openqa.selenium.TimeoutException;
 import org.testng.annotations.Test;
 
 public class PhpUserStoryTest extends AbstractUserStoryTest {
@@ -324,6 +326,12 @@ public class PhpUserStoryTest extends AbstractUserStoryTest {
     editor.goToCursorPositionVisible(3, 20);
     editor.typeTextIntoEditor(";");
     editor.waitTextIntoEditor(EXPECTED_FIXED_CODE);
-    editor.waitAllMarkersInvisibility(ERROR_OVERVIEW);
+
+    try {
+      editor.waitAllMarkersInvisibility(ERROR_OVERVIEW);
+    } catch (TimeoutException ex) {
+      // remove try-catch block after issue has been resolved
+      fail("Known permanent failure https://issues.jboss.org/browse/CRW-237");
+    }
   }
 }

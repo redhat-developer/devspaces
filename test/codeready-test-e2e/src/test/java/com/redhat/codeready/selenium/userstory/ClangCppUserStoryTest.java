@@ -82,10 +82,10 @@ public class ClangCppUserStoryTest extends AbstractUserStoryTest {
     // check contents of autocomplete container
     editor.goToPosition(7, 44);
     editor.typeTextIntoEditor(Keys.ENTER.toString());
-    editor.typeTextIntoEditor("std::cou");
+    editor.typeTextIntoEditor("std::");
     editor.launchAutocompleteAndWaitContainer();
     editor.waitProposalIntoAutocompleteContainer("cout ostream");
-    editor.waitProposalIntoAutocompleteContainer("wcout wostream");
+    editor.waitProposalIntoAutocompleteContainer(" basic_ostream");
     editor.closeAutocomplete();
 
     editor.deleteCurrentLine();

@@ -34,6 +34,7 @@ import com.google.inject.Inject;
 import com.redhat.codeready.selenium.pageobject.CodereadyEditor;
 import com.redhat.codeready.selenium.pageobject.dashboard.CodereadyNewWorkspace;
 import java.util.List;
+import org.eclipse.che.selenium.core.webdriver.SeleniumWebDriverHelper;
 import org.eclipse.che.selenium.pageobject.Consoles;
 import org.eclipse.che.selenium.pageobject.Ide;
 import org.eclipse.che.selenium.pageobject.Menu;
@@ -47,7 +48,7 @@ import org.testng.annotations.Test;
 public class SpringBootUserStoryTest extends AbstractUserStoryTest {
   private static final String PROJECT_NAME = "spring-boot-http-booster";
   private static final String PATH_TO_MAIN_PACKAGE =
-      PROJECT_NAME + "/src/main/java/io/openshift/booster";
+      PROJECT_NAME + "/src/main/java/dev/snowdrop/example";
 
   private static final String[] REPORT_DEPENDENCY_ANALYSIS = {
     "Report for /projects/spring-boot-http-booster/pom.xml",
@@ -64,6 +65,7 @@ public class SpringBootUserStoryTest extends AbstractUserStoryTest {
   @Inject private CodereadyEditor editor;
   @Inject private ProjectExplorer projectExplorer;
   @Inject private CommandsPalette commandsPalette;
+  @Inject private SeleniumWebDriverHelper seleniumWebDriverHelper;
 
   @Override
   protected CodereadyNewWorkspace.CodereadyStacks getStackName() {
@@ -93,8 +95,8 @@ public class SpringBootUserStoryTest extends AbstractUserStoryTest {
   }
 
   @Test(priority = 1)
-  public void checkSpringBootHealthCheckBoosterProjectCommands() {
-    By textOnPreviewPage = By.xpath("//h2[text()='HTTP Booster']");
+  public void checkBoosterProjectCommands() {
+    By textOnPreviewPage = By.xpath("//h2[text()='HTTP Example']");
 
     consoles.executeCommandFromProjectExplorer(
         PROJECT_NAME, BUILD_GOAL, BUILD_COMMAND, BUILD_SUCCESS);
@@ -118,13 +120,17 @@ public class SpringBootUserStoryTest extends AbstractUserStoryTest {
         LISTENING_AT_ADDRESS_8000);
   }
 
-  @Test(priority = 2)
-  public void checkCodeAssistantFeatures() {
-    projectExplorer.quickExpandWithJavaScript();
+  @Test(priority = 1)
+  public void checkMainCodeAssistantFeatures() {
+    seleniumWebDriverHelper.switchToIdeFrameAndWaitAvailability();
+    projectExplorer.quickRevealToItemWithJavaScript(
+        PATH_TO_MAIN_PACKAGE + "/service/Greeting.java");
+    projectExplorer.quickRevealToItemWithJavaScript(
+        PATH_TO_MAIN_PACKAGE + "/service/GreetingEndpoint.java");
 
-    projectExplorer.openItemByPath(PATH_TO_MAIN_PACKAGE + "/service/GreetingEndpoint.java");
-    editor.waitActive();
     projectExplorer.openItemByPath(PATH_TO_MAIN_PACKAGE + "/service/Greeting.java");
+    editor.waitActive();
+    projectExplorer.openItemByPath(PATH_TO_MAIN_PACKAGE + "/service/GreetingEndpoint.java");
     editor.waitActive();
 
     checkGoToDeclarationFeature();
@@ -139,7 +145,7 @@ public class SpringBootUserStoryTest extends AbstractUserStoryTest {
   }
 
   private void checkGoToDeclarationFeature() {
-    editor.selectTabByName("GreetingEndpoint");
+    editor.waitTabVisibilityAndCheckFocus("GreetingEndpoint");
     editor.goToPosition(33, 24);
     editor.typeTextIntoEditor(F4.toString());
     editor.waitActiveTabFileName("Greeting");

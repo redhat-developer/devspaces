@@ -344,6 +344,7 @@ public class JavaUserStoryTest extends AbstractUserStoryTest {
     commandsPalette.openCommandPalette();
     commandsPalette.startCommandByDoubleClick("kitchensink-example:build and run in debug");
     consoles.waitExpectedTextIntoConsole("started in");
+
     menu.runCommand(
         TestMenuCommandsConstants.Run.RUN_MENU,
         TestMenuCommandsConstants.Run.EDIT_DEBUG_CONFIGURATION);

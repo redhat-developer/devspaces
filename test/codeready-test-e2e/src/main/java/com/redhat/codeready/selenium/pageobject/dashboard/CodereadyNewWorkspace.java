@@ -79,8 +79,7 @@ public class CodereadyNewWorkspace extends NewWorkspace {
     NODE8("node-default"),
     NODE10("node10-default"),
     PHP("php-default"),
-    PYTHON("python-default"),
-    JAVA_RHEL8("rhel8-default");
+    PYTHON("python-default");
 
     private final String id;
 

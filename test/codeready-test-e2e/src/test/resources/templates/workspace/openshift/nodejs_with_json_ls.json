@@ -30,7 +30,7 @@
         }
       },
       "recipe": {
-        "location": "registry.access.redhat.com/codeready-workspaces/stacks-node-rhel8",
+        "content": "registry.redhat.io/codeready-workspaces/stacks-node-rhel8",
         "type": "dockerimage"
       }
     }

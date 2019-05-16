@@ -56,9 +56,9 @@ public class NewWorkspacePageTest {
           CodereadyStacks.CPP,
           CodereadyStacks.GO,
           CodereadyStacks.NODE8,
+          CodereadyStacks.NODE10,
           CodereadyStacks.PHP,
           CodereadyStacks.PYTHON,
-          CodereadyStacks.JAVA_RHEL8,
           CodereadyStacks.THORNTAIL);
 
   private static final List<CodereadyNewWorkspace.CodereadyStacks>
@@ -70,9 +70,9 @@ public class NewWorkspacePageTest {
               CodereadyStacks.JBOSS_EAP,
               CodereadyStacks.JAVA_DEFAULT,
               CodereadyStacks.THORNTAIL,
-              CodereadyStacks.JAVA_RHEL8,
               CodereadyStacks.PYTHON,
               CodereadyStacks.PHP,
+              CodereadyStacks.NODE10,
               CodereadyStacks.NODE8,
               CodereadyStacks.GO,
               CodereadyStacks.CPP,
@@ -90,9 +90,9 @@ public class NewWorkspacePageTest {
               CodereadyStacks.CPP,
               CodereadyStacks.GO,
               CodereadyStacks.NODE8,
+              CodereadyStacks.NODE10,
               CodereadyStacks.PHP,
               CodereadyStacks.PYTHON,
-              CodereadyStacks.JAVA_RHEL8,
               CodereadyStacks.THORNTAIL);
 
   private static final List<CodereadyNewWorkspace.CodereadyStacks> EXPECTED_CODEREADY_JAVA_STACKS =
@@ -100,8 +100,7 @@ public class NewWorkspacePageTest {
           CodereadyStacks.THORNTAIL,
           CodereadyStacks.SPRING_BOOT,
           CodereadyStacks.JBOSS_EAP,
-          CodereadyStacks.JAVA_DEFAULT,
-          CodereadyStacks.JAVA_RHEL8);
+          CodereadyStacks.JAVA_DEFAULT);
 
   private static final List<String> EXPECTED_CODEREADY_FILTERS_SUGGESTIONS =
       asList(MAVEN_SUGGESTION_TITLE);

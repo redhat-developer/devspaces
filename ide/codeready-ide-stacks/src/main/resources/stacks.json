@@ -1,11 +1,12 @@
 [
   {
-    "id": "java-rhel8-default",
+    "id": "java-default",
     "creator": "ide",
-    "name": "Java 1.8 on RHEL 8",
-    "description": "RHEL 8 Java stack with OpenJDK 1.8 and Maven 3.5",
+    "name": "Java 1.8",
+    "description": "RHEL 8 Java stack with EAP 7.2, OpenJDK 1.8 and Maven 3.5",
     "scope": "general",
     "tags": [
+      "eap",
       "maven",
       "java"
     ],
@@ -16,11 +17,15 @@
       },
       {
         "name": "OpenJDK",
-        "version": "1.8.0_181"
+        "version": "1.8.0_212"
       },
       {
         "name": "Maven",
-        "version": "3.5.0"
+        "version": "3.5.4-5"
+      },
+      {
+        "name": "EAP",
+        "version": "7.2.1"
       }
     ],
     "workspaceConfig": {
@@ -39,6 +44,10 @@
                 "eap" : {
                   "port" : "8080",
                   "protocol" : "http"
+                },
+                "eap-debug": {
+                  "port": "8000",
+                  "protocol": "http"
                 }
               },
               "attributes" : {
@@ -55,106 +64,7 @@
             }
           },
           "recipe": {
-            "content": "registry.access.redhat.com/codeready-workspaces/stacks-java-rhel8",
-            "type": "dockerimage"
-          }
-        }
-      },
-      "name": "default",
-      "defaultEnv": "default",
-      "description": null,
-      "commands": [
-        {
-          "commandLine": "mvn clean install -f ${current.project.path}/pom.xml",
-          "name": "build",
-          "type": "mvn",
-          "attributes": {
-            "previewUrl": "",
-            "goal": "Build"
-          }
-        },
-        {
-          "commandLine": "${HOME}/stack-analysis.sh -f ${current.project.path}/pom.xml -p ${current.project.path}",
-          "name": "dependency_analysis",
-          "attributes": {
-            "goal": "Run",
-            "previewUrl": ""
-          },
-          "type": "custom"
-        }
-      ]
-    },
-    "stackIcon": {
-      "name": "type-java.svg",
-      "mediaType": "image/svg+xml"
-    }
-  },
-  {
-    "id": "java-default",
-    "creator": "ide",
-    "name": "Java 1.8",
-    "description": "RHEL 7 Java stack with EAP 7.2, OpenJDK 1.8 and Maven 3.5",
-    "scope": "general",
-    "tags": [
-      "eap",
-      "maven",
-      "java"
-    ],
-    "components": [
-      {
-        "name": "RHEL",
-        "version": "7.6.4"
-      },
-      {
-        "name": "OpenJDK",
-        "version": "1.8.0_212"
-      },
-      {
-        "name": "Maven",
-        "version": "3.5.0"
-      },
-      {
-        "name": "EAP",
-        "version": "7.2"
-      }
-    ],
-    "workspaceConfig": {
-      "environments": {
-        "default": {
-          "machines": {
-            "dev-machine": {
-              "installers": [
-                "org.eclipse.che.exec",
-                "org.eclipse.che.terminal",
-                "org.eclipse.che.ws-agent",
-                "org.eclipse.che.ls.java",
-                "com.redhat.bayesian.lsp"
-              ],
-              "servers": {
-                "eap": {
-                  "port": "8080",
-                  "protocol": "http"
-                },
-                "eap-debug": {
-                  "port": "8000",
-                  "protocol": "http"
-                }
-              },
-              "attributes": {
-                "memoryLimitBytes": "2147483648"
-              },
-              "volumes": {
-                "m2": {
-                  "path": "/home/jboss/.m2"
-                },
-                "javadata": {
-                  "path": "/home/jboss/jdtls/data"
-                }
-              }
-            }
-          },
-          "recipe": {
-            "content": "registry.access.redhat.com/codeready-workspaces/stacks-java",
+            "content": "registry.redhat.io/codeready-workspaces/stacks-java-rhel8",
             "type": "dockerimage"
           }
         }
@@ -202,7 +112,7 @@
     "components": [
       {
         "name": "RHEL",
-        "version": "7.6.4"
+        "version": "8.0"
       },
       {
         "name": "OpenJDK",
@@ -210,7 +120,11 @@
       },
       {
         "name": "Maven",
-        "version": "3.5.0"
+        "version": "3.5.4-5"
+      },
+      {
+        "name": "EAP",
+        "version": "7.2.1"
       }
     ],
     "workspaceConfig": {
@@ -249,7 +163,7 @@
             }
           },
           "recipe": {
-            "content": "registry.access.redhat.com/codeready-workspaces/stacks-java",
+            "content": "registry.redhat.io/codeready-workspaces/stacks-java-rhel8",
             "type": "dockerimage"
           }
         }
@@ -305,7 +219,7 @@
     "id": "eap-default",
     "creator": "ide",
     "name": "JBoss EAP",
-    "description": "RHEL 7 Java stack with EAP 7.2, OpenJDK 1.8 and Maven 3.5",
+    "description": "RHEL 8 Java stack with EAP 7.2, OpenJDK 1.8 and Maven 3.5",
     "scope": "general",
     "tags": [
       "eap",
@@ -315,7 +229,7 @@
     "components": [
       {
         "name": "RHEL",
-        "version": "7.6.4"
+        "version": "8.0"
       },
       {
         "name": "OpenJDK",
@@ -323,11 +237,11 @@
       },
       {
         "name": "Maven",
-        "version": "3.5.0"
+        "version": "3.5.4-5"
       },
       {
         "name": "EAP",
-        "version": "7.2"
+        "version": "7.2.1"
       }
     ],
     "workspaceConfig": {
@@ -366,7 +280,7 @@
             }
           },
           "recipe": {
-            "content": "registry.access.redhat.com/codeready-workspaces/stacks-java",
+            "content": "registry.redhat.io/codeready-workspaces/stacks-java-rhel8",
             "type": "dockerimage"
           }
         }
@@ -396,7 +310,7 @@
       ]
     },
     "stackIcon": {
-      "name": "type-jboss.svg",
+      "name": "type-java.svg",
       "mediaType": "image/svg+xml"
     }
   },
@@ -414,7 +328,7 @@
     "components": [
       {
         "name": "RHEL",
-        "version": "7.6.4"
+        "version": "8.0"
       },
       {
         "name": "OpenJDK",
@@ -422,7 +336,11 @@
       },
       {
         "name": "Maven",
-        "version": "3.5.0"
+        "version": "3.5.4-5"
+      },
+      {
+        "name": "EAP",
+        "version": "7.2.1"
       }
     ],
     "workspaceConfig": {
@@ -457,7 +375,7 @@
             }
           },
           "recipe": {
-            "content": "registry.access.redhat.com/codeready-workspaces/stacks-java",
+            "content": "registry.redhat.io/codeready-workspaces/stacks-java-rhel8",
             "type": "dockerimage"
           }
         }
@@ -541,7 +459,7 @@
     "components": [
       {
         "name": "RHEL",
-        "version": "7.6.4"
+        "version": "8.0"
       },
       {
         "name": "OpenJDK",
@@ -549,7 +467,11 @@
       },
       {
         "name": "Maven",
-        "version": "3.5.0"
+        "version": "3.5.4-5"
+      },
+      {
+        "name": "EAP",
+        "version": "7.2.1"
       }
     ],
     "workspaceConfig": {
@@ -585,7 +507,7 @@
             }
           },
           "recipe": {
-            "content": "registry.access.redhat.com/codeready-workspaces/stacks-java",
+            "content": "registry.redhat.io/codeready-workspaces/stacks-java-rhel8",
             "type": "dockerimage"
           }
         }
@@ -633,7 +555,7 @@
     "components": [
       {
         "name": "RHEL",
-        "version": "7.6.4"
+        "version": "8.0"
       },
       {
         "name": "OpenJDK",
@@ -641,7 +563,11 @@
       },
       {
         "name": "Maven",
-        "version": "3.5.0"
+        "version": "3.5.4-5"
+      },
+      {
+        "name": "EAP",
+        "version": "7.2.1"
       }
     ],
     "workspaceConfig": {
@@ -676,7 +602,7 @@
             }
           },
           "recipe": {
-            "content": "registry.access.redhat.com/codeready-workspaces/stacks-java",
+            "content": "registry.redhat.io/codeready-workspaces/stacks-java-rhel8",
             "type": "dockerimage"
           }
         }
@@ -754,27 +680,27 @@
     "components": [
       {
         "name": "RHEL",
-        "version": "7.6.4"
+        "version": "8.0"
       },
       {
         "name": "make",
-        "version": "3.82"
+        "version": "4.2.1"
       },
       {
         "name": "cmake",
-        "version": "2.8.12.2"
+        "version": "3.11.4"
       },
       {
         "name": "gcc",
-        "version": "4.8.5"
+        "version": "8.2.1"
       },
       {
         "name": "g++",
-        "version": "4.8.5"
+        "version": "8.2.1"
       },
       {
         "name": "llvm-toolset",
-        "version": "5.0.1-4"
+        "version": "7.0.1"
       }
     ],
     "workspaceConfig": {
@@ -794,7 +720,7 @@
             }
           },
           "recipe": {
-            "content": "registry.access.redhat.com/codeready-workspaces/stacks-cpp-rhel8",
+            "content": "registry.redhat.io/codeready-workspaces/stacks-cpp-rhel8",
             "type": "dockerimage"
           }
         }
@@ -840,15 +766,15 @@
     "components": [
       {
         "name": "RHEL",
-        "version": "7.6.4"
+        "version": "8.0"
       },
       {
         "name": ".NET Runtime",
-        "version": "2.1.506"
+        "version": "2.1.504"
       },
       {
         "name": ".NET SDK",
-        "version": "2.1.506"
+        "version": "2.1.504"
       }
     ],
     "workspaceConfig": {
@@ -874,7 +800,7 @@
             }
           },
           "recipe": {
-            "content": "registry.access.redhat.com/codeready-workspaces/stacks-dotnet-rhel8",
+            "content": "registry.redhat.io/codeready-workspaces/stacks-dotnet-rhel8",
             "type": "dockerimage"
           }
         }
@@ -921,7 +847,7 @@
     "components": [
       {
         "name": "RHEL",
-        "version": "7.6.4"
+        "version": "8.0"
       },
       {
         "name": "Golang",
@@ -951,7 +877,7 @@
             }
           },
           "recipe": {
-            "content": "registry.access.redhat.com/codeready-workspaces/stacks-golang-rhel8",
+            "content": "registry.redhat.io/codeready-workspaces/stacks-golang-rhel8",
             "type": "dockerimage"
           }
         }
@@ -990,11 +916,11 @@
     "components": [
       {
         "name": "RHEL",
-        "version": "7.6.4"
+        "version": "8.0"
       },
       {
         "name": "NodeJS",
-        "version": "10.15.3"
+        "version": "10.14.1"
       },
       {
         "name": "NPM",
@@ -1022,6 +948,10 @@
                   "port": "5000",
                   "protocol": "http"
                 },
+                "8080/tcp": {
+                  "port": "8080",
+                  "protocol": "http"
+                },
                 "9000/tcp": {
                   "port": "9000",
                   "protocol": "http"
@@ -1033,7 +963,7 @@
             }
           },
           "recipe": {
-            "content": "registry.access.redhat.com/codeready-workspaces/stacks-node-rhel8",
+            "content": "registry.redhat.io/codeready-workspaces/stacks-node-rhel8",
             "type": "dockerimage"
           }
         }
@@ -1051,7 +981,7 @@
     "id": "node-default",
     "creator": "ide",
     "name": "Node",
-    "description": "NodeJS 8x stack",
+    "description": "NodeJS 8x stack on RHEL 7",
     "scope": "general",
     "tags": [
       "nodejs8",
@@ -1065,7 +995,7 @@
       },
       {
         "name": "NodeJS",
-        "version": "8.15.1"
+        "version": "8.11.4"
       },
       {
         "name": "NPM",
@@ -1093,6 +1023,10 @@
                   "port": "5000",
                   "protocol": "http"
                 },
+                "8080/tcp": {
+                  "port": "8080",
+                  "protocol": "http"
+                },
                 "9000/tcp": {
                   "port": "9000",
                   "protocol": "http"
@@ -1104,7 +1038,7 @@
             }
           },
           "recipe": {
-            "content": "registry.access.redhat.com/codeready-workspaces/stacks-node",
+            "content": "registry.redhat.io/codeready-workspaces/stacks-node",
             "type": "dockerimage"
           }
         }
@@ -1130,11 +1064,11 @@
     "components": [
       {
         "name": "RHEL",
-        "version": "7.6"
+        "version": "8.0"
       },
       {
         "name": "PHP",
-        "version": "7.2.10"
+        "version": "7.2.11"
       },
       {
         "name": "Zend Debugger",
@@ -1176,7 +1110,7 @@
             }
           },
           "recipe": {
-            "content": "registry.access.redhat.com/codeready-workspaces/stacks-php-rhel8",
+            "content": "registry.redhat.io/codeready-workspaces/stacks-php-rhel8",
             "type": "dockerimage"
           }
         }
@@ -1206,7 +1140,7 @@
         {
           "name": "start httpd",
           "type": "custom",
-          "commandLine": "httpd -k start\ntail -f /opt/rh/httpd24/root/etc/httpd/logs/access_log &\ntail -f /opt/rh/httpd24/root/etc/httpd/logs/error_log",
+          "commandLine": "httpd -k start\ntail -f /etc/httpd/logs/access_log &\ntail -f /etc/httpd/logs/error_log",
           "attributes": {
             "previewUrl": "${server.8080/tcp}/${current.project.relpath}",
             "goal": "Run"
@@ -1250,11 +1184,11 @@
     "components": [
       {
         "name": "RHEL",
-        "version": "7.6.4"
+        "version": "8.0"
       },
       {
         "name": "Python",
-        "version": "3.6.3"
+        "version": "3.6.8"
       },
       {
         "name": "pip",
@@ -1288,7 +1222,7 @@
             }
           },
           "recipe": {
-            "content": "registry.access.redhat.com/codeready-workspaces/stacks-python-rhel8",
+            "content": "registry.redhat.io/codeready-workspaces/stacks-python-rhel8",
             "type": "dockerimage"
           }
         }

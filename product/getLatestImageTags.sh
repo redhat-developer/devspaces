@@ -5,6 +5,12 @@
 # 
 # thankfully, the https://registry.access.redhat.com is v2 and does not require authentication to query
 
+if [[ ! -x /usr/bin/brew ]]; then 
+	echo "Brew is required. Please install brewkoji rpm from one of these repos:";
+	echo " * http://download.devel.redhat.com/rel-eng/RCMTOOLS/latest-RCMTOOLS-2-F-27/compose/Everything/x86_64/os/"
+	echo " * http://download.devel.redhat.com/rel-eng/RCMTOOLS/latest-RCMTOOLS-2-RHEL-7/compose/Workstation/x86_64/os/"
+fi
+
 if [[ ! $(docker images | grep  docker-ls) ]]; then 
 	echo "Installing docker-ls ..."
 	rm -fr /tmp/docker-ls
@@ -65,6 +71,7 @@ while [[ "$#" -gt 0 ]]; do
     '--stage') REGISTRY="http://registry.access.stage.redhat.com"; shift 1;;
     '-p'|'--pulp') REGISTRY="http://brew-pulp-docker01.web.prod.ext.phx2.redhat.com:8888"; EXCLUDES="candidate|guest|containers"; shift 0;;
     '-d'|'--docker') REGISTRY=""; shift 0;;
+           '--quay') REGISTRY="http://quay.io"; shift 0;;
     '-n') NUMTAGS="$2"; shift 1;;
     '--dockerfile') SHOWHISTORY=1; shift 0;;
     '--nvr') SHOWNVR=1; shift 0;;
@@ -77,6 +84,10 @@ if [[ ${REGISTRY} != "" ]]; then
 	REGISTRYPRE="${REGISTRY##*://}/"
 	if [[ ${REGISTRY} == *"brew-pulp-docker01"* ]]; then
 		if [[ ${CONTAINERS} == "${CRW_CONTAINERS_RHCC}" ]] || [[ ${CONTAINERS} == "" ]]; then CONTAINERS="${CRW_CONTAINERS_PULP}"; fi
+	elif [[ ${REGISTRY} == *"quay.io"* ]]; then
+		if [[ ${CONTAINERS} == "${CRW_CONTAINERS_RHCC}" ]] || [[ ${CONTAINERS} == "" ]]; then
+			CONTAINERS="${CRW_CONTAINERS_PULP}"; CONTAINERS="${CONTAINERS//codeready-workspaces/crw}"
+		fi
 	fi
 else
 	REGISTRYSTRING=""

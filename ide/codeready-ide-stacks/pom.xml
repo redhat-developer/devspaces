@@ -42,7 +42,7 @@
                             <target if="${nightly}">
                                 <echo message="Using images from quay.io"/>
                                 <replace
-                                        token="registry.access.redhat.com/codeready-workspaces"
+                                        token="registry.redhat.io/codeready-workspaces"
                                         file="${project.basedir}/src/main/resources/stacks.json"
                                         value="quay.io/crw"/>
                             </target>
@@ -59,7 +59,7 @@
                                 <echo message="Restoring stacks.json"/>
                                 <replace token="quay.io/crw"
                                          file="${project.basedir}/src/main/resources/stacks.json"
-                                         value="registry.access.redhat.com/codeready-workspaces"/>
+                                         value="registry.redhat.io/codeready-workspaces"/>
                             </target>
                         </configuration>
                     </execution>

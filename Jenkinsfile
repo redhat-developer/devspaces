@@ -177,7 +177,6 @@ timeout(180) {
 		unstash 'stashLSJ'
 		installNPM()
 		installGo()
-		sh "sed -i 's@executable=\"npm\"@executable=\"yarn\"@' ${CHE_path}/workspace-loader/pom.xml"
 		buildMaven()
 		// patch - switch che-ls-jdt version to a different one
 		// sh "sed -i -e \"s#\\(.*<che.ls.jdt.version>\\)0.0.3\\(</che.ls.jdt.version>.*\\)#\\10.0.4-SNAPSHOT\\2#\" ${CHE_path}/pom.xml"
@@ -188,6 +187,9 @@ timeout(180) {
 			perl -0777 -p -i -e 's|(\\ +<dependencySet>.*?<\\/dependencySet>)| ${1} =~ /<include>org.eclipse.che.docs:che-docs<\\/include>/?\"\":${1}|gse' che/assembly/assembly-main/src/assembly/assembly.xml
 			perl -0777 -p -i -e 's|(\\ +<dependency>.*?<\\/dependency>)| ${1} =~ /<artifactId>che-docs<\\/artifactId>/?\"\":${1}|gse' che/pom.xml
 		'''
+
+		// switch to yarn instead of npm, to fix https://issues.jboss.org/browse/CRW-256 - Type 'Timeout' is not assignable to type 'number'.
+		sh "sed -i 's@executable=\"npm\"@executable=\"yarn\"@' ${CHE_path}/workspace-loader/pom.xml"
 
 		VER_CHE = sh(returnStdout:true,script:"egrep \"<version>\" ${CHE_path}/pom.xml|head -2|tail -1|sed -e \"s#.*<version>\\(.\\+\\)</version>#\\1#\"").trim()
 		SHA_CHE = sh(returnStdout:true,script:"cd ${CHE_path}/ && git rev-parse --short=4 HEAD").trim()
@@ -266,7 +268,7 @@ timeout(120) {
 				"<a href=https://github.com/redhat-developer/${CRW_path}/pull/${env.ghprbPullId}>PR-${env.ghprbPullId}</a> ":\
 				("${SCRATCH}"=="true"?\
 					"<a href=${brewwebQuery}>Scratch</a> ":\
-					"<a href=https://quay.io/repository/crw/server-container?tab=tags>Quay</a> "\
+					"<a href=https://quay.io/repository/crw/server-rhel8?tab=tags>Quay</a> "\
 				)\
 			)\
 			+ "Build #${BUILD_NUMBER} (${BUILD_TIMESTAMP}) <br/>\
@@ -283,7 +285,7 @@ timeout(120) {
 
 timeout(120) {
 	node("${node}"){ stage "Run get-sources-rhpkg-container-build"
-		def QUAY_REPO_PATHs=(env.ghprbPullId && env.ghprbPullId?.trim()?"":("${SCRATCH}"=="true"?"":"server-container"))
+		def QUAY_REPO_PATHs=(env.ghprbPullId && env.ghprbPullId?.trim()?"":("${SCRATCH}"=="true"?"":"server-rhel8"))
 
 		def matcher = ( "${JOB_NAME}" =~ /.*_(stable-branch|master).*/ )
 		def JOB_BRANCH= (matcher.matches() ? matcher[0][1] : "stable-branch")

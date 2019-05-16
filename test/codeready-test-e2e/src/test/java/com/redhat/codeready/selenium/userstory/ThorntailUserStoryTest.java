@@ -17,6 +17,7 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.eclipse.che.selenium.core.constant.TestBuildConstants.BUILD_SUCCESS;
 import static org.eclipse.che.selenium.core.constant.TestTimeoutsConstants.LOAD_PAGE_TIMEOUT_SEC;
 import static org.eclipse.che.selenium.core.constant.TestTimeoutsConstants.MULTIPLE;
+import static org.eclipse.che.selenium.core.constant.TestTimeoutsConstants.PREPARING_WS_TIMEOUT_SEC;
 import static org.eclipse.che.selenium.pageobject.CodenvyEditor.MarkerLocator.ERROR;
 import static org.openqa.selenium.Keys.ENTER;
 
@@ -138,7 +139,7 @@ public class ThorntailUserStoryTest extends AbstractUserStoryTest {
     projectExplorer.quickRevealToItemWithJavaScript(pathToFile);
     projectExplorer.openItemByPath(pathToFile);
     editor.waitActive();
-    mavenPluginStatusBar.waitClosingInfoPanel();
+    mavenPluginStatusBar.waitClosingInfoPanel(PREPARING_WS_TIMEOUT_SEC * 2);
     editor.goToPosition(33, 87);
     editor.typeTextIntoEditor(ENTER.toString());
     editor.typeTextIntoEditor("n");

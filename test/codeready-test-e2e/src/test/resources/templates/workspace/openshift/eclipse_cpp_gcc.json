@@ -15,7 +15,7 @@
         }
       },
       "recipe": {
-        "location": "registry.access.redhat.com/codeready-workspaces/stacks-cpp-rhel8",
+        "content": "registry.redhat.io/codeready-workspaces/stacks-cpp-rhel8",
         "type": "dockerimage"
       }
     }
