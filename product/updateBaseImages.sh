@@ -112,7 +112,7 @@ for d in $(find ${WORKDIR} -maxdepth ${maxdepth} -name Dockerfile | sort); do
 			if [[ $VERBOSE -eq 1 ]]; then echo "[DEBUG] URL=$URL"; fi
 			if [[ $URL == "https"* ]]; then 
 				QUERY="$(echo $URL | sed -e "s#.\+\(registry.redhat.io\|registry.access.redhat.com\)/#skopeo inspect docker://registry.redhat.io/#g")"
-				echo "# $QUERY| jq .RepoTags| egrep -v \"\[|\]|latest\"|sed -e 's#.*\"\(.\+\)\",*#- \1#'|sort -V|tail -5"
+				if [[ ${QUIET} -eq 0 ]]; then echo "# $QUERY| jq .RepoTags| egrep -v \"\[|\]|latest\"|sed -e 's#.*\"\(.\+\)\",*#- \1#'|sort -V|tail -5"; fi
 				FROMPREFIX=$(echo $URL | sed -e "s#.\+registry.access.redhat.com/##g")
 				LATESTTAG=$(${QUERY} 2>/dev/null| jq .RepoTags|egrep -v "\[|\]|latest"|sed -e 's#.*\"\(.\+\)\",*#\1#'|sort -V|tail -1)
 				LATE_TAGver=${LATESTTAG%%-*} # 1.0
@@ -171,6 +171,6 @@ if [[ $fixedFiles ]]; then
 	for d in $fixedFiles; do echo -n " ${d#${WORKSPACE}/}"; done
 	echo ""
 else
-	echo "[base] No Dockerfiles changed - no new base images found."
+	if [[ ${QUIET} -eq 0 ]]; then echo "[base] No Dockerfiles changed - no new base images found."; fi
 fi
 
