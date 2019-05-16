@@ -40,7 +40,6 @@ codeready-workspaces/stacks-node"
 EXCLUDES="\^" 
 
 QUIET=0 	# less output - omit container tag URLs
-
 VERBOSE=0	# more output
 NUMTAGS=1 # by default show only the latest tag for each container; or show n latest ones
 SHOWHISTORY=0 # compute the base images defined in the Dockerfile's FROM statement(s): NOTE: requires that the image be pulled first 
@@ -128,15 +127,15 @@ for URLfrag in $CONTAINERS; do
 	# if [[ $VERBOSE -eq 1 ]]; then echo "URL=$URL"; fi
 	QUERY="$(echo $URL | sed -e "s#.\+\(registry.redhat.io\|registry.access.redhat.com\)/#skopeo inspect docker://\1/#g")"
 	if [[ $VERBOSE -eq 1 ]]; then 
-		echo ""; echo "# $QUERY| jq .RepoTags| egrep -v \"\[|\]|latest\" | sed -e 's#.*\"\(.\+\)\",*#- \1#' | sort -V|tail -5"
+		echo ""; echo "# $QUERY | jq .RepoTags | egrep -v \"\[|\]|latest\" | sed -e 's#.*\"\(.\+\)\",*#- \1#' | sort -V|tail -5"
 	fi
-	LATESTTAGs=$(${QUERY} 2>/dev/null| jq .RepoTags| egrep -v "\[|\]|latest" | sed -e 's#.*\"\(.\+\)\",*#- \1#' | sort -V |grep "${URLfragtag}"|egrep -v "\"|latest"|egrep -v "${EXCLUDES}"|sed -e "s#^-##" -e "s#[\n\r\ ]\+##g"|tail -${NUMTAGS})
+	LATESTTAGs=$(${QUERY} 2>/dev/null | jq .RepoTags | egrep -v "\[|\]|latest" | sed -e 's#.*\"\(.\+\)\",*#- \1#' | sort -V | grep "${URLfragtag}"|egrep -v "\"|latest"|egrep -v "${EXCLUDES}"|sed -e "s#^-##" -e "s#[\n\r\ ]\+##g"|tail -${NUMTAGS})
 	if [[ ! ${LATESTTAGs} ]]; then # try again with -container suffix
 		QUERY="$(echo ${URL}-container | sed -e "s#.\+\(registry.redhat.io\|registry.access.redhat.com\)/#skopeo inspect docker://\1/#g")"
 		if [[ $VERBOSE -eq 1 ]]; then 
-			echo ""; echo "# $QUERY| jq .RepoTags| egrep -v \"\[|\]|latest\" | sed -e 's#.*\"\(.\+\)\",*#- \1#' | sort -V|tail -5" 
+			echo ""; echo "# $QUERY | jq .RepoTags | egrep -v \"\[|\]|latest\" | sed -e 's#.*\"\(.\+\)\",*#- \1#' | sort -V|tail -5" 
 		fi
-		LATESTTAGs=$(${QUERY} 2>/dev/null| jq .RepoTags| egrep -v "\[|\]|latest" | sed -e 's#.*\"\(.\+\)\",*#- \1#' | sort -V|grep "${URLfragtag}"|egrep -v "\"|latest"|egrep -v "${EXCLUDES}"|sed -e "s#^-##" -e "s#[\n\r\ ]\+##g"|tail -${NUMTAGS})
+		LATESTTAGs=$(${QUERY} 2>/dev/null | jq .RepoTags | egrep -v "\[|\]|latest" | sed -e 's#.*\"\(.\+\)\",*#- \1#' | sort -V | grep "${URLfragtag}"|egrep -v "\"|latest"|egrep -v "${EXCLUDES}"|sed -e "s#^-##" -e "s#[\n\r\ ]\+##g"|tail -${NUMTAGS})
 	fi
 
 	for LATESTTAG in ${LATESTTAGs}; do
@@ -176,7 +175,7 @@ for URLfrag in $CONTAINERS; do
 				let cnt=cnt+1
 				if [[ ${cnt} -eq 3 ]]; then 
 					# echo "Image ID = ${bits}"
-					docker run -v /var/run/docker.sock:/var/run/docker.sock --rm laniksj/dfimage ${bits} #| grep FROM
+					docker run -v /var/run/docker.sock:/var/run/docker.sock --rm laniksj/dfimage ${bits} # | grep FROM
 					break
 				fi
 			done
