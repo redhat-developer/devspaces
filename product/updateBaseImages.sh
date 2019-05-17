@@ -1,23 +1,28 @@
 #!/bin/bash -e
 #
 # script to query latest tags of the FROM repos, and update Dockerfiles using the latest base images
-# requires docker-ls container to be built locally -- see https://github.com/mayflower/docker-ls
+# requires skopeo (for authenticated registry queries) and jq to do json queries
 # 
-# thankfully, the https://registry.access.redhat.com is v2 and does not require authentication to query
+# https://registry.redhat.io is v2 and requires authentication to query, so login in first like this:
+# docker login registry.redhat.io -u=USERNAME -p=PASSWORD
 
-if [[ $(docker run docker-ls docker-ls 2>&1) == *"Unable to find image"* ]]; then 
-	echo "Installing docker-ls ..."
-	rm -fr /tmp/docker-ls
-	pushd /tmp >/dev/null
-	git clone -q --depth=1 https://github.com/mayflower/docker-ls && cd docker-ls && docker build -t docker-ls .
-	rm -fr /tmp/docker-ls
-	popd >/dev/null
+if [[ ! -x /usr/bin/skopeo ]]; then 
+	echo "This script requires skopeo. Please install it."
+	exit 1
 fi
 
+if [[ ! -x /usr/bin/jq ]]; then 
+	echo "This script requires jq. Please install it."
+	exit 1
+fi
+
+QUIET=0 	# less output - omit container tag URLs
+VERBOSE=0	# more output
 WORKDIR=`pwd`
 BRANCH=crw-1.2-rhel-8 # not master
 maxdepth=2
-buildCommand="echo ''" # By default, no build will be triggered when a change occurs; use -c for a container-build (or -s for scratch).
+docommit=1 # by default DO commit the change and push it
+buildCommand="echo" # By default, no build will be triggered when a change occurs; use -c for a container-build (or -s for scratch).
 while [[ "$#" -gt 0 ]]; do
   case $1 in
     '-w') WORKDIR="$2"; shift 1;;
@@ -25,6 +30,9 @@ while [[ "$#" -gt 0 ]]; do
     '-maxdepth') maxdepth="$2"; shift 1;;
     '-c') buildCommand="rhpkg container-build"; shift 0;;
     '-s') buildCommand="rhpkg container-build --scratch"; shift 0;;
+    '-n'|'--nocommit') docommit=0; shift 0;;
+    '-q') QUIET=1; shift 0;;
+    '-v') QUIET=0; VERBOSE=1; shift 0;;
     *) OTHER="${OTHER} $1"; shift 0;; 
   esac
   shift 1
@@ -100,20 +108,18 @@ for d in $(find ${WORKDIR} -maxdepth ${maxdepth} -name Dockerfile | sort); do
 		URLs=$(cat $d | grep FROM -B1);
 		for URL in $URLs; do
 			URL=${URL#registry.access.redhat.com/}
-			# echo "URL=$URL"
+			URL=${URL#registry.redhat.io/}
+			if [[ $VERBOSE -eq 1 ]]; then echo "[DEBUG] URL=$URL"; fi
 			if [[ $URL == "https"* ]]; then 
-				QUERY="$(echo $URL | \
-							sed -e "s#.\+registry.redhat.io/#docker run docker-ls docker-ls tags --registry https://registry.redhat.io #g" | \
-							sed -e "s#.\+registry.access.redhat.com/#docker run docker-ls docker-ls tags --registry https://registry.access.redhat.com #g" | \
-							tr '\n' ' ')"
-				echo "# $QUERY|grep \"^-\"|egrep -v \"\\\"|latest\"|sort -V|tail -5"
+				QUERY="$(echo $URL | sed -e "s#.\+\(registry.redhat.io\|registry.access.redhat.com\)/#skopeo inspect docker://registry.redhat.io/#g")"
+				if [[ ${QUIET} -eq 0 ]]; then echo "# $QUERY| jq .RepoTags| egrep -v \"\[|\]|latest\"|sed -e 's#.*\"\(.\+\)\",*#- \1#'|sort -V|tail -5"; fi
 				FROMPREFIX=$(echo $URL | sed -e "s#.\+registry.access.redhat.com/##g")
-				LATESTTAG=$(${QUERY} 2>/dev/null|grep "^-"|egrep -v "\"|latest"|sed -e "s#^-##" -e "s#[\n\r\ ]\+##g"|sort -V|tail -1)
+				LATESTTAG=$(${QUERY} 2>/dev/null| jq .RepoTags|egrep -v "\[|\]|latest"|sed -e 's#.*\"\(.\+\)\",*#\1#'|sort -V|tail -1)
 				LATE_TAGver=${LATESTTAG%%-*} # 1.0
 				LATE_TAGrev=${LATESTTAG##*-} # 15.1553789946 or 15
 				LATE_TAGrevbase=${LATE_TAGrev%%.*} # 15
 				LATE_TAGrevsuf=${LATE_TAGrev##*.} # 1553789946 or 15
-				#echo "[DEBUG] LATE_TAGver=$LATE_TAGver; LATE_TAGrev=$LATE_TAGrev; LATE_TAGrevbase=$LATE_TAGrevbase; LATE_TAGrevsuf=$LATE_TAGrevsuf"
+				if [[ $VERBOSE -eq 1 ]]; then echo "[DEBUG] LATE_TAGver=$LATE_TAGver; LATE_TAGrev=$LATE_TAGrev; LATE_TAGrevbase=$LATE_TAGrevbase; LATE_TAGrevsuf=$LATE_TAGrevsuf"; fi
 				echo "+ ${FROMPREFIX}:${LATESTTAG}" # jboss-eap-7/eap72-openshift:1.0-15
 			elif [[ $URL ]] && [[ $URL == "${FROMPREFIX}:"* ]]; then
 				if [[ ${LATESTTAG} ]]; then
@@ -124,9 +130,9 @@ for d in $(find ${WORKDIR} -maxdepth ${maxdepth} -name Dockerfile | sort); do
 					CURR_TAGrev=${URL##*-} # 15.1553789946 or 15
 					CURR_TAGrevbase=${CURR_TAGrev%%.*} # 15
 					CURR_TAGrevsuf=${CURR_TAGrev##*.} # 1553789946 or 15
-					#echo "[DEBUG] 
+					if [[ $VERBOSE -eq 1 ]]; then echo "[DEBUG] 
 #CURR_TAGver=$CURR_TAGver; CURR_TAGrev=$CURR_TAGrev; CURR_TAGrevbase=$CURR_TAGrevbase; CURR_TAGrevsuf=$CURR_TAGrevsuf
-#LATE_TAGver=$LATE_TAGver; LATE_TAGrev=$LATE_TAGrev; LATE_TAGrevbase=$LATE_TAGrevbase; LATE_TAGrevsuf=$LATE_TAGrevsuf"
+#LATE_TAGver=$LATE_TAGver; LATE_TAGrev=$LATE_TAGrev; LATE_TAGrevbase=$LATE_TAGrevbase; LATE_TAGrevsuf=$LATE_TAGrevsuf"; fi
 
 					if [[ ${LATE_TAGrevsuf} != ${CURR_TAGrevsuf} ]] || [[ "${LATE_TAGver}" != "${CURR_TAGver}" ]] || [[ "${LATE_TAGrevbase}" != "${CURR_TAGrevbase}" ]]; then
 						echo "- ${URL}"
@@ -140,8 +146,10 @@ for d in $(find ${WORKDIR} -maxdepth ${maxdepth} -name Dockerfile | sort); do
 
 							# commit change and push it
 							if [[ -d ${d%%/Dockerfile} ]]; then pushd ${d%%/Dockerfile} >/dev/null; pushedIn=1; fi
-							git commit -s -m "[base] Update from ${URL} to ${FROMPREFIX}:${LATESTTAG}" Dockerfile && git push origin ${BRANCHUSED}
-							echo "# ${buildCommand} &"
+							if [[ ${docommit} -eq 1 ]]; then 
+								git commit -s -m "[base] Update from ${URL} to ${FROMPREFIX}:${LATESTTAG}" Dockerfile && git push origin ${BRANCHUSED}
+							fi
+							if [[ ${buildCommand} != "echo" ]] || [[ $VERBOSE -eq 1 ]]; then echo "# ${buildCommand}"; fi
 							${buildCommand} &
 							if [[ ${pushedIn} -eq 1 ]]; then popd >/dev/null; pushedIn=0; fi
 							fixedFiles="${fixedFiles} $d"
@@ -163,6 +171,6 @@ if [[ $fixedFiles ]]; then
 	for d in $fixedFiles; do echo -n " ${d#${WORKSPACE}/}"; done
 	echo ""
 else
-	echo "[base] No Dockerfiles changed - no new base images found."
+	if [[ ${QUIET} -eq 0 ]]; then echo "[base] No Dockerfiles changed - no new base images found."; fi
 fi
 
