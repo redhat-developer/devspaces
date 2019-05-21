@@ -31,7 +31,7 @@
         </dependency>
     </dependencies>
     <properties>
-        <crw.docs.baseurl>https://access.redhat.com/documentation/en-us/red_hat_codeready_workspaces_for_openshift/${crw.docs.version}</crw.docs.baseurl>
+        <crw.docs.baseurl>https://access.redhat.com/documentation/en-us/red_hat_codeready_workspaces/${crw.docs.version}</crw.docs.baseurl>
         <product.json.file>${project.basedir}/src/main/webapp/assets/branding/product.json</product.json.file>
     </properties>
     <build>
