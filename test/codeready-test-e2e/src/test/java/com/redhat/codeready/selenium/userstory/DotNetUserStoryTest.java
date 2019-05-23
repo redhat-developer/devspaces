@@ -21,6 +21,7 @@ import static org.eclipse.che.selenium.core.constant.TestProjectExplorerContextM
 import static org.eclipse.che.selenium.core.constant.TestTimeoutsConstants.LOADER_TIMEOUT_SEC;
 import static org.eclipse.che.selenium.pageobject.CodenvyEditor.MarkerLocator.ERROR;
 import static org.eclipse.che.selenium.pageobject.CodenvyEditor.MarkerLocator.INFO;
+import static org.testng.Assert.fail;
 
 import com.google.common.collect.ImmutableList;
 import com.google.inject.Inject;
@@ -31,6 +32,7 @@ import org.eclipse.che.selenium.pageobject.Consoles;
 import org.eclipse.che.selenium.pageobject.ProjectExplorer;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
+import org.openqa.selenium.TimeoutException;
 import org.testng.annotations.Test;
 
 /** @author Skoryk Serhii */
@@ -138,6 +140,12 @@ public class DotNetUserStoryTest extends AbstractUserStoryTest {
 
     projectExplorer.openItemByPath(PROJECT_NAME + "/" + NAME_OF_EDITING_FILE);
     editor.waitActive();
-    editor.waitCodeAssistMarkers(INFO);
+
+    try {
+      editor.waitCodeAssistMarkers(INFO);
+    } catch (TimeoutException ex) {
+      // remove try-catch block after issue has been resolved
+      fail("Known permanent failure https://issues.jboss.org/browse/CRW-192");
+    }
   }
 }

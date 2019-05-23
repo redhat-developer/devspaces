@@ -140,7 +140,13 @@ public class RedHatFuseUserStoryTest extends AbstractUserStoryTest {
     editor.waitActive();
     editor.goToPosition(13, 27);
     editor.typeTextIntoEditor("r");
-    editor.waitMarkerInPosition(ERROR, 13);
+
+    try {
+      editor.waitMarkerInPosition(ERROR, 13);
+    } catch (TimeoutException ex) {
+      // remove try-catch block after issue has been resolved
+      fail("Known permanent failure https://issues.jboss.org/browse/CRW-192");
+    }
 
     editor.goToPosition(13, 28);
     menu.runCommand(ASSISTANT, QUICK_FIX);

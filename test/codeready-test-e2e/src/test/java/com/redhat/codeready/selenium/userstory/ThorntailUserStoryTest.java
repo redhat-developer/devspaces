@@ -20,6 +20,7 @@ import static org.eclipse.che.selenium.core.constant.TestTimeoutsConstants.MULTI
 import static org.eclipse.che.selenium.core.constant.TestTimeoutsConstants.PREPARING_WS_TIMEOUT_SEC;
 import static org.eclipse.che.selenium.pageobject.CodenvyEditor.MarkerLocator.ERROR;
 import static org.openqa.selenium.Keys.ENTER;
+import static org.testng.Assert.fail;
 
 import com.google.common.collect.ImmutableList;
 import com.google.inject.Inject;
@@ -148,7 +149,13 @@ public class ThorntailUserStoryTest extends AbstractUserStoryTest {
     editor.waitTextIntoEditor("name\n        return new Greeting");
 
     // check codevalidation with autocompletion
-    editor.waitMarkerInPosition(ERROR, 34);
+    try {
+      editor.waitMarkerInPosition(ERROR, 34);
+    } catch (org.openqa.selenium.TimeoutException ex) {
+      // remove try-catch block after issue has been resolved
+      fail("Known permanent failure https://issues.jboss.org/browse/CRW-192");
+    }
+
     editor.goToPosition(34, 13);
     editor.typeTextIntoEditor(".to");
     editor.waitTextIntoEditor("name.to");
