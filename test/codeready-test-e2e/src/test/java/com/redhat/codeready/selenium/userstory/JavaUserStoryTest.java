@@ -261,7 +261,7 @@ public class JavaUserStoryTest extends AbstractUserStoryTest {
     editor.waitActive();
     consoles.selectProcessByTabName("dev-machine");
     consoles.waitExpectedTextIntoConsole("updating projectconfig for /kitchensink-example");
-    // editor.closeAllTabs();
+    editor.closeAllTabs();
 
     // open file
     seleniumWebDriver.navigate().refresh();
