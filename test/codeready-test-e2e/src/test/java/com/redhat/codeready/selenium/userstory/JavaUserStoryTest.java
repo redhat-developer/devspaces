@@ -49,6 +49,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import org.eclipse.che.selenium.core.SeleniumWebDriver;
 import org.eclipse.che.selenium.core.client.TestProjectServiceClient;
 import org.eclipse.che.selenium.core.client.TestWorkspaceServiceClient;
 import org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants;
@@ -103,6 +104,7 @@ public class JavaUserStoryTest extends AbstractUserStoryTest {
   @Inject private CodereadyFindUsageWidget findUsages;
   @Inject private TestProjectServiceClient projectServiceClient;
   @Inject private SeleniumWebDriverHelper seleniumWebDriverHelper;
+  @Inject private SeleniumWebDriver seleniumWebDriver;
 
   private static final String TAB_NAME_WITH_IMPL = "NativeMethodAccessorImpl";
   private String appUrl;
@@ -262,6 +264,9 @@ public class JavaUserStoryTest extends AbstractUserStoryTest {
     editor.closeAllTabs();
 
     // open file
+    seleniumWebDriver.navigate().refresh();
+    seleniumWebDriverHelper.switchToIdeFrameAndWaitAvailability();
+    ide.waitOpenedWorkspaceIsReadyToUse();
     projectExplorer.openItemByPath(pomXmlFilePath);
     editor.waitTabIsPresent(pomXmlEditorTabTitle, LOADER_TIMEOUT_SEC);
     editor.waitTabSelection(0, pomXmlEditorTabTitle);
@@ -303,7 +308,14 @@ public class JavaUserStoryTest extends AbstractUserStoryTest {
     editor.selectTabByName(memberRegistrationTabName);
     editor.goToPosition(26, 15);
     editor.typeTextIntoEditor("2");
-    editor.waitMarkerInPosition(ERROR_OVERVIEW, 26);
+
+    try {
+      editor.waitMarkerInPosition(ERROR_OVERVIEW, 26);
+    } catch (TimeoutException ex) {
+      // remove try-catch block after issue has been resolved
+      fail("Known permanent failure https://issues.jboss.org/browse/CRW-192");
+    }
+
     editor.goToPosition(26, 15);
     menu.runCommand(ASSISTANT, QUICK_FIX);
     editor.enterTextIntoFixErrorPropByDoubleClick("Change to 'Logger' (java.util.logging)");

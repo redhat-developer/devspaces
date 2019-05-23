@@ -158,7 +158,13 @@ public class SpringBootUserStoryTest extends AbstractUserStoryTest {
     editor.waitActive();
     editor.goToPosition(34, 17);
     editor.typeTextIntoEditor("p");
-    editor.waitMarkerInPosition(ERROR, 34);
+
+    try {
+      editor.waitMarkerInPosition(ERROR, 34);
+    } catch (TimeoutException ex) {
+      // remove try-catch block after issue has been resolved
+      fail("Known permanent failure https://issues.jboss.org/browse/CRW-192");
+    }
 
     editor.goToPosition(34, 17);
     menu.runCommand(ASSISTANT, QUICK_FIX);
