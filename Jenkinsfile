@@ -6,7 +6,7 @@
 // branchToBuildDev = refs/tags/20
 // branchToBuildParent = refs/tags/6.19.0
 // branchToBuildLib = refs/tags/6.19.0
-// branchToBuildChe = refs/tags/6.19.4 or */*/6.19.x or */master
+// branchToBuildChe = refs/tags/6.19.5 or */*/6.19.x or */master
 // branchToBuildLSJ = refs/tags/0.0.3 or */master or a SHA like 095d753f42dad32c47b1e9ae46a71bf424e98e7e
 // branchToBuildCRW = */6.19.x or */master
 // BUILDINFO = ${JOB_NAME}/${BUILD_NUMBER}
