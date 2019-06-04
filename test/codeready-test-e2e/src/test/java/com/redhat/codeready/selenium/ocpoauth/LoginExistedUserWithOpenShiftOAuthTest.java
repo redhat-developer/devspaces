@@ -12,10 +12,13 @@
 package com.redhat.codeready.selenium.ocpoauth;
 
 import static com.redhat.codeready.selenium.pageobject.dashboard.CodereadyNewWorkspace.CodereadyStacks.JAVA_DEFAULT;
+import static java.lang.String.format;
 import static org.eclipse.che.commons.lang.NameGenerator.generate;
+import static org.testng.AssertJUnit.assertEquals;
 
 import com.google.common.collect.ImmutableList;
 import com.google.inject.Inject;
+import com.google.inject.name.Named;
 import com.redhat.codeready.selenium.pageobject.CodereadyOpenShiftLoginPage;
 import com.redhat.codeready.selenium.pageobject.dashboard.CodeReadyCreateWorkspaceHelper;
 import org.eclipse.che.selenium.core.SeleniumWebDriver;
@@ -26,25 +29,35 @@ import org.eclipse.che.selenium.core.webdriver.SeleniumWebDriverHelper;
 import org.eclipse.che.selenium.core.workspace.TestWorkspace;
 import org.eclipse.che.selenium.pageobject.Ide;
 import org.eclipse.che.selenium.pageobject.ToastLoader;
-import org.eclipse.che.selenium.pageobject.dashboard.CreateWorkspaceHelper;
 import org.eclipse.che.selenium.pageobject.dashboard.Dashboard;
 import org.eclipse.che.selenium.pageobject.dashboard.workspaces.Workspaces;
 import org.eclipse.che.selenium.pageobject.ocp.AuthorizeOpenShiftAccessPage;
 import org.eclipse.che.selenium.pageobject.ocp.OpenShiftProjectCatalogPage;
 import org.eclipse.che.selenium.pageobject.site.CheLoginPage;
 import org.eclipse.che.selenium.pageobject.site.FirstBrokerProfilePage;
-import org.openqa.selenium.By;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.Test;
 
 @Test(groups = {TestGroup.OPENSHIFT, TestGroup.MULTIUSER})
-public class LoginNewUserWithHtpasswdTest {
+public class LoginExistedUserWithOpenShiftOAuthTest {
 
   private static final String WORKSPACE_NAME = generate("workspace", 4);
   private static final String PROJECT = "kitchensink-example";
+  public static final String LOGIN_TO_CHE_WITH_OPENSHIFT_OAUTH_MESSAGE_TEMPLATE =
+      "Authenticate as %s to link your account with openshift-v3";
+  public static final String USER_ALREADY_EXISTS_ERROR_MESSAGE_TEMPLATE =
+      "User with username %s already exists. How do you want to continue?";
 
   private TestWorkspace testWorkspace;
   private static final TestUser testUser = getTestUser();
+
+  @Inject(optional = true)
+  @Named("env.openshift.username")
+  private String openShiftUsername;
+
+  @Inject(optional = true)
+  @Named("env.openshift.password")
+  private String openShiftPassword;
 
   @Inject private CheLoginPage cheLoginPage;
   @Inject private CodereadyOpenShiftLoginPage codereadyOpenShiftLoginPage;
@@ -58,7 +71,6 @@ public class LoginNewUserWithHtpasswdTest {
   @Inject private OpenShiftProjectCatalogPage openShiftProjectCatalogPage;
   @Inject private SeleniumWebDriver seleniumWebDriver;
   @Inject private TestDashboardUrlProvider testDashboardUrlProvider;
-  @Inject private CreateWorkspaceHelper createWorkspaceHelper;
   @Inject private CodeReadyCreateWorkspaceHelper codeReadyCreateWorkspaceHelper;
 
   @AfterClass
@@ -67,21 +79,33 @@ public class LoginNewUserWithHtpasswdTest {
   }
 
   @Test
-  public void checkExistedCodereadyUserOcpProjectCreationAndRemoval() throws Exception {
+  public void checkWorkspaceOSProjectCreationAndRemoval() {
+    String expectedError = format(USER_ALREADY_EXISTS_ERROR_MESSAGE_TEMPLATE, testUser.getName());
+
     // go to login page of Codeready
     seleniumWebDriver.navigate().to(testDashboardUrlProvider.get());
 
     cheLoginPage.loginWithOpenShiftOAuth();
-    codereadyOpenShiftLoginPage.login(testUser.getName(), testUser.getPassword());
+    codereadyOpenShiftLoginPage.login(openShiftUsername, openShiftPassword);
 
     // authorize ocp-client to access OpenShift account
-    if (seleniumWebDriverHelper.isVisible(By.name("approve"))) {
+    if (codereadyOpenShiftLoginPage.isApproveButtonVisible()) {
       authorizeOpenShiftAccessPage.waitOnOpen();
       authorizeOpenShiftAccessPage.allowPermissions();
     }
 
     // fill first broker profile page
     firstBrokerProfilePage.submit(testUser);
+
+    // apply OCP user information to Codeready user account
+    assertEquals(firstBrokerProfilePage.getErrorAlert(), expectedError);
+    firstBrokerProfilePage.addToExistingAccount();
+
+    // login into Codeready again
+    String expectedInfo =
+        format(LOGIN_TO_CHE_WITH_OPENSHIFT_OAUTH_MESSAGE_TEMPLATE, testUser.getName());
+    assertEquals(cheLoginPage.getInfoAlert(), expectedInfo);
+    cheLoginPage.loginWithPredefinedUsername(testUser.getPassword());
 
     // create and open workspace
     testWorkspace =
@@ -92,12 +116,6 @@ public class LoginNewUserWithHtpasswdTest {
     seleniumWebDriverHelper.switchToIdeFrameAndWaitAvailability();
     toastLoader.waitToastLoaderAndClickStartButton();
     ide.waitOpenedWorkspaceIsReadyToUse();
-
-    // go to OCP and check if there is a project with name equals to test workspace id
-    openShiftProjectCatalogPage.open();
-    codereadyOpenShiftLoginPage.login(testUser.getName(), testUser.getPassword());
-    codereadyOpenShiftLoginPage.waitOnClose();
-    openShiftProjectCatalogPage.waitProject("workspace");
 
     // delete the created workspace on Dashboard
     seleniumWebDriver.navigate().to(testDashboardUrlProvider.get());
@@ -110,14 +128,16 @@ public class LoginNewUserWithHtpasswdTest {
 
     // go to OCP and check that project is not exist
     openShiftProjectCatalogPage.open();
+    codereadyOpenShiftLoginPage.login(openShiftUsername, openShiftPassword);
+    codereadyOpenShiftLoginPage.waitOnClose();
     openShiftProjectCatalogPage.waitProjectAbsence("workspace");
   }
 
   private static TestUser getTestUser() {
     return new TestUser() {
-      private final String name = "crw";
+      private final String name = "admin";
       private final String email = name + "@1.com";
-      private final String password = "crw";
+      private final String password = "admin";
 
       @Override
       public String getEmail() {

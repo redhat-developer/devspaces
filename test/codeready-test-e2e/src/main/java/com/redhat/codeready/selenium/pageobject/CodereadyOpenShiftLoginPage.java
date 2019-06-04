@@ -1,24 +1,27 @@
 /*
-* Copyright (c) 2018 Red Hat, Inc.
+* Copyright (c) 2019 Red Hat, Inc.
 
 * All rights reserved. This program and the accompanying materials
-* are made available under the terms of the Eclipse Public License v1.0
+* are made available under the terms of the Eclipse Public License v2.0
 * which accompanies this distribution, and is available at
-* http://www.eclipse.org/legal/epl-v10.html
+* http://www.eclipse.org/legal/epl-2.0
 *
 * Contributors:
 *   Red Hat, Inc. - initial API and implementation
 */
 package com.redhat.codeready.selenium.pageobject;
 
+import static com.redhat.codeready.selenium.pageobject.CodereadyOpenShiftLoginPage.Locators.APPROVE_BUTTON_NAME;
 import static com.redhat.codeready.selenium.pageobject.CodereadyOpenShiftLoginPage.Locators.CONFIRM_PASSWORD_INPUT_NAME;
 import static com.redhat.codeready.selenium.pageobject.CodereadyOpenShiftLoginPage.Locators.EMAIL_NAME;
 import static com.redhat.codeready.selenium.pageobject.CodereadyOpenShiftLoginPage.Locators.FIRST_NAME_NAME;
 import static com.redhat.codeready.selenium.pageobject.CodereadyOpenShiftLoginPage.Locators.LAST_NAME_NAME;
 import static com.redhat.codeready.selenium.pageobject.CodereadyOpenShiftLoginPage.Locators.LOGIN_BUTTON_XPATH;
 import static com.redhat.codeready.selenium.pageobject.CodereadyOpenShiftLoginPage.Locators.PASSWORD_INPUT_NAME;
+import static com.redhat.codeready.selenium.pageobject.CodereadyOpenShiftLoginPage.Locators.REGISTER_LINK_XPATH;
 import static com.redhat.codeready.selenium.pageobject.CodereadyOpenShiftLoginPage.Locators.USERNAME_INPUT_NAME;
 import static java.util.Arrays.asList;
+import static org.eclipse.che.selenium.core.constant.TestTimeoutsConstants.WIDGET_TIMEOUT_SEC;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
@@ -42,6 +45,8 @@ public class CodereadyOpenShiftLoginPage extends OpenShiftLoginPage {
     String PASSWORD_INPUT_NAME = "password";
     String CONFIRM_PASSWORD_INPUT_NAME = "password-confirm";
     String LOGIN_BUTTON_XPATH = "//button[text()='Log In']";
+    String REGISTER_LINK_XPATH = "//a[text()='Register']";
+    String APPROVE_BUTTON_NAME = "approve";
   }
 
   @FindBy(name = FIRST_NAME_NAME)
@@ -65,6 +70,12 @@ public class CodereadyOpenShiftLoginPage extends OpenShiftLoginPage {
   @FindBy(name = CONFIRM_PASSWORD_INPUT_NAME)
   private WebElement confirmPasswordInput;
 
+  @FindBy(xpath = REGISTER_LINK_XPATH)
+  private WebElement registerLink;
+
+  @FindBy(name = APPROVE_BUTTON_NAME)
+  private WebElement approveButton;
+
   @Inject
   public CodereadyOpenShiftLoginPage(
       SeleniumWebDriver seleniumWebDriver, SeleniumWebDriverHelper seleniumWebDriverHelper) {
@@ -84,16 +95,16 @@ public class CodereadyOpenShiftLoginPage extends OpenShiftLoginPage {
 
   public void waitOnOpen() {
     seleniumWebDriverHelper.waitAllVisibility(
-        asList(usernameInput, passwordInput, loginButton), 30);
+        asList(usernameInput, passwordInput, loginButton), WIDGET_TIMEOUT_SEC);
   }
 
   public void waitOnClose() {
     seleniumWebDriverHelper.waitAllInvisibility(
-        asList(usernameInput, passwordInput, loginButton), 30);
+        asList(usernameInput, passwordInput, loginButton), WIDGET_TIMEOUT_SEC);
   }
 
   public void clickOnRegisterUserLink() {
-    seleniumWebDriverHelper.waitAndClick(By.xpath("//a[text()='Register']"));
+    seleniumWebDriverHelper.waitAndClick(registerLink);
   }
 
   public void submit(String userName, String userPassword, String email) {
@@ -107,5 +118,9 @@ public class CodereadyOpenShiftLoginPage extends OpenShiftLoginPage {
 
   public void clickOnRegisterButton() {
     seleniumWebDriverHelper.waitAndClick(By.xpath("//input[@value='Register']"));
+  }
+
+  public Boolean isApproveButtonVisible() {
+    return seleniumWebDriverHelper.isVisible(approveButton);
   }
 }
