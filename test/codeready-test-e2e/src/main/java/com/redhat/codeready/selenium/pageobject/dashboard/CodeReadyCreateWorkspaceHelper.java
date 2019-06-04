@@ -64,6 +64,7 @@ public class CodeReadyCreateWorkspaceHelper {
     String successNotificationText = "Workspace updated.";
 
     // select stack on workspace dashboard
+    dashboard.waitDashboardToolbarTitle();
     dashboard.selectWorkspacesItemOnDashboard();
     dashboard.waitToolbarTitleName("Workspaces");
     workspaces.clickOnAddWorkspaceBtn();
