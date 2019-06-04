@@ -125,13 +125,13 @@ for URLfrag in $CONTAINERS; do
 		URLfragtag="^- ${URLfragtag}"
 	fi
 	# if [[ $VERBOSE -eq 1 ]]; then echo "URL=$URL"; fi
-	QUERY="$(echo $URL | sed -e "s#.\+\(registry.redhat.io\|registry.access.redhat.com\)/#skopeo inspect docker://\1/#g")"
+	QUERY="$(echo $URL | sed -e "s#.\+\(registry.redhat.io\|registry.access.redhat.com\)/#skopeo inspect docker://registry.redhat.io/#g")"
 	if [[ $VERBOSE -eq 1 ]]; then 
 		echo ""; echo "# $QUERY | jq .RepoTags | egrep -v \"\[|\]|latest\" | sed -e 's#.*\"\(.\+\)\",*#- \1#' | sort -V|tail -5"
 	fi
 	LATESTTAGs=$(${QUERY} 2>/dev/null | jq .RepoTags | egrep -v "\[|\]|latest" | sed -e 's#.*\"\(.\+\)\",*#- \1#' | sort -V | grep "${URLfragtag}"|egrep -v "\"|latest"|egrep -v "${EXCLUDES}"|sed -e "s#^-##" -e "s#[\n\r\ ]\+##g"|tail -${NUMTAGS})
 	if [[ ! ${LATESTTAGs} ]]; then # try again with -container suffix
-		QUERY="$(echo ${URL}-container | sed -e "s#.\+\(registry.redhat.io\|registry.access.redhat.com\)/#skopeo inspect docker://\1/#g")"
+		QUERY="$(echo ${URL}-container | sed -e "s#.\+\(registry.redhat.io\|registry.access.redhat.com\)/#skopeo inspect docker://registry.redhat.io/#g")"
 		if [[ $VERBOSE -eq 1 ]]; then 
 			echo ""; echo "# $QUERY | jq .RepoTags | egrep -v \"\[|\]|latest\" | sed -e 's#.*\"\(.\+\)\",*#- \1#' | sort -V|tail -5" 
 		fi
