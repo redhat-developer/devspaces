@@ -22,7 +22,6 @@ import com.redhat.codeready.selenium.pageobject.dashboard.CodeReadyCreateWorkspa
 import org.eclipse.che.selenium.core.SeleniumWebDriver;
 import org.eclipse.che.selenium.core.TestGroup;
 import org.eclipse.che.selenium.core.provider.TestDashboardUrlProvider;
-import org.eclipse.che.selenium.core.user.TestUser;
 import org.eclipse.che.selenium.core.webdriver.SeleniumWebDriverHelper;
 import org.eclipse.che.selenium.core.workspace.TestWorkspace;
 import org.eclipse.che.selenium.pageobject.Ide;
@@ -44,7 +43,6 @@ public class LoginNewUserWithOpenShiftOAuthTest {
   private static final String PROJECT = "kitchensink-example";
 
   private TestWorkspace testWorkspace;
-  private static final TestUser testUser = getTestUser();
 
   @Inject(optional = true)
   @Named("env.openshift.regular.username")
@@ -53,6 +51,10 @@ public class LoginNewUserWithOpenShiftOAuthTest {
   @Inject(optional = true)
   @Named("env.openshift.regular.password")
   private String openShiftPassword;
+
+  @Inject(optional = true)
+  @Named("env.openshift.regular.email")
+  private String openShiftEmail;
 
   @Inject private CheLoginPage cheLoginPage;
   @Inject private CodereadyOpenShiftLoginPage codereadyOpenShiftLoginPage;
@@ -88,8 +90,8 @@ public class LoginNewUserWithOpenShiftOAuthTest {
       authorizeOpenShiftAccessPage.allowPermissions();
     }
 
-    // fill first broker profile page
-    firstBrokerProfilePage.submit(testUser);
+    // fill profile page
+    codereadyOpenShiftLoginPage.submit(openShiftUsername, openShiftEmail);
 
     // create and open workspace
     testWorkspace =
@@ -104,7 +106,6 @@ public class LoginNewUserWithOpenShiftOAuthTest {
     // go to OCP and check if there is a project with name equals to test workspace id
     openShiftProjectCatalogPage.open();
     codereadyOpenShiftLoginPage.login(openShiftUsername, openShiftPassword);
-    codereadyOpenShiftLoginPage.waitOnClose();
     openShiftProjectCatalogPage.waitProject("workspace");
 
     // delete the created workspace on Dashboard
@@ -119,41 +120,5 @@ public class LoginNewUserWithOpenShiftOAuthTest {
     // go to OCP and check that project is not exist
     openShiftProjectCatalogPage.open();
     openShiftProjectCatalogPage.waitProjectAbsence("workspace");
-  }
-
-  private static TestUser getTestUser() {
-    return new TestUser() {
-      private final String name = "crw";
-      private final String email = name + "@1.com";
-      private final String password = "crw";
-
-      @Override
-      public String getEmail() {
-        return email;
-      }
-
-      @Override
-      public String getPassword() {
-        return password;
-      }
-
-      @Override
-      public String obtainAuthToken() {
-        return null;
-      }
-
-      @Override
-      public String getName() {
-        return name;
-      }
-
-      @Override
-      public String getId() {
-        return null;
-      }
-
-      @Override
-      public void delete() {}
-    };
   }
 }

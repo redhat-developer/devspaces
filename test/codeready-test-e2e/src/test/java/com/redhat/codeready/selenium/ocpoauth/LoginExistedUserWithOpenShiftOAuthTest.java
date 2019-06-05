@@ -94,7 +94,7 @@ public class LoginExistedUserWithOpenShiftOAuthTest {
       authorizeOpenShiftAccessPage.allowPermissions();
     }
 
-    // fill first broker profile page
+    // fill profile page
     firstBrokerProfilePage.submit(testUser);
 
     // apply OCP user information to Codeready user account
@@ -129,7 +129,6 @@ public class LoginExistedUserWithOpenShiftOAuthTest {
     // go to OCP and check that project is not exist
     openShiftProjectCatalogPage.open();
     codereadyOpenShiftLoginPage.login(openShiftUsername, openShiftPassword);
-    codereadyOpenShiftLoginPage.waitOnClose();
     openShiftProjectCatalogPage.waitProjectAbsence("workspace");
   }
 

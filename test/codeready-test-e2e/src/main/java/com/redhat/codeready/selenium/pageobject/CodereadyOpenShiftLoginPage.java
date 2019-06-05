@@ -17,8 +17,10 @@ import static com.redhat.codeready.selenium.pageobject.CodereadyOpenShiftLoginPa
 import static com.redhat.codeready.selenium.pageobject.CodereadyOpenShiftLoginPage.Locators.FIRST_NAME_NAME;
 import static com.redhat.codeready.selenium.pageobject.CodereadyOpenShiftLoginPage.Locators.LAST_NAME_NAME;
 import static com.redhat.codeready.selenium.pageobject.CodereadyOpenShiftLoginPage.Locators.LOGIN_BUTTON_XPATH;
+import static com.redhat.codeready.selenium.pageobject.CodereadyOpenShiftLoginPage.Locators.LOGIN_TITLE_ID;
 import static com.redhat.codeready.selenium.pageobject.CodereadyOpenShiftLoginPage.Locators.PASSWORD_INPUT_NAME;
 import static com.redhat.codeready.selenium.pageobject.CodereadyOpenShiftLoginPage.Locators.REGISTER_LINK_XPATH;
+import static com.redhat.codeready.selenium.pageobject.CodereadyOpenShiftLoginPage.Locators.SUBMIT_BUTTON_XPATH;
 import static com.redhat.codeready.selenium.pageobject.CodereadyOpenShiftLoginPage.Locators.USERNAME_INPUT_NAME;
 import static java.util.Arrays.asList;
 import static org.eclipse.che.selenium.core.constant.TestTimeoutsConstants.WIDGET_TIMEOUT_SEC;
@@ -28,7 +30,6 @@ import com.google.inject.Singleton;
 import org.eclipse.che.selenium.core.SeleniumWebDriver;
 import org.eclipse.che.selenium.core.webdriver.SeleniumWebDriverHelper;
 import org.eclipse.che.selenium.pageobject.ocp.OpenShiftLoginPage;
-import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
@@ -44,8 +45,10 @@ public class CodereadyOpenShiftLoginPage extends OpenShiftLoginPage {
     String USERNAME_INPUT_NAME = "username";
     String PASSWORD_INPUT_NAME = "password";
     String CONFIRM_PASSWORD_INPUT_NAME = "password-confirm";
+    String LOGIN_TITLE_ID = "brand";
     String LOGIN_BUTTON_XPATH = "//button[text()='Log In']";
     String REGISTER_LINK_XPATH = "//a[text()='Register']";
+    String SUBMIT_BUTTON_XPATH = "//input[@value='Submit']";
     String APPROVE_BUTTON_NAME = "approve";
   }
 
@@ -76,6 +79,12 @@ public class CodereadyOpenShiftLoginPage extends OpenShiftLoginPage {
   @FindBy(name = APPROVE_BUTTON_NAME)
   private WebElement approveButton;
 
+  @FindBy(id = LOGIN_TITLE_ID)
+  private WebElement loginTitle;
+
+  @FindBy(xpath = SUBMIT_BUTTON_XPATH)
+  private WebElement submitButton;
+
   @Inject
   public CodereadyOpenShiftLoginPage(
       SeleniumWebDriver seleniumWebDriver, SeleniumWebDriverHelper seleniumWebDriverHelper) {
@@ -91,6 +100,8 @@ public class CodereadyOpenShiftLoginPage extends OpenShiftLoginPage {
     seleniumWebDriverHelper.setValue(usernameInput, username);
     seleniumWebDriverHelper.setValue(passwordInput, password);
     seleniumWebDriverHelper.waitAndClick(loginButton);
+
+    waitOnClose();
   }
 
   public void waitOnOpen() {
@@ -99,25 +110,20 @@ public class CodereadyOpenShiftLoginPage extends OpenShiftLoginPage {
   }
 
   public void waitOnClose() {
-    seleniumWebDriverHelper.waitAllInvisibility(
-        asList(usernameInput, passwordInput, loginButton), WIDGET_TIMEOUT_SEC);
+    seleniumWebDriverHelper.waitInvisibility(loginTitle);
   }
 
   public void clickOnRegisterUserLink() {
     seleniumWebDriverHelper.waitAndClick(registerLink);
   }
 
-  public void submit(String userName, String userPassword, String email) {
+  public void submit(String userName, String email) {
     seleniumWebDriverHelper.setValue(firstUsername, userName);
     seleniumWebDriverHelper.setValue(lastUsername, userName);
     seleniumWebDriverHelper.setValue(emailName, email);
     seleniumWebDriverHelper.setValue(usernameInput, userName);
-    seleniumWebDriverHelper.setValue(passwordInput, userPassword);
-    seleniumWebDriverHelper.setValue(confirmPasswordInput, userPassword);
-  }
 
-  public void clickOnRegisterButton() {
-    seleniumWebDriverHelper.waitAndClick(By.xpath("//input[@value='Register']"));
+    seleniumWebDriverHelper.waitAndClick(submitButton);
   }
 
   public Boolean isApproveButtonVisible() {
