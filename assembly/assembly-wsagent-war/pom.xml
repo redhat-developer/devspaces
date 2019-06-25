@@ -22,7 +22,7 @@
     </parent>
     <artifactId>codeready-workspaces-assembly-wsagent-war</artifactId>
     <packaging>war</packaging>
-    <name>CodeReady Workspaces :: Workspace Agent</name>
+    <name>CRW :: Workspace Agent</name>
     <dependencies>
         <dependency>
             <groupId>javax.xml.bind</groupId>

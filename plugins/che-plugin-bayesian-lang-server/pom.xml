@@ -22,7 +22,7 @@
     </parent>
     <artifactId>che-plugin-bayesian-lang-server</artifactId>
     <packaging>jar</packaging>
-    <name>CodeReady Workspaces: Plugins :: Bayesian LSP Integration</name>
+    <name>CRW :: Plugins :: Bayesian LSP Integration</name>
     <dependencies>
         <dependency>
             <groupId>com.google.inject</groupId>
