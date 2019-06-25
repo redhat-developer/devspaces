@@ -43,11 +43,13 @@ mvn clean install
 Then just use the `Dockerfile` in this repo to build:
 
 ```
-docker build --force-rm -t codeready/codeready-workspaces:latest . && \
-docker images | grep codeready/codeready-workspaces | grep latest
+docker build --force-rm -t registry.redhat.io/codeready-workspaces/server-rhel8:1.2 . && \
+docker images | grep registry.redhat.io/codeready-workspaces/server-rhel8:1.2
 ```
 
-You can then reference this image in your deployment (set image pull policy to IfNotPresent to avoid pushing the image to a registry).
+You can then reference this image in your deployment (set image pull policy to *`Always`* to make sure it's pulled instead of the default one).
+
+For more info on how to test locally built changes in a local OKD 3.11 (Minishift 1.34) cluster, see link:devdoc/building/building-crw.adoc#make-changes-to-crw-and-re-deploy-to-minishift[Build CodeReady Workspaces server container locally and deploy using Minishift].
 
 [NOTE]
 ====
@@ -67,9 +69,9 @@ Once published, they will be in locations like these:
 * registry.redhat.io/codeready-workspaces/stacks-node:1.2
 ====
 
-### How to Build Container Using Jenkins and OSBS (Brew)
+### How to Build Container Using Jenkins and OSBS/Brew (REQUIRES VPN)
 
-Clone the pkgs.devel repo, then Run the `get-sources-jenkins.sh` script to pull the latest dependency tarball into the local project, and trigger a Brew build.
+If you have access to Red Hat VPN, clone the pkgs.devel repo, then run the `get-sources-jenkins.sh` script to pull the latest dependency tarball into the local project, and trigger a Brew build.
 
 ```
 kinit
@@ -80,7 +82,7 @@ cd codeready-workspaces
 
 See also:
 
-* http://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces/tree/README.adoc?h=codeready-1.0-rhel-7
+* http://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces/tree/README.adoc?h=crw-1.2-rhel-8
 
 See this document for more on how to use those build systems, in order to publish a container image to Red Hat Container Catalog:
 
@@ -88,9 +90,9 @@ See this document for more on how to use those build systems, in order to publis
 
 ### Keeping in sync with upstream
 
-The Dockerfile and entrypoint.sh scripts in this repo are copied from link:http://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces/tree/?h=codeready-1.0-rhel-7[upstream repo] into this one using a link:https://codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/CRW_CI/view/Releng/job/crw_sync-pkgs.devel-to-github/[Jenkins job] which adjusts it so it will work locally.
+The Dockerfile and entrypoint.sh scripts in this repo are copied from link:http://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces/tree/?h=crw-1.2-rhel-8[upstream repo] into this one using a link:https://codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/CRW_CI/view/Releng/job/crw_sync-pkgs.devel-to-github/[Jenkins job] which adjusts it so it will work locally.
 
-Upstream: http://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces/tree/?h=codeready-1.0-rhel-7
+Upstream: http://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces/tree/?h=crw-1.2-rhel-8
 
 Job: https://codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/CRW_CI/view/Releng/job/crw_sync-pkgs.devel-to-github/
 
