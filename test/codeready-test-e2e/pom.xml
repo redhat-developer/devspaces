@@ -21,7 +21,7 @@
     </parent>
     <artifactId>codeready-test-e2e</artifactId>
     <packaging>jar</packaging>
-    <name>CodeReady Workspaces :: Test :: E2E</name>
+    <name>CRW :: Test :: E2E</name>
     <properties>
         <org.mockito.version>2.10.0</org.mockito.version>
         <docker.showLogs>true</docker.showLogs>
