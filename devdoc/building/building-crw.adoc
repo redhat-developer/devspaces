@@ -6,7 +6,7 @@ The instructions below assume you're running Fedora 29, but similar instructions
 
 NOTE: Managed to get this to work on Windows 10 w/ Virtual Box 6.0.4, using link:https://conemu.github.io/[ConEmu] and a combination of Git Bash, WSL Bash. Some commands work in some shells, some do not. YMMV.
 
-== Set up minishift
+== Set up Minishift
 
 Download and unpack the latest `minishift` v1.34 binary from here:
 
@@ -18,7 +18,7 @@ https://github.com/openshift/origin/releases
 
 Once downloaded and unpacked, put the `minishift` and `oc` executables in your ~/bin or other folder that's on your PATH.
 
-== Start up minishift
+== Start up Minishift
 
 If on Windows, try Git bash shell for these steps.
 
@@ -134,7 +134,7 @@ oc secrets link builder registryredhatio
 
 
 
-== Deploy CRW to minishift (first time only)
+== Deploy CRW to Minishift (first time only)
 
 If on Windows, try Git bash shell for this step.
 
@@ -156,7 +156,7 @@ oc login 192.168.$YOUR_IP:8443 -u system -p admin && \
 if [[ $(oc project list 2>&1 | grep crw) ]]; then oc delete project crw; fi
 ```
 
-Next, deploy CRW to minishift cluster.
+Next, deploy CRW to Minishift cluster.
 
 . To run the latest public release from Red Hat Container Catalogue:
 +
@@ -196,7 +196,7 @@ image::../images/build-crw-crw-dashboard.png[CRW dashboard]
 
 == Make changes to CRW deployment
 
-Optionally, you can configure your minishift to point at a different server-image container than the one you used above.
+Optionally, you can configure your Minishift to point at a different server-image container than the one you used above.
 
 Edit this path in your https://192.168.$YOUR_IP:8443/console/project/crw/edit/yaml?kind=Deployment&name=che&group=apps&returnURL=[/console/project/crw/edit/yaml?kind=Deployment&name=che&group=apps&returnURL=] to point at the container you're going to build locally:
 
@@ -223,7 +223,7 @@ Now you can iterate changes to the code, by rebuilding the CRW assemblies then t
 . Set up docker environment and fetch sources to build
 +
 ```
-# SUPER IMPORTANT! Ensure we're using the docker daemon inside minishift, not your local one
+# SUPER IMPORTANT! Ensure we're using the docker daemon inside Minishift, not your local one
 eval $(minishift docker-env)
 
 # set up path where we'll check out code
@@ -271,7 +271,7 @@ mvn clean install
 [INFO] Total time:  06:47 min
 ```
 
-. Use the `Dockerfile` in this repo to build. Note: use the same image path and tag that you deployed to minishift (or the alternate path/name:tag you set above).
+. Use the `Dockerfile` in this repo to build. Note: use the same image path and tag that you deployed to Minishift (or the alternate path/name:tag you set above).
 +
 ```
 cd ~/projects/codeready-workspaces
