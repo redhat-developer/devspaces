@@ -1,0 +1,86 @@
+== Prerequisites
+
+You need the latest link:https://github.com/minishift/minishift/releases[Minishift] and link:https://github.com/che-incubator/chectl/releases[chectl] releases.
+
+Fetch them like this (or similar):
+
+```
+cd ~/bin
+curl -sSL  https://github.com/che-incubator/chectl/releases/download/20190628062929/chectl-linux -o chectl
+chmod +x chectl
+```
+
+```
+cd /tmp
+curl -sSL https://github.com/minishift/minishift/releases/download/v1.34.0/minishift-1.34.0-linux-amd64.tgz -o minishift.tgz
+tar xvzf minishift.tgz
+mv minishift*/minishift ~/bin/
+chmod +x ~/bin/minishift
+```
+
+== Procedure
+
+
+. Start up minishift, and log in once it's started.
+
+```
+minishift
+oc login 192.168.MY.IP:8433 -u systen -p admin
+```
+
+[NOTE]
+====
+To watch the events and see which images are pulled, start this in a second console window:
+
+```
+oc project che
+oc get po
+oc get events -w | tee /tmp/minishift.log.txt
+```
+
+Look for lines containing the following lines to see what containers are pulled.
+
+```
+Successfully pulled image "..."
+  and
+Container image "..." already present on machine
+```
++
+For example, this should extract just a list of pulled containers, including any duplicate re-pulls:
+
+```
+cat /tmp/minishift.log.txt | \
+  egrep "Successfully pulled image|Container image" | \
+  sed -e 's#.*\(Successfully pulled image\|Container image\) "\(.\+\)\".*#\2#g'
+```
+====
+
+[start=2]
+. Deploy Che to minishift:
++
+```
+chectl server:start -a minishift-addon -p minishift
+```
+
+. Open the console for the che deployment and fix this:
++
+https://192.168.YOUR.IP:8443/console/project/che/edit/dc/che
++
+```
+CHE_WORKSPACE_PLUGIN__REGISTRY__URL = https://che-plugin-registry.openshift.io/v3
+```
++
+Save changes and wait for redeployment to complete.
+
+. You can also look at the available images in the minishift docker context:
++
+```
+eval $(minishift docker-env)
+docker images
+```
+
+. Once running, you can see your Che instance here:
++
+http://che-che.192.168.YOUR.IP.nip.io/
+
+. If you then add a new workspace, you can see even more images pulled in the openshift event log (see above).
