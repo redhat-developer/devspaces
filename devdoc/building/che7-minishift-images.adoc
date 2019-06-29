@@ -1,0 +1,50 @@
+= Discovering containers loaded by Che 7
+
+== Prerequisites
+
+You need a Kubernetes or OpenShift cluster (eg., minikube or minishift), into which you have link:che7-minishift-deployment.adoc[installed Che].
+
+The commandline tool link:https://github.com/che-incubator/chectl/releases[chectl] is recommended for performing the deployment.
+
+Follow the steps in link:che7-minishift-deployment.adoc[this document] to deploy Che. Steps below can be done in parallel to collect a list of containers involved in deployment.
+
+== Procedure
+
+
+. Once you have started your cluster, you can watch events and see which images are pulled. Start this in a console window before deploying Che to your cluster.
++
+```
+oc project che
+oc get po
+oc get events -w | tee /tmp/minishift.log.txt
+```
+
+. Watch for lines containing the following lines to see what containers are pulled.
++
+```
+Successfully pulled image "..."
+  and
+Container image "..." already present on machine
+```
+
+. For example, this should extract just a list of pulled containers, including any duplicate re-pulls:
++
+```
+cat /tmp/minishift.log.txt | \
+  egrep "Successfully pulled image|Container image" | \
+  sed -e 's#.*\(Successfully pulled image\|Container image\) "\(.\+\)\".*#\2#g'
+```
+
+. You can also look at the available images in the minishift docker context:
++
+```
+eval $(minishift docker-env)
+docker images
+```
+
+. Next, using link:https://github.com/che-incubator/chectl/releases[chectl], link:che7-minishift-deployment.adoc[deploy Che to your cluster] and watch the events get logged.
+
+. You can also see container events at this URL:
+
+* https://192.168.YOUR.IP:8443/console/project/che/browse/events
+
