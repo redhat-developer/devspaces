@@ -15,6 +15,7 @@ import static com.redhat.codeready.selenium.pageobject.CodereadyOpenShiftLoginPa
 import static com.redhat.codeready.selenium.pageobject.CodereadyOpenShiftLoginPage.Locators.CONFIRM_PASSWORD_INPUT_NAME;
 import static com.redhat.codeready.selenium.pageobject.CodereadyOpenShiftLoginPage.Locators.EMAIL_NAME;
 import static com.redhat.codeready.selenium.pageobject.CodereadyOpenShiftLoginPage.Locators.FIRST_NAME_NAME;
+import static com.redhat.codeready.selenium.pageobject.CodereadyOpenShiftLoginPage.Locators.IDENTITY_PROVIDER_LINK_XPATH;
 import static com.redhat.codeready.selenium.pageobject.CodereadyOpenShiftLoginPage.Locators.LAST_NAME_NAME;
 import static com.redhat.codeready.selenium.pageobject.CodereadyOpenShiftLoginPage.Locators.LOGIN_BUTTON_XPATH;
 import static com.redhat.codeready.selenium.pageobject.CodereadyOpenShiftLoginPage.Locators.LOGIN_TITLE_ID;
@@ -22,6 +23,7 @@ import static com.redhat.codeready.selenium.pageobject.CodereadyOpenShiftLoginPa
 import static com.redhat.codeready.selenium.pageobject.CodereadyOpenShiftLoginPage.Locators.REGISTER_LINK_XPATH;
 import static com.redhat.codeready.selenium.pageobject.CodereadyOpenShiftLoginPage.Locators.SUBMIT_BUTTON_XPATH;
 import static com.redhat.codeready.selenium.pageobject.CodereadyOpenShiftLoginPage.Locators.USERNAME_INPUT_NAME;
+import static java.lang.String.format;
 import static java.util.Arrays.asList;
 import static org.eclipse.che.selenium.core.constant.TestTimeoutsConstants.WIDGET_TIMEOUT_SEC;
 
@@ -30,6 +32,7 @@ import com.google.inject.Singleton;
 import org.eclipse.che.selenium.core.SeleniumWebDriver;
 import org.eclipse.che.selenium.core.webdriver.SeleniumWebDriverHelper;
 import org.eclipse.che.selenium.pageobject.ocp.OpenShiftLoginPage;
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
@@ -50,6 +53,7 @@ public class CodereadyOpenShiftLoginPage extends OpenShiftLoginPage {
     String REGISTER_LINK_XPATH = "//a[text()='Register']";
     String SUBMIT_BUTTON_XPATH = "//input[@value='Submit']";
     String APPROVE_BUTTON_NAME = "approve";
+    String IDENTITY_PROVIDER_LINK_XPATH = "//a[@title='Log in with %s']";
   }
 
   @FindBy(name = FIRST_NAME_NAME)
@@ -128,5 +132,15 @@ public class CodereadyOpenShiftLoginPage extends OpenShiftLoginPage {
 
   public Boolean isApproveButtonVisible() {
     return seleniumWebDriverHelper.isVisible(approveButton);
+  }
+
+  public Boolean isIdentityProviderLinkVisible(String identityProviderName) {
+    return seleniumWebDriverHelper.isVisible(
+        By.xpath(format(IDENTITY_PROVIDER_LINK_XPATH, identityProviderName)));
+  }
+
+  public void clickOnIdentityProviderLink(String identityProviderName) {
+    seleniumWebDriverHelper.waitAndClick(
+        By.xpath(format(IDENTITY_PROVIDER_LINK_XPATH, identityProviderName)));
   }
 }

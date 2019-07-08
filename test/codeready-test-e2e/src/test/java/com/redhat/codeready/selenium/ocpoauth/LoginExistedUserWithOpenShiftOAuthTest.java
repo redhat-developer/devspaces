@@ -86,6 +86,9 @@ public class LoginExistedUserWithOpenShiftOAuthTest {
     seleniumWebDriver.navigate().to(testDashboardUrlProvider.get());
 
     cheLoginPage.loginWithOpenShiftOAuth();
+    if (codereadyOpenShiftLoginPage.isIdentityProviderLinkVisible("htpasswd_provider")) {
+      codereadyOpenShiftLoginPage.clickOnIdentityProviderLink("htpasswd_provider");
+    }
     codereadyOpenShiftLoginPage.login(openShiftUsername, openShiftPassword);
 
     // authorize ocp-client to access OpenShift account
