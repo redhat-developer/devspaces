@@ -33,6 +33,7 @@ import org.eclipse.che.selenium.core.SeleniumWebDriver;
 import org.eclipse.che.selenium.core.webdriver.SeleniumWebDriverHelper;
 import org.eclipse.che.selenium.pageobject.ocp.OpenShiftLoginPage;
 import org.openqa.selenium.By;
+import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
@@ -135,8 +136,15 @@ public class CodereadyOpenShiftLoginPage extends OpenShiftLoginPage {
   }
 
   public Boolean isIdentityProviderLinkVisible(String identityProviderName) {
-    return seleniumWebDriverHelper.isVisible(
-        By.xpath(format(IDENTITY_PROVIDER_LINK_XPATH, identityProviderName)));
+
+    try {
+      seleniumWebDriverHelper.waitVisibility(
+          By.xpath(format(IDENTITY_PROVIDER_LINK_XPATH, identityProviderName)), 2);
+    } catch (TimeoutException e) {
+      return false;
+    }
+
+    return true;
   }
 
   public void clickOnIdentityProviderLink(String identityProviderName) {
