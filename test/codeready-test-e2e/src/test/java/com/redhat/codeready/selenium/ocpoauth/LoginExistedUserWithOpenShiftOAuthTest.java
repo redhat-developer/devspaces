@@ -14,6 +14,7 @@ package com.redhat.codeready.selenium.ocpoauth;
 import static com.redhat.codeready.selenium.pageobject.dashboard.CodereadyNewWorkspace.CodereadyStacks.JAVA_DEFAULT;
 import static java.lang.String.format;
 import static org.eclipse.che.commons.lang.NameGenerator.generate;
+import static org.testng.Assert.fail;
 import static org.testng.AssertJUnit.assertEquals;
 
 import com.google.common.collect.ImmutableList;
@@ -35,6 +36,7 @@ import org.eclipse.che.selenium.pageobject.ocp.AuthorizeOpenShiftAccessPage;
 import org.eclipse.che.selenium.pageobject.ocp.OpenShiftProjectCatalogPage;
 import org.eclipse.che.selenium.pageobject.site.CheLoginPage;
 import org.eclipse.che.selenium.pageobject.site.FirstBrokerProfilePage;
+import org.openqa.selenium.TimeoutException;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.Test;
 
@@ -43,10 +45,11 @@ public class LoginExistedUserWithOpenShiftOAuthTest {
 
   private static final String WORKSPACE_NAME = generate("workspace", 4);
   private static final String PROJECT = "kitchensink-example";
-  public static final String LOGIN_TO_CHE_WITH_OPENSHIFT_OAUTH_MESSAGE_TEMPLATE =
+  private static final String LOGIN_TO_CHE_WITH_OPENSHIFT_OAUTH_MESSAGE_TEMPLATE =
       "Authenticate as %s to link your account with openshift-v3";
-  public static final String USER_ALREADY_EXISTS_ERROR_MESSAGE_TEMPLATE =
+  private static final String USER_ALREADY_EXISTS_ERROR_MESSAGE_TEMPLATE =
       "User with username %s already exists. How do you want to continue?";
+  private static final String IDENTITY_PROVIDER_NAME = "htpasswd_provider";
 
   private TestWorkspace testWorkspace;
   private static final TestUser testUser = getTestUser();
@@ -86,6 +89,9 @@ public class LoginExistedUserWithOpenShiftOAuthTest {
     seleniumWebDriver.navigate().to(testDashboardUrlProvider.get());
 
     cheLoginPage.loginWithOpenShiftOAuth();
+    if (codereadyOpenShiftLoginPage.isIdentityProviderLinkVisible(IDENTITY_PROVIDER_NAME)) {
+      codereadyOpenShiftLoginPage.clickOnIdentityProviderLink(IDENTITY_PROVIDER_NAME);
+    }
     codereadyOpenShiftLoginPage.login(openShiftUsername, openShiftPassword);
 
     // authorize ocp-client to access OpenShift account
@@ -95,7 +101,12 @@ public class LoginExistedUserWithOpenShiftOAuthTest {
     }
 
     // fill profile page
-    firstBrokerProfilePage.submit(testUser);
+    try {
+      firstBrokerProfilePage.submit(testUser);
+    } catch (TimeoutException ex) {
+      // remove try-catch block after issue has been resolved
+      fail("Known permanent OCP4.x failure https://issues.jboss.org/browse/CRW-202");
+    }
 
     // apply OCP user information to Codeready user account
     assertEquals(firstBrokerProfilePage.getErrorAlert(), expectedError);
