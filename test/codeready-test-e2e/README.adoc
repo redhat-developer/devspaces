@@ -24,7 +24,7 @@ export OPENSHIFT_PASSWORD=<openshift_web_console_password>;
 export OPENSHIFT_TOKEN=<openshift_web_console_bearer_auth_token>;
 export CHE_OPENSHIFT_PROJECT=<namespace_of_codeready_workspaces_deployed_on_openshift>;
 ```
-where `CHE_OPENSHIFT_PROJECT` is optional and is aimed to replace username/password when OpenShift is configured with oAuth.
+where `CHE_OPENSHIFT_PROJECT` is optional and is aimed to replace username/password when OpenShift is configured with OAuth.
 
 ==== 3. Setup test admin and test user credentials
 Also you can set your own credentials of test user or admin instead of default ones
@@ -78,7 +78,7 @@ If test user credentials aren't set, tests create random test user.
 
 == Setup GitHub related tests execution
 
-==== 1. Register GitHub oAuth application
+==== 1. Register GitHub OAuth application
 
 Go to https://github.com/settings/applications/new[OAuth application page] and register a new application:
 
