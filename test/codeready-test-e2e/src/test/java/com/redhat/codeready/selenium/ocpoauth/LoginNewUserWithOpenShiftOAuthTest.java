@@ -13,6 +13,7 @@ package com.redhat.codeready.selenium.ocpoauth;
 
 import static com.redhat.codeready.selenium.pageobject.dashboard.CodereadyNewWorkspace.CodereadyStacks.JAVA_DEFAULT;
 import static org.eclipse.che.commons.lang.NameGenerator.generate;
+import static org.testng.Assert.fail;
 
 import com.google.common.collect.ImmutableList;
 import com.google.inject.Inject;
@@ -26,13 +27,13 @@ import org.eclipse.che.selenium.core.webdriver.SeleniumWebDriverHelper;
 import org.eclipse.che.selenium.core.workspace.TestWorkspace;
 import org.eclipse.che.selenium.pageobject.Ide;
 import org.eclipse.che.selenium.pageobject.ToastLoader;
-import org.eclipse.che.selenium.pageobject.dashboard.CreateWorkspaceHelper;
 import org.eclipse.che.selenium.pageobject.dashboard.Dashboard;
 import org.eclipse.che.selenium.pageobject.dashboard.workspaces.Workspaces;
 import org.eclipse.che.selenium.pageobject.ocp.AuthorizeOpenShiftAccessPage;
 import org.eclipse.che.selenium.pageobject.ocp.OpenShiftProjectCatalogPage;
 import org.eclipse.che.selenium.pageobject.site.CheLoginPage;
 import org.eclipse.che.selenium.pageobject.site.FirstBrokerProfilePage;
+import org.openqa.selenium.TimeoutException;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.Test;
 
@@ -41,6 +42,7 @@ public class LoginNewUserWithOpenShiftOAuthTest {
 
   private static final String WORKSPACE_NAME = generate("workspace", 4);
   private static final String PROJECT = "kitchensink-example";
+  private static final String IDENTITY_PROVIDER_NAME = "htpasswd_provider";
 
   private TestWorkspace testWorkspace;
 
@@ -68,7 +70,6 @@ public class LoginNewUserWithOpenShiftOAuthTest {
   @Inject private OpenShiftProjectCatalogPage openShiftProjectCatalogPage;
   @Inject private SeleniumWebDriver seleniumWebDriver;
   @Inject private TestDashboardUrlProvider testDashboardUrlProvider;
-  @Inject private CreateWorkspaceHelper createWorkspaceHelper;
   @Inject private CodeReadyCreateWorkspaceHelper codeReadyCreateWorkspaceHelper;
 
   @AfterClass
@@ -82,8 +83,8 @@ public class LoginNewUserWithOpenShiftOAuthTest {
     seleniumWebDriver.navigate().to(testDashboardUrlProvider.get());
 
     cheLoginPage.loginWithOpenShiftOAuth();
-    if (codereadyOpenShiftLoginPage.isIdentityProviderLinkVisible("htpasswd_provider")) {
-      codereadyOpenShiftLoginPage.clickOnIdentityProviderLink("htpasswd_provider");
+    if (codereadyOpenShiftLoginPage.isIdentityProviderLinkVisible(IDENTITY_PROVIDER_NAME)) {
+      codereadyOpenShiftLoginPage.clickOnIdentityProviderLink(IDENTITY_PROVIDER_NAME);
     }
     codereadyOpenShiftLoginPage.login(openShiftUsername, openShiftPassword);
 
@@ -94,7 +95,12 @@ public class LoginNewUserWithOpenShiftOAuthTest {
     }
 
     // fill profile page
-    codereadyOpenShiftLoginPage.submit(openShiftUsername, openShiftEmail);
+    try {
+      codereadyOpenShiftLoginPage.submit(openShiftUsername, openShiftEmail);
+    } catch (TimeoutException ex) {
+      // remove try-catch block after issue has been resolved
+      fail("Known permanent OCP4.x failure https://issues.jboss.org/browse/CRW-202");
+    }
 
     // create and open workspace
     testWorkspace =
