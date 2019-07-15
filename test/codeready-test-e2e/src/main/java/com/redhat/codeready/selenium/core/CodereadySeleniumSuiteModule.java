@@ -15,10 +15,12 @@ import com.google.inject.AbstractModule;
 import com.redhat.codeready.selenium.core.client.keycloak.cli.CodeReadyOpenShiftKeycloakCliCommandExecutor;
 import com.redhat.codeready.selenium.core.executor.hotupdate.CodeReadyHotUpdateUtil;
 import com.redhat.codeready.selenium.core.utils.CodeReadyWorkspaceDtoDeserializer;
+import com.redhat.codeready.selenium.pageobject.site.CodereadyLoginPage;
 import org.eclipse.che.selenium.core.CheSeleniumSuiteModule;
 import org.eclipse.che.selenium.core.client.keycloak.cli.OpenShiftKeycloakCliCommandExecutor;
 import org.eclipse.che.selenium.core.executor.hotupdate.HotUpdateUtil;
 import org.eclipse.che.selenium.core.utils.WorkspaceDtoDeserializer;
+import org.eclipse.che.selenium.pageobject.site.CheLoginPage;
 
 /**
  * Guice module per suite.
@@ -36,5 +38,6 @@ public class CodereadySeleniumSuiteModule extends AbstractModule {
 
     bind(HotUpdateUtil.class).to(CodeReadyHotUpdateUtil.class);
     bind(WorkspaceDtoDeserializer.class).to(CodeReadyWorkspaceDtoDeserializer.class);
+    bind(CheLoginPage.class).to(CodereadyLoginPage.class);
   }
 }
