@@ -22,6 +22,7 @@ import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import com.redhat.codeready.selenium.pageobject.CodereadyOpenShiftLoginPage;
 import com.redhat.codeready.selenium.pageobject.dashboard.CodeReadyCreateWorkspaceHelper;
+import com.redhat.codeready.selenium.pageobject.site.CodereadyLoginPage;
 import org.eclipse.che.selenium.core.SeleniumWebDriver;
 import org.eclipse.che.selenium.core.TestGroup;
 import org.eclipse.che.selenium.core.provider.TestDashboardUrlProvider;
@@ -34,7 +35,6 @@ import org.eclipse.che.selenium.pageobject.dashboard.Dashboard;
 import org.eclipse.che.selenium.pageobject.dashboard.workspaces.Workspaces;
 import org.eclipse.che.selenium.pageobject.ocp.AuthorizeOpenShiftAccessPage;
 import org.eclipse.che.selenium.pageobject.ocp.OpenShiftProjectCatalogPage;
-import org.eclipse.che.selenium.pageobject.site.CheLoginPage;
 import org.eclipse.che.selenium.pageobject.site.FirstBrokerProfilePage;
 import org.openqa.selenium.TimeoutException;
 import org.testng.annotations.AfterClass;
@@ -62,7 +62,7 @@ public class LoginExistedUserWithOpenShiftOAuthTest {
   @Named("env.openshift.password")
   private String openShiftPassword;
 
-  @Inject private CheLoginPage cheLoginPage;
+  @Inject private CodereadyLoginPage codereadyLoginPage;
   @Inject private CodereadyOpenShiftLoginPage codereadyOpenShiftLoginPage;
   @Inject private FirstBrokerProfilePage firstBrokerProfilePage;
   @Inject private AuthorizeOpenShiftAccessPage authorizeOpenShiftAccessPage;
@@ -88,7 +88,7 @@ public class LoginExistedUserWithOpenShiftOAuthTest {
     // go to login page of Codeready
     seleniumWebDriver.navigate().to(testDashboardUrlProvider.get());
 
-    cheLoginPage.loginWithOpenShiftOAuth();
+    codereadyLoginPage.loginWithOpenShiftOAuth();
     if (codereadyOpenShiftLoginPage.isIdentityProviderLinkVisible(IDENTITY_PROVIDER_NAME)) {
       codereadyOpenShiftLoginPage.clickOnIdentityProviderLink(IDENTITY_PROVIDER_NAME);
     }
@@ -115,8 +115,8 @@ public class LoginExistedUserWithOpenShiftOAuthTest {
     // login into Codeready again
     String expectedInfo =
         format(LOGIN_TO_CHE_WITH_OPENSHIFT_OAUTH_MESSAGE_TEMPLATE, testUser.getName());
-    assertEquals(cheLoginPage.getInfoAlert(), expectedInfo);
-    cheLoginPage.loginWithPredefinedUsername(testUser.getPassword());
+    assertEquals(codereadyLoginPage.getInfoAlert(), expectedInfo);
+    codereadyLoginPage.loginWithPredefinedUsername(testUser.getPassword());
 
     // create and open workspace
     testWorkspace =
