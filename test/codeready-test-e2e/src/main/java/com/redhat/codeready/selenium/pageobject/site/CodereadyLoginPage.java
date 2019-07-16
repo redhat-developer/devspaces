@@ -19,9 +19,7 @@ import org.eclipse.che.selenium.pageobject.site.CheLoginPage;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
-/** @author Dmytro Nochevnov
- * TODO implement it in upstream Che 7 and remove in CRW 2.0
- * */
+/** @author Dmytro Nochevnov TODO implement it in upstream Che 7 and remove in CRW 2.0 */
 @Singleton
 public class CodereadyLoginPage extends CheLoginPage {
 
