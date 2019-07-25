@@ -38,7 +38,7 @@ minishift start
 oc login 192.168.MY.IP:8433 -u system -p admin
 ```
 
-. For Eclipse Che 7, pull link:https://github.com/eclipse/che-operator/blob/master/pkg/deploy/defaults.go[these images] and link:che7-custom-images-cr-pull-rename-push.sh[publish them] to your internal registry:
+. For Eclipse Che 7, pull link:https://github.com/eclipse/che-operator/blob/master/pkg/deploy/defaults.go[these images] and link:che7-custom-resource-airgap-pull-rename-push.sh[publish them] to your internal registry:
 
 * eclipse/che-server:nightly
 * eclipse/che-keycloak:nightly
@@ -47,18 +47,18 @@ oc login 192.168.MY.IP:8433 -u system -p admin
 * centos/postgresql-96-centos7:latest
 * registry.access.redhat.com/ubi8-minimal:8.0
 
-. Create a link:che7-custom-images-cr.yaml[custom resource file], which overrides the default image values from link:https://github.com/eclipse/che-operator/blob/master/pkg/deploy/defaults.go[che-operator defaults.go] to use your custom registry's images.
+. Create a link:che7-custom-resource-airgap.yaml[custom resource file], which overrides the default image values from link:https://github.com/eclipse/che-operator/blob/master/pkg/deploy/defaults.go[che-operator defaults.go] to use your custom registry's images.
 +
 [NOTE]
 ====
 To watch the events and verify which images are pulled, see link:che7-minishift-images.adoc[this document] before performing the next step.
 ====
 
-. Deploy Che to minishift using the custom resource file created above, link:che7-custom-images-cr.yaml[`che7-custom-images-cr.yaml`]. In this example the namespace `che-op` is used instead of the default `che`:
+. Deploy Che to minishift using the custom resource file created above, link:che7-custom-resource-airgap.yaml[`che7-custom-resource-airgap.yaml`]. In this example the namespace `che-op` is used instead of the default `che`:
 +
 ```
 chectl server:start -a operator -p minishift \
-  --che-operator-cr-yaml=che7-custom-images-cr.yaml -n che-op
+  --che-operator-cr-yaml=che7-custom-resource-airgap.yaml -n che-op
 ```
 +
 [NOTE]
