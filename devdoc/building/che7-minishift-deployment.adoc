@@ -8,20 +8,19 @@ Fetch them like this (or similar):
 
 ```
 cd ~/bin
-curl -sSL  https://github.com/che-incubator/chectl/releases/download/20190628062929/chectl-linux -o chectl
+curl -sSL https://github.com/che-incubator/chectl/releases/download/20190724230954/chectl-linux -o chectl
 chmod +x chectl
 ```
 
 ```
 cd /tmp
-curl -sSL https://github.com/minishift/minishift/releases/download/v1.34.0/minishift-1.34.0-linux-amd64.tgz -o minishift.tgz
+curl -sSL https://github.com/minishift/minishift/releases/download/v1.34.1/minishift-1.34.1-linux-amd64.tgz -o minishift.tgz
 tar xvzf minishift.tgz
 mv minishift*/minishift ~/bin/
 chmod +x ~/bin/minishift
 ```
 
 == Procedure
-
 
 . Start up minishift. (See link:building-crw.adoc#start-up-minishift[Start up Minishift] for some suggested default settings.)
 +
@@ -34,8 +33,11 @@ minishift start
 ```
 oc login 192.168.MY.IP:8433 -u system -p admin
 ```
-
-. To watch the events and see which images are pulled, see link:che7-minishift-images.adoc[this document].
++
+[NOTE]
+====
+To watch the events and verify which images are pulled, see link:che7-minishift-images.adoc[this document] before performing the next step.
+====
 
 . Deploy Che to minishift:
 +
@@ -43,7 +45,7 @@ oc login 192.168.MY.IP:8433 -u system -p admin
 chectl server:start -a minishift-addon -p minishift
 ```
 
-. Fix the plugin registry URL to use the latest version:
+. If using a version of Minishift before 1.34.1, you must fix the plugin registry URL to use the latest version:
 +
 ```
 oc set env dc/che CHE_WORKSPACE_PLUGIN__REGISTRY__URL=https://che-plugin-registry.openshift.io/v3
