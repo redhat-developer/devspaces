@@ -23,10 +23,10 @@ chmod +x ~/bin/minishift
 == Procedure
 
 
-. Start up minishift.
+. Start up minishift. (See link:building-crw.adoc#start-up-minishift[Start up Minishift] for some suggested default settings.)
 +
 ```
-minishift
+minishift start
 ```
 
 . Log in once startup is complete.
