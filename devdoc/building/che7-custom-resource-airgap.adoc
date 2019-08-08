@@ -81,6 +81,7 @@ image:../images/che7-custom-resource-deployed-view-config.png[]
 . Now that you've made it work locally, you can deploy to an OCP cluster instead of Minishift! It's almost the same command but you have to specify the platform (`-p` or `--platform=`) as `openshift` and define the domain to which to push the deployment (using `-b` or `--domain=`):
 
 ```
-chectl server:start -a operator -p openshift -b console-openshift-console.apps.crw.codereadyeq.com \
+chectl server:start -a operator -p openshift \
+  -b console-openshift-console.apps.crw.codereadyeq.com \
   --che-operator-cr-yaml=che7-custom-resource-airgap.yaml -n che-on-ocp
 ```
