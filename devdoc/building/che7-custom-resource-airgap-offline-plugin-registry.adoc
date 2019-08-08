@@ -56,8 +56,8 @@ To watch the events and verify which images are pulled, see link:che7-minishift-
 . Deploy Che to minishift using the custom resource file created above, link:che7-custom-resource-airgap-offline-plugin-registry.yaml[`che7-custom-resource-airgap-offline-plugin-registry.yaml`]. In this example the namespace `che-op` is used instead of the default `che`:
 +
 ```
-chectl server:start -a operator -p minishift \
-  --che-operator-cr-yaml=che7-custom-resource-airgap.yaml -n che-op
+chectl server:start -a operator -p minishift -n che-op \
+  --che-operator-cr-yaml=che7-custom-resource-airgap-offline-plugin-registry.yaml
 ```
 +
 [NOTE]
@@ -78,17 +78,25 @@ image:../images/che7-custom-resource-chectl-deployed.png[]
 image:../images/che7-custom-resource-deployed-view-config.png[]
 
 . Next, inject the environment variable for your plugin registry deployment's route URL into the config and wait until it's redeployed.
-
++
 ```
 routebits=$(oc get routes | grep plugin-registry);
 route=( $routebits );
 regurl=${route[1]};
 oc set env deployment/plugin-registry CHE_WORKSPACE_PLUGIN__REGISTRY__URL=${regurl}
 ```
-
++
 You can verify it worked after a few minutes like this:
-
++
 ```
 oc rsh $(oc get pods | grep plugin-registry | grep Running | sed -e "s# \+1/1.\+##") \
 /bin/bash -c "env | grep CHE_WORKSPACE_PLUGIN__REGISTRY__URL"
+```
+
+. Now that you've made it work locally, you can deploy to an OCP cluster instead of Minishift! It's almost the same command but you have to specify the platform (`-p` or `--platform=`) as `openshift` and define the domain to which to push the deployment (using `-b` or `--domain=`):
++
+```
+chectl server:start -a operator -p openshift -n che-on-ocp \
+  -b console-openshift-console.apps.crw.codereadyeq.com \
+  --che-operator-cr-yaml=che7-custom-resource-airgap-offline-plugin-registry.yaml 
 ```
