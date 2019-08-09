@@ -26,6 +26,7 @@ oc login 192.168.MY.IP:8433 -u system -p admin
 
 . For Eclipse Che 7, pull link:https://github.com/eclipse/che-operator/blob/master/pkg/deploy/defaults.go[these images] and link:che7-custom-resource-airgap-pull-rename-push.sh[publish them] to your internal registry:
 
+* quay.io/eclipse/che-operator:nightly
 * eclipse/che-server:nightly
 * eclipse/che-keycloak:nightly
 * quay.io/eclipse/che-devfile-registry:nightly
