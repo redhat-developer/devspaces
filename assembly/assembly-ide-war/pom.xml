@@ -24,18 +24,20 @@
     <name>CRW :: Assemblies :: IDE</name>
     <properties>
         <generated.sources.directory>${project.build.directory}/generated-sources/gen</generated.sources.directory>
-        <gwt.log.enable>true</gwt.log.enable>
+        <!-- <gwt.log.enable>true</gwt.log.enable> -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
     <dependencies>
-        <dependency>
+        <!-- <dependency>
             <groupId>com.redhat</groupId>
             <artifactId>codeready-ide-gwt-app</artifactId>
+            <version>${che.version}</version>
             <type>war</type>
-        </dependency>
+        </dependency> -->
         <dependency>
             <groupId>org.eclipse.che</groupId>
             <artifactId>assembly-ide-war</artifactId>
+            <version>${che.version}</version>
             <type>war</type>
             <scope>runtime</scope>
         </dependency>
@@ -67,7 +69,7 @@
                         <configuration>
                             <ignoredUnusedDeclaredDependencies>
                                 <!-- dependency is required just to overlay it's content -->
-                                <dep>com.redhat:codeready-ide-gwt-app</dep>
+                                <!-- <dep>com.redhat:codeready-ide-gwt-app</dep> -->
                             </ignoredUnusedDeclaredDependencies>
                         </configuration>
                     </execution>

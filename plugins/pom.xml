@@ -27,6 +27,7 @@
     <name>CRW :: Plugins :: Parent</name>
     <modules>
         <module>ls-bayesian-agent</module>
-        <module>che-plugin-bayesian-lang-server</module>
+        <!-- DISABLED due to compilation failure but do we still need this? or has this been replaced by a vscode extension? 
+        <module>che-plugin-bayesian-lang-server</module> -->
     </modules>
 </project>

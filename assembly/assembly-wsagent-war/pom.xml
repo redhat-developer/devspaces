@@ -40,10 +40,11 @@
             <groupId>javax.activation</groupId>
             <artifactId>activation</artifactId>
         </dependency>
+        <!-- DISABLED due to compilation failure but do we still need this? or has this been replaced by a vscode extension? 
         <dependency>
             <groupId>com.redhat</groupId>
             <artifactId>che-plugin-bayesian-lang-server</artifactId>
-        </dependency>
+        </dependency> -->
         <dependency>
             <groupId>org.eclipse.che</groupId>
             <artifactId>assembly-wsagent-war</artifactId>

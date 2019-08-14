@@ -131,6 +131,7 @@
         <dependency>
             <groupId>org.eclipse.che.plugin</groupId>
             <artifactId>che-plugin-github-server</artifactId>
+            <version>${che.version}</version>
             <scope>runtime</scope>
         </dependency>
         <dependency>

@@ -24,7 +24,7 @@
     <packaging>pom</packaging>
     <name>CRW :: Che Assembly :: Parent</name>
   <modules>
-      <module>codeready-ide-gwt-app</module>
+      <!-- <module>codeready-ide-gwt-app</module> -->
       <module>assembly-ide-war</module>
       <module>assembly-dashboard-war</module>
       <module>assembly-wsmaster-war</module>
