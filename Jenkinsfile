@@ -15,7 +15,7 @@
 def installNPM(){
 	def nodeHome = tool 'nodejs-10.9.0'
 	env.PATH="${env.PATH}:${nodeHome}/bin"
-	sh "npm install -g yarn"
+	sh "npm install yarn"
 	sh "npm version"
 }
 
