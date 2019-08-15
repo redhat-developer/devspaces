@@ -32,11 +32,11 @@
             <groupId>com.google.gwt</groupId>
             <artifactId>gwt-dev</artifactId>
         </dependency>
-        <dependency>
+        <!-- <dependency>
             <groupId>com.redhat</groupId>
             <artifactId>codeready-product-info</artifactId>
             <type>gwt-lib</type>
-        </dependency>
+        </dependency> -->
         <dependency>
             <groupId>org.eclipse.che.core</groupId>
             <artifactId>che-ide-full</artifactId>

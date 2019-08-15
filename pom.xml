@@ -19,7 +19,7 @@
     <parent>
         <artifactId>maven-depmgt-pom</artifactId>
         <groupId>org.eclipse.che.depmgt</groupId>
-        <version>7.0.0-rc-4.0-SNAPSHOT</version>
+        <version>7.0.0</version>
     </parent>
     <groupId>com.redhat</groupId>
     <artifactId>codeready</artifactId>
@@ -35,7 +35,7 @@
         </license>
     </licenses>
     <properties>
-        <che.version>7.0.0-rc-4.0-SNAPSHOT</che.version>
+        <che.version>7.0.0</che.version>
         <che.dashboard.version>${che.version}</che.dashboard.version>
         <crw.version>2.0.0.GA</crw.version>
         <crw.docs.version>2.0</crw.docs.version>
@@ -50,24 +50,24 @@
                 <version>${crw.version}</version>
                 <type>war</type>
             </dependency> -->
-            <dependency>
+            <!-- <dependency>
                 <groupId>com.redhat</groupId>
                 <artifactId>codeready-product-info</artifactId>
                 <version>${crw.version}</version>
                 <type>gwt-lib</type>
-            </dependency>
+            </dependency> -->
             <dependency>
                 <groupId>com.redhat</groupId>
                 <artifactId>codeready-dashboard-war</artifactId>
                 <type>war</type>
                 <version>${crw.version}</version>
             </dependency>
-            <dependency>
+            <!-- <dependency>
                 <groupId>com.redhat</groupId>
                 <artifactId>codeready-ide-assembly-ide-war</artifactId>
                 <type>war</type>
                 <version>${crw.version}</version>
-            </dependency>
+            </dependency> -->
             <dependency>
                 <groupId>com.redhat</groupId>
                 <artifactId>codeready-stacks</artifactId>
@@ -114,12 +114,12 @@
                 <artifactId>che-plugin-bayesian-lang-server</artifactId>
                 <version>${crw.version}</version>
             </dependency> -->
-            <dependency>
+            <!-- <dependency>
                 <groupId>org.eclipse.che</groupId>
                 <artifactId>assembly-wsagent-war</artifactId>
                 <version>${che.version}</version>
                 <type>war</type>
-            </dependency>
+            </dependency> -->
             <dependency>
                 <groupId>org.eclipse.che.core</groupId>
                 <artifactId>che-ide-full</artifactId>
@@ -146,7 +146,7 @@
                 <artifactId>che-plugin-json-server</artifactId>
                 <version>${che.version}</version>
             </dependency>
-            <dependency>
+            <!-- <dependency>
                 <groupId>com.redhat</groupId>
                 <artifactId>codeready-workspaces-assembly-wsagent-server</artifactId>
                 <version>${crw.version}</version>
@@ -156,18 +156,18 @@
                 <artifactId>codeready-workspaces-assembly-wsagent-war</artifactId>
                 <version>${crw.version}</version>
                 <type>war</type>
-            </dependency>
+            </dependency> -->
             <dependency>
                 <groupId>com.redhat</groupId>
                 <artifactId>ls-bayesian-agent</artifactId>
                 <version>${crw.version}</version>
             </dependency>
-            <dependency>
+            <!-- <dependency>
                 <groupId>com.redhat</groupId>
                 <artifactId>codeready-workspaces-assembly-wsagent-server</artifactId>
                 <version>${crw.version}</version>
                 <type>tar.gz</type>
-            </dependency>
+            </dependency> -->
             <dependency>
                 <groupId>javax.xml.bind</groupId>
                 <artifactId>jaxb-api</artifactId>

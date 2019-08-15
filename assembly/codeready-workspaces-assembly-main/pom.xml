@@ -30,11 +30,11 @@
     </properties>
 
     <dependencies>
-        <dependency>
+        <!-- <dependency>
             <groupId>com.redhat</groupId>
             <artifactId>codeready-workspaces-assembly-wsagent-server</artifactId>
             <type>tar.gz</type>
-        </dependency>
+        </dependency> -->
         <dependency>
             <groupId>com.redhat</groupId>
             <artifactId>assembly-wsmaster-war</artifactId>
@@ -49,11 +49,11 @@
             <artifactId>codeready-dashboard-war</artifactId>
             <type>war</type>
         </dependency>
-        <dependency>
+        <!-- <dependency>
             <groupId>com.redhat</groupId>
             <artifactId>codeready-ide-assembly-ide-war</artifactId>
             <type>war</type>
-        </dependency>
+        </dependency> -->
     </dependencies>
     <build>
         <plugins>

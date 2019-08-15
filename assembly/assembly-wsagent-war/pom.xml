@@ -45,15 +45,15 @@
             <groupId>com.redhat</groupId>
             <artifactId>che-plugin-bayesian-lang-server</artifactId>
         </dependency> -->
-        <dependency>
+        <!-- <dependency>
             <groupId>org.eclipse.che</groupId>
             <artifactId>assembly-wsagent-war</artifactId>
             <type>war</type>
-        </dependency>
+        </dependency> -->
     </dependencies>
     <build>
         <plugins>
-            <plugin>
+            <!-- <plugin>
                 <groupId>org.eclipse.che.core</groupId>
                 <artifactId>che-core-dynamodule-maven-plugin</artifactId>
                 <version>${che.version}</version>
@@ -68,7 +68,7 @@
                 <configuration>
                     <scanWarDependencies>true</scanWarDependencies>
                 </configuration>
-            </plugin>
+            </plugin> -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
