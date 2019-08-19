@@ -11,7 +11,7 @@ spec:
     # image:tag used in Devfile registry deployment
     devfileRegistryImage: 'quay.io/nickboldt/airgap-che-devfile-registry:nightly'
     # image:tag used in plugin registry deployment
-    pluginRegistryImage: 'quay.io/nickboldt/che-pluginregistry:nightly'
+    pluginRegistryImage: 'quay.io/nickboldt/airgap-che-plugin-registry:nightly'
     # defaults to `che`. When set to `codeready`, CodeReady Workspaces is deployed
     # the difference is in images, labels, exec commands
     cheFlavor: ''

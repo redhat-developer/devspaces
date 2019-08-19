@@ -12,7 +12,7 @@ See link:che7-custom-resource-airgap.adoc[Deploying Che 7 with custom images] fo
 
 == Procedure
 
-. Start up minishift. (See link:building-crw.adoc#start-up-minishift[Start up Minishift] for some suggested default settings.) 
+. Start up minishift. (See link:building-crw.adoc#start-up-minishift[Start up Minishift] for some suggested default settings.)
 +
 ```
 minishift start
@@ -33,8 +33,8 @@ oc login 192.168.MY.IP:8433 -u system -p admin
 * centos/postgresql-96-centos7:latest
 * registry.access.redhat.com/ubi8-minimal:8.0
 
-. Build a forked version of the link:https://github.com/eclipse/che-plugin-registry[quay.io/eclipse/che-plugin-registry:nightly] from link:https://github.com/nickboldt/containers/tree/master/che-plugin-registry-airgap[che-plugin-registry-airgap]. 
-. The result of the build can be seen as link:https://quay.io/repository/nickboldt/che-pluginregistry[`quay.io/nickboldt/che-pluginregistry:nightly`].
+. Build a forked version of the link:https://github.com/eclipse/che-plugin-registry[quay.io/eclipse/che-plugin-registry:nightly] from link:https://github.com/nickboldt/containers/tree/master/che-plugin-registry-airgap[che-plugin-registry-airgap].
+. The result of the build can be seen as link:https://quay.io/repository/nickboldt/airgap-che-plugin-registry[`quay.io/nickboldt/airgap-che-plugin-registry:nightly`].
 
 [IMPORTANT]
 ====
@@ -75,7 +75,7 @@ image:../images/che7-custom-resource-chectl.png[Console output]
 image:../images/che7-custom-resource-chectl-deployed.png[]
 
 . The custom image reference can be seen in the yaml for the deployment:
-+ 
++
 image:../images/che7-custom-resource-deployed-view-config.png[]
 
 . Next, inject the environment variable for your plugin registry deployment's route URL into the config and wait until it's redeployed.
@@ -99,5 +99,5 @@ oc rsh $(oc get pods | grep plugin-registry | grep Running | sed -e "s# \+1/1.\+
 ```
 chectl server:start -a operator -p openshift -n che-on-ocp \
   -b console-openshift-console.apps.crw.codereadyeq.com \
-  --che-operator-cr-yaml=che7-custom-resource-airgap-offline-plugin-registry.yaml 
+  --che-operator-cr-yaml=che7-custom-resource-airgap-offline-plugin-registry.yaml
 ```
