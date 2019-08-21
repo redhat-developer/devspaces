@@ -40,7 +40,7 @@ timeout(120) {
 			poll: true,
 			extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: "crw"]], 
 			submoduleCfg: [], 
-			userRemoteConfigs: [[url: "https://github.com/redhat-developer/coderady-workspaces.git"]]])
+			userRemoteConfigs: [[url: "https://github.com/redhat-developer/codeready-workspaces.git"]]])
 		checkout([$class: 'GitSCM', 
 			branches: [[name: "${branchToBuildCheTheia}"]], 
 			doGenerateSubmoduleConfigurations: false, 
