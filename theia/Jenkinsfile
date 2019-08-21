@@ -1,0 +1,128 @@
+#!/usr/bin/env groovy
+
+// PARAMETERS for this pipeline:
+// node == slave label, eg., rhel7-devstudio-releng-16gb-ram||rhel7-16gb-ram||rhel7-devstudio-releng||rhel7 or rhel7-32gb||rhel7-16gb||rhel7-8gb
+// branchToBuildParent = refs/tags/6.19.0, */6.19.x, or */master
+// branchToBuildCRW = */6.19.x or */master
+
+def installNPM(){
+	def nodeHome = tool 'nodejs-10.9.0'
+	env.PATH="${env.PATH}:${nodeHome}/bin"
+	sh "npm install yarn"
+	sh "npm version"
+}
+
+def installGo(){
+	def goHome = tool 'go-1.10'
+	env.PATH="${env.PATH}:${goHome}/bin"
+	sh "go version"
+}
+
+def MVN_FLAGS="-Dmaven.repo.local=.repository/ -V -B -e"
+
+def buildMaven(){
+	def mvnHome = tool 'maven-3.5.4'
+	env.PATH="${env.PATH}:${mvnHome}/bin"
+}
+
+// run this:
+// export GITHUB_TOKEN=86811773404ec16716fa1c917ab112f1eab1225f
+// ./build.sh --no-tests --build-args:GITHUB_TOKEN=${GITHUB_TOKEN},THEIA_VERSION=master --tag:next --branch:master --git-ref:refs\\/heads\\/master
+
+// TODO parameterize che-theia and theia versions as job config elements
+def branchToBuildCheTheia = "master"
+def THEIA_VERSION = "master"
+def tag = "next"
+def branch = "master"
+def gitref = "refs\\/heads\\/master"
+
+timeout(120) {
+	node("${node}"){ stage "Build Theia Dev"
+		cleanWs()
+		// for private repo, use checkout(credentialsId: 'devstudio-release')
+		checkout([$class: 'GitSCM', 
+			branches: [[name: "${branchToBuildCRW}"]], 
+			doGenerateSubmoduleConfigurations: false, 
+			poll: true,
+			extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: "crw"]], 
+			submoduleCfg: [], 
+			userRemoteConfigs: [[url: "https://github.com/redhat-developer/coderady-workspaces.git"]]])
+		checkout([$class: 'GitSCM', 
+			branches: [[name: "${branchToBuildCheTheia}"]], 
+			doGenerateSubmoduleConfigurations: false, 
+			poll: true,
+			extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: "che-theia"]], 
+			submoduleCfg: [], 
+			userRemoteConfigs: [[url: "https://github.com/eclipse/che-theia.git"]]])
+		installNPM()
+		installGo()
+		buildMaven()
+		//sh '''#!/bin/bash -xe
+		//'''
+		sh "export GITHUB_TOKEN=86811773404ec16716fa1c917ab112f1eab1225f"
+
+		// TODO replace Alpine with UBI
+		// sh "cp crw/dockerfiles/che-theia/Dockerfile che-theia/dockerfiles/theia/Dockefile"
+
+		// TODO make this a for loop or split into stages
+		sh "cd che-theia/dockerfiles/theia-dev && ./build.sh --no-tests --build-args:GITHUB_TOKEN=${GITHUB_TOKEN},THEIA_VERSION=${THEIA_VERSION} --tag:${tag} --branch:${branch} --git-ref:${gitref}"
+		sh "cd che-theia/dockerfiles/theia-endpoint-runtime && ./build.sh --no-tests --build-args:GITHUB_TOKEN=${GITHUB_TOKEN},THEIA_VERSION=${THEIA_VERSION} --tag:${tag} --branch:${branch} --git-ref:${gitref}"
+		sh "cd che-theia/dockerfiles/remote-plugin-java8 && ./build.sh --no-tests --build-args:GITHUB_TOKEN=${GITHUB_TOKEN},THEIA_VERSION=${THEIA_VERSION} --tag:${tag} --branch:${branch} --git-ref:${gitref}"
+		sh "cd che-theia/dockerfiles/remote-plugin-openshift-connector-0.0.21 && ./build.sh --no-tests --build-args:GITHUB_TOKEN=${GITHUB_TOKEN},THEIA_VERSION=${THEIA_VERSION} --tag:${tag} --branch:${branch} --git-ref:${gitref}"
+
+		// TODO tar up the node modules so we can build inject them into the Brew builds?
+		// archiveArtifacts fingerprint: true, artifacts: "crw/**/*.tar.*, crw/**/node_modules/**"
+
+		sh 'printenv | sort'
+		def descriptString="Build #${BUILD_NUMBER} (${BUILD_TIMESTAMP}) <br/> :: ${THEIA_VERSION}, ${tag}, ${branch}"
+		echo "${descriptString}"
+		currentBuild.description="${descriptString}"
+	}
+}
+
+// TODO enable downstream image builds
+// timeout(120) {
+// 	node("${node}"){ stage "Run get-sources-rhpkg-container-build"
+// 		def QUAY_REPO_PATHs=(env.ghprbPullId && env.ghprbPullId?.trim()?"":("${SCRATCH}"=="true"?"":"server-rhel8"))
+
+// 		def matcher = ( "${JOB_NAME}" =~ /.*_(stable-branch|master).*/ )
+// 		def JOB_BRANCH= (matcher.matches() ? matcher[0][1] : "stable-branch")
+
+// 		echo "[INFO] Trigger get-sources-rhpkg-container-build " + (env.ghprbPullId && env.ghprbPullId?.trim()?"for PR-${ghprbPullId} ":"") + \
+// 		"with SCRATCH = ${SCRATCH}, QUAY_REPO_PATHs = ${QUAY_REPO_PATHs}, JOB_BRANCH = ${JOB_BRANCH}"
+
+// 		// trigger OSBS build
+// 		build(
+// 		  job: 'get-sources-rhpkg-container-build',
+// 		  wait: false,
+// 		  propagate: false,
+// 		  parameters: [
+// 			[
+// 			  $class: 'StringParameterValue',
+// 			  name: 'GIT_PATH',
+// 			  value: "containers/codeready-workspaces",
+// 			],
+// 			[
+// 			  $class: 'StringParameterValue',
+// 			  name: 'GIT_BRANCH',
+// 			  value: "crw-2.0-rhel-8",
+// 			],
+// 			[
+// 			  $class: 'StringParameterValue',
+// 			  name: 'QUAY_REPO_PATHs',
+// 			  value: "${QUAY_REPO_PATHs}",
+// 			],
+// 			[
+// 			  $class: 'StringParameterValue',
+// 			  name: 'SCRATCH',
+// 			  value: "${SCRATCH}",
+// 			],
+// 			[
+// 			  $class: 'StringParameterValue',
+// 			  name: 'JOB_BRANCH',
+// 			  value: "${JOB_BRANCH}",
+// 			]
+// 		  ]
+// 		)
+// 	}
+// }
