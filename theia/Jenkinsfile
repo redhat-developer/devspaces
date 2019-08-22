@@ -11,7 +11,7 @@
 // GITHUB_TOKEN = (github token)
 
 def installNPM(){
-	def nodeHome = tool 'nodejs-12.8.0'
+	def nodeHome = tool 'nodejs-10.15.3'
 	env.PATH="${nodeHome}/bin:${env.PATH}"
 	sh "node --version && npm --version"
 	sh "npm install yarn"
