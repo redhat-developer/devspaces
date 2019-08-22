@@ -12,9 +12,9 @@
 
 def installNPM(){
 	def nodeHome = tool 'nodejs-12.8.0'
-	env.PATH="${env.PATH}:${nodeHome}/bin"
+	env.PATH="${nodeHome}/bin:${env.PATH}"
+	sh "node --version && npm --version"
 	sh "npm install yarn"
-	sh "npm version"
 }
 
 timeout(120) {
