@@ -11,23 +11,10 @@
 // GITHUB_TOKEN = (github token)
 
 def installNPM(){
-	def nodeHome = tool 'nodejs-10.9.0'
+	def nodeHome = tool 'nodejs-12.8.0'
 	env.PATH="${env.PATH}:${nodeHome}/bin"
 	sh "npm install yarn"
 	sh "npm version"
-}
-
-def installGo(){
-	def goHome = tool 'go-1.10'
-	env.PATH="${env.PATH}:${goHome}/bin"
-	sh "go version"
-}
-
-def MVN_FLAGS="-Dmaven.repo.local=.repository/ -V -B -e"
-
-def buildMaven(){
-	def mvnHome = tool 'maven-3.5.4'
-	env.PATH="${env.PATH}:${mvnHome}/bin"
 }
 
 timeout(120) {
@@ -49,8 +36,6 @@ timeout(120) {
 			submoduleCfg: [], 
 			userRemoteConfigs: [[url: "https://github.com/eclipse/che-theia.git"]]])
 		installNPM()
-		installGo()
-		buildMaven()
 		//sh '''#!/bin/bash -xe
 		//'''
 		sh "export GITHUB_TOKEN=${GITHUB_TOKEN}"
