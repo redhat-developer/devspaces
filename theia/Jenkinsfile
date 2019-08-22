@@ -44,7 +44,6 @@ timeout(120) {
 		// sh "cp crw/dockerfiles/che-theia/Dockerfile che-theia/dockerfiles/theia/Dockefile"
 
 		// TODO make this a for loop or split into stages
-		sh "cd che-theia && yarn add -W --ignore-engines ansi-escapes@4.2.1 @types/jest concurrently jest lerna rimraf ts-jest tslint tslint-language-service typescript typescript-formatter"
 		sh "cd che-theia && yarn add" // ./build.sh"
 		sh "cd che-theia/dockerfiles/theia-dev && ./build.sh --no-tests --build-args:GITHUB_TOKEN=${GITHUB_TOKEN},THEIA_VERSION=${che_theia_version} --tag:${che_theia_tag} --branch:${che_theia_branch} --git-ref:${che_theia_gitref}"
 		sh "cd che-theia/dockerfiles/theia-endpoint-runtime && ./build.sh --no-tests --build-args:GITHUB_TOKEN=${GITHUB_TOKEN},THEIA_VERSION=${che_theia_version} --tag:${che_theia_tag} --branch:${che_theia_branch} --git-ref:${che_theia_gitref}"
