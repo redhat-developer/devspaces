@@ -87,8 +87,8 @@ export class OcpWebConsolePage {
         await this.driverHelper.waitVisibility(upgradeStatuslocator, TestConstants.TS_SELENIUM_LOAD_PAGE_TIMEOUT);
     }
 
-    async waitCatalogSourceNameOnSubscriptionOverviewPage (projectName: string) {
-        const catalogSourceNameLolcator: By = By.css(`a[title=\'installed-redhat-${projectName}\']`);
+    async waitCatalogSourceNameOnSubscriptionOverviewPage (catalogSourceName: string, projectName: string) {
+        const catalogSourceNameLolcator: By = By.css(`a[title=\'${catalogSourceName}-${projectName}\']`);
         await this.driverHelper.waitVisibility(catalogSourceNameLolcator);
     }
 

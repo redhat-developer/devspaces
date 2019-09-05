@@ -92,7 +92,7 @@ export const TestConstants = {
     /**
      * Username used to log in CRW.
      */
-    TS_SELENIUM_USERNAME: process.env.TS_SELENIUM_USERNAME || 'crw',
+    TS_SELENIUM_USERNAME: process.env.TS_SELENIUM_USERNAME || '',
 
     /**
      * Password used to log in CRW.
@@ -134,5 +134,10 @@ export const TestConstants = {
     /**
      * Codeready Workspaces OperatorHub Catalog title.
      */
-    TS_SELENIUM_CODEREADY_OPERATOR_TITLE: process.env.TS_SELENIUM_CODEREADY_OPERATOR_TITLE || 'codeready-workspaces-latest'
+    TS_SELENIUM_CODEREADY_OPERATOR_TITLE: process.env.TS_SELENIUM_CODEREADY_OPERATOR_TITLE || 'codeready-workspaces-latest',
+
+    /**
+     * Catalog Source name on Subscription Overview.
+     */
+     TS_SELENIUM_CATALOG_SOURCE_NAME: process.env.TS_SELENIUM_CATALOG_SOURCE_NAME || 'installed-custom'
 };

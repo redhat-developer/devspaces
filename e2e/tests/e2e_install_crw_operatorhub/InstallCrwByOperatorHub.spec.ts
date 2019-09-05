@@ -23,6 +23,7 @@ const ocpLoginPage: OcpLoginPage = e2eContainer.get(CLASSES.OcpLoginPage);
 const ocpWebConsole: OcpWebConsolePage = e2eContainer.get(CLASSES.OcpWebConsolePage);
 const dashboard: Dashboard = e2eContainer.get(CLASSES.Dashboard);
 const projectName: string = TestConstants.TS_INSTALL_CRW_PROJECT_NAME;
+const catalogSourceName = TestConstants.TS_SELENIUM_CATALOG_SOURCE_NAME;
 const codeReadyOperatorTitle = TestConstants.TS_SELENIUM_CODEREADY_OPERATOR_TITLE;
 
 suite('E2E', async () => {
@@ -62,7 +63,7 @@ suite('E2E', async () => {
         test('Wait the Subscription Overview', async () => {
             await ocpWebConsole.waitSubscriptionOverviewPage();
             await ocpWebConsole.waitUpgradeStatusOnSubscriptionOverviewPage();
-            await ocpWebConsole.waitCatalogSourceNameOnSubscriptionOverviewPage(projectName);
+            await ocpWebConsole.waitCatalogSourceNameOnSubscriptionOverviewPage(catalogSourceName, projectName);
         });
     });
 
