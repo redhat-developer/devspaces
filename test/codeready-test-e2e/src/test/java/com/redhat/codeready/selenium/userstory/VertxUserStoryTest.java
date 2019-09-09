@@ -49,7 +49,7 @@ import org.testng.annotations.Test;
 public class VertxUserStoryTest extends AbstractUserStoryTest {
   private static final String VERTX_PROJECT_NAME = "vertx-http-booster";
   private static final String PATH_TO_MAIN_PACKAGE =
-      VERTX_PROJECT_NAME + "/src/main/java/io.openshift.booster";
+      VERTX_PROJECT_NAME + "/src/main/java/io.openshift.example";
   private static final String JAVA_FILE_NAME = "HttpApplication";
 
   private static final String[] REPORT_DEPENDENCY_ANALYSIS = {
@@ -129,7 +129,7 @@ public class VertxUserStoryTest extends AbstractUserStoryTest {
 
   @Test(priority = 1)
   public void checkVertxHttpBoosterProjectCommands() {
-    By textOnPreviewPage = By.id("_http_booster");
+    By textOnPreviewPage = By.id("_http_Example");
 
     // build and run web application
     consoles.executeCommandFromProjectExplorer(
