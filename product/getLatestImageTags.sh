@@ -44,6 +44,7 @@ VERBOSE=0	# more output
 NUMTAGS=1 # by default show only the latest tag for each container; or show n latest ones
 SHOWHISTORY=0 # compute the base images defined in the Dockerfile's FROM statement(s): NOTE: requires that the image be pulled first 
 SHOWNVR=0; # show NVR format instead of repo/container:tag format
+SHOWLOG=0; # show URL of the console log
 usage () {
 	echo "
 Usage: 
@@ -53,7 +54,7 @@ Usage:
   $0 -c ubi7 -c ubi8:8.0 --pulp -n 5                         | check pulp registry; show 8.0* tags; show 5 tags per container
   $0 -c ubi7 -c ubi8:8.0 --stage -n 5                        | check RHCC stage registry; show 8.0* tags; show 5 tags per container
   $0 -c pivotaldata/centos --docker --dockerfile             | check docker registry; show Dockerfile contents (requires dfimage)
-  $0 --crw --pulp --nvr                                      | check for latest images in pulp; output NVRs can be copied to Errata
+  $0 --crw --pulp --nvr --log                                | check for latest images in pulp; output NVRs can be copied to Errata; show links to Brew logs
 "
 	exit
 }
@@ -76,6 +77,7 @@ while [[ "$#" -gt 0 ]]; do
     '-n') NUMTAGS="$2"; shift 1;;
     '--dockerfile') SHOWHISTORY=1; shift 0;;
     '--nvr') SHOWNVR=1; shift 0;;
+    '--log') SHOWLOG=1; shift 0;;
     '-h') usage;;
   esac
   shift 1
@@ -108,8 +110,13 @@ if [[ ${CONTAINERS} == "" ]]; then usage; fi
 # special case!
 if [[ ${REGISTRY} == "http://brew-pulp-docker01.web.prod.ext.phx2.redhat.com:8888" ]] && [[ ${CONTAINERS} == "${CRW_CONTAINERS_PULP}" ]] && [[ ${SHOWNVR} -eq 1 ]]; then
 	for containername in ${CONTAINERS}; do
-		if [[ $containername == "codeready-workspaces/stacks-node" ]]; then canditateTag="codeready-1.0-rhel-7-candidate"; else canditateTag="crw-1.2-rhel-8-candidate"; fi
-		brew list-tagged ${canditateTag} | grep "${containername/\//-}" | sort -V | tail -${NUMTAGS} | sed -e "s#[\ \t]\+${canditateTag}.\+##"
+		if [[ $containername == "codeready-workspaces/stacks-node" ]]; then candidateTag="codeready-1.0-rhel-7-candidate"; else candidateTag="crw-1.2-rhel-8-candidate"; fi
+		if [[ ${SHOWLOG} -eq 1 ]]; then
+			brew list-tagged ${candidateTag} | grep "${containername/\//-}" | sort -V | tail -${NUMTAGS} | sed -e "s#[\ \t]\+${candidateTag}.\+##" | \
+				sed -e "s#\(.\+\)-container-\([0-9.]\+\)-\([0-9]\+\)#\0 - http://download.eng.bos.redhat.com/brewroot/packages/\1-container/\2/\3/data/logs/x86_64.log#"
+		else
+			brew list-tagged ${candidateTag} | grep "${containername/\//-}" | sort -V | tail -${NUMTAGS} | sed -e "s#[\ \t]\+${candidateTag}.\+##"
+		fi
 	done
 	exit
 fi
@@ -150,7 +157,11 @@ for URLfrag in $CONTAINERS; do
 				echo "${REGISTRYPRE}${URLfrag%%:*}:${LATESTTAG}"
 			elif [[ ${SHOWNVR} -eq 1 ]]; then
 				ufrag=${URLfrag%%:*}; ufrag=${ufrag/\//-}
-				echo "${ufrag}-container-${LATESTTAG}"
+				if [[ ${SHOWLOG} -eq 1 ]]; then
+					echo "${ufrag}-container-${LATESTTAG} - http://download.eng.bos.redhat.com/brewroot/packages/${ufrag}-container-${LATESTTAG//-//}/data/logs/x86_64.log"
+				else
+					echo "${ufrag}-container-${LATESTTAG}"
+				fi
 			elif [[ $QUIET -eq 1 ]]; then
 				echo "${URLfrag%%:*}:${LATESTTAG}"
 			else
