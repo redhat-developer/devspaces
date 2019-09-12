@@ -23,18 +23,57 @@ if [[ ! -x /usr/bin/jq ]]; then
 fi
 
 # default list of CRW containers to query
-CRW_CONTAINERS_RHCC="\
+CRW12_CONTAINERS_RHCC="\
 codeready-workspaces/server-operator-rhel8 codeready-workspaces/server-rhel8 \
 codeready-workspaces/stacks-cpp-rhel8 codeready-workspaces/stacks-dotnet-rhel8 codeready-workspaces/stacks-golang-rhel8 \
 codeready-workspaces/stacks-java-rhel8 codeready-workspaces/stacks-node-rhel8 \
 codeready-workspaces/stacks-php-rhel8 codeready-workspaces/stacks-python-rhel8 \
 codeready-workspaces/stacks-node"
-CRW_CONTAINERS_PULP="\
+CRW12_CONTAINERS_PULP="\
 codeready-workspaces/operator-rhel8 codeready-workspaces/server-rhel8 \
 codeready-workspaces/stacks-cpp-rhel8 codeready-workspaces/stacks-dotnet-rhel8 codeready-workspaces/stacks-golang-rhel8 \
 codeready-workspaces/stacks-java-rhel8 codeready-workspaces/stacks-node-rhel8 \
 codeready-workspaces/stacks-php-rhel8 codeready-workspaces/stacks-python-rhel8 \
 codeready-workspaces/stacks-node"
+
+CRW20_CONTAINERS_RHCC="\
+codeready-workspaces/server-operator-rhel8 \
+\
+codeready-workspaces/server-rhel8 \
+codeready-workspaces/machineexec-rhel8 \
+codeready-workspaces/jwtproxy-rhel8 \
+codeready-workspaces/pluginbrokerinit-rhel8 \
+codeready-workspaces/pluginbroker-rhel8 \
+\
+codeready-workspaces/theia-rhel8 \
+codeready-workspaces/theia-dev-rhel8 \
+codeready-workspaces/theia-endpoint-rhel8 \
+\
+codeready-workspaces/devfileregistry-rhel8 \
+codeready-workspaces/pluginregistry-rhel8 \
+\
+codeready-workspaces/plugin-java8-rhel8 \
+codeready-workspaces/plugin-openshift-rhel8 \
+"
+CRW20_CONTAINERS_PULP="\
+codeready-workspaces/operator-rhel8 \
+\
+codeready-workspaces/server-rhel8 \
+codeready-workspaces/machineexec-rhel8 \
+codeready-workspaces/jwtproxy-rhel8 \
+codeready-workspaces/pluginbrokerinit-rhel8 \
+codeready-workspaces/pluginbroker-rhel8 \
+\
+codeready-workspaces/theia-rhel8 \
+codeready-workspaces/theia-dev-rhel8 \
+codeready-workspaces/theia-endpoint-rhel8 \
+\
+codeready-workspaces/devfileregistry-rhel8 \
+codeready-workspaces/pluginregistry-rhel8 \
+\
+codeready-workspaces/plugin-java8-rhel8 \
+codeready-workspaces/plugin-openshift-rhel8 \
+"
 
 # regex pattern of container versions/names to exclude, eg., Beta1 (because version sort thinks 1.0.0.Beta1 > 1.0-12)
 EXCLUDES="\^" 
@@ -54,7 +93,8 @@ Usage:
   $0 -c ubi7 -c ubi8:8.0 --pulp -n 5                         | check pulp registry; show 8.0* tags; show 5 tags per container
   $0 -c ubi7 -c ubi8:8.0 --stage -n 5                        | check RHCC stage registry; show 8.0* tags; show 5 tags per container
   $0 -c pivotaldata/centos --docker --dockerfile             | check docker registry; show Dockerfile contents (requires dfimage)
-  $0 --crw --pulp --nvr --log                                | check for latest images in pulp; output NVRs can be copied to Errata; show links to Brew logs
+  $0 --crw12 --pulp --nvr --log                              | check for latest images in pulp; output NVRs can be copied to Errata; show links to Brew logs
+  $0 --crw20 --pulp --nvr --log                              | check for latest images in pulp; output NVRs can be copied to Errata; show links to Brew logs
 "
 	exit
 }
@@ -64,7 +104,8 @@ REGISTRY="https://registry.redhat.io" # or http://brew-pulp-docker01.web.prod.ex
 CONTAINERS=""
 while [[ "$#" -gt 0 ]]; do
   case $1 in
-    '--crw') CONTAINERS="${CRW_CONTAINERS_RHCC}"; EXCLUDES="Beta1"; shift 0;;
+    '--crw12') CONTAINERS="${CRW12_CONTAINERS_RHCC}"; EXCLUDES="Beta1"; shift 0;;
+    '--crw20') CONTAINERS="${CRW20_CONTAINERS_RHCC}"; EXCLUDES="Beta1"; shift 0;;
     '-c') CONTAINERS="${CONTAINERS} $2"; shift 1;;
     '-x') EXCLUDES="$2"; shift 1;;
     '-q') QUIET=1; shift 0;;
@@ -86,10 +127,14 @@ if [[ ${REGISTRY} != "" ]]; then
 	REGISTRYSTRING="--registry ${REGISTRY}"
 	REGISTRYPRE="${REGISTRY##*://}/"
 	if [[ ${REGISTRY} == *"brew-pulp-docker01"* ]]; then
-		if [[ ${CONTAINERS} == "${CRW_CONTAINERS_RHCC}" ]] || [[ ${CONTAINERS} == "" ]]; then CONTAINERS="${CRW_CONTAINERS_PULP}"; fi
+		if [[ ${CONTAINERS} == "${CRW12_CONTAINERS_RHCC}" ]] || [[ ${CONTAINERS} == "" ]]; then CONTAINERS="${CRW12_CONTAINERS_PULP}"; fi
+		if [[ ${CONTAINERS} == "${CRW20_CONTAINERS_RHCC}" ]]; then CONTAINERS="${CRW20_CONTAINERS_PULP}"; fi
 	elif [[ ${REGISTRY} == *"quay.io"* ]]; then
-		if [[ ${CONTAINERS} == "${CRW_CONTAINERS_RHCC}" ]] || [[ ${CONTAINERS} == "" ]]; then
-			CONTAINERS="${CRW_CONTAINERS_PULP}"; CONTAINERS="${CONTAINERS//codeready-workspaces/crw}"
+		if [[ ${CONTAINERS} == "${CRW12_CONTAINERS_RHCC}" ]] || [[ ${CONTAINERS} == "" ]]; then
+			CONTAINERS="${CRW12_CONTAINERS_PULP}"; CONTAINERS="${CONTAINERS//codeready-workspaces/crw}"
+		fi
+		if [[ ${CONTAINERS} == "${CRW20_CONTAINERS_RHCC}" ]]; then
+			CONTAINERS="${CRW20_CONTAINERS_PULP}"; CONTAINERS="${CONTAINERS//codeready-workspaces/crw}"
 		fi
 	fi
 else
@@ -108,7 +153,8 @@ fi
 if [[ ${CONTAINERS} == "" ]]; then usage; fi
 
 # special case!
-if [[ ${REGISTRY} == "http://brew-pulp-docker01.web.prod.ext.phx2.redhat.com:8888" ]] && [[ ${CONTAINERS} == "${CRW_CONTAINERS_PULP}" ]] && [[ ${SHOWNVR} -eq 1 ]]; then
+if [[ ${REGISTRY} == "http://brew-pulp-docker01.web.prod.ext.phx2.redhat.com:8888" ]] && [[ ${SHOWNVR} -eq 1 ]]; then
+  if [[ ${CONTAINERS} == "${CRW12_CONTAINERS_PULP}" ]]; then
 	for containername in ${CONTAINERS}; do
 		if [[ $containername == "codeready-workspaces/stacks-node" ]]; then candidateTag="codeready-1.0-rhel-7-candidate"; else candidateTag="crw-1.2-rhel-8-candidate"; fi
 		if [[ ${SHOWLOG} -eq 1 ]]; then
@@ -119,6 +165,18 @@ if [[ ${REGISTRY} == "http://brew-pulp-docker01.web.prod.ext.phx2.redhat.com:888
 		fi
 	done
 	exit
+  elif [[ ${CONTAINERS} == "${CRW20_CONTAINERS_PULP}" ]]; then
+	for containername in ${CONTAINERS}; do
+		candidateTag="crw-2.0-rhel-8-candidate"
+		if [[ ${SHOWLOG} -eq 1 ]]; then
+			brew list-tagged ${candidateTag} | grep "${containername/\//-}" | sort -V | tail -${NUMTAGS} | sed -e "s#[\ \t]\+${candidateTag}.\+##" | \
+				sed -e "s#\(.\+\)-container-\([0-9.]\+\)-\([0-9]\+\)#\0 - http://download.eng.bos.redhat.com/brewroot/packages/\1-container/\2/\3/data/logs/x86_64.log#"
+		else
+			brew list-tagged ${candidateTag} | grep "${containername/\//-}" | sort -V | tail -${NUMTAGS} | sed -e "s#[\ \t]\+${candidateTag}.\+##"
+		fi
+	done
+	exit
+  fi
 fi
 
 echo ""
