@@ -17,6 +17,7 @@ import static org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants.A
 import static org.eclipse.che.selenium.core.utils.FileUtil.readFileToString;
 import static org.eclipse.che.selenium.pageobject.CodenvyEditor.MarkerLocator.ERROR;
 import static org.openqa.selenium.Keys.BACK_SPACE;
+import static org.testng.Assert.fail;
 
 import com.google.common.collect.ImmutableList;
 import com.google.inject.Inject;
@@ -42,6 +43,7 @@ import org.eclipse.che.selenium.pageobject.Menu;
 import org.eclipse.che.selenium.pageobject.ProjectExplorer;
 import org.eclipse.che.selenium.pageobject.intelligent.CommandsPalette;
 import org.openqa.selenium.Keys;
+import org.openqa.selenium.WebDriverException;
 import org.testng.annotations.Test;
 
 public class Node8UserStoryTest extends AbstractUserStoryTest {
@@ -177,7 +179,13 @@ public class Node8UserStoryTest extends AbstractUserStoryTest {
     assistantFindPanel.typeToInputField("a");
     assistantFindPanel.waitForm();
     assistantFindPanel.waitInputField();
-    assistantFindPanel.waitAllNodes("/web-nodejs-simple/node_modules/express/lib/express.js");
+
+    try {
+      assistantFindPanel.waitAllNodes("/web-nodejs-simple/node_modules/express/lib/express.js");
+    } catch (WebDriverException ex) {
+      // remove try-catch block after issue has been resolved
+      fail("Known random failure https://issues.jboss.org/browse/CRW-377", ex);
+    }
 
     // select item in the find panel by clicking on node
     assistantFindPanel.clickOnActionNodeWithTextContains(
