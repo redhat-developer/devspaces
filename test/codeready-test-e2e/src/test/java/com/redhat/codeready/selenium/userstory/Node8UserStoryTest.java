@@ -12,6 +12,7 @@
 package com.redhat.codeready.selenium.userstory;
 
 import static com.redhat.codeready.selenium.pageobject.dashboard.CodereadyNewWorkspace.CodereadyStacks.NODE8;
+import static org.eclipse.che.selenium.core.TestGroup.FLAKY;
 import static org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants.Assistant.ASSISTANT;
 import static org.eclipse.che.selenium.core.constant.TestMenuCommandsConstants.Assistant.FIND_PROJECT_SYMBOL;
 import static org.eclipse.che.selenium.core.utils.FileUtil.readFileToString;
@@ -93,7 +94,7 @@ public class Node8UserStoryTest extends AbstractUserStoryTest {
     runAndCheckHelloWorldApp();
   }
 
-  @Test(priority = 2)
+  @Test(priority = 2, groups = FLAKY)
   public void checkMainLsFeatures() {
     checkHovering();
     checkCodeValidation();
