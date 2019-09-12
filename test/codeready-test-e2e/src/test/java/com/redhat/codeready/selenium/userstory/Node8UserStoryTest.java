@@ -185,6 +185,6 @@ public class Node8UserStoryTest extends AbstractUserStoryTest {
     assistantFindPanel.waitFormIsClosed();
     editor.waitTextIntoEditor("function createApplication()");
     editor.waitTabIsPresent("express.js");
-    editor.waitCursorPosition(48, 2);
+    editor.waitCursorPosition(57, 2);
   }
 }
