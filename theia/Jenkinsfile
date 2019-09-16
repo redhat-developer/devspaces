@@ -14,11 +14,11 @@ def installNPM(){
 	def nodeHome = tool 'nodejs-10.15.3'
 	env.PATH="${nodeHome}/bin:${env.PATH}"
 	sh "node --version && npm --version"
-	sh "npm install yarn"
+	sh "rm -fr ${HOME}/.node-gyp ${HOME}/.npmrc"
 }
 
 timeout(120) {
-	node("${node}"){ stage "Build Theia Dev"
+	node("${node}"){ stage "Build Theia"
 		cleanWs()
 		// for private repo, use checkout(credentialsId: 'devstudio-release')
 		checkout([$class: 'GitSCM', 
@@ -45,7 +45,7 @@ timeout(120) {
 		// sh "cp crw/dockerfiles/che-theia/Dockerfile che-theia/dockerfiles/theia/Dockefile"
 
 		// TODO make this a for loop or split into stages
-		sh "cd che-theia && ./build.sh"
+		sh "cd che-theia && npm install yarn; ./build.sh"
 		// sh "cd che-theia/dockerfiles/theia-dev && ./build.sh --no-tests --build-args:GITHUB_TOKEN=${GITHUB_TOKEN},THEIA_VERSION=${che_theia_version} --tag:${che_theia_tag} --branch:${che_theia_branch} --git-ref:${che_theia_gitref}"
 		// sh "cd che-theia/dockerfiles/theia-endpoint-runtime && ./build.sh --no-tests --build-args:GITHUB_TOKEN=${GITHUB_TOKEN},THEIA_VERSION=${che_theia_version} --tag:${che_theia_tag} --branch:${che_theia_branch} --git-ref:${che_theia_gitref}"
 		// sh "cd che-theia/dockerfiles/remote-plugin-java8 && ./build.sh --no-tests --build-args:GITHUB_TOKEN=${GITHUB_TOKEN},THEIA_VERSION=${che_theia_version} --tag:${che_theia_tag} --branch:${che_theia_branch} --git-ref:${che_theia_gitref}"
