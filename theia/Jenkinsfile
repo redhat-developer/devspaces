@@ -50,6 +50,8 @@ timeout(120) {
 		sh "cd che-theia && npm install yarn"
 		sh "yarn config set registry https://repository.engineering.redhat.com/nexus/repository/registry.npmjs.org/; yarn config get registry"
 		sh "yarn --version"
+		sh "npm config set strict-ssl false"
+		sh "npm config ls -l"
 
 		// TODO make this a for loop or split into stages
 		sh "cd che-theia; ./build.sh"
