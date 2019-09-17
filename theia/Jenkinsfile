@@ -13,7 +13,7 @@
 def installNPM(){
 	def nodeHome = tool 'nodejs-10.15.3'
 	env.PATH="${nodeHome}/bin:${env.PATH}"
-	sh "rm -fr ${HOME}/.node-gyp ${HOME}/.npmrc ${HOME}/.yarnrc"
+	// sh "rm -fr ${HOME}/.node-gyp ${HOME}/.npmrc ${HOME}/.yarnrc"
 	sh "node --version; npm --version"
 }
 
