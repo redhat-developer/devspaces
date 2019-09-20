@@ -42,16 +42,7 @@ timeout(120) {
 
 		// TODO replace Alpine with UBI
 		// sh "cp crw/dockerfiles/che-theia/Dockerfile che-theia/dockerfiles/theia/Dockefile"
-
-		// CRW-360 use RH NPM mirror
-		sh "sed -i 's|https://registry.yarnpkg.com/|https://repository.engineering.redhat.com/nexus/repository/registry.npmjs.org/|g' che-theia/yarn.lock"
-		sh "npm config set registry https://repository.engineering.redhat.com/nexus/repository/registry.npmjs.org/; npm config get registry"
-		sh "npm config set strict-ssl false"
-		sh "npm config ls -l"
-		sh "cd che-theia && npm install yarn"
-		sh "yarn config set registry https://repository.engineering.redhat.com/nexus/repository/registry.npmjs.org/; yarn config get registry"
-		sh "yarn --version"
-
+		
 		// TODO make this a for loop or split into stages
 		sh "cd che-theia; ./build.sh"
 		// sh "cd che-theia/dockerfiles/theia-dev && ./build.sh --no-tests --build-args:GITHUB_TOKEN=${GITHUB_TOKEN},THEIA_VERSION=${che_theia_version} --tag:${che_theia_tag} --branch:${che_theia_branch} --git-ref:${che_theia_gitref}"
