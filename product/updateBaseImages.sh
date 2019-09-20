@@ -28,7 +28,7 @@ while [[ "$#" -gt 0 ]]; do
     '-w') WORKDIR="$2"; shift 1;;
     '-b') BRANCH="$2"; shift 1;;
     '-maxdepth') maxdepth="$2"; shift 1;;
-    '-c') buildCommand="rhpkg container-build"; shift 0;;
+    '-c') buildCommand="rhpkg container-build"; shift 0;; # NOTE: will trigger a new build for each commit, rather than for each change set (eg., Dockefiles with more than one FROM)
     '-s') buildCommand="rhpkg container-build --scratch"; shift 0;;
     '-n'|'--nocommit') docommit=0; shift 0;;
     '-q') QUIET=1; shift 0;;
@@ -151,6 +151,7 @@ for d in $(find ${WORKDIR} -maxdepth ${maxdepth} -name Dockerfile | sort); do
 							fi
 							if [[ ${buildCommand} != "echo" ]] || [[ $VERBOSE -eq 1 ]]; then echo "# ${buildCommand}"; fi
 							${buildCommand} &
+							echo
 							if [[ ${pushedIn} -eq 1 ]]; then popd >/dev/null; pushedIn=0; fi
 							fixedFiles="${fixedFiles} $d"
 						else
@@ -166,9 +167,9 @@ sleep 10s & wait
 
 echo ""
 if [[ $fixedFiles ]]; then
-	echo -n "[base] Updated"
+	echo "[base] Updated:"
 	# if WORKSPACE defined, trim that off; if not, just trim /
-	for d in $fixedFiles; do echo -n " ${d#${WORKSPACE}/}"; done
+	for d in $fixedFiles; do echo " ${d#${WORKSPACE}/}"; done
 	echo ""
 else
 	if [[ ${QUIET} -eq 0 ]]; then echo "[base] No Dockerfiles changed - no new base images found."; fi
