@@ -45,13 +45,7 @@ timeout(120) {
 
 		// CRW-360 use RH NPM mirror
 		sh "sed -i 's|https://registry.yarnpkg.com/|https://repository.engineering.redhat.com/nexus/repository/registry.npmjs.org/|g' che-theia/yarn.lock"
-		sh "sed -i 's/yarn install/yarn install --verbose/' che-theia/dockerfiles/theia-endpoint-runtime/Dockerfile"
-//		sh "npm config set registry https://repository.engineering.redhat.com/nexus/repository/registry.npmjs.org/; npm config get registry"
-//		sh "npm config set strict-ssl false"
-//		sh "npm config ls -l"
-//		sh "cd che-theia && npm install yarn"
-//		sh "yarn config set registry https://repository.engineering.redhat.com/nexus/repository/registry.npmjs.org/; yarn config get registry"
-//		sh "yarn --version"
+		sh "sed -i 's|https://registry.yarnpkg.com/|https://repository.engineering.redhat.com/nexus/repository/registry.npmjs.org/|g' che-theia/generator/tests/production/assembly/yarn.lock"
 
 		// TODO make this a for loop or split into stages
 		sh "cd che-theia; ./build.sh"
