@@ -15,9 +15,9 @@ def installNPM(){
 	env.PATH="${nodeHome}/bin:${env.PATH}"
 
 	sh '''#!/bin/bash -xe
-echo "registry=https://repository.engineering.redhat.com/nexus/repository/registry.npmjs.org/ \
-virtual/:_authToken=credentials \
-always-auth=true \
+echo "registry=https://repository.engineering.redhat.com/nexus/repository/registry.npmjs.org/
+virtual/:_authToken=credentials
+always-auth=true
 " > ${HOME}/.npmrc
 echo "registry https://registry.yarnpkg.com
 " > ${HOME}/.yarnrc
