@@ -72,7 +72,7 @@ timeout(120) {
 
 		// increase verbosity of yarn calls
 		sh '''#!/bin/bash -xe 
-		for d in $(find . -name package.json); do sed -i $d -e 's#yarn #yarn --verbose #g'; done"
+		for d in $(find . -name package.json); do sed -i $d -e 's#yarn #yarn --verbose #g'; done
 		'''
 
 		// TODO make this a for loop or split into stages
