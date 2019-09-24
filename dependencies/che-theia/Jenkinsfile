@@ -18,9 +18,12 @@ def installNPM(){
 echo "registry=https://repository.engineering.redhat.com/nexus/repository/registry.npmjs.org/
 virtual/:_authToken=credentials
 always-auth=true
-" > ${HOME}/.npmrc
+" >> ${HOME}/.npmrc
 echo "registry https://registry.yarnpkg.com
-" > ${HOME}/.yarnrc
+" >> ${HOME}/.yarnrc
+
+cat ${HOME}/.npmrc
+cat ${HOME}/.yarnrc
 
 npm install --global yarn
 npm config get; yarn config get list
