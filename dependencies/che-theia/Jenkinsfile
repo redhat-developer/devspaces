@@ -15,12 +15,21 @@ def installNPM(){
 	env.PATH="${nodeHome}/bin:${env.PATH}"
 
 	sh '''#!/bin/bash -xe
-echo "registry=https://repository.engineering.redhat.com/nexus/repository/registry.npmjs.org/
+
+echo '
+registry=https://repository.engineering.redhat.com/nexus/repository/registry.npmjs.org/
+cafile=/etc/pki/ca-trust/source/anchors/RH-IT-Root-CA.crt
+strict-ssl=false
 virtual/:_authToken=credentials
 always-auth=true
-" >> ${HOME}/.npmrc
-echo "registry https://registry.yarnpkg.com
-" >> ${HOME}/.yarnrc
+' >> ${HOME}/.npmrc
+
+echo '
+# registry "https://repository.engineering.redhat.com/nexus/repository/registry.npmjs.org/"
+registry https://registry.yarnpkg.com
+cafile /etc/pki/ca-trust/source/anchors/RH-IT-Root-CA.crt
+strict-ssl false
+' >> ${HOME}/.yarnrc
 
 cat ${HOME}/.npmrc
 cat ${HOME}/.yarnrc
