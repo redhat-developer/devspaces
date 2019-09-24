@@ -1,0 +1,18 @@
+apiVersion: v2
+publisher: redhat
+name: vscode-wsdl2rest
+version: 0.0.9
+type: VS Code extension
+displayName: wsdl2rest support for Apache Camel
+title: wsdl2rest support for Apache Camel
+description: Extension supporting the mapping of an existing SOAP service to a RESTful service in Camel Rest DSL generated via wsdl2rest.
+icon: https://www.eclipse.org/che/images/logo-eclipseche.svg
+repository: https://github.com/camel-tooling/vscode-wsdl2rest
+category: Other
+firstPublicationDate: "2019-02-26"
+spec:
+  containers:
+    - image: "eclipse/che-remote-plugin-runner-java8:next"
+      memoryLimit: "256Mi"
+  extensions:
+    - https://download.jboss.org/jbosstools/vscode/stable/vscode-wsdl2rest/vscode-wsdl2rest-0.0.9-16.vsix

@@ -1,0 +1,48 @@
+apiVersion: v2
+publisher: dirigiblelabs
+name: dirigible
+version: 3.4.0
+type: Che Editor
+displayName: Eclipse Dirigible
+title: Eclipse Dirigible for Eclipse Che
+description: Eclipse Dirigible as App Development Platform for Eclipse Che
+icon: https://www.dirigible.io/img/dirigible.svg
+category: Editor
+repository: https://github.com/dirigiblelabs/dirigible-che-editor-plugin/
+firstPublicationDate: "2019-02-05"
+spec:
+  endpoints:
+   -  name: "dirigible"
+      public: true
+      targetPort: 8080
+      attributes:
+        protocol: http
+        type: ide
+  containers:
+   - name: eclipse-dirigible
+     image: "docker.io/dirigiblelabs/dirigible-openshift:3.4.0"
+     env:
+         - name: DIRIGIBLE_DATABASE_PROVIDER
+           value: "local"
+         - name: DIRIGIBLE_REPOSITORY_LOCAL_ROOT_FOLDER
+           value: /projects/dirigible/repository
+         - name: DIRIGIBLE_REPOSITORY_LOCAL_ROOT_FOLDER_IS_ABSOLUTE
+           value: true
+         - name: DIRIGIBLE_REPOSITORY_SEARCH_ROOT_FOLDER
+           value: /projects/dirigible/repository
+         - name: DIRIGIBLE_REPOSITORY_SEARCH_ROOT_FOLDER_IS_ABSOLUTE
+           value: true
+         - name: DIRIGIBLE_CMS_INTERNAL_ROOT_FOLDER
+           value: /projects/dirigible/cms
+         - name: DIRIGIBLE_CMS_INTERNAL_ROOT_FOLDER_IS_ABSOLUTE
+           value: true
+         - name: DIRIGIBLE_DATABASE_H2_ROOT_FOLDER_DEFAULT
+           value: /projects/dirigible/h2
+         - name: DIRIGIBLE_DATABASE_H2_URL
+           value: jdbc:h2:/projects/dirigible/h2
+         - name: DIRIGIBLE_OPERATIONS_LOGS_ROOT_FOLDER_DEFAULT
+           value: /usr/local/tomcat/logs
+     mountSources: true
+     ports:
+         - exposedPort: 8080
+     memoryLimit: "1024M"

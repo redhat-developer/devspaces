@@ -1,0 +1,22 @@
+apiVersion: v2
+publisher: ms-vscode
+name: go
+version: 0.11.0
+type: VS Code extension
+displayName: Go
+title: Rich Go language support
+description: This extension adds rich language support for the Go language
+icon: https://www.eclipse.org/che/images/logo-eclipseche.svg
+repository: https://github.com/Microsoft/vscode-go.git
+category: Language
+firstPublicationDate: '2019-06-20'
+spec:
+  containers:
+    - image: "docker.io/eclipse/che-remote-plugin-go-1.10.7:next"
+      name: vscode-go
+      memoryLimit: '512Mi'
+      env:
+      - name: GOPATH
+        value: /go:$(CHE_PROJECTS_ROOT)
+  extensions:
+    - https://github.com/microsoft/vscode-go/releases/download/0.11.0/Go-0.11.0.vsix

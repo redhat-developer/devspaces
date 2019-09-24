@@ -1,0 +1,20 @@
+apiVersion: v2
+publisher: redhat
+name: java
+version: 0.43.0
+type: VS Code extension
+displayName: Language Support for Java(TM)
+title: Language and Debugger Support for Java(TM)
+description: Java Linting, debugging, Intellisense, formatting, refactoring, Maven/Gradle support and more...
+icon: https://www.eclipse.org/che/images/logo-eclipseche.svg
+repository: https://github.com/redhat-developer/vscode-java
+category: Language
+firstPublicationDate: "2019-04-25"
+spec:
+  containers:
+    - image: "docker.io/eclipse/che-remote-plugin-runner-java8:next"
+      name: vscode-java
+      memoryLimit: "1500Mi"
+  extensions:
+    - https://github.com/microsoft/vscode-java-debug/releases/download/0.16.0/vscode-java-debug-0.16.0.vsix
+    - http://download.jboss.org/jbosstools/static/jdt.ls/stable/java-0.43.0-1473.vsix

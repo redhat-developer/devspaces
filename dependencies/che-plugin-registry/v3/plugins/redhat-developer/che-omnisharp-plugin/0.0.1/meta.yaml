@@ -1,0 +1,19 @@
+apiVersion: v2
+publisher: redhat-developer
+name: che-omnisharp-plugin
+version: 0.0.1
+type: Theia plugin
+displayName: Omnisharp Theia Plug-in
+title: C# Language Support for Theia
+description: This plug-in registers omnisharp-roslyn as a language server and provides project dependencies and language syntax.
+icon: https://www.eclipse.org/che/images/logo-eclipseche.svg
+repository: https://github.com/redhat-developer/omnisharp-theia-plugin
+category: Language
+firstPublicationDate: "2019-03-13"
+spec:
+  containers:
+  - image: "docker.io/eclipse/che-remote-plugin-dotnet-2.2.105:next"
+    name: theia-omnisharp
+    memoryLimit: "1024Mi"
+  extensions:
+    - https://github.com/redhat-developer/omnisharp-theia-plugin/releases/download/v0.0.1/omnisharp_theia_plugin.theia

@@ -1,0 +1,21 @@
+apiVersion: v2
+publisher: che-incubator
+name: cpptools
+version: 0.1
+type: VS Code extension
+displayName: C/C++ tools
+title: C/C++ intelliSense, debugging and code browsing
+description: C/C++ intelliSense, debugging and code browsing
+icon: https://www.eclipse.org/che/images/logo-eclipseche.svg
+repository: https://github.com/eclipse-cdt/cdt-vscode.git
+category: Language
+firstPublicationDate: '2019-08-06'
+spec:
+  containers:
+    - image: "docker.io/eclipse/che-remote-plugin-clang-8:next"
+      name: cpp-plugins
+      memoryLimit: '512Mi'
+  extensions:
+    - https://github.com/che-incubator/che-cpptools/releases/download/v1.0/cdt-gdb-vscode-0.0.90.vsix
+    - https://github.com/che-incubator/che-cpptools/releases/download/v1.0/cdt-vscode-0.0.7.vsix
+    - https://github.com/che-incubator/che-cpptools/releases/download/v1.0/llvm-vs-code-extensions.vscode-clangd-0.0.16.vsix

@@ -1,0 +1,19 @@
+apiVersion: v2
+publisher: redhat
+name: vscode-xml
+version: 0.5.1
+type: VS Code extension
+displayName: XML
+title: XML Language Support by Red Hat
+description: This VS Code extension provides support for creating and editing XML documents, based on the LSP4XML language server, running with Java.
+icon: https://www.eclipse.org/che/images/logo-eclipseche.svg
+repository: https://github.com/redhat-developer/vscode-xml
+category: Language
+firstPublicationDate: "2019-04-19"
+spec:
+  containers:
+    - image: "docker.io/eclipse/che-remote-plugin-runner-java11:next"
+      name: vscode-xml
+      memoryLimit: "768Mi"
+  extensions:
+    - https://github.com/redhat-developer/vscode-xml/releases/download/0.5.1/redhat.vscode-xml-0.5.1.vsix

@@ -1,0 +1,18 @@
+apiVersion: v2
+publisher: redhat
+name: dependency-analytics
+version: 0.0.12
+type: VS Code extension
+displayName: Dependency Analytics
+title: Insights about your application dependencies
+description: Insights about your application dependencies, Security, License compatibility and AI based guidance to choose appropriate dependencies for your application.
+icon: https://www.eclipse.org/che/images/logo-eclipseche.svg
+repository: https://github.com/fabric8-analytics/fabric8-analytics-vscode-extension
+category: Other
+firstPublicationDate: '2018-10-03'
+spec:
+  containers:
+    - image: "docker.io/eclipse/che-remote-plugin-dependency-analytics-0.0.12:next"
+      memoryLimit: "512Mi"
+  extensions:
+    - https://github.com/fabric8-analytics/fabric8-analytics-vscode-extension/releases/download/0.0.12/redhat.fabric8-analytics-0.0.12.vsix

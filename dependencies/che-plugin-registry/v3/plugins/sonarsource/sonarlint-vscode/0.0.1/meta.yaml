@@ -1,0 +1,19 @@
+apiVersion: v2
+publisher: sonarsource
+name: sonarlint-vscode
+version: 0.0.1
+type: VS Code extension
+displayName: vscode-sonarlint
+title: Sonarlint code intelligence
+description: VS Code extension that provides sonarlint features
+icon: https://www.eclipse.org/che/images/logo-eclipseche.svg
+firstPublicationDate: "2019-02-05"
+category: Linter
+repository: https://www.sonarlint.org/
+spec:
+  containers:
+    - image: "docker.io/eclipse/che-remote-plugin-runner-java8:next"
+      name: vscode-sonarlint
+      memoryLimit: "512Mi"
+  extensions:
+    - https://github.com/SonarSource/sonarlint-vscode/releases/download/1.6.0/sonarlint-vscode-1.6.0.vsix

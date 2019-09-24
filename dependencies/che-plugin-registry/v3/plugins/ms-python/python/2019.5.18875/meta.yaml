@@ -1,0 +1,20 @@
+apiVersion: v2
+publisher: ms-python
+name: python
+version: 2019.5.18875
+type: VS Code extension
+displayName: Python
+title: Python extension
+description: Linting, Debugging (multi-threaded, remote), Intellisense, code formatting,
+  refactoring, unit tests, snippets, and more.
+icon: https://www.eclipse.org/che/images/logo-eclipseche.svg
+repository: https://github.com/Microsoft/vscode-python
+category: Language
+firstPublicationDate: '2019-06-20'
+spec:
+  containers:
+  - image: "docker.io/eclipse/che-remote-plugin-python-3.7.3:next"
+    name: vscode-python
+    memoryLimit: '512Mi'
+  extensions:
+  - https://github.com/Microsoft/vscode-python/releases/download/2019.5.18875/ms-python-release.vsix

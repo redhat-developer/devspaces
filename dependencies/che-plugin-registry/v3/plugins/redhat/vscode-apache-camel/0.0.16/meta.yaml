@@ -1,0 +1,19 @@
+apiVersion: v2
+publisher: redhat
+name: vscode-apache-camel
+version: 0.0.16
+type: VS Code extension
+displayName: Language Support for Apache Camel
+title: Language Support for Apache Camel
+description: This VS Code extension provides support for Apache Camel.
+icon: https://www.eclipse.org/che/images/logo-eclipseche.svg
+repository: https://github.com/camel-tooling/camel-lsp-client-vscode
+category: Language
+firstPublicationDate: '2018-04-23'
+spec:
+  containers:
+  - image: "docker.io/eclipse/che-remote-plugin-runner-java11:next"
+    name: vscode-apache-camel
+    memoryLimit: "512Mi"
+  extensions:
+  - https://download.jboss.org/jbosstools/vscode/stable/vscode-apache-camel/vscode-apache-camel-0.0.16-37.vsix

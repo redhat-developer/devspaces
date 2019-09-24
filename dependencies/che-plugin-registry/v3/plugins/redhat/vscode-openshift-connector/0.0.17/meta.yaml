@@ -1,0 +1,19 @@
+apiVersion: v2
+publisher: redhat
+name: vscode-openshift-connector
+version: 0.0.17
+type: VS Code extension
+displayName: OpenShift Connector
+title: OpenShift Connector
+description: Interacting with Red Hat OpenShift clusters and providing a streamlined developer experience using Eclipse Che
+icon: https://www.eclipse.org/che/images/logo-eclipseche.svg
+repository: https://github.com/redhat-developer/vscode-openshift-tools
+category: Other
+firstPublicationDate: "2019-03-11"
+spec:
+  containers:
+    - image: "docker.io/eclipse/che-remote-plugin-openshift-connector-0.0.17:next"
+      name: "vscode-openshift-connector"
+      memoryLimit: "512Mi"
+  extensions:
+    - https://github.com/redhat-developer/vscode-openshift-tools/releases/download/v0.0.17/openshift-connector-0.0.17-127.vsix
