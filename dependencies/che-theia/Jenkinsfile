@@ -22,14 +22,14 @@ cafile=/etc/pki/ca-trust/source/anchors/RH-IT-Root-CA.crt
 strict-ssl=false
 virtual/:_authToken=credentials
 always-auth=true
-' >> ${HOME}/.npmrc
+' > ${HOME}/.npmrc
 
 echo '
 # registry "https://repository.engineering.redhat.com/nexus/repository/registry.npmjs.org/"
-registry https://registry.yarnpkg.com
+registry "https://registry.yarnpkg.com"
 cafile /etc/pki/ca-trust/source/anchors/RH-IT-Root-CA.crt
 strict-ssl false
-' >> ${HOME}/.yarnrc
+' > ${HOME}/.yarnrc
 
 cat ${HOME}/.npmrc
 cat ${HOME}/.yarnrc
