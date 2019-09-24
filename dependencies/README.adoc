@@ -1,0 +1,30 @@
+# This folder contains the build process metadata for building:
+
+* che-plugin-registry
+* che-theia
+* (more to come)
+
+# Builds will:
+
+* fetch 3rd party sources
+
+* build 3rd party sources if required
+** vsix extensions that are only available from MS VSCode Marketplace
+** che-theia & dependencies, including any patches (if required)
+
+* tar sources & binaries used in Brew build
+
+* provide Dockerfile (semi-synced to pkgs.devel for use in Brew), which can be used to build the container locally
+
+# Downstream, Brew builds must:
+
+* apply changes to upstream Dockerfile to see Pulp repos and support Brew build process
+
+* fetch 3rd party source/binary tarball, including patches
+
+* push that tar to dist-git lookaside cache so it's available when running the Dockerfile build
+
+* unpack the tar as part of the container build where required
+
+* run a container build
+
