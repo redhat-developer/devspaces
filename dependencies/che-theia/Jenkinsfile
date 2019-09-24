@@ -22,8 +22,8 @@ always-auth=true \
 echo "registry https://registry.yarnpkg.com
 " > ${HOME}/.yarnrc
 
-npm install --global yarn"
-npm config get; yarn config get list"
+npm install --global yarn
+npm config get; yarn config get list
 npm --version; yarn --version
 '''
 }
