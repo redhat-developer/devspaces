@@ -2,19 +2,21 @@
 
 // PARAMETERS for this pipeline:
 // branchToBuildCRW = codeready-workspaces branch to build: */2.0.x or */master
-// branchToBuildCheTheia = che-theia branch to build: refs/tags/7.0.0, */7.1.x, or */master
-// che_theia_version = master
-// che_theia_tag = next
-// che_theia_branch = master
-// che_theia_gitref = refs/heads/master
+// branchToBuildCheTheia = che-theia branch to build: refs/tags/7.0.0, */7.2.0, or */master
+// che_theia_version = 7.2.0 or master
+// che_theia_tag = 7.2.0 or next
+// che_theia_branch = 7.2.0 or master
+// che_theia_gitref = refs/heads/7.2.0 or refs/heads/master
 // node == slave label, eg., rhel7-devstudio-releng-16gb-ram||rhel7-16gb-ram||rhel7-devstudio-releng||rhel7 or rhel7-32gb||rhel7-16gb||rhel7-8gb
 // GITHUB_TOKEN = (github token)
+// USE_PUBLIC_NEXUS = true or false (if true, don't use https://repository.engineering.redhat.com/nexus/repository/registry.npmjs.org)
 
 def installNPM(){
 	def nodeHome = tool 'nodejs-10.15.3'
 	env.PATH="${nodeHome}/bin:${env.PATH}"
-
-	sh '''#!/bin/bash -xe
+	sh "echo USE_PUBLIC_NEXUS = ${USE_PUBLIC_NEXUS}"
+	if ("${USE_PUBLIC_NEXUS}".equals("false")) {
+		sh '''#!/bin/bash -xe
 
 echo '
 registry=https://repository.engineering.redhat.com/nexus/repository/registry.npmjs.org/
@@ -38,6 +40,15 @@ npm install --global yarn
 npm config get; yarn config get list
 npm --version; yarn --version
 '''
+	}
+	else
+	{
+		sh '''#!/bin/bash -xe
+rm -f ${HOME}/.npmrc ${HOME}/.yarnrc
+npm install --global yarn
+npm --version; yarn --version
+'''
+	}
 }
 
 timeout(120) {
@@ -68,7 +79,9 @@ timeout(120) {
 		// TODO add more UBI Dockerfiles if needed (endpoint-runtime, remote-plugin-*)
 
 		// CRW-360 use RH NPM mirror
-		sh "cd che-theia; sed -i 's|https://registry.yarnpkg.com/|https://repository.engineering.redhat.com/nexus/repository/registry.npmjs.org/|g' yarn.lock"
+		if ("${USE_PUBLIC_NEXUS}".equals("false")) {
+			sh "cd che-theia; sed -i 's|https://registry.yarnpkg.com/|https://repository.engineering.redhat.com/nexus/repository/registry.npmjs.org/|g' yarn.lock"
+		}
 
 		// increase verbosity of yarn calls
 		sh '''#!/bin/bash -xe 
