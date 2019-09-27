@@ -97,7 +97,7 @@ timeout(120) {
 			DIR=che-theia/dockerfiles/${d}
 			# use CRW version of Dockerfile if it exists
 			if [[ -f ${WORKSPACE}/crw/dependencies/${DIR}/Dockerfile ]]; then 
-				cp -frv ${WORKSPACE}/crw/dependencies/${DIR}/* ${WORKSPACE}/${DIR}/*
+				cp -frv ${WORKSPACE}/crw/dependencies/${DIR}/* ${WORKSPACE}/${DIR}/
 			fi
 			pushd ${WORKSPACE}/${DIR} >/dev/null
 				# ./build.sh ${BUILD_PARAMS} | tee ${WORKSPACE}/che-theia/${d}_buildlog.txt
