@@ -1,0 +1,27 @@
+#!/usr/bin/env groovy
+
+def installNPM(){
+	def nodeHome = tool 'nodejs-10.9.0'
+	env.PATH="${env.PATH}:${nodeHome}/bin"
+	sh "npm install yarn"
+	sh "npm install vsce"
+	sh "npm version"
+}
+
+def EXT_path = "node-debug"
+timeout(120) {
+	node("${node}"){ stage "Build ${EXT_path}"
+		cleanWs()
+		checkout([$class: 'GitSCM',
+			branches: [[name: "${branchToBuildParent}"]],
+			doGenerateSubmoduleConfigurations: false,
+			poll: true,
+			extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: "${PAR_path}"]],
+			submoduleCfg: [],
+			userRemoteConfigs: [[url: "https://github.com/microsoft/vscode-node-debug2"]]])
+		sh "npm install"
+		sh "vcse package"
+
+		archiveArtifacts artifacts: 'node-debug/*.vsix', fingerprint: true
+	}
+}
