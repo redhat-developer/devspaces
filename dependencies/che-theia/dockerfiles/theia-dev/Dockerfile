@@ -57,11 +57,13 @@ WORKDIR ${HOME}
 EXPOSE 3000 3030
 
 # Configure npm and yarn to use home folder for global dependencies
-RUN npm --verbose install -g yarn | tee -a /tmp/npm_install.log.txt && \
+RUN npm install -g yarn && \
     npm config set prefix "${HOME}/.npm-global" && \
     echo "--global-folder \"${HOME}/.yarn-global\"" > ${HOME}/.yarnrc && \
     # add eclipse che theia generator
-    yarn --verbose global add yo @theia/generator-plugin@0.0.1 file:${HOME}/eclipse-che-theia-generator.tgz | tee -a /tmp/npm_install.log.txt && \
+    ## yarn global add yo @theia/generator-plugin@0.0.1-1540209403 file:${HOME}/eclipse-che-theia-generator.tgz && \
+    yarn global add yo @theia/generator-plugin && \
+    yarn global add @eclipse-che/theia-generator && \
     # Generate .passwd.template \
     cat /etc/passwd | \
     sed s#root:x.*#theia-dev:x:\${USER_ID}:\${GROUP_ID}::${HOME}:/bin/bash#g \
@@ -80,10 +82,8 @@ RUN npm --verbose install -g yarn | tee -a /tmp/npm_install.log.txt && \
     for f in "${HOME}" "/etc/passwd" "/etc/group" "/projects"; do \
         echo "Changing permissions on ${f}" && chgrp -R 0 ${f} && \
         chmod -R g+rwX ${f}; \
-    done
-
-RUN echo "Installed npm Packages" && cat /tmp/npm_install.log.txt |grep https://registry.yarnpkg.com | \
-    sed -e "s#.\+\(request to \|Request \"\)##" -e "s#\"\.##" | tr -d "\"" | grep -v "status code 200" | sort | uniq && \
+    done && \
+    echo "Installed npm Packages" && npm ls -g | sort | uniq && yarn global list && \
     echo "End Of Installed npm Packages"
 
 # TODO: collect all these freshly installed npm deps into a tarball for reuse in Brew
