@@ -3,7 +3,6 @@
 def installNPM(){
 	def nodeHome = tool 'nodejs-10.9.0'
 	env.PATH="${env.PATH}:${nodeHome}/bin"
-	sh "npm install yarn"
 	sh "npm install vsce"
 	sh "npm version"
 }
@@ -18,6 +17,7 @@ timeout(120) {
 			extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: "${EXT_path}"]],
 			submoduleCfg: [],
 			userRemoteConfigs: [[url: "https://github.com/microsoft/vscode-node-debug2"]]])
+		installNPM()
 		sh "cd ${EXT_path} && npm install && vsce package"
 
 		echo "build finished"
