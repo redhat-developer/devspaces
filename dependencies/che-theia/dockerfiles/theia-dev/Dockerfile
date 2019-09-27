@@ -30,14 +30,19 @@ LABEL summary="$SUMMARY" \
 
 USER root
 
-# enable rhel 7 or 8 content sets (from Brew) to resolve jq as rpm
+# enable rhel 7 (or 8) content sets to resolve jq as rpm
 COPY content_sets_epel7.repo /etc/yum.repos.d/
 
-# TODO: this isn't available - do we need it? libxkbfile-devel
-RUN dnf install -y microdnf curl jq make cmake gcc gcc-c++ python3-six git openssh less bash libX11-devel tar gzip && \
+# Temp solution: copied from:
+# https://rpmfind.net/linux/centos/7.7.1908/os/x86_64/Packages/libxkbfile-1.0.9-3.el7.x86_64.rpm
+# https://rpmfind.net/linux/centos/7.7.1908/os/x86_64/Packages/libxkbfile-devel-1.0.9-3.el7.x86_64.rpm
+COPY libxkbfile*.rpm /tmp/
+
+# TODO: find libxkbfile-devel from RHEL7 yum repo to resolve libxkbfile and libxkbfile-devel 
+RUN dnf install -y /tmp/libxkbfile*.rpm && \
+    dnf install -y microdnf curl jq make cmake gcc gcc-c++ python2 git openssh less bash libX11-devel tar gzip && \
     dnf -y clean all && rm -rf /var/cache/yum && \
-    # echo "Installed Packages" && rpm -qa | sort -V && echo "End Of Installed Packages" && \
-    ln -s /usr/bin/python3.6 /usr/bin/python
+    echo "Installed Packages" && rpm -qa | sort -V && echo "End Of Installed Packages" 
 
 # Add npm global bin directory to the path
 ENV HOME=/home/theia-dev \
