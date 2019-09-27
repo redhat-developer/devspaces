@@ -58,12 +58,16 @@ RUN microdnf install -y findutils bash wget yum gzip tar jq python3-six python3-
 # PHASE TWO: configure registry image
 #################
 
-# if only including the /latest/ plugins, apply this line to remove them from builder 
-RUN rm -fr $(find /build/v3 -name 'meta.yaml' | grep -v "/latest/")
-
 COPY ./scripts/*.sh ./scripts/meta.yaml.schema /build/
 COPY /v3 /build/v3
 WORKDIR /build/
+
+# if only including the /latest/ plugins, apply this line to remove them from builder 
+RUN rm -fr $(find /build/v3 -name 'meta.yaml' | grep -v "/latest/")
+
+# optional steps for air gap - replace references to docker.io, quay.io, registry.access.redhat.com, registry.redhat.io with internal registry
+RUN ./list_containers.sh v3 && ./replace_container_repos.sh v3 rcquay.rc.helab.devfg.rbc.com
+
 RUN ./check_plugins_location.sh v3 && \
     ./set_plugin_dates.sh v3 && \
     ./check_plugins_viewer_mandatory_fields.sh v3 && \
@@ -123,9 +127,6 @@ LABEL summary="$SUMMARY" \
       maintainer="Nick Boldt <nboldt@redhat.com>" \
       io.openshift.expose-services="" \
       usage=""
-
-# optional steps for air gap - replace references to docker.io, quay.io, registry.access.redhat.com, registry.redhat.io with internal registry
-# RUN ./list_containers.sh v3 && ./replace_container_repos.sh v3 myquay.mycorp.com
 
 COPY --from=offline-builder /build/v3 /var/www/html/v3
 WORKDIR /var/www/html
