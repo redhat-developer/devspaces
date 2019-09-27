@@ -33,7 +33,7 @@ USER root
 # enable rhel 7 or 8 content sets (from Brew) to resolve jq as rpm
 COPY content_sets_epel7.repo /etc/yum.repos.d/
 
-# not available: libxkbfile-devel
+# TODO: this isn't available - do we need it? libxkbfile-devel
 RUN dnf install -y microdnf curl jq make cmake gcc gcc-c++ python3-six git openssh less bash libX11-devel tar gzip && \
     dnf -y clean all && rm -rf /var/cache/yum && \
     # echo "Installed Packages" && rpm -qa | sort -V && echo "End Of Installed Packages" && \
@@ -86,7 +86,7 @@ RUN echo "Installed npm Packages" && cat /tmp/npm_install.log.txt |grep https://
     sed -e "s#.\+\(request to \|Request \"\)##" -e "s#\"\.##" | tr -d "\"" | grep -v "status code 200" | sort | uniq && \
     echo "End Of Installed npm Packages"
 
-# collect all these freshly installed npm deps into a tarball for reuse in Brew
+# TODO: collect all these freshly installed npm deps into a tarball for reuse in Brew
 #   /home/theia-dev/.yarn-global/node_modules/ 
 #   /usr/local/share/.cache/yarn/
 #   /opt/app-root/src/.npm-global/
