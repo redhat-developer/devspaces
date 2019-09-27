@@ -22,6 +22,8 @@ timeout(120) {
 		sh "npm install"
 		sh "vcse package"
 
+		echo "build finished"
+
 		archiveArtifacts artifacts: 'node-debug/*.vsix', fingerprint: true
 	}
 }
