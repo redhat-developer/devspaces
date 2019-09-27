@@ -11,7 +11,6 @@ def installNPM(){
 def EXT_path = "node-debug"
 timeout(120) {
 	node("${node}"){ stage "Build ${EXT_path}"
-		cleanWs()
 		checkout([$class: 'GitSCM',
 			branches: [[name: "${branchToBuildParent}"]],
 			doGenerateSubmoduleConfigurations: false,
