@@ -12,10 +12,10 @@ def EXT_path = "node-debug"
 timeout(120) {
 	node("${node}"){ stage "Build ${EXT_path}"
 		checkout([$class: 'GitSCM',
-			branches: [[name: "${branchToBuildParent}"]],
+			branches: [[name: "${branchToBuildPlugin}"]],
 			doGenerateSubmoduleConfigurations: false,
 			poll: true,
-			extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: "${PAR_path}"]],
+			extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: "${EXT_path}"]],
 			submoduleCfg: [],
 			userRemoteConfigs: [[url: "https://github.com/microsoft/vscode-node-debug2"]]])
 		sh "npm install"
