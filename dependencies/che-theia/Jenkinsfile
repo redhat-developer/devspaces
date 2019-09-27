@@ -111,6 +111,7 @@ timeout(120) {
 		// TODO verify this works & is archived correctly
 		// tar up the node modules and other 3rd party deps from the generated containers so we can inject them into the Brew builds
 		sh '''#!/bin/bash -xe 
+		docker image ls | egrep "theia|eclipse"
 		CONTAINERNAME="eclipse/che-theia-builder-e2e:${che_theia_tag}" && \
 		CONTENT_TO_ARCHIVE="projects" && \
 		PATHNAME="/tmp/che-theia/dockerfiles/theia-dev/target" && \
@@ -118,7 +119,7 @@ timeout(120) {
 		mkdir -p ${PATHNAME} && cd ${PATHNAME} && \
 		docker run --name ${TARNAME} --rm --mount type=bind,source=${PATHNAME},target=/out ${CONTAINERNAME} /bin/bash -c "tar czf /out/${TARNAME} /${CONTENT_TO_ARCHIVE}" && \
 		echo "Created ${PATHNAME}/${TARNAME}"
-		//'''
+		'''
 		// TODO repeat for other builds
 
 		// TODO verify this works & is archived correctly
