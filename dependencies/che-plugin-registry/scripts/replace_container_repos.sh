@@ -10,6 +10,8 @@
 
 # replace all external container image references to that of an internal registry
 
+#TODO: replace this with configmap soluution in https://github.com/eclipse/che/issues/14693
+
 set -e
 
 # define which dir to process, eg., the v3/ folder

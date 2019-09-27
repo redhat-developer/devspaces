@@ -1,8 +1,10 @@
 #!/bin/bash -ex
 #
 # Builds this container, including locally fetched plugins and replaces references to docker/quay/RHCC with specified container registry
+# 
+# see also https://github.com/eclipse/che/issues/14693
+# 
 
-sed -i Dockerfile -e "s%#.*RUN ./fetch_resources.sh%RUN ./fetch_resources.sh%"
 if [[ $1 == "nightly" ]]; then
 	nightly="nightly"
 	now=`date +%Y%m%d-%H%M`
