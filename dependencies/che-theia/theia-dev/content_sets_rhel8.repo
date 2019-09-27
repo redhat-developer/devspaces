@@ -1,0 +1,11 @@
+[rhel-8-for-x86_64-appstream-rpms]
+name=rhel-8-for-x86_64-appstream-rpms
+baseurl=http://pulp.dist.prod.ext.phx2.redhat.com/content/dist/rhel8/8/x86_64/appstream/os
+enabled=1
+gpgcheck=0
+ 
+[rhel-8-for-x86_64-baseos-rpms]
+name=rhel-8-for-x86_64-baseos-rpms
+baseurl=http://pulp.dist.prod.ext.phx2.redhat.com/content/dist/rhel8/8/x86_64/baseos/os
+enabled=1
+gpgcheck=0
