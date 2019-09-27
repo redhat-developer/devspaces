@@ -97,7 +97,7 @@ timeout(120) {
 				fi
 				./build.sh ${BUILD_PARAMS} | tee ${WORKSPACE}/che-theia/${d}_buildlog.txt
 			popd >/dev/null
-
+		done
 		'''
 
 		// TODO verify this works & is archived correctly
