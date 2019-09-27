@@ -103,7 +103,7 @@ timeout(120) {
 		// for now since build.sh is stupid, comment out the images we don't want to build
 		sh '''#!/bin/bash -xe 
 		sed -i che-theia/docker_image_build.include \
-			-e "s|dockerfiles/remote-plugin\(.\+\)|# dockerfiles/remote-plugin\1|g" \
+			-e "s|dockerfiles/remote-plugin\\(.\\+\\)|# dockerfiles/remote-plugin\\1|g" \
 			-e "s|dockerfiles/theia-endpoint-runtime|# dockerfiles/theia-endpoint-runtime|g" && egrep -v "^#" che-theia/docker_image_build.include 
 		cd che-theia && ./build.sh ${BUILD_PARAMS}
 		'''
