@@ -87,12 +87,11 @@ timeout(120) {
 		//sh '''#!/bin/bash -xe //'''
 		def BUILD_PARAMS="--skip-tests --build-args:GITHUB_TOKEN=${GITHUB_TOKEN},THEIA_VERSION=${che_theia_version} \
 --tag:${che_theia_tag} --branch:${che_theia_branch} --git-ref:${che_theia_gitref}"
-		// TODO: build these only if we need them: theia-endpoint-runtime remote-plugin-java8 remote-plugin-openshift-connector-0.0.21 etc.
 		sh '''#!/bin/bash -xe
-		for d in theia-dev theia; do 
+		for d in theia-dev theia; do # TODO: build these only if we need them: theia-endpoint-runtime remote-plugin-java8 remote-plugin-openshift-connector-0.0.21 etc.
 			DIR=che-theia/dockerfiles/${d}
 			pushd ${DIR} >/dev/null
-				// replace Dockerfile with CRW version
+				# replace Dockerfile with CRW version if it exists
 				if [[ -f crw/dependencies/che-theia/dockerfiles/${d}/Dockerfile ]]; then 
 					cp -f -v crw/dependencie$/${DIR}/Dockerfile ./Dockefile
 				fi
