@@ -18,8 +18,7 @@ timeout(120) {
 			extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: "${EXT_path}"]],
 			submoduleCfg: [],
 			userRemoteConfigs: [[url: "https://github.com/microsoft/vscode-node-debug2"]]])
-		sh "npm install"
-		sh "vcse package"
+		sh "cd ${EXT_path} && npm install && vsce package"
 
 		echo "build finished"
 
