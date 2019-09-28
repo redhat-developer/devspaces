@@ -30,17 +30,17 @@ LABEL summary="$SUMMARY" \
 
 USER root
 
-# enable rhel 7 (or 8) content sets to resolve jq as rpm
+# enable rhel 7 (or 8) content sets to resolve jq and libxkbfile-devel + libxkbfile as rpms
 COPY content_sets_epel7.repo /etc/yum.repos.d/
 
-# Temp solution: copied from:
+# Alternative solution:
+# 1. download these rpms
 # https://rpmfind.net/linux/centos/7.7.1908/os/x86_64/Packages/libxkbfile-1.0.9-3.el7.x86_64.rpm
 # https://rpmfind.net/linux/centos/7.7.1908/os/x86_64/Packages/libxkbfile-devel-1.0.9-3.el7.x86_64.rpm
-COPY libxkbfile*.rpm /tmp/
+# 2. COPY libxkbfile*.rpm /tmp/
+# 3. RUN dnf install -y /tmp/libxkbfile*.rpm
 
-# TODO: find libxkbfile-devel from RHEL7 yum repo to resolve libxkbfile and libxkbfile-devel 
-RUN dnf install -y /tmp/libxkbfile*.rpm && \
-    dnf install -y microdnf curl jq make cmake gcc gcc-c++ python2 git openssh less bash libX11-devel tar gzip && \
+RUN dnf install -y microdnf curl jq make cmake gcc gcc-c++ python2 git openssh less bash libX11-devel libxkbfile libxkbfile-devel tar gzip && \
     dnf -y clean all && rm -rf /var/cache/yum && \
     echo "Installed Packages" && rpm -qa | sort -V && echo "End Of Installed Packages" 
 
@@ -54,7 +54,8 @@ ENV HOME=/home/theia-dev \
     THEIA_ELECTRON_SKIP_REPLACE_FFMPEG=true
 
 # Define package of the theia generator to use - created in https://github.com/eclipse/che-theia/tree/master/dockerfiles/theia-dev
-COPY generator/eclipse-che-theia-generator.tgz ${HOME}/eclipse-che-theia-generator.tgz
+# TODO do we need to do this if we're just installing the latest from npm (see below)?
+# COPY generator/eclipse-che-theia-generator.tgz ${HOME}/eclipse-che-theia-generator.tgz
 
 WORKDIR ${HOME}
 
@@ -66,7 +67,8 @@ RUN npm install -g yarn && \
     npm config set prefix "${HOME}/.npm-global" && \
     echo "--global-folder \"${HOME}/.yarn-global\"" > ${HOME}/.yarnrc && \
     # add eclipse che theia generator
-    ## yarn global add yo @theia/generator-plugin@0.0.1-1540209403 file:${HOME}/eclipse-che-theia-generator.tgz && \
+    # TODO do we need to do this if we're just installing the latest from npm instead ?
+    # yarn global add yo @theia/generator-plugin@0.0.1-1540209403 file:${HOME}/eclipse-che-theia-generator.tgz && \
     yarn global add yo @theia/generator-plugin && \
     yarn global add @eclipse-che/theia-generator && \
     # Generate .passwd.template \
