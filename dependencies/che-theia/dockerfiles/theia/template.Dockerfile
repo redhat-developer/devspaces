@@ -70,7 +70,7 @@ FROM registry.access.redhat.com/ubi8/nodejs-10:1-41
 ENV SUMMARY="Red Hat CodeReady Workspaces - Theia container" \
     DESCRIPTION="Red Hat CodeReady Workspaces - Theia container" \
     PRODNAME="codeready-workspaces" \
-    COMPNAME="theia-dev-rhel8"
+    COMPNAME="theia-rhel8"
 
 LABEL summary="$SUMMARY" \
       description="$DESCRIPTION" \
@@ -87,9 +87,6 @@ LABEL summary="$SUMMARY" \
 
 USER root
 
-# enable rhel 7 or 8 content sets (from Brew) to resolve jq as rpm
-COPY content_sets_epel7.repo /etc/yum.repos.d/
-
 ENV USE_LOCAL_GIT=true \
     HOME=/home/theia \
     THEIA_DEFAULT_PLUGINS=local-dir:///default-theia-plugins \
@@ -97,30 +94,27 @@ ENV USE_LOCAL_GIT=true \
     LOCAL_GIT_DIRECTORY=/usr \
     GIT_EXEC_PATH=/usr/libexec/git-core \
     # Ignore from port plugin the default hosted mode port
-    PORT_PLUGIN_EXCLUDE_3130=TRUE
-
-EXPOSE 3100 3130
+    PORT_PLUGIN_EXCLUDE_3130=TRUE \
+    THEIA_YEOMAN_PLUGIN="https://github.com/eclipse/theia-yeoman-plugin/releases/download/untagged-c11870b25a17d20bb7a7/theia_yeoman_plugin.theia" \
+    VSCODE_GIT="https://github.com/che-incubator/vscode-git/releases/download/1.30.1/vscode-git-1.3.0.1.vsix"
 
 COPY --from=builder /home/theia-dev/theia-source-code/production/plugins /default-theia-plugins
 
-# Install sudo
-# Install git
-# Install bzip2 to unpack files
-# Install which tool in order to search git
-# Install curl and bash
-# Install ssh for cloning ssh-repositories
-# Install less for handling git diff properly
-RUN apk add --update --no-cache sudo git bzip2 which bash curl openssh openssh-keygen less
-RUN adduser -D -S -u 1001 -G root -h ${HOME} -s /bin/sh theia \
+EXPOSE 3100 3130
+
+RUN yum install -y sudo git bzip2 which bash curl openssh less && \
+    userdel default && useradd -u 1001 -G root -d ${HOME} -s /bin/sh theia \
     && echo "%wheel ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers \
     # Create /projects for Che
     && mkdir /projects \
     # Create root node_modules in order to not use node_modules in each project folder
     && mkdir /node_modules \
     # Download yeoman generator plug-in
-    && curl -L -o /default-theia-plugins/theia_yeoman_plugin.theia https://github.com/eclipse/theia-yeoman-plugin/releases/download/untagged-c11870b25a17d20bb7a7/theia_yeoman_plugin.theia \
+    && echo "Fetch THEIA_YEOMAN_PLUGIN = ${THEIA_YEOMAN_PLUGIN}" \
+    && curl -sSL -o /default-theia-plugins/theia_yeoman_plugin.theia ${theia_yeoman_plugin} \
     # Download vscode git plug-in
-    && curl -L -o /default-theia-plugins/vscode-git-1.3.0.1.vsix https://github.com/che-incubator/vscode-git/releases/download/1.30.1/vscode-git-1.3.0.1.vsix \
+    && echo "Fetch VSCODE_GIT = ${VSCODE_GIT}" \
+    && curl -sSL -o /default-theia-plugins/vscode-git-1.3.0.1.vsix ${VSCODE_GIT} \
     && for f in "${HOME}" "/etc/passwd" "/etc/group /node_modules /default-theia-plugins /projects"; do\
            sudo chgrp -R 0 ${f} && \
            sudo chmod -R g+rwX ${f}; \
@@ -128,19 +122,23 @@ RUN adduser -D -S -u 1001 -G root -h ${HOME} -s /bin/sh theia \
     && cat /etc/passwd | sed s#root:x.*#root:x:\${USER_ID}:\${GROUP_ID}::\${HOME}:/bin/bash#g > ${HOME}/passwd.template \
     && cat /etc/group | sed s#root:x:0:#root:x:0:0,\${USER_ID}:#g > ${HOME}/group.template \
     # Add yeoman, theia plugin generator and typescript (to have tsc/typescript working)
-    && yarn global add yo @theia/generator-plugin@0.0.1-1562578105 typescript@2.9.2 \
+    # TODO why use @theia/generator-plugin@0.0.1-1562578105 when version in theia-dev is different?
+    && cd $HOME && npm install -g yarn && yarn global add yo @theia/generator-plugin typescript@2.9.2 \
     && mkdir -p ${HOME}/.config/insight-nodejs/ \
     && chmod -R 777 ${HOME}/.config/ \
     # Disable the statistics for yeoman
     && echo '{"optOut": true}' > $HOME/.config/insight-nodejs/insight-yo.json \
     # Link yarn global modules for yeoman
-    && mv /usr/local/lib/node_modules/* /usr/local/share/.config/yarn/global/node_modules && rm -rf /usr/local/lib/node_modules && ln -s /usr/local/share/.config/yarn/global/node_modules /usr/local/lib/ \
+    && mv /usr/lib/node_modules/* /usr/local/share/.config/yarn/global/node_modules \
+    && rm -rf /usr/lib/node_modules && ln -s /usr/local/share/.config/yarn/global/node_modules /usr/local/lib/ \
     # Cleanup tmp folder
     && rm -rf /tmp/* \
     # Cleanup yarn cache
     && yarn cache clean \
     # Change permissions to allow editing of files for openshift user
     && find ${HOME} -exec sh -c "chgrp 0 {}; chmod g+rwX {}" \;
+
+# TODO collect deps in /usr/local/share/.config/yarn/global/node_modules to tarball for Brew
 
 COPY --chown=theia:root --from=builder /home/theia-dev/theia-source-code/production /home/theia
 USER theia
