@@ -43,6 +43,7 @@ init() {
   PREFIX="che"
   TAG="next"
   SKIP_TESTS=false
+  SKIP_GENERATOR_BUILD=false
   NAME="che"
   ARGS=""
   OPTIONS=""
@@ -91,6 +92,9 @@ init() {
         shift ;;
       --git-ref:*)
         GIT_REF="${1#*:}"
+        shift ;;
+      --skip-generator-build)
+        SKIP_GENERATOR_BUILD=true
         shift ;;
       --*)
         printf "${RED}Unknown parameter: $1${NC}\n"; exit 2 ;;
