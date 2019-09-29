@@ -100,18 +100,18 @@ timeout(120) {
 				cp -frv ${WORKSPACE}/crw/dependencies/${DIR}/* ${WORKSPACE}/${DIR}/
 			fi
 			pushd ${WORKSPACE}/${DIR} >/dev/null
-				# ./build.sh ${BUILD_PARAMS} | tee ${WORKSPACE}/che-theia/${d}_buildlog.txt
+				./build.sh ${BUILD_PARAMS} | tee ${WORKSPACE}/che-theia/${d}_buildlog.txt
 			popd >/dev/null
 		done
 		'''
 
 		// for now since build.sh is stupid, comment out the images we don't want to build
-		sh '''#!/bin/bash -xe 
-		sed -i che-theia/docker_image_build.include \
-			-e "s|dockerfiles/remote-plugin\\(.\\+\\)|# dockerfiles/remote-plugin\\1|g" \
-			-e "s|dockerfiles/theia-endpoint-runtime|# dockerfiles/theia-endpoint-runtime|g" && egrep -v "^#" che-theia/docker_image_build.include 
-		cd che-theia && ./build.sh ${BUILD_PARAMS}
-		'''
+		// sh '''#!/bin/bash -xe 
+		// sed -i che-theia/docker_image_build.include \
+		// 	-e "s|dockerfiles/remote-plugin\\(.\\+\\)|# dockerfiles/remote-plugin\\1|g" \
+		// 	-e "s|dockerfiles/theia-endpoint-runtime|# dockerfiles/theia-endpoint-runtime|g" && egrep -v "^#" che-theia/docker_image_build.include 
+		// cd che-theia && ./build.sh ${BUILD_PARAMS}
+		// '''
 		
 		// check available disk space -- might need to do some cleanup if this slave is getting full
 		sh '''#!/bin/bash -xe 
