@@ -83,7 +83,7 @@ timeout(120) {
 
 		// check available disk space -- might need to do some cleanup if this slave is getting full
 		sh '''#!/bin/bash -xe 
-		df -h
+		df -h  ${WORKSPACE} /tmp / /home/hudson/static_build_env /qa/tools
 		'''
 
 		// increase verbosity of yarn calls to we can log what's being downloaded from 3rd parties
@@ -114,7 +114,7 @@ timeout(120) {
 		
 		// check available disk space -- might need to do some cleanup if this slave is getting full
 		sh '''#!/bin/bash -xe 
-		df -h
+		df -h  ${WORKSPACE} /tmp / /home/hudson/static_build_env /qa/tools
 		'''
 
 		// TODO verify this works & is archived correctly
