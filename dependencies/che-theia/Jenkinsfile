@@ -62,20 +62,23 @@ timeout(120) {
 			extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: "crw"]], 
 			submoduleCfg: [], 
 			userRemoteConfigs: [[url: "https://github.com/redhat-developer/codeready-workspaces.git"]]])
-		checkout([$class: 'GitSCM', 
-			branches: [[name: "${branchToBuildCheTheia}"]], 
-			doGenerateSubmoduleConfigurations: false, 
-			poll: true,
-			extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: "che-theia"]], 
-			submoduleCfg: [], 
-			userRemoteConfigs: [[url: "https://github.com/eclipse/che-theia.git"]]])
+		// checkout([$class: 'GitSCM', 
+		// 	branches: [[name: "${branchToBuildCheTheia}"]], 
+		// 	doGenerateSubmoduleConfigurations: false, 
+		// 	poll: true,
+		// 	extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: "che-theia"]], 
+		// 	submoduleCfg: [], 
+		// 	userRemoteConfigs: [[url: "https://github.com/eclipse/che-theia.git"]]])
 		installNPM()
 		sh "export GITHUB_TOKEN=${GITHUB_TOKEN}"
 		// sh 'printenv | sort'
 
 		// CRW-360 use RH NPM mirror
 		if ("${USE_PUBLIC_NEXUS}".equals("false")) {
-			sh "cd che-theia; sed -i 's|https://registry.yarnpkg.com/|https://repository.engineering.redhat.com/nexus/repository/registry.npmjs.org/|g' yarn.lock"
+			sh '''#!/bin/bash -xe 
+			for d in $(find . -name yarn.lock -o -name package.json); do 
+				sed -i $d 's|https://registry.yarnpkg.com/|https://repository.engineering.redhat.com/nexus/repository/registry.npmjs.org/|g'
+			'''
 		}
 
 		// check available disk space -- might need to do some cleanup if this slave is getting full
@@ -93,14 +96,10 @@ timeout(120) {
 		def BUILD_PARAMS="--skip-tests --build-args:GITHUB_TOKEN=${GITHUB_TOKEN},THEIA_VERSION=${che_theia_version} \
 --tag:${che_theia_tag} --branch:${che_theia_branch} --git-ref:${che_theia_gitref}"
 		sh '''#!/bin/bash -xe
+		mkdir -p ${WORKSPACE}/logs/
 		for d in theia-dev theia; do # TODO: build these only if we need them: theia-endpoint-runtime remote-plugin-java8 remote-plugin-openshift-connector-0.0.21 etc.
-			DIR=che-theia/dockerfiles/${d}
-			# use CRW version of Dockerfile if it exists
-			if [[ -f ${WORKSPACE}/crw/dependencies/${DIR}/Dockerfile ]]; then 
-				cp -frv ${WORKSPACE}/crw/dependencies/${DIR}/* ${WORKSPACE}/${DIR}/
-			fi
-			pushd ${WORKSPACE}/${DIR} >/dev/null
-				./build.sh ${BUILD_PARAMS} | tee ${WORKSPACE}/che-theia/${d}_buildlog.txt
+			pushd ${WORKSPACE}/crw/dependencies/che-theia/dockerfiles/${d} >/dev/null
+				./build.sh ${BUILD_PARAMS} | tee ${WORKSPACE}/logs/crw_che-theia_${d}_buildlog.txt
 			popd >/dev/null
 		done
 		'''
@@ -124,22 +123,21 @@ timeout(120) {
 		docker image ls | egrep "theia|eclipse"
 
 		# includes Theia sources
-		CONTAINERNAME=$(docker images --format "{{.Repository}}:{{.Tag}}" | grep eclipse/che-theia-builder-e2e | head -1) && \
-		CONTENT_TO_ARCHIVE="projects" && \
-		PATHNAME="/tmp/che-theia/dockerfiles/theia-dev/target" && \
-		TARNAME="$(echo ${CONTAINERNAME//:/--} | tr "/" "_")__${CONTENT_TO_ARCHIVE}.tgz" && \
-		mkdir -p ${PATHNAME} && cd ${PATHNAME} && \
-		docker run --name ${TARNAME} --rm --mount type=bind,source=${PATHNAME},target=/out ${CONTAINERNAME} /bin/bash -c "tar czf /out/${TARNAME} /${CONTENT_TO_ARCHIVE}" && \
-		echo "Created ${PATHNAME}/${TARNAME}"
+		# CONTAINERNAME=$(docker images --format "{{.Repository}}:{{.Tag}}" | grep eclipse/che-theia-builder-e2e | head -1) && \
+		# CONTENT_TO_ARCHIVE="projects" && \
+		# PATHNAME="/tmp/che-theia/dockerfiles/theia-dev/target" && \
+		# TARNAME="$(echo ${CONTAINERNAME//:/--} | tr "/" "_")__${CONTENT_TO_ARCHIVE}.tgz" && \
+		# mkdir -p ${PATHNAME} && cd ${PATHNAME} && \
+		# docker run --name ${TARNAME} --rm --mount type=bind,source=${PATHNAME},target=/out ${CONTAINERNAME} /bin/bash -c "tar czf /out/${TARNAME} /${CONTENT_TO_ARCHIVE}" && \
+		# echo "Created ${PATHNAME}/${TARNAME}"
 		'''
-		// TODO repeat for other builds
+		// TODO repeat for other builds - pull more container content out as tarballs
 
 		// TODO verify this works & is archived correctly
 		archiveArtifacts fingerprint: true, artifacts: "\
-			/tmp/che-theia/dockerfiles/theia-dev/target/*.tgz, \
-			che-theia/dockerfiles/theia-dev/generator/*.tgz, \
-			che-theia/dockerfiles/theia/che-theia/*.tgz, \
-			che-theia/*buildlog.txt \
+			${WORKSPACE}/crw/dependencies/che-theia/dockerfiles/theia-dev/generator/eclipse-che-theia-generator.tgz, \
+			${WORKSPACE}/crw/dependencies/che-theia/dockerfiles/theia/che-theia/*, \
+			${WORKSPACE}/logs/*buildlog.txt \
 		"
 
 		def descriptString="Build #${BUILD_NUMBER} (${BUILD_TIMESTAMP}) <br/> :: ${che_theia_version}, ${che_theia_tag}, ${che_theia_branch}"
