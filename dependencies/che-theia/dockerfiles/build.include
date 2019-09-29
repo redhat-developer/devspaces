@@ -148,6 +148,7 @@ build_image() {
   printf " * BRANCH = $BRANCH\n"
   printf " * GIT_REF = $GIT_REF\n"
   printf "${NC}\n"
+  set -x 
   # Replace macros in Dockerfiles
   cat ${DIR}/${DOCKERFILE} | sed \
     -e "s#\${BUILD_ORGANIZATION}#${ORGANIZATION}#" \
@@ -178,6 +179,7 @@ build_image() {
     printf "${RED}Failure when building docker image ${IMAGE_NAME}${NC}\n"
     exit 1
   fi
+  set +x
 }
 
 check_docker() {
