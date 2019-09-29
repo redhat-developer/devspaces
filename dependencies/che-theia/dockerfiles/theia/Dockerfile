@@ -112,7 +112,7 @@ RUN yum install -y sudo git bzip2 which bash curl openssh less && \
     && mkdir /node_modules \
     # Download yeoman generator plug-in
     && echo "Fetch THEIA_YEOMAN_PLUGIN = ${THEIA_YEOMAN_PLUGIN}" \
-    && curl -sSL -o /default-theia-plugins/theia_yeoman_plugin.theia ${theia_yeoman_plugin} \
+    && curl -sSL -o /default-theia-plugins/theia_yeoman_plugin.theia ${THEIA_YEOMAN_PLUGIN} \
     # Download vscode git plug-in
     && echo "Fetch VSCODE_GIT = ${VSCODE_GIT}" \
     && curl -sSL -o /default-theia-plugins/vscode-git-1.3.0.1.vsix ${VSCODE_GIT} \
