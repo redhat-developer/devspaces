@@ -45,7 +45,8 @@ if [[ $SKIP_GENERATOR_BUILD == "false" ]] || [[ ! -f ${CHE_THEIA_GENERATOR_PACKA
   cd "${base_dir}"
 fi
 
-build
+echo "Build image theia-dev ..."
+build Dockerfile
 if [[ $SKIP_TESTS == "false" ]] && [[ -x "${base_dir}"/e2e/build.sh ]]; then
   bash "${base_dir}"/e2e/build.sh "$@"
 else

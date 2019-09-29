@@ -51,25 +51,23 @@ if [ "${MONACO_CDN_PREFIX:-}" != "" ]; then
   BUILD_ARGS+="--build-arg MONACO_CDN_PREFIX=${MONACO_CDN_PREFIX} "
 fi
 
-cat template.Dockerfile | sed s/\$\{BUILD_ORGANIZATION\}/${ORGANIZATION}/ | \
-  sed s/\$\{BUILD_PREFIX\}/${PREFIX}/ | sed s/\$\{BUILD_TAG\}/${TAG}/ | \
-  sed s/\$\{BUILD_PARENT_IMAGE\}/${PARENT_IMAGE}/ | sed s/\$\{GIT_BRANCH_NAME\}/${BRANCH}/ | \
-  sed s/\$\{GIT_REF\}/"${GIT_REF}"/ > Dockerfile
-docker build -t ${IMAGE_NAME} ${BUILD_ARGS} .
-
-if [[ $SKIP_TESTS == "false" ]]; then
+echo "Build image theia using FROM ${ORGANIZATION}/${PREFIX}-theia-dev:${TAG} ..."
+build Dockerfile
+if [[ $SKIP_TESTS == "false" ]] && [[ -x "${base_dir}"/e2e/build.sh ]]; then
   bash "${base_dir}"/e2e/build.sh "$PREFIX-$NAME" "$@"
 else
-  echo "Tests skipped in $0"
+  echo "E2E tests skipped."
 fi
 
-echo "Extracting artifacts for the CDN"
-mkdir -p "${base_dir}/theia_artifacts"
-"${base_dir}"/extract-for-cdn.sh "$IMAGE_NAME" "${base_dir}/theia_artifacts"
-LABEL_CONTENT=$(cat "${base_dir}"/theia_artifacts/cdn.json || true 2>/dev/null)
-if [ -n "${LABEL_CONTENT}" ]; then
-  BUILD_ARGS+="--label che-plugin.cdn.artifacts=$(echo ${LABEL_CONTENT} | sed 's/ //g') "
-  echo "Rebuilding with CDN label..."
-  build
-  "${base_dir}"/push-cdn-files-to-akamai.sh
+if [[ -x "${base_dir}"/extract-for-cdn.sh ]]; then
+  echo "Extracting artifacts for the CDN"
+  mkdir -p "${base_dir}/theia_artifacts"
+  "${base_dir}"/extract-for-cdn.sh "$IMAGE_NAME" "${base_dir}/theia_artifacts"
+  LABEL_CONTENT=$(cat "${base_dir}"/theia_artifacts/cdn.json || true 2>/dev/null)
+  if [[ -n "${LABEL_CONTENT}" ]] && [[ -x "${base_dir}"/push-cdn-files-to-akamai.sh ]]; then
+    BUILD_ARGS+="--label che-plugin.cdn.artifacts=$(echo ${LABEL_CONTENT} | sed 's/ //g') "
+    echo "Rebuilding with CDN label..."
+    build
+    "${base_dir}"/push-cdn-files-to-akamai.sh
+  fi
 fi

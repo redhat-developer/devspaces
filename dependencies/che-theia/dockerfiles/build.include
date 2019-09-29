@@ -39,12 +39,12 @@ init() {
   BOLD='\033[1m'
   UNDERLINE='\033[4m'
 
-  ORGANIZATION="eclipse"
-  PREFIX="che"
+  ORGANIZATION="quay.io/crw"
+  PREFIX="crw"
   TAG="next"
   SKIP_TESTS=false
   SKIP_GENERATOR_BUILD=false
-  NAME="che"
+  NAME="crw"
   ARGS=""
   OPTIONS=""
   DOCKERFILE=""
@@ -140,10 +140,23 @@ build() {
 }
 
 build_image() {
-  printf "${BOLD}Building Docker Image ${IMAGE_NAME} from $DIR directory with tag $TAG${NC}\n"
+  printf "${BOLD}Building container image ${IMAGE_NAME} from $DIR/ with:\n"
+  printf " * ORGANIZATION = $ORGANIZATION\n"
+  printf " * PREFIX = $PREFIX\n"
+  printf " * TAG = $TAG\n"
+  printf " * PARENT_IMAGE = $PARENT_IMAGE\n"
+  printf " * BRANCH = $BRANCH\n"
+  printf " * GIT_REF = $GIT_REF\n"
+  printf "${NC}\n"
   # Replace macros in Dockerfiles
-  cat ${DIR}/${DOCKERFILE} | sed s/\$\{BUILD_ORGANIZATION\}/${ORGANIZATION}/ | sed s/\$\{BUILD_PREFIX\}/${PREFIX}/ | sed s/\$\{BUILD_TAG\}/${TAG}/ | sed s/\$\{BUILD_PARENT_IMAGE\}/${PARENT_IMAGE}/ | sed s/\$\{GIT_BRANCH_NAME\}/${BRANCH}/ | sed s/\$\{GIT_REF\}/"${GIT_REF}"/ > ${DIR}/.Dockerfile
-  cd "${DIR}" && docker build -f ${DIR}/.Dockerfile -t ${IMAGE_NAME} ${BUILD_ARGS} .
+  cat ${DIR}/${DOCKERFILE} | sed \
+    -e "s#\${BUILD_ORGANIZATION}#${ORGANIZATION}#" \
+    -e "s#\${BUILD_PREFIX}#${PREFIX}#" \
+    -e "s#\${BUILD_TAG}#${TAG}#" \
+    -e "s#\${BUILD_PARENT_IMAGE}#${PARENT_IMAGE}#" \
+    -e "s#\${GIT_BRANCH_NAME}#${BRANCH}#" > ${DIR}/.Dockerfile
+  # cat ${DIR}/.Dockerfile | egrep "^FROM "
+  cd "${DIR}" && docker build -f ${DIR}/.Dockerfile -t ${IMAGE_NAME} ${BUILD_ARGS} . --squash --no-cache
   rm ${DIR}/.Dockerfile
   if [ $? -eq 0 ]; then
     printf "Build of ${BLUE}${IMAGE_NAME} ${GREEN}[OK]${NC}\n"

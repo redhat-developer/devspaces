@@ -11,7 +11,8 @@
 ###
 # Builder Image
 #
-FROM eclipse/che-theia-dev:ubi as builder
+# FROM eclipse/che-theia-dev:next as builder
+FROM ${BUILD_ORGANIZATION}/${BUILD_PREFIX}-theia-dev:${BUILD_TAG} as builder
 
 ENV NODE_OPTIONS="--max-old-space-size=4096"
 
