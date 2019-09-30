@@ -19,9 +19,9 @@ timeout(120) {
 		sh "cd ${extensionFolder}"
 		sh "npm --version"
 		installNPM()
-		sh "sudo npm install -g vsce && sudo npm install -g gulp && npm install"
-		sh "ls -l"
-		sh "vsce package"
+		sh "cd ${extensionFolder} && sudo npm install -g vsce && sudo npm install -g gulp && npm install"
+		sh "cd ${extensionFolder} ls -l"
+		sh "cd ${extensionFolder} vsce package"
 
 		echo "build finished"
 
