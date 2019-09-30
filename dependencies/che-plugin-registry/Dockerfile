@@ -37,19 +37,25 @@ COPY content_sets_epel7.repo /etc/yum.repos.d/
 
 RUN microdnf install -y findutils bash wget yum gzip tar jq python3-six python3-pip && microdnf -y clean all && \
     # install yq (depends on jq and pyyaml - if jq and pyyaml not already installed, this will try to compile it)
-    if [[ -f /tmp/root-local.tgz ]]; then mkdir -p /root/.local && tar xf /tmp/root-local.tgz -C /root/.local/ && rm -fr /tmp/root-local.tgz; fi && \
-    /usr/bin/pip3.6 install --user yq jsonschema && \
-    # could be installed in /opt/app-root/src/.local/bin or /root/.local/bin
-    for d in /opt/app-root/src/.local /root/.local; do \
-      if [[ -d ${d} ]]; then \
-        cp ${d}/bin/yq ${d}/bin/jsonschema /usr/local/bin/; \
-        pushd ${d}/lib/python3.6/site-packages/ >/dev/null; \
-          cp -r PyYAML* xmltodict* yaml* yq* jsonschema* /usr/lib/python3.6/site-packages/; \
-        popd >/dev/null; \
-      fi; \
-    done && \
-    chmod +x /usr/local/bin/yq && \
-    ln -s /usr/bin/python3.6 /usr/bin/python
+    if [[ -f /tmp/root-local.tgz ]]; then \
+      mkdir -p /root/.local; tar xf /tmp/root-local.tgz -C /root/.local/; rm -fr /tmp/root-local.tgz;  \
+      /usr/bin/pip3.6 install --user yq jsonschema; \
+      # could be installed in /opt/app-root/src/.local/bin or /root/.local/bin
+      for d in /opt/app-root/src/.local /root/.local; do \
+        if [[ -d ${d} ]]; then \
+          cp ${d}/bin/yq ${d}/bin/jsonschema /usr/local/bin/; \
+          pushd ${d}/lib/python3.6/site-packages/ >/dev/null; \
+            cp -r PyYAML* xmltodict* yaml* yq* jsonschema* /usr/lib/python3.6/site-packages/; \
+          popd >/dev/null; \
+        fi; \
+      done; \
+      chmod -c +x /usr/local/bin/*; \
+    else \
+      /usr/bin/pip3.6 install yq jsonschema; \
+    fi && \
+    ln -s /usr/bin/python3.6 /usr/bin/python && \
+    # test install worked
+    for d in python yq jq jsonschema; do echo -n "$d: "; $d --version; done
 
 # for debugging only
 # RUN microdnf install -y util-linux && whereis python pip jq yq && python --version && jq --version && yq --version
@@ -65,8 +71,9 @@ WORKDIR /build/
 # if only including the /latest/ plugins, apply this line to remove them from builder 
 RUN rm -fr $(find /build/v3 -name 'meta.yaml' | grep -v "/latest/")
 
+# not supported in Brew unless we prefetch the content via tarball injection
 # optional steps for air gap - replace references to docker.io, quay.io, registry.access.redhat.com, registry.redhat.io with internal registry
-RUN ./list_containers.sh v3 && ./replace_container_repos.sh v3 rcquay.rc.helab.devfg.rbc.com
+# RUN ./list_containers.sh v3 && ./replace_container_repos.sh v3 myquay.mycorp.com
 
 RUN ./check_plugins_location.sh v3 && \
     ./set_plugin_dates.sh v3 && \
@@ -91,9 +98,8 @@ RUN sed -i /etc/httpd/conf/httpd.conf \
     -e "s,logs/access_log,/dev/stdout," \
     -e "s,AllowOverride None,AllowOverride All," && \
     chmod a+rwX /etc/httpd/conf /run/httpd
-EXPOSE 80
 STOPSIGNAL SIGWINCH
-ENTRYPOINT ["/usr/sbin/httpd", "-D", "FOREGROUND"]
+ENTRYPOINT ["uid_entrypoint.sh", "entrypoint.sh"]
 # END these steps might not be required
 
 COPY README.md .htaccess /var/www/html/
@@ -130,3 +136,4 @@ LABEL summary="$SUMMARY" \
 
 COPY --from=offline-builder /build/v3 /var/www/html/v3
 WORKDIR /var/www/html
+ENTRYPOINT ["uid_entrypoint.sh", "entrypoint.sh"]
