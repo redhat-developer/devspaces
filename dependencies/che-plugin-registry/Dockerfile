@@ -71,7 +71,7 @@ COPY /v3 /build/v3
 WORKDIR /build/
 
 # if only including the /latest/ plugins, apply this line to remove them from builder 
-RUN rm -fr $(find /build/v3 -name 'meta.yaml' | grep -v "/latest/")
+RUN rm -fr $(find /build/v3 -name 'meta.yaml' | grep -v "/latest/" | grep -o ".*/")
 
 # not supported in Brew unless we prefetch the content via tarball injection
 # optional steps for air gap - replace references to docker.io, quay.io, registry.access.redhat.com, registry.redhat.io with internal registry
@@ -128,7 +128,7 @@ FROM builder AS offline-builder
 
 RUN if [[ ! -f /tmp/resources.tgz ]] || [[ ${BOOTSTRAP} == "true" ]]; then \
       # To only cache files from /latest/ folders, use ./cache_artifacts.sh v3 --latest-only 
-      # and uncomment line above to remove files so they're not included in index.json -- RUN rm -fr $(find /build/v3 -name 'meta.yaml' | grep -v "/latest/")
+      # and uncomment line above to remove files so they're not included in index.json -- RUN rm -fr $(find /build/v3 -name 'meta.yaml' | grep -v "/latest/" | grep -o ".*/")
       ./cache_artifacts.sh v3 --latest-only && chmod -R g+rwX /build; \
     else \
       mkdir -p /build/v3/resources/; tar xf /tmp/resources.tgz -C /build/v3/resources/; rm -fr /tmp/resources.tgz;  \
