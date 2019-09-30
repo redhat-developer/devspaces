@@ -99,11 +99,14 @@ RUN sed -i /etc/httpd/conf/httpd.conf \
     -e "s,AllowOverride None,AllowOverride All," && \
     chmod a+rwX /etc/httpd/conf /run/httpd
 STOPSIGNAL SIGWINCH
-ENTRYPOINT ["uid_entrypoint.sh", "entrypoint.sh"]
 # END these steps might not be required
 
 COPY README.md .htaccess /var/www/html/
 COPY --from=builder /build/v3 /var/www/html/v3
+COPY ./scripts/*entrypoint.sh /usr/local/bin/
+
+WORKDIR /var/www/html
+ENTRYPOINT ["/usr/local/bin/uid_entrypoint.sh", "/usr/local/bin/entrypoint.sh"]
 
 # Offline build: cache .theia and .vsix files in registry itself and update metas
 FROM builder AS offline-builder
@@ -135,5 +138,3 @@ LABEL summary="$SUMMARY" \
       usage=""
 
 COPY --from=offline-builder /build/v3 /var/www/html/v3
-WORKDIR /var/www/html
-ENTRYPOINT ["uid_entrypoint.sh", "entrypoint.sh"]
