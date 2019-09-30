@@ -9,7 +9,7 @@ timeout(120) {
 			extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: "${extensionFolder}"]],
 			submoduleCfg: [],
 			userRemoteConfigs: [[url: "${clonePath}"]]])
-		sh "cd ${extensionFolder} && npm install vsce && npm install && vsce package"
+		sh "cd ${extensionFolder} && sudo npm install -g vsce --verbose && npm install --verbose && vsce package"
 
 		echo "build finished"
 
