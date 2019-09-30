@@ -123,6 +123,7 @@ RUN yum install -y sudo git bzip2 which bash curl openssh less && \
     && cat /etc/passwd | sed s#root:x.*#root:x:\${USER_ID}:\${GROUP_ID}::\${HOME}:/bin/bash#g > ${HOME}/passwd.template \
     && cat /etc/group | sed s#root:x:0:#root:x:0:0,\${USER_ID}:#g > ${HOME}/group.template \
     # Add yeoman, theia plugin generator and typescript (to have tsc/typescript working)
+    # theia plugin generator from https://github.com/eclipse/theia-generator-plugin
     # TODO why use @theia/generator-plugin@0.0.1-1562578105 when version in theia-dev is different?
     && cd $HOME && npm install -g yarn && yarn global add yo @theia/generator-plugin typescript@2.9.2 \
     && mkdir -p ${HOME}/.config/insight-nodejs/ \

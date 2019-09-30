@@ -66,8 +66,8 @@ RUN whereis npm node && node --version && npm --version && \
     npm install -g yarn && \
     npm config set prefix "${HOME}/.npm-global" && \
     echo "--global-folder \"${HOME}/.yarn-global\"" > ${HOME}/.yarnrc && \
-    # add eclipse che theia generator
     # yarn global add yo @theia/generator-plugin@0.0.1-1540209403 file:${HOME}/eclipse-che-theia-generator.tgz && \
+    # theia plugin generator from https://github.com/eclipse/theia-generator-plugin
     yarn global add yo @theia/generator-plugin && \
     yarn global add file:${HOME}/eclipse-che-theia-generator.tgz && \
     # or use latest release :: yarn global add @eclipse-che/theia-generator && \
