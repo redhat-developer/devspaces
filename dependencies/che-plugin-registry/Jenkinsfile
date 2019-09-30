@@ -17,10 +17,9 @@ timeout(120) {
 			submoduleCfg: [],
 			userRemoteConfigs: [[url: "${clonePath}"]]])
 		sh "cd ${extensionFolder}"
-		sh "npm -version"
+		sh "npm --version"
 		installNPM()
-		sh "npm -version"
-		sh "&& sudo npm install -g vsce && sudo npm install gulp && npm install && vsce package"
+		sh "sudo npm install -g vsce && sudo npm install -g gulp && npm install && vsce package"
 
 		echo "build finished"
 
