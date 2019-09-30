@@ -19,13 +19,16 @@ USER 0
 # PHASE ONE: create ubi8-minimal image with yq
 ################# 
 
+ARG BOOTSTRAP=false
+ENV BOOTSTRAP=${BOOTSTRAP}
 # to get all the python deps pre-fetched so we can build in Brew:
+
 # 1. extract files in the container to your local filesystem
-#    CONTAINERNAME="pluginregistry"
+#    CONTAINERNAME="pluginregistrybuilder" && docker build -t ${CONTAINERNAME} . --target=builder --no-cache --squash --build-arg BOOTSTRAP=true
 #    mkdir -p /tmp/root-local/ && docker run -it -v /tmp/root-local/:/tmp/root-local/ ${CONTAINERNAME} /bin/bash -c "cd /root/.local/ && cp -r bin/ lib/ /tmp/root-local/"
-# 2. then back on your own machine, tar them up and put them in this folder
-#    cd /tmp/root-local && sudo tar cvzf root-local.tgz lib/ bin/ && cd - && mv -f /tmp/root-local/root-local.tgz . && sudo rm -fr /tmp/root-local/
-# 3. then add it to dist-git so it's part of this repo
+#    pushd /tmp/root-local >/dev/null && sudo tar czf root-local.tgz lib/ bin/ && popd >/dev/null && mv -f /tmp/root-local/root-local.tgz . && sudo rm -fr /tmp/root-local/
+
+# 2. then add it to dist-git so it's part of this repo
 #    rhpkg new-sources root-local.tgz 
 
 # built in Brew, use tarball in lookaside cache
@@ -37,7 +40,7 @@ COPY content_sets_epel7.repo /etc/yum.repos.d/
 
 RUN microdnf install -y findutils bash wget yum gzip tar jq python3-six python3-pip && microdnf -y clean all && \
     # install yq (depends on jq and pyyaml - if jq and pyyaml not already installed, this will try to compile it)
-    if [[ -f /tmp/root-local.tgz ]]; then \
+    if [[ -f /tmp/root-local.tgz ]] || [[ ${BOOTSTRAP} == "true" ]]; then \
       mkdir -p /root/.local; tar xf /tmp/root-local.tgz -C /root/.local/; rm -fr /tmp/root-local.tgz;  \
       /usr/bin/pip3.6 install --user yq jsonschema; \
       # could be installed in /opt/app-root/src/.local/bin or /root/.local/bin
