@@ -22,7 +22,6 @@ USER 0
 ARG BOOTSTRAP=false
 ENV BOOTSTRAP=${BOOTSTRAP}
 # to get all the python deps pre-fetched so we can build in Brew:
-
 # 1. extract files in the container to your local filesystem
 #    CONTAINERNAME="pluginregistrybuilder" && docker build -t ${CONTAINERNAME} . --target=builder --no-cache --squash --build-arg BOOTSTRAP=true
 #    mkdir -p /tmp/root-local/ && docker run -it -v /tmp/root-local/:/tmp/root-local/ ${CONTAINERNAME} /bin/bash -c "cd /root/.local/ && cp -r bin/ lib/ /tmp/root-local/"
