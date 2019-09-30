@@ -138,7 +138,9 @@ RUN if [[ ! -f /tmp/resources.tgz ]] || [[ ${BOOTSTRAP} == "true" ]]; then \
 FROM registry AS offline-registry
 USER 0
 
-# Offline registry: copy updated meta.yamls and cached extensions
+# multiple temp stages does not work in Brew
+COPY --from=offline-builder /build/v3 /var/www/html/v3
+
 ENV SUMMARY="Red Hat CodeReady Workspaces plugin registry container" \
     DESCRIPTION="Red Hat CodeReady Workspaces plugin registry container" \
     PRODNAME="codeready-workspaces" \
@@ -156,5 +158,3 @@ LABEL summary="$SUMMARY" \
       maintainer="Nick Boldt <nboldt@redhat.com>" \
       io.openshift.expose-services="" \
       usage=""
-# multiple temp stages does not work in Brew
-COPY --from=offline-builder /build/v3 /var/www/html/v3
