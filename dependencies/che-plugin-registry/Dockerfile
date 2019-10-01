@@ -21,6 +21,9 @@ USER 0
 
 ARG BOOTSTRAP=false
 ENV BOOTSTRAP=${BOOTSTRAP}
+ARG LATEST_ONLY=false
+ENV LATEST_ONLY=${LATEST_ONLY}
+
 # to get all the python deps pre-fetched so we can build in Brew:
 # 1. extract files in the container to your local filesystem
 #    CONTAINERNAME="pluginregistrybuilder" && docker build -t ${CONTAINERNAME} . --target=builder --no-cache --squash --build-arg BOOTSTRAP=true
@@ -71,7 +74,9 @@ COPY /v3 /build/v3
 WORKDIR /build/
 
 # if only including the /latest/ plugins, apply this line to remove them from builder 
-RUN rm -fr $(find /build/v3 -name 'meta.yaml' | grep -v "/latest/" | grep -o ".*/")
+RUN if [[ ${LATEST_ONLY} == "true" ]]; then \
+      rm -fr $(find /build/v3 -name 'meta.yaml' | grep -v "/latest/" | grep -o ".*/"); \
+    fi
 
 # not supported in Brew unless we prefetch the content via tarball injection
 # optional steps for air gap - replace references to docker.io, quay.io, registry.access.redhat.com, registry.redhat.io with internal registry
@@ -130,11 +135,14 @@ FROM builder AS offline-builder
 
 # 2. then add it to dist-git so it's part of this repo
 #    rhpkg new-sources root-local.tgz v3.tgz
-
 RUN if [[ ! -f /tmp/v3.tgz ]] || [[ ${BOOTSTRAP} == "true" ]]; then \
       # To only cache files from /latest/ folders, use ./cache_artifacts.sh v3 --latest-only 
       # and uncomment line above to remove files so they're not included in index.json -- RUN rm -fr $(find /build/v3 -name 'meta.yaml' | grep -v "/latest/" | grep -o ".*/")
-      ./cache_artifacts.sh v3 --latest-only && chmod -R g+rwX /build; \
+      if [[ ${LATEST_ONLY} == "true" ]]; then \
+        ./cache_artifacts.sh v3 --latest-only && chmod -R g+rwX /build; \
+      else \
+        ./cache_artifacts.sh v3 && chmod -R g+rwX /build; \
+        fi \
     else \
       # in Brew use /var/www/html/; in upstream/ offline-builder use /build/
       mkdir -p /build/v3/; tar xf /tmp/v3.tgz -C /build/v3/; rm -fr /tmp/v3.tgz;  \
