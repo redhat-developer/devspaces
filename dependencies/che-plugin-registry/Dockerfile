@@ -115,23 +115,24 @@ ENTRYPOINT ["/usr/local/bin/uid_entrypoint.sh", "/usr/local/bin/entrypoint.sh"]
 FROM builder AS offline-builder
 
 # built in Brew, use tarball in lookaside cache; built locally, comment this out
-# COPY resources.tgz /tmp/resources.tgz
+# COPY v3.tgz /tmp/v3.tgz
 
 # to get all the python deps pre-fetched so we can build in Brew:
 # 1. extract files in the container to your local filesystem
 #    CONTAINERNAME="pluginregistryoffline" && docker build -t ${CONTAINERNAME} . --target=offline-builder --no-cache --squash --build-arg BOOTSTRAP=true
-#    mkdir -p /tmp/pr-res/ && docker run -it -v /tmp/pr-res/:/tmp/pr-res/ ${CONTAINERNAME} /bin/bash -c "cd /build/v3/resources/ && cp -r ./* /tmp/pr-res/"
-#    pushd /tmp/pr-res >/dev/null && sudo tar czf resources.tgz ./* && popd >/dev/null && mv -f /tmp/pr-res/resources.tgz . && sudo rm -fr /tmp/pr-res/
+#    mkdir -p /tmp/pr-res/ && docker run -it -v /tmp/pr-res/:/tmp/pr-res/ ${CONTAINERNAME} /bin/bash -c "cd /build/v3/ && cp -r ./* /tmp/pr-res/"
+#    pushd /tmp/pr-res >/dev/null && sudo tar czf v3.tgz ./* && popd >/dev/null && mv -f /tmp/pr-res/v3.tgz . && sudo rm -fr /tmp/pr-res/
 
 # 2. then add it to dist-git so it's part of this repo
-#    rhpkg new-sources root-local.tgz resources.tgz
+#    rhpkg new-sources root-local.tgz v3.tgz
 
-RUN if [[ ! -f /tmp/resources.tgz ]] || [[ ${BOOTSTRAP} == "true" ]]; then \
+RUN if [[ ! -f /tmp/v3.tgz ]] || [[ ${BOOTSTRAP} == "true" ]]; then \
       # To only cache files from /latest/ folders, use ./cache_artifacts.sh v3 --latest-only 
       # and uncomment line above to remove files so they're not included in index.json -- RUN rm -fr $(find /build/v3 -name 'meta.yaml' | grep -v "/latest/" | grep -o ".*/")
       ./cache_artifacts.sh v3 --latest-only && chmod -R g+rwX /build; \
     else \
-      mkdir -p /build/v3/resources/; tar xf /tmp/resources.tgz -C /build/v3/resources/; rm -fr /tmp/resources.tgz;  \
+      # in Brew use /var/www/html/; in upstream/ offline-builder use /build/
+      mkdir -p /build/v3/; tar xf /tmp/v3.tgz -C /build/v3/; rm -fr /tmp/v3.tgz;  \
     fi
 
 # multiple temp stages does not work in Brew
