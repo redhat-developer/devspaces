@@ -9,19 +9,19 @@ def installNPM(){
 
 timeout(120) {
 	node("${node}"){ stage "Build ${extensionFolder}"
+	  def extensionFolder = "${extensionPath}".substring(string.lastIndexOf('/') + 1);
 		checkout([$class: 'GitSCM',
 			branches: [[name: "${branchToBuildPlugin}"]],
 			doGenerateSubmoduleConfigurations: false,
 			poll: true,
 			extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: "${extensionFolder}"]],
 			submoduleCfg: [],
-			userRemoteConfigs: [[url: "${clonePath}"]]])
+			userRemoteConfigs: [[url: "${extensionPath}"]]])
+
 		sh "cd ${extensionFolder}"
 		sh "npm --version"
 		installNPM()
-		sh "cd ${extensionFolder} && sudo npm install -g vsce && sudo npm install -g gulp && npm install"
-		sh "cd ${extensionFolder} &&ls -l"
-		sh "cd ${extensionFolder} && vsce package"
+		sh "cd ${extensionFolder} && sudo npm install -g vsce && sudo npm install -g gulp && npm install && vsce package"
 
 		echo "build finished"
 
