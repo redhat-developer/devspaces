@@ -22,6 +22,6 @@ spec:
       discoverable: false
   containers:
   - name: che-machine-exec
-    image: "docker.io/eclipse/che-machine-exec:7.1.0"
+    image: "quay.io/eclipse/che-machine-exec:7.2.0"
     ports:
     - exposedPort: 4444
