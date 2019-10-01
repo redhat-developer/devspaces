@@ -89,8 +89,13 @@ RUN ./check_plugins_location.sh v3 && \
 ################# 
 
 # Build registry, copying meta.yamls and index.json from builder
+# UPSTREAM: use RHEL7/RHSCL/httpd image so we're not required to authenticate with registry.redhat.io
 # https://access.redhat.com/containers/?tab=tags#/registry.access.redhat.com/rhscl/httpd-24-rhel7
 FROM registry.access.redhat.com/rhscl/httpd-24-rhel7:2.4-104 AS registry
+
+# DOWNSTREAM: use RHEL8/httpd
+# https://access.redhat.com/containers/?tab=tags#/registry.access.redhat.com/rhel8/httpd-24
+# FROM registry.redhat.io/rhel8/httpd-24:1-60 AS registry
 USER 0
 
 # BEGIN these steps might not be required
