@@ -8,7 +8,7 @@ def installNPM(){
 
 
 timeout(120) {
-	node("${node}"){ stage "Build ${extensionFolder}"
+	node("${node}"){ stage "Build ${extensionPath}"
 	  def extensionFolder = "${extensionPath}".substring("extensionPath".lastIndexOf('/') + 1);
 		checkout([$class: 'GitSCM',
 			branches: [[name: "${branchToBuildPlugin}"]],
