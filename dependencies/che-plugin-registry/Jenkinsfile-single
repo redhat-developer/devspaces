@@ -1,5 +1,10 @@
 #!/usr/bin/env groovy
 
+// build params
+//branchToBuildPlugin - extension branch (default master)
+//extensionPath - URL to extension repo
+//node - node version
+
 def installNPM(){
 	def nodeHome = tool 'nodejs-10.15.3'
 	env.PATH="${nodeHome}/bin:${env.PATH}"

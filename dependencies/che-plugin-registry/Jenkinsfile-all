@@ -1,0 +1,24 @@
+#!/usr/bin/env groovy
+
+// build params
+//extensions - comma separated list of extensions
+
+node {
+    stage 'build extensions'
+    def extensions = "${extensions}"
+    def jobs = []
+    extensions.split(",").each { extension ->
+        def buildjob = build job: 'vscode-extensions-packaging', parameters: [ string(name: 'clonePath', value: extension)]
+        jobs.add(buildjob)
+    }
+
+    jobs.each { job ->
+        copyArtifacts(projectName: 'vscode-extensions-packaging', selector: specific("${job.number}"))
+    }
+
+    sh "tar -cvf vscode-extensions-vsix.tar ."
+
+    sh "rhpkg new-sources vscode-extensions-vsix.tar"
+
+    archiveArtifacts artifacts: '*.tar', fingerprint: true
+}
