@@ -9,12 +9,12 @@
 #   Red Hat, Inc. - initial API and implementation
 
 # https://access.redhat.com/containers/?tab=tags#/registry.access.redhat.com/ubi8/nodejs-10
-FROM registry.access.redhat.com/ubi7/nodejs-10:1-20.1568971390
+FROM registry.access.redhat.com/ubi8/nodejs-10:1-51
 ENV SUMMARY="Red Hat CodeReady Workspaces - Theia-Dev container" \
     DESCRIPTION="Red Hat CodeReady Workspaces - Theia-Dev container" \
     PRODNAME="codeready-workspaces" \
-    COMPNAME="theia-dev" \
-    PATH=/opt/rh/rh-nodejs10/root/usr/bin:${PATH}
+    COMPNAME="theia-dev-rhel8" 
+    # PATH=/opt/rh/rh-nodejs10/root/usr/bin:${PATH}
 
 LABEL summary="$SUMMARY" \
       description="$DESCRIPTION" \
@@ -29,17 +29,19 @@ LABEL summary="$SUMMARY" \
       io.openshift.expose-services="" \
       usage=""
 
-USER root
+USER 0
 
-# Alternate solution (eg., for using ubi8 base image, where no el8 versions exist):
+# Alternate solution (eg., for using ubi7/nodejs-10 base image):
 # 1. download these rpms
 # https://rpmfind.net/linux/centos/7.7.1908/os/x86_64/Packages/libxkbfile-1.0.9-3.el7.x86_64.rpm
 # https://rpmfind.net/linux/centos/7.7.1908/os/x86_64/Packages/libxkbfile-devel-1.0.9-3.el7.x86_64.rpm
 # 2. COPY libxkbfile*.rpm /tmp/
 # 3. RUN dnf install -y /tmp/libxkbfile*.rpm
+# UBI8 versions exist on http://pulp-read.dist.prod.ext.phx2.redhat.com/content/dist/rhel8/8/x86_64/codeready-builder/os/
+# Currently: libxkbfile-1.0.9-9.el8.x86_64 and libxkbfile-devel-1.0.9-9.el8.x86_64
 
-# enable rhel 7 (or 8) content sets to resolve jq and libxkbfile-devel + libxkbfile as rpms
-COPY content_sets_epel7.repo /etc/yum.repos.d/
+# enable rhel8 content sets (including codeready-builder) to resolve jq and libxkbfile-devel + libxkbfile as rpms
+COPY content_sets_rhel8.repo /etc/yum.repos.d/
 RUN yum install -y curl jq make cmake gcc gcc-c++ python2 git openssh less bash libX11-devel tar gzip libxkbfile libxkbfile-devel && \
     yum -y clean all && rm -rf /var/cache/yum && \
     echo "Installed Packages" && rpm -qa | sort -V && echo "End Of Installed Packages" 
@@ -61,13 +63,34 @@ EXPOSE 3000 3030
 # generator.tgz built from https://github.com/eclipse/che-theia/tree/master/generator
 COPY generator/eclipse-che-theia-generator.tgz ${HOME}/eclipse-che-theia-generator.tgz
 
+# 0. Enable this script to collect intalled node deps into a single folder for easier tarballing
+# COPY collect.installed.dependencies.sh /usr/local/bin/
+
+# 1. extract files in the container to your local filesystem
+# CONTAINERNAME="quay.io/crw/crw-theia-dev:next" && rm -f root-local.tgz && ./build.sh
+# mkdir -p /tmp/root-local/ && \
+# docker run --rm -v /tmp/root-local/:/tmp/root-local/ ${CONTAINERNAME} /bin/bash -c "collect.installed.dependencies.sh"
+# pushd /tmp/root-local >/dev/null && sudo tar czf /tmp/root-local.tgz ./* && popd >/dev/null && sudo mv -f /tmp/root-local.tgz . && sudo rm -fr /tmp/root-local/
+
+# 2. then add it to dist-git so it's part of this repo
+#    rhpkg new-sources root-local.tgz 
+
+# built in Brew, use tarball in lookaside cache; built locally, comment this out
+# COPY root-local.tgz /tmp/root-local.tgz
+
 # Configure npm and yarn to use home folder for global dependencies
 RUN whereis npm node && node --version && npm --version && \
-    npm install -g yarn && \
-    npm config set prefix "${HOME}/.npm-global" && \
-    echo "--global-folder \"${HOME}/.yarn-global\"" > ${HOME}/.yarnrc && \
-    # add eclipse che theia generator
-    yarn global add yo @theia/generator-plugin@0.0.1-1562578105 file:${HOME}/eclipse-che-theia-generator.tgz && \
+    if [[ ! -f /tmp/root-local.tgz ]]; then \
+        # online install
+        npm install -g yarn && \
+        npm config set prefix "${HOME}/.npm-global" && \
+        echo "--global-folder \"${HOME}/.yarn-global\"" > ${HOME}/.yarnrc && \
+        # add eclipse che theia generator
+        yarn global add yo @theia/generator-plugin@0.0.1-1562578105 file:${HOME}/eclipse-che-theia-generator.tgz; \
+    else \
+        # offline install (Brew)
+        tar xf /tmp/root-local.tgz -C /; rm -fr /tmp/root-local.tgz;  \
+    fi; \
     # Generate .passwd.template \
     cat /etc/passwd | \
     sed s#root:x.*#theia-dev:x:\${USER_ID}:\${GROUP_ID}::${HOME}:/bin/bash#g \
