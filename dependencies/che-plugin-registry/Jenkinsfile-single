@@ -1,0 +1,30 @@
+#!/usr/bin/env groovy
+
+def installNPM(){
+	def nodeHome = tool 'nodejs-10.15.3'
+	env.PATH="${nodeHome}/bin:${env.PATH}"
+	sh "node --version; npm --version"
+}
+
+
+timeout(120) {
+	node("${node}"){ stage "Build ${extensionPath}"
+
+		def extensionFolder = "${extensionPath}".substring("${extensionPath}".lastIndexOf('/') + 1);
+
+		echo "${extensionFolder}"
+
+		checkout([$class: 'GitSCM',
+				  branches: [[name: "${branchToBuildPlugin}"]],
+				  doGenerateSubmoduleConfigurations: false,
+				  poll: true,
+				  extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: "${extensionFolder}"]],
+				  submoduleCfg: [],
+				  userRemoteConfigs: [[url: "${extensionPath}"]]])
+
+		installNPM()
+		sh "cd ${extensionFolder} && sudo npm install -g vsce && sudo npm install -g gulp && npm install && vsce package"
+
+		archiveArtifacts artifacts: '**/*.vsix', fingerprint: true
+	}
+}
