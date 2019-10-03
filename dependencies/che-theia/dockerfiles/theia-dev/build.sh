@@ -45,6 +45,9 @@ if [[ $SKIP_GENERATOR_BUILD == "false" ]] || [[ ! -f ${CHE_THEIA_GENERATOR_PACKA
   cd "${base_dir}"
 fi
 
+# move generator/eclipse-che-theia-generator.tgz into the root dir so it's in the place that Brew expects it
+mv "${CHE_THEIA_GENERATOR_PACKAGE}" "${base_dir}"
+
 echo "Build image theia-dev ..."
 build Dockerfile
 if [[ $SKIP_TESTS == "false" ]] && [[ -x "${base_dir}"/e2e/build.sh ]]; then
