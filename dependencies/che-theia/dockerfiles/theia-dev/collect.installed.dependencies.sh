@@ -8,6 +8,6 @@ for d in \
     /opt/app-root/src/.npm-global; do \
     if [[ -d ${d} ]]; then 
         mkdir -p /tmp/root-local/${d}; 
-        rsync -aPrz ${d} /tmp/root-local/${d};
+        rsync -aAXz ${d} /tmp/root-local/${d};
     fi; 
 done
