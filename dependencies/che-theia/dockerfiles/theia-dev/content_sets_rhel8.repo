@@ -10,28 +10,8 @@ baseurl=http://pulp.dist.prod.ext.phx2.redhat.com/content/dist/rhel8/8/x86_64/ba
 enabled=1
 gpgcheck=0
 
-[rhel-8-for-x86_64-codeready-builder-rpms]
-name=codeready builder
+[codeready-builder-for-rhel-8-x86_64-rpms]
+name=codeready-builder-for-rhel-8-x86_64-rpms
 baseurl=http://pulp-read.dist.prod.ext.phx2.redhat.com/content/dist/rhel8/8/x86_64/codeready-builder/os/
 enabled=1
 gpgcheck=0
-
-[rhel-8-for-x86_64-appstream-rpms]
-name=rhel-8-for-x86_64-appstream-rpms
-baseurl=http://cdn.redhat.com/content/dist/rhel8/8/x86_64/appstream/os/
-enabled=0
-gpgcheck=1
- 
-[rhel-8-for-x86_64-baseos-rpms]
-name=rhel-8-for-x86_64-baseos-rpms
-baseurl=http://cdn.redhat.com/content/dist/rhel8/8/x86_64/baseos/os/
-enabled=0
-gpgcheck=1
-
-name=Extra Packages for Enterprise Linux $releasever - $basearch
-#baseurl=https://download.fedoraproject.org/pub/epel/$releasever/Everything/$basearch
-metalink=https://mirrors.fedoraproject.org/metalink?repo=epel-$releasever&arch=$basearch&infra=$infra&content=$contentdir
-failovermethod=priority
-enabled=1
-gpgcheck=1
-gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-$releasever
