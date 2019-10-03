@@ -61,21 +61,21 @@ WORKDIR ${HOME}
 EXPOSE 3000 3030
 
 # generator.tgz built from https://github.com/eclipse/che-theia/tree/master/generator
-COPY generator/eclipse-che-theia-generator.tgz ${HOME}/eclipse-che-theia-generator.tgz
+# DOWNSTREAM file must be in the root, not generator/ subfolder
+COPY eclipse-che-theia-generator.tgz ${HOME}/eclipse-che-theia-generator.tgz
 
 # 0. Enable this script to collect intalled node deps into a single folder for easier tarballing
-# COPY collect.installed.dependencies.sh /usr/local/bin/
+COPY collect.installed.dependencies.sh /usr/local/bin/
 
 # 1. extract files in the container to your local filesystem
 # CONTAINERNAME="quay.io/crw/crw-theia-dev:next" && rm -f root-local.tgz && ./build.sh
-# mkdir -p /tmp/root-local/ && \
-# docker run --rm -v /tmp/root-local/:/tmp/root-local/ ${CONTAINERNAME} /bin/bash -c "collect.installed.dependencies.sh"
+# mkdir -p /tmp/root-local/ && docker run --rm -v /tmp/root-local/:/tmp/root-local/ ${CONTAINERNAME} /bin/bash -c "collect.installed.dependencies.sh"
 # pushd /tmp/root-local >/dev/null && sudo tar czf /tmp/root-local.tgz ./* && popd >/dev/null && sudo mv -f /tmp/root-local.tgz . && sudo rm -fr /tmp/root-local/
 
 # 2. then add it to dist-git so it's part of this repo
 #    rhpkg new-sources root-local.tgz 
 
-# built in Brew, use tarball in lookaside cache; built locally, comment this out
+# 3. built in Brew, use tarball in lookaside cache; built locally, comment this out
 # COPY root-local.tgz /tmp/root-local.tgz
 
 # Configure npm and yarn to use home folder for global dependencies
@@ -88,9 +88,13 @@ RUN whereis npm node && node --version && npm --version && \
         # add eclipse che theia generator
         yarn global add yo @theia/generator-plugin@0.0.1-1562578105 file:${HOME}/eclipse-che-theia-generator.tgz; \
     else \
+        npm config set prefix "${HOME}/.npm-global" && \
+        echo "--global-folder \"${HOME}/.yarn-global\"" > ${HOME}/.yarnrc && \
         # offline install (Brew)
-        tar xf /tmp/root-local.tgz -C /; rm -fr /tmp/root-local.tgz;  \
+        tar xf /tmp/root-local.tgz -C /; rm -fr /tmp/root-local.tgz; \
     fi; \
+    echo -n "yarn " && yarn --version && \
+    echo -n "che:theia " && che:theia --version && \
     # Generate .passwd.template \
     cat /etc/passwd | \
     sed s#root:x.*#theia-dev:x:\${USER_ID}:\${GROUP_ID}::${HOME}:/bin/bash#g \
@@ -112,11 +116,6 @@ RUN whereis npm node && node --version && npm --version && \
     done && \
     echo "Installed npm Packages" && npm ls -g | sort | uniq && yarn global list && \
     echo "End Of Installed npm Packages"
-
-# TODO: collect all these freshly installed npm deps into a tarball for reuse in Brew
-#   /home/theia-dev/.yarn-global/node_modules/ 
-#   /usr/local/share/.cache/yarn/
-#   /opt/app-root/src/.npm-global/
 
 WORKDIR /projects
 
