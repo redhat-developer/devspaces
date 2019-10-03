@@ -7,7 +7,10 @@ for d in \
     /usr/local/share/.cache/yarn \
     /opt/app-root/src/.npm-global; do \
     if [[ -d ${d} ]]; then 
-        mkdir -p /tmp/root-local/${d}; 
-        rsync -aAXz ${d} /tmp/root-local/${d};
+        mkdir -p /tmp/root-local/${d%/*}/; # one path segment less than $d
+        rsync -aAXz ${d} /tmp/root-local/${d%/*}/;
+    else
+        echo "Error: did not find directory ${d} to archive!"
+        exit 1
     fi; 
 done
