@@ -128,7 +128,7 @@ FROM builder AS offline-builder
 # built in Brew, use tarball in lookaside cache; built locally, comment this out
 # COPY v3.tgz /tmp/v3.tgz
 
-# to get all the python deps pre-fetched so we can build in Brew:
+# to get all the cached vsix files pre-fetched so we can use them in Brew:
 # 1. extract files in the container to your local filesystem
 #    CONTAINERNAME="pluginregistryoffline" && docker build -t ${CONTAINERNAME} . --target=offline-builder --no-cache --squash --build-arg BOOTSTRAP=true
 #    mkdir -p /tmp/pr-res/ && docker run -it -v /tmp/pr-res/:/tmp/pr-res/ ${CONTAINERNAME} /bin/bash -c "cd /build/v3/ && cp -r ./* /tmp/pr-res/"
@@ -137,8 +137,7 @@ FROM builder AS offline-builder
 # 2. then add it to dist-git so it's part of this repo
 #    rhpkg new-sources root-local.tgz v3.tgz
 RUN if [[ ! -f /tmp/v3.tgz ]] || [[ ${BOOTSTRAP} == "true" ]]; then \
-      # To only cache files from /latest/ folders, use ./cache_artifacts.sh v3 --latest-only 
-      # and uncomment line above to remove files so they're not included in index.json -- RUN rm -fr $(find /build/v3 -name 'meta.yaml' | grep -v "/latest/" | grep -o ".*/")
+      # To only cache files from /latest/ folders, use --build-arg LATEST_ONLY=true 
       if [[ ${LATEST_ONLY} == "true" ]]; then \
         ./cache_artifacts.sh v3 --latest-only && chmod -R g+rwX /build; \
       else \
