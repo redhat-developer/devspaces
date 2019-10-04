@@ -68,7 +68,7 @@ COPY eclipse-che-theia-generator.tgz ${HOME}/eclipse-che-theia-generator.tgz
 COPY collect.installed.dependencies.sh /usr/local/bin/
 
 # 1. extract files in the container to your local filesystem
-# CONTAINERNAME="quay.io/crw/crw-theia-dev:next" && rm -f root-local.tgz && ./build.sh
+# CONTAINERNAME="quay.io/crw/crw-theia-dev:next" && rm -f root-local.tgz eclipse-che-theia-generator.tgz; ./build.sh
 # mkdir -p /tmp/root-local/ && docker run --rm -v /tmp/root-local/:/tmp/root-local/ ${CONTAINERNAME} /bin/bash -c "collect.installed.dependencies.sh"
 # pushd /tmp/root-local >/dev/null && sudo tar czf /tmp/root-local.tgz ./* && popd >/dev/null && sudo mv -f /tmp/root-local.tgz . && sudo rm -fr /tmp/root-local/
 
