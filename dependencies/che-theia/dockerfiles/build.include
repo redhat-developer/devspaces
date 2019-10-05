@@ -125,6 +125,7 @@ build() {
        if [ ${dockerfile} != "Dockerfile" ]; then
          TAG=${ORIGINAL_TAG}-$(echo ${dockerfile} | sed -e "s/^Dockerfile.//")
        fi
+       # support both foo.Dockerfile and Dockerfile.foo
        BUILD_IMAGE_TARGET=$(echo ${dockerfile} | sed -e "s/^Dockerfile\.//" | sed -e "s/\.Dockerfile//" | sed -e "s/^$/default/")
        IMAGE_NAME="$ORGANIZATION/$PREFIX-$NAME:$TAG"
        DOCKERFILE=${dockerfile}
@@ -135,6 +136,7 @@ build() {
     TAG=${ORIGINAL_TAG}
     IMAGE_NAME="$ORGANIZATION/$PREFIX-$NAME:$TAG"
   else
+    # support both foo.Dockerfile and Dockerfile.foo
     dockerfile=$(basename ${DOCKERFILE})
     BUILD_IMAGE_TARGET=$(echo ${dockerfile} | sed -e "s/^Dockerfile\.//" | sed -e "s/\.Dockerfile//" | sed -e "s/^$/default/")
     # else if specified, build only the one specified
@@ -152,10 +154,9 @@ build_image() {
   printf " * BRANCH = $BRANCH\n"
   printf " * GIT_REF = $GIT_REF\n"
   printf "${NC}\n"
-  set -x 
   # Replace macros in Dockerfiles
   # TODO why do we need to do this replacement TWICE?
-  cat ${DIR}/${DOCKERFILE} | sed s/\$\{BUILD_ORGANIZATION\}/${ORGANIZATION}/ | sed s/\$\{BUILD_PREFIX\}/${PREFIX}/ \
+  cat ${DIR}/${DOCKERFILE} | sed s@\$\{BUILD_ORGANIZATION\}@${ORGANIZATION}@ | sed s/\$\{BUILD_PREFIX\}/${PREFIX}/ \
   | sed s/\$\{BUILD_TAG\}/${TAG}/ | sed s/\$\{BUILD_PARENT_IMAGE\}/${PARENT_IMAGE}/ \
   | sed s/\$\{BUILD_IMAGE_TARGET\}/${BUILD_IMAGE_TARGET}/  \
   | sed s/\$\{GIT_BRANCH_NAME\}/${BRANCH}/ | sed s/\$\{GIT_REF\}/"${GIT_REF}"/ > ${DIR}/.Dockerfile
@@ -176,12 +177,13 @@ build_image() {
     fi
   done
   cp ${DIR}/.Dockerfile ${DIR}/.Dockerfile2
-  cat ${DIR}/.Dockerfile2 | sed s/\$\{BUILD_ORGANIZATION\}/${ORGANIZATION}/ | sed s/\$\{BUILD_PREFIX\}/${PREFIX}/ \
+  cat ${DIR}/.Dockerfile2 | sed s@\$\{BUILD_ORGANIZATION\}@${ORGANIZATION}@ | sed s/\$\{BUILD_PREFIX\}/${PREFIX}/ \
   | sed s/\$\{BUILD_TAG\}/${TAG}/ | sed s/\$\{BUILD_PARENT_IMAGE\}/${PARENT_IMAGE}/ \
   | sed s/\$\{BUILD_IMAGE_TARGET\}/${BUILD_IMAGE_TARGET}/  \
   | sed s/\$\{GIT_BRANCH_NAME\}/${BRANCH}/ | sed s/\$\{GIT_REF\}/"${GIT_REF}"/ > ${DIR}/.Dockerfile
   rm ${DIR}/.Dockerfile2
-  cd "${DIR}" && docker build -f ${DIR}/.Dockerfile -t ${IMAGE_NAME} ${BUILD_ARGS} . --squash --no-cache
+
+  cd "${DIR}" && docker build -f ${DIR}/.Dockerfile -t ${IMAGE_NAME} ${BUILD_ARGS} . --squash
   rm ${DIR}/.Dockerfile
   if [ $? -eq 0 ]; then
     printf "Build of ${BLUE}${IMAGE_NAME} ${GREEN}[OK]${NC}\n"
@@ -203,7 +205,6 @@ build_image() {
     printf "${RED}Failure when building docker image ${IMAGE_NAME}${NC}\n"
     exit 1
   fi
-  set +x
 }
 
 check_docker() {
