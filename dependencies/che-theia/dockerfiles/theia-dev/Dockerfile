@@ -82,7 +82,7 @@ COPY collect.installed.dependencies.sh /usr/local/bin/
 RUN whereis npm node && node --version && npm --version && \
     if [[ ! -f /tmp/root-local.tgz ]]; then \
         # online install
-        npm install -g yarn && \
+        npm install -g yarn@1.17.3 && \
         npm config set prefix "${HOME}/.npm-global" && \
         echo "--global-folder \"${HOME}/.yarn-global\"" > ${HOME}/.yarnrc && \
         # add eclipse che theia generator
