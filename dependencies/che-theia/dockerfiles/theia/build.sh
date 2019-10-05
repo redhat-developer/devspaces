@@ -39,6 +39,7 @@ fi
 
 # prefetch 3 offline artifacts
 # TODO: also need to collect npm/yarn installed node_modules but can't do that until the container is built
+# TODO: externalize version/repo/branch params so they're not hardcoded here
 if [[ ${OFFLINE} == "true" ]]; then
 	THEIA_VERSION=master
 	THEIA_GITHUB_REPO=eclipse-theia/theia
@@ -61,11 +62,7 @@ if [[ ${OFFLINE} == "true" ]]; then
 	curl -sSL https://github.com/che-incubator/vscode-git/releases/download/1.30.1/vscode-git-1.3.0.1.vsix -o vscode-git-1.3.0.1.vsix
 fi
 
-if [[ ${OFFLINE} == "true" ]]; then
-  build rhel.Dockerfile
-else
-  build Dockerfile
-fi
+build
 
 if [ ! skip_tests ] && [[ -x "${base_dir}"/e2e/build.sh ]]; then
   bash "${base_dir}"/e2e/build.sh "$PREFIX-$NAME" "$@"
