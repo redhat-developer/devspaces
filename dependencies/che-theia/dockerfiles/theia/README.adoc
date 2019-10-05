@@ -1,0 +1,26 @@
+## Build che-theia theia image
+
+To run this build locally using RHEL dependencies:
+
+```
+./build.sh --dockerfile:rhel.Dockerfile
+```
+
+To run this build in order to collect dependencies needed to run in Brew:
+
+```
+./build.sh --offline --dockerfile:rhel.Dockerfile
+```
+
+Note that this build depends on the creation and publication of the theia-dev image, which is currently being published here:
+
+```
+registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-theia-dev-rhel8:2.0
+```
+
+If building `theia-dev` locally, you can override that value using:
+
+```
+FROM ${BUILD_ORGANIZATION}/${BUILD_PREFIX}-theia-dev:${BUILD_TAG}
+```
+
