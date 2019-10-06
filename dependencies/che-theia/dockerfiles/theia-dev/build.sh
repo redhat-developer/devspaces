@@ -15,7 +15,7 @@ LOCAL_ASSEMBLY_DIR="${base_dir}"/generator
 CHE_THEIA_GENERATOR_PACKAGE_NAME=eclipse-che-theia-generator.tgz
 CHE_THEIA_GENERATOR_PACKAGE="${LOCAL_ASSEMBLY_DIR}/${CHE_THEIA_GENERATOR_PACKAGE_NAME}"
 
-if [[ $SKIP_GENERATOR_BUILD == "false" ]] || [[ ! -f ${CHE_THEIA_GENERATOR_PACKAGE} ]]; then
+if [[ ! -f ${CHE_THEIA_GENERATOR_PACKAGE} ]]; then
 
   if [ -d "${LOCAL_ASSEMBLY_DIR}" ]; then rm -fr "${LOCAL_ASSEMBLY_DIR}"/*; fi
   mkdir -p ${LOCAL_ASSEMBLY_DIR}
