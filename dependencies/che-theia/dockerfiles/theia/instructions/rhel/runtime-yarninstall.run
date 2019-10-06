@@ -1,3 +1,11 @@
+    # To run this build in order to collect dependencies needed to run in Brew:
+
+    # CONTAINERNAME="quay.io/crw/theia-rhel8:2.0"; rm -f root-local.tgz
+    # ./build.sh --offline --dockerfile:rhel.Dockerfile --image-name:"${CONTAINERNAME}"
+    # mkdir -p /tmp/root-local/ && sudo chmod 777 /tmp/root-local && sudo chown -R 1002:1002 /tmp/root-local
+    # docker run -it --entrypoint /bin/bash -v /tmp/root-local/:/tmp/root-local/ ${CONTAINERNAME} -c "collect.installed.dependencies.sh"
+    # pushd /tmp/root-local >/dev/null && sudo tar -pczf /tmp/root-local.tgz ./* && popd >/dev/null && sudo mv -f /tmp/root-local.tgz . && sudo rm -fr /tmp/root-local/
+
     # Add yeoman, theia plugin generator and typescript (to have tsc/typescript working)
     if [[ ! -f /tmp/root-local.tgz ]]; then \
         # online install
