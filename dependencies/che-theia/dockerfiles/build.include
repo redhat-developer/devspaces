@@ -39,8 +39,8 @@ init() {
   BOLD='\033[1m'
   UNDERLINE='\033[4m'
 
-  ORGANIZATION="quay.io/crw"
-  PREFIX="crw"
+  ORGANIZATION="docker.io/eclipse"
+  PREFIX="che"
   TAG="next"
   SKIP_TESTS=false
   NAME="che"
@@ -97,6 +97,9 @@ init() {
       --offline)
         OFFLINE=true
         shift ;;
+      --image-name:*)
+        IMAGE_NAME="${1#*:}"
+        shift ;;
       --*)
         printf "${RED}Unknown parameter: $1${NC}\n"; exit 2 ;;
       *)
@@ -104,7 +107,7 @@ init() {
     esac
   done
 
-  IMAGE_NAME="$ORGANIZATION/$PREFIX-$NAME:$TAG"
+  IMAGE_NAME="${IMAGE_NAME:-$ORGANIZATION/$PREFIX-$NAME:$TAG}"
 }
 
 build() {
