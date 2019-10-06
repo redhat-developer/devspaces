@@ -19,7 +19,8 @@ fi
 QUIET=0 	# less output - omit container tag URLs
 VERBOSE=0	# more output
 WORKDIR=`pwd`
-BRANCH=crw-1.2-rhel-8 # not master
+BRANCH=crw-2.0-rhel-8 # not master
+DOCKERFILE="Dockerfile" # or "rhel.Dockerfile"
 maxdepth=2
 docommit=1 # by default DO commit the change and push it
 buildCommand="echo" # By default, no build will be triggered when a change occurs; use -c for a container-build (or -s for scratch).
@@ -27,6 +28,7 @@ while [[ "$#" -gt 0 ]]; do
   case $1 in
     '-w') WORKDIR="$2"; shift 1;;
     '-b') BRANCH="$2"; shift 1;;
+    '-f') DOCKERFILE="$2"; shift 1;;
     '-maxdepth') maxdepth="$2"; shift 1;;
     '-c') buildCommand="rhpkg container-build"; shift 0;; # NOTE: will trigger a new build for each commit, rather than for each change set (eg., Dockefiles with more than one FROM)
     '-s') buildCommand="rhpkg container-build --scratch"; shift 0;;
