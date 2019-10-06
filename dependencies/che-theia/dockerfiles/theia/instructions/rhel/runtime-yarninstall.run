@@ -18,7 +18,7 @@ COPY collect.installed.dependencies.sh /usr/local/bin/
 # Add yeoman, theia plugin generator and typescript (to have tsc/typescript working)
 RUN if [[ ! -f /tmp/root-local.tgz ]]; then \
         # online install
-        npm i -g yarn@1.17.3 node-gyp && node-gyp configure && \
+        npm i -g yarn@1.17.3 && \
         yarn global add yo @theia/generator-plugin@0.0.1-1562578105 typescript@2.9.2; \
     else \
         # offline install (Brew)
