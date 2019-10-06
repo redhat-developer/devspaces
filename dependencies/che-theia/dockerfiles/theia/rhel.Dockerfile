@@ -39,11 +39,8 @@ COPY --from=builder /home/theia-dev/theia-source-code/production/plugins /defaul
 
 USER root
 ${INCLUDE:instructions/${BUILD_IMAGE_TARGET}/runtime-install-dependencies.run}
-
-RUN \
-    ${INCLUDE:instructions/${BUILD_IMAGE_TARGET}/runtime-adduser.run}
-    ${INCLUDE:instructions/${BUILD_IMAGE_TARGET}/runtime-yarninstall.run}
-
+${INCLUDE:instructions/${BUILD_IMAGE_TARGET}/runtime-adduser.run}
+${INCLUDE:instructions/${BUILD_IMAGE_TARGET}/runtime-yarninstall.run}
 ${INCLUDE:instructions/${BUILD_IMAGE_TARGET}/runtime-getplugins.run}
 
 ${INCLUDE:instructions/runtime-configure.run}

@@ -12,7 +12,7 @@ To run this build in order to collect dependencies needed to run in Brew:
 
 ```
 # prepare
-sudo rm -f root-local.tgz /tmp/root-local/
+sudo rm -fr root-local.tgz /tmp/root-local/
 
 # run build
 CONTAINERNAME="quay.io/crw/theia-rhel8:2.0"
