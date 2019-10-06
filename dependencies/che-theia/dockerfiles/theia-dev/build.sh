@@ -7,14 +7,14 @@
 #
 # SPDX-License-Identifier: EPL-2.0
 
+base_dir=$(cd "$(dirname "$0")"; pwd)
+. "${base_dir}"/../build.include
+init --name:theia-dev "$@"
+
 # TODO make these cmdline options
 CHE_THEIA_GIT_BRANCH_NAME=7.2.0
 NODE_VER="${node --version}" # eg., v10.14.1
 # TODO make these cmdline options
-
-base_dir=$(cd "$(dirname "$0")"; pwd)
-. "${base_dir}"/../build.include
-init --name:theia-dev "$@"
 
 LOCAL_ASSEMBLY_DIR="${base_dir}"/generator
 CHE_THEIA_GENERATOR_PACKAGE_NAME=eclipse-che-theia-generator.tgz
