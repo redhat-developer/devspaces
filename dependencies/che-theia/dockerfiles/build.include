@@ -187,7 +187,11 @@ build_image() {
   rm ${DIR}/.Dockerfile2
 
   cd "${DIR}" && docker build -f ${DIR}/.Dockerfile -t ${IMAGE_NAME} ${BUILD_ARGS} . --squash
-  rm ${DIR}/.Dockerfile
+  if [[ ${OFFLINE} == "false" ]]; then 
+    rm ${DIR}/.Dockerfile
+  else
+    echo "Dockerfile used in build: ${DIR}/.Dockerfile"
+  fi
   if [ $? -eq 0 ]; then
     printf "Build of ${BLUE}${IMAGE_NAME} ${GREEN}[OK]${NC}\n"
     if [ ! -z "${IMAGE_ALIASES}" ]; then
