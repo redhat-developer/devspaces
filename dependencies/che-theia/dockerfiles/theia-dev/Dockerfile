@@ -9,7 +9,7 @@
 #   Red Hat, Inc. - initial API and implementation
 
 # https://access.redhat.com/containers/?tab=tags#/registry.access.redhat.com/ubi8/nodejs-10
-FROM registry.access.redhat.com/ubi8/nodejs-10:1-41
+FROM registry.access.redhat.com/ubi8/nodejs-10:1-51
 ENV SUMMARY="Red Hat CodeReady Workspaces - Theia-Dev container" \
     DESCRIPTION="Red Hat CodeReady Workspaces - Theia-Dev container" \
     PRODNAME="codeready-workspaces" \
