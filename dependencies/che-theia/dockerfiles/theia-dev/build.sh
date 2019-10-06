@@ -7,6 +7,11 @@
 #
 # SPDX-License-Identifier: EPL-2.0
 
+# TODO make these cmdline options
+CHE_THEIA_GIT_BRANCH_NAME=7.2.0
+NODE_VER="${node --version}" # eg., v10.14.1
+# TODO make these cmdline options
+
 base_dir=$(cd "$(dirname "$0")"; pwd)
 . "${base_dir}"/../build.include
 init --name:theia-dev "$@"
@@ -14,14 +19,12 @@ init --name:theia-dev "$@"
 LOCAL_ASSEMBLY_DIR="${base_dir}"/generator
 CHE_THEIA_GENERATOR_PACKAGE_NAME=eclipse-che-theia-generator.tgz
 CHE_THEIA_GENERATOR_PACKAGE="${LOCAL_ASSEMBLY_DIR}/${CHE_THEIA_GENERATOR_PACKAGE_NAME}"
+CHE_THEIA_GITHUB_REPO=eclipse/che-theia
 
 if [[ ! -f ${CHE_THEIA_GENERATOR_PACKAGE} ]]; then
 
   if [ -d "${LOCAL_ASSEMBLY_DIR}" ]; then rm -fr "${LOCAL_ASSEMBLY_DIR}"/*; fi
   mkdir -p ${LOCAL_ASSEMBLY_DIR}
-
-  CHE_THEIA_GIT_BRANCH_NAME=7.2.0
-  CHE_THEIA_GITHUB_REPO=eclipse/che-theia
 
   if [[ -d theia-source-code/che-theia ]]; then rm -fr theia-source-code/che-theia; fi; mkdir -p theia-source-code
   echo "Check out https://github.com/${CHE_THEIA_GITHUB_REPO} from branch ${CHE_THEIA_GIT_BRANCH_NAME} to ./theia-source-code/che-theia ..."
@@ -48,8 +51,8 @@ fi
 # move generator/eclipse-che-theia-generator.tgz into the root dir so it's in the place that Brew expects it
 mv "${CHE_THEIA_GENERATOR_PACKAGE}" "${base_dir}"
 
-echo "Build image theia-dev ..."
-build Dockerfile
+echo "Build image theia-dev with node ${NODE_VER} ..."
+build --build-arg:NODE_VER="${NODE_VER}"
 if [[ $SKIP_TESTS == "false" ]] && [[ -x "${base_dir}"/e2e/build.sh ]]; then
   bash "${base_dir}"/e2e/build.sh "$@"
 else
