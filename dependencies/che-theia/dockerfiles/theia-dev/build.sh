@@ -7,13 +7,16 @@
 #
 # SPDX-License-Identifier: EPL-2.0
 
+# install supported yarn and node versions
+npm i -g node@10.14.1 yarn@1.17.3
+
 base_dir=$(cd "$(dirname "$0")"; pwd)
 . "${base_dir}"/../build.include
 init --name:theia-dev "$@"
 
 # TODO make these cmdline options
 CHE_THEIA_GIT_BRANCH_NAME=7.2.0
-NODE_VER="${node --version}" # eg., v10.14.1
+NODE_VER="$(node --version)" # eg., v10.14.1
 # TODO make these cmdline options
 
 LOCAL_ASSEMBLY_DIR="${base_dir}"/generator
