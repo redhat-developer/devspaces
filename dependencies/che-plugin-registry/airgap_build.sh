@@ -1,8 +1,10 @@
 #!/bin/bash -ex
 #
 # Builds this container, including locally fetched plugins and replaces references to docker/quay/RHCC with specified container registry
+# 
+# see also https://github.com/eclipse/che/issues/14693
+# 
 
-sed -i Dockerfile -e "s%#.*RUN ./fetch_resources.sh%RUN ./fetch_resources.sh%"
 if [[ $1 == "nightly" ]]; then
 	nightly="nightly"
 	now=`date +%Y%m%d-%H%M`
@@ -20,11 +22,8 @@ fi
 
 now=`date +%Y%m%d-%H%M`
 docker build . -t quay.io/nickboldt/airgap-che-plugin-registry:${nightly} --no-cache --squash
-
-echo; echo "Size of binaries and sources on disk:"
-du -sch resources/ sources/; echo
-
 docker tag quay.io/nickboldt/airgap-che-plugin-registry:{${nightly},${now}}
+
 if [[ $2 == "--push" ]]; then
 	for d in ${nightly} ${now}; do
 		docker push quay.io/nickboldt/airgap-che-plugin-registry:${d} &

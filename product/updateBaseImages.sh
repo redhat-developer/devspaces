@@ -19,7 +19,8 @@ fi
 QUIET=0 	# less output - omit container tag URLs
 VERBOSE=0	# more output
 WORKDIR=`pwd`
-BRANCH=crw-1.2-rhel-8 # not master
+BRANCH=crw-2.0-rhel-8 # not master
+DOCKERFILE="Dockerfile" # or "rhel.Dockerfile"
 maxdepth=2
 docommit=1 # by default DO commit the change and push it
 buildCommand="echo" # By default, no build will be triggered when a change occurs; use -c for a container-build (or -s for scratch).
@@ -27,6 +28,7 @@ while [[ "$#" -gt 0 ]]; do
   case $1 in
     '-w') WORKDIR="$2"; shift 1;;
     '-b') BRANCH="$2"; shift 1;;
+    '-f') DOCKERFILE="$2"; shift 1;;
     '-maxdepth') maxdepth="$2"; shift 1;;
     '-c') buildCommand="rhpkg container-build"; shift 0;; # NOTE: will trigger a new build for each commit, rather than for each change set (eg., Dockefiles with more than one FROM)
     '-s') buildCommand="rhpkg container-build --scratch"; shift 0;;
@@ -87,13 +89,13 @@ testvercomp () {
 }
 
 pushedIn=0
-for d in $(find ${WORKDIR} -maxdepth ${maxdepth} -name Dockerfile | sort); do
+for d in $(find ${WORKDIR} -maxdepth ${maxdepth} -name ${DOCKERFILE} | sort); do
 	if [[ -f ${d} ]]; then
 		echo ""
-		echo "# Checking ${d%/Dockerfile} ..."
+		echo "# Checking ${d%/${DOCKERFILE}} ..."
 		# pull latest commits
-		if [[ -d ${d%%/Dockerfile} ]]; then pushd ${d%%/Dockerfile} >/dev/null; pushedIn=1; fi
-		if [[ "${d%/Dockerfile}" == *"-rhel8" ]]; then
+		if [[ -d ${d%%/${DOCKERFILE}} ]]; then pushd ${d%%/${DOCKERFILE}} >/dev/null; pushedIn=1; fi
+		if [[ "${d%/${DOCKERFILE}}" == *"-rhel8" ]]; then
 			BRANCHUSED=${BRANCH/rhel-7/rhel-8}
 		else
 			BRANCHUSED=${BRANCH}
@@ -140,14 +142,14 @@ for d in $(find ${WORKDIR} -maxdepth ${maxdepth} -name Dockerfile | sort); do
 					# TODO: try using testvercomp against the full tag versions w/ suffixes, eg., 8.16.0-0 ">" 8.15.1-1.1554788812
 					if [[ "${LATE_TAGver}" != "${CURR_TAGver}" ]] || [[ ${LATE_TAGrevbase} -gt ${CURR_TAGrevbase} ]] || [[ ${LATE_TAGrevsuf} -gt ${CURR_TAGrevsuf} ]]; then
 						testvercomp "${LATE_TAGver}" ">" "${CURR_TAGver}"
-						if [[ "${testvercomp_return}" == "true" ]] || [[ ${LATE_TAGrevsuf} -ge ${CURR_TAGrevsuf} ]] || [[ ${LATE_TAGrevbase} -gt ${CURR_TAGrevbase} ]]; then # fix the Dockerfile
+						if [[ "${testvercomp_return}" == "true" ]] || [[ ${LATE_TAGrevsuf} -ge ${CURR_TAGrevsuf} ]] || [[ ${LATE_TAGrevbase} -gt ${CURR_TAGrevbase} ]]; then # fix the ${DOCKERFILE}
 							echo "++ $d "
 							sed -i -e "s#${URL}#${FROMPREFIX}:${LATESTTAG}#g" $d
 
 							# commit change and push it
-							if [[ -d ${d%%/Dockerfile} ]]; then pushd ${d%%/Dockerfile} >/dev/null; pushedIn=1; fi
+							if [[ -d ${d%%/${DOCKERFILE}} ]]; then pushd ${d%%/${DOCKERFILE}} >/dev/null; pushedIn=1; fi
 							if [[ ${docommit} -eq 1 ]]; then 
-								git commit -s -m "[base] Update from ${URL} to ${FROMPREFIX}:${LATESTTAG}" Dockerfile && git push origin ${BRANCHUSED}
+								git commit -s -m "[base] Update from ${URL} to ${FROMPREFIX}:${LATESTTAG}" ${DOCKERFILE} && git push origin ${BRANCHUSED}
 							fi
 							if [[ ${buildCommand} != "echo" ]] || [[ $VERBOSE -eq 1 ]]; then echo "# ${buildCommand}"; fi
 							${buildCommand} &
