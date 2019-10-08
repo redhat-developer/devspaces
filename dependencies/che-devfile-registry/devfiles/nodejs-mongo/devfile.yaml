@@ -1,0 +1,70 @@
+---
+apiVersion: 1.0.0
+metadata:
+  generateName: nodejs-mongo-
+projects:
+  - name: nodejs-mongodb-sample
+    source:
+      type: git
+      location: "https://github.com/jpinkney/nodejs-mongodb-sample"
+components:
+  - type: chePlugin
+    id: che-incubator/typescript/latest
+    memoryLimit: 512Mi
+  - type: dockerimage
+    alias: nodejs
+    image: registry.redhat.io/codeready-workspaces/stacks-node-rhel8
+    env:
+      # The values below are used to set up the environment for running the application
+      - name: SECRET
+        value: 220fd770-c028-480d-8f95-f84353c7d55a
+      - name: NODE_ENV
+        value: production
+    memoryLimit: 512Mi
+    endpoints:
+      - name: "nodejs"
+        port: 8080
+    mountSources: true
+  - type: dockerimage
+    alias: mongo
+    image: registry.redhat.io/rhscl/mongodb-34-rhel7
+    memoryLimit: 512Mi
+    env:
+      - name: MONGODB_USER
+        value: user
+      - name: MONGODB_PASSWORD
+        value: password
+      - name: MONGODB_DATABASE
+        value: guestbook
+      - name: MONGODB_ADMIN_PASSWORD
+        value: password
+    volumes:
+      - name: mongo-storage
+        containerPath: /var/lib/mongodb/data
+    endpoints:
+      - name: mongodb-34-rhel7
+        port: 27017
+        attributes:
+          discoverable: "true"
+          public: "false"
+commands:
+  - name: run the application
+    actions:
+      - type: exec
+        component: nodejs
+        command: npm install && node --inspect=9229 app.js
+        workdir: ${CHE_PROJECTS_ROOT}/nodejs-mongodb-sample
+  - name: Debug remote node application
+    actions:
+      - type: vscode-launch
+        referenceContent: |
+          {
+          "version": "0.2.0",
+          "configurations": [
+            {
+              "type": "node",
+              "name": "Debug (Attach) - Remote",
+              "request": "attach",
+              "port": 9229
+            }]
+          }
