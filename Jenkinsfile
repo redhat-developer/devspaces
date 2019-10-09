@@ -76,32 +76,6 @@ timeout(120) {
 	}
 }
 
-// // no longer require https://github.com/eclipse/che/pull/14592
-// def LIB_path = "che-lib"
-// def VER_LIB = "VER_LIB"
-// def SHA_LIB = "SHA_LIB"
-// timeout(120) {
-// 	node("${node}"){ stage "Build ${LIB_path}"
-// 		cleanWs()
-// 		checkout([$class: 'GitSCM', 
-// 			branches: [[name: "${branchToBuildLib}"]], 
-// 			doGenerateSubmoduleConfigurations: false, 
-// 			poll: true,
-// 			extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: "${LIB_path}"]], 
-// 			submoduleCfg: [], 
-// 			userRemoteConfigs: [[url: "https://github.com/eclipse/${LIB_path}.git"]]])
-// 		unstash 'stashParent'
-// 		installNPM()
-// 		buildMaven()
-// 		sh "mvn clean install ${MVN_FLAGS} -f ${LIB_path}/pom.xml ${MVN_EXTRA_FLAGS}"
-// 		stash name: 'stashLib', includes: findFiles(glob: '.repository/**').join(", ")
-
-// 		sh "perl -0777 -p -i -e 's|(\\ +<parent>.*?<\\/parent>)| ${1} =~ /<version>/?\"\":${1}|gse' ${LIB_path}/pom.xml"
-// 		VER_LIB = sh(returnStdout:true,script:"egrep \"<version>\" ${LIB_path}/pom.xml|head -1|sed -e \"s#.*<version>\\(.\\+\\)</version>#\\1#\"").trim()
-// 		SHA_LIB = sh(returnStdout:true,script:"cd ${LIB_path}/ && git rev-parse --short=4 HEAD").trim()
-// 	}
-// }
-
 def LSJ_path = "che-ls-jdt"
 def VER_LSJ = "VER_LSJ"
 def SHA_LSJ = "SHA_LSJ"
