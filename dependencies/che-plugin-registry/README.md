@@ -114,7 +114,7 @@ spec:                  # spec (used to be che-plugin.yaml)
         - /bin/sh
       args:              # optional; list arguments for root process command inside container
         - -c
-          ./entrypoint.sh
+        - ./entrypoint.sh
       volumes:           # volumes required by plugin
         - mountPath:
           name:
@@ -140,7 +140,7 @@ spec:                  # spec (used to be che-plugin.yaml)
         - /bin/sh
       args:              # optional; list arguments for root process command inside container
         - -c
-          ./entrypoint.sh
+        - ./entrypoint.sh
       volumes:           # volumes required by plugin
         - mountPath:
           name:
