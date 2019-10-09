@@ -1,0 +1,35 @@
+apiVersion: v2
+publisher: cdr
+name: code-server
+version: latest
+type: Che Editor
+displayName: code-server
+title: Visual Studio Code - Web (code-server)
+description: A open source distribution of Visual Studio Code as a cloud IDE
+icon: https://raw.githubusercontent.com/sr229/discord-open-source/master/logos/code-server.svg 
+category: Editor
+repository: https://github.com/cdr/code-server
+firstPublicationDate: "2019-09-08"
+spec:
+  endpoints:
+   -  name: "code-server"
+      public: true
+      targetPort: 9000
+      attributes:
+        protocol: http
+        type: ide
+  containers:
+   - name: code-server
+     image: "docker.io/chinodesuuu/coder:che-v2"
+     mountSources: true
+     ports:
+         - exposedPort: 9000
+     memoryLimit: "1024M" 
+     volumes:
+        - mountPath: '/projects'
+          name: 'projects'
+          ephemeral: true
+
+        - mountPath: '/home/coder/.local/share/code-server'
+          name: 'user-data'
+
