@@ -28,3 +28,21 @@ commands:
         component: python
         command: "python hello-world.py"
         workdir: ${CHE_PROJECTS_ROOT}/python-hello-world
+  -
+    name: Debug current file
+    actions:
+    - type: vscode-launch
+      referenceContent: |
+        {
+          "version": "0.2.0",
+          "configurations": [
+            {
+              "name": "Python: Current File",
+              "type": "python",
+              "request": "launch",
+              "program": "${file}",
+              "console": "internalConsole"
+            }
+          ]
+        }
+
