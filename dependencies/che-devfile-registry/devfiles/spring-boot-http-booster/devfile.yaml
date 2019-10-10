@@ -10,7 +10,7 @@ projects:
 attributes:
   persistVolumes: 'false'
 components:
-  - id: redhat/java/latest
+  - id: redhat/jav8/latest
     type: chePlugin
   - id: redhat/dependency-analytics/latest
     type: chePlugin
