@@ -1,0 +1,83 @@
+#
+# Copyright (c) 2018-2019 Red Hat, Inc.
+# This program and the accompanying materials are made
+# available under the terms of the Eclipse Public License 2.0
+# which is available at https://www.eclipse.org/legal/epl-2.0/
+#
+# SPDX-License-Identifier: EPL-2.0
+#
+# Contributors:
+#   Red Hat, Inc. - initial API and implementation
+#
+
+# https://access.redhat.com/containers/?tab=tags#/registry.access.redhat.com/ubi8-minimal
+# FROM registry.access.redhat.com/ubi8-minimal:8.0
+
+ARG FROM_IMAGE=registry.access.redhat.com/ubi8-minimal:8.0
+FROM ${FROM_IMAGE}
+
+ENV SUMMARY="Red Hat CodeReady Workspaces java8-maven container" \
+    DESCRIPTION="Red Hat CodeReady Workspaces java8-maven container" \
+    PRODNAME="codeready-workspaces" \
+    COMPNAME="java8-maven-rhel8" \
+    HOME=/home/user
+
+LABEL summary="$SUMMARY" \
+      description="$DESCRIPTION" \
+      io.k8s.description="$DESCRIPTION" \
+      io.k8s.display-name="$DESCRIPTION" \
+      io.openshift.tags="$PRODNAME,$COMPNAME" \
+      com.redhat.component="$PRODNAME-$COMPNAME-container" \
+      name="$PRODNAME/$COMPNAME" \
+      version="2.0" \
+      license="EPLv2" \
+      maintainer="Nick Boldt <nboldt@redhat.com>" \
+      io.openshift.expose-services="" \
+      usage=""
+
+USER root
+
+################# 
+# PHASE ONE: create ubi8-minimal image with JDK 8 or 11
+################# 
+
+# 1.8.0 or 11
+ARG INSTALL_VERSION=11
+RUN microdnf -y install java-${INSTALL_VERSION}-openjdk java-${INSTALL_VERSION}-openjdk-devel java-${INSTALL_VERSION}-openjdk-headless && \
+    microdnf remove -y yum && microdnf -y clean all
+
+################# 
+# PHASE TWO: create ubi8-minimal image with maven, installed from tarball (no rpm for 3.6 avail yet)
+################# 
+
+# copied from https://github.com/carlossg/docker-maven/blob/master/jdk-11/Dockerfile
+ARG MAVEN_VERSION=3.6.2
+ARG USER_HOME_DIR="/root"
+ARG SHA=d941423d115cd021514bfd06c453658b1b3e39e6240969caf4315ab7119a77299713f14b620fb2571a264f8dff2473d8af3cb47b05acf0036fc2553199a5c1ee
+ARG BASE_URL=https://apache.osuosl.org/maven/maven-3/${MAVEN_VERSION}/binaries
+
+RUN mkdir -p /usr/share/maven /usr/share/maven/ref \
+  && curl -fsSL -o /tmp/apache-maven.tar.gz ${BASE_URL}/apache-maven-${MAVEN_VERSION}-bin.tar.gz \
+  && echo "${SHA}  /tmp/apache-maven.tar.gz" | sha512sum -c - \
+  && tar -xzf /tmp/apache-maven.tar.gz -C /usr/share/maven --strip-components=1 \
+  && rm -f /tmp/apache-maven.tar.gz \
+  && ln -s /usr/share/maven/bin/mvn /usr/bin/mvn
+
+ENV MAVEN_HOME /usr/share/maven
+ENV MAVEN_CONFIG "$USER_HOME_DIR/.m2"
+
+COPY mvn-entrypoint.sh /usr/local/bin/mvn-entrypoint.sh
+COPY settings-docker.xml /usr/share/maven/ref/
+
+# Set permissions on /etc/passwd and /home to allow arbitrary users to write
+RUN mkdir -p /home/user
+RUN chgrp -R 0 /home
+RUN chmod -R g=u /etc/passwd /home
+COPY [--chown=0:0] entrypoint.sh /
+RUN chmod +x /entrypoint.sh
+
+USER 10001
+WORKDIR /projects
+
+ENTRYPOINT ["/usr/local/bin/mvn-entrypoint.sh", "/entrypoint.sh" ]
+CMD ["tail", "-f", "/dev/null"]
