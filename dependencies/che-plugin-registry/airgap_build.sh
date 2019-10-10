@@ -10,7 +10,7 @@ if [[ $1 == "nightly" ]]; then
 	now=`date +%Y%m%d-%H%M`
 elif [[ $1 ]]; then
 	cat Dockerfile   | sed -e "s%#.*RUN ./list_containers.sh%RUN ./list_containers.sh%" > Dockerfile.2
-	cat Dockerfile.2 | sed -e "s%myquay.mycorp.com%${1}%" > Dockerfile
+	cat Dockerfile.2 | sed -e "s%myquay.mycorp.com%${1}%" > Dockerfile; rm -f Dockerfile.2
 	nightly="${1%%.*}" # first section of the URL replacement
 	now="${nightly}-`date +%Y%m%d-%H%M`" # append timestamp
 else
