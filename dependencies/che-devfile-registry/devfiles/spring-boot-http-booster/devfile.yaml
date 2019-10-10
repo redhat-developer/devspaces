@@ -22,7 +22,7 @@ components:
     type: dockerimage
     volumes:
       - name: m2
-        containerPath: /home/user/.m2
+        containerPath: /home/jboss/.m2
     alias: maven
     image: registry.redhat.io/codeready-workspaces/stacks-java-rhel8
     env:
@@ -30,7 +30,7 @@ components:
           -XX:MaxRAMPercentage=50.0 -XX:+UseParallelGC -XX:MinHeapFreeRatio=10
           -XX:MaxHeapFreeRatio=20 -XX:GCTimeRatio=4
           -XX:AdaptiveSizePolicyWeight=90 -Dsun.zip.disableMemoryMapping=true
-          -Xms20m -Djava.security.egd=file:/dev/./urandom -Duser.home=/home/user
+          -Xms20m -Djava.security.egd=file:/dev/./urandom -Duser.home=/home/jboss
         name: JAVA_OPTS
       - value: $(JAVA_OPTS)
         name: MAVEN_OPTS
