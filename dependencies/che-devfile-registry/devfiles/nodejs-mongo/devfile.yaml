@@ -6,7 +6,7 @@ projects:
   - name: nodejs-mongodb-sample
     source:
       type: git
-      location: "https://github.com/jpinkney/nodejs-mongodb-sample"
+      location: "https://github.com/crw-samples/nodejs-mongodb-sample"
 components:
   - type: chePlugin
     id: che-incubator/typescript/latest
