@@ -1,0 +1,66 @@
+---
+apiVersion: 1.0.0
+metadata:
+  generateName: nodejs-
+projects:
+  - name: nodejs-web-app
+    source:
+      type: git
+      location: "https://github.com/che-samples/web-nodejs-sample.git"
+components:
+  - type: chePlugin
+    id: che-incubator/typescript/latest
+    memoryLimit: 512Mi
+  - type: dockerimage
+    alias: nodejs
+    image: quay.io/crw/stacks-node-rhel8:2.0-3
+    memoryLimit: 512Mi
+    endpoints:
+      - name: "nodejs"
+        port: 3000
+    mountSources: true
+commands:
+  - name: download dependencies
+    actions:
+      - type: exec
+        component: nodejs
+        command: npm install
+        workdir: ${CHE_PROJECTS_ROOT}/nodejs-web-app/app
+  - name: run the web app
+    actions:
+      - type: exec
+        component: nodejs
+        command: nodemon app.js
+        workdir: ${CHE_PROJECTS_ROOT}/nodejs-web-app/app
+  - name: run the web app (debugging enabled)
+    actions:
+      - type: exec
+        component: nodejs
+        command: nodemon --inspect app.js
+        workdir: ${CHE_PROJECTS_ROOT}/nodejs-web-app/app
+  - name: stop the web app
+    actions:
+      - type: exec
+        component: nodejs
+        command: >-
+          node_server_pids=$(pgrep -fx '.*nodemon (--inspect )?app.js' | tr "\\n" " ") &&
+          echo "Stopping node server with PIDs: ${node_server_pids}" && 
+          kill -15 ${node_server_pids} &>/dev/null && echo 'Done.'
+  - name: Attach remote debugger
+    actions:
+      - type: vscode-launch
+        referenceContent: |
+          {
+            "version": "0.2.0",
+            "configurations": [
+              {
+                "type": "node",
+                "request": "attach",
+                "name": "Attach to Remote",
+                "address": "localhost",
+                "port": 9229,
+                "localRoot": "${workspaceFolder}",
+                "remoteRoot": "${workspaceFolder}"
+              }
+            ]
+          }
