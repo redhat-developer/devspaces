@@ -39,7 +39,7 @@ ENV LATEST_ONLY=${LATEST_ONLY}
 
 # NOTE: uncomment for local build. Must also set full registry path in FROM to registry.redhat.io or registry.access.redhat.com
 # enable rhel 7 or 8 content sets (from Brew) to resolve jq as rpm
-COPY content_sets_epel7.repo /etc/yum.repos.d/
+COPY ./build/dockerfiles/content_sets_epel7.repo /etc/yum.repos.d/
 
 RUN microdnf install -y findutils bash wget yum gzip tar jq python3-six python3-pip && microdnf -y clean all && \
     # install yq (depends on jq and pyyaml - if jq and pyyaml not already installed, this will try to compile it)
@@ -70,18 +70,14 @@ RUN microdnf install -y findutils bash wget yum gzip tar jq python3-six python3-
 # PHASE TWO: configure registry image
 #################
 
-COPY ./scripts/*.sh ./scripts/meta.yaml.schema /build/
-COPY ./v3 /build/v3
+COPY ./build/scripts/*.sh ./build/scripts/meta.yaml.schema /build/
+COPY /v3 /build/v3
 WORKDIR /build/
 
-# if only including the /latest/ plugins, apply this line to remove them from builder 
+# if only including the /latest/ plugins, apply this line to remove them from builder
 RUN if [[ ${LATEST_ONLY} == "true" ]]; then \
       rm -fr $(find /build/v3 -name 'meta.yaml' | grep -v "/latest/" | grep -o ".*/"); \
     fi
-
-# not supported in Brew unless we prefetch the content via tarball injection
-# optional steps for air gap - replace references to docker.io, quay.io, registry.access.redhat.com, registry.redhat.io with internal registry
-# RUN ./list_containers.sh v3 && ./replace_container_repos.sh v3 myquay.mycorp.com
 
 RUN ./check_plugins_location.sh v3 && \
     ./set_plugin_dates.sh v3 && \
@@ -116,10 +112,11 @@ STOPSIGNAL SIGWINCH
 
 COPY README.md .htaccess /var/www/html/
 COPY --from=builder /build/v3 /var/www/html/v3
-COPY ./scripts/*entrypoint.sh /usr/local/bin/
+COPY ./build/dockerfiles/rhel.entrypoint.sh ./build/dockerfiles/entrypoint.sh /usr/local/bin/
 
 WORKDIR /var/www/html
-ENTRYPOINT ["/usr/local/bin/uid_entrypoint.sh", "/usr/local/bin/entrypoint.sh"]
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
+CMD ["/usr/local/bin/rhel.entrypoint.sh"]
 
 # Offline build: cache .theia and .vsix files in registry itself and update metas
 # multiple temp stages does not work in Brew
@@ -155,20 +152,4 @@ USER 0
 # multiple temp stages does not work in Brew
 COPY --from=offline-builder /build/v3 /var/www/html/v3
 
-ENV SUMMARY="Red Hat CodeReady Workspaces plugin registry container" \
-    DESCRIPTION="Red Hat CodeReady Workspaces plugin registry container" \
-    PRODNAME="codeready-workspaces" \
-    COMPNAME="pluginregistry-rhel8"
-
-LABEL summary="$SUMMARY" \
-      description="$DESCRIPTION" \
-      io.k8s.description="$DESCRIPTION" \
-      io.k8s.display-name="$DESCRIPTION" \
-      io.openshift.tags="$PRODNAME,$COMPNAME" \
-      com.redhat.component="$PRODNAME-$COMPNAME-container" \
-      name="$PRODNAME/$COMPNAME" \
-      version="2.0" \
-      license="EPLv2" \
-      maintainer="Nick Boldt <nboldt@redhat.com>" \
-      io.openshift.expose-services="" \
-      usage=""
+# append Brew metadata here
