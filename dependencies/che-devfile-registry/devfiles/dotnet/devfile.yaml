@@ -1,0 +1,43 @@
+---
+apiVersion: 1.0.0
+metadata:
+  generateName: dotnet-
+projects:
+  -
+    name: dotnet-web-simple
+    source:
+      type: git
+      location: "https://github.com/che-samples/dotnet-web-simple"
+components:
+  -
+    type: chePlugin
+    alias: omnisharp
+    id: redhat-developer/che-omnisharp-plugin/latest
+    memoryLimit: 1024Mi
+  -
+    type: dockerimage
+    alias: dotnet
+    image: registry.redhat.io/codeready-workspaces/stacks-dotnet-rhel8
+    memoryLimit: 512Mi
+    endpoints:
+      - name: '5000/tcp'
+        port: 5000
+    mountSources: true
+    volumes:
+      - name: dotnet
+        containerPath: "/home/user"
+commands:
+  -
+    name: update dependencies
+    actions:
+      - type: exec
+        component: dotnet
+        command: "dotnet restore"
+        workdir: ${CHE_PROJECTS_ROOT}/dotnet-web-simple
+  -
+    name: run
+    actions:
+      - type: exec
+        component: dotnet
+        command: "dotnet run"
+        workdir: ${CHE_PROJECTS_ROOT}/dotnet-web-simple
