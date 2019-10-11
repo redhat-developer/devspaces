@@ -74,7 +74,7 @@ COPY ./scripts/*.sh ./scripts/meta.yaml.schema /build/
 COPY /v3 /build/v3
 WORKDIR /build/
 
-# if only including the /latest/ plugins, apply this line to remove them from builder
+# if only including the /latest/ plugins, apply this line to remove them from builder 
 RUN if [[ ${LATEST_ONLY} == "true" ]]; then \
       rm -fr $(find /build/v3 -name 'meta.yaml' | grep -v "/latest/" | grep -o ".*/"); \
     fi
