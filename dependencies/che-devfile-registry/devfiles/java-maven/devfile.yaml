@@ -1,0 +1,54 @@
+---
+apiVersion: 1.0.0
+metadata:
+  generateName: java-maven-
+projects:
+  -
+    name: console-java-simple
+    source:
+      type: git
+      location: "https://github.com/che-samples/console-java-simple"
+components:
+  -
+    type: chePlugin
+    id: redhat/java8/latest
+  -
+    type: dockerimage
+    alias: maven
+    image: registry.redhat.io/codeready-workspaces/stacks-java-rhel8
+    env:
+      - name: MAVEN_CONFIG
+        value: /home/jboss/.m2
+      - name: JAVA_OPTS
+        value: "-XX:MaxRAMPercentage=50.0 -XX:+UseParallelGC -XX:MinHeapFreeRatio=10 -XX:MaxHeapFreeRatio=20 -XX:GCTimeRatio=4 -XX:AdaptiveSizePolicyWeight=90 -Dsun.zip.disableMemoryMapping=true -Xms20m -Djava.security.egd=file:/dev/./urandom -Duser.home=/home/jboss"
+      - name: MAVEN_OPTS
+        value: $(JAVA_OPTS)
+    memoryLimit: 512Mi
+    mountSources: true
+    volumes:
+      - name: m2
+        containerPath: /home/jboss/.m2
+commands:
+  -
+    name: maven build
+    actions:
+      -
+        type: exec
+        component: maven
+        command: "mvn clean install"
+        workdir: ${CHE_PROJECTS_ROOT}/console-java-simple
+  -
+    name: maven build and run
+    actions:
+      -
+        type: exec
+        component: maven
+        command: "mvn clean install && java -jar ./target/*.jar"
+        workdir: ${CHE_PROJECTS_ROOT}/console-java-simple
+  -
+    name: dependency analysis
+    actions:
+      -
+        type: exec
+        component: maven
+        command: "${HOME}/stack-analysis.sh -f ${CHE_PROJECTS_ROOT}/console-java-simple/pom.xml -p ${CHE_PROJECTS_ROOT}/console-java-simple"
