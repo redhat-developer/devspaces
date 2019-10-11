@@ -16,7 +16,7 @@ ARG PATCHED_IMAGES_ORG="eclipse"
 ARG PATCHED_IMAGES_TAG="nightly"
 
 COPY ./build/scripts ./arbitrary-users-patch/base_images /build/
-COPY /devfiles /build/devfiles
+COPY ./devfiles /build/devfiles
 WORKDIR /build/
 RUN TAG=${PATCHED_IMAGES_TAG} \
     ORGANIZATION=${PATCHED_IMAGES_ORG} \

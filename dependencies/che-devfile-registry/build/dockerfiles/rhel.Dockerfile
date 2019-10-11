@@ -41,30 +41,8 @@ ENV LATEST_ONLY=${LATEST_ONLY}
 # enable rhel 7 or 8 content sets (from Brew) to resolve jq as rpm
 COPY ./build/dockerfiles/content_sets_epel7.repo /etc/yum.repos.d/
 
-RUN microdnf install -y findutils bash wget yum gzip tar jq python3-six python3-pip && microdnf -y clean all && \
-    # install yq (depends on jq and pyyaml - if jq and pyyaml not already installed, this will try to compile it)
-    if [[ -f /tmp/root-local.tgz ]] || [[ ${BOOTSTRAP} == "true" ]]; then \
-      mkdir -p /root/.local; tar xf /tmp/root-local.tgz -C /root/.local/; rm -fr /tmp/root-local.tgz;  \
-      /usr/bin/pip3.6 install --user yq jsonschema; \
-      # could be installed in /opt/app-root/src/.local/bin or /root/.local/bin
-      for d in /opt/app-root/src/.local /root/.local; do \
-        if [[ -d ${d} ]]; then \
-          cp ${d}/bin/yq ${d}/bin/jsonschema /usr/local/bin/; \
-          pushd ${d}/lib/python3.6/site-packages/ >/dev/null; \
-            cp -r PyYAML* xmltodict* yaml* yq* jsonschema* /usr/lib/python3.6/site-packages/; \
-          popd >/dev/null; \
-        fi; \
-      done; \
-      chmod -c +x /usr/local/bin/*; \
-    else \
-      /usr/bin/pip3.6 install yq jsonschema; \
-    fi && \
-    ln -s /usr/bin/python3.6 /usr/bin/python && \
-    # test install worked
-    for d in python yq jq jsonschema; do echo -n "$d: "; $d --version; done
-
-# for debugging only
-# RUN microdnf install -y util-linux && whereis python pip jq yq && python --version && jq --version && yq --version
+COPY ./build/dockerfiles/rhel.install.sh /tmp
+RUN /tmp/rhel.install.sh && rm -f /tmp/rhel.install.sh
 
 # Registry, organization, and tag to use for base images in dockerfiles. Devfiles
 # will be rewritten during build to use these values for base images.
@@ -107,12 +85,13 @@ RUN sed -i /etc/httpd/conf/httpd.conf \
 STOPSIGNAL SIGWINCH
 # END these steps might not be required
 
+WORKDIR /var/www/html
+
 RUN mkdir /var/www/html/devfiles
 COPY .htaccess README.md /var/www/html/
 COPY --from=builder /build/devfiles /var/www/html/devfiles
 COPY ./build/dockerfiles/rhel.entrypoint.sh ./build/dockerfiles/entrypoint.sh /usr/local/bin/
 RUN chmod g+rwX /usr/local/bin/entrypoint.sh /usr/local/bin/rhel.entrypoint.sh
-WORKDIR /var/www/html
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 CMD ["/usr/local/bin/rhel.entrypoint.sh"]
 
