@@ -81,6 +81,7 @@ RUN TAG=${PATCHED_IMAGES_TAG} \
     ./update_devfile_patched_image_tags.sh
 RUN ./check_mandatory_fields.sh devfiles
 RUN ./index.sh > /build/devfiles/index.json
+RUN chmod -R g+rwX /build/devfiles
 
 ################# 
 # PHASE TWO: configure registry image
@@ -109,10 +110,10 @@ STOPSIGNAL SIGWINCH
 RUN mkdir /var/www/html/devfiles
 COPY .htaccess README.md /var/www/html/
 COPY --from=builder /build/devfiles /var/www/html/devfiles
-RUN chmod -R g+rwX /var/www/html/devfiles
-COPY /build/scripts/*entrypoint.sh /usr/local/bin/
-
+COPY ./build/dockerfiles/rhel.entrypoint.sh ./build/dockerfiles/entrypoint.sh /usr/local/bin/
+RUN chmod g+rwX /usr/local/bin/entrypoint.sh /usr/local/bin/rhel.entrypoint.sh
 WORKDIR /var/www/html
-ENTRYPOINT ["/usr/local/bin/uid_entrypoint.sh", "/usr/local/bin/entrypoint.sh"]
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
+CMD ["/usr/local/bin/rhel.entrypoint.sh"]
 
 # append Brew metadata here

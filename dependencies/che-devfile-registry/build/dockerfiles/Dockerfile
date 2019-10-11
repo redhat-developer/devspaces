@@ -24,10 +24,12 @@ RUN TAG=${PATCHED_IMAGES_TAG} \
     ./update_devfile_patched_image_tags.sh
 RUN ./check_mandatory_fields.sh devfiles
 RUN ./index.sh > /build/devfiles/index.json
+RUN chmod -R g+rwX /build/devfiles
 
 FROM registry.centos.org/centos/httpd-24-centos7
 RUN mkdir /var/www/html/devfiles
 COPY .htaccess README.md /var/www/html/
 COPY --from=builder /build/devfiles /var/www/html/devfiles
-USER 0
-RUN chmod -R g+rwX /var/www/html/devfiles
+COPY ./build/dockerfiles/entrypoint.sh /usr/bin/
+ENTRYPOINT ["/usr/bin/entrypoint.sh"]
+CMD ["/usr/bin/run-httpd"]
