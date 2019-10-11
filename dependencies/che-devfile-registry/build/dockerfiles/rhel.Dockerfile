@@ -72,8 +72,8 @@ ARG PATCHED_IMAGES_REG="quay.io"
 ARG PATCHED_IMAGES_ORG="crw"
 ARG PATCHED_IMAGES_TAG="2.0"
 
-COPY /build/scripts /arbitrary-users-patch/base_images /build/
-COPY /devfiles /build/devfiles
+COPY ./build/scripts ./arbitrary-users-patch/base_images /build/
+COPY ./devfiles /build/devfiles
 WORKDIR /build/
 RUN TAG=${PATCHED_IMAGES_TAG} \
     ORGANIZATION=${PATCHED_IMAGES_ORG} \
