@@ -81,7 +81,7 @@ RUN sed -i /etc/httpd/conf/httpd.conf \
     -e "s,logs/error_log,/dev/stderr," \
     -e "s,logs/access_log,/dev/stdout," \
     -e "s,AllowOverride None,AllowOverride All," && \
-    chmod a+rwX /etc/httpd/conf /run/httpd
+    chmod a+rwX /etc/httpd/conf /run/httpd /etc/httpd/logs/
 STOPSIGNAL SIGWINCH
 # END these steps might not be required
 
