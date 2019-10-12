@@ -41,30 +41,8 @@ ENV LATEST_ONLY=${LATEST_ONLY}
 # enable rhel 7 or 8 content sets (from Brew) to resolve jq as rpm
 COPY ./build/dockerfiles/content_sets_epel7.repo /etc/yum.repos.d/
 
-RUN microdnf install -y findutils bash wget yum gzip tar jq python3-six python3-pip && microdnf -y clean all && \
-    # install yq (depends on jq and pyyaml - if jq and pyyaml not already installed, this will try to compile it)
-    if [[ -f /tmp/root-local.tgz ]] || [[ ${BOOTSTRAP} == "true" ]]; then \
-      mkdir -p /root/.local; tar xf /tmp/root-local.tgz -C /root/.local/; rm -fr /tmp/root-local.tgz;  \
-      /usr/bin/pip3.6 install --user yq jsonschema; \
-      # could be installed in /opt/app-root/src/.local/bin or /root/.local/bin
-      for d in /opt/app-root/src/.local /root/.local; do \
-        if [[ -d ${d} ]]; then \
-          cp ${d}/bin/yq ${d}/bin/jsonschema /usr/local/bin/; \
-          pushd ${d}/lib/python3.6/site-packages/ >/dev/null; \
-            cp -r PyYAML* xmltodict* yaml* yq* jsonschema* /usr/lib/python3.6/site-packages/; \
-          popd >/dev/null; \
-        fi; \
-      done; \
-      chmod -c +x /usr/local/bin/*; \
-    else \
-      /usr/bin/pip3.6 install yq jsonschema; \
-    fi && \
-    ln -s /usr/bin/python3.6 /usr/bin/python && \
-    # test install worked
-    for d in python yq jq jsonschema; do echo -n "$d: "; $d --version; done
-
-# for debugging only
-# RUN microdnf install -y util-linux && whereis python pip jq yq && python --version && jq --version && yq --version
+COPY ./build/dockerfiles/rhel.install.sh /tmp
+RUN /tmp/rhel.install.sh && rm -f /tmp/rhel.install.sh
 
 ################# 
 # PHASE TWO: configure registry image
@@ -93,11 +71,11 @@ RUN ./check_plugins_location.sh v3 && \
 # Build registry, copying meta.yamls and index.json from builder
 # UPSTREAM: use RHEL7/RHSCL/httpd image so we're not required to authenticate with registry.redhat.io
 # https://access.redhat.com/containers/?tab=tags#/registry.access.redhat.com/rhscl/httpd-24-rhel7
-FROM registry.access.redhat.com/rhscl/httpd-24-rhel7:2.4-104 AS registry
+# FROM registry.access.redhat.com/rhscl/httpd-24-rhel7:2.4-104 AS registry
 
 # DOWNSTREAM: use RHEL8/httpd
 # https://access.redhat.com/containers/?tab=tags#/registry.access.redhat.com/rhel8/httpd-24
-# FROM registry.redhat.io/rhel8/httpd-24:1-60 AS registry
+FROM registry.redhat.io/rhel8/httpd-24:1-60 AS registry
 USER 0
 
 # BEGIN these steps might not be required
@@ -152,4 +130,20 @@ USER 0
 # multiple temp stages does not work in Brew
 COPY --from=offline-builder /build/v3 /var/www/html/v3
 
-# append Brew metadata here
+ENV SUMMARY="Red Hat CodeReady Workspaces plugin registry container" \
+    DESCRIPTION="Red Hat CodeReady Workspaces plugin registry container" \
+    PRODNAME="codeready-workspaces" \
+    COMPNAME="pluginregistry-rhel8"
+
+LABEL summary="$SUMMARY" \
+      description="$DESCRIPTION" \
+      io.k8s.description="$DESCRIPTION" \
+      io.k8s.display-name="$DESCRIPTION" \
+      io.openshift.tags="$PRODNAME,$COMPNAME" \
+      com.redhat.component="$PRODNAME-$COMPNAME-container" \
+      name="$PRODNAME/$COMPNAME" \
+      version="2.0" \
+      license="EPLv2" \
+      maintainer="Nick Boldt <nboldt@redhat.com>" \
+      io.openshift.expose-services="" \
+      usage=""
