@@ -5,7 +5,6 @@
   "logoTextFile": "CRW_wordmark-bold-white.svg",
   "favicon": "CodeReady.ico",
   "loader": "CodeReady_icon_loader.svg",
-  "ideResources": "/_app/",
   "websocketContext": "/api/websocket",
   "helpPath": "https://access.redhat.com/products/red-hat-codeready-workspaces/",
   "helpTitle": "Support",
@@ -20,7 +19,10 @@
     "name" : "CHE"
   },
   "docs" : {
-    "stack" : "@@crw.docs.baseurl@@/html/administration_guide/administering_workspaces#stacks",
-    "workspace" : "@@crw.docs.baseurl@@/html/administration_guide/administering_workspaces/"
+    "devfile" : "@@crw.docs.baseurl@@/html/end-user_guide/using_developer_workspaces#converting-a-workspace-to-a-devfile",
+    "workspace" : "@@crw.docs.baseurl@@/html/administration_guide/administering_workspaces",
+    "factory" : "@@crw.docs.baseurl@@/html/administration_guide/administering_workspaces",
+    "converting": "@@crw.docs.baseurl@@/html/end-user_guide/using_developer_workspaces#converting-a-workspace-to-a-devfile",
+    "general": "@@crw.docs.baseurl@@/html"
   }
 }
