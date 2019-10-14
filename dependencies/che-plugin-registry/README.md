@@ -21,7 +21,7 @@ Note that the Dockerfiles feature multi-stage build, so it requires Docker versi
 
 ### Offline and airgapped registry images
 
-It's possible to build an image for the plugin registry that includes all referenced extension artifacts (i.e. all `.theia` and `.vsix` archives). This is done using the same `Dockerfile`, but performs additional steps to download artifacts and rewrite the devfiles to use files cached in `v3/resources/`.
+It's possible to build an image for the plugin registry that includes all referenced extension artifacts (i.e. all `.theia` and `.vsix` archives). This is done using the same `Dockerfile`, but performs additional steps to download artifacts and rewrite the plugin meta.yamls to use files cached in `v3/resources/`.
 
 ```shell
 docker build --no-cache -t quay.io/eclipse/che-plugin-registry:offline --target offline-registry .
@@ -114,7 +114,7 @@ spec:                  # spec (used to be che-plugin.yaml)
         - /bin/sh
       args:              # optional; list arguments for root process command inside container
         - -c
-          ./entrypoint.sh
+        - ./entrypoint.sh
       volumes:           # volumes required by plugin
         - mountPath:
           name:
@@ -140,7 +140,7 @@ spec:                  # spec (used to be che-plugin.yaml)
         - /bin/sh
       args:              # optional; list arguments for root process command inside container
         - -c
-          ./entrypoint.sh
+        - ./entrypoint.sh
       volumes:           # volumes required by plugin
         - mountPath:
           name:

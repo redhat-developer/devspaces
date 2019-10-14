@@ -1,1 +1,0 @@
-COPY --chown=theia:root --from=builder /home/theia-dev/theia-source-code/production /home/theia

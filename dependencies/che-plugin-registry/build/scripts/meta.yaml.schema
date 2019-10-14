@@ -1,0 +1,78 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Plugin",
+  "description": "Plugin meta.yaml",
+  "type": "object",
+  "properties": {
+    "apiVersion": {
+      "type": "string",
+      "pattern": "^[-._a-zA-Z0-9]+$"
+    },
+    "publisher": {
+      "type": "string",
+      "pattern": "^[-._a-zA-Z0-9]+$"
+    },
+    "name": {
+      "type": "string",
+      "pattern": "^[-._a-zA-Z0-9]+$"
+    },
+    "version": {
+      "type": ["number", "string"],
+      "pattern": "^[-._a-zA-Z0-9]+$",
+      "minimum": 0
+    },
+    "title": {
+      "type": "string",
+      "pattern": "[-._a-zA-Z0-9]+"
+    },
+    "icon": {
+      "type": "string",
+      "pattern": "[-._a-zA-Z0-9]+.svg[^.]*$"
+    },
+    "description": {
+      "type": "string",
+      "pattern": "[-._a-zA-Z0-9]+"
+    },
+    "repository": {
+      "type": "string",
+      "pattern": "[-._a-zA-Z0-9]+"
+    },
+    "firstPublicationDate": {
+      "type": "string",
+      "pattern": "[-._a-zA-Z0-9]+"
+    },
+    "latestUpdateDate": {
+      "type": "string",
+      "pattern": "[-._a-zA-Z0-9]+"
+    },
+    "spec": {
+      "type": "object"
+    },
+    "category": {
+      "enum": [
+        "Editor",
+        "Debugger",
+        "Formatter",
+        "Language",
+        "Linter",
+        "Snippet",
+        "Theme",
+        "Other"
+      ]
+    }
+  },
+  "required": [
+    "publisher",
+    "name",
+    "version",
+    "title",
+    "category",
+    "icon",
+    "description",
+    "repository",
+    "firstPublicationDate",
+    "latestUpdateDate",
+    "spec",
+    "apiVersion"
+  ]
+}

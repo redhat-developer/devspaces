@@ -1,0 +1,23 @@
+apiVersion: v2
+publisher: redhat
+name: java11
+version: 0.50.0
+type: VS Code extension
+displayName: Language Support for Java 11
+title: Language Support for Java(TM) by Red Hat
+description: Java Linting, Intellisense, formatting, refactoring, Maven/Gradle support and more...
+icon: https://www.eclipse.org/che/images/logo-eclipseche.svg
+repository: https://github.com/redhat-developer/vscode-java
+category: Language
+firstPublicationDate: "2019-10-03"
+spec:
+  containers:
+    - image: "docker.io/eclipse/che-remote-plugin-runner-java11:next"
+      name: vscode-java
+      memoryLimit: "1500Mi"
+      volumes:
+      - mountPath: "/home/theia/.m2"
+        name: m2
+  extensions:
+    - https://github.com/microsoft/vscode-java-debug/releases/download/0.20.0/vscode-java-debug-0.20.0.vsix
+    - https://download.jboss.org/jbosstools/static/jdt.ls/stable/java-0.50.0-1825.vsix

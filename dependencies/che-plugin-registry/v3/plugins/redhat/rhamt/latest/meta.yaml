@@ -1,0 +1,36 @@
+apiVersion: v2
+id: redhat.rhamt-vscode-extension
+version: latest
+type: VS Code extension
+name: rhamt
+displayName: Red Hat Application Migration Toolkit
+title: Red Hat Application Migration Toolkit
+description: Application Migration and Modernization using RHAMT
+icon: https://www.eclipse.org/che/images/logo-eclipseche.svg
+publisher: redhat
+repository: https://github.com/windup/rhamt-vscode-extension
+category: Other
+firstPublicationDate: "2019-06-19"
+spec:
+  endpoints:
+  - name: "configuration-endpoint"
+    public: true
+    targetPort: 61436
+    attributes:
+      protocol: http
+  - name: "report-endpoint"
+    public: true
+    targetPort: 61435
+    attributes:
+      protocol: http
+  containers:
+  - image: "windup3/rhamt-vscode-extension:java8"
+    name: rhamt-extension
+    memoryLimit: 1500Mi
+    ports:
+      - exposedPort: 61435
+      - exposedPort: 61436
+    mountSources: true
+  extensions:
+    - https://download.jboss.org/jbosstools/adapters/stable/rhamt-vscode-extension/rhamt-vscode-extension-0.0.8-200.vsix
+

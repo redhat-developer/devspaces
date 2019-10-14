@@ -9,8 +9,8 @@ if [[ $1 == "nightly" ]]; then
 	nightly="nightly"
 	now=`date +%Y%m%d-%H%M`
 elif [[ $1 ]]; then
-	sed -i Dockerfile -e "s%#.*RUN ./list_containers.sh%RUN ./list_containers.sh%"
-	sed -i Dockerfile -e "s%myquay.mycorp.com%${1}%"
+	cat Dockerfile   | sed -e "s%#.*RUN ./list_containers.sh%RUN ./list_containers.sh%" > Dockerfile.2
+	cat Dockerfile.2 | sed -e "s%myquay.mycorp.com%${1}%" > Dockerfile; rm -f Dockerfile.2
 	nightly="${1%%.*}" # first section of the URL replacement
 	now="${nightly}-`date +%Y%m%d-%H%M`" # append timestamp
 else
@@ -21,7 +21,7 @@ else
 fi
 
 now=`date +%Y%m%d-%H%M`
-docker build . -t quay.io/nickboldt/airgap-che-plugin-registry:${nightly} --no-cache --squash
+docker build . -t quay.io/nickboldt/airgap-che-plugin-registry:${nightly} --no-cache # --squash
 docker tag quay.io/nickboldt/airgap-che-plugin-registry:{${nightly},${now}}
 
 if [[ $2 == "--push" ]]; then

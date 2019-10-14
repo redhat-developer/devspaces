@@ -1,0 +1,88 @@
+---
+apiVersion: 1.0.0
+metadata:
+  generateName: java-eap-maven-
+projects:
+  -
+    name: kitchensink-example
+    source:
+      type: git
+      location: "https://github.com/che-samples/kitchensink-example"
+components:
+  -
+    type: chePlugin
+    id: redhat/java8/latest
+  -
+    type: dockerimage
+    alias: maven
+    image: registry.redhat.io/codeready-workspaces/stacks-java-rhel8
+    env:
+      - name: MAVEN_CONFIG
+        value: /home/jboss/.m2
+      - name: MAVEN_OPTS
+        value: "-Xmx200m -XX:MaxRAMPercentage=50.0 -XX:+UseParallelGC -XX:MinHeapFreeRatio=10 -XX:MaxHeapFreeRatio=20 -XX:GCTimeRatio=4 -XX:AdaptiveSizePolicyWeight=90 -Dsun.zip.disableMemoryMapping=true -Xms20m -Djava.security.egd=file:/dev/./urandom -Duser.home=/home/jboss"
+    memoryLimit: 512Mi
+    endpoints:
+      - name: 'eap'
+        port: 8080
+    mountSources: true
+    volumes:
+      - name: m2
+        containerPath: /home/jboss/.m2
+commands:
+  -
+    name: build
+    actions:
+      -
+        type: exec
+        component: maven
+        command: "mvn clean install"
+        workdir: ${CHE_PROJECTS_ROOT}/kitchensink-example
+  -
+    name: build and run in debug
+    actions:
+      -
+        type: exec
+        component: maven
+        command: "mvn clean install && cp target/*.war /opt/eap/standalone/deployments/ROOT.war && export JAVA_OPTS_APPEND=-Dsun.util.logging.disableCallerCheck=true && /opt/eap/bin/standalone.sh -b 0.0.0.0 --debug 8000"
+        workdir: ${CHE_PROJECTS_ROOT}/kitchensink-example
+  -
+    name: copy war
+    actions:
+      -
+        type: exec
+        component: maven
+        command: "cp target/*.war /opt/eap/standalone/deployments/ROOT.war"
+        workdir: ${CHE_PROJECTS_ROOT}/kitchensink-example
+  -
+    name: hot update
+    actions:
+      -
+        type: exec
+        component: maven
+        command: "mvn clean install && cp target/*.war /opt/eap/standalone/deployments/ROOT.war"
+        workdir: ${CHE_PROJECTS_ROOT}/kitchensink-example
+  -
+    name: dependency analysis
+    actions:
+      -
+        type: exec
+        component: maven
+        command: "${HOME}/stack-analysis.sh -f ${CHE_PROJECTS_ROOT}/kitchensink-example/pom.xml -p ${CHE_PROJECTS_ROOT}/kitchensink-example"
+  -
+    name: Debug (Attach)
+    actions:
+    - type: vscode-launch
+      referenceContent: |
+        {
+        "version": "0.2.0",
+        "configurations": [
+        {
+            "type": "java",
+            "request": "attach",
+            "name": "Debug (Attach)",
+            "hostName": "localhost",
+            "port": 8000
+        }
+        ]
+        }
