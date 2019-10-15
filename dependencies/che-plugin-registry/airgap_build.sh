@@ -21,7 +21,7 @@ else
 fi
 
 now=`date +%Y%m%d-%H%M`
-docker build . -t quay.io/nickboldt/airgap-che-plugin-registry:${nightly} --no-cache # --squash
+docker build . -f build/dockerfiles/rhel.Dockerfile -t quay.io/nickboldt/airgap-che-plugin-registry:${nightly} --no-cache # --squash
 docker tag quay.io/nickboldt/airgap-che-plugin-registry:{${nightly},${now}}
 
 if [[ $2 == "--push" ]]; then
