@@ -13,9 +13,9 @@ def installNPM(){
 
 
 timeout(120) {
-	node("${node}"){ stage "Build ${extensionPath}"
+	node("${node}"){ stage "Build ${extensionSource}"
 
-        def extensionFolder = extensionSource.split("//")[1]
+        def extensionFolder = extensionPath.split("//")[1]
 
 		echo "${extensionFolder}"
 
@@ -23,7 +23,7 @@ timeout(120) {
 				  branches: [[name: "${branchToBuildPlugin}"]],
 				  doGenerateSubmoduleConfigurations: false,
 				  poll: true,
-				  extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: "${extensionPath}"]],
+				  extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: "${extensionFolder}"]],
 				  submoduleCfg: [],
 				  userRemoteConfigs: [[url: "${extensionSource}"]]])
 
