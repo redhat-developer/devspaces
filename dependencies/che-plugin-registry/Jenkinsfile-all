@@ -18,7 +18,8 @@ node {
 
     sh "tar -cvf vscode-extensions-vsix.tar ."
 
-    sh "rhpkg new-sources vscode-extensions-vsix.tar"
+
+    # TODO deploy artifact to pkgs.devel?
 
     archiveArtifacts artifacts: '*.tar', fingerprint: true
 }

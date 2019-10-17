@@ -22,13 +22,31 @@ fi
 
 RESOURCES_DIR="${1}/resources/"
 TEMP_DIR="${1}/extensions_temp/"
+PRECACHED_EXTENSIONS_DIR
+
+if [ -f "/tmp/vscode-extensions-vsix.tar" ]; then
+echo 'found non empty extensions.tar, unpacking'
+  tar -zxvf /tmp/vscode-extensions-vsix.tar
+  #array of filenames
+fi
+
+
 
 mkdir -p "${RESOURCES_DIR}" "${TEMP_DIR}"
 for extension in $(yq -r '.spec.extensions[]?' "${metas[@]}" | sort | uniq); do
   echo -en "Caching extension ${extension}\n    "
   # Workaround for getting filenames through content-disposition: copy to temp
   # dir and read filename before moving to /resources.
-  wget -P "${TEMP_DIR}" -nv --content-disposition "${extension}"
+
+
+  # Before attempting to download, check if we already have this file in supplied precached archive
+  # if found, skip the download
+  if [[ " ${precached_plugins[@]} " =~ " ${precached_extension_dir} " ]]; then
+    mv precached_extension_dir
+  else
+    wget -P "${TEMP_DIR}" -nv --content-disposition "${extension}?access_token=5b7d3da810f72b0fb0d45cac8da1c34837a7a611"
+  fi
+
   file=$(find "${TEMP_DIR}" -type f)
   filename=$(basename "${file}")
 

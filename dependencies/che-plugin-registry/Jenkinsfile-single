@@ -15,7 +15,7 @@ def installNPM(){
 timeout(120) {
 	node("${node}"){ stage "Build ${extensionPath}"
 
-		def extensionFolder = "${extensionPath}".substring("${extensionPath}".lastIndexOf('/') + 1);
+        def extensionFolder = new URI(extensionSource).getPath()
 
 		echo "${extensionFolder}"
 
@@ -23,9 +23,9 @@ timeout(120) {
 				  branches: [[name: "${branchToBuildPlugin}"]],
 				  doGenerateSubmoduleConfigurations: false,
 				  poll: true,
-				  extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: "${extensionFolder}"]],
+				  extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: "${extensionPath}"]],
 				  submoduleCfg: [],
-				  userRemoteConfigs: [[url: "${extensionPath}"]]])
+				  userRemoteConfigs: [[url: "${extensionSource}"]]])
 
 		installNPM()
 		sh "cd ${extensionFolder} && sudo npm install -g vsce && sudo npm install -g gulp && npm install && vsce package"
