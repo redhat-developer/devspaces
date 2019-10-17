@@ -16,10 +16,11 @@ node {
 
         def registryLocation = keyValue[0].split("//")[1]
         def extensionPath = keyValue[1]
+        def branch = keyValue[2]
 
         echo "${registryLocation}, ${extensionPath}"
 
-        def buildjob = build job: 'vscode-extensions-packaging', parameters: [ string(name: 'extensionPath', value: extensionPath)]
+        def buildjob = build job: 'vscode-extensions-packaging', parameters: [ string(name: 'extensionPath', value: extensionPath), string(name: 'branchToBuildPlugin', value: branch) ]
         jobs.put(registryLocation, buildjob)
     }
 
