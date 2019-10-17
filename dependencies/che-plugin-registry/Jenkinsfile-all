@@ -11,9 +11,12 @@ node {
     def jobs = [:]
 
 
-    extensions.each { extension ->
-        def buildjob = build job: 'vscode-extensions-packaging', parameters: [ string(name: 'extensionPath', value: extension.split("|")[1])]
-        jobs.put(extension.split("|")[0], buildjob)
+    extensions.split(",").each { extension ->
+        def registryLocation = extension.split("|")[0]
+        def extensionPath = extension.split("|")[1]
+
+        def buildjob = build job: 'vscode-extensions-packaging', parameters: [ string(name: 'extensionPath', value: extensionPath)]
+        jobs.put(registryLocation, buildjob)
     }
 
     jobs.each { fileLocation, job ->
