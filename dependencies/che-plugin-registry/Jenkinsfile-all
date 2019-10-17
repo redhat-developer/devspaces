@@ -10,9 +10,8 @@ node {
     // key value map for
     def jobs = [:]
 
-
     extensions.split(",").each { extension ->
-        def keyValue = extension.split("|")
+        def keyValue = extension.split("\\|")
         echo "${keyValue}, ${extension}"
 
         def registryLocation = keyValue[0]
