@@ -20,7 +20,7 @@ for meta in "${metas[@]}"; do
   plugin_id=$(evaluate_plugin_id "$meta")
   echo "Checking plugin '${plugin_id}'"
 
-  if ! jsonschema ./meta.yaml.schema -F $'\t{error.message}\n' -i <(yq . "${meta}"); then
+  if ! jsonschema "$(dirname "$0")/meta.yaml.schema" -F $'\t{error.message}\n' -i <(yq . "${meta}"); then
     INVALID_JSON=true
   fi
 done

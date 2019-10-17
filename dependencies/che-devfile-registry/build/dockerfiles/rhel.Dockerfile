@@ -44,19 +44,25 @@ COPY ./build/dockerfiles/content_sets_epel7.repo /etc/yum.repos.d/
 COPY ./build/dockerfiles/rhel.install.sh /tmp
 RUN /tmp/rhel.install.sh && rm -f /tmp/rhel.install.sh
 
+# DO NOT USE FOR CRW
 # Registry, organization, and tag to use for base images in dockerfiles. Devfiles
 # will be rewritten during build to use these values for base images.
-ARG PATCHED_IMAGES_REG="quay.io"
-ARG PATCHED_IMAGES_ORG="crw"
-ARG PATCHED_IMAGES_TAG="2.0"
+# ARG PATCHED_IMAGES_REG="quay.io"
+# ARG PATCHED_IMAGES_ORG="crw"
+# ARG PATCHED_IMAGES_TAG="2.0"
+# DO NOT USE FOR CRW
 
 COPY ./build/scripts ./arbitrary-users-patch/base_images /build/
 COPY ./devfiles /build/devfiles
 WORKDIR /build/
-RUN TAG=${PATCHED_IMAGES_TAG} \
-    ORGANIZATION=${PATCHED_IMAGES_ORG} \
-    REGISTRY=${PATCHED_IMAGES_REG} \
-    ./update_devfile_patched_image_tags.sh
+
+# DO NOT USE FOR CRW
+# RUN TAG=${PATCHED_IMAGES_TAG} \
+#     ORGANIZATION=${PATCHED_IMAGES_ORG} \
+#     REGISTRY=${PATCHED_IMAGES_REG} \
+#     ./update_devfile_patched_image_tags.sh
+# DO NOT USE FOR CRW
+
 RUN ./check_mandatory_fields.sh devfiles
 RUN ./index.sh > /build/devfiles/index.json
 RUN chmod -R g+rwX /build/devfiles

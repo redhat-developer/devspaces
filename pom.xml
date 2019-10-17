@@ -231,8 +231,8 @@
         </plugins>
     </build>
     <modules>
-        <module>ide</module>
-        <module>plugins</module>
+        <!-- <module>ide</module> -->
+        <!-- <module>plugins</module> -->
         <module>assembly</module>
         <module>test</module>
     </modules>

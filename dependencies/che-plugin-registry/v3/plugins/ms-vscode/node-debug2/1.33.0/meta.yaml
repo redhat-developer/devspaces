@@ -13,7 +13,7 @@ category: Debugger
 firstPublicationDate: '2019-06-20'
 spec:
   containers:
-  - image: "docker.io/eclipse/che-theia-endpoint-runtime:next"
+  - image: "quay.io/crw/theia-endpoint-rhel8:2.0"
     name: vscode-node-debug
     memoryLimit: '512Mi'
   extensions:
