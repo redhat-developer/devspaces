@@ -15,7 +15,7 @@ def installNPM(){
 timeout(120) {
 	node("${node}"){ stage "Build ${extensionPath}"
 
-        def extensionFolder = new URI(extensionSource).getPath()
+        def extensionFolder = extensionSource.split("//")[1]
 
 		echo "${extensionFolder}"
 
