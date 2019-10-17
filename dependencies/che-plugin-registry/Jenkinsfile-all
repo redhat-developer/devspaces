@@ -14,7 +14,7 @@ node {
         def keyValue = extension.split("\\|")
         echo "${keyValue}, ${extension}"
 
-        def registryLocation = keyValue[0]
+        def registryLocation = keyValue[0].split("//")[1]
         def extensionPath = keyValue[1]
 
         echo "${registryLocation}, ${extensionPath}"
@@ -24,9 +24,11 @@ node {
     }
 
     jobs.each { fileLocation, job ->
+        echo "archiving artifact at ${fileLocation}"
         copyArtifacts(projectName: 'vscode-extensions-packaging', selector: specific("${job.number}"), target: fileLocation)
     }
 
+    sh "ls -l"
     sh "tar -cvf vscode-extensions-vsix.tar ."
 
 
