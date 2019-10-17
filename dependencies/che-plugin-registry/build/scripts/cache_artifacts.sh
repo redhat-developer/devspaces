@@ -28,6 +28,8 @@ if [ -f "/tmp/vscode-extensions-vsix.tar" ]; then
 echo 'found non empty extensions.tar, unpacking'
   tar -zxvf /tmp/vscode-extensions-vsix.tar
   #array of filenames
+
+  #readarray -d '' cachedArchives < <(find /tmp/vscode-extensions-vsix.tar -name '*.vsix' -print0)
 fi
 
 
