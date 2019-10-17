@@ -6,20 +6,17 @@
 node {
     stage 'build extensions'
     def extensions = "${extensions}"
-    def jobs = []
 
-    def extensionKeyValues = extensions.split(",")
-    //def extensionMap= [:]
-    //extensionsKeyValues.each {
-    //
-    //}
+    // key value map for
+    def jobs = [:]
+
 
     extensionKeyValues.each { extension ->
-        def buildjob = build job: 'vscode-extensions-packaging', parameters: [ string(name: 'extensionPath', value: extension.split("|")[0], string(name: 'extensionSource', value: extension.split("|")[1])]
-        jobs.add(buildjob)
+        def buildjob = build job: 'vscode-extensions-packaging', parameters: [ string(name: 'extensionPath', value: extension.split("|")[1])]
+        jobs.put(extension.split("|")[0]), buildjob)
     }
 
-    jobs.each { job ->
+    jobs.each { fileLocation, job ->
         copyArtifacts(projectName: 'vscode-extensions-packaging', selector: specific("${job.number}"))
     }
 
