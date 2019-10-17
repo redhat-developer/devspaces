@@ -48,7 +48,7 @@ spec:
         discoverable: false
   containers:
    - name: theia-ide
-     image: "docker.io/eclipse/che-theia:7.2.0"
+     image: "quay.io/crw/theia-rhel8:2.0"
      env:
          - name: THEIA_PLUGINS
            value: local-dir:///plugins

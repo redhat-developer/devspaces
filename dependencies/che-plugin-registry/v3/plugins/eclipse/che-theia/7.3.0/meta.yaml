@@ -1,15 +1,15 @@
 apiVersion: v2
 publisher: eclipse
 name: che-theia
-version: next
+version: 7.3.0
 type: Che Editor
 displayName: theia-ide
-title: Eclipse Theia development version.
-description: Eclipse Theia, get the latest release each day.
+title: Eclipse Theia for Eclipse Che
+description: Eclipse Theia
 icon: https://raw.githubusercontent.com/theia-ide/theia/master/logo/theia-logo-no-text-black.svg?sanitize=true
 category: Editor
 repository: https://github.com/eclipse/che-theia
-firstPublicationDate: "2019-03-07"
+firstPublicationDate: "2019-10-16"
 spec:
   endpoints:
    -  name: "theia"
@@ -48,7 +48,7 @@ spec:
         discoverable: false
   containers:
    - name: theia-ide
-     image: "docker.io/eclipse/che-theia:next"
+     image: "quay.io/crw/theia-rhel8:2.0"
      env:
          - name: THEIA_PLUGINS
            value: local-dir:///plugins
