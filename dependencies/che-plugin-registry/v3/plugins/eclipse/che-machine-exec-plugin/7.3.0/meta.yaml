@@ -13,17 +13,17 @@ firstPublicationDate: "2019-10-16"
 category: Other
 spec:
   endpoints:
-   -  name: "che-machine-exec"
-      public: true
-      targetPort: 4444
-      attributes:
-        protocol: ws
-        type: terminal
-        discoverable: false
-        secure: true
-        cookiesAuthEnabled: true
+  - name: che-machine-exec
+    public: true
+    targetPort: 4444
+    attributes:
+      protocol: ws
+      type: terminal
+      discoverable: false
+      secure: true
+      cookiesAuthEnabled: true
   containers:
-   - name: che-machine-exec
-     image: "quay.io/crw/machineexec-rhel8:2.0"
-     ports:
-       - exposedPort: 4444
+  - name: che-machine-exec
+    image: "quay.io/crw/machineexec-rhel8:2.0"
+    ports:
+    - exposedPort: 4444
