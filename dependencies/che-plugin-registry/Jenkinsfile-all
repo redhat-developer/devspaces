@@ -17,7 +17,7 @@ node {
     }
 
     jobs.each { fileLocation, job ->
-        copyArtifacts(projectName: 'vscode-extensions-packaging', selector: specific("${job.number}"))
+        copyArtifacts(projectName: 'vscode-extensions-packaging', selector: specific("${job.number}"), target: fileLocation)
     }
 
     sh "tar -cvf vscode-extensions-vsix.tar ."
