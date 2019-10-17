@@ -4,6 +4,7 @@
 //extensions - comma separated list of extensions
 
 node {
+    cleanWs()
     stage 'build extensions'
     def extensions = "${extensions}"
 

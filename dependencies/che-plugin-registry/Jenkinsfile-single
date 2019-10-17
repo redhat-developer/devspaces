@@ -14,7 +14,7 @@ def installNPM(){
 
 timeout(120) {
     node("${node}"){ stage "Build ${extensionPath}"
-
+        cleanWs()
         def extensionFolder = "${extensionPath}".substring("${extensionPath}".lastIndexOf('/') + 1);
 
         echo "${extensionFolder}"
