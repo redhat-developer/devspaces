@@ -19,14 +19,14 @@ timeout(120) {
             submoduleCfg: [],
             userRemoteConfigs: [[url: "https://github.com/redhat-developer/codeready-workspaces.git"]]])
 
-        def extensionFiles = findFiles(glob: 'dependencies/che-plugin-registry/v3/plugins**/*')
+        def extensionFiles = findFiles(glob: 'dependencies/che-plugin-registry/v3/plugins**/*.yaml')
 
         extensionFiles.each { extensionFile ->
             echo "${extensionFile.getName()}"
             def extensionYaml = readYaml file: ${extensionFile.getName()}
             def extensionPath = extensionYaml.spec.extension
             echo "${extensionPath}"
-            if (extensionPath.contains("marketplace.visualstudio.com") {
+            if (extensionPath.contains("marketplace.visualstudio.com")) {
                 def registryLocation = extensionPath.split("//")[1]
                 echo "${registryLocation}"
 
