@@ -19,7 +19,7 @@ timeout(120) {
             submoduleCfg: [],
             userRemoteConfigs: [[url: "https://github.com/redhat-developer/codeready-workspaces.git"]]])
 
-        def extensionFiles = findFiles(glob: 'dependencies/che-plugin-registry/v3/plugins**/*.yaml')
+        def extensionFiles = findFiles(glob: 'dependencies/che-plugin-registry/v3/plugins/**/*.yaml')
 
         extensionFiles.each { extensionFile ->
             echo "${extensionFile.getName()}"
