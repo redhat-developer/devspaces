@@ -21,19 +21,18 @@ timeout(120) {
 
         def extensionFiles = findFiles(glob: 'crw/dependencies/che-plugin-registry/v3/plugins/**/meta.yaml')
 
-        echo "${extensionFiles}"
         extensionFiles.each { extensionFile ->
-            echo "${extensionFile.getName()}"
-            def extensionYaml = readYaml file: ${extensionFile.getName()}
+            def extensionYaml = readYaml file: ${extensionFile.getPath()}
             def extensionPath = extensionYaml.spec.extension
-            echo "${extensionPath}"
+            echo "processing extension ${extensionPath}"
             if (extensionPath.contains("marketplace.visualstudio.com")) {
                 def registryLocation = extensionPath.split("//")[1]
-                echo "${registryLocation}"
+                echo "selected extension ${registryLocation}"
 
                 // since there may be multiple plugins pointing to the same extension URL
                 // we just need to buld them once
                 if (jobs.containsKey(registryLocation)) {
+                    echo "duplicated plugin ${registryLocation} omitted"
                     continue
                 }
 
