@@ -22,7 +22,7 @@ timeout(120) {
         def extensionFiles = findFiles(glob: 'crw/dependencies/che-plugin-registry/v3/plugins/**/meta.yaml')
 
         extensionFiles.each { extensionFile ->
-            def extensionYaml = readYaml file: ${extensionFile.getPath()}
+            def extensionYaml = readYaml file: extensionFile.getPath()}
             def extensionPath = extensionYaml.spec.extension
             echo "processing extension ${extensionPath}"
             if (extensionPath.contains("marketplace.visualstudio.com")) {
