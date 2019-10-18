@@ -29,7 +29,7 @@ timeout(120) {
 
         installNPM()
         sh "cd ${extensionFolder} && sudo npm install -g vsce && sudo npm install -g gulp && npm install && vsce package"
-
-        archiveArtifacts artifacts: '**/*.vsix', fingerprint: true
+        sh "mv **/*.vsix ."
+        archiveArtifacts artifacts: '*.vsix', fingerprint: true
     }
 }
