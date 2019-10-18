@@ -21,7 +21,7 @@ USER 0
 
 ARG BOOTSTRAP=false
 ENV BOOTSTRAP=${BOOTSTRAP}
-ARG LATEST_ONLY=true
+ARG LATEST_ONLY=false
 ENV LATEST_ONLY=${LATEST_ONLY}
 
 # to get all the python deps pre-fetched so we can build in Brew:
