@@ -1,14 +1,14 @@
 #!/usr/bin/env groovy
 
 // build params
-//extensions - comma separated list of extensions
+//BranchToBuildCRW - branch for crw plugin registry
 
 timeout(120) {
     node {
         cleanWs()
         stage 'build extensions'
 
-        // key value map for
+        // key value map for build jobs, where key is extension location in the registry
         def jobs = [:]
 
         checkout([$class: 'GitSCM',
@@ -23,7 +23,11 @@ timeout(120) {
 
         extensionFiles.each { extensionFile ->
             def extensionYaml = readYaml file: extensionFile.getPath()
-            def extensionPath = extensionYaml.spec.extension
+            if (!extensionYaml.spec.extensions) {
+                echo "extensions are not present in plugin ${extensionFile.getPath()} skipping"
+                return
+            }
+            def extensionPath = extensionYaml.spec.extensions[0]
             echo "processing extension ${extensionPath}"
             if (extensionPath.contains("marketplace.visualstudio.com")) {
                 def registryLocation = extensionPath.split("//")[1]
@@ -33,7 +37,7 @@ timeout(120) {
                 // we just need to buld them once
                 if (jobs.containsKey(registryLocation)) {
                     echo "duplicated plugin ${registryLocation} omitted"
-                    continue
+                    return
                 }
 
                 def repository = extensionYaml.repository
@@ -52,14 +56,13 @@ timeout(120) {
                 jobs.put(registryLocation, buildjob)
             }
         }
-
+        sh "mkdir result"
         jobs.each { fileLocation, job ->
             echo "archiving artifact at ${fileLocation}"
-            copyArtifacts(projectName: 'vscode-extensions-packaging', selector: specific("${job.number}"), target: fileLocation)
+            copyArtifacts(projectName: 'vscode-extensions-packaging', selector: specific("${job.number}"), target: "result/" + fileLocation)
         }
 
-        sh "tar -cvf vscode-extensions-vsix.tar ."
-
+        sh "tar -cvf vscode-extensions-vsix.tar result"
 
         // TODO deploy artifact to pkgs.devel?
 
