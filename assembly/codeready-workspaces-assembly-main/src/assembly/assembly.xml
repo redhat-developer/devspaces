@@ -29,18 +29,18 @@
             <useProjectArtifact>false</useProjectArtifact>
             <unpack>false</unpack>
             <outputDirectory>tomcat/webapps</outputDirectory>
-            <outputFileNameMapping>dashboard.war</outputFileNameMapping>
+            <outputFileNameMapping>api.war</outputFileNameMapping>
             <includes>
-                <include>com.redhat:codeready-dashboard-war</include>
+                <include>com.redhat:assembly-wsmaster-war</include>
             </includes>
         </dependencySet>
         <dependencySet>
             <useProjectArtifact>false</useProjectArtifact>
             <unpack>false</unpack>
             <outputDirectory>tomcat/webapps</outputDirectory>
-            <outputFileNameMapping>api.war</outputFileNameMapping>
+            <outputFileNameMapping>dashboard.war</outputFileNameMapping>
             <includes>
-                <include>com.redhat:assembly-wsmaster-war</include>
+                <include>com.redhat:codeready-dashboard-war</include>
             </includes>
         </dependencySet>
         <dependencySet>
