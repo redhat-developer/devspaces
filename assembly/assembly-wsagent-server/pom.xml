@@ -24,11 +24,11 @@
     <packaging>pom</packaging>
     <name>CRW :: Workspace Agent Server</name>
     <dependencies>
-        <dependency>
+        <!-- <dependency>
             <groupId>com.redhat</groupId>
             <artifactId>codeready-workspaces-assembly-wsagent-war</artifactId>
             <type>war</type>
-        </dependency>
+        </dependency> -->
     </dependencies>
     <build>
         <plugins>

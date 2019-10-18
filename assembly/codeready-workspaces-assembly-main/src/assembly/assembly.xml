@@ -61,9 +61,9 @@
             <unpack>false</unpack>
             <outputDirectory>lib</outputDirectory>
             <outputFileNameMapping>ws-agent.tar.gz</outputFileNameMapping>
-            <includes>
+            <!-- <includes>
                 <include>com.redhat:codeready-workspaces-assembly-wsagent-server</include>
-            </includes>
+            </includes> -->
         </dependencySet>
     </dependencySets>
 

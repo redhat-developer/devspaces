@@ -25,9 +25,9 @@
             <unpack>false</unpack>
             <outputDirectory>webapps</outputDirectory>
             <outputFileNameMapping>ROOT.war</outputFileNameMapping>
-            <includes>
+            <!-- <includes>
                 <include>com.redhat:codeready-workspaces-assembly-wsagent-war</include>
-            </includes>
+            </includes> -->
         </dependencySet>
     </dependencySets>
     <fileSets>
