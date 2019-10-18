@@ -43,7 +43,7 @@
                 <include>com.redhat:codeready-dashboard-war</include>
             </includes>
         </dependencySet>
-        <dependencySet>
+        <!-- <dependencySet>
             <useProjectArtifact>false</useProjectArtifact>
             <unpack>true</unpack>
             <outputDirectory>templates</outputDirectory>
@@ -55,7 +55,7 @@
                     <exclude>META-INF/**</exclude>
                 </excludes>
             </unpackOptions>
-        </dependencySet>
+        </dependencySet> -->
         <dependencySet>
             <useProjectArtifact>false</useProjectArtifact>
             <unpack>false</unpack>

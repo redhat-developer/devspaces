@@ -40,10 +40,10 @@
             <artifactId>assembly-wsmaster-war</artifactId>
             <type>war</type>
         </dependency>
-        <dependency>
+        <!-- <dependency>
             <groupId>com.redhat</groupId>
             <artifactId>codeready-samples</artifactId>
-        </dependency>
+        </dependency> -->
         <dependency>
             <groupId>com.redhat</groupId>
             <artifactId>codeready-dashboard-war</artifactId>
