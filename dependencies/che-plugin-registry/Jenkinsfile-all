@@ -28,6 +28,7 @@ timeout(120) {
             echo "${extensionPath}"
             if (extensionPath.contains("marketplace.visualstudio.com") {
                 def registryLocation = extensionPath.split("//")[1]
+                echo "${registryLocation}"
 
                 // since there may be multiple plugins pointing to the same extension URL
                 // we just need to buld them once
@@ -44,9 +45,8 @@ timeout(120) {
                 // and prefixing with 'v'
                 def branch = "v" + extensionPath.split("${extensionName}/")[1].split("/vspackage")[0]
 
-                echo $"{branch}"
+                echo "${branch}"
 
-                echo "${registryLocation}
 
                 def buildjob = build job: 'vscode-extensions-packaging', parameters: [ string(name: 'extensionPath', value: repository), string(name: 'branchToBuildPlugin', value: branch) ]
                 jobs.put(registryLocation, buildjob)
