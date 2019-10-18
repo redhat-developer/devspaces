@@ -19,8 +19,9 @@ timeout(120) {
             submoduleCfg: [],
             userRemoteConfigs: [[url: "https://github.com/redhat-developer/codeready-workspaces.git"]]])
 
-        def extensionFiles = findFiles(glob: 'dependencies/che-plugin-registry/v3/plugins/**/*.yaml')
+        def extensionFiles = findFiles(glob: 'crw/dependencies/che-plugin-registry/v3/plugins/**/meta.yaml')
 
+        echo "${extensionFiles}"
         extensionFiles.each { extensionFile ->
             echo "${extensionFile.getName()}"
             def extensionYaml = readYaml file: ${extensionFile.getName()}
@@ -58,7 +59,6 @@ timeout(120) {
             copyArtifacts(projectName: 'vscode-extensions-packaging', selector: specific("${job.number}"), target: fileLocation)
         }
 
-        sh "ls -l"
         sh "tar -cvf vscode-extensions-vsix.tar ."
 
 
