@@ -60,8 +60,7 @@ codeready-workspaces/stacks-python-rhel8 \
 codeready-workspaces/plugin-dependency-analytics-rhel8 \
 codeready-workspaces/plugin-java11-rhel8 \
 codeready-workspaces/plugin-kubernetes-rhel8 \
-codeready-workspaces/plugin-openshift-rhel8 \
-"
+codeready-workspaces/plugin-openshift-rhel8"
 
 CRW20_CONTAINERS_PULP="\
 codeready-workspaces/operator-rhel8 \
@@ -82,13 +81,12 @@ codeready-workspaces/theia-endpoint-rhel8 \
 codeready-workspaces/stacks-cpp-rhel8  codeready-workspaces/stacks-dotnet-rhel8 \
 codeready-workspaces/stacks-golang-rhel8 codeready-workspaces/stacks-java-rhel8 \
 codeready-workspaces/stacks-node-rhel8    codeready-workspaces/stacks-php-rhel8 \
-codeready-workspaces/stacks-python-rhel8 \ 
+codeready-workspaces/stacks-python-rhel8 \
 \
 codeready-workspaces/plugin-dependency-analytics-rhel8 \
 codeready-workspaces/plugin-java11-rhel8 \
 codeready-workspaces/plugin-kubernetes-rhel8 \
-codeready-workspaces/plugin-openshift-rhel8 \
-"
+codeready-workspaces/plugin-openshift-rhel8"
 
 # regex pattern of container versions/names to exclude, eg., Beta1 (because version sort thinks 1.0.0.Beta1 > 1.0-12)
 EXCLUDES="\^" 
@@ -222,7 +220,10 @@ for URLfrag in $CONTAINERS; do
 		fi
 		LATESTTAGs=$(${QUERY} 2>/dev/null | jq .RepoTags | egrep -v "\[|\]|latest" | sed -e 's#.*\"\(.\+\)\",*#- \1#' | sort -V | grep "${URLfragtag}"|egrep -v "\"|latest"|egrep -v "${EXCLUDES}"|sed -e "s#^-##" -e "s#[\n\r\ ]\+##g"|tail -${NUMTAGS})
 	fi
-
+	if [[ ! ${LATESTTAGs} ]]; then
+	  nocontainer=${QUERY##*docker://}; nocontainer=${nocontainer%%-container}
+	  echo "[ERROR] No tags found for $nocontainer or ${nocontainer}-container. Is the container public and populated?"
+	fi
 	for LATESTTAG in ${LATESTTAGs}; do
 		if [[ "$REGISTRY" = *"registry.access.redhat.com"* ]]; then
 			if [[ $QUIET -eq 1 ]]; then
