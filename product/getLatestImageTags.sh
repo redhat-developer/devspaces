@@ -57,7 +57,7 @@ codeready-workspaces/stacks-golang-rhel8 codeready-workspaces/stacks-java-rhel8 
 codeready-workspaces/stacks-node-rhel8    codeready-workspaces/stacks-php-rhel8 \
 codeready-workspaces/stacks-python-rhel8 \
 \
-codeready-workspaces/plugin-dependency-analytics-rhel8 \
+codeready-workspaces/plugin-dependencyanalytics-rhel8 \
 codeready-workspaces/plugin-java11-rhel8 \
 codeready-workspaces/plugin-kubernetes-rhel8 \
 codeready-workspaces/plugin-openshift-rhel8"
@@ -83,7 +83,7 @@ codeready-workspaces/stacks-golang-rhel8 codeready-workspaces/stacks-java-rhel8 
 codeready-workspaces/stacks-node-rhel8    codeready-workspaces/stacks-php-rhel8 \
 codeready-workspaces/stacks-python-rhel8 \
 \
-codeready-workspaces/plugin-dependency-analytics-rhel8 \
+codeready-workspaces/plugin-dependencyanalytics-rhel8 \
 codeready-workspaces/plugin-java11-rhel8 \
 codeready-workspaces/plugin-kubernetes-rhel8 \
 codeready-workspaces/plugin-openshift-rhel8"
@@ -118,15 +118,16 @@ REGISTRY="https://registry.redhat.io" # or http://brew-pulp-docker01.web.prod.ex
 CONTAINERS=""
 while [[ "$#" -gt 0 ]]; do
   case $1 in
+    '--crw'|'--crw20') CONTAINERS="${CRW20_CONTAINERS_RHCC}"; EXCLUDES="Beta1"; shift 0;;
     '--crw12') CONTAINERS="${CRW12_CONTAINERS_RHCC}"; EXCLUDES="Beta1"; shift 0;;
-    '--crw20') CONTAINERS="${CRW20_CONTAINERS_RHCC}"; EXCLUDES="Beta1"; shift 0;;
     '-c') CONTAINERS="${CONTAINERS} $2"; shift 1;;
     '-x') EXCLUDES="$2"; shift 1;;
     '-q') QUIET=1; shift 0;;
     '-v') QUIET=0; VERBOSE=1; shift 0;;
     '-r') REGISTRY="$2"; shift 1;;
     '--stage') REGISTRY="http://registry.stage.redhat.io"; shift 1;;
-    '-p'|'--pulp') REGISTRY="http://brew-pulp-docker01.web.prod.ext.phx2.redhat.com:8888"; EXCLUDES="candidate|guest|containers"; shift 0;;
+    '--pulp-old') REGISTRY="http://brew-pulp-docker01.web.prod.ext.phx2.redhat.com:8888"; EXCLUDES="candidate|guest|containers"; shift 0;;
+    '-p'|'--pulp') REGISTRY="http://registry-proxy.engineering.redhat.com/rh-osbs"; EXCLUDES="candidate|guest|containers"; shift 0;;
     '-d'|'--docker') REGISTRY="http://docker.io"; shift 0;;
            '--quay') REGISTRY="http://quay.io"; shift 0;;
     '-n') NUMTAGS="$2"; shift 1;;
@@ -140,7 +141,10 @@ done
 if [[ ${REGISTRY} != "" ]]; then 
 	REGISTRYSTRING="--registry ${REGISTRY}"
 	REGISTRYPRE="${REGISTRY##*://}/"
-	if [[ ${REGISTRY} == *"brew-pulp-docker01"* ]]; then
+	if [[ ${REGISTRY} == *"registry-proxy.engineering.redhat.com"* ]]; then
+		if [[ ${CONTAINERS} == "${CRW12_CONTAINERS_RHCC}" ]] || [[ ${CONTAINERS} == "" ]]; then CONTAINERS="${CRW12_CONTAINERS_PULP//codeready-workspaces\//codeready-workspaces-}"; fi
+		if [[ ${CONTAINERS} == "${CRW20_CONTAINERS_RHCC}" ]]; then CONTAINERS="${CRW20_CONTAINERS_PULP//codeready-workspaces\//codeready-workspaces-}"; fi
+	elif [[ ${REGISTRY} == *"brew-pulp-docker01"* ]]; then
 		if [[ ${CONTAINERS} == "${CRW12_CONTAINERS_RHCC}" ]] || [[ ${CONTAINERS} == "" ]]; then CONTAINERS="${CRW12_CONTAINERS_PULP}"; fi
 		if [[ ${CONTAINERS} == "${CRW20_CONTAINERS_RHCC}" ]]; then CONTAINERS="${CRW20_CONTAINERS_PULP}"; fi
 	elif [[ ${REGISTRY} == *"quay.io"* ]]; then
@@ -171,30 +175,32 @@ fi
 if [[ ${CONTAINERS} == "" ]]; then usage; fi
 
 # special case!
-if [[ ${REGISTRY} == "http://brew-pulp-docker01.web.prod.ext.phx2.redhat.com:8888" ]] && [[ ${SHOWNVR} -eq 1 ]]; then
-  if [[ ${CONTAINERS} == "${CRW12_CONTAINERS_PULP}" ]]; then
-	for containername in ${CONTAINERS}; do
-		if [[ $containername == "codeready-workspaces/stacks-node" ]]; then candidateTag="codeready-1.0-rhel-7-candidate"; else candidateTag="crw-1.2-rhel-8-candidate"; fi
-		if [[ ${SHOWLOG} -eq 1 ]]; then
-			brew list-tagged ${candidateTag} | grep "${containername/\//-}" | sort -V | tail -${NUMTAGS} | sed -e "s#[\ \t]\+${candidateTag}.\+##" | \
-				sed -e "s#\(.\+\)-container-\([0-9.]\+\)-\([0-9]\+\)#\0 - http://download.eng.bos.redhat.com/brewroot/packages/\1-container/\2/\3/data/logs/x86_64.log#"
-		else
-			brew list-tagged ${candidateTag} | grep "${containername/\//-}" | sort -V | tail -${NUMTAGS} | sed -e "s#[\ \t]\+${candidateTag}.\+##"
+if [[ ${REGISTRY} == *"registry-proxy.engineering.redhat.com"* ]] || [[ ${REGISTRY} == "http://brew-pulp-docker01.web.prod.ext.phx2.redhat.com:8888" ]]; then 
+  	if [[ ${SHOWNVR} -eq 1 ]]; then 
+		if [[ ${CONTAINERS} == "${CRW12_CONTAINERS_PULP}" ]]; then
+			for containername in ${CONTAINERS}; do
+				if [[ $containername == "codeready-workspaces/stacks-node" ]]; then candidateTag="codeready-1.0-rhel-7-candidate"; else candidateTag="crw-1.2-rhel-8-candidate"; fi
+				if [[ ${SHOWLOG} -eq 1 ]]; then
+					brew list-tagged ${candidateTag} | grep "${containername/\//-}" | sort -V | tail -${NUMTAGS} | sed -e "s#[\ \t]\+${candidateTag}.\+##" | \
+						sed -e "s#\(.\+\)-container-\([0-9.]\+\)-\([0-9]\+\)#\0 - http://download.eng.bos.redhat.com/brewroot/packages/\1-container/\2/\3/data/logs/x86_64.log#"
+				else
+					brew list-tagged ${candidateTag} | grep "${containername/\//-}" | sort -V | tail -${NUMTAGS} | sed -e "s#[\ \t]\+${candidateTag}.\+##"
+				fi
+			done
+			exit
+		elif [[ ${CONTAINERS} == "${CRW20_CONTAINERS_PULP}" ]]; then
+			for containername in ${CONTAINERS}; do
+				candidateTag="crw-2.0-rhel-8-candidate"
+				if [[ ${SHOWLOG} -eq 1 ]]; then
+					brew list-tagged ${candidateTag} | grep "${containername/\//-}" | sort -V | tail -${NUMTAGS} | sed -e "s#[\ \t]\+${candidateTag}.\+##" | \
+						sed -e "s#\(.\+\)-container-\([0-9.]\+\)-\([0-9]\+\)#\0 - http://download.eng.bos.redhat.com/brewroot/packages/\1-container/\2/\3/data/logs/x86_64.log#"
+				else
+					brew list-tagged ${candidateTag} | grep "${containername/\//-}" | sort -V | tail -${NUMTAGS} | sed -e "s#[\ \t]\+${candidateTag}.\+##"
+				fi
+			done
+			exit
 		fi
-	done
-	exit
-  elif [[ ${CONTAINERS} == "${CRW20_CONTAINERS_PULP}" ]]; then
-	for containername in ${CONTAINERS}; do
-		candidateTag="crw-2.0-rhel-8-candidate"
-		if [[ ${SHOWLOG} -eq 1 ]]; then
-			brew list-tagged ${candidateTag} | grep "${containername/\//-}" | sort -V | tail -${NUMTAGS} | sed -e "s#[\ \t]\+${candidateTag}.\+##" | \
-				sed -e "s#\(.\+\)-container-\([0-9.]\+\)-\([0-9]\+\)#\0 - http://download.eng.bos.redhat.com/brewroot/packages/\1-container/\2/\3/data/logs/x86_64.log#"
-		else
-			brew list-tagged ${candidateTag} | grep "${containername/\//-}" | sort -V | tail -${NUMTAGS} | sed -e "s#[\ \t]\+${candidateTag}.\+##"
-		fi
-	done
-	exit
-  fi
+	fi
 fi
 
 echo ""
@@ -207,19 +213,36 @@ for URLfrag in $CONTAINERS; do
 		URL="https://access.redhat.com/containers/?tab=tags#/registry.access.redhat.com/${URLfrag%%:*}"
 		URLfragtag="^- ${URLfragtag}"
 	fi
-	# if [[ $VERBOSE -eq 1 ]]; then echo "URL=$URL"; fi
-	QUERY="$(echo $URL | sed -e "s#.\+\(registry.redhat.io\|registry.access.redhat.com\)/#skopeo inspect docker://${REGISTRYPRE}#g")"
-	if [[ $VERBOSE -eq 1 ]]; then 
-		echo ""; echo "# $QUERY | jq .RepoTags | egrep -v \"\[|\]|latest\" | sed -e 's#.*\"\(.\+\)\",*#- \1#' | sort -V|tail -5"
-	fi
-	LATESTTAGs=$(${QUERY} 2>/dev/null | jq .RepoTags | egrep -v "\[|\]|latest" | sed -e 's#.*\"\(.\+\)\",*#- \1#' | sort -V | grep "${URLfragtag}"|egrep -v "\"|latest"|egrep -v "${EXCLUDES}"|sed -e "s#^-##" -e "s#[\n\r\ ]\+##g"|tail -${NUMTAGS})
-	if [[ ! ${LATESTTAGs} ]]; then # try again with -container suffix
-		QUERY="$(echo ${URL}-container | sed -e "s#.\+\(registry.redhat.io\|registry.access.redhat.com\)/#skopeo inspect docker://${REGISTRYPRE}#g")"
+
+	if [[ ${REGISTRY} == *"registry-proxy.engineering.redhat.com"* ]]; then
+		QUERY="$(echo $URL | sed -e "s#.\+\(registry.redhat.io\|registry.access.redhat.com\)/#skopeo inspect docker://${REGISTRYPRE}#g")"
 		if [[ $VERBOSE -eq 1 ]]; then 
-			echo ""; echo "# $QUERY | jq .RepoTags | egrep -v \"\[|\]|latest\" | sed -e 's#.*\"\(.\+\)\",*#- \1#' | sort -V|tail -5" 
+			echo ""; echo "# $QUERY | jq .Labels.url | sed -e 's#.\+/images/\(.\+\)\".*#\1#'"
+		fi
+		LATESTTAGs=$(${QUERY} 2>/dev/null | jq .Labels.url | sed -e 's#.\+/images/\(.\+\)\".*#\1#')
+		if [[ ! ${LATESTTAGs} ]]; then # try again with -container suffix
+			QUERY="$(echo ${URL}-container | sed -e "s#.\+\(registry.redhat.io\|registry.access.redhat.com\)/#skopeo inspect docker://${REGISTRYPRE}#g")"
+			if [[ $VERBOSE -eq 1 ]]; then 
+				echo ""; echo "# $QUERY | jq .Labels.url | sed -e 's#.\+/images/\(.\+\)\".*#\1#'" 
+			fi
+			LATESTTAGs=$(${QUERY} 2>/dev/null | jq .Labels.url | sed -e 's#.\+/images/\(.\+\)\".*#\1#')
+		fi
+	else
+		# if [[ $VERBOSE -eq 1 ]]; then echo "URL=$URL"; fi
+		QUERY="$(echo $URL | sed -e "s#.\+\(registry.redhat.io\|registry.access.redhat.com\)/#skopeo inspect docker://${REGISTRYPRE}#g")"
+		if [[ $VERBOSE -eq 1 ]]; then 
+			echo ""; echo "# $QUERY | jq .RepoTags | egrep -v \"\[|\]|latest\" | sed -e 's#.*\"\(.\+\)\",*#- \1#' | sort -V|tail -5"
 		fi
 		LATESTTAGs=$(${QUERY} 2>/dev/null | jq .RepoTags | egrep -v "\[|\]|latest" | sed -e 's#.*\"\(.\+\)\",*#- \1#' | sort -V | grep "${URLfragtag}"|egrep -v "\"|latest"|egrep -v "${EXCLUDES}"|sed -e "s#^-##" -e "s#[\n\r\ ]\+##g"|tail -${NUMTAGS})
+		if [[ ! ${LATESTTAGs} ]]; then # try again with -container suffix
+			QUERY="$(echo ${URL}-container | sed -e "s#.\+\(registry.redhat.io\|registry.access.redhat.com\)/#skopeo inspect docker://${REGISTRYPRE}#g")"
+			if [[ $VERBOSE -eq 1 ]]; then 
+				echo ""; echo "# $QUERY | jq .RepoTags | egrep -v \"\[|\]|latest\" | sed -e 's#.*\"\(.\+\)\",*#- \1#' | sort -V|tail -5" 
+			fi
+			LATESTTAGs=$(${QUERY} 2>/dev/null | jq .RepoTags | egrep -v "\[|\]|latest" | sed -e 's#.*\"\(.\+\)\",*#- \1#' | sort -V | grep "${URLfragtag}"|egrep -v "\"|latest"|egrep -v "${EXCLUDES}"|sed -e "s#^-##" -e "s#[\n\r\ ]\+##g"|tail -${NUMTAGS})
+		fi
 	fi
+
 	if [[ ! ${LATESTTAGs} ]]; then
 	  nocontainer=${QUERY##*docker://}; nocontainer=${nocontainer%%-container}
 	  echo "[ERROR] No tags found for $nocontainer or ${nocontainer}-container. Is the container public and populated?"
