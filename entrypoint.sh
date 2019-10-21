@@ -260,8 +260,8 @@ init() {
   fi
 
   [ -z "$CHE_DATABASE" ] && export CHE_DATABASE=${CHE_DATA}/storage
-  [ -z "$CHE_TEMPLATE_STORAGE" ] && export CHE_TEMPLATE_STORAGE=${CHE_DATA}/templates
-  mkdir -p ${CHE_TEMPLATE_STORAGE}
+  [ -z "$CHE_TEMPLATE_STORAGE" ] && export CHE_TEMPLATE_STORAGE="${CHE_DATA}/templates"
+  mkdir -p "${CHE_TEMPLATE_STORAGE}"
 
   perform_database_migration
 
