@@ -38,8 +38,11 @@ codeready-workspaces/stacks-node"
 
 CRW20_CONTAINERS_RHCC="\
 codeready-workspaces/server-operator-rhel8 \
-\
 codeready-workspaces/server-rhel8 \
+\
+codeready-workspaces/devfileregistry-rhel8 \
+codeready-workspaces/pluginregistry-rhel8 \
+\
 codeready-workspaces/machineexec-rhel8 \
 codeready-workspaces/jwtproxy-rhel8 \
 codeready-workspaces/pluginbrokerinit-rhel8 \
@@ -49,19 +52,24 @@ codeready-workspaces/theia-rhel8 \
 codeready-workspaces/theia-dev-rhel8 \
 codeready-workspaces/theia-endpoint-rhel8 \
 \
-codeready-workspaces/devfileregistry-rhel8 \
-codeready-workspaces/pluginregistry-rhel8 \
+codeready-workspaces/stacks-cpp-rhel8  codeready-workspaces/stacks-dotnet-rhel8 \
+codeready-workspaces/stacks-golang-rhel8 codeready-workspaces/stacks-java-rhel8 \
+codeready-workspaces/stacks-node-rhel8    codeready-workspaces/stacks-php-rhel8 \
+codeready-workspaces/stacks-python-rhel8 \
 \
-codeready-workspaces/plugin-java8-rhel8 \
+codeready-workspaces/plugin-dependency-analytics-rhel8 \
+codeready-workspaces/plugin-java11-rhel8 \
+codeready-workspaces/plugin-kubernetes-rhel8 \
 codeready-workspaces/plugin-openshift-rhel8 \
-\
-codeready-workspaces/stacks-cpp-rhel8 codeready-workspaces/stacks-dotnet-rhel8 codeready-workspaces/stacks-golang-rhel8 codeready-workspaces/stacks-java-rhel8 \
-codeready-workspaces/stacks-node-rhel8 codeready-workspaces/stacks-php-rhel8 codeready-workspaces/stacks-python-rhel8" # codeready-workspaces/stacks-node
+"
 
 CRW20_CONTAINERS_PULP="\
 codeready-workspaces/operator-rhel8 \
-\
 codeready-workspaces/server-rhel8 \
+\
+codeready-workspaces/devfileregistry-rhel8 \
+codeready-workspaces/pluginregistry-rhel8 \
+\
 codeready-workspaces/machineexec-rhel8 \
 codeready-workspaces/jwtproxy-rhel8 \
 codeready-workspaces/pluginbrokerinit-rhel8 \
@@ -71,14 +79,16 @@ codeready-workspaces/theia-rhel8 \
 codeready-workspaces/theia-dev-rhel8 \
 codeready-workspaces/theia-endpoint-rhel8 \
 \
-codeready-workspaces/devfileregistry-rhel8 \
-codeready-workspaces/pluginregistry-rhel8 \
+codeready-workspaces/stacks-cpp-rhel8  codeready-workspaces/stacks-dotnet-rhel8 \
+codeready-workspaces/stacks-golang-rhel8 codeready-workspaces/stacks-java-rhel8 \
+codeready-workspaces/stacks-node-rhel8    codeready-workspaces/stacks-php-rhel8 \
+codeready-workspaces/stacks-python-rhel8 \ 
 \
-codeready-workspaces/plugin-java8-rhel8 \
+codeready-workspaces/plugin-dependency-analytics-rhel8 \
+codeready-workspaces/plugin-java11-rhel8 \
+codeready-workspaces/plugin-kubernetes-rhel8 \
 codeready-workspaces/plugin-openshift-rhel8 \
-\
-codeready-workspaces/stacks-cpp-rhel8 codeready-workspaces/stacks-dotnet-rhel8 codeready-workspaces/stacks-golang-rhel8 codeready-workspaces/stacks-java-rhel8 \
-codeready-workspaces/stacks-node-rhel8 codeready-workspaces/stacks-php-rhel8 codeready-workspaces/stacks-python-rhel8" # codeready-workspaces/stacks-node
+"
 
 # regex pattern of container versions/names to exclude, eg., Beta1 (because version sort thinks 1.0.0.Beta1 > 1.0-12)
 EXCLUDES="\^" 
@@ -92,14 +102,15 @@ SHOWLOG=0; # show URL of the console log
 usage () {
 	echo "
 Usage: 
-  $0 --crw                                                   | use default list of CRW images in RHCC Prod
-  $0 --crw -r registry.access.stage.redhat.com               | use default list of CRW images in RHCC Stage
+  $0 --crw12                                                 | use default list of CRW images in RHCC Prod
+  $0 --crw12 --stage                                         | use default list of CRW images in RHCC Stage
+  $0 --crw20 --quay                                          | use default list of CRW images in quay.io/crw
   $0 -c 'rhoar-nodejs/nodejs-10 jboss-eap-7/eap72-openshift' | use specific list of RHCC images
   $0 -c ubi7 -c ubi8:8.0 --pulp -n 5                         | check pulp registry; show 8.0* tags; show 5 tags per container
   $0 -c ubi7 -c ubi8:8.0 --stage -n 5                        | check RHCC stage registry; show 8.0* tags; show 5 tags per container
   $0 -c pivotaldata/centos --docker --dockerfile             | check docker registry; show Dockerfile contents (requires dfimage)
   $0 --crw12 --pulp --nvr --log                              | check for latest images in pulp; output NVRs can be copied to Errata; show links to Brew logs
-  $0 --crw20 --pulp --nvr --log                              | check for latest images in pulp; output NVRs can be copied to Errata; show links to Brew logs
+  $0 --crw20 --pulp --nvr                                    | check for latest images in pulp; output NVRs can be copied to Errata
 "
 	exit
 }
@@ -118,7 +129,7 @@ while [[ "$#" -gt 0 ]]; do
     '-r') REGISTRY="$2"; shift 1;;
     '--stage') REGISTRY="http://registry.stage.redhat.io"; shift 1;;
     '-p'|'--pulp') REGISTRY="http://brew-pulp-docker01.web.prod.ext.phx2.redhat.com:8888"; EXCLUDES="candidate|guest|containers"; shift 0;;
-    '-d'|'--docker') REGISTRY=""; shift 0;;
+    '-d'|'--docker') REGISTRY="http://docker.io"; shift 0;;
            '--quay') REGISTRY="http://quay.io"; shift 0;;
     '-n') NUMTAGS="$2"; shift 1;;
     '--dockerfile') SHOWHISTORY=1; shift 0;;
@@ -145,6 +156,10 @@ if [[ ${REGISTRY} != "" ]]; then
 else
 	REGISTRYSTRING=""
 	REGISTRYPRE=""
+fi
+if [[ $VERBOSE -eq 1 ]]; then 
+	echo REGISTRYSTRING = $REGISTRYSTRING
+	echo REGISTRYPRE = $REGISTRYPRE
 fi
 
 # see https://hub.docker.com/r/laniksj/dfimage
@@ -195,13 +210,13 @@ for URLfrag in $CONTAINERS; do
 		URLfragtag="^- ${URLfragtag}"
 	fi
 	# if [[ $VERBOSE -eq 1 ]]; then echo "URL=$URL"; fi
-	QUERY="$(echo $URL | sed -e "s#.\+\(registry.redhat.io\|registry.access.redhat.com\)/#skopeo inspect docker://registry.redhat.io/#g")"
+	QUERY="$(echo $URL | sed -e "s#.\+\(registry.redhat.io\|registry.access.redhat.com\)/#skopeo inspect docker://${REGISTRYPRE}#g")"
 	if [[ $VERBOSE -eq 1 ]]; then 
 		echo ""; echo "# $QUERY | jq .RepoTags | egrep -v \"\[|\]|latest\" | sed -e 's#.*\"\(.\+\)\",*#- \1#' | sort -V|tail -5"
 	fi
 	LATESTTAGs=$(${QUERY} 2>/dev/null | jq .RepoTags | egrep -v "\[|\]|latest" | sed -e 's#.*\"\(.\+\)\",*#- \1#' | sort -V | grep "${URLfragtag}"|egrep -v "\"|latest"|egrep -v "${EXCLUDES}"|sed -e "s#^-##" -e "s#[\n\r\ ]\+##g"|tail -${NUMTAGS})
 	if [[ ! ${LATESTTAGs} ]]; then # try again with -container suffix
-		QUERY="$(echo ${URL}-container | sed -e "s#.\+\(registry.redhat.io\|registry.access.redhat.com\)/#skopeo inspect docker://registry.redhat.io/#g")"
+		QUERY="$(echo ${URL}-container | sed -e "s#.\+\(registry.redhat.io\|registry.access.redhat.com\)/#skopeo inspect docker://${REGISTRYPRE}#g")"
 		if [[ $VERBOSE -eq 1 ]]; then 
 			echo ""; echo "# $QUERY | jq .RepoTags | egrep -v \"\[|\]|latest\" | sed -e 's#.*\"\(.\+\)\",*#- \1#' | sort -V|tail -5" 
 		fi
@@ -226,9 +241,9 @@ for URLfrag in $CONTAINERS; do
 					echo "${ufrag}-container-${LATESTTAG}"
 				fi
 			elif [[ $QUIET -eq 1 ]]; then
-				echo "${URLfrag%%:*}:${LATESTTAG}"
+				echo "${REGISTRYPRE}${URLfrag%%:*}:${LATESTTAG}"
 			else
-				echo "${URLfrag%%:*}:${LATESTTAG} :: ${REGISTRY}"
+				echo "${URLfrag%%:*}:${LATESTTAG} :: ${REGISTRY}/${URLfrag%%:*}:${LATESTTAG}"
 			fi
 		else
 			echo "${URLfrag}:${LATESTTAG}"
