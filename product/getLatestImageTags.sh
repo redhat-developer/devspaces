@@ -97,6 +97,8 @@ NUMTAGS=1 # by default show only the latest tag for each container; or show n la
 SHOWHISTORY=0 # compute the base images defined in the Dockerfile's FROM statement(s): NOTE: requires that the image be pulled first 
 SHOWNVR=0; # show NVR format instead of repo/container:tag format
 SHOWLOG=0; # show URL of the console log
+PUSHTOQUAY=0; # utility method to pull then push to quay
+PUSHTOQUAYTAGS=""; # utility method to pull then push to quay (extra tags to push)
 usage () {
 	echo "
 Usage: 
@@ -109,6 +111,7 @@ Usage:
   $0 -c pivotaldata/centos --docker --dockerfile             | check docker registry; show Dockerfile contents (requires dfimage)
   $0 --crw12 --pulp --nvr --log                              | check for latest images in pulp; output NVRs can be copied to Errata; show links to Brew logs
   $0 --crw20 --pulp --nvr                                    | check for latest images in pulp; output NVRs can be copied to Errata
+  $0 --crw20 --pulp --pushtoquay='2.0 latest'                | pull images from pulp, then push matching tag to quay, including extra tags if set
 "
 	exit
 }
@@ -116,8 +119,10 @@ if [[ $# -lt 1 ]]; then usage; fi
 
 REGISTRY="https://registry.redhat.io" # or http://brew-pulp-docker01.web.prod.ext.phx2.redhat.com:8888 or https://registry-1.docker.io or https://registry.access.redhat.com
 CONTAINERS=""
-while [[ "$#" -gt 0 ]]; do
-  case $1 in
+# while [[ "$#" -gt 0 ]]; do
+#   case $1 in
+for key in "$@"; do
+  case $key in
     '--crw'|'--crw20') CONTAINERS="${CRW20_CONTAINERS_RHCC}"; EXCLUDES="Beta1"; shift 0;;
     '--crw12') CONTAINERS="${CRW12_CONTAINERS_RHCC}"; EXCLUDES="Beta1"; shift 0;;
     '-c') CONTAINERS="${CONTAINERS} $2"; shift 1;;
@@ -130,6 +135,8 @@ while [[ "$#" -gt 0 ]]; do
     '-p'|'--pulp') REGISTRY="http://registry-proxy.engineering.redhat.com/rh-osbs"; EXCLUDES="candidate|guest|containers"; shift 0;;
     '-d'|'--docker') REGISTRY="http://docker.io"; shift 0;;
            '--quay') REGISTRY="http://quay.io"; shift 0;;
+           '--pushtoquay') PUSHTOQUAY=1; PUSHTOQUAYTAGS=""; shift 0;;
+           --pushtoquay=*) PUSHTOQUAY=1; PUSHTOQUAYTAGS="$(echo "${key#*=}")"; shift 0;;
     '-n') NUMTAGS="$2"; shift 1;;
     '--dockerfile') SHOWHISTORY=1; shift 0;;
     '--nvr') SHOWNVR=1; shift 0;;
@@ -138,6 +145,7 @@ while [[ "$#" -gt 0 ]]; do
   esac
   shift 1
 done
+
 if [[ ${REGISTRY} != "" ]]; then 
 	REGISTRYSTRING="--registry ${REGISTRY}"
 	REGISTRYPRE="${REGISTRY##*://}/"
@@ -272,6 +280,21 @@ for URLfrag in $CONTAINERS; do
 		else
 			echo "${URLfrag}:${LATESTTAG}"
 		fi
+
+		if [[ ${PUSHTOQUAY} ]] && [[ ${REGISTRY} != *"quay.io"* ]]; then
+		    QUAYDEST="${REGISTRYPRE}${URLfrag}"; QUAYDEST="quay.io/crw/${QUAYDEST##*codeready-workspaces-}"
+			if [[ $VERBOSE -eq 1 ]]; then echo "Push ${REGISTRYPRE}${URLfrag}:${LATESTTAG} to ${QUAYDEST}:${LATESTTAG}"; fi
+			docker pull ${REGISTRYPRE}${URLfrag}:${LATESTTAG}
+			docker tag ${REGISTRYPRE}${URLfrag}:${LATESTTAG} ${QUAYDEST}:${LATESTTAG} && docker push ${QUAYDEST}:${LATESTTAG} && \
+			docker image rm -f ${QUAYDEST}:${LATESTTAG} >/dev/null
+			for qtag in ${PUSHTOQUAYTAGS}; do
+				if [[ $VERBOSE -eq 1 ]]; then echo "Push ${REGISTRYPRE}${URLfrag}:${LATESTTAG} to ${QUAYDEST}:${qtag}"; fi
+				docker tag ${REGISTRYPRE}${URLfrag}:${LATESTTAG} ${QUAYDEST}:${qtag} && docker push ${QUAYDEST}:${qtag} && \
+				docker image rm -f ${QUAYDEST}:${qtag} >/dev/null
+			done
+			docker image rm -f ${REGISTRYPRE}${URLfrag}:${LATESTTAG} >/dev/null
+		fi
+
 		if [[ ${SHOWHISTORY} -eq 1 ]]; then
 			if [[ $VERBOSE -eq 1 ]]; then echo "Pull ${REGISTRYPRE}${URLfrag}:${LATESTTAG} ..."; fi
 			if [[ ! $(docker images | grep ${URLfrag} | grep ${LATESTTAG}) ]]; then 
