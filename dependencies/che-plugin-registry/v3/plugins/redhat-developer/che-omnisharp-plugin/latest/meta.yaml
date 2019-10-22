@@ -16,5 +16,8 @@ spec:
   - image: "quay.io/crw/stacks-dotnet-rhel8:2.0"
     name: theia-omnisharp
     memoryLimit: "1024Mi"
+    volumes:
+    - mountPath: "/home/jboss/.nuget"
+      name: nuget
   extensions:
   - https://github.com/redhat-developer/omnisharp-theia-plugin/releases/download/v0.0.5/omnisharp_theia_plugin.theia
