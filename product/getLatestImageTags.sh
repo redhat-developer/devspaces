@@ -281,7 +281,7 @@ for URLfrag in $CONTAINERS; do
 			echo "${URLfrag}:${LATESTTAG}"
 		fi
 
-		if [[ ${PUSHTOQUAY} ]] && [[ ${REGISTRY} != *"quay.io"* ]]; then
+		if [[ ${PUSHTOQUAY} -eq 1 ]] && [[ ${REGISTRY} != *"quay.io"* ]]; then
 		    QUAYDEST="${REGISTRYPRE}${URLfrag}"; QUAYDEST="quay.io/crw/${QUAYDEST##*codeready-workspaces-}"
 			if [[ $VERBOSE -eq 1 ]]; then echo "Push ${REGISTRYPRE}${URLfrag}:${LATESTTAG} to ${QUAYDEST}:${LATESTTAG}"; fi
 			docker pull ${REGISTRYPRE}${URLfrag}:${LATESTTAG}
