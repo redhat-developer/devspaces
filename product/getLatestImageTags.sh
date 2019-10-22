@@ -57,10 +57,10 @@ codeready-workspaces/stacks-golang-rhel8 codeready-workspaces/stacks-java-rhel8 
 codeready-workspaces/stacks-node-rhel8    codeready-workspaces/stacks-php-rhel8 \
 codeready-workspaces/stacks-python-rhel8 \
 \
-codeready-workspaces/plugin-dependencyanalytics-rhel8 \
-codeready-workspaces/plugin-java11-rhel8 \
 codeready-workspaces/plugin-kubernetes-rhel8 \
 codeready-workspaces/plugin-openshift-rhel8"
+# codeready-workspaces/plugin-dependencyanalytics-rhel8 \
+# codeready-workspaces/plugin-java11-rhel8 \
 
 CRW20_CONTAINERS_PULP="\
 codeready-workspaces/operator-rhel8 \
@@ -83,10 +83,10 @@ codeready-workspaces/stacks-golang-rhel8 codeready-workspaces/stacks-java-rhel8 
 codeready-workspaces/stacks-node-rhel8    codeready-workspaces/stacks-php-rhel8 \
 codeready-workspaces/stacks-python-rhel8 \
 \
-codeready-workspaces/plugin-dependencyanalytics-rhel8 \
-codeready-workspaces/plugin-java11-rhel8 \
 codeready-workspaces/plugin-kubernetes-rhel8 \
 codeready-workspaces/plugin-openshift-rhel8"
+# codeready-workspaces/plugin-dependencyanalytics-rhel8 \
+# codeready-workspaces/plugin-java11-rhel8 \
 
 # regex pattern of container versions/names to exclude, eg., Beta1 (because version sort thinks 1.0.0.Beta1 > 1.0-12)
 EXCLUDES="\^" 
