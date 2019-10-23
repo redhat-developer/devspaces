@@ -45,10 +45,11 @@ RUN mkdir -p /home/jboss/codeready
 COPY assembly/codeready-workspaces-assembly-main/target/codeready-workspaces-assembly-main.tar.gz /tmp/codeready-workspaces-assembly-main.tar.gz
 RUN tar xzf /tmp/codeready-workspaces-assembly-main.tar.gz --strip-components=1 -C /home/jboss/codeready && \
     rm -f /tmp/codeready-workspaces-assembly-main.tar.gz && \
-    cp /etc/pki/java/cacerts /home/jboss/cacerts && \
+    cp /etc/pki/java/cacerts /home/jboss/cacerts && chmod 644 /home/jboss/cacerts && \
     mkdir -p /logs /data && \
     chgrp -R 0     /home/jboss /data /logs && \
-    chmod -R g+rwX /home/jboss /data /logs
+    chmod -R g+rwX /home/jboss /data /logs && \
+    chown -R jboss /home/jboss
 # NOTE: Can not run yum commands in upstream image -- fails due to lack of subscription / entitlement
 # RUN yum update -y python3-six pango && yum clean all && rm -rf /var/cache/yum && echo "Installed Packages" && rpm -qa | sort -V && echo "End Of Installed Packages"
 

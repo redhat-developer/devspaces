@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (c) 2018-2019 Red Hat, Inc.
-
+    Copyright (c) 2019 Red Hat, Inc.
     This program and the accompanying materials are made
     available under the terms of the Eclipse Public License 2.0
     which is available at https://www.eclipse.org/legal/epl-2.0/
@@ -13,8 +12,7 @@
       Red Hat, Inc. - initial API and implementation
 
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <artifactId>codeready-assembly-parent</artifactId>
@@ -23,37 +21,16 @@
     </parent>
     <artifactId>codeready-workspaces-assembly-main</artifactId>
     <packaging>pom</packaging>
-    <name>CRW :: Tomcat Assembly</name>
-
+    <name>CRW :: Assembly :: Tomcat</name>
     <properties>
         <jbossNexus>repository.jboss.org</jbossNexus>
     </properties>
-
     <dependencies>
-        <!-- <dependency>
-            <groupId>com.redhat</groupId>
-            <artifactId>codeready-workspaces-assembly-wsagent-server</artifactId>
-            <type>tar.gz</type>
-        </dependency> -->
         <dependency>
             <groupId>com.redhat</groupId>
-            <artifactId>assembly-wsmaster-war</artifactId>
+            <artifactId>codeready-workspaces-assembly-dashboard-war</artifactId>
             <type>war</type>
         </dependency>
-        <!-- <dependency>
-            <groupId>com.redhat</groupId>
-            <artifactId>codeready-samples</artifactId>
-        </dependency> -->
-        <dependency>
-            <groupId>com.redhat</groupId>
-            <artifactId>codeready-dashboard-war</artifactId>
-            <type>war</type>
-        </dependency>
-        <!-- <dependency>
-            <groupId>com.redhat</groupId>
-            <artifactId>codeready-ide-assembly-ide-war</artifactId>
-            <type>war</type>
-        </dependency> -->
     </dependencies>
     <build>
         <plugins>
@@ -104,89 +81,6 @@
                     </execution>
                 </executions>
             </plugin>
-            <plugin>
-                <groupId>org.sonatype.plugins</groupId>
-                <artifactId>nexus-staging-maven-plugin</artifactId>
-                <version>1.6.7</version>
-                <extensions>true</extensions>
-                <configuration>
-                    <!-- The Base URL of Nexus instance where we want to stage -->
-                    <nexusUrl>https://${jbossNexus}/nexus/</nexusUrl>
-                    <!-- The server "id" element from settings to use authentication from -->
-                    <serverId>jboss-releases-repository</serverId>
-                </configuration>
-            </plugin>
         </plugins>
     </build>
-
-    <repositories>
-        <repository>
-            <id>jboss-releases</id>
-            <name>JBoss Releases Maven Repository</name>
-            <url>https://${jbossNexus}/nexus/content/repositories/releases/</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-        </repository>
-        <repository>
-            <id>jboss-snapshots-repository</id>
-            <name>JBoss Snapshots Repository</name>
-            <url>https://${jbossNexus}/nexus/content/repositories/snapshots/</url>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </repository>
-        <repository>
-            <id>jboss-ga-repository</id>
-            <name>JBoss General Availability Maven Repository</name>
-            <url>http://maven.repository.redhat.com/ga/</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-        </repository>
-    </repositories>
-
-    <distributionManagement>
-        <snapshotRepository>
-            <id>jboss-snapshots-repository</id>
-            <name>JBoss Snapshots Repository</name>
-            <url>https://${jbossNexus}/nexus/content/repositories/snapshots/</url>
-            <uniqueVersion>false</uniqueVersion>
-        </snapshotRepository>
-        <repository>
-            <id>jboss-releases-repository</id>
-            <name>JBoss Release Staging Repository</name>
-            <uniqueVersion>false</uniqueVersion>
-            <url>https://${jbossNexus}/nexus/service/local/staging/deploy/maven2/</url>
-            <layout>default</layout>
-        </repository>
-    </distributionManagement>
-
-    <scm>
-        <connection>scm:git:git://git@github.com:redhat-developer/codeready-workspaces.git</connection>
-        <developerConnection>scm:git:ssh://git@github.com:redhat-developer/codeready-workspaces.git</developerConnection>
-        <url>git://github.com/redhat-developer/codeready-workspaces.git</url>
-    </scm>
-
-    <issueManagement>
-        <system>jira</system>
-        <url>https://jira.jboss.org/jira/secure/</url>
-    </issueManagement>
-
-    <licenses>
-        <license>
-            <name>Eclipse Public License - v 2.0</name>
-            <url>https://www.eclipse.org/legal/epl-2.0/</url>
-        </license>
-    </licenses>
-
-    <developers>
-        <developer>
-            <id>CodeReady Workspaces</id>
-            <name>CodeReady Workspaces</name>
-            <organization>Red Hat</organization>
-            <organizationUrl>https://developers.redhat.com/products/codeready-workspaces/</organizationUrl>
-        </developer>
-    </developers>
-
 </project>

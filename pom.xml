@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (c) 2018-2019 Red Hat, Inc.
-
+    Copyright (c) 2019 Red Hat, Inc.
     This program and the accompanying materials are made
     available under the terms of the Eclipse Public License 2.0
     which is available at https://www.eclipse.org/legal/epl-2.0/
@@ -13,8 +12,7 @@
       Red Hat, Inc. - initial API and implementation
 
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <artifactId>maven-depmgt-pom</artifactId>
@@ -34,67 +32,26 @@
             <distribution>repo</distribution>
         </license>
     </licenses>
+    <modules>
+        <module>assembly</module>
+        <module>test</module>
+    </modules>
     <properties>
-        <che.version>7.3.0</che.version>
         <che.dashboard.version>${che.version}</che.dashboard.version>
-        <crw.version>2.0.0.GA</crw.version>
-        <crw.docs.version>2.0</crw.docs.version>
+        <che.version>7.3.0</che.version>
         <crw.dashboard.version>${crw.version} (Eclipse Che ${che.version})</crw.dashboard.version>
+        <crw.docs.version>2.0</crw.docs.version>
+        <crw.version>2.0.0.GA</crw.version>
+        <license_years>2019</license_years>
         <nightly>false</nightly>
     </properties>
     <dependencyManagement>
         <dependencies>
-            <!-- <dependency>
+            <dependency>
                 <groupId>com.redhat</groupId>
-                <artifactId>codeready-ide-gwt-app</artifactId>
+                <artifactId>codeready-workspaces-assembly-dashboard-war</artifactId>
                 <version>${crw.version}</version>
                 <type>war</type>
-            </dependency> -->
-            <!-- <dependency>
-                <groupId>com.redhat</groupId>
-                <artifactId>codeready-product-info</artifactId>
-                <version>${crw.version}</version>
-                <type>gwt-lib</type>
-            </dependency> -->
-            <dependency>
-                <groupId>com.redhat</groupId>
-                <artifactId>codeready-dashboard-war</artifactId>
-                <type>war</type>
-                <version>${crw.version}</version>
-            </dependency>
-            <!-- <dependency>
-                <groupId>com.redhat</groupId>
-                <artifactId>codeready-ide-assembly-ide-war</artifactId>
-                <type>war</type>
-                <version>${crw.version}</version>
-            </dependency> -->
-            <dependency>
-                <groupId>com.redhat</groupId>
-                <artifactId>codeready-stacks</artifactId>
-                <version>${crw.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.redhat</groupId>
-                <artifactId>codeready-samples</artifactId>
-                <version>${crw.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.redhat</groupId>
-                <artifactId>assembly-main</artifactId>
-                <type>tar.gz</type>
-                <version>${crw.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.redhat</groupId>
-                <artifactId>assembly-main</artifactId>
-                <type>zip</type>
-                <version>${crw.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.redhat</groupId>
-                <artifactId>assembly-wsmaster-war</artifactId>
-                <type>war</type>
-                <version>${crw.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.eclipse.che</groupId>
@@ -103,139 +60,8 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
-            <dependency>
-                <groupId>org.eclipse.che.core</groupId>
-                <artifactId>che-core-ide-api</artifactId>
-                <version>${che.version}</version>
-            </dependency>
-        <!-- DISABLED due to compilation failure but do we still need this? or has this been replaced by a vscode extension? 
-            <dependency>
-                <groupId>com.redhat</groupId>
-                <artifactId>che-plugin-bayesian-lang-server</artifactId>
-                <version>${crw.version}</version>
-            </dependency> -->
-            <!-- <dependency>
-                <groupId>org.eclipse.che</groupId>
-                <artifactId>assembly-wsagent-war</artifactId>
-                <version>${che.version}</version>
-                <type>war</type>
-            </dependency> -->
-            <dependency>
-                <groupId>org.eclipse.che.core</groupId>
-                <artifactId>che-ide-full</artifactId>
-                <version>${che.version}</version>
-                <type>gwt-lib</type>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.che.core</groupId>
-                <artifactId>che-core-api-languageserver</artifactId>
-                <version>${che.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.che.core</groupId>
-                <artifactId>che-core-api-languageserver-shared</artifactId>
-                <version>${che.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.che.core</groupId>
-                <artifactId>che-core-commons-inject</artifactId>
-                <version>${che.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.che.plugin</groupId>
-                <artifactId>che-plugin-json-server</artifactId>
-                <version>${che.version}</version>
-            </dependency>
-            <!-- <dependency>
-                <groupId>com.redhat</groupId>
-                <artifactId>codeready-workspaces-assembly-wsagent-server</artifactId>
-                <version>${crw.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.redhat</groupId>
-                <artifactId>codeready-workspaces-assembly-wsagent-war</artifactId>
-                <version>${crw.version}</version>
-                <type>war</type>
-            </dependency> -->
-            <dependency>
-                <groupId>com.redhat</groupId>
-                <artifactId>ls-bayesian-agent</artifactId>
-                <version>${crw.version}</version>
-            </dependency>
-            <!-- <dependency>
-                <groupId>com.redhat</groupId>
-                <artifactId>codeready-workspaces-assembly-wsagent-server</artifactId>
-                <version>${crw.version}</version>
-                <type>tar.gz</type>
-            </dependency> -->
-            <dependency>
-                <groupId>javax.xml.bind</groupId>
-                <artifactId>jaxb-api</artifactId>
-                <version>2.2.11</version>
-            </dependency>
-            <dependency>
-                <groupId>com.sun.xml.bind</groupId>
-                <artifactId>jaxb-core</artifactId>
-                <version>2.2.11</version>
-            </dependency>
-            <dependency>
-                <groupId>com.sun.xml.bind</groupId>
-                <artifactId>jaxb-impl</artifactId>
-                <version>2.2.11</version>
-            </dependency>
-            <dependency>
-                <groupId>javax.activation</groupId>
-                <artifactId>activation</artifactId>
-                <version>1.1.1</version>
-            </dependency>
         </dependencies>
     </dependencyManagement>
-    <repositories>
-        <repository>
-            <id>ossrh</id>
-            <name>central public snapshots</name>
-            <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
-        </repository>
-        <repository>
-            <id>codenvy-public-repo</id>
-            <name>codenvy public</name>
-            <url>https://maven.codenvycorp.com/content/groups/public/</url>
-        </repository>
-    </repositories>
-    <pluginRepositories>
-        <pluginRepository>
-            <id>ossrh</id>
-            <name>central public snapshots</name>
-            <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
-        </pluginRepository>
-    </pluginRepositories>
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>com.mycila</groupId>
-                <artifactId>license-maven-plugin</artifactId>
-                <configuration>
-                    <excludes>
-                        <exclude>**/*.*</exclude>
-                    </excludes>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>com.google.code.sortpom</groupId>
-                <artifactId>maven-sortpom-plugin</artifactId>
-                <version>${version.sortpom.plugin}</version>
-                <configuration>
-                    <skip>true</skip>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
-    <modules>
-        <!-- <module>ide</module> -->
-        <!-- <module>plugins</module> -->
-        <module>assembly</module>
-        <module>test</module>
-    </modules>
     <profiles>
         <profile>
             <id>nightly</id>

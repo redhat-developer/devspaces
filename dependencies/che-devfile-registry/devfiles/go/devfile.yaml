@@ -17,7 +17,7 @@ components:
   memoryLimit: 512Mi
 -
   type: dockerimage
-  image: registry.redhat.io/codeready-workspaces/stacks-golang-rhel8
+  image: quay.io/crw/stacks-golang-rhel8:2.0
   alias: go-cli
   env:
     - name: GOPATH

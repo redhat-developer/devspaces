@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright (c) 2019 Red Hat, Inc.
+    This program and the accompanying materials are made
+    available under the terms of the Eclipse Public License 2.0
+    which is available at https://www.eclipse.org/legal/epl-2.0/
+
+    SPDX-License-Identifier: EPL-2.0
+
+    Contributors:
+      Red Hat, Inc. - initial API and implementation
+
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <artifactId>codeready-assembly-parent</artifactId>
+        <groupId>com.redhat</groupId>
+        <version>2.0.0.GA</version>
+    </parent>
+    <artifactId>codeready-workspaces-assembly-dashboard-war</artifactId>
+    <packaging>pom</packaging>
+    <name>CRW :: Assembly :: Dashboard</name>
+    <properties>
+        <crw.docs.baseurl>https://access.redhat.com/documentation/en-us/red_hat_codeready_workspaces/${crw.docs.version}</crw.docs.baseurl>
+        <product.json.file>${project.basedir}/src/main/webapp/assets/branding/product.json</product.json.file>
+    </properties>
+    <dependencies>
+        <dependency>
+            <groupId>org.eclipse.che.dashboard</groupId>
+            <artifactId>che-dashboard-war</artifactId>
+            <version>${che.dashboard.version}</version>
+            <type>war</type>
+        </dependency>
+    </dependencies>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>copy-dependencies</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/source-war</outputDirectory>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>org.eclipse.che.dashboard</groupId>
+                                    <artifactId>che-dashboard-war</artifactId>
+                                    <version>${che.dashboard.version}</version>
+                                    <type>war</type>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.8</version>
+                <executions>
+                    <execution>
+                        <id>update-docs-version-product-json</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <tasks>
+                                <copy file="${product.json.file}.template" overwrite="true" tofile="${product.json.file}" />
+                                <replace file="${product.json.file}" token="@@crw.docs.baseurl@@" value="${crw.docs.baseurl}" />
+                            </tasks>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>branding-update</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <tasks>
+                                <copy overwrite="true" todir="${project.build.directory}/source-war">
+                                    <fileset dir="${project.basedir}/src/main/webapp" />
+                                </copy>
+                            </tasks>
+                        </configuration>
+                    </execution>
+                    <!-- apply dashboard version string -->
+                    <execution>
+                        <id>dashboard-version-string-update</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <tasks>
+                                <condition else="${crw.dashboard.version}" property="productVersion" value="${crw.dashboard.version} :: ${JOB_NAME} # ${BUILD_NUMBER} @ ${GIT_COMMIT} / ${GIT_BRANCH}">
+                                    <isset property="JOB_NAME" />
+                                </condition>
+                                <!--       this.$rootScope.productVersion = (info && info.implementationVersion) ? info.implementationVersion : ''; -->
+                                <replaceregexp byline="true" file="${project.build.directory}/source-war/components/branding/che-branding.factory.ts" match="(.+productVersion = ).+" replace="\1'${productVersion}';" />
+                            </tasks>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>update-docs-link</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <tasks>
+                                <replace dir="${project.build.directory}/source-war/scripts" includes="**/*.js" token="/docs/factories-getting-started.html" value="${crw.docs.baseurl}/html/administration_guide/administering_workspaces#factories" />
+                                <replace dir="${project.build.directory}/source-war/scripts" includes="**/*.js" token="/docs/organizations.html" value="${crw.docs.baseurl}/html/administration_guide/managing_users#organizations" />
+                                <replace dir="${project.build.directory}/source-war/scripts" includes="**/*.js" token="/docs/getting-started/intro/index.html" value="${crw.docs.baseurl}/html/administration_guide/administering_workspaces#workspace" />
+                                <replace dir="${project.build.directory}/source-war/scripts" includes="**/*.js" token="/docs/getting-started/runtime-stacks/index.html" value="${crw.docs.baseurl}/html/administration_guide/administering_workspaces#stacks" />
+                                <replace dir="${project.build.directory}/source-war/scripts" includes="**/*.js" token="/docs" value="${crw.docs.baseurl}/" />
+                            </tasks>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>make-assembly</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <appendAssemblyId>false</appendAssemblyId>
+                    <updateOnly>false</updateOnly>
+                    <descriptors>
+                        <descriptor>${project.basedir}/src/assembly/assembly.xml</descriptor>
+                    </descriptors>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>

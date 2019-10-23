@@ -12,11 +12,11 @@ category: Language
 firstPublicationDate: '2019-09-19'
 spec:
   containers:
-    - image: "docker.io/eclipse/che-remote-plugin-go-1.12.9:next"
+    - image: "quay.io/crw/stacks-golang-rhel8:2.0"
       name: vscode-go
       memoryLimit: '512Mi'
       env:
       - name: GOPATH
-        value: /go:$(CHE_PROJECTS_ROOT)
+        value: /projects/.che/gopath:$(CHE_PROJECTS_ROOT)
   extensions:
     - https://github.com/microsoft/vscode-go/releases/download/0.11.4/Go-0.11.4.vsix
