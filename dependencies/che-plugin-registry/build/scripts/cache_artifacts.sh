@@ -29,8 +29,8 @@ PRECACHED_ROOT_DIR_NAME="result"
 # if archive with prebuilt extensions is located at given path,
 # use them to substitute
 if [ -f "/tmp/vscode-extensions-vsix.tar" ]; then
-echo 'found non empty extensions.tar, unpacking'
-  tar -xvf /tmp/vscode-extensions-vsix.tar
+echo 'found non empty extensions tar, unpacking'
+  tar -zxvf /tmp/vscode-extensions-vsix.tar
   readarray -d '' precached_plugins < <(find $PRECACHED_ROOT_DIR_NAME -name '*.vsix' -print0)
 fi
 
@@ -65,8 +65,9 @@ for extension in $(yq -r '.spec.extensions[]?' "${metas[@]}" | sort | uniq); do
     else
       echo not mached extension "$plugin_file_path" and "$precached_url"
     fi
+  done
 
-  if [[ ! -z matched_plugin_path ]]; then
+  if [[ -z matched_plugin_path ]]; then
     echo "omitting download of plugin ${matched_plugin_path}"
     mv "${matched_plugin_path}"  ${TEMP_DIR}
   else
