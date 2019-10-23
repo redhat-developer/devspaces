@@ -22,14 +22,16 @@ fi
 
 RESOURCES_DIR="${1}/resources/"
 TEMP_DIR="${1}/extensions_temp/"
-PRECACHED_EXTENSIONS_DIR
 
+PRECACHED_ROOT_DIR_NAME="result"
+
+
+# if archive with prebuilt extensions is located at given path,
+# use them to substitute
 if [ -f "/tmp/vscode-extensions-vsix.tar" ]; then
 echo 'found non empty extensions.tar, unpacking'
-  tar -zxvf /tmp/vscode-extensions-vsix.tar
-  #array of filenames
-
-  #readarray -d '' cachedArchives < <(find /tmp/vscode-extensions-vsix.tar -name '*.vsix' -print0)
+  tar -xvf /tmp/vscode-extensions-vsix.tar
+  readarray -d '' precached_plugins < <(find $PRECACHED_ROOT_DIR_NAME -name '*.vsix' -print0)
 fi
 
 
@@ -43,8 +45,30 @@ for extension in $(yq -r '.spec.extensions[]?' "${metas[@]}" | sort | uniq); do
 
   # Before attempting to download, check if we already have this file in supplied precached archive
   # if found, skip the download
-  if [[ " ${precached_plugins[@]} " =~ " ${precached_extension_dir} " ]]; then
-    mv precached_extension_dir
+  for plugin_file_path in "${precached_plugins[@]}"; do
+    echo evaluating $plugin_file_path
+
+    # strip root directory from path on filesystem to match it with extension URL
+    plugin_file_path=${plugin_file_path#${PRECACHED_ROOT_DIR_NAME}/}
+    plugin_file_path=${plugin_file_path%/*.vsix}
+
+    echo directorey: "$plugin_file_path"
+
+  #  if [[ $precached_url == */vspackage ]]; then
+  #    precached_url=${precached_url%/vspackage}
+  #    echo --- transformed to "$precached_url"
+  #  fi
+    if [[ $plugin_file_path == $precached_url ]]; then
+      echo mached extension "$plugin_file_path" and "$precached_url"
+      matched_plugin_path = plugin_file_path
+      break
+    else
+      echo not mached extension "$plugin_file_path" and "$precached_url"
+    fi
+
+  if [[ ! -z matched_plugin_path ]]; then
+    echo "omitting download of plugin ${matched_plugin_path}"
+    mv "${matched_plugin_path}"  ${TEMP_DIR}
   else
     wget -P "${TEMP_DIR}" -nv --content-disposition "${extension}?access_token=5b7d3da810f72b0fb0d45cac8da1c34837a7a611"
   fi
