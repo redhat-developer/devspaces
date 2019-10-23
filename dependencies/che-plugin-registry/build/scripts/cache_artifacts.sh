@@ -69,7 +69,7 @@ for extension in $(yq -r '.spec.extensions[]?' "${metas[@]}" | sort | uniq); do
     echo "omitting download of plugin ${matched_plugin_path}"
     mv "${matched_plugin_path}"  ${TEMP_DIR}
   else
-    wget -P "${TEMP_DIR}" -nv --content-disposition "${extension}?access_token=5b7d3da810f72b0fb0d45cac8da1c34837a7a611"
+    wget -P "${TEMP_DIR}" -nv --content-disposition "${extension}"
   fi
 
   file=$(find "${TEMP_DIR}" -type f)
