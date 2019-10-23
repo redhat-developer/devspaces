@@ -44,27 +44,23 @@ for extension in $(yq -r '.spec.extensions[]?' "${metas[@]}" | sort | uniq); do
     echo evaluating $plugin_file_path
 
     # strip root directory from path on filesystem to match it with extension URL
-    plugin_file_path=${plugin_file_path#${PREBUILT_VSIX_ROOT_DIR_NAME}/}
-    plugin_file_path=${plugin_file_path%/*.vsix}
+    rel_plugin_file_path=${plugin_file_path#/build/${PREBUILT_VSIX_ROOT_DIR_NAME}/}
+    rel_plugin_file_path=${rel_plugin_file_path%/*.vsix}
 
     extension_location=${extension#*//}
 
-  #  if [[ $precached_url == */vspackage ]]; then
-  #    precached_url=${precached_url%/vspackage}
-  #    echo --- transformed to "$precached_url"
-  #  fi
-    if [[ ${plugin_file_path} == $extension_location ]]; then
-      echo mached extension "$plugin_file_path" and "$extension_location"
-      matched_plugin_path = plugin_file_path
+    if [[ ${rel_plugin_file_path} == ${extension_location} ]]; then
+      matched_plugin_path=${plugin_file_path}
+      echo "+++ ${matched_plugin_path}"
       break
     else
       echo not mached extension "$plugin_file_path" and "$extension_location"
     fi
   done
 
-  if [[ -z matched_plugin_path ]]; then
+  if [[ ! -z "$matched_plugin_path" ]]; then
     echo "omitting download of plugin ${matched_plugin_path}"
-    mv "${matched_plugin_path}"  ${TEMP_DIR}
+    mv "${matched_plugin_path}" ${TEMP_DIR}
   else
     # Workaround for getting filenames through content-disposition: copy to temp
     # dir and read filename before moving to /resources.
