@@ -1,10 +1,14 @@
 <!--
 
     Copyright (c) 2019 Red Hat, Inc.
-    All rights reserved. This program and the accompanying materials
-    are made available under the terms of the Eclipse Public License v2.0
-    which accompanies this distribution, and is available at
-    http://www.eclipse.org/legal/epl-2.0
+    This program and the accompanying materials are made
+    available under the terms of the Eclipse Public License 2.0
+    which is available at https://www.eclipse.org/legal/epl-2.0/
+
+    SPDX-License-Identifier: EPL-2.0
+
+    Contributors:
+      Red Hat, Inc. - initial API and implementation
 
 -->
 <assembly xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -12,7 +16,6 @@
     <id>tomcat-zip</id>
     <formats>
         <format>dir</format>
-        <!-- <format>zip</format> -->
         <format>tar.gz</format>
     </formats>
     <dependencySets>
@@ -20,50 +23,10 @@
             <useProjectArtifact>false</useProjectArtifact>
             <unpack>false</unpack>
             <outputDirectory>tomcat/webapps</outputDirectory>
-            <outputFileNameMapping>ROOT.war</outputFileNameMapping>
-            <includes>
-                <include>com.redhat:codeready-ide-assembly-ide-war</include>
-            </includes>
-        </dependencySet>
-        <dependencySet>
-            <useProjectArtifact>false</useProjectArtifact>
-            <unpack>false</unpack>
-            <outputDirectory>tomcat/webapps</outputDirectory>
-            <outputFileNameMapping>api.war</outputFileNameMapping>
-            <includes>
-                <include>com.redhat:assembly-wsmaster-war</include>
-            </includes>
-        </dependencySet>
-        <dependencySet>
-            <useProjectArtifact>false</useProjectArtifact>
-            <unpack>false</unpack>
-            <outputDirectory>tomcat/webapps</outputDirectory>
             <outputFileNameMapping>dashboard.war</outputFileNameMapping>
             <includes>
-                <include>com.redhat:codeready-dashboard-war</include>
+                <include>com.redhat:codeready-workspaces-assembly-dashboard-war</include>
             </includes>
-        </dependencySet>
-        <!-- <dependencySet>
-            <useProjectArtifact>false</useProjectArtifact>
-            <unpack>true</unpack>
-            <outputDirectory>templates</outputDirectory>
-            <includes>
-                <include>com.redhat:codeready-samples</include>
-            </includes>
-            <unpackOptions>
-                <excludes>
-                    <exclude>META-INF/**</exclude>
-                </excludes>
-            </unpackOptions>
-        </dependencySet> -->
-        <dependencySet>
-            <useProjectArtifact>false</useProjectArtifact>
-            <unpack>false</unpack>
-            <outputDirectory>lib</outputDirectory>
-            <outputFileNameMapping>ws-agent.tar.gz</outputFileNameMapping>
-            <!-- <includes>
-                <include>com.redhat:codeready-workspaces-assembly-wsagent-server</include>
-            </includes> -->
         </dependencySet>
     </dependencySets>
 
@@ -72,12 +35,8 @@
             <directory>${project.build.directory}/dependency/eclipse-che-${che.version}</directory>
             <outputDirectory></outputDirectory>
             <excludes>
-                <exclude>**/tomcat/webapps/api.war</exclude>
-                <exclude>**/tomcat/webapps/ROOT.war</exclude>
                 <exclude>**/tomcat/webapps/dashboard.war</exclude>
                 <exclude>**/tomcat/webapps/docs.war</exclude>
-                <exclude>**/templates/**</exclude>
-                <exclude>**/lib/ws-agent.tar.gz</exclude>
             </excludes>
         </fileSet>
     </fileSets>
