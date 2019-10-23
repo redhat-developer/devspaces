@@ -13,7 +13,7 @@ components:
     memoryLimit: 512Mi
   - type: dockerimage
     alias: nodejs
-    image: registry.redhat.io/codeready-workspaces/stacks-node-rhel8
+    image: quay.io/crw/stacks-node-rhel8:2.0
     env:
       # The values below are used to set up the environment for running the application
       - name: SECRET
