@@ -18,7 +18,7 @@ ARG LATEST_ONLY=false
 
 COPY ./build/scripts/*.sh ./build/scripts/meta.yaml.schema /build/
 COPY /v3 /build/v3
-#COPY /vsix.tar.gz /build/v3
+COPY /vsix.tar.gz /build/vsix.tar.gz
 WORKDIR /build/
 
 RUN if [[ ${LATEST_ONLY} == "true" ]]; then \

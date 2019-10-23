@@ -56,13 +56,13 @@ timeout(120) {
                 jobs.put(registryLocation, buildjob)
             }
         }
-        sh "mkdir vscode-extensions-vsix"
+        sh "mkdir vsix"
         jobs.each { fileLocation, job ->
             echo "archiving artifact at ${fileLocation}"
-            copyArtifacts(projectName: 'vscode-extensions-packaging', selector: specific("${job.number}"), target: "vscode-extensions-vsix/" + fileLocation)
+            copyArtifacts(projectName: 'vscode-extensions-packaging', selector: specific("${job.number}"), target: "vsix/" + fileLocation)
         }
 
-        sh "tar -czvf vsix.tar.gz vscode-extensions-vsix"
+        sh "tar -czvf vsix.tar.gz vsix"
 
         // TODO deploy artifact to pkgs.devel?
 
