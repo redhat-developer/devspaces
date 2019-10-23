@@ -12,7 +12,7 @@ category: Language
 firstPublicationDate: "2019-04-16"
 spec:
   containers:
-    - image: "docker.io/eclipse/che-remote-plugin-php7:next"
+    - image: "quay.io/crw/stacks-php-rhel8:2.0"
       name: php-intelephense
       memoryLimit: "1000Mi"
   extensions:

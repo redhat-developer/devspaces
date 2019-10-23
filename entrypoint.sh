@@ -1,14 +1,14 @@
 #!/bin/bash
 #
 # Copyright (c) 2019 Red Hat, Inc.
-
-# All rights reserved. This program and the accompanying materials
-# are made available under the terms of the Eclipse Public License v2.0
-# which accompanies this distribution, and is available at
-# http://www.eclipse.org/legal/epl-2.0
+# This program and the accompanying materials are made
+# available under the terms of the Eclipse Public License 2.0
+# which is available at https://www.eclipse.org/legal/epl-2.0/
+#
+# SPDX-License-Identifier: EPL-2.0
 #
 # Contributors:
-#   Red Hat, Inc.- initial API and implementation
+#   Red Hat, Inc. - initial API and implementation
 #
 
 init_global_variables () {
@@ -33,6 +33,7 @@ Variables:
     CHE_REGISTRY_HOST                   Hostname of Docker registry to launch, otherwise 'localhost'
     CHE_LOG_LEVEL                       [INFO | DEBUG] Sets the output level of Tomcat messages
     CHE_DEBUG_SERVER                    If true, activates Tomcat's JPDA debugging mode
+    CHE_DEBUG_SUSPEND                   If true, Tomcat will start suspended waiting for debugger
     CHE_HOME                            Where the Che assembly resides - self-determining if not set
 "
 
@@ -65,6 +66,8 @@ Variables:
   DEFAULT_CHE_DEBUG_SERVER=false
   CHE_DEBUG_SERVER=${CHE_DEBUG_SERVER:-${DEFAULT_CHE_DEBUG_SERVER}}
 
+  DEFAULT_CHE_DEBUG_SUSPEND="false"
+  CHE_DEBUG_SUSPEND=${CHE_DEBUG_SUSPEND:-${DEFAULT_CHE_DEBUG_SUSPEND}}
 }
 
 error () {
@@ -106,6 +109,12 @@ set_environment_variables () {
   # Convert windows path name to POSIX
   if [[ "${CATALINA_HOME}" == *":"* ]]; then
     CATALINA_HOME=$(echo /"${CATALINA_HOME}" | sed  's|\\|/|g' | sed 's|:||g')
+  fi
+
+  if [[ "${CHE_DEBUG_SUSPEND}" == "true" ]]; then
+    export JPDA_SUSPEND="y"
+  else
+    export JPDA_SUSPEND="n"
   fi
 
   # Internal properties - should generally not be overridden
@@ -218,12 +227,17 @@ init() {
   ### Any variables with export is a value that native Tomcat che.sh startup script requires
   export CHE_IP=${CHE_IP}
 
-  if [ -f "/assembly/tomcat/bin/catalina.sh" ]; then
-    echo "Found custom assembly..."
-    export CHE_HOME="/assembly"
+  if [ -z "$CHE_HOME" ]; then
+    if [ -f "/assembly/tomcat/bin/catalina.sh" ]; then
+      echo "Found custom assembly in /assembly"
+      export CHE_HOME="/assembly"
+    else
+      echo "Using embedded assembly."
+      export CHE_HOME=$(echo /home/jboss/codeready)
+    fi
   else
-    echo "Using embedded assembly..."
-    export CHE_HOME=$(echo /home/jboss/codeready)
+    export CHE_HOME=$(echo ${CHE_HOME})
+    echo "Using custom assembly from $CHE_HOME"
   fi
 
   ### We need to discover the host mount provided by the user for `/data`
@@ -246,7 +260,8 @@ init() {
   fi
 
   [ -z "$CHE_DATABASE" ] && export CHE_DATABASE=${CHE_DATA}/storage
-  [ -z "$CHE_TEMPLATE_STORAGE" ] && export CHE_TEMPLATE_STORAGE=${CHE_DATA}/templates
+  [ -z "$CHE_TEMPLATE_STORAGE" ] && export CHE_TEMPLATE_STORAGE="${CHE_DATA}/templates"
+  mkdir -p "${CHE_TEMPLATE_STORAGE}"
 
   perform_database_migration
 
@@ -266,12 +281,6 @@ init() {
     rm -rf "${CHE_DATA}"/stacks
   fi
 
-  # replace samples.json each run to make sure that we are using corrent samples from the assembly.
-  # also it allows users to store their own samples which should not be touched by us.
-  mkdir -p "${CHE_DATA}"/templates
-  rm -rf "${CHE_DATA}"/templates/samples.json
-  cp -rf "${CHE_HOME}"/templates/* "${CHE_DATA}"/templates
-
   # A che property, which names the Docker network used for che + ws to communicate
   if [ -z "$CHE_DOCKER_NETWORK" ]; then
     NETWORK_NAME="bridge"
@@ -282,13 +291,28 @@ init() {
 }
 
 add_cert_to_truststore() {
+  if [ "${CHE_SELF__SIGNED__CERT}" != "" ]; then
+    DEFAULT_JAVA_TRUST_STORE=$JAVA_HOME/jre/lib/security/cacerts
+    DEFAULT_JAVA_TRUST_STOREPASS="changeit"
 
-    if [ "${CHE_SELF__SIGNED__CERT}" != "" ]; then
-        echo "Found a custom cert. Adding it to java trust store..."
-        echo "${CHE_SELF__SIGNED__CERT}" > /home/jboss/openshift.crt
-        echo yes | keytool -keystore /home/jboss/cacerts -importcert -alias HOSTDOMAIN -file /home/jboss/openshift.crt -storepass changeit
-        export JAVA_OPTS="${JAVA_OPTS} -Djavax.net.ssl.trustStore=/home/jboss/cacerts -Djavax.net.ssl.trustStorePassword=changeit"
-    fi
+    JAVA_TRUST_STORE=/home/jboss/cacerts
+    SELF_SIGNED_CERT=/home/jboss/openshift.crt
+
+    echo "Found a custom cert. Adding it to java trust store based on $DEFAULT_JAVA_TRUST_STORE"
+    cp $DEFAULT_JAVA_TRUST_STORE $JAVA_TRUST_STORE
+
+    echo "$CHE_SELF__SIGNED__CERT" > $SELF_SIGNED_CERT
+
+    # make sure that owner has permissions to write and other groups have permissions to read
+    chmod 644 $JAVA_TRUST_STORE
+
+    echo yes | keytool -keystore $JAVA_TRUST_STORE -importcert -alias HOSTDOMAIN -file $SELF_SIGNED_CERT -storepass $DEFAULT_JAVA_TRUST_STOREPASS > /dev/null
+
+    # allow only read by all groups
+    chmod 444 $JAVA_TRUST_STORE
+
+    export JAVA_OPTS="${JAVA_OPTS} -Djavax.net.ssl.trustStore=$JAVA_TRUST_STORE -Djavax.net.ssl.trustStorePassword=$DEFAULT_JAVA_TRUST_STOREPASS"
+  fi
 }
 
 get_che_data_from_host() {

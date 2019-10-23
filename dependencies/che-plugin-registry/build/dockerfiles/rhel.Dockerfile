@@ -21,7 +21,7 @@ USER 0
 
 ARG BOOTSTRAP=false
 ENV BOOTSTRAP=${BOOTSTRAP}
-ARG LATEST_ONLY=true
+ARG LATEST_ONLY=false
 ENV LATEST_ONLY=${LATEST_ONLY}
 
 # to get all the python deps pre-fetched so we can build in Brew:
@@ -111,13 +111,8 @@ FROM builder AS offline-builder
 
 # 2. then add it to dist-git so it's part of this repo
 #    rhpkg new-sources root-local.tgz v3.tgz
-RUN if [[ ! -f /tmp/v3.tgz ]] || [[ ${BOOTSTRAP} == "true" ]]; then \
-      # To only cache files from /latest/ folders, use --build-arg LATEST_ONLY=true 
-      if [[ ${LATEST_ONLY} == "true" ]]; then \
-        ./cache_artifacts.sh v3 --latest-only && chmod -R g+rwX /build; \
-      else \
-        ./cache_artifacts.sh v3 && chmod -R g+rwX /build; \
-        fi \
+RUN if [ ! -f /tmp/v3.tgz ] || [ ${BOOTSTRAP} == "true" ]; then \
+      ./cache_artifacts.sh v3 && chmod -c -R g+rwX /build; \
     else \
       # in Brew use /var/www/html/; in upstream/ offline-builder use /build/
       mkdir -p /build/v3/; tar xf /tmp/v3.tgz -C /build/v3/; rm -fr /tmp/v3.tgz;  \

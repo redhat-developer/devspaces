@@ -26,23 +26,23 @@
     <packaging>war</packaging>
     <name>CRW :: Workspace Master Assembly</name>
     <dependencies>
-        <dependency>
+        <!-- <dependency>
             <groupId>com.redhat</groupId>
             <artifactId>ls-bayesian-agent</artifactId>
-        </dependency>
+        </dependency> -->
         <dependency>
             <groupId>org.eclipse.che</groupId>
             <artifactId>assembly-wsmaster-war</artifactId>
             <type>war</type>
         </dependency>
-        <dependency>
+        <!-- <dependency>
             <groupId>com.redhat</groupId>
             <artifactId>codeready-stacks</artifactId>
-        </dependency>
-        <dependency>
+        </dependency> -->
+        <!-- <dependency>
             <groupId>com.redhat</groupId>
             <artifactId>codeready-samples</artifactId>
-        </dependency>
+        </dependency> -->
     </dependencies>
     <build>
         <plugins>

@@ -12,7 +12,7 @@ category: Language
 firstPublicationDate: "2019-06-17"
 spec:
   containers:
-    - image: "docker.io/eclipse/che-remote-plugin-runner-java11:next"
+    - image: "quay.io/crw/stacks-java-rhel8:2.0"
       memoryLimit: "768Mi"
   extensions:
     - https://github.com/redhat-developer/vscode-xml/releases/download/0.7.0/vscode-xml-0.7.0-3205.vsix

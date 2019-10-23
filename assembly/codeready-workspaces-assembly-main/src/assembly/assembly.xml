@@ -29,21 +29,21 @@
             <useProjectArtifact>false</useProjectArtifact>
             <unpack>false</unpack>
             <outputDirectory>tomcat/webapps</outputDirectory>
-            <outputFileNameMapping>dashboard.war</outputFileNameMapping>
-            <includes>
-                <include>com.redhat:codeready-dashboard-war</include>
-            </includes>
-        </dependencySet>
-        <dependencySet>
-            <useProjectArtifact>false</useProjectArtifact>
-            <unpack>false</unpack>
-            <outputDirectory>tomcat/webapps</outputDirectory>
             <outputFileNameMapping>api.war</outputFileNameMapping>
             <includes>
                 <include>com.redhat:assembly-wsmaster-war</include>
             </includes>
         </dependencySet>
         <dependencySet>
+            <useProjectArtifact>false</useProjectArtifact>
+            <unpack>false</unpack>
+            <outputDirectory>tomcat/webapps</outputDirectory>
+            <outputFileNameMapping>dashboard.war</outputFileNameMapping>
+            <includes>
+                <include>com.redhat:codeready-dashboard-war</include>
+            </includes>
+        </dependencySet>
+        <!-- <dependencySet>
             <useProjectArtifact>false</useProjectArtifact>
             <unpack>true</unpack>
             <outputDirectory>templates</outputDirectory>
@@ -55,15 +55,15 @@
                     <exclude>META-INF/**</exclude>
                 </excludes>
             </unpackOptions>
-        </dependencySet>
+        </dependencySet> -->
         <dependencySet>
             <useProjectArtifact>false</useProjectArtifact>
             <unpack>false</unpack>
             <outputDirectory>lib</outputDirectory>
             <outputFileNameMapping>ws-agent.tar.gz</outputFileNameMapping>
-            <includes>
+            <!-- <includes>
                 <include>com.redhat:codeready-workspaces-assembly-wsagent-server</include>
-            </includes>
+            </includes> -->
         </dependencySet>
     </dependencySets>
 

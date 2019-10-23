@@ -1,0 +1,217 @@
+#!/usr/bin/env groovy
+
+// PARAMETERS for this pipeline:
+// def FORCE_BUILD = "false"
+
+def SOURCE_BRANCH = "master" // ref/tags/v0.22.0, or master :: branch of source repo from which to find and sync commits to pkgs.devel repo
+def SOURCE_REPO = "eclipse/che-plugin-broker" //source repo from which to find and sync commits to pkgs.devel repo 
+def GIT_PATH1 = "containers/codeready-workspaces-pluginbroker" // dist-git repo to use as target
+def GIT_PATH2 = "containers/codeready-workspaces-pluginbrokerinit" // dist-git repo to use as target
+
+def GIT_BRANCH = "crw-2.0-rhel-8" // target branch in dist-git repo, eg., crw-2.0-rhel-8
+def SCRATCH = "false"
+def PUSH_TO_QUAY = "true"
+
+def buildNode = "rhel7-releng" // slave label
+timeout(120) {
+	node("${buildNode}"){ stage "Sync repos"
+		cleanWs()
+    withCredentials([file(credentialsId: 'crw-build.keytab', variable: 'CRW_KEYTAB')]) {
+      checkout([$class: 'GitSCM', 
+        branches: [[name: "${SOURCE_BRANCH}"]], 
+        doGenerateSubmoduleConfigurations: false,
+        credentialsId: 'devstudio-release',
+        poll: true,
+        extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: "sources"]], 
+        submoduleCfg: [], 
+        userRemoteConfigs: [[url: "https://github.com/${SOURCE_REPO}.git"]]])
+
+      // checkout([$class: 'GitSCM', 
+      //   branches: [[name: "${GIT_BRANCH}"]], 
+      //   doGenerateSubmoduleConfigurations: false,
+      //   credentialsId: 'crw-build',
+      //   poll: true,
+      //   extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: "target1"]], 
+      //   submoduleCfg: [], 
+      //   userRemoteConfigs: [[url: "ssh://crw-build@pkgs.devel.redhat.com/containers/codeready-workspaces-pluginbroker"]]])
+
+      // checkout([$class: 'GitSCM', 
+      //   branches: [[name: "${GIT_BRANCH}"]], 
+      //   doGenerateSubmoduleConfigurations: false,
+      //   credentialsId: 'crw-build',
+      //   poll: true,
+      //   extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: "target2"]], 
+      //   submoduleCfg: [], 
+      //   userRemoteConfigs: [[url: "ssh://crw-build@pkgs.devel.redhat.com/containers/codeready-workspaces-pluginbrokerinit"]]])
+
+  	 	sh '''#!/bin/bash -xe
+
+# bootstrapping: if keytab is lost, upload to 
+# https://codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/credentials/store/system/domain/_/
+# then set Use secret text above and set Bindings > Variable (path to the file) as ''' + CRW_KEYTAB + '''
+chmod 700 ''' + CRW_KEYTAB + ''' && chown ''' + USER + ''' ''' + CRW_KEYTAB + '''
+# create .k5login file
+echo "crw-build/codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com@REDHAT.COM" > ~/.k5login
+chmod 644 ~/.k5login && chown ''' + USER + ''' ~/.k5login
+ echo "pkgs.devel.redhat.com,10.16.101.66 ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAplqWKs26qsoaTxvWn3DFcdbiBxqRLhFngGiMYhbudnAj4li9/VwAJqLm1M6YfjOoJrj9dlmuXhNzkSzvyoQODaRgsjCG5FaRjuN8CSM/y+glgCYsWX1HFZSnAasLDuW0ifNLPR2RBkmWx61QKq+TxFDjASBbBywtupJcCsA5ktkjLILS+1eWndPJeSUJiOtzhoN8KIigkYveHSetnxauxv1abqwQTk5PmxRgRt20kZEFSRqZOJUlcl85sZYzNC/G7mneptJtHlcNrPgImuOdus5CW+7W49Z/1xqqWI/iRjwipgEMGusPMlSzdxDX4JzIx6R53pDpAwSAQVGDz4F9eQ==
+" >> ~/.ssh/known_hosts
+
+ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts
+
+# see https://mojo.redhat.com/docs/DOC-1071739
+if [[ -f ~/.ssh/config ]]; then mv -f ~/.ssh/config{,.BAK}; fi
+echo "
+GSSAPIAuthentication yes
+GSSAPIDelegateCredentials yes
+
+Host pkgs.devel.redhat.com
+User crw-build/codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com@REDHAT.COM
+" > ~/.ssh/config
+chmod 600 ~/.ssh/config
+
+# initialize kerberos
+export KRB5CCNAME=/var/tmp/crw-build_ccache
+kinit "crw-build/codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com@REDHAT.COM" -kt ''' + CRW_KEYTAB + '''
+klist # verify working
+
+hasChanged=0
+
+# REQUIRE: skopeo
+curl -L -s -S https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/master/product/updateBaseImages.sh -o /tmp/updateBaseImages.sh
+chmod +x /tmp/updateBaseImages.sh 
+cd ${WORKSPACE}/sources
+  git checkout --track origin/''' + SOURCE_BRANCH + '''
+  OLD_SHA=\$(git rev-parse HEAD) # echo ${OLD_SHA:0:8}
+  git config user.email nickboldt+devstudio-release@gmail.com
+  git config user.name "Red Hat Devstudio Release Bot"
+  git config --global push.default matching
+
+  /tmp/updateBaseImages.sh -b ''' + SOURCE_BRANCH + '''
+  NEW_SHA=$(git rev-parse HEAD) # echo ${NEW_SHA:0:8}
+  if [[ "${OLD_SHA}" != "${NEW_SHA}" ]]; then hasChanged=1; fi
+  SOURCE_SHA=\$(git rev-parse HEAD) # echo ${SOURCE_SHA:0:8}
+cd ..
+
+for targetN in target1 target2; do
+    # fetch sources to be updated
+    if [[ \$targetN == "target1" ]]; then GIT_PATH="''' + GIT_PATH1 + '''"; else GIT_PATH="''' + GIT_PATH2 + '''"; fi
+    if [[ ! -d ${WORKSPACE}/${targetN} ]]; then git clone ssh://crw-build@pkgs.devel.redhat.com/${GIT_PATH} ${targetN}; fi
+    cd ${WORKSPACE}/${targetN}
+    git checkout --track origin/''' + GIT_BRANCH + '''
+    git config user.email crw-build@REDHAT.COM
+    git config user.name "CRW Build"
+    git config --global push.default matching
+    cd ..
+
+    # rsync files in github to dist-git
+    SYNC_FILES="brokers  build  cfg  common  CONTRIBUTING.md  devfile.yaml  Gopkg.lock  Gopkg.toml  LICENSE  Makefile  model  README.md  storage  utils  vendor"
+    for d in ${SYNC_FILES}; do
+    if [[ -f ${WORKSPACE}/sources/${d} ]]; then 
+        rsync -zrlt ${WORKSPACE}/sources/${d} ${WORKSPACE}/${targetN}/${d}
+    elif [[ -d ${WORKSPACE}/sources/${d} ]]; then
+        # copy over the files 
+        rsync -zrlt ${WORKSPACE}/sources/${d}/* ${WORKSPACE}/${targetN}/${d}/
+        # sync the directory and delete from target if deleted from source 
+        rsync -zrlt --delete ${WORKSPACE}/sources/${d}/ ${WORKSPACE}/${targetN}/${d}/ 
+    fi
+    done
+
+    # TODO apply patches from upstream https://github.com/eclipse/che-plugin-broker/tree/master/build/*/rhel.Dockerfile to downstream Dockerfile
+    #sed -i ${WORKSPACE}/${targetN}/Dockerfile \
+    #  -e "s#FROM registry.redhat.io/#FROM #g" \
+    #  -e "s#FROM registry.access.redhat.com/#FROM #g" \
+    #  -e "s#COPY assembly/codeready-workspaces-assembly-main/target/#COPY #g" \
+    #  -e "s/# *RUN yum /RUN yum /g"
+
+    # push changes in cgit to github
+    cd ${WORKSPACE}/${targetN}
+    if [[ \$(git diff --name-only) ]]; then # file changed
+    OLD_SHA=\$(git rev-parse HEAD) # echo ${OLD_SHA:0:8}
+    git add ${SYNC_FILES}
+    git commit -s -m "[sync] Update from ''' + SOURCE_REPO + ''' @ ${SOURCE_SHA:0:8}" ${SYNC_FILES}
+    git push origin ''' + GIT_BRANCH + '''
+    NEW_SHA=\$(git rev-parse HEAD) # echo ${NEW_SHA:0:8}
+    if [[ "${OLD_SHA}" != "${NEW_SHA}" ]]; then hasChanged=1; fi
+    echo "[sync] Updated pkgs.devel @ ${NEW_SHA:0:8} from ''' + SOURCE_REPO + ''' @ ${SOURCE_SHA:0:8}"
+    fi
+    cd ..
+
+    # update base image
+    cd ${WORKSPACE}/${targetN}
+    OLD_SHA=\$(git rev-parse HEAD) # echo ${OLD_SHA:0:8}
+    /tmp/updateBaseImages.sh -b ''' + GIT_BRANCH + '''
+    NEW_SHA=\$(git rev-parse HEAD) # echo ${NEW_SHA:0:8}
+    if [[ "${OLD_SHA}" != "${NEW_SHA}" ]]; then hasChanged=1; fi
+    cd ..
+done
+
+if [[ ''' + FORCE_BUILD + ''' == "true" ]]; then hasChanged=1; fi
+
+if [[ ${hasChanged} -eq 1 ]]; then
+  for QRP in pluginbroker-rhel8 pluginbrokerinit-rhel8; do
+    QUAY_REPO_PATH=""; if [[ ''' + PUSH_TO_QUAY + ''' == "true" ]]; then QUAY_REPO_PATH="${QRP}"; fi
+    curl \
+"https://codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/get-sources-rhpkg-container-build/buildWithParameters?\
+token=CI_BUILD&\
+cause=${QUAY_REPO_PATH}+respin+by+${BUILD_TAG}&\
+GIT_BRANCH=''' + GIT_BRANCH + '''&\
+GIT_PATHs=containers/codeready-workspaces&\
+QUAY_REPO_PATHs=${QUAY_REPO_PATH}&\
+JOB_BRANCH=master&\
+FORCE_BUILD=true&\
+SCRATCH=''' + SCRATCH + '''"
+  done
+
+if [[ ${hasChanged} -eq 0 ]]; then
+  echo "No changes upstream, nothing to commit"
+fi
+		  '''
+    }
+	}
+}
+
+// timeout(120) {
+// 	node("${node}"){ stage "Run get-sources-rhpkg-container-build"
+// 		def QUAY_REPO_PATHs=(env.ghprbPullId && env.ghprbPullId?.trim()?"":("${SCRATCH}"=="true"?"":"server-rhel8"))
+
+// 		def matcher = ( "${JOB_NAME}" =~ /.*_(stable-branch|master).*/ )
+// 		def JOB_BRANCH= (matcher.matches() ? matcher[0][1] : "stable-branch")
+
+// 		echo "[INFO] Trigger get-sources-rhpkg-container-build " + (env.ghprbPullId && env.ghprbPullId?.trim()?"for PR-${ghprbPullId} ":"") + \
+// 		"with SCRATCH = ${SCRATCH}, QUAY_REPO_PATHs = ${QUAY_REPO_PATHs}, JOB_BRANCH = ${JOB_BRANCH}"
+
+// 		// trigger OSBS build
+// 		build(
+// 		  job: 'get-sources-rhpkg-container-build',
+// 		  wait: false,
+// 		  propagate: false,
+// 		  parameters: [
+// 			[
+// 			  $class: 'StringParameterValue',
+// 			  name: 'GIT_PATH',
+// 			  value: "containers/codeready-workspaces",
+// 			],
+// 			[
+// 			  $class: 'StringParameterValue',
+// 			  name: 'GIT_BRANCH',
+// 			  value: "crw-2.0-rhel-8",
+// 			],
+// 			[
+// 			  $class: 'StringParameterValue',
+// 			  name: 'QUAY_REPO_PATHs',
+// 			  value: "${QUAY_REPO_PATHs}",
+// 			],
+// 			[
+// 			  $class: 'StringParameterValue',
+// 			  name: 'SCRATCH',
+// 			  value: "${SCRATCH}",
+// 			],
+// 			[
+// 			  $class: 'StringParameterValue',
+// 			  name: 'JOB_BRANCH',
+// 			  value: "${JOB_BRANCH}",
+// 			]
+// 		  ]
+// 		)
+//     }
+// }
