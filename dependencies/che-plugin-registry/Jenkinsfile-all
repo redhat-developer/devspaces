@@ -62,7 +62,7 @@ timeout(120) {
             copyArtifacts(projectName: 'vscode-extensions-packaging', selector: specific("${job.number}"), target: "vscode-extensions-vsix/" + fileLocation)
         }
 
-        sh "tar -cvf vscode-extensions-vsix.tar vscode-extensions-vsix"
+        sh "tar -czvf vscode-extensions-vsix.tar vscode-extensions-vsix"
 
         // TODO deploy artifact to pkgs.devel?
 
