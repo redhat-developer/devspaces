@@ -28,13 +28,11 @@ PRECACHED_ROOT_DIR_NAME="result"
 
 # if archive with prebuilt extensions is located at given path,
 # use them to substitute
-if [ -f "/tmp/vscode-extensions-vsix.tar" ]; then
+if [ -f "/tmp/vsix.tar.gz" ]; then
 echo 'found non empty extensions tar, unpacking'
-  tar -zxvf /tmp/vscode-extensions-vsix.tar
+  tar -zxvf /tmp/vsix.tar.gz
   readarray -d '' precached_plugins < <(find $PRECACHED_ROOT_DIR_NAME -name '*.vsix' -print0)
 fi
-
-
 
 mkdir -p "${RESOURCES_DIR}" "${TEMP_DIR}"
 for extension in $(yq -r '.spec.extensions[]?' "${metas[@]}" | sort | uniq); do

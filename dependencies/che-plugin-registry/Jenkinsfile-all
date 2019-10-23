@@ -66,6 +66,6 @@ timeout(120) {
 
         // TODO deploy artifact to pkgs.devel?
 
-        archiveArtifacts artifacts: '*.tar', fingerprint: true
+        archiveArtifacts artifacts: '*.tar.gz', fingerprint: true
     }
 }
