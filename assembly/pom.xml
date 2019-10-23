@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (c) 2018-2019 Red Hat, Inc.
-
+    Copyright (c) 2019 Red Hat, Inc.
     This program and the accompanying materials are made
     available under the terms of the Eclipse Public License 2.0
     which is available at https://www.eclipse.org/legal/epl-2.0/
@@ -12,7 +11,8 @@
     Contributors:
       Red Hat, Inc. - initial API and implementation
 
---><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <artifactId>codeready</artifactId>
@@ -22,14 +22,9 @@
     <groupId>com.redhat</groupId>
     <artifactId>codeready-assembly-parent</artifactId>
     <packaging>pom</packaging>
-    <name>CRW :: Che Assembly :: Parent</name>
-  <modules>
-      <!-- <module>codeready-ide-gwt-app</module> -->
-      <!-- <module>assembly-ide-war</module> -->
-      <module>assembly-dashboard-war</module>
-      <module>assembly-wsmaster-war</module>
-      <!-- <module>assembly-wsagent-war</module> -->
-      <!-- <module>assembly-wsagent-server</module> -->
-      <module>codeready-workspaces-assembly-main</module>
-  </modules>
+    <name>CRW :: Assembly :: Parent</name>
+    <modules>
+        <module>codeready-workspaces-assembly-dashboard-war</module>
+        <module>codeready-workspaces-assembly-main</module>
+    </modules>
 </project>

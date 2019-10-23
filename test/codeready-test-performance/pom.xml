@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (c) 2018-2019 Red Hat, Inc.
-
+    Copyright (c) 2019 Red Hat, Inc.
     This program and the accompanying materials are made
     available under the terms of the Eclipse Public License 2.0
     which is available at https://www.eclipse.org/legal/epl-2.0/
@@ -11,6 +10,7 @@
 
     Contributors:
       Red Hat, Inc. - initial API and implementation
+
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
@@ -23,8 +23,8 @@
     <packaging>jar</packaging>
     <name>CRW :: Test :: Performance</name>
     <properties>
-        <jmeter.analysis.maven.plugin.version>1.0.6</jmeter.analysis.maven.plugin.version>
         <jmeter-maven-plugin.version>2.8.1</jmeter-maven-plugin.version>
+        <jmeter.analysis.maven.plugin.version>1.0.6</jmeter.analysis.maven.plugin.version>
     </properties>
     <profiles>
         <profile>
@@ -44,6 +44,13 @@
                                 </goals>
                             </execution>
                         </executions>
+                        <dependencies>
+                            <dependency>
+                                <groupId>kg.apc</groupId>
+                                <artifactId>jmeter-plugins</artifactId>
+                                <version>1.0.0</version>
+                            </dependency>
+                        </dependencies>
                         <configuration>
                             <overrideRootLogLevel>debug</overrideRootLogLevel>
                             <generateReports>true</generateReports>
@@ -60,17 +67,9 @@
                                 <jMeterTestFile>${jmeterScript}</jMeterTestFile>
                             </testFilesIncluded>
                         </configuration>
-                        <dependencies>
-                            <dependency>
-                                <groupId>kg.apc</groupId>
-                                <artifactId>jmeter-plugins</artifactId>
-                                <version>1.0.0</version>
-                            </dependency>
-                        </dependencies>
                     </plugin>
-              </plugins>
+                </plugins>
             </build>
         </profile>
     </profiles>
-
 </project>
