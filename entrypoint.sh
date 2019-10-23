@@ -305,8 +305,9 @@ add_cert_to_truststore() {
 
     echo yes | keytool -keystore $JAVA_TRUST_STORE -importcert -alias HOSTDOMAIN -file $SELF_SIGNED_CERT -storepass $DEFAULT_JAVA_TRUST_STOREPASS > /dev/null
 
+    # DOES NOT WORK IN OPENSHIFT - maybe we need to add anyuid fix? 
     # allow only read by all groups
-    if [[ -w $JAVA_TRUST_STORE ]]; then chmod 444 $JAVA_TRUST_STORE; fi
+    # if [[ -w $JAVA_TRUST_STORE ]]; then chmod 444 $JAVA_TRUST_STORE; fi
 
     export JAVA_OPTS="${JAVA_OPTS} -Djavax.net.ssl.trustStore=$JAVA_TRUST_STORE -Djavax.net.ssl.trustStorePassword=$DEFAULT_JAVA_TRUST_STOREPASS"
   fi
