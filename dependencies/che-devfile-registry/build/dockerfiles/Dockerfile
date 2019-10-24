@@ -7,7 +7,7 @@
 # SPDX-License-Identifier: EPL-2.0
 #
 FROM alpine:3.10 AS builder
-RUN apk add --no-cache py-pip jq bash && pip install yq
+RUN apk add --no-cache py-pip jq bash git && pip install yq
 
 # Registry, organization, and tag to use for base images in dockerfiles. Devfiles
 # will be rewritten during build to use these values for base images.
@@ -26,10 +26,21 @@ RUN ./check_mandatory_fields.sh devfiles
 RUN ./index.sh > /build/devfiles/index.json
 RUN chmod -R g+rwX /build/devfiles
 
-FROM registry.centos.org/centos/httpd-24-centos7
+FROM registry.centos.org/centos/httpd-24-centos7 AS registry
 RUN mkdir /var/www/html/devfiles
 COPY .htaccess README.md /var/www/html/
 COPY --from=builder /build/devfiles /var/www/html/devfiles
 COPY ./build/dockerfiles/entrypoint.sh /usr/bin/
 ENTRYPOINT ["/usr/bin/entrypoint.sh"]
 CMD ["/usr/bin/run-httpd"]
+
+
+# Offline registry: download project zips and place them in /build/resources
+FROM builder AS offline-builder
+RUN ./list_referenced_images.sh devfiles > /build/devfiles/external_images.txt
+RUN ./cache_projects.sh devfiles resources && chmod -R g+rwX /build
+
+# Offline registry: copy updated devfile.yamls and cached projects
+FROM registry AS offline-registry
+COPY --from=offline-builder /build/devfiles /var/www/html/devfiles
+COPY --from=offline-builder /build/resources /var/www/html/resources

@@ -101,6 +101,15 @@ RUN chmod g+rwX /usr/local/bin/entrypoint.sh /usr/local/bin/rhel.entrypoint.sh
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 CMD ["/usr/local/bin/rhel.entrypoint.sh"]
 
+# Offline devfile registry build
+FROM builder AS offline-builder
+RUN ./list_referenced_images.sh devfiles > /build/devfiles/external_images.txt
+RUN ./cache_projects.sh devfiles resources && chmod -R g+rwX /build
+
+FROM registry AS offline-registry
+COPY --from=offline-builder /build/devfiles /var/www/html/devfiles
+COPY --from=offline-builder /build/resources /var/www/html/resources
+
 ENV SUMMARY="Red Hat CodeReady Workspaces devfile registry container" \
     DESCRIPTION="Red Hat CodeReady Workspaces devile registry container" \
     PRODNAME="codeready-workspaces" \

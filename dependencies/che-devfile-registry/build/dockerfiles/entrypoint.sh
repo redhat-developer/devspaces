@@ -16,6 +16,12 @@
 # By default, this script will operate on the `/var/www/html/devfiles` directory.
 # This can be overridden by the environment variable $DEVFILES_DIR
 #
+# In addition, this script will perform the necessary set up for the offline
+# devfile registry, replacing placeholders in all devfiles based off environment
+# variable
+#     CHE_DEVFILE_REGISTRY_URL
+# which should be set to the public endpoint for this registry.
+#
 # Will execute any arguments on completion (`exec $@`)
 
 set -e
@@ -23,6 +29,7 @@ set -e
 REGISTRY=${CHE_DEVFILE_IMAGES_REGISTRY_URL}
 ORGANIZATION=${CHE_DEVFILE_IMAGES_REGISTRY_ORGANIZATION}
 TAG=${CHE_DEVFILE_IMAGES_REGISTRY_TAG}
+PUBLIC_URL=${CHE_DEVFILE_REGISTRY_URL}
 
 DEFAULT_DEVFILES_DIR="/var/www/html/devfiles"
 DEVFILES_DIR="${DEVFILES_DIR:-${DEFAULT_DEVFILES_DIR}}"
@@ -57,5 +64,21 @@ for devfile in "${devfiles[@]}"; do
     sed -i -E "s|image:$IMAGE_REGEX|image:\1\2/\3/\4:${TAG}\6|" "$devfile"
   fi
 done
+
+if [ -n "$PUBLIC_URL" ]; then
+  echo "Updating devfiles to point at internal project zip files"
+  PUBLIC_URL=${PUBLIC_URL%/}
+  sed -i "s|{{ DEVFILE_REGISTRY_URL }}|${PUBLIC_URL}|" "${devfiles[@]}"
+else
+  if grep -q '{{ DEVFILE_REGISTRY_URL }}' "${devfiles[@]}"; then
+    echo "WARNING: environment variable 'CHE_DEVFILE_REGISTRY_URL' not configured" \
+         "for an offline build of this registry. This may cause issues with importing" \
+         "projects in a workspace."
+    # Experimental workaround -- detect service IP for che-devfile-registry
+    # Depends on service used being named 'che-devfile-registry'
+    URL="http://${CHE_DEVFILE_REGISTRY_SERVICE_HOST}:${CHE_DEVFILE_REGISTRY_SERVICE_PORT}"
+    sed -i "s|{{ DEVFILE_REGISTRY_URL }}|${URL}|" "${devfiles[@]}"
+  fi
+fi
 
 exec "${@}"

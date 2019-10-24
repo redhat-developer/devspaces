@@ -11,10 +11,10 @@ This repository holds ready-to-use Devfiles for different languages and technolo
 
 Execute
 ```shell
-docker build --no-cache -t quay.io/eclipse/che-devfile-registry:nightly .
+docker build --no-cache -t quay.io/eclipse/che-devfile-registry:nightly --target registry .
 
 # or to use & create a RHEL-based image
-docker build --no-cache -t quay.io/eclipse/che-devfile-registry:nightly -f build/dockerfiles/rhel.Dockerfile .
+docker build --no-cache -t quay.io/eclipse/che-devfile-registry:nightly -f build/dockerfiles/rhel.Dockerfile --target registry.
 ```
 Where `--no-cache` is needed to prevent usage of cached layers with devfile registry files.
 Useful when you change devfile files and rebuild the image.
@@ -23,6 +23,14 @@ Note that the Dockerfiles feature multi-stage build, so it requires Docker of ve
 Though you may also just provide the image to the older versions of Docker (ex. on Minishift) by having it build on newer version, and pushing and pulling it from Docker Hub.
 
 `quay.io/eclipse/che-devfile-registry:nightly` image would be rebuilt after each commit in master.
+
+### Offline registry
+
+The default docker build has multiple targets:
+- `--target registry` is used to build the default devfile registry, where projects in devfiles refer to publically hosted git repos
+- `--target offline-registry` is used to build a devfile registry which self-hosts projects as zip files.
+
+The offline registry build will, during the docker build, pull zips from all projects hosted on github and store them in the `/resources` path. This registry should be deployed with environment variable `CHE_DEVFILE_REGISTRY_URL` set to the URL of the route/endpoint that exposes the devfile registry, as devfiles need to be rewritten to point to internally hosted zip files.
 
 ## OpenShift
 You can deploy Che devfile registry on Openshift with command.
