@@ -23,9 +23,9 @@ fi
 DOCKERFILE=build/dockerfiles/rhel.Dockerfile
 
 # Extra step for air gap - replace references to docker.io, quay.io, registry.access.redhat.com, registry.redhat.io with internal registry
-# inject this into the Dockerfile: RUN ./replace_container_repos.sh v3 myquay.mycorp.com
-cat ${DOCKERFILE} | sed -e "s%.*\(RUN \)\(./check_plugins_location.sh v3\)%RUN ./replace_container_repos.sh v3 ${registry} \&\& \2%" > airgap.Dockerfile
-if [[ $(cat airgap.Dockerfile | grep "replace_container_repos.sh") != *"replace_container_repos.sh"* ]]; then
+# inject this into the Dockerfile: RUN ./airgap_replace_referenced_image.sh v3 myquay.mycorp.com
+cat ${DOCKERFILE} | sed -e "s%\(./check_plugins_location.sh\)%./airgap_replace_referenced_image.sh v3 ${registry}; \1%" > airgap.Dockerfile
+if [[ $(cat airgap.Dockerfile | grep "airgap_replace_referenced_image.sh") != *"airgap_replace_referenced_image.sh"* ]]; then
 	echo "Error! did not find injection point. Check your $DOCKERFILE ang try again."
 	exit
 fi
