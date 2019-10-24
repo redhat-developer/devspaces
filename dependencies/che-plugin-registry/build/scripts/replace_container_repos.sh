@@ -37,4 +37,4 @@ for metayaml in ${metayamls}; do # grep "image:" $metayaml
   sed -i $metayaml -e "s#\(.\+image: \'\|\"\)\(${REPOS}\)\(.\+\)#\1${REPLACEMENT}\3#g"
 done
 
-source $(dirname "$0")/list_containers.sh $DIR "internal/external"
+source $(dirname "$0")/list_referenced_images.sh $DIR
