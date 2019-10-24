@@ -4,13 +4,14 @@
 # 
 # see also https://github.com/eclipse/che/issues/14693
 # 
+# eg., ./airgap_build.sh mycorpquay.bigco.co.uk --push --squash
 
 if [[ $1 == "nightly" ]]; then
+	registry="myquay.mycorp.com"
 	nightly="nightly"
 	now=`date +%Y%m%d-%H%M`
 elif [[ $1 ]]; then
-	cat Dockerfile   | sed -e "s%#.*RUN ./list_containers.sh%RUN ./list_containers.sh%" > Dockerfile.2
-	cat Dockerfile.2 | sed -e "s%myquay.mycorp.com%${1}%" > Dockerfile; rm -f Dockerfile.2
+	registry="${1}"
 	nightly="${1%%.*}" # first section of the URL replacement
 	now="${nightly}-`date +%Y%m%d-%H%M`" # append timestamp
 else
@@ -20,8 +21,12 @@ else
 	exit 1
 fi
 
+# Extra step for air gap - replace references to docker.io, quay.io, registry.access.redhat.com, registry.redhat.io with internal registry
+# inject this into the Dockerfile: RUN ./replace_container_repos.sh v3 myquay.mycorp.com
+cat Dockerfile | sed -e "s%#.*\(RUN ./check_plugins_location.sh v3\)%./replace_container_repos.sh v3 ${registry} && \1%" > Dockerfile.2; mv Dockerfile.2 Dockerfile
+
 now=`date +%Y%m%d-%H%M`
-docker build . -f build/dockerfiles/rhel.Dockerfile -t quay.io/nickboldt/airgap-che-plugin-registry:${nightly} --no-cache # --squash
+docker build . -f build/dockerfiles/rhel.Dockerfile -t quay.io/nickboldt/airgap-che-plugin-registry:${nightly} --no-cache $3
 docker tag quay.io/nickboldt/airgap-che-plugin-registry:{${nightly},${now}}
 
 if [[ $2 == "--push" ]]; then
