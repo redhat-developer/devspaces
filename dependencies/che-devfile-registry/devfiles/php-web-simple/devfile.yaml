@@ -61,3 +61,23 @@ commands:
         else
           echo "DocumentRoot already configured!"
         fi
+-
+  name: Debug current file
+  actions:
+  - type: vscode-launch
+    referenceContent: |
+      {
+        "version": "0.2.0",
+        "configurations": [
+          {
+            "name": "Launch currently open script",
+            "type": "php",
+            "request": "launch",
+            "program": "${file}",
+            "stopOnEntry": true,
+            "cwd": "${fileDirname}",
+            "port": 9000,
+            "runtimeExecutable": "php"
+          }
+        ]
+      }
