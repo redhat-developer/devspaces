@@ -54,13 +54,13 @@ WORKDIR /build/
 
 # if only including the /latest/ plugins, apply this line to remove them from builder
 RUN if [[ ${LATEST_ONLY} == "true" ]]; then \
-      rm -fr $(find /build/v3 -name 'meta.yaml' | grep -v "/latest/" | grep -o ".*/"); \
+      ./keep_only_latest.sh; \
     fi
 
-RUN ./check_plugins_location.sh v3 && \
+RUN ./generate_latest_metas.sh v3 && \
+    ./check_plugins_location.sh v3 && \
     ./set_plugin_dates.sh v3 && \
     ./check_plugins_viewer_mandatory_fields.sh v3 && \
-    ./ensure_latest_exists.sh && \
     ./index.sh v3 > /build/v3/plugins/index.json && \
     chmod -c -R g+rwX /build
 
