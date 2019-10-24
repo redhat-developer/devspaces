@@ -41,6 +41,7 @@ CMD ["/usr/bin/run-httpd"]
 
 # Offline build: cache .theia and .vsix files in registry itself and update metas
 FROM builder AS offline-builder
+RUN ./list_referenced_images.sh v3 > /build/v3/external_images.txt
 RUN ./cache_artifacts.sh v3 && chmod -R g+rwX /build
 
 # Offline registry: copy updated meta.yamls and cached extensions

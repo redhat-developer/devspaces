@@ -99,6 +99,7 @@ CMD ["/usr/local/bin/rhel.entrypoint.sh"]
 # Offline build: cache .theia and .vsix files in registry itself and update metas
 # multiple temp stages does not work in Brew
 FROM builder AS offline-builder
+RUN ./list_referenced_images.sh v3 > /build/v3/external_images.txt
 
 # built in Brew, use tarball in lookaside cache; built locally, comment this out
 # COPY v3.tgz /tmp/v3.tgz
