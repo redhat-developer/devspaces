@@ -21,14 +21,15 @@ COPY /v3 /build/v3
 WORKDIR /build/
 
 RUN if [[ ${LATEST_ONLY} == "true" ]]; then \
-      rm -fr $(find /build/v3 -name 'meta.yaml' | grep -v "/latest/" | grep -o ".*/"); \
+      ./keep_only_latest.sh; \
     fi
 
-RUN ./check_plugins_location.sh v3 && \
+RUN ./generate_latest_metas.sh v3 && \
+    ./check_plugins_location.sh v3 && \
     ./set_plugin_dates.sh v3 && \
     ./check_plugins_viewer_mandatory_fields.sh v3 && \
-    ./ensure_latest_exists.sh && \
     ./index.sh v3 > /build/v3/plugins/index.json && \
+    ./list_referenced_images.sh v3 > /build/v3/external_images.txt && \
     chmod -R g+rwX /build
 
 # Build registry, copying meta.yamls and index.json from builder
@@ -41,7 +42,6 @@ CMD ["/usr/bin/run-httpd"]
 
 # Offline build: cache .theia and .vsix files in registry itself and update metas
 FROM builder AS offline-builder
-RUN ./list_referenced_images.sh v3 > /build/v3/external_images.txt
 RUN ./cache_artifacts.sh v3 && chmod -R g+rwX /build
 
 # Offline registry: copy updated meta.yamls and cached extensions
