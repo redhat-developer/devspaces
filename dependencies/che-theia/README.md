@@ -1,0 +1,1 @@
+Moved to https://github.com/redhat-developer/codeready-workspaces-theia
