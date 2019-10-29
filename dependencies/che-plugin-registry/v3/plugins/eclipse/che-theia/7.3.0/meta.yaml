@@ -67,3 +67,15 @@ spec:
          - exposedPort: 13132
          - exposedPort: 13133
      memoryLimit: "512M"
+  initContainers:
+  - name: remote-runtime-injector
+    image: quay.io/crw/theia-endpoint:2.0
+    volumes:
+      - mountPath: "/remote-endpoint"
+        name: remote-endpoint
+        ephemeral: true
+    env:
+      - name: PLUGIN_REMOTE_ENDPOINT_EXECUTABLE
+        value: /remote-endpoint/plugin-remote-endpoint
+      - name: REMOTE_ENDPOINT_VOLUME_NAME
+        value: remote-endpoint
