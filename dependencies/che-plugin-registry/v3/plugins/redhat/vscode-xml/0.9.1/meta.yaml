@@ -1,7 +1,7 @@
 apiVersion: v2
 publisher: redhat
 name: vscode-xml
-version: 0.7.0
+version: 0.9.1
 type: VS Code extension
 displayName: XML
 title: XML Language Support by Red Hat
@@ -9,10 +9,11 @@ description: This VS Code extension provides support for creating and editing XM
 icon: https://www.eclipse.org/che/images/logo-eclipseche.svg
 repository: https://github.com/redhat-developer/vscode-xml
 category: Language
-firstPublicationDate: "2019-06-17"
+firstPublicationDate: "2019-10-28"
 spec:
   containers:
     - image: "quay.io/crw/stacks-java-rhel8:2.0"
+      name: vscode-xml
       memoryLimit: "768Mi"
   extensions:
-    - https://github.com/redhat-developer/vscode-xml/releases/download/0.7.0/vscode-xml-0.7.0-3205.vsix
+    - https://github.com/redhat-developer/vscode-xml/releases/download/0.9.1/redhat.vscode-xml-0.9.1.vsix
