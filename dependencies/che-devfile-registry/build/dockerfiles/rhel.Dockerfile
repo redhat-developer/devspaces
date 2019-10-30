@@ -68,7 +68,8 @@ RUN ./index.sh > /build/devfiles/index.json
 RUN chmod -R g+rwX /build/devfiles
 
 RUN ./list_referenced_images.sh devfiles > /build/devfiles/external_images.txt
-RUN ./cache_projects.sh devfiles resources && chmod -R g+rwX /build
+# Does not work in brew; need to run this online, cache in tarball and add to Brew
+# RUN ./cache_projects.sh devfiles resources && chmod -R g+rwX /build
 
 ################# 
 # PHASE TWO: configure registry image
