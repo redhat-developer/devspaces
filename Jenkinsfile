@@ -9,7 +9,8 @@
 // branchToBuildLSJ = refs/tags/0.0.3 or */master or a SHA like 095d753f42dad32c47b1e9ae46a71bf424e98e7e
 // branchToBuildCRW = */7.0.0-RC-2.x or */master
 // BUILDINFO = ${JOB_NAME}/${BUILD_NUMBER}
-// // MVN_EXTRA_FLAGS = extra flags, such as to disable a module -pl '!org.eclipse.che.selenium:che-selenium-test'
+// MVN_EXTRA_FLAGS = extra flags, such as to disable a module -pl '!org.eclipse.che.selenium:che-selenium-test'
+// SCRATCH = true (don't push to Quay) or false (do push to Quay)
 
 def installNPM(){
 	def nodeHome = tool 'nodejs-10.9.0'
