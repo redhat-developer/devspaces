@@ -14,7 +14,7 @@ usage () {
 	echo "
 Usage: for 1 or more containes in quay or Pulp, compute the NVR, Build URL, and Source commit for that build. eg., 
   $0  quay.io/crw/stacks-java-rhel8:1.2-10 quay.io/crw/stacks-java-rhel8:1.2-9 ...
-  $0  brew-pulp-docker01.web.prod.ext.phx2.redhat.com:8888/codeready-workspaces/stacks-java-rhel8 -n 2      | show last 2 tags
+  $0  registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-stacks-java-rhel8 -n 2      | show last 2 tags
 "
 exit
 }
