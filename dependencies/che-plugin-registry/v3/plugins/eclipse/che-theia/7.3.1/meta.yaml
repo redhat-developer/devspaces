@@ -69,7 +69,7 @@ spec:
      memoryLimit: "512M"
   initContainers:
   - name: remote-runtime-injector
-    image: quay.io/crw/theia-endpoint:2.0
+    image: quay.io/crw/theia-endpoint-rhel8:2.0
     volumes:
       - mountPath: "/remote-endpoint"
         name: remote-endpoint
