@@ -148,14 +148,14 @@ done
 if [[ ''' + FORCE_BUILD + ''' == "true" ]]; then hasChanged=1; fi
 
 if [[ ${hasChanged} -eq 1 ]]; then
-  for QRP in pluginbroker-rhel8 pluginbrokerinit-rhel8; do
-    QUAY_REPO_PATH=""; if [[ ''' + PUSH_TO_QUAY + ''' == "true" ]]; then QUAY_REPO_PATH="${QRP}"; fi
+  for QRP in pluginbroker pluginbrokerinit; do
+    QUAY_REPO_PATH=""; if [[ ''' + PUSH_TO_QUAY + ''' == "true" ]]; then QUAY_REPO_PATH="${QRP}-rhel8"; fi
     curl \
 "https://codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/get-sources-rhpkg-container-build/buildWithParameters?\
 token=CI_BUILD&\
 cause=${QUAY_REPO_PATH}+respin+by+${BUILD_TAG}&\
 GIT_BRANCH=''' + GIT_BRANCH + '''&\
-GIT_PATHs=containers/codeready-workspaces&\
+GIT_PATHs=containers/codeready-workspaces-${QRP}&\
 QUAY_REPO_PATHs=${QUAY_REPO_PATH}&\
 JOB_BRANCH=master&\
 FORCE_BUILD=true&\
@@ -188,8 +188,8 @@ fi
 // 		  parameters: [
 // 			[
 // 			  $class: 'StringParameterValue',
-// 			  name: 'GIT_PATH',
-// 			  value: "containers/codeready-workspaces",
+// 			  name: 'GIT_PATHs',
+// 			  value: "containers/codeready-workspaces-FIXME",
 // 			],
 // 			[
 // 			  $class: 'StringParameterValue',
