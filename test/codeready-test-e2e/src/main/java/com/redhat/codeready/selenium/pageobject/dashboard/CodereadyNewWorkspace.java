@@ -1,21 +1,20 @@
 /*
-* Copyright (c) 2019 Red Hat, Inc.
-
-* All rights reserved. This program and the accompanying materials
-* are made available under the terms of the Eclipse Public License v2.0
-* which accompanies this distribution, and is available at
-* http://www.eclipse.org/legal/epl-2.0
-*
-* Contributors:
-*   Red Hat, Inc. - initial API and implementation
-*/
+ * Copyright (c) 2019 Red Hat, Inc.
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *
+ * Contributors:
+ *   Red Hat, Inc. - initial API and implementation
+ */
 package com.redhat.codeready.selenium.pageobject.dashboard;
 
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toList;
 import static org.eclipse.che.selenium.core.constant.TestTimeoutsConstants.ELEMENT_TIMEOUT_SEC;
-import static org.eclipse.che.selenium.pageobject.dashboard.NewWorkspace.Locators.STACK_ROW_XPATH;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
@@ -101,7 +100,8 @@ public class CodereadyNewWorkspace extends NewWorkspace {
 
   public void selectCodereadyStack(CodereadyStacks stack) {
     waitCodereadyStacks(asList(stack));
-    seleniumWebDriverHelper.waitAndClick(By.xpath(format(STACK_ROW_XPATH, stack.getId())));
+    seleniumWebDriverHelper.waitAndClick(
+        By.xpath(format("//div[@data-stack-id='%s']", stack.getId())));
   }
 
   public void waitCodereadyStacks(List<CodereadyStacks> expectedStacks) {

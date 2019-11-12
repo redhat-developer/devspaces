@@ -18,12 +18,6 @@
        thread-count="1">
     <test name="all">
         <classes>
-            <class name="com.redhat.codeready.selenium.git.AuthorizeOnGithubFromDashboardTest"/>
-            <class name="com.redhat.codeready.selenium.git.AuthorizeOnGithubFromPreferencesTest"/>
-            <class name="com.redhat.codeready.selenium.dashboard.workspaces.WorkspacesListTest"/>
-            <class name="com.redhat.codeready.selenium.dashboard.organization.ShareWorkspaceOwnerTest"/>
-            <class name="com.redhat.codeready.selenium.dashboard.organization.ShareWorkspaceMemberTest"/>
-
             <class name="org.eclipse.che.selenium.dashboard.organization.AddWorkspaceToOrganizationTest"/>
             <class name="org.eclipse.che.selenium.dashboard.organization.AdminOfParentOrganizationTest"/>
             <class name="org.eclipse.che.selenium.dashboard.organization.AdminOfSubOrganizationTest"/>
@@ -35,13 +29,13 @@
             <class name="org.eclipse.che.selenium.dashboard.organization.MemberOrganizationTest"/>
             <class name="org.eclipse.che.selenium.dashboard.organization.OrganizationMembersTest"/>
             <class name="org.eclipse.che.selenium.dashboard.organization.RenameOrganizationTest"/>
+            <class name="org.eclipse.che.selenium.dashboard.organization.ShareWorkspaceOwnerTest"/>
+            <class name="org.eclipse.che.selenium.dashboard.organization.ShareWorkspaceMemberTest"/>
             <class name="org.eclipse.che.selenium.dashboard.organization.SystemAdminOrganizationTest"/>
-            <class name="org.eclipse.che.selenium.git.CheckoutToRemoteBranchTest"/>
-            <class name="org.eclipse.che.selenium.git.PullRequestPluginTest"/>
-            <class name="org.eclipse.che.selenium.git.PullRequestPluginWithForkTest"/>
-            <class name="org.eclipse.che.selenium.git.PushingChangesTest"/>
+            <class name="org.eclipse.che.selenium.git.AuthorizeOnGithubFromDashboardTest"/>
             <class name="org.eclipse.che.selenium.dashboard.ImportProjectFromGitHubTest"/>
             <class name="org.eclipse.che.selenium.factory.DirectUrlFactoryWithKeepDirectoryTest"/>
+            <class name="org.eclipse.che.selenium.dashboard.workspaces.WorkspacesListTest"/>
         </classes>
     </test>
 </suite>
