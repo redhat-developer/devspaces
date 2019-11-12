@@ -12,7 +12,7 @@
 
 # Builder: check meta.yamls and create index.json
 # https://access.redhat.com/containers/?tab=tags#/registry.access.redhat.com/ubi8-minimal
-FROM registry.access.redhat.com/ubi8-minimal:8.0-213 as builder
+FROM registry.access.redhat.com/ubi8-minimal:8.1-279 as builder
 USER 0
 
 ################# 
@@ -82,7 +82,7 @@ RUN ./list_referenced_images.sh devfiles > /build/devfiles/external_images.txt
 
 # DOWNSTREAM: use RHEL8/httpd
 # https://access.redhat.com/containers/?tab=tags#/registry.access.redhat.com/rhel8/httpd-24
-FROM registry.redhat.io/rhel8/httpd-24:1-60 AS registry
+FROM registry.redhat.io/rhel8/httpd-24:1-63 AS registry
 USER 0
 
 # BEGIN these steps might not be required
