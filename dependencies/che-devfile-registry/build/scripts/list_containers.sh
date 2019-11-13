@@ -18,5 +18,5 @@ if [[ ! $1 ]]; then DIR=$(dirname "$0"); else DIR="$1"; fi
 
 # search in devfiles folder, eg., $1 = devfiles/
 echo "BEGIN list of external containers in $DIR folder:"
-yq -r '.components[].image | strings' ${DIR}/**/devfile.yaml | sort | uniq | sed "s/^/  /g"
+yq -r '.components[].image | strings' "${DIR}"/**/devfile.yaml | sort | uniq | sed "s/^/  /g"
 echo "END list of external containers in $DIR folder"

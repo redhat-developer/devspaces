@@ -12,7 +12,7 @@ set -e
 
 readarray -d '' metas < <(find devfiles -name 'meta.yaml' -print0)
 for meta in "${metas[@]}"; do
-    META_DIR=$(dirname ${meta})
+    META_DIR=$(dirname "${meta}")
     # Workaround to include self-links, since it's not possible to
     # get filename in yq easily
     echo -e "links:\n  self: /${META_DIR}/devfile.yaml" >> "${meta}"
