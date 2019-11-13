@@ -25,7 +25,7 @@
           <class name="org.eclipse.che.selenium.dashboard.DeleteRunningWorkspaceTest"/>
           <class name="org.eclipse.che.selenium.dashboard.DeleteStoppingWorkspaceTest"/>
           <class name="org.eclipse.che.selenium.dashboard.ImportMavenProjectFromGitTest"/>
-          <class name="org.eclipse.che.selenium.dashboard.workspaces.details.WorkspaceDetailsOverviewTest"/>
+          <class name="com.redhat.codeready.selenium.dashboard.workspaces.details.WorkspaceDetailsOverviewTest"/>
           <class name="org.eclipse.che.selenium.dashboard.workspaces.details.WorkspaceDetailsProjectsTest"/>
           <class name="org.eclipse.che.selenium.dashboard.RenameWorkspaceTest"/>
           <class name="org.eclipse.che.selenium.dashboard.CreateWorkspaceTest"/>
@@ -39,7 +39,7 @@
           <class name="org.eclipse.che.selenium.workspaces.ProjectStateAfterRenameWorkspaceTest"/>
           <class name="org.eclipse.che.selenium.workspaces.ProjectStateAfterWorkspaceRestartTest"/>
           <class name="org.eclipse.che.selenium.workspaces.CheckStoppingWsByTimeoutTest"/>
-          <class name="org.eclipse.che.selenium.dashboard.AccountTest"/>
+          <class name="com.redhat.codeready.selenium.dashboard.AccountTest"/>
 
           <!-- Next tests can unexpectedly affect on other tests and so should be executed at the end -->
         </classes>

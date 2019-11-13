@@ -26,7 +26,7 @@ import org.openqa.selenium.By;
  */
 @Singleton
 public class CodereadyKeycloakHeaderButtons extends KeycloakHeaderButtons {
-  private enum Button {
+  public enum Button {
     ACCOUNT("Account"),
     PASSWORD("Password"),
     AUTHENTICATOR("Authenticator"),
@@ -67,5 +67,9 @@ public class CodereadyKeycloakHeaderButtons extends KeycloakHeaderButtons {
             Button.SESSIONS.getXpath(),
             Button.APPLICATIONS.getXpath())
         .forEach(locator -> seleniumWebDriverHelper.waitVisibility(locator));
+  }
+
+  public void clickOnButton(Button button) {
+    seleniumWebDriverHelper.waitAndClick(button.getXpath());
   }
 }
