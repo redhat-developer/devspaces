@@ -17,7 +17,7 @@
     <parent>
         <artifactId>maven-depmgt-pom</artifactId>
         <groupId>org.eclipse.che.depmgt</groupId>
-        <version>7.3.1</version>
+        <version>7.3.2</version>
     </parent>
     <groupId>com.redhat</groupId>
     <artifactId>codeready</artifactId>
@@ -38,7 +38,7 @@
     </modules>
     <properties>
         <che.dashboard.version>${che.version}</che.dashboard.version>
-        <che.version>7.3.1</che.version>
+        <che.version>7.3.2</che.version>
         <crw.dashboard.version>${crw.version} (Eclipse Che ${che.version})</crw.dashboard.version>
         <crw.docs.version>2.0</crw.docs.version>
         <crw.version>2.0.0.GA</crw.version>
