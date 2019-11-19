@@ -13,4 +13,4 @@
 set -e
 
 readarray -d '' metas < <(find "$1" -name 'meta.yaml' -print0)
-yq -r '.spec.containers[]?.image' "${metas[@]}" | sort | uniq
+yq -r '..|.image?' "${metas[@]}" | grep -v 'null' | sort | uniq

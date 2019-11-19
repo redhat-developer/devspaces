@@ -58,8 +58,16 @@ objects:
             periodSeconds: 10
             timeoutSeconds: 3
           resources:
+            requests:
+              cpu: 1m
+              memory: 5Mi
             limits:
+              cpu: 100m
               memory: ${MEMORY_LIMIT}
+          envFrom:
+          - configMapRef:
+              name: che-plugin-registry
+              optional: true
     triggers:
     - type: ConfigChange
 - apiVersion: v1
@@ -81,6 +89,15 @@ objects:
     to:
       kind: Service
       name: che-plugin-registry
+- apiVersion: v1
+  kind: ConfigMap
+  metadata:
+    name: che-plugin-registry
+  data:
+    CHE_SIDECAR_CONTAINERS_REGISTRY_URL: ${CHE_SIDECAR_CONTAINERS_REGISTRY_URL}
+    CHE_SIDECAR_CONTAINERS_REGISTRY_ORGANIZATION: ${CHE_SIDECAR_CONTAINERS_REGISTRY_ORGANIZATION}
+    CHE_SIDECAR_CONTAINERS_REGISTRY_TAG: ${CHE_SIDECAR_CONTAINERS_REGISTRY_TAG}
+
 parameters:
 - name: IMAGE
   value: quay.io/eclipse/che-plugin-registry
@@ -98,3 +115,12 @@ parameters:
   value: Always
   displayName: Eclipse Che plugin registry image pull policy
   description: Always pull by default. Can be IfNotPresent
+- name: CHE_SIDECAR_CONTAINERS_REGISTRY_URL
+  displayName: Sidecar image registry URL
+  description: URL of docker registry containing plugin sidecar images; used to override sidecars in plugins
+- name: CHE_SIDECAR_CONTAINERS_REGISTRY_ORGANIZATION
+  displayName: Sidecar image registry organization
+  description: Organization containing plugin sidecar images; used to override base images in plugins
+- name: CHE_SIDECAR_CONTAINERS_REGISTRY_TAG
+  displayName: Plugin sidecar images tag
+  description: Tag used for overridden sidecar images; used to override base images in plugins
