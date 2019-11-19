@@ -17,6 +17,14 @@
 # This can be overridden by the environment variable $METAS_DIR
 #
 # Will execute any arguments on completion (`exec $@`)
+# For testing, the images used for the che-theia, theia runtime, and machine-exec
+# plugins can be overridden via the environment variables
+#     CHE_PLUGIN_REGISTRY_THEIA_IMAGE
+#     CHE_PLUGIN_REGISTRY_THEIA_ENDPOINT_RUNTIME_BINARY_IMAGE
+#     CHE_PLUGIN_REGISTRY_MACHINE_EXEC_IMAGE
+# If set, these env vars override all modifications
+# (e.g. via CHE_DEVFILE_IMAGES_REGISTRY_URL)
+#
 
 set -e
 
@@ -57,5 +65,20 @@ for meta in "${metas[@]}"; do
     sed -i -E "s|image:$IMAGE_REGEX|image:\1\2/\3/\4:${TAG}\6|" "$meta"
   fi
 done
+
+if [ -n "$CHE_PLUGIN_REGISTRY_THEIA_IMAGE" ]; then
+  echo "Overriding Che Theia image with $CHE_PLUGIN_REGISTRY_THEIA_IMAGE"
+  sed -i -E "s|image:.*theia-rhel8.*|image: $CHE_PLUGIN_REGISTRY_THEIA_IMAGE|" "${metas[@]}"
+fi
+
+if [ -n "$CHE_PLUGIN_REGISTRY_THEIA_ENDPOINT_RUNTIME_BINARY_IMAGE" ]; then
+  echo "Overriding Theia remote runtime image with $CHE_PLUGIN_REGISTRY_THEIA_ENDPOINT_RUNTIME_BINARY_IMAGE"
+  sed -i -E "s|image:.*theia-endpoint-rhel8.*|image: $CHE_PLUGIN_REGISTRY_THEIA_ENDPOINT_RUNTIME_BINARY_IMAGE|" "${metas[@]}"
+fi
+
+if [ -n "$CHE_PLUGIN_REGISTRY_MACHINE_EXEC_IMAGE" ]; then
+  echo "Overriding Theia remote runtime image with $CHE_PLUGIN_REGISTRY_MACHINE_EXEC_IMAGE"
+  sed -i -E "s|image:.*machineexec-rhel8.*|image: $CHE_PLUGIN_REGISTRY_MACHINE_EXEC_IMAGE|" "${metas[@]}"
+fi
 
 exec "${@}"
