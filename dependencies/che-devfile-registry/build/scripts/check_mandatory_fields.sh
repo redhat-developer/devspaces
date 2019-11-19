@@ -17,7 +17,7 @@ for meta in "${metas[@]}"; do
     echo "Checking devfile '${meta}'"
     unset NULL_OR_EMPTY_FIELDS
     for field in "${FIELDS[@]}"; do
-        if ! grep -q "^${field}:.*\S" $meta; then
+        if ! grep -q "^${field}:.*\S" "$meta"; then
             NULL_OR_EMPTY_FIELDS+="$field "
         fi
     done

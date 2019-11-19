@@ -30,7 +30,7 @@ function cache_project() {
   local repo="$1"
   local branch="$2"
   local destination="$3"
-  git clone "$location" -b "$branch" --depth 1 "$TEMP_REPO" &>/dev/null
+  git clone "$repo" -b "$branch" --depth 1 "$TEMP_REPO" &>/dev/null
   git archive "$branch" --remote="$TEMP_REPO" --format zip --output "$destination"
   rm -rf "$TEMP_REPO"
 }
@@ -82,7 +82,7 @@ function get_devfile_name() {
     else
       "unnamed-devfile"
     end
-  ' $devfile
+  ' "$devfile"
 }
 
 readarray -d '' devfiles < <(find "$DEVFILES_DIR" -name 'devfile.yaml' -print0)
@@ -103,12 +103,13 @@ for devfile in "${devfiles[@]}"; do
 
     location=$(echo "$project" | jq -r '.source.location')
     branch=$(echo "$project" | jq -r '.source.branch')
-    if [ -n $branch ]; then
+    if [ -n "$branch" ]; then
       branch="master"
     fi
     destination="${RESOURCES_DIR}/${devfile_name}-${project_name}-${branch}.zip"
-    echo "    Caching project to $(realpath $destination)"
-    cache_project "$location" "$branch" "$(realpath $destination)"
+    absolute_destination=$(realpath "$destination")
+    echo "    Caching project to $absolute_destination"
+    cache_project "$location" "$branch" "$absolute_destination"
 
     echo "    Updating devfile $devfile to point at cached project zip $destination"
     update_devfile "$devfile" "$project_name" "$destination"

@@ -33,6 +33,7 @@ PUBLIC_URL=${CHE_DEVFILE_REGISTRY_URL}
 
 DEFAULT_DEVFILES_DIR="/var/www/html/devfiles"
 DEVFILES_DIR="${DEVFILES_DIR:-${DEFAULT_DEVFILES_DIR}}"
+INDEX_JSON="${DEVFILES_DIR}/index.json"
 
 # Regex used to break an image reference into groups:
 #   \1 - Whitespace and (optional) quotation preceding image reference
@@ -41,12 +42,13 @@ DEVFILES_DIR="${DEVFILES_DIR:-${DEFAULT_DEVFILES_DIR}}"
 #   \4 - Image name portion of image, e.g. quay.io/eclipse/(che-theia):tag
 #   \5 - Tag of image, e.g. quay.io/eclipse/che-theia:(tag)
 #   \6 - Optional quotation following image reference
-IMAGE_REGEX='([[:space:]]*"?)([._a-zA-Z0-9-]*)/([._a-zA-Z0-9-]*)/([._a-zA-Z0-9-]*):([._a-zA-Z0-9-]*)("?)'
+IMAGE_REGEX='([[:space:]]*"?)([._:a-zA-Z0-9-]*)/([._a-zA-Z0-9-]*)/([._a-zA-Z0-9-]*):([._a-zA-Z0-9-]*)("?)'
 
 # We can't use the `-d` option for readarray because
 # registry.centos.org/centos/httpd-24-centos7 ships with Bash 4.2
 # The below command will fail if any path contains whitespace
 readarray -t devfiles < <(find "${DEVFILES_DIR}" -name 'devfile.yaml')
+readarray -t metas < <(find "${DEVFILES_DIR}" -name 'meta.yaml')
 for devfile in "${devfiles[@]}"; do
   echo "Checking devfile $devfile"
   # Need to update each field separately in case they are not defined.
@@ -68,16 +70,17 @@ done
 if [ -n "$PUBLIC_URL" ]; then
   echo "Updating devfiles to point at internal project zip files"
   PUBLIC_URL=${PUBLIC_URL%/}
-  sed -i "s|{{ DEVFILE_REGISTRY_URL }}|${PUBLIC_URL}|" "${devfiles[@]}"
+  sed -i "s|{{ DEVFILE_REGISTRY_URL }}|${PUBLIC_URL}|" "${devfiles[@]}" "${metas[@]}" "$INDEX_JSON"
 else
   if grep -q '{{ DEVFILE_REGISTRY_URL }}' "${devfiles[@]}"; then
     echo "WARNING: environment variable 'CHE_DEVFILE_REGISTRY_URL' not configured" \
          "for an offline build of this registry. This may cause issues with importing" \
          "projects in a workspace."
     # Experimental workaround -- detect service IP for che-devfile-registry
-    # Depends on service used being named 'che-devfile-registry'
+    # Depends on service used being named 'che-devfile-registry' and only works
+    # within the cluster (i.e. browser-side retrieval won't work)
     URL="http://${CHE_DEVFILE_REGISTRY_SERVICE_HOST}:${CHE_DEVFILE_REGISTRY_SERVICE_PORT}"
-    sed -i "s|{{ DEVFILE_REGISTRY_URL }}|${URL}|" "${devfiles[@]}"
+    sed -i "s|{{ DEVFILE_REGISTRY_URL }}|${URL}|" "${devfiles[@]}" "${metas[@]}" "$INDEX_JSON"
   fi
 fi
 

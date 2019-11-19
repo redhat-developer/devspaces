@@ -13,4 +13,4 @@
 set -e
 
 readarray -d '' devfiles < <(find "$1" -name 'devfile.yaml' -print0)
-yq -r '.components[] | if has("image") then .image else empty end' "${devfiles[@]}" | sort | uniq
+yq -r '..|.image?' "${devfiles[@]}" | grep -v "null" | sort | uniq

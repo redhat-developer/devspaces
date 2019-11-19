@@ -65,11 +65,8 @@ WORKDIR /build/
 
 RUN ./check_mandatory_fields.sh devfiles
 RUN ./index.sh > /build/devfiles/index.json
-RUN chmod -R g+rwX /build/devfiles
-
 RUN ./list_referenced_images.sh devfiles > /build/devfiles/external_images.txt
-# Does not work in brew; need to run this online, cache in tarball and add to Brew
-# RUN ./cache_projects.sh devfiles resources && chmod -R g+rwX /build
+RUN chmod -R g+rwX /build/devfiles
 
 ################# 
 # PHASE TWO: configure registry image
@@ -107,6 +104,14 @@ CMD ["/usr/local/bin/rhel.entrypoint.sh"]
 
 # Offline devfile registry build
 FROM builder AS offline-builder
+# DO NOT USE FOR CRW
+# Does not work in brew; need to run this online, cache in tarball and add to Brew
+# RUN ./cache_projects.sh devfiles resources && \
+#     ./cache_images.sh devfiles resources && \
+#     chmod -R g+rwX /build
+# DO NOT USE FOR CRW
+
+
 FROM registry AS offline-registry
 COPY --from=offline-builder /build/devfiles /var/www/html/devfiles
 COPY --from=offline-builder /build/resources /var/www/html/resources
