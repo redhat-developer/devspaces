@@ -24,6 +24,6 @@ yq -sS 'map(
     "\(.publisher)/\(.name)/\(.version)" as $id |
     {
         $id, displayName, version, type, name, description, publisher,
-        links: {self: "\($PLUGINS_DIR)/\($id)"}
+        links: {self: "\($PLUGINS_DIR)/\($id)/"}
     } + if has("deprecate") then {deprecate} else null end ) |
     sort_by(.id)' "${metas[@]}" --arg "PLUGINS_DIR" "$PLUGINS_DIR"

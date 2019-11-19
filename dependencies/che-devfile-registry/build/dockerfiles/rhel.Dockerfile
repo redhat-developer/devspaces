@@ -104,11 +104,12 @@ CMD ["/usr/local/bin/rhel.entrypoint.sh"]
 
 # Offline devfile registry build
 FROM builder AS offline-builder
-
+# DO NOT USE FOR CRW (not tested yet)
 # Does not work in brew; need to run this online, cache in tarball and add to Brew
-# RUN ./cache_projects.sh devfiles resources && chmod -R g+rwX /build
+# RUN ./cache_projects.sh devfiles resources && \
 #     ./cache_images.sh devfiles resources && \
 #     chmod -R g+rwX /build
+# DO NOT USE FOR CRW (not tested yet)
 
 FROM registry AS offline-registry
 COPY --from=offline-builder /build/devfiles /var/www/html/devfiles

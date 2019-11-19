@@ -80,4 +80,4 @@ The following [CentOS CI jobs](https://ci.centos.org/) are associated with the r
 - [`release-preview`](https://ci.centos.org/job/devtools-che-devfile-registry-release-preview/) - builds CentOS and corresponding RHEL images from the [`release-preview`](https://github.com/eclipse/che-devfile-registry/tree/release-preview) branch and automatically updates ["Hosted Che"](https://www.eclipse.org/che/docs/che-7/hosted-che/) staging devfile registry deployment based on the new version of images - https://che-devfile-registry.prod-preview.openshift.io/. CentOS images are public and pushed to [quay.io](https://quay.io/organization/eclipse). RHEL images are also pushed to quay.io, but to the private repositories.
 
 ### License
-Che is open sourced under the Eclipse Public License 2.0.
+Che is open sourced under the Eclipse Public License 2.0
