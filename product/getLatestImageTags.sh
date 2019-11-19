@@ -105,10 +105,12 @@ Usage:
   $0 --crw12                                                 | use default list of CRW images in RHCC Prod
   $0 --crw12 --stage                                         | use default list of CRW images in RHCC Stage
   $0 --crw20 --quay                                          | use default list of CRW images in quay.io/crw
+  $0 -c 'crw/theia-rhel8 crw/theia-endpoint-rhel8' --quay -q | check a specific image in quay; quieter output
   $0 -c 'rhoar-nodejs/nodejs-10 jboss-eap-7/eap72-openshift' | use specific list of RHCC images
   $0 -c ubi7 -c ubi8:8.0 --pulp -n 5                         | check pulp registry; show 8.0* tags; show 5 tags per container
   $0 -c ubi7 -c ubi8:8.0 --stage -n 5                        | check RHCC stage registry; show 8.0* tags; show 5 tags per container
   $0 -c pivotaldata/centos --docker --dockerfile             | check docker registry; show Dockerfile contents (requires dfimage)
+  $0 -c 'codeready-workspaces-theia-dev-rhel8' --pulp -q     | check a specific image in pulp; quieter output
   $0 --crw12 --pulp --nvr --log                              | check for latest images in pulp; output NVRs can be copied to Errata; show links to Brew logs
   $0 --crw20 --pulp --nvr                                    | check for latest images in pulp; output NVRs can be copied to Errata
   $0 --crw20 --pulp --pushtoquay='2.0 latest'                | pull images from pulp, then push matching tag to quay, including extra tags if set
