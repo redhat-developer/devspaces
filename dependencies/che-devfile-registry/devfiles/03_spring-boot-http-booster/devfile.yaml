@@ -24,7 +24,7 @@ components:
       - name: m2
         containerPath: /home/jboss/.m2
     alias: maven
-    image: quay.io/crw/stacks-java-rhel8:2.0
+    image: registry.redhat.io/codeready-workspaces/stacks-java-rhel8:2.0
     env:
       - value: >-
           -XX:MaxRAMPercentage=50.0 -XX:+UseParallelGC -XX:MinHeapFreeRatio=10

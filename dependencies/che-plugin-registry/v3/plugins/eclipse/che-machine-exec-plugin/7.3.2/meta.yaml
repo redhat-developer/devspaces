@@ -24,6 +24,6 @@ spec:
         cookiesAuthEnabled: true
   containers:
    - name: che-machine-exec
-     image: "quay.io/crw/machineexec-rhel8:2.0"
+     image: "registry.redhat.io/codeready-workspaces/machineexec-rhel8:2.0"
      ports:
        - exposedPort: 4444

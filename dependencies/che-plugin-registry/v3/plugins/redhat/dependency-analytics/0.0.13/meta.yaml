@@ -12,7 +12,7 @@ category: Other
 firstPublicationDate: '2019-09-12'
 spec:
   containers:
-    - image: "quay.io/crw/stacks-java-rhel8:2.0"
+    - image: "registry.redhat.io/codeready-workspaces/stacks-java-rhel8:2.0"
       name: dependency-analytics
       memoryLimit: "512Mi"
   extensions:

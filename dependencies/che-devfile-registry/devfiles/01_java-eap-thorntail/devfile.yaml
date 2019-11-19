@@ -15,7 +15,7 @@ components:
   -
     type: dockerimage
     alias: maven
-    image: quay.io/crw/stacks-java-rhel8:2.0
+    image: registry.redhat.io/codeready-workspaces/stacks-java-rhel8:2.0
     env:
       - name: MAVEN_CONFIG
         value: /home/jboss/.m2
