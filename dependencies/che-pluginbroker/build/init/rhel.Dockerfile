@@ -16,6 +16,13 @@ ENV PATH=/opt/rh/go-toolset-1.11/root/usr/bin:$PATH \
 USER root
 WORKDIR /go/src/github.com/eclipse/che-plugin-broker/brokers/init/cmd/
 COPY . /go/src/github.com/eclipse/che-plugin-broker/
+# Workaround for CRW-494 - disable websocket communication in init broker
+RUN LN_START="$(grep -n 'cfg.DisablePushingToEndpoint' main.go | cut -f 1 -d ':')"; \
+    LN_END="$((LN_START + 3))"; \
+    sed -i "${LN_START},${LN_END}s|^|//|g" main.go && \
+    echo "Updated main.go" && cat main.go
+# End Workaround for CRW-494
+
 RUN adduser appuser && \
     CGO_ENABLED=0 GOOS=linux go build -a -ldflags '-w -s' -installsuffix cgo -o init-plugin-broker main.go
 
