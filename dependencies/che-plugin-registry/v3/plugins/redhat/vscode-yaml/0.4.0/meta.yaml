@@ -15,5 +15,9 @@ spec:
     - image: "registry.redhat.io/codeready-workspaces/stacks-node-rhel8:2.0"
       name: vscode-yaml
       memoryLimit: "256Mi"
+      args:
+        - sh
+        - -c
+        - ${PLUGIN_REMOTE_ENDPOINT_EXECUTABLE}
   extensions:
     - https://github.com/redhat-developer/vscode-yaml/releases/download/0.4.0/redhat.vscode-yaml-0.4.0.vsix

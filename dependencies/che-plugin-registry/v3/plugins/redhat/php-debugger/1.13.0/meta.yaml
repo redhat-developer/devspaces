@@ -14,5 +14,9 @@ spec:
   containers:
     - image: "registry.redhat.io/codeready-workspaces/stacks-php-rhel8:2.0"
       name: php-debugger
+      args:
+        - sh
+        - -c
+        - ${PLUGIN_REMOTE_ENDPOINT_EXECUTABLE}
   extensions:
     - https://github.com/felixfbecker/vscode-php-debug/releases/download/v1.13.0/php-debug.vsix

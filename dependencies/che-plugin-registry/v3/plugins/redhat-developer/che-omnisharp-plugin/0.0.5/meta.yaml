@@ -15,6 +15,10 @@ spec:
   - image: "registry.redhat.io/codeready-workspaces/stacks-dotnet-rhel8:2.0"
     name: theia-omnisharp
     memoryLimit: "1024Mi"
+    args:
+      - sh
+      - -c
+      - ${PLUGIN_REMOTE_ENDPOINT_EXECUTABLE}
     volumes:
     - mountPath: "/home/jboss/.nuget"
       name: nuget

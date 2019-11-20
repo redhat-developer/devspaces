@@ -15,5 +15,9 @@ spec:
     - image: "registry.redhat.io/codeready-workspaces/stacks-java-rhel8:2.0"
       name: vscode-xml
       memoryLimit: "768Mi"
+      args:
+        - sh
+        - -c
+        - ${PLUGIN_REMOTE_ENDPOINT_EXECUTABLE}
   extensions:
     - https://github.com/redhat-developer/vscode-xml/releases/download/0.9.1/redhat.vscode-xml-0.9.1.vsix
