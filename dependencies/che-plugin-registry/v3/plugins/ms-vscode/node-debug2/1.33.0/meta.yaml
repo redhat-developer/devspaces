@@ -16,5 +16,9 @@ spec:
   - image: "quay.io/crw/stacks-node-rhel8:2.0"
     name: vscode-node-debug
     memoryLimit: '512Mi'
+    args:
+      - sh
+      - -c
+      - ${PLUGIN_REMOTE_ENDPOINT_EXECUTABLE}
   extensions:
   - https://marketplace.visualstudio.com/_apis/public/gallery/publishers/ms-vscode/vsextensions/node-debug2/1.33.0/vspackage

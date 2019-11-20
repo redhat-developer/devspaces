@@ -16,5 +16,9 @@ spec:
   - image: "quay.io/crw/stacks-python-rhel8:2.0"
     name: vscode-python
     memoryLimit: '512Mi'
+    args:
+      - sh
+      - -c
+      - ${PLUGIN_REMOTE_ENDPOINT_EXECUTABLE}
   extensions:
   - https://github.com/Microsoft/vscode-python/releases/download/2019.5.18875/ms-python-release.vsix

@@ -15,6 +15,10 @@ spec:
     - image: "quay.io/crw/stacks-golang-rhel8:2.0"
       name: vscode-go
       memoryLimit: '512Mi'
+      args:
+        - sh
+        - -c
+        - ${PLUGIN_REMOTE_ENDPOINT_EXECUTABLE}
       env:
       - name: GOPATH
         value: /projects/.che/gopath:$(CHE_PROJECTS_ROOT)

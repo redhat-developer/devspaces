@@ -16,6 +16,10 @@ spec:
   - image: "quay.io/crw/stacks-java-rhel8:2.0"
     name: vscode-java
     memoryLimit: "1500Mi"
+    args:
+      - sh
+      - -c
+      - ${PLUGIN_REMOTE_ENDPOINT_EXECUTABLE}
     volumes:
     - mountPath: "/home/theia/.m2"
       name: m2
