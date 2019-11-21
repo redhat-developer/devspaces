@@ -187,10 +187,10 @@ timeout(180) {
 		'''
 
 		sh '''#!/bin/bash -xe
-			cp ./patches/0001-Provision-proxy-settings-on-init-containers.patch ${CHE_PATH}
-			pushd ${CHE_PATH} > /dev/null
+			cp ./patches/0001-Provision-proxy-settings-on-init-containers.patch ${CHE_path}
+			pushd ${CHE_path} > /dev/null
 			git am < 0001-Provision-proxy-settings-on-init-containers.patch
-			popd ${CHE_PATH} > /dev/null
+			popd ${CHE_path} > /dev/null
 		'''
 
 		sh "mvn clean install ${MVN_FLAGS} -P native -f ${CHE_path}/pom.xml ${MVN_EXTRA_FLAGS}"
