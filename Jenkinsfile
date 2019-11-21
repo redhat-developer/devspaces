@@ -186,6 +186,13 @@ timeout(180) {
 			cat che/dashboard/src/assets/branding/branding.css
 		'''
 
+		sh '''#!/bin/bash -xe
+			cp ./patches/0001-Provision-proxy-settings-on-init-containers.patch ${CHE_PATH}
+			pushd ${CHE_PATH} > /dev/null
+			git am < 0001-Provision-proxy-settings-on-init-containers.patch
+			popd ${CHE_PATH} > /dev/null
+		'''
+
 		sh "mvn clean install ${MVN_FLAGS} -P native -f ${CHE_path}/pom.xml ${MVN_EXTRA_FLAGS}"
 		stash name: 'stashChe', includes: findFiles(glob: '.repository/**').join(", ")
 		archiveArtifacts fingerprint: false, artifacts:"**/*.log, **/${CHE_path}/pom.xml, **/${CHE_path}/assembly/assembly-main/pom.xml, **/${CHE_path}/assembly/assembly-main/src/assembly/assembly.xml"
