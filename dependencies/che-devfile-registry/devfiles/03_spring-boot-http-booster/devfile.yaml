@@ -7,8 +7,6 @@ projects:
       location: 'https://github.com/snowdrop/spring-boot-http-booster'
       type: git
       branch: master
-attributes:
-  persistVolumes: 'false'
 components:
   - id: redhat/java8/latest
     type: chePlugin
