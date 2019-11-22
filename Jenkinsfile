@@ -111,7 +111,7 @@ def CRW_path = "codeready-workspaces"
 def VER_CRW = "VER_CRW"
 def SHA_CRW = "SHA_CRW"
 timeout(120) {
-	node("${node}"){ stage "Get ${CRW_path} version"
+	node("${node}"){ stage "Get ${CRW_path} version and patches"
 		cleanWs()
 		// for private repo, use checkout(credentialsId: 'devstudio-release')
 		if (env.ghprbPullId && env.ghprbPullId?.trim()) { 
@@ -133,6 +133,7 @@ timeout(120) {
 		}
 		VER_CRW = sh(returnStdout:true,script:"egrep \"<version>\" ${CRW_path}/pom.xml|head -2|tail -1|sed -e \"s#.*<version>\\(.\\+\\)</version>#\\1#\"").trim()
 		SHA_CRW = sh(returnStdout:true,script:"cd ${CRW_path}/ && git rev-parse --short=4 HEAD").trim()
+		stash name: 'stashCRWPatches', includes: findFiles(glob: CRW_path + '/patches/**').join(", ")
 	}
 }
 
@@ -184,6 +185,13 @@ timeout(180) {
 			curl -S -L --create-dirs -o che/dashboard/src/assets/branding/branding.css \
 				https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/${rawBranch}/assembly/codeready-workspaces-assembly-dashboard-war/src/main/webapp/assets/branding/branding-crw.css
 			cat che/dashboard/src/assets/branding/branding.css
+		'''
+		unstash 'stashCRWPatches'
+		sh '''#!/bin/bash -xe
+			cp ''' + CRW_path + '''/patches/0001-Provision-proxy-settings-on-init-containers.patch ''' + CHE_path + '''
+			pushd ''' + CHE_path + ''' > /dev/null
+			git am < 0001-Provision-proxy-settings-on-init-containers.patch
+			popd > /dev/null
 		'''
 
 		sh "mvn clean install ${MVN_FLAGS} -P native -f ${CHE_path}/pom.xml ${MVN_EXTRA_FLAGS}"

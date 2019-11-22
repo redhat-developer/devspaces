@@ -1,0 +1,102 @@
+From 01f1d71dda843f2c3b7b89c3dd3ab6364b2b3a7f Mon Sep 17 00:00:00 2001
+From: Angel Misevski <amisevsk@redhat.com>
+Date: Wed, 20 Nov 2019 17:46:49 -0500
+Subject: [PATCH] Provision proxy settings on init containers
+
+Signed-off-by: Angel Misevski <amisevsk@redhat.com>
+---
+ .../provision/ProxySettingsProvisioner.java   |  7 +++-
+ .../ProxySettingsProvisionerTest.java         | 35 ++++++++++++++++++-
+ 2 files changed, 40 insertions(+), 2 deletions(-)
+
+diff --git a/infrastructures/kubernetes/src/main/java/org/eclipse/che/workspace/infrastructure/kubernetes/provision/ProxySettingsProvisioner.java b/infrastructures/kubernetes/src/main/java/org/eclipse/che/workspace/infrastructure/kubernetes/provision/ProxySettingsProvisioner.java
+index c95d409cfe..397f9c2905 100644
+--- a/infrastructures/kubernetes/src/main/java/org/eclipse/che/workspace/infrastructure/kubernetes/provision/ProxySettingsProvisioner.java
++++ b/infrastructures/kubernetes/src/main/java/org/eclipse/che/workspace/infrastructure/kubernetes/provision/ProxySettingsProvisioner.java
+@@ -16,6 +16,7 @@ import static org.eclipse.che.workspace.infrastructure.kubernetes.server.secure.
+ import io.fabric8.kubernetes.api.model.EnvVar;
+ import java.util.HashMap;
+ import java.util.Map;
++import java.util.stream.Stream;
+ import javax.inject.Inject;
+ import javax.inject.Named;
+ import org.eclipse.che.api.core.model.workspace.runtime.RuntimeIdentity;
+@@ -68,7 +69,11 @@ public class ProxySettingsProvisioner implements ConfigurationProvisioner {
+           // JWTProxy container doesn't need proxy settings since it never does any outbound
+           // requests, and setting of it may fail accessing internal addresses.
+           .filter(entry -> !entry.getKey().equals(JWT_PROXY_POD_NAME))
+-          .flatMap(entry -> entry.getValue().getSpec().getContainers().stream())
++          .flatMap(
++              entry ->
++                  Stream.concat(
++                      entry.getValue().getSpec().getContainers().stream(),
++                      entry.getValue().getSpec().getInitContainers().stream()))
+           .forEach(
+               container ->
+                   proxyEnvVars.forEach((k, v) -> container.getEnv().add(new EnvVar(k, v, null))));
+diff --git a/infrastructures/kubernetes/src/test/java/org/eclipse/che/workspace/infrastructure/kubernetes/provision/ProxySettingsProvisionerTest.java b/infrastructures/kubernetes/src/test/java/org/eclipse/che/workspace/infrastructure/kubernetes/provision/ProxySettingsProvisionerTest.java
+index ce38a373b2..311a1513d4 100644
+--- a/infrastructures/kubernetes/src/test/java/org/eclipse/che/workspace/infrastructure/kubernetes/provision/ProxySettingsProvisionerTest.java
++++ b/infrastructures/kubernetes/src/test/java/org/eclipse/che/workspace/infrastructure/kubernetes/provision/ProxySettingsProvisionerTest.java
+@@ -25,9 +25,11 @@ import io.fabric8.kubernetes.api.model.EnvVar;
+ import io.fabric8.kubernetes.api.model.Pod;
+ import io.fabric8.kubernetes.api.model.PodBuilder;
+ import java.util.ArrayList;
++import java.util.Arrays;
+ import java.util.HashMap;
+ import java.util.List;
+ import java.util.Map;
++import java.util.stream.Stream;
+ import org.eclipse.che.api.core.model.workspace.runtime.RuntimeIdentity;
+ import org.eclipse.che.workspace.infrastructure.kubernetes.environment.KubernetesEnvironment;
+ import org.mockito.Mock;
+@@ -59,7 +61,7 @@ public class ProxySettingsProvisionerTest {
+   public void shouldApplyProxySettingsToAllContainers() throws Exception {
+ 
+     Map<String, Pod> pods = new HashMap<>();
+-    pods.put("pod1", buildPod("pod1", buildContainers(2)));
++    Pod pod1 = pods.put("pod1", buildPod("pod1", buildContainers(2)));
+     pods.put("pod2", buildPod("pod2", buildContainers(3)));
+ 
+     KubernetesEnvironment k8sEnv = KubernetesEnvironment.builder().setPods(pods).build();
+@@ -109,6 +111,37 @@ public class ProxySettingsProvisionerTest {
+                             .contains(new EnvVar(NO_PROXY, NO_PROXY_VALUE, null))));
+   }
+ 
++  @Test
++  public void shouldApplyProxySettingsToInitContainers() throws Exception {
++    Map<String, Pod> pods = new HashMap<>();
++    Pod pod1 = buildPod("pod1", buildContainers(3));
++    pod1.getSpec().setInitContainers(Arrays.asList(buildContainers(2)));
++    pods.put("pod1", pod1);
++
++    KubernetesEnvironment k8sEnv = KubernetesEnvironment.builder().setPods(pods).build();
++    provisioner.provision(k8sEnv, runtimeId);
++
++    assertTrue(
++        k8sEnv
++            .getPodsData()
++            .values()
++            .stream()
++            .flatMap(
++                pod ->
++                    Stream.concat(
++                        pod.getSpec().getContainers().stream(),
++                        pod.getSpec().getInitContainers().stream()))
++            .allMatch(
++                container ->
++                    container.getEnv().contains(new EnvVar(HTTP_PROXY, HTTP_PROXY_VALUE, null))
++                        && container
++                            .getEnv()
++                            .contains(new EnvVar(HTTPS_PROXY, HTTPS_PROXY_VALUE, null))
++                        && container
++                            .getEnv()
++                            .contains(new EnvVar(NO_PROXY, NO_PROXY_VALUE, null))));
++  }
++
+   private Pod buildPod(String podName, Container... containers) {
+     return new PodBuilder()
+         .withNewMetadata()
+-- 
+2.21.0
+
