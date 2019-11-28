@@ -4,7 +4,7 @@
 
 if [[ ! $1 ]]; then
 	echo "Usage: $0 version-to-tag"
-	echo "Example: $0 1.2.2.GA"
+	echo "Example: $0 2.0.0.GA"
 	exit 1
 else
 	TAG="$1"
@@ -13,39 +13,43 @@ fi
 mkdir -p /tmp/tmp-checkouts
 cd /tmp/tmp-checkouts
 
-for d in che-operator; do
-	echo; echo "== $d =="
-	if [[ ! -d ${d} ]]; then git clone git@github.com:eclipse/${d}.git projects_${d}; fi
-	cd projects_${d} && git checkout 1.x -q && git pull -q
-	git tag ${TAG} && git push origin ${TAG}
-	cd ..
-done
-
-for d in codeready-workspaces codeready-workspaces-deprecated codeready-workspaces-productization; do
-	echo; echo "== $d =="
-	if [[ ! -d ${d} ]]; then git clone git@github.com:redhat-developer/${d}.git projects_${d}; fi 
-	cd projects_${d} && git checkout 6.19.x -q && git pull -q
-	git tag ${TAG} && git push origin ${TAG}
-	cd ..
-done
-
-for d in codeready-workspaces-stacks-node; do
-	echo; echo "== $d =="
-	if [[ ! -d ${d} ]]; then git clone ssh://nboldt@pkgs.devel.redhat.com/containers/${d} containers_${d}; fi
-	cd containers_${d} && git checkout codeready-1.0-rhel-7 -q && git pull -q
-	git tag -a ${TAG}_RHEL7 -m "${TAG}_RHEL7" && git push origin ${TAG}_RHEL7
-	cd ..
-done
-
+pkgs_devel_branch=crw-2.0-rhel-8
 for d in \
-codeready-workspaces codeready-workspaces-operator codeready-workspaces-stacks-cpp \
-codeready-workspaces-stacks-dotnet codeready-workspaces-stacks-golang codeready-workspaces-stacks-java \
-codeready-workspaces-stacks-node codeready-workspaces-stacks-php codeready-workspaces-stacks-python \
+codeready-workspaces codeready-workspaces-operator \
+codeready-workspaces-jwtproxy codeready-workspaces-machineexec \
+codeready-workspaces-devfileregistry codeready-workspaces-pluginregistry \
+codeready-workspaces-pluginbrokerinit codeready-workspaces-pluginbroker \
+codeready-workspaces-plugin-kubernetes codeready-workspaces-plugin-openshift \
+codeready-workspaces-theia codeready-workspaces-theia-endpoint \
+codeready-workspaces-theia-dev codeready-workspaces-stacks-cpp \
+codeready-workspaces-stacks-dotnet codeready-workspaces-stacks-golang \
+codeready-workspaces-stacks-java codeready-workspaces-stacks-node \
+codeready-workspaces-stacks-php codeready-workspaces-stacks-python \
 ; do
 	echo; echo "== $d =="
-	if [[ ! -d ${d} ]]; then git clone ssh://nboldt@pkgs.devel.redhat.com/containers/${d} containers_${d}; fi
-	cd containers_${d} && git checkout crw-1.2-rhel-8 -q && git pull -q
-	git tag -a ${TAG} -m "${TAG}" && git push origin ${TAG}
+	if [[ ! -d ${d} ]]; then git clone -b ${pkgs_devel_branch} ssh://nboldt@pkgs.devel.redhat.com/containers/${d} containers_${d}; fi
+	cd containers_${d} && git checkout ${pkgs_devel_branch} -q && git pull -q
+	git tag -a ${TAG} -m "${TAG}"; git push origin ${TAG}
+	cd ..
+done
+
+che_operator_branch=crw-2.0
+for d in che-operator; do
+	echo; echo "== $d =="
+	if [[ ! -d ${d} ]]; then git clone --depth 1 -b ${che_operator_branch} git@github.com:eclipse/${d}.git projects_${d}; fi
+	cd projects_${d} && git checkout ${che_operator_branch} -q && git pull -q
+	git tag ${TAG};	git push origin ${TAG}
+	cd ..
+done
+
+crw_repos_branch=master 
+for d in codeready-workspaces codeready-workspaces-deprecated \
+		 codeready-workspaces-operator codeready-workspaces-chectl \
+		 codeready-workspaces-theia codeready-workspaces-productization; do
+	echo; echo "== $d =="
+	if [[ ! -d ${d} ]]; then git clone --depth 1 -b ${crw_repos_branch} git@github.com:redhat-developer/${d}.git projects_${d}; fi 
+	cd projects_${d} && git checkout ${crw_repos_branch} -q && git pull -q
+	git tag ${TAG}; git push origin ${TAG}
 	cd ..
 done
 
