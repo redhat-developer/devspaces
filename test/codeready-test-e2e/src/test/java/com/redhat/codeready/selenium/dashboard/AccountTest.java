@@ -15,6 +15,7 @@ import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 
 import com.google.inject.Inject;
+import com.redhat.codeready.selenium.pageobject.account.CodereadyKeycloakHeaderButtons;
 import com.redhat.codeready.selenium.pageobject.account.CodereadyKeycloakHeaderButtons.Button;
 import org.eclipse.che.selenium.core.SeleniumWebDriver;
 import org.eclipse.che.selenium.core.TestGroup;
@@ -24,7 +25,6 @@ import org.eclipse.che.selenium.pageobject.dashboard.Dashboard;
 import org.eclipse.che.selenium.pageobject.dashboard.account.Account;
 import org.eclipse.che.selenium.pageobject.dashboard.account.DashboardAccount;
 import org.eclipse.che.selenium.pageobject.dashboard.account.KeycloakAccountPage;
-import com.redhat.codeready.selenium.pageobject.account.CodereadyKeycloakHeaderButtons;
 import org.eclipse.che.selenium.pageobject.dashboard.account.KeycloakPasswordPage;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
