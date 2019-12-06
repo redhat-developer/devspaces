@@ -12,7 +12,7 @@ repository: https://github.com/eclipse/che-machine-exec/
 firstPublicationDate: "2019-11-14"
 deprecate:
   automigrate: true
-  migrateTo: eclipse/che-theia/latest
+  migrateTo: eclipse/che-machine-exec-plugin/latest
 category: Other
 spec:
   endpoints:
