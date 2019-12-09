@@ -18,8 +18,16 @@
    id="defs551"><filter
      id="filter308"
      style="color-interpolation-filters:sRGB;"><feColorMatrix
+       result="fbSourceGraphic"
        id="feColorMatrix306"
-       values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.213904 -1 -1 0.6 0 " /></filter></defs>
+       values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.213904 -1 -1 0.6 0 " /><feColorMatrix
+       id="feColorMatrix329"
+       values="0 0 0 -1 0 0 0 0 -1 0 0 0 0 -1 0 0 0 0 1 0"
+       in="fbSourceGraphic"
+       result="fbSourceGraphicAlpha" /><feColorMatrix
+       in="fbSourceGraphic"
+       values="-0.21 1 1 0.4 0 -0.21 1 1 0.4 0 -0.21 1 1 0.4 0 0 0 0 1 0 "
+       id="feColorMatrix331" /></filter></defs>
 <g
    style="filter:url(#filter308)"
    transform="matrix(0.341,0,0,0.341,-182.39497,-122.22957)"
