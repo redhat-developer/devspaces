@@ -6,7 +6,6 @@
 // branchToBuildDev = refs/tags/20
 // branchToBuildParent = refs/tags/7.0.0-RC-2.0
 // branchToBuildChe = refs/tags/7.0.0-RC-2.0 or */*/7.0.0-RC-2.x or */master
-// branchToBuildLSJ = refs/tags/0.0.3 or */master or a SHA like 095d753f42dad32c47b1e9ae46a71bf424e98e7e
 // branchToBuildCRW = */7.0.0-RC-2.x or */master
 // BUILDINFO = ${JOB_NAME}/${BUILD_NUMBER}
 // MVN_EXTRA_FLAGS = extra flags, such as to disable a module -pl '!org.eclipse.che.selenium:che-selenium-test'
@@ -77,33 +76,6 @@ timeout(120) {
 	}
 }
 
-def LSJ_path = "che-ls-jdt"
-def VER_LSJ = "VER_LSJ"
-def SHA_LSJ = "SHA_LSJ"
-timeout(120) {
-	node("${node}"){ stage "Build ${LSJ_path}"
-		cleanWs()
-		checkout([$class: 'GitSCM', 
-			branches: [[name: "${branchToBuildLSJ}"]], 
-			doGenerateSubmoduleConfigurations: false, 
-			poll: true,
-			extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: "${LSJ_path}"]], 
-			submoduleCfg: [], 
-			userRemoteConfigs: [[url: "https://github.com/eclipse/${LSJ_path}.git"]]])
-		unstash 'stashParent'
-		installNPM()
-		installGo()
-		buildMaven()
-		sh "mvn clean install -V -U -e -DskipTests -f ${LSJ_path}/pom.xml ${MVN_EXTRA_FLAGS}"
-		stash name: 'stashLSJ', includes: findFiles(glob: '.repository/**').join(", ")
-		archiveArtifacts fingerprint: false, artifacts:"**/target/*.zip, **/target/*.tar.*, **/target/*.ear"
-
-		sh "perl -0777 -p -i -e 's|(\\ +<parent>.*?<\\/parent>)| ${1} =~ /<version>/?\"\":${1}|gse' ${LSJ_path}/pom.xml"
-		VER_LSJ = sh(returnStdout:true,script:"egrep \"<version>\" ${LSJ_path}/pom.xml|head -1|sed -e \"s#.*<version>\\(.\\+\\)</version>#\\1#\"").trim()
-		SHA_LSJ = sh(returnStdout:true,script:"cd ${LSJ_path}/ && git rev-parse --short=4 HEAD").trim()
-		echo "[INFO] Built ${LSJ_path} :: ${SHA_LSJ} (${VER_LSJ})"
-	}
-}
 
 def CRW_SHAs = ""
 
@@ -150,7 +122,7 @@ timeout(180) {
 			extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: "${CHE_path}"]], 
 			submoduleCfg: [], 
 			userRemoteConfigs: [[url: "https://github.com/eclipse/${CHE_path}.git"]]])
-		unstash 'stashLSJ'
+		unstash 'stashParent'
 		installNPM()
 		installGo()
 		buildMaven()
@@ -171,7 +143,6 @@ timeout(180) {
 		CRW_SHAs="${VER_CRW} :: ${BUILDINFO} \
 :: ${DEV_path} @ ${SHA_DEV} (${VER_DEV}) \
 :: ${PAR_path} @ ${SHA_PAR} (${VER_PAR}) \
-:: ${LSJ_path} @ ${SHA_LSJ} (${VER_LSJ}) \
 :: ${CHE_path} @ ${SHA_CHE} (${VER_CHE}) \
 :: ${CRW_path} @ ${SHA_CRW} (${VER_CRW})"
 		// echo "CRW_SHAs = ${CRW_SHAs}"
@@ -229,7 +200,6 @@ timeout(120) {
 		CRW_SHAs="${VER_CRW} :: ${BUILDINFO} \
 :: ${DEV_path} @ ${SHA_DEV} (${VER_DEV}) \
 :: ${PAR_path} @ ${SHA_PAR} (${VER_PAR}) \
-:: ${LSJ_path} @ ${SHA_LSJ} (${VER_LSJ}) \
 :: ${CHE_path} @ ${SHA_CHE} (${VER_CHE}) \
 :: ${CRW_path} @ ${SHA_CRW} (${VER_CRW})"
 		// echo "CRW_SHAs = ${CRW_SHAs}"
@@ -252,7 +222,6 @@ timeout(120) {
 			+ "Build #${BUILD_NUMBER} (${BUILD_TIMESTAMP}) <br/>\
  :: ${DEV_path} @ ${SHA_DEV} (${VER_DEV}) <br/>\
  :: ${PAR_path} @ ${SHA_PAR} (${VER_PAR}) <br/>\
- :: ${LSJ_path} @ ${SHA_LSJ} (${VER_LSJ}) <br/>\
  :: ${CHE_path} @ ${SHA_CHE} (${VER_CHE}) <br/>\
  :: ${CRW_path} @ ${SHA_CRW} (${VER_CRW})"
 		echo "${descriptString}"
