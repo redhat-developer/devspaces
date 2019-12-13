@@ -126,8 +126,6 @@ timeout(180) {
 		installNPM()
 		installGo()
 		buildMaven()
-		// patch - switch che-ls-jdt version to a different one
-		// sh "sed -i -e \"s#\\(.*<che.ls.jdt.version>\\)0.0.3\\(</che.ls.jdt.version>.*\\)#\\10.0.4-SNAPSHOT\\2#\" ${CHE_path}/pom.xml"
 
 		// disable docs from assembly main and root pom as we don't need them in CRW
 		sh '''#!/bin/bash -xe
