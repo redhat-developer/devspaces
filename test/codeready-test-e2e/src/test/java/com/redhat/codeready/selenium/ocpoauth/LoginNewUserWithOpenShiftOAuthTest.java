@@ -12,18 +12,15 @@
 package com.redhat.codeready.selenium.ocpoauth;
 
 import static org.eclipse.che.commons.lang.NameGenerator.generate;
-import static org.eclipse.che.selenium.core.constant.TestTimeoutsConstants.WIDGET_TIMEOUT_SEC;
 
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import com.redhat.codeready.selenium.pageobject.CodereadyOpenShiftLoginPage;
-import com.redhat.codeready.selenium.pageobject.ocp.CodenvyOpenShiftProjectCatalogPage;
 import java.util.Collections;
 import org.eclipse.che.selenium.core.SeleniumWebDriver;
 import org.eclipse.che.selenium.core.TestGroup;
 import org.eclipse.che.selenium.core.client.TestWorkspaceServiceClient;
 import org.eclipse.che.selenium.core.provider.TestDashboardUrlProvider;
-import org.eclipse.che.selenium.core.workspace.TestWorkspace;
 import org.eclipse.che.selenium.pageobject.dashboard.CreateWorkspaceHelper;
 import org.eclipse.che.selenium.pageobject.dashboard.Dashboard;
 import org.eclipse.che.selenium.pageobject.dashboard.NewWorkspace.Devfile;
@@ -38,8 +35,6 @@ public class LoginNewUserWithOpenShiftOAuthTest {
 
   private static final String WORKSPACE_NAME = generate("workspace", 4);
   private static final String IDENTITY_PROVIDER_NAME = "htpasswd";
-
-  private TestWorkspace testWorkspace;
 
   @Inject(optional = true)
   @Named("env.openshift.regular.username")
@@ -57,7 +52,6 @@ public class LoginNewUserWithOpenShiftOAuthTest {
   @Inject private AuthorizeOpenShiftAccessPage authorizeOpenShiftAccessPage;
   @Inject private Dashboard dashboard;
   @Inject private Workspaces workspaces;
-  @Inject private CodenvyOpenShiftProjectCatalogPage openShiftProjectCatalogPage;
   @Inject private SeleniumWebDriver seleniumWebDriver;
   @Inject private TestDashboardUrlProvider testDashboardUrlProvider;
   @Inject private CreateWorkspaceHelper createWorkspaceHelper;
@@ -96,11 +90,6 @@ public class LoginNewUserWithOpenShiftOAuthTest {
     theiaIde.waitLoaderInvisibility();
     theiaIde.waitTheiaIdeTopPanel();
 
-    // go to OCP and check if there is a project with name equals to test workspace id
-    openShiftProjectCatalogPage.open();
-    codereadyOpenShiftLoginPage.login(openShiftUsername, openShiftPassword);
-    openShiftProjectCatalogPage.waitProject("workspace", WIDGET_TIMEOUT_SEC);
-
     // delete the created workspace on Dashboard
     seleniumWebDriver.navigate().to(testDashboardUrlProvider.get());
     dashboard.waitDashboardToolbarTitle();
@@ -109,9 +98,5 @@ public class LoginNewUserWithOpenShiftOAuthTest {
     workspaces.clickOnDeleteWorkspacesBtn();
     workspaces.clickOnDeleteButtonInDialogWindow();
     workspaces.waitWorkspaceIsNotPresent(WORKSPACE_NAME);
-
-    // go to OCP and check that project is not exist
-    openShiftProjectCatalogPage.open();
-    openShiftProjectCatalogPage.waitProjectAbsence("workspace", WIDGET_TIMEOUT_SEC);
   }
 }

@@ -13,13 +13,11 @@ package com.redhat.codeready.selenium.ocpoauth;
 
 import static java.lang.String.format;
 import static org.eclipse.che.commons.lang.NameGenerator.generate;
-import static org.eclipse.che.selenium.core.constant.TestTimeoutsConstants.WIDGET_TIMEOUT_SEC;
 import static org.testng.AssertJUnit.assertEquals;
 
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import com.redhat.codeready.selenium.pageobject.CodereadyOpenShiftLoginPage;
-import com.redhat.codeready.selenium.pageobject.ocp.CodenvyOpenShiftProjectCatalogPage;
 import com.redhat.codeready.selenium.pageobject.site.CodereadyLoginPage;
 import java.util.Collections;
 import org.eclipse.che.selenium.core.SeleniumWebDriver;
@@ -63,7 +61,6 @@ public class LoginExistedUserWithOpenShiftOAuthTest {
   @Inject private AuthorizeOpenShiftAccessPage authorizeOpenShiftAccessPage;
   @Inject private Dashboard dashboard;
   @Inject private Workspaces workspaces;
-  @Inject private CodenvyOpenShiftProjectCatalogPage openShiftProjectCatalogPage;
   @Inject private SeleniumWebDriver seleniumWebDriver;
   @Inject private TestDashboardUrlProvider testDashboardUrlProvider;
   @Inject private CreateWorkspaceHelper createWorkspaceHelper;
@@ -122,11 +119,6 @@ public class LoginExistedUserWithOpenShiftOAuthTest {
     workspaces.clickOnDeleteWorkspacesBtn();
     workspaces.clickOnDeleteButtonInDialogWindow();
     workspaces.waitWorkspaceIsNotPresent(WORKSPACE_NAME);
-
-    // go to OCP and check that project is not exist
-    openShiftProjectCatalogPage.open();
-    codereadyOpenShiftLoginPage.login(openShiftUsername, openShiftPassword);
-    openShiftProjectCatalogPage.waitProjectAbsence("workspace", WIDGET_TIMEOUT_SEC);
   }
 
   private static TestUser getTestUser() {
