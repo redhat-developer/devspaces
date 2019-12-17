@@ -14,6 +14,7 @@ package com.redhat.codeready.selenium.ocpoauth;
 import static java.lang.String.format;
 import static org.eclipse.che.commons.lang.NameGenerator.generate;
 import static org.testng.AssertJUnit.assertEquals;
+import static org.testng.AssertJUnit.assertTrue;
 
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
@@ -40,7 +41,7 @@ public class LoginExistedUserWithOpenShiftOAuthTest {
 
   private static final String WORKSPACE_NAME = generate("workspace", 4);
   private static final String LOGIN_TO_CHE_WITH_OPENSHIFT_OAUTH_MESSAGE_TEMPLATE =
-      "Authenticate as %s to link your account with openshift-v3";
+      "Authenticate as %s to link your account with openshift";
   private static final String USER_ALREADY_EXISTS_ERROR_MESSAGE_TEMPLATE =
       "User with username %s already exists. How do you want to continue?";
   private static final String IDENTITY_PROVIDER_NAME = "htpasswd";
@@ -99,7 +100,7 @@ public class LoginExistedUserWithOpenShiftOAuthTest {
     // login into Codeready again
     String expectedInfo =
         format(LOGIN_TO_CHE_WITH_OPENSHIFT_OAUTH_MESSAGE_TEMPLATE, testUser.getName());
-    assertEquals(codereadyLoginPage.getInfoAlert(), expectedInfo);
+    assertTrue(codereadyLoginPage.getInfoAlert().contains(expectedInfo));
     codereadyLoginPage.loginWithPredefinedUsername(testUser.getPassword());
 
     createWorkspaceHelper.createAndStartWorkspaceFromStack(
