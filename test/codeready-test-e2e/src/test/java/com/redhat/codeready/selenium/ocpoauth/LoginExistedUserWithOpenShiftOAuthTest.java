@@ -43,7 +43,7 @@ public class LoginExistedUserWithOpenShiftOAuthTest {
       "Authenticate as %s to link your account with openshift-v3";
   private static final String USER_ALREADY_EXISTS_ERROR_MESSAGE_TEMPLATE =
       "User with username %s already exists. How do you want to continue?";
-  private static final String IDENTITY_PROVIDER_NAME = "htpasswd_provider";
+  private static final String IDENTITY_PROVIDER_NAME = "htpasswd";
 
   private static final TestUser testUser = getTestUser();
 
