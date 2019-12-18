@@ -17,8 +17,6 @@ components:
     alias: maven
     image: registry.redhat.io/codeready-workspaces/stacks-java-rhel8:2.0
     env:
-      - name: MAVEN_CONFIG
-        value: /home/jboss/.m2
       - name: JAVA_OPTS
         value: "-XX:MaxRAMPercentage=50.0 -XX:+UseParallelGC -XX:MinHeapFreeRatio=10 -XX:MaxHeapFreeRatio=20 -XX:GCTimeRatio=4 -XX:AdaptiveSizePolicyWeight=90 -Dsun.zip.disableMemoryMapping=true -Xms20m -Djava.security.egd=file:/dev/./urandom -Duser.home=/home/jboss"
       - name: MAVEN_OPTS

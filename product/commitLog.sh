@@ -125,7 +125,6 @@ function parseCommitLog ()
     # Update from Jenkins ::
     # crw_master ::
     # Build #246 (2019-02-26 04:23:36 EST) ::
-    # che-ls-jdt @ 288b75765175d368480a688c8f3a77ce4758c72d (0.0.3) ::
     # che @ f34f4c6c82de35081351e0b0686b1ae6589735d4 (6.19.0-SNAPSHOT) ::
     # codeready-workspaces @ 184e24bee5bd923b733fa8c9f4b055a9caad40d2 (1.1.0.GA) ::
     # codeready-workspaces-deprecated @ 620a53c5b0a1bbc02ba68e96be94ec3b932c9bee (1.0.0.GA-SNAPSHOT) ::
@@ -141,7 +140,7 @@ function parseCommitLog ()
       case $1 in
         'crw_master'|'crw_stable-branch'|'crw-operator-installer-and-ls-deps_'*) JOB_NAME="$1"; shift 2;;
         'Build'*) BUILD_NUMBER="$2"; BUILD_NUMBER=${BUILD_NUMBER#\#}; shift 6;; # trim # from the number, ignore timestamp
-        'che-dev'|'che-parent'|'che-lib'|'che-ls-jdt'|'che') 
+        'che-dev'|'che-parent'|'che-lib'|'che') 
             sha="$3"; addLabeln "git.commit.eclipse__${1}" "${GHE}${1}/commit/${sha:0:7}"; addLabel "pom.version.eclipse__${1}" "${4:1:-1}" " "; shift 5;;
         'codeready-workspaces'|'codeready-workspaces-deprecated') 
             sha="$3"; addLabeln "git.commit.redhat-developer__${1}" "${GHR}${1}/commit/${sha:0:7}"; addLabel "pom.version.redhat-developer__${1}" "${4:1:-1}" " "; shift 5;;
