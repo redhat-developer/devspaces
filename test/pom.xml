@@ -24,8 +24,7 @@
     <packaging>pom</packaging>
     <name>CRW :: Test :: Parent</name>
     <modules>
-        <!-- DISABLED due to compilation failure 
-        <module>codeready-test-e2e</module> -->
+        <module>codeready-test-e2e</module>
         <module>codeready-test-performance</module>
     </modules>
     <dependencyManagement>
