@@ -23,43 +23,12 @@ fi
 RESOURCES_DIR="${1}/resources/"
 TEMP_DIR="${1}/extensions_temp/"
 
-PREBUILT_VSIX_ARCHIVE_DIR_NAME="${1}/vsix"
-
-if [ -f "${PREBUILT_VSIX_ARCHIVE_DIR_NAME}.tar.gz" ]; then
-echo "found ${PREBUILT_VSIX_ARCHIVE_DIR_NAME}.tar.gz, unpacking"
-  tar -zxvf ${PREBUILT_VSIX_ARCHIVE_DIR_NAME}.tar.gz -C ${1}
-  rm -fr ${PREBUILT_VSIX_ARCHIVE_DIR_NAME}.tar.gz
-  readarray -d '' prebuilt_extensions < <(find "${PREBUILT_VSIX_ARCHIVE_DIR_NAME}" -name '*.vsix' -print0)
-fi
-
 mkdir -p "${RESOURCES_DIR}" "${TEMP_DIR}"
 for extension in $(yq -r '.spec.extensions[]?' "${metas[@]}" | sort | uniq); do
   echo -en "Caching extension ${extension}\n    "
-
-  # Before attempting to download, check if we already have this file in supplied prebuilt plugins
-  # archive. If found, skip the download
-  for plugin_file_path in "${prebuilt_extensions[@]}"; do
-    # strip root directory from path on filesystem to match it with extension URL
-    rel_plugin_file_path=${plugin_file_path#${PREBUILT_VSIX_ARCHIVE_DIR_NAME}/}
-    rel_plugin_file_path=${rel_plugin_file_path%/*.vsix}
-
-    extension_location=${extension#*//}
-
-    if [[ ${rel_plugin_file_path} == ${extension_location} ]]; then
-      matched_plugin_path=${plugin_file_path}
-      echo "found prebuilt extension: ${matched_plugin_path}    "
-      break
-    fi
-  done
-
-  if [[ ! -z "$matched_plugin_path" ]]; then
-    mv "${matched_plugin_path}" ${TEMP_DIR}
-  else
-    # Workaround for getting filenames through content-disposition: copy to temp
-    # dir and read filename before moving to /resources.
-    wget -P "${TEMP_DIR}" -nv --content-disposition "${extension}"
-  fi
-
+  # Workaround for getting filenames through content-disposition: copy to temp
+  # dir and read filename before moving to /resources.
+  wget -P "${TEMP_DIR}" -nv --content-disposition "${extension}"
   file=$(find "${TEMP_DIR}" -type f)
   filename=$(basename "${file}")
 
