@@ -94,7 +94,7 @@ STOPSIGNAL SIGWINCH
 
 WORKDIR /var/www/html
 
-RUN mkdir /var/www/html/devfiles
+RUN mkdir -m 777 /var/www/html/devfiles
 COPY .htaccess README.md /var/www/html/
 COPY --from=builder /build/devfiles /var/www/html/devfiles
 COPY ./build/dockerfiles/rhel.entrypoint.sh ./build/dockerfiles/entrypoint.sh /usr/local/bin/

@@ -3,7 +3,7 @@
 // PARAMETERS for this pipeline:
 // def FORCE_BUILD = "false"
 
-def SOURCE_BRANCH = "master" // ref/tags/v0.22.0, or master :: branch of source repo from which to find and sync commits to pkgs.devel repo
+def SOURCE_BRANCH = "crw-2.0" // ref/tags/v0.24.0, or crw-2.0, or master :: branch of source repo from which to find and sync commits to pkgs.devel repo
 def SOURCE_REPO = "eclipse/che-plugin-broker" //source repo from which to find and sync commits to pkgs.devel repo 
 def GIT_PATH1 = "containers/codeready-workspaces-pluginbroker" // dist-git repo to use as target
 def GIT_PATH2 = "containers/codeready-workspaces-pluginbrokerinit" // dist-git repo to use as target
@@ -25,24 +25,6 @@ timeout(120) {
         extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: "sources"]], 
         submoduleCfg: [], 
         userRemoteConfigs: [[url: "https://github.com/${SOURCE_REPO}.git"]]])
-
-      // checkout([$class: 'GitSCM', 
-      //   branches: [[name: "${GIT_BRANCH}"]], 
-      //   doGenerateSubmoduleConfigurations: false,
-      //   credentialsId: 'crw-build',
-      //   poll: true,
-      //   extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: "target1"]], 
-      //   submoduleCfg: [], 
-      //   userRemoteConfigs: [[url: "ssh://crw-build@pkgs.devel.redhat.com/containers/codeready-workspaces-pluginbroker"]]])
-
-      // checkout([$class: 'GitSCM', 
-      //   branches: [[name: "${GIT_BRANCH}"]], 
-      //   doGenerateSubmoduleConfigurations: false,
-      //   credentialsId: 'crw-build',
-      //   poll: true,
-      //   extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: "target2"]], 
-      //   submoduleCfg: [], 
-      //   userRemoteConfigs: [[url: "ssh://crw-build@pkgs.devel.redhat.com/containers/codeready-workspaces-pluginbrokerinit"]]])
 
   	 	sh '''#!/bin/bash -xe
 
@@ -161,6 +143,7 @@ JOB_BRANCH=master&\
 FORCE_BUILD=true&\
 SCRATCH=''' + SCRATCH + '''"
   done
+fi
 
 if [[ ${hasChanged} -eq 0 ]]; then
   echo "No changes upstream, nothing to commit"
@@ -169,49 +152,3 @@ fi
     }
 	}
 }
-
-// timeout(120) {
-// 	node("${node}"){ stage "Run get-sources-rhpkg-container-build"
-// 		def QUAY_REPO_PATHs=(env.ghprbPullId && env.ghprbPullId?.trim()?"":("${SCRATCH}"=="true"?"":"server-rhel8"))
-
-// 		def matcher = ( "${JOB_NAME}" =~ /.*_(stable-branch|master).*/ )
-// 		def JOB_BRANCH= (matcher.matches() ? matcher[0][1] : "stable-branch")
-
-// 		echo "[INFO] Trigger get-sources-rhpkg-container-build " + (env.ghprbPullId && env.ghprbPullId?.trim()?"for PR-${ghprbPullId} ":"") + \
-// 		"with SCRATCH = ${SCRATCH}, QUAY_REPO_PATHs = ${QUAY_REPO_PATHs}, JOB_BRANCH = ${JOB_BRANCH}"
-
-// 		// trigger OSBS build
-// 		build(
-// 		  job: 'get-sources-rhpkg-container-build',
-// 		  wait: false,
-// 		  propagate: false,
-// 		  parameters: [
-// 			[
-// 			  $class: 'StringParameterValue',
-// 			  name: 'GIT_PATHs',
-// 			  value: "containers/codeready-workspaces-FIXME",
-// 			],
-// 			[
-// 			  $class: 'StringParameterValue',
-// 			  name: 'GIT_BRANCH',
-// 			  value: "crw-2.0-rhel-8",
-// 			],
-// 			[
-// 			  $class: 'StringParameterValue',
-// 			  name: 'QUAY_REPO_PATHs',
-// 			  value: "${QUAY_REPO_PATHs}",
-// 			],
-// 			[
-// 			  $class: 'StringParameterValue',
-// 			  name: 'SCRATCH',
-// 			  value: "${SCRATCH}",
-// 			],
-// 			[
-// 			  $class: 'StringParameterValue',
-// 			  name: 'JOB_BRANCH',
-// 			  value: "${JOB_BRANCH}",
-// 			]
-// 		  ]
-// 		)
-//     }
-// }
