@@ -26,6 +26,7 @@ import org.eclipse.che.selenium.pageobject.dashboard.Dashboard;
 import org.eclipse.che.selenium.pageobject.dashboard.NewWorkspace.Devfile;
 import org.eclipse.che.selenium.pageobject.dashboard.workspaces.Workspaces;
 import org.eclipse.che.selenium.pageobject.ocp.AuthorizeOpenShiftAccessPage;
+import org.eclipse.che.selenium.pageobject.site.CheLoginPage;
 import org.eclipse.che.selenium.pageobject.theia.TheiaIde;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.Test;
@@ -57,6 +58,7 @@ public class LoginNewUserWithOpenShiftOAuthTest {
   @Inject private CreateWorkspaceHelper createWorkspaceHelper;
   @Inject private TheiaIde theiaIde;
   @Inject private TestWorkspaceServiceClient defaultUserWorkspaceServiceClient;
+  @Inject private CheLoginPage cheLoginPage;
 
   @AfterClass
   private void removeTestWorkspace() throws Exception {
@@ -68,9 +70,14 @@ public class LoginNewUserWithOpenShiftOAuthTest {
     // go to login page of Codeready
     seleniumWebDriver.navigate().to(testDashboardUrlProvider.get());
 
+    if (cheLoginPage.isOpened()) {
+      cheLoginPage.loginWithOpenShiftOAuth();
+    }
+
     if (codereadyOpenShiftLoginPage.isIdentityProviderLinkVisible(IDENTITY_PROVIDER_NAME)) {
       codereadyOpenShiftLoginPage.clickOnIdentityProviderLink(IDENTITY_PROVIDER_NAME);
     }
+
     codereadyOpenShiftLoginPage.login(openShiftUsername, openShiftPassword);
 
     // authorize ocp-client to access OpenShift account
