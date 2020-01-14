@@ -26,7 +26,7 @@ timeout(120) {
         submoduleCfg: [], 
         userRemoteConfigs: [[url: "https://github.com/${SOURCE_REPO}.git"]]])
 
-  	 	sh '''#!/bin/bash -xe
+  	 	def BOOTSTRAP = '''#!/bin/bash -xe
 
 # bootstrapping: if keytab is lost, upload to 
 # https://codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/credentials/store/system/domain/_/
@@ -85,6 +85,7 @@ for targetN in target1 target2; do
     cd ..
 done
 '''
+      sh BOOTSTRAP
 
       def OLD_SHA1 = sh(script: '''#!/bin/bash -xe
       cd ${WORKSPACE}/target1; git rev-parse HEAD
@@ -96,8 +97,7 @@ done
       ''', returnStdout: true)
       println "Got OLD_SHA2 in target2 folder: " + OLD_SHA2
 
-  	 	sh '''#!/bin/bash -xe
-
+  	 	sh BOOTSTRAP + '''
 for targetN in target1 target2; do
     # rsync files in github to dist-git
     SYNC_FILES="brokers  build  cfg  common  CONTRIBUTING.md  devfile.yaml  Gopkg.lock  Gopkg.toml  LICENSE  Makefile  model  README.md  storage  utils  vendor"
