@@ -62,7 +62,7 @@ hasChanged=0
 curl -L -s -S https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/master/product/updateBaseImages.sh -o /tmp/updateBaseImages.sh
 chmod +x /tmp/updateBaseImages.sh 
 cd ${WORKSPACE}/sources
-  git checkout --track origin/''' + SOURCE_BRANCH + '''
+  git checkout --track origin/''' + SOURCE_BRANCH + ''' || true
   OLD_SHA=\$(git rev-parse HEAD) # echo ${OLD_SHA:0:8}
   git config user.email nickboldt+devstudio-release@gmail.com
   git config user.name "Red Hat Devstudio Release Bot"
@@ -78,7 +78,7 @@ for targetN in target1 target2; do
     if [[ \$targetN == "target1" ]]; then GIT_PATH="''' + GIT_PATH1 + '''"; else GIT_PATH="''' + GIT_PATH2 + '''"; fi
     if [[ ! -d ${WORKSPACE}/${targetN} ]]; then git clone ssh://crw-build@pkgs.devel.redhat.com/${GIT_PATH} ${targetN}; fi
     cd ${WORKSPACE}/${targetN}
-    git checkout --track origin/''' + GIT_BRANCH + '''
+    git checkout --track origin/''' + GIT_BRANCH + ''' || true
     git config user.email crw-build@REDHAT.COM
     git config user.name "CRW Build"
     git config --global push.default matching
