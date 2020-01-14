@@ -73,6 +73,17 @@ cd ${WORKSPACE}/sources
   if [[ "${OLD_SHA}" != "${NEW_SHA}" ]]; then hasChanged=1; fi
   SOURCE_SHA=\$(git rev-parse HEAD) # echo ${SOURCE_SHA:0:8}
 cd ..
+for targetN in target1 target2; do
+    # fetch sources to be updated
+    if [[ \$targetN == "target1" ]]; then GIT_PATH="''' + GIT_PATH1 + '''"; else GIT_PATH="''' + GIT_PATH2 + '''"; fi
+    if [[ ! -d ${WORKSPACE}/${targetN} ]]; then git clone ssh://crw-build@pkgs.devel.redhat.com/${GIT_PATH} ${targetN}; fi
+    cd ${WORKSPACE}/${targetN}
+    git checkout --track origin/''' + GIT_BRANCH + '''
+    git config user.email crw-build@REDHAT.COM
+    git config user.name "CRW Build"
+    git config --global push.default matching
+    cd ..
+done
 '''
 
       def OLD_SHA1 = sh(script: '''#!/bin/bash -xe
@@ -86,17 +97,8 @@ cd ..
       println "Got OLD_SHA2 in target2 folder: " + OLD_SHA2
 
   	 	sh '''#!/bin/bash -xe
-for targetN in target1 target2; do
-    # fetch sources to be updated
-    if [[ \$targetN == "target1" ]]; then GIT_PATH="''' + GIT_PATH1 + '''"; else GIT_PATH="''' + GIT_PATH2 + '''"; fi
-    if [[ ! -d ${WORKSPACE}/${targetN} ]]; then git clone ssh://crw-build@pkgs.devel.redhat.com/${GIT_PATH} ${targetN}; fi
-    cd ${WORKSPACE}/${targetN}
-    git checkout --track origin/''' + GIT_BRANCH + '''
-    git config user.email crw-build@REDHAT.COM
-    git config user.name "CRW Build"
-    git config --global push.default matching
-    cd ..
 
+for targetN in target1 target2; do
     # rsync files in github to dist-git
     SYNC_FILES="brokers  build  cfg  common  CONTRIBUTING.md  devfile.yaml  Gopkg.lock  Gopkg.toml  LICENSE  Makefile  model  README.md  storage  utils  vendor"
     for d in ${SYNC_FILES}; do
