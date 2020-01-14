@@ -73,7 +73,19 @@ cd ${WORKSPACE}/sources
   if [[ "${OLD_SHA}" != "${NEW_SHA}" ]]; then hasChanged=1; fi
   SOURCE_SHA=\$(git rev-parse HEAD) # echo ${SOURCE_SHA:0:8}
 cd ..
+'''
 
+      def OLD_SHA1 = sh(script: '''#!/bin/bash -xe
+      cd ${WORKSPACE}/target1; git rev-parse HEAD
+      ''', returnStdout: true)
+      println "Got OLD_SHA1 in target1 folder: " + OLD_SHA1
+
+      def OLD_SHA2 = sh(script: '''#!/bin/bash -xe
+      cd ${WORKSPACE}/target2; git rev-parse HEAD
+      ''', returnStdout: true)
+      println "Got OLD_SHA2 in target2 folder: " + OLD_SHA2
+
+  	 	sh '''#!/bin/bash -xe
 for targetN in target1 target2; do
     # fetch sources to be updated
     if [[ \$targetN == "target1" ]]; then GIT_PATH="''' + GIT_PATH1 + '''"; else GIT_PATH="''' + GIT_PATH2 + '''"; fi
@@ -99,11 +111,9 @@ for targetN in target1 target2; do
     done
 
     # TODO apply patches from upstream https://github.com/eclipse/che-plugin-broker/tree/master/build/*/rhel.Dockerfile to downstream Dockerfile
-    #sed -i ${WORKSPACE}/${targetN}/Dockerfile \
-    #  -e "s#FROM registry.redhat.io/#FROM #g" \
-    #  -e "s#FROM registry.access.redhat.com/#FROM #g" \
-    #  -e "s#COPY assembly/codeready-workspaces-assembly-main/target/#COPY #g" \
-    #  -e "s/# *RUN yum /RUN yum /g"
+    sed -i ${WORKSPACE}/${targetN}/Dockerfile \
+      -e "s#FROM registry.redhat.io/#FROM #g" \
+      -e "s#FROM registry.access.redhat.com/#FROM #g"
 
     # push changes in cgit to github
     cd ${WORKSPACE}/${targetN}
@@ -149,6 +159,20 @@ if [[ ${hasChanged} -eq 0 ]]; then
   echo "No changes upstream, nothing to commit"
 fi
 		  '''
+    }
+
+      def NEW_SHA1 = sh(script: '''#!/bin/bash -xe
+      cd ${WORKSPACE}/target1; git rev-parse HEAD
+      ''', returnStdout: true)
+      println "Got NEW_SHA1 in target1 folder: " + NEW_SHA1
+
+      def NEW_SHA2 = sh(script: '''#!/bin/bash -xe
+      cd ${WORKSPACE}/target2; git rev-parse HEAD
+      ''', returnStdout: true)
+      println "Got NEW_SHA2 in target2 folder: " + NEW_SHA2
+
+    if (NEW_SHA1.equals(OLD_SHA1) && NEW_SHA2.equals(OLD_SHA2)) {
+      currentBuild.result='UNSTABLE'
     }
 	}
 }
