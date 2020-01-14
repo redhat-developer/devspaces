@@ -15,6 +15,8 @@ def PUSH_TO_QUAY = "true"
 
 def OLD_SHA1=""
 def OLD_SHA2=""
+def SRC_SHA1=""
+def SRC_SHA2=""
 
 def buildNode = "rhel7-releng" // slave label
 timeout(120) {
@@ -83,7 +85,6 @@ cd ${WORKSPACE}/sources
   /tmp/updateBaseImages.sh -b ''' + SOURCE_BRANCH + '''
   NEW_SHA=$(git rev-parse HEAD) # echo ${NEW_SHA:0:8}
   if [[ "${OLD_SHA}" != "${NEW_SHA}" ]]; then hasChanged=1; fi
-  SOURCE_SHA=\$(git rev-parse HEAD) # echo ${SOURCE_SHA:0:8}
 cd ..
 for targetN in target1 target2; do
     # fetch sources to be updated
@@ -98,6 +99,16 @@ for targetN in target1 target2; do
 done
 '''
       sh BOOTSTRAP
+
+      SRC_SHA1 = sh(script: '''#!/bin/bash -xe
+      cd ${WORKSPACE}/sources; git rev-parse HEAD
+      ''', returnStdout: true)
+      println "Got SRC_SHA1 in sources folder: " + SRC_SHA1
+
+      SRC_SHA2 = sh(script: '''#!/bin/bash -xe
+      cd ${WORKSPACE}/sourcesmidstream; git rev-parse HEAD
+      ''', returnStdout: true)
+      println "Got SRC_SHA2 in sourcesmidstream folder: " + SRC_SHA2
 
       OLD_SHA1 = sh(script: '''#!/bin/bash -xe
       cd ${WORKSPACE}/target1; git rev-parse HEAD
@@ -145,11 +156,11 @@ for targetN in target1 target2; do
     if [[ \$(git diff --name-only) ]]; then # file changed
     OLD_SHA=\$(git rev-parse HEAD) # echo ${OLD_SHA:0:8}
     git add Dockerfile ${SYNC_FILES}
-    git commit -s -m "[sync] Update from ''' + SOURCE_REPO1 + ''' @ ${SOURCE_SHA:0:8}" Dockerfile ${SYNC_FILES}
+    git commit -s -m "[sync] Update from ''' + SOURCE_REPO1 + ''' @ ${SRC_SHA1:0:8}, ''' + SOURCE_REPO2 + ''' @ ${SRC_SHA2:0:8}" Dockerfile ${SYNC_FILES}
     git push origin ''' + GIT_BRANCH + '''
     NEW_SHA=\$(git rev-parse HEAD) # echo ${NEW_SHA:0:8}
     if [[ "${OLD_SHA}" != "${NEW_SHA}" ]]; then hasChanged=1; fi
-    echo "[sync] Updated pkgs.devel @ ${NEW_SHA:0:8} from ''' + SOURCE_REPO1 + ''' @ ${SOURCE_SHA:0:8}"
+    echo "[sync] Updated pkgs.devel @ ${NEW_SHA:0:8} from ''' + SOURCE_REPO1 + ''' @ ${SRC_SHA1:0:8}, ''' + SOURCE_REPO2 + ''' @ ${SRC_SHA2:0:8}"
     fi
     cd ..
 
