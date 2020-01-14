@@ -9,10 +9,10 @@ description: Support for Apache Camel K functionality
 icon: https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/master/dependencies/che-plugin-registry/resources/images/default.svg?sanitize=true
 repository: https://github.com/camel-tooling/vscode-camelk
 category: Language
-firstPublicationDate: '2020-01-09'
+firstPublicationDate: '2020-01-14'
 spec:
   containers:
-  - image: "quay.io/eclipse/che-sidecar-camelk:0.0.10-70f9d17"
+  - image: "quay.io/crw/plugin-kubernetes-rhel8:2.1"
     name: vscode-camelk
     memoryLimit: "1G"
   extensions:
