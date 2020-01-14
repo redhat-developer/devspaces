@@ -1,7 +1,7 @@
 apiVersion: v2
 publisher: redhat
 name: java11
-version: 0.55.1
+version: 0.50.0
 type: VS Code extension
 displayName: Language Support for Java 11
 title: Language Support for Java(TM) by Red Hat
@@ -20,4 +20,4 @@ spec:
         name: m2
   extensions:
     - https://download.jboss.org/jbosstools/vscode/3rdparty/vscode-java-debug/vscode-java-debug-0.23.0.vsix
-    - https://download.jboss.org/jbosstools/static/jdt.ls/stable/java-0.55.1-1984.vsix
+    - https://download.jboss.org/jbosstools/static/jdt.ls/stable/java-0.50.0-1825.vsix
