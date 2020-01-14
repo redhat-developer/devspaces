@@ -13,6 +13,9 @@ def GIT_BRANCH = "crw-2.0-rhel-8" // target branch in dist-git repo, eg., crw-2.
 def SCRATCH = "false"
 def PUSH_TO_QUAY = "true"
 
+def OLD_SHA1=""
+def OLD_SHA2=""
+
 def buildNode = "rhel7-releng" // slave label
 timeout(120) {
 	node("${buildNode}"){ stage "Sync repos"
@@ -96,12 +99,12 @@ done
 '''
       sh BOOTSTRAP
 
-      def OLD_SHA1 = sh(script: '''#!/bin/bash -xe
+      OLD_SHA1 = sh(script: '''#!/bin/bash -xe
       cd ${WORKSPACE}/target1; git rev-parse HEAD
       ''', returnStdout: true)
       println "Got OLD_SHA1 in target1 folder: " + OLD_SHA1
 
-      def OLD_SHA2 = sh(script: '''#!/bin/bash -xe
+      OLD_SHA2 = sh(script: '''#!/bin/bash -xe
       cd ${WORKSPACE}/target2; git rev-parse HEAD
       ''', returnStdout: true)
       println "Got OLD_SHA2 in target2 folder: " + OLD_SHA2
