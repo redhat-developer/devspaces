@@ -17,6 +17,8 @@ USER root
 WORKDIR /go/src/github.com/eclipse/che-plugin-broker/brokers/unified/cmd/
 COPY . /go/src/github.com/eclipse/che-plugin-broker/
 RUN adduser appuser && \
+    dnf -y clean all && rm -rf /var/cache/yum && \
+    echo "Installed Packages" && rpm -qa | sort -V && echo "End Of Installed Packages" && \
     CGO_ENABLED=0 GOOS=linux go build -a -ldflags '-w -s' -installsuffix cgo -o unified-broker main.go
 
 # https://access.redhat.com/containers/?tab=tags#/registry.access.redhat.com/ubi8-minimal

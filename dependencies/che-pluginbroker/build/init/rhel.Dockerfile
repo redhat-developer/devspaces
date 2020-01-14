@@ -17,14 +17,12 @@ USER root
 WORKDIR /go/src/github.com/eclipse/che-plugin-broker/brokers/init/cmd/
 COPY . /go/src/github.com/eclipse/che-plugin-broker/
 RUN adduser appuser && \
-    # CRW-528 don't need to install anything as tls-ca-bundle.pem already in go-toolset image
-    # dnf install -y ca-certificates && \
-    #dnf -y clean all && rm -rf /var/cache/yum && \
-    #echo "Installed Packages" && rpm -qa | sort -V && echo "End Of Installed Packages" && \
+    dnf -y clean all && rm -rf /var/cache/yum && \
+    echo "Installed Packages" && rpm -qa | sort -V && echo "End Of Installed Packages" && \
     CGO_ENABLED=0 GOOS=linux go build -a -ldflags '-w -s' -installsuffix cgo -o init-plugin-broker main.go
 
 # to test this container by attaching bash shell, need a non-scratch base like ubi8-minimal
-# FROM ubi8-minimal
+# FROM registry.access.redhat.com/ubi8-minimal
 FROM scratch
 
 USER appuser
