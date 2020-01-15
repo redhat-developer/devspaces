@@ -1,7 +1,7 @@
 apiVersion: v2
 publisher: redhat
 name: vscode-wsdl2rest
-version: 0.0.9
+version: 0.0.11
 type: VS Code extension
 displayName: wsdl2rest support for Apache Camel
 title: wsdl2rest support for Apache Camel
@@ -9,10 +9,7 @@ description: Extension supporting the mapping of an existing SOAP service to a R
 icon: https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/master/dependencies/che-plugin-registry/resources/images/default.svg?sanitize=true
 repository: https://github.com/camel-tooling/vscode-wsdl2rest
 category: Other
-firstPublicationDate: "2019-02-26"
-deprecate:
-  automigrate: true
-  migrateTo: redhat/vscode-wsdl2rest/latest
+firstPublicationDate: "2020-01-13"
 spec:
   containers:
     - image: "registry.redhat.io/codeready-workspaces/stacks-java-rhel8:2.0"
@@ -22,4 +19,4 @@ spec:
         - -c
         - ${PLUGIN_REMOTE_ENDPOINT_EXECUTABLE}
   extensions:
-    - https://download.jboss.org/jbosstools/vscode/stable/vscode-wsdl2rest/vscode-wsdl2rest-0.0.9-16.vsix
+    - https://download.jboss.org/jbosstools/vscode/stable/vscode-wsdl2rest/vscode-wsdl2rest-0.0.11-106.vsix
