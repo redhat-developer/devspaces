@@ -40,6 +40,7 @@ public class CodereadyLoginPage extends CheLoginPage {
     this.seleniumWebDriverHelper = seleniumWebDriverHelper;
   }
 
+  @Override
   public void loginWithOpenShiftOAuth() {
     seleniumWebDriverHelper.waitAndClick(openShiftOAuthLink);
   }

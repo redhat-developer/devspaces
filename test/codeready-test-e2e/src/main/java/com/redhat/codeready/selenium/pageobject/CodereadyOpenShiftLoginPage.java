@@ -99,6 +99,7 @@ public class CodereadyOpenShiftLoginPage extends OpenShiftLoginPage {
     PageFactory.initElements(seleniumWebDriver, this);
   }
 
+  @Override
   public void login(String username, String password) {
     waitOnOpen();
 
@@ -109,6 +110,7 @@ public class CodereadyOpenShiftLoginPage extends OpenShiftLoginPage {
     waitOnClose();
   }
 
+  @Override
   public void waitOnOpen() {
     seleniumWebDriverHelper.waitAllVisibility(
         asList(usernameInput, passwordInput, loginButton), WIDGET_TIMEOUT_SEC);
