@@ -12,12 +12,15 @@
 // SCRATCH = true (don't push to Quay) or false (do push to Quay)
 
 def installNPM(){
-	def nodeHome = tool 'nodejs-10.9.0'
-	env.PATH="${env.PATH}:${nodeHome}/bin"
-	sh "npm install yarn"
-	sh "npm version"
+	def yarnVersion="1.21.0"
+	def nodeHome = tool 'nodejs-10.15.3'
+	env.PATH="${nodeHome}/bin:${env.PATH}"
+	sh '''#!/bin/bash -xe
+rm -f ${HOME}/.npmrc ${HOME}/.yarnrc
+npm install --global yarn@''' + yarnVersion + '''
+npm --version; yarn --version
+'''
 }
-
 def installGo(){
 	def goHome = tool 'go-1.10'
 	env.PATH="${env.PATH}:${goHome}/bin"
