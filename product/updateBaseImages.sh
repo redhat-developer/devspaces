@@ -23,7 +23,6 @@ BRANCH=crw-2.0-rhel-8 # not master
 DOCKERFILE="Dockerfile" # or "rhel.Dockerfile"
 maxdepth=2
 docommit=1 # by default DO commit the change and push it
-doPR=0; # by default attempt to push the change directly (midstream CRW GH repos and downstream pkgs.devel repos), rather than submitting a PR (upstream Che GH repos)
 buildCommand="echo" # By default, no build will be triggered when a change occurs; use -c for a container-build (or -s for scratch).
 while [[ "$#" -gt 0 ]]; do
   case $1 in
@@ -34,7 +33,6 @@ while [[ "$#" -gt 0 ]]; do
     '-c') buildCommand="rhpkg container-build"; shift 0;; # NOTE: will trigger a new build for each commit, rather than for each change set (eg., Dockefiles with more than one FROM)
     '-s') buildCommand="rhpkg container-build --scratch"; shift 0;;
     '-n'|'--nocommit') docommit=0; shift 0;;
-    '-p'|'--pull-request') doPR=1; shift 0;;
     '-q') QUIET=1; shift 0;;
     '-v') QUIET=0; VERBOSE=1; shift 0;;
     *) OTHER="${OTHER} $1"; shift 0;; 
@@ -123,8 +121,7 @@ for d in $(find ${WORKDIR} -maxdepth ${maxdepth} -name ${DOCKERFILE} | sort); do
 				LATE_TAGrev=${LATESTTAG##*-} # 15.1553789946 or 15
 				LATE_TAGrevbase=${LATE_TAGrev%%.*} # 15
 				LATE_TAGrevsuf=${LATE_TAGrev##*.} # 1553789946 or 15
-				if [[ $VERBOSE -eq 1 ]]; then echo "[DEBUG] 
-@LATE_TAGver=$LATE_TAGver; LATE_TAGrev=$LATE_TAGrev; LATE_TAGrevbase=$LATE_TAGrevbase; LATE_TAGrevsuf=$LATE_TAGrevsuf"; fi
+				if [[ $VERBOSE -eq 1 ]]; then echo "[DEBUG] LATE_TAGver=$LATE_TAGver; LATE_TAGrev=$LATE_TAGrev; LATE_TAGrevbase=$LATE_TAGrevbase; LATE_TAGrevsuf=$LATE_TAGrevsuf"; fi
 				echo "+ ${FROMPREFIX}:${LATESTTAG}" # jboss-eap-7/eap72-openshift:1.0-15
 			elif [[ $URL ]] && [[ $URL == "${FROMPREFIX}:"* ]]; then
 				if [[ ${LATESTTAG} ]]; then
@@ -151,26 +148,8 @@ for d in $(find ${WORKDIR} -maxdepth ${maxdepth} -name ${DOCKERFILE} | sort); do
 
 							# commit change and push it
 							if [[ -d ${d%%/${DOCKERFILE}} ]]; then pushd ${d%%/${DOCKERFILE}} >/dev/null; pushedIn=1; fi
-							if [[ ${docommit} -eq 1 ]]; then
-								lastCommitComment="[base] Update from ${URL} to ${FROMPREFIX}:${LATESTTAG}"
-								git commit -s -m "${lastCommitComment}" ${DOCKERFILE}
-								if [[ $VERBOSE -eq 1 ]]; then echo "[DEBUG] git commit comment: ${lastCommitComment}"; fi
-								PUSH_TRY=""
-# 								if [[ ${BRANCHUSED} != "master" ]] && [[ ${doPR} -eq 0 ]]; then 
-									PUSH_TRY="$(git push origin "${BRANCHUSED}" 2>&1)"
-# 								fi
-# 								if [[ ${doPR} -eq 1 ]] || [[ ${BRANCHUSED} == "master" ]] || [[ $PUSH_TRY == *"protected branch hook declined"* ]]; then
-# 									PR_BRANCH=pr-Dockefile-to-${LATESTTAG}
-# 									if [[ $VERBOSE -eq 1 ]]; then echo "[DEBUG] PR branch: ${PR_BRANCH}"; fi
-# 									# create pull request for master branch, as branch is restricted
-# 									git branch "${PR_BRANCH}"
-# 									git checkout "${PR_BRANCH}"
-# 									git push origin "${PR_BRANCH}"
-# 									lastCommitComment="$(git log -1 --pretty=%B)"
-# 									hub pull-request -o -f -m "${lastCommitComment}
-
-# ${lastCommitComment}" -b "${BRANCH}" -h "${PR_BRANCH}"
-# 								fi 
+							if [[ ${docommit} -eq 1 ]]; then 
+								git commit -s -m "[base] Update from ${URL} to ${FROMPREFIX}:${LATESTTAG}" ${DOCKERFILE} && git push origin ${BRANCHUSED}
 							fi
 							if [[ ${buildCommand} != "echo" ]] || [[ $VERBOSE -eq 1 ]]; then echo "# ${buildCommand}"; fi
 							${buildCommand} &
