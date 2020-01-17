@@ -23,6 +23,7 @@ BRANCH=crw-2.0-rhel-8 # not master
 DOCKERFILE="Dockerfile" # or "rhel.Dockerfile"
 maxdepth=2
 docommit=1 # by default DO commit the change and push it
+doPR=0; # by default attempt to push the change directly (midstream CRW GH repos and downstream pkgs.devel repos), rather than submitting a PR (upstream Che GH repos)
 buildCommand="echo" # By default, no build will be triggered when a change occurs; use -c for a container-build (or -s for scratch).
 while [[ "$#" -gt 0 ]]; do
   case $1 in
@@ -33,6 +34,7 @@ while [[ "$#" -gt 0 ]]; do
     '-c') buildCommand="rhpkg container-build"; shift 0;; # NOTE: will trigger a new build for each commit, rather than for each change set (eg., Dockefiles with more than one FROM)
     '-s') buildCommand="rhpkg container-build --scratch"; shift 0;;
     '-n'|'--nocommit') docommit=0; shift 0;;
+    '-p'|'--pull-request') doPR=1; shift 0;;
     '-q') QUIET=1; shift 0;;
     '-v') QUIET=0; VERBOSE=1; shift 0;;
     *) OTHER="${OTHER} $1"; shift 0;; 
@@ -153,10 +155,11 @@ for d in $(find ${WORKDIR} -maxdepth ${maxdepth} -name ${DOCKERFILE} | sort); do
 								lastCommitComment="[base] Update from ${URL} to ${FROMPREFIX}:${LATESTTAG}"
 								git commit -s -m "${lastCommitComment}" ${DOCKERFILE}
 								if [[ $VERBOSE -eq 1 ]]; then echo "[DEBUG] git commit comment: ${lastCommitComment}"; fi
-								if [[ ${BRANCHUSED} != "master" ]]; then 
+								PUSH_TRY=""
+								if [[ ${BRANCHUSED} != "master" ]] && [[ ${doPR} -eq 0 ]]; then 
 									PUSH_TRY="$(git push origin "${BRANCHUSED}" 2>&1)"
 								fi
-								if [[ ${BRANCHUSED} == "master" ]] || [[ $PUSH_TRY == *"protected branch hook declined"* ]]; then
+								if [[ ${doPR} -eq 1 ]] || [[ ${BRANCHUSED} == "master" ]] || [[ $PUSH_TRY == *"protected branch hook declined"* ]]; then
 									PR_BRANCH=pr-Dockefile-to-${LATESTTAG}
 									if [[ $VERBOSE -eq 1 ]]; then echo "[DEBUG] PR branch: ${PR_BRANCH}"; fi
 									# create pull request for master branch, as branch is restricted
