@@ -156,21 +156,21 @@ for d in $(find ${WORKDIR} -maxdepth ${maxdepth} -name ${DOCKERFILE} | sort); do
 								git commit -s -m "${lastCommitComment}" ${DOCKERFILE}
 								if [[ $VERBOSE -eq 1 ]]; then echo "[DEBUG] git commit comment: ${lastCommitComment}"; fi
 								PUSH_TRY=""
-								if [[ ${BRANCHUSED} != "master" ]] && [[ ${doPR} -eq 0 ]]; then 
+# 								if [[ ${BRANCHUSED} != "master" ]] && [[ ${doPR} -eq 0 ]]; then 
 									PUSH_TRY="$(git push origin "${BRANCHUSED}" 2>&1)"
-								fi
-								if [[ ${doPR} -eq 1 ]] || [[ ${BRANCHUSED} == "master" ]] || [[ $PUSH_TRY == *"protected branch hook declined"* ]]; then
-									PR_BRANCH=pr-Dockefile-to-${LATESTTAG}
-									if [[ $VERBOSE -eq 1 ]]; then echo "[DEBUG] PR branch: ${PR_BRANCH}"; fi
-									# create pull request for master branch, as branch is restricted
-									git branch "${PR_BRANCH}"
-									git checkout "${PR_BRANCH}"
-									git push origin "${PR_BRANCH}"
-									lastCommitComment="$(git log -1 --pretty=%B)"
-									hub pull-request -o -f -m "${lastCommitComment}
+# 								fi
+# 								if [[ ${doPR} -eq 1 ]] || [[ ${BRANCHUSED} == "master" ]] || [[ $PUSH_TRY == *"protected branch hook declined"* ]]; then
+# 									PR_BRANCH=pr-Dockefile-to-${LATESTTAG}
+# 									if [[ $VERBOSE -eq 1 ]]; then echo "[DEBUG] PR branch: ${PR_BRANCH}"; fi
+# 									# create pull request for master branch, as branch is restricted
+# 									git branch "${PR_BRANCH}"
+# 									git checkout "${PR_BRANCH}"
+# 									git push origin "${PR_BRANCH}"
+# 									lastCommitComment="$(git log -1 --pretty=%B)"
+# 									hub pull-request -o -f -m "${lastCommitComment}
 
-${lastCommitComment}" -b "${BRANCH}" -h "${PR_BRANCH}"
-								fi 
+# ${lastCommitComment}" -b "${BRANCH}" -h "${PR_BRANCH}"
+# 								fi 
 							fi
 							if [[ ${buildCommand} != "echo" ]] || [[ $VERBOSE -eq 1 ]]; then echo "# ${buildCommand}"; fi
 							${buildCommand} &
