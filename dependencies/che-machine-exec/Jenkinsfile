@@ -73,12 +73,9 @@ cd ${WORKSPACE}/sources
   git config user.name "Red Hat Devstudio Release Bot"
   git config --global push.default matching
 
-  SOURCE_SHA=\$(git rev-parse HEAD) # echo ${SOURCE_SHA:0:8}
   # can't yet generate a PR against eclipse/che-* repos, and can't push directly
   # so check for a new base image but DO NOT commit/push/pull-request
   /tmp/updateBaseImages.sh -b ''' + SOURCE_BRANCH + ''' -f ${SOURCEDOCKERFILE##*/} --nocommit
-  NEW_SHA=$(git rev-parse HEAD) # echo ${NEW_SHA:0:8}
-  if [[ "${OLD_SHA}" != "${NEW_SHA}" ]]; then hasChanged=1; fi
 cd ..
 # fetch sources to be updated
 GIT_PATH="''' + GIT_PATH + '''"
