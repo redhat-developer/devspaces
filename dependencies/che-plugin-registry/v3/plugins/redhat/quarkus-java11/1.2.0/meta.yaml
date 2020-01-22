@@ -1,26 +1,22 @@
 apiVersion: v2
 publisher: redhat
-name: quarkus-java8
+name: quarkus-java11
 version: 1.2.0
 type: VS Code extension
-displayName: Quarkus Tools with Java 8
-title: Quarkus Tools by Red Hat
-description: This plug-in provides support for Quarkus development via a Quarkus language server, Java jdt.ls and Java Debugger.
+displayName: Quarkus, Maven, Gradle and Java 11 Language Support
+title: Quarkus, Java 11, Maven, and Gradle Tools by Red Hat
+description: Support for Quarkus, Maven, Gradle. Java Linting, Intellisense, formatting, refactoring, debugging, and language server.
 icon: https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/master/dependencies/che-plugin-registry/resources/images/default.svg?sanitize=true
 repository: https://github.com/redhat-developer/vscode-quarkus
 category: Language
-firstPublicationDate: "2020-01-13"
+firstPublicationDate: "2020-01-22"
 spec:
   containers:
-  - image: "registry.redhat.io/codeready-workspaces/stacks-java-rhel8:2.0"
+  - image: "quay.io/crw/plugin-java11-rhel8:2.1"
       name: vscode-quarkus
-      memoryLimit: "1500Mi"
-      args:
-        - sh
-        - -c
-        - ${PLUGIN_REMOTE_ENDPOINT_EXECUTABLE}
+      memoryLimit: "3500Mi"
       volumes:
-      - mountPath: "/home/theia/.m2"
+      - mountPath: "/home/jboss/.m2"
         name: m2
   extensions:
     - https://download.jboss.org/jbosstools/vscode/3rdparty/vscode-java-debug/vscode-java-debug-0.23.0.vsix

@@ -3,20 +3,20 @@ publisher: redhat
 name: java11
 version: 0.50.0
 type: VS Code extension
-displayName: Language Support for Java 11
-title: Language Support for Java(TM) by Red Hat
-description: Java Linting, Intellisense, formatting, refactoring, Maven/Gradle support and more...
+displayName: Maven, Gradle, and Java 11 Language Support
+title: Java 11, Maven, and Gradle Tools by Red Hat
+description: Support for Maven, Gradle. Java Linting, Intellisense, formatting, refactoring, debugging, and language server.
 icon: https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/master/dependencies/che-plugin-registry/resources/images/default.svg?sanitize=true
 repository: https://github.com/redhat-developer/vscode-java
 category: Language
-firstPublicationDate: "2020-01-13"
+firstPublicationDate: "2020-01-22"
 spec:
   containers:
-  - image: "registry.redhat.io/codeready-workspaces/plugin-java11-rhel8:2.0"
+  - image: "quay.io/crw/plugin-java11-rhel8:2.1"
       name: vscode-java
       memoryLimit: "1500Mi"
       volumes:
-      - mountPath: "/home/theia/.m2"
+      - mountPath: "/home/jboss/.m2"
         name: m2
   extensions:
     - https://download.jboss.org/jbosstools/vscode/3rdparty/vscode-java-debug/vscode-java-debug-0.23.0.vsix
