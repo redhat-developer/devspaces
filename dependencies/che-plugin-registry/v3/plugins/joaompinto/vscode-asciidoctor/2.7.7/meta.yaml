@@ -1,0 +1,15 @@
+publisher: joaompinto
+apiVersion: v2
+version: 2.7.7
+type: VS Code extension
+name: vscode-asciidoctor
+displayName: AsciiDoc support
+title: AsciiDoctor Plugin.
+description: This extension provides a live preview, syntax highlighting and snippets for the AsciiDoc format using Asciidoctor flavor.
+icon: https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/master/dependencies/che-plugin-registry/resources/images/default.svg?sanitize=true
+category: Language
+repository: https://github.com/asciidoctor/asciidoctor-vscode
+firstPublicationDate: "2019-12-02"
+spec:
+  extensions:
+  - https://download.jboss.org/jbosstools/vscode/3rdparty/asciidoctor-vscode/asciidoctor-vscode-2.7.7.vsix
