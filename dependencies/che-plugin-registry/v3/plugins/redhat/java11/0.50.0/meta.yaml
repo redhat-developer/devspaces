@@ -12,7 +12,7 @@ category: Language
 firstPublicationDate: "2020-01-22"
 spec:
   containers:
-  - image: "quay.io/crw/plugin-java11-rhel8:2.1"
+    - image: "quay.io/crw/plugin-java11-rhel8:2.1"
       name: vscode-java
       memoryLimit: "1500Mi"
       volumes:
