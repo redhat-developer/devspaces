@@ -36,8 +36,10 @@ codeready-workspaces/stacks-java-rhel8 codeready-workspaces/stacks-node-rhel8 \
 codeready-workspaces/stacks-php-rhel8 codeready-workspaces/stacks-python-rhel8 \
 codeready-workspaces/stacks-node"
 
+# OLD WAY: codeready-workspaces/server-operator-rhel8 \
 CRW20_CONTAINERS_RHCC="\
-codeready-workspaces/server-operator-rhel8 \
+codeready-workspaces/operator-metadata \
+codeready-workspaces/operator-rhel8 \
 codeready-workspaces/server-rhel8 \
 \
 codeready-workspaces/devfileregistry-rhel8 \
@@ -63,6 +65,7 @@ codeready-workspaces/plugin-openshift-rhel8"
 # codeready-workspaces/plugin-dependencyanalytics-rhel8 \
 
 CRW20_CONTAINERS_PULP="\
+codeready-workspaces/operator-metadata \
 codeready-workspaces/operator-rhel8 \
 codeready-workspaces/server-rhel8 \
 \
