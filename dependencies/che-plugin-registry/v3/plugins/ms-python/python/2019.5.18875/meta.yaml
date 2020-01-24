@@ -16,9 +16,5 @@ spec:
   - image: "registry.redhat.io/codeready-workspaces/stacks-python-rhel8:2.0"
     name: vscode-python
     memoryLimit: '512Mi'
-    args:
-      - sh
-      - -c
-      - ${PLUGIN_REMOTE_ENDPOINT_EXECUTABLE}
   extensions:
   - https://download.jboss.org/jbosstools/vscode/3rdparty/vscode-python/python-2019.5.4.vsix
