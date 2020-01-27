@@ -12,7 +12,7 @@ category: Other
 firstPublicationDate: "2019-11-18"
 spec:
   containers:
-    - image: "registry.redhat.io/codeready-workspaces/plugin-openshift-rhel8:2.0"
+    - image: "registry.redhat.io/codeready-workspaces/plugin-openshift-rhel8:2.1"
       name: "vscode-openshift-connector"
       memoryLimit: "512Mi"
   extensions:

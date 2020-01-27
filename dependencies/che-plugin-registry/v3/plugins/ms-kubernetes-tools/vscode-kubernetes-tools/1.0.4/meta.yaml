@@ -12,7 +12,7 @@ category: Other
 firstPublicationDate: "2019-10-16"
 spec:
   containers:
-    - image: "registry.redhat.io/codeready-workspaces/plugin-kubernetes-rhel8:2.0"
+    - image: "registry.redhat.io/codeready-workspaces/plugin-kubernetes-rhel8:2.1"
       name: "vscode-kubernetes-tools"
       memoryLimit: "1G"
   extensions:
