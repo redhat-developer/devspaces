@@ -1,0 +1,54 @@
+---
+apiVersion: 1.0.0
+metadata:
+  generateName: java-gradle-
+projects:
+  -
+    name: console-java-simple
+    source:
+      type: git
+      location: "https://github.com/che-samples/console-java-simple.git"
+      branch: java1.11
+components:
+  -
+    type: chePlugin
+    id: redhat/java11/latest
+  -
+    type: dockerimage
+    alias: gradle
+    image: quay.io/crw/plugin-java11-rhel8:2.1
+    env:
+      - name: GRADLE_USER_HOME
+        value: /home/jboss/.gradle
+      - name: JAVA_OPTS
+        value: "-XX:MaxRAMPercentage=50 -XX:+UseParallelGC -XX:MinHeapFreeRatio=10
+          -XX:MaxHeapFreeRatio=20 -XX:GCTimeRatio=4 -XX:AdaptiveSizePolicyWeight=90
+          -Dsun.zip.disableMemoryMapping=true -Xms20m -Djava.security.egd=file:/dev/./urandom"
+      - name: JAVA_TOOL_OPTIONS
+        value: "-XX:MaxRAMPercentage=50 -XX:+UseParallelGC -XX:MinHeapFreeRatio=10
+          -XX:MaxHeapFreeRatio=20 -XX:GCTimeRatio=4 -XX:AdaptiveSizePolicyWeight=90
+          -Dsun.zip.disableMemoryMapping=true -Xms20m -Djava.security.egd=file:/dev/./urandom"
+      - name: HOME
+        value: /home/jboss
+    memoryLimit: 512Mi
+    volumes:
+      - name: gradle
+        containerPath: /home/jboss/.gradle
+    mountSources: true
+commands:
+  -
+    name: gradle build
+    actions:
+      -
+        type: exec
+        component: gradle
+        command: "gradle build"
+        workdir: ${CHE_PROJECTS_ROOT}/console-java-simple
+  -
+    name: gradle run
+    actions:
+      -
+        type: exec
+        component: gradle
+        command: "gradle run"
+        workdir: ${CHE_PROJECTS_ROOT}/console-java-simple
