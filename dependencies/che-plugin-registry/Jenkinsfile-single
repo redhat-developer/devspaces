@@ -73,6 +73,16 @@ def buildPhpDebug(branchToBuildPlugin, extensionFolder) {
     sh "cd ${extensionFolder} && sudo npm install -g vsce gulp && npm install && npm run build && vsce package"
 }
 
+def buildVscodePython(branchToBuildPlugin, extensionFolder) {
+    installNPM()
+    sh "sudo /usr/bin/python3 -m pip install --upgrade pip"
+    buildNumber = branchToBuildPlugin.substring(branchToBuildPlugin.lastIndexOf('.') + 1)
+    echo "${buildNumber}"
+    sh "cd ${extensionFolder} && sudo npm install -g vsce gulp && npm ci && gulp updateBuildNumber --buildNumber ${buildNumber} && rm -rf node_modules"
+    archiveSources(extensionFolder)
+    sh "cd ${extensionFolder} && npm ci && gulp installPythonLibs && gulp prePublishBundle && vsce package"
+}
+
 def buildDefault(extensionFolder) {
     archiveSources(extensionFolder)
     installNPM()
@@ -148,8 +158,10 @@ timeout(120) {
             buildEclipseCdt(extensionFolder)
         } else if (extensionPath.contains("https://github.com/llvm/llvm-project")) {
             buildClangVscode(extensionFolder)
+        } else if (extensionPath.contains("https://github.com/microsoft/vscode-python")) {
+            buildVscodePython(branchToBuildPlugin, extensionFolder)
         } else if (extensionPath.contains("https://github.com/microsoft/vscode-java-debug")) {
-            buildJavaExtension(extensionFolder, extensionFolder)
+            buildJavaExtension(branchToBuildPlugin, extensionFolder)
         }  else if (extensionPath.contains("https://github.com/felixfbecker/vscode-php-debug")) {
             buildPhpDebug(branchToBuildPlugin, extensionFolder)
         } else {
@@ -177,9 +189,8 @@ timeout(120) {
 
         archiveArtifacts artifacts: '*.vsix, *-sources.tar.gz', fingerprint: true
 
+        input (message: "proceed with publish?")
 
-        // that would be built by this job
-        //
         if (publishDestinationAddress && publishDestinationDir ) {
             echo "beginning publishing process"
             sh "mkdir --parents /tmp/${publishDestinationDir} && find ./ -name '*.vsix' -exec mv {}  /tmp/${publishDestinationDir}  \\;"
