@@ -19,7 +19,7 @@ components:
 -
   type: dockerimage
   alias: cpp-dev
-  image: registry.redhat.io/codeready-workspaces/stacks-cpp-rhel8:2.0
+  image: registry.redhat.io/codeready-workspaces/stacks-cpp-rhel8:2.1
   command: ['sleep']
   args: ['infinity']
   memoryLimit: 512Mi

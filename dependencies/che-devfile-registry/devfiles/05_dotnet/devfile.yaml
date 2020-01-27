@@ -17,7 +17,7 @@ components:
   -
     type: dockerimage
     alias: dotnet
-    image: registry.redhat.io/codeready-workspaces/stacks-dotnet-rhel8:2.0
+    image: registry.redhat.io/codeready-workspaces/stacks-dotnet-rhel8:2.1
     memoryLimit: 512Mi
     endpoints:
       - name: '5000/tcp'
