@@ -24,6 +24,23 @@ DOCKERFILE="Dockerfile" # or "rhel.Dockerfile"
 maxdepth=2
 docommit=1 # by default DO commit the change and push it
 buildCommand="echo" # By default, no build will be triggered when a change occurs; use -c for a container-build (or -s for scratch).
+
+checkrecentupdates () {
+	# set +e
+	for d in $(find ${WORKDIR} -maxdepth ${maxdepth} -name ${DOCKERFILE} | sort); do
+		pushdir=${d%/${DOCKERFILE}}
+		pushd ${pushdir} >/dev/null
+			last=$(git lg -1 | grep -v days || true)
+			if [[ $last = *[$' \t\n\r']* ]]; then 
+				echo "[DEBUG] ${pushdir##*/}"
+				echo "[DEBUG] $last" | egrep "seconds|minutes" || true
+				echo
+			fi
+		popd >/dev/null
+	done
+	# set -e
+}
+
 while [[ "$#" -gt 0 ]]; do
   case $1 in
     '-w') WORKDIR="$2"; shift 1;;
@@ -35,6 +52,7 @@ while [[ "$#" -gt 0 ]]; do
     '-n'|'--nocommit') docommit=0; shift 0;;
     '-q') QUIET=1; shift 0;;
     '-v') QUIET=0; VERBOSE=1; shift 0;;
+	'--check-recent-updates-only') QUIET=0; VERBOSE=1; checkrecentupdates; shift 0; exit;;
     *) OTHER="${OTHER} $1"; shift 0;; 
   esac
   shift 1
@@ -176,4 +194,3 @@ if [[ $fixedFiles ]]; then
 else
 	if [[ ${QUIET} -eq 0 ]]; then echo "[base] No Dockerfiles changed - no new base images found."; fi
 fi
-
