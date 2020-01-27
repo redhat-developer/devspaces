@@ -15,6 +15,8 @@ spec:
     - image: "registry.redhat.io/codeready-workspaces/stacks-golang-rhel8:2.0"
       name: vscode-go
       memoryLimit: '512Mi'
+      args:
+        - ${PLUGIN_REMOTE_ENDPOINT_EXECUTABLE}
       env:
       - name: GOPATH
         value: /projects/.che/gopath:$(CHE_PROJECTS_ROOT)

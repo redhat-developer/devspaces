@@ -15,5 +15,7 @@ spec:
     - image: "registry.redhat.io/codeready-workspaces/stacks-php-rhel8:2.0"
       name: php-intelephense
       memoryLimit: "1000Mi"
+      args:
+        - ${PLUGIN_REMOTE_ENDPOINT_EXECUTABLE}
   extensions:
     - https://download.jboss.org/jbosstools/vscode/3rdparty/vscode-intelephense/vscode-intelephense-client-1.0.13.vsix

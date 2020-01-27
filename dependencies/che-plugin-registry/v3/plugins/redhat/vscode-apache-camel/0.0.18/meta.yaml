@@ -18,5 +18,7 @@ spec:
   - image: "registry.redhat.io/codeready-workspaces/stacks-java-rhel8:2.0"
     name: vscode-apache-camel
     memoryLimit: "512Mi"
+    args:
+      - ${PLUGIN_REMOTE_ENDPOINT_EXECUTABLE}
   extensions:
   - https://download.jboss.org/jbosstools/vscode/stable/vscode-apache-camel/vscode-apache-camel-0.0.18-67.vsix
