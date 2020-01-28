@@ -9,7 +9,7 @@
 * fetch 3rd party sources
 
 * build 3rd party sources if required
-** vsix extensions that are only available from MS VSCode Marketplace
+** che-plugin-registry/Jenkinsfile-single is a pipeline for building and publishing any third party vsix extensions, that would be used in CRW plugin registry
 ** che-theia & dependencies, including any patches (if required)
 
 * tar sources & binaries used in Brew build

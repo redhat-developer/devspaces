@@ -6,6 +6,9 @@
 
 # Eclipse Che plugin registry
 
+## Building and publishing third party VSIX extensions for CRW plugin registry
+See: https://github.com/redhat-developer/codeready-workspaces-productization/blob/master/devdoc/building/build-vsix-extension.adoc
+
 ## Build Eclipse Che plugin registry container image
 
 Most of the time you won't need to rebuild the image because we build ```quay.io/eclipse/che-plugin-registry:nightly``` after every commit in master. In case you needed to change the content of the registry (e.g. add or modify some plugins meta.yaml) you can build your own image executing:
