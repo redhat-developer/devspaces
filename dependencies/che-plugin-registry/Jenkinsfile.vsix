@@ -5,7 +5,6 @@
 //extensionPath - URL to extension repo
 //publishDestinationAddress - full address for the endpoint, on which the extension should be published
 //publishDestinationDir - end folder for the plugin (after /vscode/3rdparty)
-//node - node version
 
 import groovy.transform.Field
 
@@ -112,7 +111,7 @@ def buildClangVscode(extensionFolder) {
 }
 
 timeout(120) {
-    node("${node}"){ stage "Build ${extensionPath}"
+    node("rhel7||rhel7-8gb||rhel7-16gb||rhel7-releng"){ stage "Build ${extensionPath}"
         cleanWs()
 
         def extensionFolder = "${extensionPath}".substring("${extensionPath}".lastIndexOf('/') + 1)
