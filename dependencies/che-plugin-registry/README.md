@@ -7,7 +7,7 @@
 # Eclipse Che plugin registry
 
 ## Building and publishing third party VSIX extensions for CRW plugin registry
-See: https://github.com/redhat-developer/codeready-workspaces-productization/blob/master/devdoc/building/build-vsix-extension.adoc
+See: https://github.com/redhat-developer/codeready-workspaces/blob/master/devdoc/building/build-vsix-extension.adoc
 
 ## Build Eclipse Che plugin registry container image
 
