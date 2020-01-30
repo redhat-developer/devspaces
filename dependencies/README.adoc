@@ -1,20 +1,22 @@
-# This folder contains the build process metadata for building:
+# This folder contains the build process metadata for syncing from upstream and building:
 
 * che-devfile-registry
+* che-jwtproxy
+* che-machine-exec
+* che-pluginbroker(s)
 * che-plugin-registry
-* che-pluginbrokers
+
+# VS Code extension (.vsix) builds
+
+Third party VS Code extensions must be built from sources and co-published with those sources. link:che-plugin-registry/vsix.Jenkinsfile[vsix.Jenkinsfile] will link:https://github.com/redhat-developer/codeready-workspaces/blob/master/devdoc/building/build-vsix-extension.adoc[build and publish] any .vsix bundle for use in both Che and CRW plugin registries.
 
 # Builds will:
 
-* fetch 3rd party sources
-
-* build 3rd party sources if required
-** che-plugin-registry/vsix.Jenkinsfile is a pipeline for building and publishing any third party vsix extensions, that would be used in Che and CRW plugin registry. More info at https://github.com/redhat-developer/codeready-workspaces/blob/master/devdoc/building/build-vsix-extension.adoc
-** che-theia & dependencies, including any patches (if required)
+* fetch 3rd party sources, dependencies, and any applicable patches (eg., from npm/yarn/golang projects & registries)
 
 * tar sources & binaries used in Brew build
 
-* provide Dockerfile (semi-synced to pkgs.devel for use in Brew), which can be used to build the container locally
+* provide Dockerfile (synced w/ transformations to pkgs.devel for use in Brew), which can be also used to build the container locally
 
 # Downstream, Brew builds must:
 
@@ -28,3 +30,7 @@
 
 * run a container build
 
+# Further downstream, Jenkins and Errata are used to:
+
+* publish nightlies to Quay
+* publish releases to Red Hat Container Catalog
