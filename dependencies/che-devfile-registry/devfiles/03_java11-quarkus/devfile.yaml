@@ -12,7 +12,7 @@ projects:
 components:
   -
     type: chePlugin
-    id: redhat/quarkus-java8/latest
+    id: redhat/quarkus-java11/latest
   -
     type: dockerimage
     alias: maven
