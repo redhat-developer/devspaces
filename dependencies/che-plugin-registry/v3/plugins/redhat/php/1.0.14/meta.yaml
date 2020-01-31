@@ -16,6 +16,8 @@ spec:
       name: php-intelephense
       memoryLimit: "1000Mi"
       args:
+        - sh
+        - -c
         - ${PLUGIN_REMOTE_ENDPOINT_EXECUTABLE}
   extensions:
     - https://github.com/che-incubator/vscode-intelephense/releases/download/v1.0.14/bmewburn.vscode-intelephense-client-1.0.14.vsix

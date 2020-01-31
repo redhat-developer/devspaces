@@ -16,6 +16,8 @@ spec:
       name: cpp-plugins
       memoryLimit: '512Mi'
       args:
+        - sh
+        - -c
         - ${PLUGIN_REMOTE_ENDPOINT_EXECUTABLE}
   extensions:
     - https://download.jboss.org/jbosstools/vscode/3rdparty/cdt-gdb-vscode/cdt-gdb-vscode-0.0.90-ba3a21.vsix

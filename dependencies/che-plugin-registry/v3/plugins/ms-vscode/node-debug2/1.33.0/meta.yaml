@@ -17,6 +17,8 @@ spec:
     name: vscode-node-debug
     memoryLimit: '512Mi'
     args:
+      - sh
+      - -c
       - ${PLUGIN_REMOTE_ENDPOINT_EXECUTABLE}
   extensions:
   - https://download.jboss.org/jbosstools/vscode/3rdparty/vscode-node-debug2/node-debug2-1.33.0.vsix

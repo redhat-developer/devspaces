@@ -17,6 +17,8 @@ spec:
     name: vscode-java
     memoryLimit: "1500Mi"
     args:
+      - sh
+      - -c
       - ${PLUGIN_REMOTE_ENDPOINT_EXECUTABLE}
     volumes:
     - mountPath: "/home/theia/.m2"

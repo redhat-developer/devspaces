@@ -16,6 +16,8 @@ spec:
     name: theia-omnisharp
     memoryLimit: "1024Mi"
     args:
+      - sh
+      - -c
       - ${PLUGIN_REMOTE_ENDPOINT_EXECUTABLE}
     volumes:
     - mountPath: "/home/jboss/.nuget"

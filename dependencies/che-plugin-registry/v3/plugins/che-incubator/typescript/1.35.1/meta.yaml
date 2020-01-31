@@ -16,6 +16,8 @@ spec:
     name: vscode-typescript
     memoryLimit: '512Mi'
     args:
+      - sh
+      - -c
       - ${PLUGIN_REMOTE_ENDPOINT_EXECUTABLE}
   extensions:
   - https://download.jboss.org/jbosstools/vscode/3rdparty/ms-code.typescript/che-typescript-language-1.35.1.vsix

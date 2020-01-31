@@ -15,6 +15,8 @@ spec:
     - image: "registry.redhat.io/codeready-workspaces/stacks-java-rhel8:2.1"
       memoryLimit: "256Mi"
       args:
+        - sh
+        - -c
         - ${PLUGIN_REMOTE_ENDPOINT_EXECUTABLE}
   extensions:
     - https://download.jboss.org/jbosstools/vscode/stable/vscode-wsdl2rest/vscode-wsdl2rest-0.0.11-106.vsix

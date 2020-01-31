@@ -16,6 +16,8 @@ spec:
       name: vscode-go
       memoryLimit: '512Mi'
       args:
+        - sh
+        - -c
         - ${PLUGIN_REMOTE_ENDPOINT_EXECUTABLE}
       env:
       - name: GOPATH
