@@ -85,8 +85,8 @@ cd ${WORKSPACE}/sources
   git config --global push.default matching
 
   # TODO enable generating PRs for upstream rhel.Dockerfile
-  # /tmp/updateBaseImages.sh -b ''' + SOURCE_BRANCH + ''' -f build/metadata/rhel.Dockerfile
-  # /tmp/updateBaseImages.sh -b ''' + SOURCE_BRANCH + ''' -f build/artifacts/rhel.Dockerfile
+  # /tmp/updateBaseImages.sh -b ''' + SOURCE_BRANCH + ''' -w ${WORKSPACE}/sources/build/metadata -f rhel.Dockerfile
+  # /tmp/updateBaseImages.sh -b ''' + SOURCE_BRANCH + ''' -w ${WORKSPACE}/sources/build/artifacts -f rhel.Dockerfile
   # NEW_SHA=$(git rev-parse HEAD) # echo ${NEW_SHA:0:8}
   # if [[ "${OLD_SHA}" != "${NEW_SHA}" ]]; then hasChanged=1; fi
 cd ..
@@ -204,7 +204,7 @@ for targetN in target1 target2; do
     # update base image
     cd ${WORKSPACE}/${targetN}
     OLD_SHA=\$(git rev-parse HEAD) # echo ${OLD_SHA:0:8}
-    /tmp/updateBaseImages.sh -b ''' + GIT_BRANCH + ''' -f ${TARGETDOCKERFILE}
+    /tmp/updateBaseImages.sh -b ''' + GIT_BRANCH + ''' -w ${TARGETDOCKERFILE%/*} -f ${TARGETDOCKERFILE##*/} -v
     NEW_SHA=\$(git rev-parse HEAD) # echo ${NEW_SHA:0:8}
     if [[ "${OLD_SHA}" != "${NEW_SHA}" ]]; then hasChanged=1; fi
     cd ..
