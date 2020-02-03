@@ -2,16 +2,18 @@
 
 // PARAMETERS for this pipeline:
 // def FORCE_BUILD = "false"
+// def SOURCE_BRANCH = "crw-2.1" // ref/tags/v0.24.0, or crw-2.1, or master :: branch of source repo from which to find and sync commits to pkgs.devel repo
 
-def SOURCE_BRANCH = "crw-2.0" // ref/tags/v0.24.0, or crw-2.0, or master :: branch of source repo from which to find and sync commits to pkgs.devel repo
 def SOURCE_REPO1 = "eclipse/che-plugin-broker" //source repo from which to find and sync commits to pkgs.devel repo 
 def SOURCE_REPO2 = "redhat-developer/codeready-workspaces" //source repo from which to find and sync commits to pkgs.devel repo 
-def GIT_PATH1 = "containers/codeready-workspaces-pluginbroker" // dist-git repo to use as target
-def GIT_PATH2 = "containers/codeready-workspaces-pluginbrokerinit" // dist-git repo to use as target
+def GIT_PATH1 = "containers/codeready-workspaces-pluginbroker-metadata" // dist-git repo to use as target
+def GIT_PATH2 = "containers/codeready-workspaces-pluginbroker-artifacts" // dist-git repo to use as target
 
 def GIT_BRANCH = "crw-2.0-rhel-8" // target branch in dist-git repo, eg., crw-2.0-rhel-8
 def SCRATCH = "false"
 def PUSH_TO_QUAY = "true"
+def QUAY_PROJECT1 = "pluginbroker-metadata" // also used for the Brew dockerfile params
+def QUAY_PROJECT2 = "pluginbroker-artifacts" // also used for the Brew dockerfile params
 
 def OLD_SHA1=""
 def OLD_SHA2=""
@@ -123,7 +125,7 @@ done
   	 	sh BOOTSTRAP + '''
 for targetN in target1 target2; do
     # rsync files in github to dist-git
-    SYNC_FILES="brokers  build  cfg  common  CONTRIBUTING.md  devfile.yaml  Gopkg.lock  Gopkg.toml  LICENSE  Makefile  model  README.md  storage  utils  vendor"
+    SYNC_FILES="brokers build cfg common CONTRIBUTING.md  devfile.yaml  Gopkg.lock  Gopkg.toml  LICENSE  Makefile  model  README.md  storage  utils  vendor VERSION"
     for d in ${SYNC_FILES}; do
     if [[ -f ${WORKSPACE}/sources/${d} ]]; then 
         rsync -zrlt ${WORKSPACE}/sources/${d} ${WORKSPACE}/${targetN}/${d}
@@ -141,15 +143,46 @@ for targetN in target1 target2; do
     SOURCEDOCKERFILE=""
     TARGETDOCKERFILE=""
     if [[ \$targetN == "target1" ]]; then 
-      SOURCEDOCKERFILE="${WORKSPACE}/sourcesmidstream/dependencies/che-pluginbroker/build/unified/rhel.Dockerfile"
+      # SOURCEDOCKERFILE="${WORKSPACE}/sourcesmidstream/dependencies/che-pluginbroker/build/metadata/rhel.Dockerfile"
+      SOURCEDOCKERFILE="${WORKSPACE}/sources/build/metadata/rhel.Dockerfile"
       TARGETDOCKERFILE="${WORKSPACE}/target1/Dockerfile"
+      QUAY_PROJECT="''' + QUAY_PROJECT1 + '''"
     elif [[ \$targetN == "target2" ]]; then 
-      SOURCEDOCKERFILE="${WORKSPACE}/sourcesmidstream/dependencies/che-pluginbroker/build/init/rhel.Dockerfile"
+      # SOURCEDOCKERFILE="${WORKSPACE}/sourcesmidstream/dependencies/che-pluginbroker/build/artifacts/rhel.Dockerfile"
+      SOURCEDOCKERFILE="${WORKSPACE}/sources/build/artifacts/rhel.Dockerfile"
       TARGETDOCKERFILE="${WORKSPACE}/target2/Dockerfile"
+      QUAY_PROJECT="''' + QUAY_PROJECT2 + '''"
     fi
+
+    # TODO should this be a branch instead of just master?
+    CRW_VERSION=`wget -qO- https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/master/dependencies/VERSION`
+    #apply patches
     if [[ ${SOURCEDOCKERFILE} != "" ]] && [[ ${TARGETDOCKERFILE} != "" ]]; then
-      sed ${SOURCEDOCKERFILE} -e "s#FROM registry.redhat.io/#FROM #g" -e "s#FROM registry.access.redhat.com/#FROM #g" > ${TARGETDOCKERFILE}
+      sed ${SOURCEDOCKERFILE} \
+        -e "s#FROM registry.redhat.io/#FROM #g" \
+        -e "s#FROM registry.access.redhat.com/#FROM #g" \
+        -s "s#devtools/go-toolset-rhel7#rhel8/go-toolset#g" \
+        > ${TARGETDOCKERFILE}
     fi
+
+    METADATA='ENV SUMMARY="Red Hat CodeReady Workspaces '${QUAY_PROJECT}' container" \\\r
+        DESCRIPTION="Red Hat CodeReady Workspaces '${QUAY_PROJECT}' container" \\\r
+        PRODNAME="codeready-workspaces" \\\r
+        COMPNAME="'${QUAY_PROJECT}'-rhel8" \r
+    LABEL summary="$SUMMARY" \\\r
+          description="$DESCRIPTION" \\\r
+          io.k8s.description="$DESCRIPTION" \\\r
+          io.k8s.display-name=\"$DESCRIPTION" \\\r
+          io.openshift.tags="$PRODNAME,$COMPNAME" \\\r
+          com.redhat.component="$PRODNAME-$COMPNAME-container" \\\r
+          name="$PRODNAME/$COMPNAME" \\\r
+          version="'${CRW_VERSION}'" \\\r
+          license="EPLv2" \\\r
+          maintainer="Nick Boldt <nboldt@redhat.com>" \\\r
+          io.openshift.expose-services="" \\\r
+          usage="" \r'
+
+    echo -e "$METADATA" >> ${TARGETDOCKERFILE}
 
     # push changes in cgit to github
     cd ${WORKSPACE}/${targetN}
@@ -176,7 +209,7 @@ done
 if [[ ''' + FORCE_BUILD + ''' == "true" ]]; then hasChanged=1; fi
 
 if [[ ${hasChanged} -eq 1 ]]; then
-  for QRP in pluginbroker pluginbrokerinit; do
+  for QRP in pluginbroker-metadata pluginbroker-artifacts; do
     QUAY_REPO_PATH=""; if [[ ''' + PUSH_TO_QUAY + ''' == "true" ]]; then QUAY_REPO_PATH="${QRP}-rhel8"; fi
     curl \
 "https://codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/get-sources-rhpkg-container-build/buildWithParameters?\

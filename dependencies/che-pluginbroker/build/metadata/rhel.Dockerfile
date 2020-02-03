@@ -11,28 +11,27 @@
 
 # https://access.redhat.com/containers/?tab=tags#/registry.access.redhat.com/rhel8/go-toolset
 FROM registry.access.redhat.com/rhel8/go-toolset:1.12.8-18 as builder
-ENV PATH=/opt/rh/go-toolset-1.11/root/usr/bin:$PATH \
+ENV PATH=/opt/rh/go-toolset-1.12/root/usr/bin:$PATH \
     GOPATH=/go/
 USER root
-WORKDIR /go/src/github.com/eclipse/che-plugin-broker/brokers/unified/cmd/
+WORKDIR /go/src/github.com/eclipse/che-plugin-broker/brokers/metadata/cmd/
 COPY . /go/src/github.com/eclipse/che-plugin-broker/
 RUN adduser appuser && \
-    dnf -y clean all && rm -rf /var/cache/yum && \
-    echo "Installed Packages" && rpm -qa | sort -V && echo "End Of Installed Packages" && \
-    CGO_ENABLED=0 GOOS=linux go build -a -ldflags '-w -s' -installsuffix cgo -o unified-broker main.go
+    dnf -y clean all && rm -rf /var/cache/yum && echo "Installed Packages" && rpm -qa | sort -V && echo "End Of Installed Packages" && \
+    CGO_ENABLED=0 GOOS=linux go build -a -ldflags '-w -s' -installsuffix cgo -o metadata-broker main.go
 
 # https://access.redhat.com/containers/?tab=tags#/registry.access.redhat.com/ubi8-minimal
 FROM registry.access.redhat.com/ubi8-minimal:8.1-328
 
 USER appuser
 COPY --from=builder /etc/passwd /etc/passwd
-COPY --from=builder /go/src/github.com/eclipse/che-plugin-broker/brokers/unified/cmd/unified-broker /
-ENTRYPOINT ["/unified-broker"]
+COPY --from=builder /go/src/github.com/eclipse/che-plugin-broker/brokers/metadata/cmd/metadata-broker /
+ENTRYPOINT ["/metadata-broker"]
 
-ENV SUMMARY="Red Hat CodeReady Workspaces pluginbroker container" \
-    DESCRIPTION="Red Hat CodeReady Workspaces pluginbroker container" \
+ENV SUMMARY="Red Hat CodeReady Workspaces pluginbroker-metadata container" \
+    DESCRIPTION="Red Hat CodeReady Workspaces pluginbroker-metadata container" \
     PRODNAME="codeready-workspaces" \
-    COMPNAME="pluginbroker-rhel8"
+    COMPNAME="pluginbroker-metadata-rhel8"
 
 LABEL summary="$SUMMARY" \
       description="$DESCRIPTION" \
