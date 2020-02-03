@@ -161,7 +161,7 @@ for targetN in target1 target2; do
       sed ${SOURCEDOCKERFILE} \
         -e "s#FROM registry.redhat.io/#FROM #g" \
         -e "s#FROM registry.access.redhat.com/#FROM #g" \
-        -s "s#devtools/go-toolset-rhel7#rhel8/go-toolset#g" \
+        -e "s#devtools/go-toolset-rhel7#rhel8/go-toolset#g" \
         > ${TARGETDOCKERFILE}
     fi
 
