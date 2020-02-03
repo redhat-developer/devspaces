@@ -119,7 +119,7 @@ CRW_VERSION=`wget -qO- https://raw.githubusercontent.com/redhat-developer/codere
 #apply patches
 sed -i ${WORKSPACE}/target/Dockerfile \
   -e "s#FROM registry.redhat.io/#FROM #g" \
-  -e "s#FROM registry.access.redhat.com/#FROM #g" \
+  -e "s#FROM registry.access.redhat.com/#FROM #g"
 
 METADATA='ENV SUMMARY="Red Hat CodeReady Workspaces ''' + QUAY_PROJECT + ''' container" \\\r
     DESCRIPTION="Red Hat CodeReady Workspaces ''' + QUAY_PROJECT + ''' container" \\\r
@@ -132,7 +132,7 @@ LABEL summary="$SUMMARY" \\\r
       io.openshift.tags="$PRODNAME,$COMPNAME" \\\r
       com.redhat.component="$PRODNAME-$COMPNAME-container" \\\r
       name="$PRODNAME/$COMPNAME" \\\r
-      version="'$CRW_VERSION'" \\\r
+      version="'${CRW_VERSION}'" \\\r
       license="EPLv2" \\\r
       maintainer="Nick Boldt <nboldt@redhat.com>" \\\r
       io.openshift.expose-services="" \\\r
