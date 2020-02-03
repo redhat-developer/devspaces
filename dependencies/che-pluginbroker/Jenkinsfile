@@ -5,7 +5,7 @@
 // def SOURCE_BRANCH = "crw-2.1" // ref/tags/v0.24.0, or crw-2.1, or master :: branch of source repo from which to find and sync commits to pkgs.devel repo
 
 def SOURCE_REPO1 = "eclipse/che-plugin-broker" //source repo from which to find and sync commits to pkgs.devel repo 
-// def SOURCE_REPO2 = "redhat-developer/codeready-workspaces" //source repo from which to find and sync commits to pkgs.devel repo 
+def SOURCE_REPO2 = "redhat-developer/codeready-workspaces" //source repo from which to find and sync commits to pkgs.devel repo 
 def GIT_PATH1 = "containers/codeready-workspaces-pluginbroker-metadata" // dist-git repo to use as target
 def GIT_PATH2 = "containers/codeready-workspaces-pluginbroker-artifacts" // dist-git repo to use as target
 
