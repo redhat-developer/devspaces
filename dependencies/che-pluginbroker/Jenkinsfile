@@ -5,7 +5,7 @@
 // def SOURCE_BRANCH = "crw-2.1" // ref/tags/v0.24.0, or crw-2.1, or master :: branch of source repo from which to find and sync commits to pkgs.devel repo
 
 def SOURCE_REPO1 = "eclipse/che-plugin-broker" //source repo from which to find and sync commits to pkgs.devel repo 
-def SOURCE_REPO2 = "redhat-developer/codeready-workspaces" //source repo from which to find and sync commits to pkgs.devel repo 
+// def SOURCE_REPO2 = "redhat-developer/codeready-workspaces" //source repo from which to find and sync commits to pkgs.devel repo 
 def GIT_PATH1 = "containers/codeready-workspaces-pluginbroker-metadata" // dist-git repo to use as target
 def GIT_PATH2 = "containers/codeready-workspaces-pluginbroker-artifacts" // dist-git repo to use as target
 
@@ -18,7 +18,7 @@ def QUAY_PROJECT2 = "pluginbroker-artifacts" // also used for the Brew dockerfil
 def OLD_SHA1=""
 def OLD_SHA2=""
 def SRC_SHA1=""
-def SRC_SHA2=""
+// def SRC_SHA2=""
 
 def buildNode = "rhel7-releng" // slave label
 timeout(120) {
@@ -33,14 +33,14 @@ timeout(120) {
         extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: "sources"]], 
         submoduleCfg: [], 
         userRemoteConfigs: [[url: "https://github.com/${SOURCE_REPO1}.git"]]])
-      checkout([$class: 'GitSCM', 
-        branches: [[name: "master"]], 
-        doGenerateSubmoduleConfigurations: false,
-        credentialsId: 'devstudio-release',
-        poll: true,
-        extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: "sourcesmidstream"]], 
-        submoduleCfg: [], 
-        userRemoteConfigs: [[url: "https://github.com/${SOURCE_REPO2}.git"]]])
+      // checkout([$class: 'GitSCM', 
+      //   branches: [[name: "master"]], 
+      //   doGenerateSubmoduleConfigurations: false,
+      //   credentialsId: 'devstudio-release',
+      //   poll: true,
+      //   extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: "sourcesmidstream"]], 
+      //   submoduleCfg: [], 
+      //   userRemoteConfigs: [[url: "https://github.com/${SOURCE_REPO2}.git"]]])
 
   	 	def BOOTSTRAP = '''#!/bin/bash -xe
 
@@ -84,9 +84,11 @@ cd ${WORKSPACE}/sources
   git config user.name "Red Hat Devstudio Release Bot"
   git config --global push.default matching
 
-  /tmp/updateBaseImages.sh -b ''' + SOURCE_BRANCH + '''
-  NEW_SHA=$(git rev-parse HEAD) # echo ${NEW_SHA:0:8}
-  if [[ "${OLD_SHA}" != "${NEW_SHA}" ]]; then hasChanged=1; fi
+  # TODO enable generating PRs for upstream rhel.Dockerfile
+  # /tmp/updateBaseImages.sh -b ''' + SOURCE_BRANCH + ''' -f build/metadata/rhel.Dockerfile
+  # /tmp/updateBaseImages.sh -b ''' + SOURCE_BRANCH + ''' -f build/artifacts/rhel.Dockerfile
+  # NEW_SHA=$(git rev-parse HEAD) # echo ${NEW_SHA:0:8}
+  # if [[ "${OLD_SHA}" != "${NEW_SHA}" ]]; then hasChanged=1; fi
 cd ..
 for targetN in target1 target2; do
     # fetch sources to be updated
@@ -107,10 +109,10 @@ done
       ''', returnStdout: true)
       println "Got SRC_SHA1 in sources folder: " + SRC_SHA1
 
-      SRC_SHA2 = sh(script: '''#!/bin/bash -xe
-      cd ${WORKSPACE}/sourcesmidstream; git rev-parse HEAD
-      ''', returnStdout: true)
-      println "Got SRC_SHA2 in sourcesmidstream folder: " + SRC_SHA2
+      // SRC_SHA2 = sh(script: '''#!/bin/bash -xe
+      // cd ${WORKSPACE}/sourcesmidstream; git rev-parse HEAD
+      // ''', returnStdout: true)
+      // println "Got SRC_SHA2 in sourcesmidstream folder: " + SRC_SHA2
 
       OLD_SHA1 = sh(script: '''#!/bin/bash -xe
       cd ${WORKSPACE}/target1; git rev-parse HEAD
@@ -189,18 +191,20 @@ for targetN in target1 target2; do
     if [[ \$(git diff --name-only) ]]; then # file changed
     OLD_SHA=\$(git rev-parse HEAD) # echo ${OLD_SHA:0:8}
     git add Dockerfile ${SYNC_FILES}
-    git commit -s -m "[sync] Update from ''' + SOURCE_REPO1 + ''' @ ${SRC_SHA1:0:8}, ''' + SOURCE_REPO2 + ''' @ ${SRC_SHA2:0:8}" Dockerfile ${SYNC_FILES}
+    # git commit -s -m "[sync] Update from ''' + SOURCE_REPO1 + ''' @ ${SRC_SHA1:0:8}, ''' + SOURCE_REPO2 + ''' @ ${SRC_SHA2:0:8}" Dockerfile ${SYNC_FILES}
+    git commit -s -m "[sync] Update from ''' + SOURCE_REPO1 + ''' @ ${SRC_SHA1:0:8}" Dockerfile ${SYNC_FILES}
     git push origin ''' + GIT_BRANCH + '''
     NEW_SHA=\$(git rev-parse HEAD) # echo ${NEW_SHA:0:8}
     if [[ "${OLD_SHA}" != "${NEW_SHA}" ]]; then hasChanged=1; fi
-    echo "[sync] Updated pkgs.devel @ ${NEW_SHA:0:8} from ''' + SOURCE_REPO1 + ''' @ ${SRC_SHA1:0:8}, ''' + SOURCE_REPO2 + ''' @ ${SRC_SHA2:0:8}"
+    # echo "[sync] Updated pkgs.devel @ ${NEW_SHA:0:8} from ''' + SOURCE_REPO1 + ''' @ ${SRC_SHA1:0:8}, ''' + SOURCE_REPO2 + ''' @ ${SRC_SHA2:0:8}"
+    echo "[sync] Updated pkgs.devel @ ${NEW_SHA:0:8} from ''' + SOURCE_REPO1 + ''' @ ${SRC_SHA1:0:8}"
     fi
     cd ..
 
     # update base image
     cd ${WORKSPACE}/${targetN}
     OLD_SHA=\$(git rev-parse HEAD) # echo ${OLD_SHA:0:8}
-    /tmp/updateBaseImages.sh -b ''' + GIT_BRANCH + '''
+    /tmp/updateBaseImages.sh -b ''' + GIT_BRANCH + ''' -f ${TARGETDOCKERFILE}
     NEW_SHA=\$(git rev-parse HEAD) # echo ${NEW_SHA:0:8}
     if [[ "${OLD_SHA}" != "${NEW_SHA}" ]]; then hasChanged=1; fi
     cd ..
