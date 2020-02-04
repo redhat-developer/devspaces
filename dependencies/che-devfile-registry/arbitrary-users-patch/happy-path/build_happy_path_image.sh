@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Copyright (c) 2012-2019-2020 Red Hat, Inc.
+# Copyright (c) 2018-2020 Red Hat, Inc.
 # This program and the accompanying materials are made
 # available under the terms of the Eclipse Public License 2.0
 # which is available at https://www.eclipse.org/legal/epl-2.0/
@@ -28,8 +28,8 @@ if [ "$1" == "--push" ]; then
 fi
 
 # Build image for happy-path tests with precashed mvn dependencies
-docker build -t "${NAME_FORMAT}/happy-path:${TAG}" --no-cache --build-arg TAG="${TAG}" "${SCRIPT_DIR}"/
+docker build -t "${NAME_FORMAT}/happy-path:${TAG}" --no-cache --build-arg TAG="${TAG}" "${SCRIPT_DIR}"/  | cat
 if ${PUSH_IMAGES}; then
     echo "Pushing ${NAME_FORMAT}/happy-path:${TAG}" to remote registry
-    docker push "${NAME_FORMAT}/happy-path:${TAG}"
+    docker push "${NAME_FORMAT}/happy-path:${TAG}" | cat
 fi

@@ -10,3 +10,5 @@ che-nodejs8-centos      registry.centos.org/che-stacks/centos-nodejs
 che-php-7               eclipse/php:7.1-che7
 che-python-3.6          centos/python-36-centos7:1
 che-python-3.7          python:3.7.4-slim
+che-quarkus             quay.io/quarkus/centos-quarkus-maven:19.2.1
+che-rust-1.39           rust:1.39.0-slim
