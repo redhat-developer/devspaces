@@ -2,8 +2,8 @@
 
 // PARAMETERS for this pipeline:
 // def FORCE_BUILD = "false"
+// def SOURCE_BRANCH = "master" // branch of source repo from which to find and sync commits to pkgs.devel repo
 
-def SOURCE_BRANCH = "master" // branch of source repo from which to find and sync commits to pkgs.devel repo
 def SOURCE_REPO = "eclipse/che-jwtproxy" //source repo from which to find and sync commits to pkgs.devel repo
 def GIT_PATH = "containers/codeready-workspaces-jwtproxy" // dist-git repo to use as target
 
@@ -80,8 +80,7 @@ cd ${WORKSPACE}/sources
 cd ..
 
 # fetch sources to be updated
-GIT_PATH="''' + GIT_PATH + '''"
-if [[ ! -d ${WORKSPACE}/target ]]; then git clone ssh://crw-build@pkgs.devel.redhat.com/${GIT_PATH} target; fi
+if [[ ! -d ${WORKSPACE}/target ]]; then git clone ssh://crw-build@pkgs.devel.redhat.com/''' + GIT_PATH + ''' target; fi
 cd ${WORKSPACE}/target
 git checkout --track origin/''' + GIT_BRANCH + ''' || true
 git config user.email crw-build@REDHAT.COM
@@ -147,7 +146,7 @@ cd ${WORKSPACE}/target
 if [[ \$(git diff --name-only) ]]; then # file changed
 	OLD_SHA=\$(git rev-parse HEAD) # echo ${OLD_SHA:0:8}
 	git add ${SYNC_FILES}
-    /tmp/updateBaseImages.sh -b ''' + GIT_BRANCH + ''' --nocommit
+        /tmp/updateBaseImages.sh -b ''' + GIT_BRANCH + ''' --nocommit
 	git commit -s -m "[sync] Update from ''' + SOURCE_REPO + ''' @ ${SOURCE_SHA:0:8}" ${SYNC_FILES}
 	git push origin ''' + GIT_BRANCH + '''
 	NEW_SHA=\$(git rev-parse HEAD) # echo ${NEW_SHA:0:8}
