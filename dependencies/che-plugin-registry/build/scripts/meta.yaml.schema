@@ -21,6 +21,13 @@
       "pattern": "^[-._a-zA-Z0-9]+$",
       "minimum": 0
     },
+    "type": {
+      "type": "string",
+      "pattern": "Che Plugin|Che Editor|Theia plugin|VS Code extension"
+    },
+    "displayName": {
+      "type": "string"
+    },
     "title": {
       "type": "string",
       "pattern": "[-._a-zA-Z0-9]+"
@@ -30,8 +37,7 @@
       "pattern": "[-._a-zA-Z0-9]+.svg[^.]*$"
     },
     "description": {
-      "type": "string",
-      "pattern": "[-._a-zA-Z0-9]+"
+      "type": "string"
     },
     "repository": {
       "type": "string",
@@ -39,14 +45,327 @@
     },
     "firstPublicationDate": {
       "type": "string",
-      "pattern": "[-._a-zA-Z0-9]+"
+      "format": "date"
     },
     "latestUpdateDate": {
       "type": "string",
-      "pattern": "[-._a-zA-Z0-9]+"
+      "format": "date"
+    },
+    "deprecate": {
+      "type": "object",
+      "properties": {
+        "automigrate": {
+          "type": "boolean"
+        },
+        "migrateTo": {
+          "type": "string",
+          "pattern": "^[-._/a-zA-Z0-9]+$"
+        }
+      }
     },
     "spec": {
-      "type": "object"
+      "type": "object",
+      "properties": {
+        "endpoints": {
+          "properties": {
+            "name": {
+              "type": "string",
+              "pattern": "^[-._a-zA-Z0-9]+$"
+            },
+            "public": {
+              "type": "boolean"
+            },
+            "targetPort": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "attributes": {
+              "type": "object",
+              "properties": {
+                "protocol": {
+                  "type": "string",
+                  "pattern": "^[-._a-zA-Z0-9]+$"
+                },
+                "secure": {
+                  "type": "boolean"
+                },
+                "discoverable": {
+                  "type": "boolean"
+                },
+                "cookiesAuthEnabled": {
+                  "type": "boolean"
+                },
+                "path": {
+                  "type": "string",
+                  "pattern": "^[-._a-zA-Z0-9]+$"
+                }
+              }
+            }
+          }
+        },
+        "containers": {
+          "type": "array",
+          "items" : {
+            "type": "object",
+            "properties": {
+              "image": {
+                "type": "string",
+                "pattern": "[-a-z0-9./]+(?::[-.a-z0-9]+)?"
+              },
+              "name": {
+                "type": "string",
+                "pattern": "^[-._a-zA-Z0-9]+$"
+              },
+              "memoryLimit": {
+                "type": "string",
+                "pattern": "[1-9][0-9]*([Gg]i|(Mm)i|(Kk)i|b)?"
+              },
+              "env": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "type": "string",
+                      "pattern": "^[-._a-zA-Z0-9]+$"
+                    },
+                    "value": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "name",
+                    "value"
+                  ]
+                }
+              },
+              "command": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "pattern": "^.+$"
+                }
+              },
+              "args": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "pattern": "^.+$"
+                }
+              },
+              "volumes": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "mountPath": {
+                      "type": "string",
+                      "pattern": "^(/?[^/]+)+$"
+                    },
+                    "name": {
+                      "type": "string",
+                      "pattern": "^[-._a-zA-Z0-9]+$"
+                    },
+                    "ephemeral": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "mountPath",
+                    "name"
+                  ]
+                }
+              },
+              "ports": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "exposedPort": {
+                      "type": "integer",
+                      "minimum": 0
+                    }
+                  },
+                  "required": []
+                }
+              },
+              "commands": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "type": "string",
+                      "pattern": "^[-._a-zA-Z0-9]+$"
+                    },
+                    "workingDir": {
+                      "type": "string",
+                      "pattern": "^(/?[^/]+)+$"
+                    },
+                    "command": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "pattern": "^[-._a-zA-Z0-9]+$"
+                      }
+                    },
+                    "mountSources": {
+                      "type": "boolean"
+                    }
+                  }
+                }
+              }
+            },
+            "required": [
+              "image"
+            ]
+          }
+        },
+        "initContainers": {
+          "type": "array",
+          "items" : {
+            "type": "object",
+            "properties": {
+              "image": {
+                "type": "string",
+                "pattern": "[-a-z0-9./]+(?::[-.a-z0-9]+)?"
+              },
+              "name": {
+                "type": "string",
+                "pattern": "^[-._a-zA-Z0-9]+$"
+              },
+              "memoryLimit": {
+                "type": "string",
+                "pattern": "[1-9][0-9]*([Gg]i|(Mm)i|(Kk)i|b)?"
+              },
+              "env": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "type": "string",
+                      "pattern": "^[-._a-zA-Z0-9]+$"
+                    },
+                    "value": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "name",
+                    "value"
+                  ]
+                }
+              },
+              "command": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "pattern": "^[-._a-zA-Z0-9]+$"
+                }
+              },
+              "args": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "pattern": "^[-._a-zA-Z0-9]+$"
+                }
+              },
+              "volumes": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "mountPath": {
+                      "type": "string",
+                      "pattern": "^(/?[^/]+)+$"
+                    },
+                    "name": {
+                      "type": "string",
+                      "pattern": "^[-._a-zA-Z0-9]+$"
+                    },
+                    "ephemeral": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "mountPath",
+                    "name"
+                  ]
+                }
+              },
+              "ports": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "exposedPort": {
+                      "type": "integer",
+                      "minimum": 0
+                    }
+                  },
+                  "required": []
+                }
+              },
+              "commands": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "type": "string",
+                      "pattern": "^[-._a-zA-Z0-9]+$"
+                    },
+                    "workingDir": {
+                      "type": "string",
+                      "pattern": "^([^/]+/?)+$"
+                    },
+                    "command": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "pattern": "^[-._a-zA-Z0-9]+$"
+                      }
+                    },
+                    "mountSources": {
+                      "type": "boolean"
+                    }
+                  }
+                }
+              }
+            },
+            "required": [
+              "image"
+            ]
+          }
+        },
+        "workspaceEnv": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string",
+                "pattern": "^[-._a-zA-Z0-9]+$"
+              },
+              "value": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "name",
+              "value"
+            ]
+          }
+        },
+        "extensions": {
+          "type": "array",
+          "items": {
+             "type": "string",
+             "format": "uri"
+          }
+        }
+      }
     },
     "category": {
       "enum": [
@@ -65,13 +384,14 @@
     "publisher",
     "name",
     "version",
+    "type",
+    "displayName",
     "title",
     "category",
     "icon",
     "description",
     "repository",
     "firstPublicationDate",
-    "latestUpdateDate",
     "spec",
     "apiVersion"
   ]
