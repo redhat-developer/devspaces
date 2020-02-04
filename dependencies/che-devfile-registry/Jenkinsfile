@@ -122,8 +122,6 @@ cp -f ${SOURCEDOCKERFILE} ${WORKSPACE}/target/Dockerfile
 # TODO should this be a branch instead of just master?
 CRW_VERSION=`wget -qO- https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/master/dependencies/VERSION`
 # apply patches to transform CRW upstream to pkgs.devel version
-# not needed: -e "s@/build/devfiles/external_images.txt@/var/www/html/devfiles/external_images.txt@g" \
-# not needed: -e "s@\&\& chmod -R g+rwX /build\$@\&\& chmod -R g+rwX /var/www/html@g" \
 sed -i ${WORKSPACE}/target/Dockerfile \
   -e "s%FROM registry.access.redhat.com/\\(ubi8-minimal\\)%FROM \\1%g" \
   -e "s/# *COPY root/COPY root/g" \
