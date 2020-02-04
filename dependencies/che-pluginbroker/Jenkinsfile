@@ -166,7 +166,7 @@ for targetN in target1 target2; do
 
     echo -e "$METADATA" >> ${TARGETDOCKERFILE}
 
-    # push changes in cgit to github
+    # push changes in github to dist-git
     cd ${WORKSPACE}/${targetN}
     if [[ \$(git diff --name-only) ]]; then # file changed
     OLD_SHA=\$(git rev-parse HEAD) # echo ${OLD_SHA:0:8}
