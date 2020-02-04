@@ -9,28 +9,35 @@ This repository holds ready-to-use Devfiles for different languages and technolo
 
 ## Build Eclipse Che devfile registry docker image
 
-Execute
-```shell
-docker build --no-cache -t quay.io/eclipse/che-devfile-registry:nightly --target registry .
-
-# or to use & create a RHEL-based image
-docker build --no-cache -t quay.io/eclipse/che-devfile-registry:nightly -f build/dockerfiles/rhel.Dockerfile --target registry.
+This repository contains a `build.sh` script at its root that can be used to build the devfile registry:
 ```
-Where `--no-cache` is needed to prevent usage of cached layers with devfile registry files.
-Useful when you change devfile files and rebuild the image.
+Usage: ./build.sh [OPTIONS]
+Options:
+    --help
+        Print this message.
+    --tag, -t [TAG]
+        Docker image tag to be used for image; default: 'nightly'
+    --registry, -r [REGISTRY]
+        Docker registry to be used for image; default 'quay.io'
+    --organization, -o [ORGANIZATION]
+        Docker image organization to be used for image; default: 'eclipse'
+    --offline
+        Build offline version of registry, with all sample projects
+        cached in the registry; disabled by default.
+    --rhel
+        Build registry using UBI images instead of default
+```
+By default, the built registry will be tagged `quay.io/eclipse/che-devfile-registry:nightly`, and will be built with offline mode disabled.
 
-Note that the Dockerfiles feature multi-stage build, so it requires Docker of version 17.05 and higher.
-Though you may also just provide the image to the older versions of Docker (ex. on Minishift) by having it build on newer version, and pushing and pulling it from Docker Hub.
-
-`quay.io/eclipse/che-devfile-registry:nightly` image would be rebuilt after each commit in master.
+Note that the Dockerfiles utilize multi-stage builds, so Docker version 17.05 or higher is required.
 
 ### Offline registry
 
-The default docker build has multiple targets:
-- `--target registry` is used to build the default devfile registry, where projects in devfiles refer to publically hosted git repos
-- `--target offline-registry` is used to build a devfile registry which self-hosts projects as zip files.
+Using the `--offline` option in `build.sh` will build the registry to contain `zip` files for all projects referenced, which is useful for running Che in clusters that may not have access to GitHub. When building the offline registry, the docker build will
+1. Clone all git projects referenced in devfiles, and
+2. `git archive` them in the `/resources` path, making them available to workspaces.
 
-The offline registry build will, during the docker build, pull zips from all projects hosted on github and store them in the `/resources` path. This registry should be deployed with environment variable `CHE_DEVFILE_REGISTRY_URL` set to the URL of the route/endpoint that exposes the devfile registry, as devfiles need to be rewritten to point to internally hosted zip files.
+When deploying this offline registry, it is necessary to set the environment variable `CHE_DEVFILE_REGISTRY_URL` to the URL of the route/endpoint that exposes the devfile registry, as devfiles need to be rewritten to point to internally hosted zip files.
 
 ## OpenShift
 You can deploy Che devfile registry on Openshift with command.
@@ -46,7 +53,6 @@ You can deploy Che devfile registry on Openshift with command.
 You can deploy Che devfile registry on Kubernetes using [helm](https://docs.helm.sh/). For example if you want to deploy it in the namespace `kube-che` and you are using `minikube` you can use the following command.
 
 ```bash
-
 NAMESPACE="kube-che"
 DOMAIN="$(minikube ip).nip.io"
 helm upgrade --install che-devfile-registry \
@@ -54,15 +60,12 @@ helm upgrade --install che-devfile-registry \
     --namespace ${NAMESPACE} \
     --set global.ingressDomain=${DOMAIN} \
     ./deploy/kubernetes/che-devfile-registry/
-
 ```
 
 You can use the following command to uninstall it.
 
 ```bash
-
 helm delete --purge che-devfile-registry
-
 ```
 
 ## Docker
@@ -80,4 +83,4 @@ The following [CentOS CI jobs](https://ci.centos.org/) are associated with the r
 - [`release-preview`](https://ci.centos.org/job/devtools-che-devfile-registry-release-preview/) - builds CentOS and corresponding RHEL images from the [`release-preview`](https://github.com/eclipse/che-devfile-registry/tree/release-preview) branch and automatically updates ["Hosted Che"](https://www.eclipse.org/che/docs/che-7/hosted-che/) staging devfile registry deployment based on the new version of images - https://che-devfile-registry.prod-preview.openshift.io/. CentOS images are public and pushed to [quay.io](https://quay.io/organization/eclipse). RHEL images are also pushed to quay.io, but to the private repositories.
 
 ### License
-Che is open sourced under the Eclipse Public License 2.0
+Che is open sourced under the Eclipse Public License 2.0.
