@@ -2,7 +2,10 @@ Header set Access-Control-Allow-Origin "*"
 Header set Access-Control-Allow-Headers "Authorization"
 DirectoryIndex README.md
 
-<FilesMatch "\.(json|yaml)$">
+AddType image/svg+xml svg svgz
+AddEncoding gzip svgz
+
+<FilesMatch "\.(json|yaml|svg|png)$">
 
   <IfModule mod_expires.c>
     ExpiresActive Off
