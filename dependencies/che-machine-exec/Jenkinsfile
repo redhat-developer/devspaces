@@ -3,7 +3,7 @@
 // PARAMETERS for this pipeline:
 // def FORCE_BUILD = "false"
 
-def SOURCE_BRANCH = "7.3.x" // 7.3.x or 7.7.x :: branch of source repo from which to find and sync commits to pkgs.devel repo
+def SOURCE_BRANCH = "7.8.x" // 7.3.x or 7.7.x :: branch of source repo from which to find and sync commits to pkgs.devel repo
 def SOURCE_REPO = "eclipse/che-machine-exec" //source repo from which to find and sync commits to pkgs.devel repo
 def GIT_PATH = "containers/codeready-workspaces-machineexec" // dist-git repo to use as target
 
@@ -18,17 +18,17 @@ def buildNode = "rhel7-releng" // slave label
 timeout(120) {
 	node("${buildNode}"){ stage "Sync repos"
 		cleanWs()
-	        withCredentials([file(credentialsId: 'crw-build.keytab', variable: 'CRW_KEYTAB')]) {
-		      checkout([$class: 'GitSCM',
-		        branches: [[name: "${SOURCE_BRANCH}"]],
-		        doGenerateSubmoduleConfigurations: false,
-		        credentialsId: 'devstudio-release',
-		        poll: true,
-		        extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: "sources"]],
-		        submoduleCfg: [],
-		        userRemoteConfigs: [[url: "https://github.com/${SOURCE_REPO}.git"]]])
+    withCredentials([file(credentialsId: 'crw-build.keytab', variable: 'CRW_KEYTAB')]) {
+      checkout([$class: 'GitSCM',
+        branches: [[name: "${SOURCE_BRANCH}"]],
+        doGenerateSubmoduleConfigurations: false,
+        credentialsId: 'devstudio-release',
+        poll: true,
+        extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: "sources"]],
+        submoduleCfg: [],
+        userRemoteConfigs: [[url: "https://github.com/${SOURCE_REPO}.git"]]])
 
-  		      def BOOTSTRAP = '''#!/bin/bash -xe
+  	 	def BOOTSTRAP = '''#!/bin/bash -xe
 
 # bootstrapping: if keytab is lost, upload to
 # https://codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/credentials/store/system/domain/_/
@@ -74,9 +74,12 @@ cd ${WORKSPACE}/sources
   git config user.name "Red Hat Devstudio Release Bot"
   git config --global push.default matching
 
+  SOURCE_SHA=\$(git rev-parse HEAD) # echo ${SOURCE_SHA:0:8}
   # can't yet generate a PR against eclipse/che-* repos, and can't push directly
   # so check for a new base image but DO NOT commit/push/pull-request
   /tmp/updateBaseImages.sh -b ''' + SOURCE_BRANCH + ''' -f ${SOURCEDOCKERFILE##*/} --nocommit
+  NEW_SHA=$(git rev-parse HEAD) # echo ${NEW_SHA:0:8}
+  if [[ "${OLD_SHA}" != "${NEW_SHA}" ]]; then hasChanged=1; fi
 cd ..
 
 # fetch sources to be updated
@@ -90,14 +93,14 @@ git config --global push.default matching
 cd ..
 
 '''
-		      sh BOOTSTRAP
+      sh BOOTSTRAP
 
-		      OLD_SHA = sh(script: '''#!/bin/bash -xe
-		      cd ${WORKSPACE}/target; git rev-parse HEAD
-		      ''', returnStdout: true)
-		      println "Got OLD_SHA in target folder: " + OLD_SHA
+      OLD_SHA = sh(script: '''#!/bin/bash -xe
+      cd ${WORKSPACE}/target; git rev-parse HEAD
+      ''', returnStdout: true)
+      println "Got OLD_SHA in target folder: " + OLD_SHA
 
-		      sh BOOTSTRAP + '''
+  	 	sh BOOTSTRAP + '''
 
 # rsync files in github to dist-git
 SYNC_FILES="api  client  dockerfiles  exec-info  exec  filter  mocks  output  shell  vendor ws-conn  CONTRIBUTING.md  devfile.yaml  Gopkg.lock  Gopkg.toml  LICENSE  VERSION  README.md  main.go  compile.sh  Dockerfile"
@@ -145,7 +148,7 @@ cd ${WORKSPACE}/target
 if [[ \$(git diff --name-only) ]]; then # file changed
 	OLD_SHA=\$(git rev-parse HEAD) # echo ${OLD_SHA:0:8}
 	git add ${SYNC_FILES}
-    /tmp/updateBaseImages.sh -b ''' + GIT_BRANCH + ''' --nocommit
+    /tmp/updateBaseImages.sh -b ''' + GIT_BRANCH + ''' --nocommit 
 	git commit -s -m "[sync] Update from ''' + SOURCE_REPO + ''' @ ${SOURCE_SHA:0:8}" ${SYNC_FILES}
 	git push origin ''' + GIT_BRANCH + '''
 	NEW_SHA=\$(git rev-parse HEAD) # echo ${NEW_SHA:0:8}
@@ -183,15 +186,15 @@ fi
 if [[ ${hasChanged} -eq 0 ]]; then
   echo "No changes upstream, nothing to commit"
 fi
-'''
-    		}
-	        def NEW_SHA = sh(script: '''#!/bin/bash -xe
-	        cd ${WORKSPACE}/target; git rev-parse HEAD
-	        ''', returnStdout: true)
-	        println "Got NEW_SHA in target folder: " + NEW_SHA
+		  '''
+    }
+        def NEW_SHA = sh(script: '''#!/bin/bash -xe
+        cd ${WORKSPACE}/target; git rev-parse HEAD
+        ''', returnStdout: true)
+        println "Got NEW_SHA in target folder: " + NEW_SHA
 
-	        if (NEW_SHA.equals(OLD_SHA)) {
-	          currentBuild.result='UNSTABLE'
-	        }
+        if (NEW_SHA.equals(OLD_SHA)) {
+          currentBuild.result='UNSTABLE'
+        }
 	}
 }
