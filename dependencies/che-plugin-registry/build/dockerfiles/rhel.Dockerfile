@@ -126,20 +126,4 @@ USER 0
 # multiple temp stages does not work in Brew
 COPY --from=offline-builder /build/v3 /var/www/html/v3
 
-ENV SUMMARY="Red Hat CodeReady Workspaces plugin registry container" \
-    DESCRIPTION="Red Hat CodeReady Workspaces plugin registry container" \
-    PRODNAME="codeready-workspaces" \
-    COMPNAME="pluginregistry-rhel8"
-
-LABEL summary="$SUMMARY" \
-      description="$DESCRIPTION" \
-      io.k8s.description="$DESCRIPTION" \
-      io.k8s.display-name="$DESCRIPTION" \
-      io.openshift.tags="$PRODNAME,$COMPNAME" \
-      com.redhat.component="$PRODNAME-$COMPNAME-container" \
-      name="$PRODNAME/$COMPNAME" \
-      version="2.1" \
-      license="EPLv2" \
-      maintainer="Nick Boldt <nboldt@redhat.com>" \
-      io.openshift.expose-services="" \
-      usage=""
+# append Brew metadata here
