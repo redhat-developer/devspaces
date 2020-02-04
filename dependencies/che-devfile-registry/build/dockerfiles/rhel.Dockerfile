@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2018-2019-2020 Red Hat, Inc.
+# Copyright (c) 2018-2020 Red Hat, Inc.
 # This program and the accompanying materials are made
 # available under the terms of the Eclipse Public License 2.0
 # which is available at https://www.eclipse.org/legal/epl-2.0/
@@ -97,6 +97,7 @@ WORKDIR /var/www/html
 RUN mkdir -m 777 /var/www/html/devfiles
 COPY .htaccess README.md /var/www/html/
 COPY --from=builder /build/devfiles /var/www/html/devfiles
+COPY ./images /var/www/html/images
 COPY ./build/dockerfiles/rhel.entrypoint.sh ./build/dockerfiles/entrypoint.sh /usr/local/bin/
 RUN chmod g+rwX /usr/local/bin/entrypoint.sh /usr/local/bin/rhel.entrypoint.sh
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
@@ -115,20 +116,4 @@ FROM registry AS offline-registry
 COPY --from=offline-builder /build/devfiles /var/www/html/devfiles
 COPY --from=offline-builder /build/resources /var/www/html/resources
 
-ENV SUMMARY="Red Hat CodeReady Workspaces devfile registry container" \
-    DESCRIPTION="Red Hat CodeReady Workspaces devile registry container" \
-    PRODNAME="codeready-workspaces" \
-    COMPNAME="devfileregistry-rhel8"
-
-LABEL summary="$SUMMARY" \
-      description="$DESCRIPTION" \
-      io.k8s.description="$DESCRIPTION" \
-      io.k8s.display-name="$DESCRIPTION" \
-      io.openshift.tags="$PRODNAME,$COMPNAME" \
-      com.redhat.component="$PRODNAME-$COMPNAME-container" \
-      name="$PRODNAME/$COMPNAME" \
-      version="2.1" \
-      license="EPLv2" \
-      maintainer="Nick Boldt <nboldt@redhat.com>" \
-      io.openshift.expose-services="" \
-      usage=""
+# append Brew metadata here
