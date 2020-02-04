@@ -222,7 +222,7 @@ fi
       ''', returnStdout: true)
       println "Got NEW_SHA2 in target2 folder: " + NEW_SHA2
 
-    if (NEW_SHA1.equals(OLD_SHA1) && NEW_SHA2.equals(OLD_SHA2)) {
+    if (NEW_SHA1.equals(OLD_SHA1) && NEW_SHA2.equals(OLD_SHA2) && !FORCE_BUILD.equals("true")) {
       currentBuild.result='UNSTABLE'
     }
 	}

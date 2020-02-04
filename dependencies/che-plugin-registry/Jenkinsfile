@@ -266,7 +266,7 @@ fi
         ''', returnStdout: true)
         println "Got NEW_SHA in target folder: " + NEW_SHA
 
-        if (NEW_SHA.equals(OLD_SHA)) {
+        if (NEW_SHA.equals(OLD_SHA) && !FORCE_BUILD.equals("true")) {
           currentBuild.result='UNSTABLE'
         }
 	}
