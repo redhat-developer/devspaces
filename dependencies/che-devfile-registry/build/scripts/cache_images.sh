@@ -27,7 +27,10 @@ images=$(yq -S -r '.icon' "${metas[@]}" | sort | uniq)
 mkdir -p "$RESOURCES_DIR" "$TEMP_DIR"
 
 echo "Caching images referenced in devfiles"
-for image in "${images[@]}"; do
+while read -r image; do
+  if [[ ! "$image" == http* ]]; then
+    continue
+  fi
   # Workaround for getting filenames through content-disposition: copy to temp
   # dir and read filename before moving to /resources.
   wget -P "${TEMP_DIR}" -nv --content-disposition "${image}"
@@ -40,13 +43,15 @@ for image in "${images[@]}"; do
   image_dir="${RESOURCES_DIR%/}/${image_dir%/*}"
   mkdir -p "$image_dir"
 
-  cached_image="${image_dir%/}/${filename}"
+  # Strip query and fragment components from image URL
+  cached_image="${image_dir%/}/${filename%%\?*}"
+  cached_image="${cached_image%%\#*}"
   mv "$file" "$cached_image"
   echo "  Downloaded image $image to $cached_image"
 
   cached_url="{{ DEVFILE_REGISTRY_URL }}/${cached_image#/}"
   sed -i "s|${image}|${cached_url}|g" "${metas[@]}" "$INDEX_JSON"
   echo "  Updated devfiles to point at cached image"
-done
+done <<< "$images"
 
 rm -rf "$TEMP_DIR"
