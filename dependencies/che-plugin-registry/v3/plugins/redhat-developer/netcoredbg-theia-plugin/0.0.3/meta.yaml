@@ -12,8 +12,12 @@ category: Debugger
 firstPublicationDate: "2020-01-05"
 spec:
   containers:
-  - image: "registry.redhat.io/codeready-workspaces/stacks-dotnet-rhel8:2.1"
+  - image: "vsvydenko/dotnet-30:test"
     name: theia-netcoredbg
     memoryLimit: "512Mi"
+    args:
+      - sh
+      - -c
+      - ${PLUGIN_REMOTE_ENDPOINT_EXECUTABLE}
   extensions:
     - https://github.com/redhat-developer/netcoredbg-theia-plugin/releases/download/v0.0.3/netcoredbg_theia_plugin.theia
