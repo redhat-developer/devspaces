@@ -1,0 +1,19 @@
+apiVersion: v2
+publisher: redhat-developer
+name: netcoredbg-theia-plugin
+version: 0.0.3
+type: Theia plugin
+displayName: NetcoreDBG Theia Plug-in
+title: Debugger for .NET Core runtime
+description: This plug-in provides Samsung/netcoredbg which implements VSCode Debug Adapter protocol and allows to debug .NET apps under .NET Core runtime.
+icon: https://www.eclipse.org/che/images/logo-eclipseche.svg
+repository: https://github.com/redhat-developer/netcoredbg-theia-plugin
+category: Debugger
+firstPublicationDate: "2020-01-05"
+spec:
+  containers:
+  - image: "registry.redhat.io/codeready-workspaces/stacks-dotnet-rhel8:2.1"
+    name: theia-netcoredbg
+    memoryLimit: "512Mi"
+  extensions:
+    - https://github.com/redhat-developer/netcoredbg-theia-plugin/releases/download/v0.0.3/netcoredbg_theia_plugin.theia
