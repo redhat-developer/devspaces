@@ -22,19 +22,57 @@ if [[ ! -x /usr/bin/jq ]]; then
 	exit 1
 fi
 
-# default list of CRW containers to query
-CRW12_CONTAINERS_RHCC="\
-codeready-workspaces/server-operator-rhel8 codeready-workspaces/server-rhel8 \
-codeready-workspaces/stacks-cpp-rhel8 codeready-workspaces/stacks-dotnet-rhel8 codeready-workspaces/stacks-golang-rhel8 \
-codeready-workspaces/stacks-java-rhel8 codeready-workspaces/stacks-node-rhel8 \
-codeready-workspaces/stacks-php-rhel8 codeready-workspaces/stacks-python-rhel8 \
-codeready-workspaces/stacks-node"
-CRW12_CONTAINERS_PULP="\
-codeready-workspaces/operator-rhel8 codeready-workspaces/server-rhel8 \
-codeready-workspaces/stacks-cpp-rhel8 codeready-workspaces/stacks-dotnet-rhel8 codeready-workspaces/stacks-golang-rhel8 \
-codeready-workspaces/stacks-java-rhel8 codeready-workspaces/stacks-node-rhel8 \
-codeready-workspaces/stacks-php-rhel8 codeready-workspaces/stacks-python-rhel8 \
-codeready-workspaces/stacks-node"
+CRW21_CONTAINERS_RHCC="\
+codeready-workspaces/operator-metadata \
+codeready-workspaces/operator-rhel8 \
+codeready-workspaces/server-rhel8 \
+\
+codeready-workspaces/devfileregistry-rhel8 \
+codeready-workspaces/pluginregistry-rhel8 \
+\
+codeready-workspaces/machineexec-rhel8 \
+codeready-workspaces/jwtproxy-rhel8 \
+codeready-workspaces/pluginbroker-metadata-rhel8 \
+codeready-workspaces/pluginbroker-artifacts-rhel8 \
+\
+codeready-workspaces/theia-rhel8 \
+codeready-workspaces/theia-dev-rhel8 \
+codeready-workspaces/theia-endpoint-rhel8 \
+\
+codeready-workspaces/stacks-cpp-rhel8  codeready-workspaces/stacks-dotnet-rhel8 \
+codeready-workspaces/stacks-golang-rhel8 codeready-workspaces/stacks-java-rhel8 \
+codeready-workspaces/stacks-node-rhel8    codeready-workspaces/stacks-php-rhel8 \
+codeready-workspaces/stacks-python-rhel8 \
+\
+codeready-workspaces/plugin-java11-rhel8 \
+codeready-workspaces/plugin-kubernetes-rhel8 \
+codeready-workspaces/plugin-openshift-rhel8"
+
+CRW21_CONTAINERS_PULP="\
+codeready-workspaces/operator-metadata \
+codeready-workspaces/operator-rhel8 \
+codeready-workspaces/server-rhel8 \
+\
+codeready-workspaces/devfileregistry-rhel8 \
+codeready-workspaces/pluginregistry-rhel8 \
+\
+codeready-workspaces/machineexec-rhel8 \
+codeready-workspaces/jwtproxy-rhel8 \
+codeready-workspaces/pluginbroker-metadata-rhel8 \
+codeready-workspaces/pluginbroker-artifacts-rhel8 \
+\
+codeready-workspaces/theia-rhel8 \
+codeready-workspaces/theia-dev-rhel8 \
+codeready-workspaces/theia-endpoint-rhel8 \
+\
+codeready-workspaces/stacks-cpp-rhel8  codeready-workspaces/stacks-dotnet-rhel8 \
+codeready-workspaces/stacks-golang-rhel8 codeready-workspaces/stacks-java-rhel8 \
+codeready-workspaces/stacks-node-rhel8    codeready-workspaces/stacks-php-rhel8 \
+codeready-workspaces/stacks-python-rhel8 \
+\
+codeready-workspaces/plugin-java11-rhel8 \
+codeready-workspaces/plugin-kubernetes-rhel8 \
+codeready-workspaces/plugin-openshift-rhel8"
 
 # OLD WAY: codeready-workspaces/server-operator-rhel8 \
 CRW20_CONTAINERS_RHCC="\
@@ -105,9 +143,9 @@ PUSHTOQUAYTAGS=""; # utility method to pull then push to quay (extra tags to pus
 usage () {
 	echo "
 Usage: 
-  $0 --crw12                                                 | use default list of CRW images in RHCC Prod
-  $0 --crw12 --stage                                         | use default list of CRW images in RHCC Stage
-  $0 --crw20 --quay                                          | use default list of CRW images in quay.io/crw
+  $0 --crw21                                                 | use default list of CRW images in RHCC Prod
+  $0 --crw21 --stage                                         | use default list of CRW images in RHCC Stage
+  $0 --crw21 --quay                                          | use default list of CRW images in quay.io/crw
 
   $0 -c 'crw/theia-rhel8 crw/theia-endpoint-rhel8' --quay -q | check a specific image in quay; quieter output
   $0 -c 'rhoar-nodejs/nodejs-10 jboss-eap-7/eap72-openshift' | use specific list of RHCC images
@@ -116,9 +154,9 @@ Usage:
   $0 -c pivotaldata/centos --docker --dockerfile             | check docker registry; show Dockerfile contents (requires dfimage)
   $0 -c codeready-workspaces-plugin-java11-rhel8 --pulp --pushtoquay='2.1 latest' 		| pull an image from pulp, push 3 tags to quay
 
-  $0 --crw12 --pulp --nvr --log                              | check for latest images in pulp; output NVRs can be copied to Errata; show links to Brew logs
-  $0 --crw20 --pulp --nvr                                    | check for latest images in pulp; output NVRs can be copied to Errata
-  $0 --crw20 --pulp --pushtoquay='2.1 latest'                | pull images from pulp, then push matching tag to quay, including extra tags if set
+  $0 --crw21 --pulp --nvr --log                              | check for latest images in pulp; output NVRs can be copied to Errata; show links to Brew logs
+  $0 --crw21 --pulp --nvr                                    | check for latest images in pulp; output NVRs can be copied to Errata
+  $0 --crw21 --pulp --pushtoquay='2.1 latest'                | pull images from pulp, then push matching tag to quay, including extra tags if set
 
 "
 	exit
@@ -132,7 +170,7 @@ CONTAINERS=""
 for key in "$@"; do
   case $key in
     '--crw'|'--crw20') CONTAINERS="${CRW20_CONTAINERS_RHCC}"; EXCLUDES="Beta1"; shift 0;;
-    '--crw12') CONTAINERS="${CRW12_CONTAINERS_RHCC}"; EXCLUDES="Beta1"; shift 0;;
+    '--crw21') CONTAINERS="${CRW21_CONTAINERS_RHCC}"; EXCLUDES="Beta1"; shift 0;;
     '-c') CONTAINERS="${CONTAINERS} $2"; shift 1;;
     '-x') EXCLUDES="$2"; shift 1;;
     '-q') QUIET=1; shift 0;;
@@ -158,14 +196,14 @@ if [[ ${REGISTRY} != "" ]]; then
 	REGISTRYSTRING="--registry ${REGISTRY}"
 	REGISTRYPRE="${REGISTRY##*://}/"
 	if [[ ${REGISTRY} == *"registry-proxy.engineering.redhat.com"* ]]; then
-		if [[ ${CONTAINERS} == "${CRW12_CONTAINERS_RHCC}" ]] || [[ ${CONTAINERS} == "" ]]; then CONTAINERS="${CRW12_CONTAINERS_PULP//codeready-workspaces\//codeready-workspaces-}"; fi
+		if [[ ${CONTAINERS} == "${CRW21_CONTAINERS_RHCC}" ]] || [[ ${CONTAINERS} == "" ]]; then CONTAINERS="${CRW21_CONTAINERS_PULP//codeready-workspaces\//codeready-workspaces-}"; fi
 		if [[ ${CONTAINERS} == "${CRW20_CONTAINERS_RHCC}" ]]; then CONTAINERS="${CRW20_CONTAINERS_PULP//codeready-workspaces\//codeready-workspaces-}"; fi
 	elif [[ ${REGISTRY} == *"brew-pulp-docker01"* ]]; then
-		if [[ ${CONTAINERS} == "${CRW12_CONTAINERS_RHCC}" ]] || [[ ${CONTAINERS} == "" ]]; then CONTAINERS="${CRW12_CONTAINERS_PULP}"; fi
+		if [[ ${CONTAINERS} == "${CRW21_CONTAINERS_RHCC}" ]] || [[ ${CONTAINERS} == "" ]]; then CONTAINERS="${CRW21_CONTAINERS_PULP}"; fi
 		if [[ ${CONTAINERS} == "${CRW20_CONTAINERS_RHCC}" ]]; then CONTAINERS="${CRW20_CONTAINERS_PULP}"; fi
 	elif [[ ${REGISTRY} == *"quay.io"* ]]; then
-		if [[ ${CONTAINERS} == "${CRW12_CONTAINERS_RHCC}" ]] || [[ ${CONTAINERS} == "" ]]; then
-			CONTAINERS="${CRW12_CONTAINERS_PULP}"; CONTAINERS="${CONTAINERS//codeready-workspaces/crw}"
+		if [[ ${CONTAINERS} == "${CRW21_CONTAINERS_RHCC}" ]] || [[ ${CONTAINERS} == "" ]]; then
+			CONTAINERS="${CRW21_CONTAINERS_PULP}"; CONTAINERS="${CONTAINERS//codeready-workspaces/crw}"
 		fi
 		if [[ ${CONTAINERS} == "${CRW20_CONTAINERS_RHCC}" ]]; then
 			CONTAINERS="${CRW20_CONTAINERS_PULP}"; CONTAINERS="${CONTAINERS//codeready-workspaces/crw}"
@@ -193,18 +231,7 @@ if [[ ${CONTAINERS} == "" ]]; then usage; fi
 # special case!
 if [[ ${REGISTRY} == *"registry-proxy.engineering.redhat.com"* ]] || [[ ${REGISTRY} == "http://brew-pulp-docker01.web.prod.ext.phx2.redhat.com:8888" ]]; then 
   	if [[ ${SHOWNVR} -eq 1 ]]; then 
-		if [[ ${CONTAINERS} == "${CRW12_CONTAINERS_PULP}" ]]; then
-			for containername in ${CONTAINERS}; do
-				if [[ $containername == "codeready-workspaces/stacks-node" ]]; then candidateTag="codeready-1.0-rhel-7-candidate"; else candidateTag="crw-1.2-rhel-8-candidate"; fi
-				if [[ ${SHOWLOG} -eq 1 ]]; then
-					brew list-tagged ${candidateTag} | grep "${containername/\//-}" | sort -V | tail -${NUMTAGS} | sed -e "s#[\ \t]\+${candidateTag}.\+##" | \
-						sed -e "s#\(.\+\)-container-\([0-9.]\+\)-\([0-9]\+\)#\0 - http://download.eng.bos.redhat.com/brewroot/packages/\1-container/\2/\3/data/logs/x86_64.log#"
-				else
-					brew list-tagged ${candidateTag} | grep "${containername/\//-}" | sort -V | tail -${NUMTAGS} | sed -e "s#[\ \t]\+${candidateTag}.\+##"
-				fi
-			done
-			exit
-		elif [[ ${CONTAINERS} == "${CRW20_CONTAINERS_PULP}" ]]; then
+		if [[ ${CONTAINERS} == "${CRW21_CONTAINERS_PULP}" ]] || [[ ${CONTAINERS} == "${CRW20_CONTAINERS_PULP}" ]]; then
 			for containername in ${CONTAINERS}; do
 				candidateTag="crw-2.0-rhel-8-candidate"
 				if [[ ${SHOWLOG} -eq 1 ]]; then
