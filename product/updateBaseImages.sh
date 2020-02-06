@@ -21,13 +21,13 @@ VERBOSE=0	# more output
 WORKDIR=`pwd`
 BRANCH=crw-2.0-rhel-8 # not master
 DOCKERFILE="Dockerfile" # or "rhel.Dockerfile"
-maxdepth=2
+MAXDEPTH=2
 docommit=1 # by default DO commit the change and push it
 buildCommand="echo" # By default, no build will be triggered when a change occurs; use -c for a container-build (or -s for scratch).
 
 checkrecentupdates () {
 	# set +e
-	for d in $(find ${WORKDIR} -maxdepth ${maxdepth} -name ${DOCKERFILE} | sort); do
+	for d in $(find ${WORKDIR} -maxdepth ${MAXDEPTH} -name ${DOCKERFILE} | sort); do
 		pushdir=${d%/${DOCKERFILE}}
 		pushd ${pushdir} >/dev/null
 			last=$(git lg -1 | grep -v days || true)
@@ -41,18 +41,34 @@ checkrecentupdates () {
 	# set -e
 }
 
+usage () {
+	echo "Usage:   $0 -b [BRANCH] [-w WORKDIR] [-f DOCKERFILE] [-maxdepth MAXDEPTH]"
+	echo "Example: $0 -b crw-2.0-rhel-8 -w $(pwd) -f rhel.Dockerfile -maxdepth 2"
+	echo "Options: 
+	--no-commit, -n    do not push to BRANCH
+	-q, -v             quiet, verbose output
+	--help, -h         help
+	--check-recent-updates-only   
+	                   don't poll for new base images; just report on 
+	                   recently changed Dockerfiles in WORKDIR and subdirs
+	"
+}
+
+if [[ $# -lt 1 ]]; then usage; exit; fi
+
 while [[ "$#" -gt 0 ]]; do
   case $1 in
     '-w') WORKDIR="$2"; shift 1;;
     '-b') BRANCH="$2"; shift 1;;
     '-f') DOCKERFILE="$2"; shift 1;;
-    '-maxdepth') maxdepth="$2"; shift 1;;
+    '-maxdepth') MAXDEPTH="$2"; shift 1;;
     '-c') buildCommand="rhpkg container-build"; shift 0;; # NOTE: will trigger a new build for each commit, rather than for each change set (eg., Dockefiles with more than one FROM)
     '-s') buildCommand="rhpkg container-build --scratch"; shift 0;;
     '-n'|'--nocommit') docommit=0; shift 0;;
     '-q') QUIET=1; shift 0;;
     '-v') QUIET=0; VERBOSE=1; shift 0;;
 	'--check-recent-updates-only') QUIET=0; VERBOSE=1; checkrecentupdates; shift 0; exit;;
+	'--help'|'-h') usage; exit;;
     *) OTHER="${OTHER} $1"; shift 0;; 
   esac
   shift 1
@@ -107,7 +123,7 @@ testvercomp () {
 }
 
 pushedIn=0
-for d in $(find ${WORKDIR} -maxdepth ${maxdepth} -name ${DOCKERFILE} | sort); do
+for d in $(find ${WORKDIR} -maxdepth ${MAXDEPTH} -name ${DOCKERFILE} | sort); do
 	if [[ -f ${d} ]]; then
 		echo ""
 		echo "# Checking ${d%/${DOCKERFILE}} ..."
