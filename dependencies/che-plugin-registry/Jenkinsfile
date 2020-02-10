@@ -73,7 +73,7 @@ curl -L -s -S https://raw.githubusercontent.com/redhat-developer/codeready-works
 chmod +x /tmp/updateBaseImages.sh
 cd ${WORKSPACE}/sources
   git checkout --track origin/''' + SOURCE_BRANCH + ''' || true
-  git config user.email nickboldt+devstudio-release@gmail.com
+  git config user.email "nickboldt+devstudio-release@gmail.com"
   git config user.name "Red Hat Devstudio Release Bot"
   git config --global push.default matching
   OLD_SHA=$(git rev-parse HEAD) # echo ${OLD_SHA:0:8}
