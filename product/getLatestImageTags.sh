@@ -23,8 +23,8 @@ if [[ ! -x /usr/bin/jq ]]; then
 fi
 
 CRW21_CONTAINERS_RHCC="\
-codeready-workspaces/operator-metadata \
-codeready-workspaces/operator-rhel8 \
+codeready-workspaces/crw-2-rhel8-operator-metadata \
+codeready-workspaces/crw-2-rhel8-operator \
 codeready-workspaces/server-rhel8 \
 \
 codeready-workspaces/devfileregistry-rhel8 \
@@ -49,8 +49,8 @@ codeready-workspaces/plugin-kubernetes-rhel8 \
 codeready-workspaces/plugin-openshift-rhel8"
 
 CRW21_CONTAINERS_PULP="\
-codeready-workspaces/operator-metadata \
-codeready-workspaces/operator-rhel8 \
+codeready-workspaces/rhel8-operator-metadata \
+codeready-workspaces/rhel8-operator-container \
 codeready-workspaces/server-rhel8 \
 \
 codeready-workspaces/devfileregistry-rhel8 \
@@ -204,6 +204,10 @@ if [[ ${REGISTRY} != "" ]]; then
 	elif [[ ${REGISTRY} == *"quay.io"* ]]; then
 		if [[ ${CONTAINERS} == "${CRW21_CONTAINERS_RHCC}" ]] || [[ ${CONTAINERS} == "" ]]; then
 			CONTAINERS="${CRW21_CONTAINERS_PULP}"; CONTAINERS="${CONTAINERS//codeready-workspaces/crw}"
+			# codeready-workspaces/rhel8-operator-metadata -> crw/operator-metadata
+			# codeready-workspaces/rhel8-operator-container -> crw/operator-rhel8
+			CONTAINERS="${CONTAINERS//rhel8-}"
+			CONTAINERS="${CONTAINERS//-container/-rhel8}"
 		fi
 		if [[ ${CONTAINERS} == "${CRW20_CONTAINERS_RHCC}" ]]; then
 			CONTAINERS="${CRW20_CONTAINERS_PULP}"; CONTAINERS="${CONTAINERS//codeready-workspaces/crw}"
@@ -231,18 +235,16 @@ if [[ ${CONTAINERS} == "" ]]; then usage; fi
 # special case!
 if [[ ${REGISTRY} == *"registry-proxy.engineering.redhat.com"* ]] || [[ ${REGISTRY} == "http://brew-pulp-docker01.web.prod.ext.phx2.redhat.com:8888" ]]; then 
   	if [[ ${SHOWNVR} -eq 1 ]]; then 
-		if [[ ${CONTAINERS} == "${CRW21_CONTAINERS_PULP}" ]] || [[ ${CONTAINERS} == "${CRW20_CONTAINERS_PULP}" ]]; then
-			for containername in ${CONTAINERS}; do
-				candidateTag="crw-2.0-rhel-8-candidate"
-				if [[ ${SHOWLOG} -eq 1 ]]; then
-					brew list-tagged ${candidateTag} | grep "${containername/\//-}" | sort -V | tail -${NUMTAGS} | sed -e "s#[\ \t]\+${candidateTag}.\+##" | \
-						sed -e "s#\(.\+\)-container-\([0-9.]\+\)-\([0-9]\+\)#\0 - http://download.eng.bos.redhat.com/brewroot/packages/\1-container/\2/\3/data/logs/x86_64.log#"
-				else
-					brew list-tagged ${candidateTag} | grep "${containername/\//-}" | sort -V | tail -${NUMTAGS} | sed -e "s#[\ \t]\+${candidateTag}.\+##"
-				fi
-			done
-			exit
-		fi
+		for containername in ${CONTAINERS}; do
+			candidateTag="crw-2.0-rhel-8-candidate"
+			if [[ ${SHOWLOG} -eq 1 ]]; then
+				brew list-tagged ${candidateTag} | grep "${containername/\//-}" | sort -V | tail -${NUMTAGS} | sed -e "s#[\ \t]\+${candidateTag}.\+##" | \
+					sed -e "s#\(.\+\)-container-\([0-9.]\+\)-\([0-9]\+\)#\0 - http://download.eng.bos.redhat.com/brewroot/packages/\1-container/\2/\3/data/logs/x86_64.log#"
+			else
+				brew list-tagged ${candidateTag} | grep "${containername/\//-}" | sort -V | tail -${NUMTAGS} | sed -e "s#[\ \t]\+${candidateTag}.\+##"
+			fi
+		done
+		exit
 	fi
 fi
 
