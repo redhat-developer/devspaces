@@ -8,7 +8,6 @@
 
 def SOURCE_REPO = "redhat-developer/codeready-workspaces" //source repo from which to find and sync commits to pkgs.devel repo
 def GIT_PATH = "containers/codeready-workspaces-pluginregistry" // dist-git repo to use as target
-
 def GIT_BRANCH = "crw-2.0-rhel-8" // target branch in dist-git repo, eg., crw-2.0-rhel-8
 def SCRATCH = "false"
 def PUSH_TO_QUAY = "true"
@@ -20,7 +19,8 @@ def buildNode = "rhel7-releng" // slave label
 timeout(120) {
 	node("${buildNode}"){ stage "Sync repos"
 		cleanWs()
-    withCredentials([file(credentialsId: 'crw-build.keytab', variable: 'CRW_KEYTAB')]) {
+    withCredentials([string(credentialsId:'devstudio-release.token', variable: 'GITHUB_TOKEN'), 
+        file(credentialsId: 'crw-build.keytab', variable: 'CRW_KEYTAB')]) {
       checkout([$class: 'GitSCM',
         branches: [[name: "${SOURCE_BRANCH}"]],
         doGenerateSubmoduleConfigurations: false,
@@ -28,7 +28,7 @@ timeout(120) {
         poll: true,
         extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: "sources"]],
         submoduleCfg: [],
-        userRemoteConfigs: [[url: "https://github.com/${SOURCE_REPO}.git"]]])
+        userRemoteConfigs: [[url: "git@github.com:${SOURCE_REPO}.git"]]])
 
   	 	def BOOTSTRAP = '''#!/bin/bash -xe
 
@@ -62,7 +62,7 @@ klist # verify working
 
 hasChanged=0
 
-SOURCEDIR=${WORKSPACE}/sources/dependencies/che-plugin-registry/
+SOURCEDIR=${WORKSPACE}/sources/dependencies/che-plugin-registry
 SOURCEDOCKERFILE=${SOURCEDIR}/Dockerfile
 if [[ -f ${SOURCEDIR}/build/dockerfiles/rhel.Dockerfile ]]; then
   SOURCEDOCKERFILE=${SOURCEDIR}/build/dockerfiles/rhel.Dockerfile
@@ -76,6 +76,7 @@ cd ${WORKSPACE}/sources
   git config user.email "nickboldt+devstudio-release@gmail.com"
   git config user.name "Red Hat Devstudio Release Bot"
   git config --global push.default matching
+  export GITHUB_TOKEN=''' + GITHUB_TOKEN + ''' # echo "''' + GITHUB_TOKEN + '''"
   OLD_SHA=$(git rev-parse HEAD) # echo ${OLD_SHA:0:8}
   pushd ${SOURCEDOCKERFILE%/*} >/dev/null
     /tmp/updateBaseImages.sh -b ''' + SOURCE_BRANCH + ''' -f ${SOURCEDOCKERFILE##*/} # just pass in rhel.Dockerfile

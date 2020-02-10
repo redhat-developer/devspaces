@@ -4,7 +4,7 @@
 // def FORCE_BUILD = "false"
 // def SOURCE_BRANCH = "crw-2.1" // ref/tags/v0.24.0, or crw-2.1, or master :: branch of source repo from which to find and sync commits to pkgs.devel repo
 
-def SOURCE_REPO1 = "eclipse/che-plugin-broker" //source repo from which to find and sync commits to pkgs.devel repo 
+def SOURCE_REPO = "eclipse/che-plugin-broker" //source repo from which to find and sync commits to pkgs.devel repo 
 def GIT_PATH1 = "containers/codeready-workspaces-pluginbroker-metadata" // dist-git repo to use as target
 def GIT_PATH2 = "containers/codeready-workspaces-pluginbroker-artifacts" // dist-git repo to use as target
 
@@ -22,7 +22,8 @@ def buildNode = "rhel7-releng" // slave label
 timeout(120) {
 	node("${buildNode}"){ stage "Sync repos"
 		cleanWs()
-    withCredentials([file(credentialsId: 'crw-build.keytab', variable: 'CRW_KEYTAB')]) {
+    withCredentials([string(credentialsId:'devstudio-release.token', variable: 'GITHUB_TOKEN'), 
+        file(credentialsId: 'crw-build.keytab', variable: 'CRW_KEYTAB')]) {
       checkout([$class: 'GitSCM', 
         branches: [[name: "${SOURCE_BRANCH}"]], 
         doGenerateSubmoduleConfigurations: false,
@@ -30,7 +31,7 @@ timeout(120) {
         poll: true,
         extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: "sources"]], 
         submoduleCfg: [], 
-        userRemoteConfigs: [[url: "https://github.com/${SOURCE_REPO1}.git"]]])
+        userRemoteConfigs: [[url: "git@github.com:${SOURCE_REPO}.git"]]])
 
   	 	def BOOTSTRAP = '''#!/bin/bash -xe
 
@@ -69,8 +70,9 @@ curl -L -s -S https://raw.githubusercontent.com/redhat-developer/codeready-works
 chmod +x /tmp/updateBaseImages.sh 
 cd ${WORKSPACE}/sources
   git checkout --track origin/''' + SOURCE_BRANCH + ''' || true
+  export GITHUB_TOKEN=''' + GITHUB_TOKEN + ''' # echo "''' + GITHUB_TOKEN + '''"
   OLD_SHA=\$(git rev-parse HEAD) # echo ${OLD_SHA:0:8}
-  git config user.email nickboldt+devstudio-release@gmail.com
+  git config user.email "nickboldt+devstudio-release@gmail.com"
   git config user.name "Red Hat Devstudio Release Bot"
   git config --global push.default matching
 
@@ -171,11 +173,11 @@ for targetN in target1 target2; do
     if [[ \$(git diff --name-only) ]]; then # file changed
     OLD_SHA=\$(git rev-parse HEAD) # echo ${OLD_SHA:0:8}
     git add Dockerfile ${SYNC_FILES}
-    git commit -s -m "[sync] Update from ''' + SOURCE_REPO1 + ''' @ ${SRC_SHA1:0:8}" Dockerfile ${SYNC_FILES}
+    git commit -s -m "[sync] Update from ''' + SOURCE_REPO + ''' @ ${SRC_SHA1:0:8}" Dockerfile ${SYNC_FILES}
     git push origin ''' + GIT_BRANCH + '''
     NEW_SHA=\$(git rev-parse HEAD) # echo ${NEW_SHA:0:8}
     if [[ "${OLD_SHA}" != "${NEW_SHA}" ]]; then hasChanged=1; fi
-    echo "[sync] Updated pkgs.devel @ ${NEW_SHA:0:8} from ''' + SOURCE_REPO1 + ''' @ ${SRC_SHA1:0:8}"
+    echo "[sync] Updated pkgs.devel @ ${NEW_SHA:0:8} from ''' + SOURCE_REPO + ''' @ ${SRC_SHA1:0:8}"
     fi
     cd ..
 

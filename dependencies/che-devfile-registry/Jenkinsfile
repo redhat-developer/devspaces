@@ -20,7 +20,8 @@ def buildNode = "rhel7-releng" // slave label
 timeout(120) {
 	node("${buildNode}"){ stage "Sync repos"
 		cleanWs()
-    withCredentials([file(credentialsId: 'crw-build.keytab', variable: 'CRW_KEYTAB')]) {
+    withCredentials([string(credentialsId:'devstudio-release.token', variable: 'GITHUB_TOKEN'), 
+        file(credentialsId: 'crw-build.keytab', variable: 'CRW_KEYTAB')]) {
       checkout([$class: 'GitSCM',
         branches: [[name: "${SOURCE_BRANCH}"]],
         doGenerateSubmoduleConfigurations: false,
@@ -28,7 +29,7 @@ timeout(120) {
         poll: true,
         extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: "sources"]],
         submoduleCfg: [],
-        userRemoteConfigs: [[url: "https://github.com/${SOURCE_REPO}.git"]]])
+        userRemoteConfigs: [[url: "git@github.com:${SOURCE_REPO}.git"]]])
 
   	 	def BOOTSTRAP = '''#!/bin/bash -xe
 
@@ -62,7 +63,7 @@ klist # verify working
 
 hasChanged=0
 
-SOURCEDIR=${WORKSPACE}/sources/dependencies/che-devfile-registry/
+SOURCEDIR=${WORKSPACE}/sources/dependencies/che-devfile-registry
 SOURCEDOCKERFILE=${SOURCEDIR}/Dockerfile
 if [[ -f ${SOURCEDIR}/build/dockerfiles/rhel.Dockerfile ]]; then
   SOURCEDOCKERFILE=${SOURCEDIR}/build/dockerfiles/rhel.Dockerfile
@@ -73,7 +74,8 @@ curl -L -s -S https://raw.githubusercontent.com/redhat-developer/codeready-works
 chmod +x /tmp/updateBaseImages.sh
 cd ${WORKSPACE}/sources
   git checkout --track origin/''' + SOURCE_BRANCH + ''' || true
-  git config user.email nickboldt+devstudio-release@gmail.com
+  export GITHUB_TOKEN=''' + GITHUB_TOKEN + ''' # echo "''' + GITHUB_TOKEN + '''"
+  git config user.email "nickboldt+devstudio-release@gmail.com"
   git config user.name "Red Hat Devstudio Release Bot"
   git config --global push.default matching
   OLD_SHA=$(git rev-parse HEAD) # echo ${OLD_SHA:0:8}
