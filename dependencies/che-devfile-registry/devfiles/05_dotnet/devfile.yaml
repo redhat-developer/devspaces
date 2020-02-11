@@ -30,8 +30,8 @@ components:
         port: 5000
     mountSources: true
     volumes:
-      - name: dotnet
-        containerPath: "/home/user"
+      - name: nuget
+        containerPath: "/home/jboss/.nuget"
 commands:
   -
     name: update dependencies
