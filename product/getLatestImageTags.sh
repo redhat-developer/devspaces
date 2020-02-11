@@ -176,8 +176,8 @@ for key in "$@"; do
     '-q') QUIET=1; shift 0;;
     '-v') QUIET=0; VERBOSE=1; shift 0;;
     '-r') REGISTRY="$2"; shift 1;;
-    '--rhcc') CONTAINERS="${CRW21_CONTAINERS_RHCC}"; REGISTRY="http://registry.redhat.io"; shift 1;;
-    '--stage') CONTAINERS="${CRW21_CONTAINERS_RHCC}"; REGISTRY="http://registry.stage.redhat.io"; shift 1;;
+    '--rhcc') REGISTRY="http://registry.redhat.io"; shift 1;;
+    '--stage') REGISTRY="http://registry.stage.redhat.io"; shift 1;;
     '--pulp-old') REGISTRY="http://brew-pulp-docker01.web.prod.ext.phx2.redhat.com:8888"; EXCLUDES="candidate|guest|containers"; shift 0;;
     '-p'|'--pulp') REGISTRY="http://registry-proxy.engineering.redhat.com/rh-osbs"; EXCLUDES="candidate|guest|containers"; shift 0;;
     '-d'|'--docker') REGISTRY="http://docker.io"; shift 0;;
@@ -186,7 +186,7 @@ for key in "$@"; do
            --pushtoquay=*) PUSHTOQUAY=1; PUSHTOQUAYTAGS="$(echo "${key#*=}")"; shift 0;;
     '-n') NUMTAGS="$2"; shift 1;;
     '--dockerfile') SHOWHISTORY=1; shift 0;;
-    '--nvr') CONTAINERS="${CRW21_CONTAINERS_PULP}"; SHOWNVR=1; shift 0;;
+    '--nvr') if [[ ! $CONTAINERS ]]; then CONTAINERS="${CRW21_CONTAINERS_PULP}"; fi; SHOWNVR=1; shift 0;;
     '--log') SHOWLOG=1; shift 0;;
     '-h') usage;;
   esac
