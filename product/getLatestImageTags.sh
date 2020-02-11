@@ -30,8 +30,9 @@ codeready-workspaces/server-rhel8 \
 codeready-workspaces/devfileregistry-rhel8 \
 codeready-workspaces/pluginregistry-rhel8 \
 \
-codeready-workspaces/machineexec-rhel8 \
+codeready-workspaces/imagepuller-rhel8 \
 codeready-workspaces/jwtproxy-rhel8 \
+codeready-workspaces/machineexec-rhel8 \
 codeready-workspaces/pluginbroker-metadata-rhel8 \
 codeready-workspaces/pluginbroker-artifacts-rhel8 \
 \
@@ -58,8 +59,9 @@ codeready-workspaces/server-rhel8 \
 codeready-workspaces/devfileregistry-rhel8 \
 codeready-workspaces/pluginregistry-rhel8 \
 \
-codeready-workspaces/machineexec-rhel8 \
+codeready-workspaces/imagepuller-rhel8 \
 codeready-workspaces/jwtproxy-rhel8 \
+codeready-workspaces/machineexec-rhel8 \
 codeready-workspaces/pluginbroker-metadata-rhel8 \
 codeready-workspaces/pluginbroker-artifacts-rhel8 \
 \
