@@ -8,7 +8,7 @@ projects:
     source:
       type: git
       location: "https://github.com/che-samples/dotnet-web-simple"
-      branch: netcoreapp3.0
+      branch: netcoreapp3.1
 components:
   -
     type: chePlugin
@@ -65,7 +65,7 @@ commands:
                  {
                     "type": "netcoredbg",
                     "request": "launch",
-                    "program": "/projects/dotnet-web-simple/bin/Debug/netcoreapp3.0/web.dll",
+                    "program": "/projects/dotnet-web-simple/bin/Debug/netcoreapp3.1/web.dll",
                     "args": [],
                     "name": ".NET Core Launch (console)",
                     "stopAtEntry": true,
