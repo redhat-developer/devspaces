@@ -48,9 +48,11 @@ codeready-workspaces/plugin-java11-rhel8 \
 codeready-workspaces/plugin-kubernetes-rhel8 \
 codeready-workspaces/plugin-openshift-rhel8"
 
+# registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-operator-metadata:2.1-9
+# registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-operator:2.1-10
 CRW21_CONTAINERS_PULP="\
-codeready-workspaces/rhel8-operator-metadata \
-codeready-workspaces/rhel8-operator-container \
+codeready-workspaces/operator-metadata \
+codeready-workspaces/operator \
 codeready-workspaces/server-rhel8 \
 \
 codeready-workspaces/devfileregistry-rhel8 \
@@ -76,8 +78,7 @@ codeready-workspaces/plugin-openshift-rhel8"
 
 # OLD WAY: codeready-workspaces/server-operator-rhel8 \
 CRW20_CONTAINERS_RHCC="\
-codeready-workspaces/operator-metadata \
-codeready-workspaces/operator-rhel8 \
+codeready-workspaces/server-operator-rhel8 \
 codeready-workspaces/server-rhel8 \
 \
 codeready-workspaces/devfileregistry-rhel8 \
@@ -103,7 +104,6 @@ codeready-workspaces/plugin-openshift-rhel8"
 # codeready-workspaces/plugin-dependencyanalytics-rhel8 \
 
 CRW20_CONTAINERS_PULP="\
-codeready-workspaces/operator-metadata \
 codeready-workspaces/operator-rhel8 \
 codeready-workspaces/server-rhel8 \
 \
@@ -154,8 +154,8 @@ Usage:
   $0 -c pivotaldata/centos --docker --dockerfile             | check docker registry; show Dockerfile contents (requires dfimage)
   $0 -c codeready-workspaces-plugin-java11-rhel8 --pulp --pushtoquay='2.1 latest' 		| pull an image from pulp, push 3 tags to quay
 
-  $0 --crw21 --pulp --nvr --log                              | check for latest images in pulp; output NVRs can be copied to Errata; show links to Brew logs
-  $0 --crw21 --pulp --nvr                                    | check for latest images in pulp; output NVRs can be copied to Errata
+  $0 --crw21 --nvr --log                                     | check images in brew; output NVRs can be copied to Errata; show links to Brew logs
+  $0 --crw21 --pulp                                          | check images in pulp ( registry-proxy.engineering.redhat.com/rh-osbs )
   $0 --crw21 --pulp --pushtoquay='2.1 latest'                | pull images from pulp, then push matching tag to quay, including extra tags if set
 
 "
@@ -176,7 +176,8 @@ for key in "$@"; do
     '-q') QUIET=1; shift 0;;
     '-v') QUIET=0; VERBOSE=1; shift 0;;
     '-r') REGISTRY="$2"; shift 1;;
-    '--stage') REGISTRY="http://registry.stage.redhat.io"; shift 1;;
+    '--rhcc') CONTAINERS="${CRW21_CONTAINERS_RHCC}"; REGISTRY="http://registry.redhat.io"; shift 1;;
+    '--stage') CONTAINERS="${CRW21_CONTAINERS_RHCC}"; REGISTRY="http://registry.stage.redhat.io"; shift 1;;
     '--pulp-old') REGISTRY="http://brew-pulp-docker01.web.prod.ext.phx2.redhat.com:8888"; EXCLUDES="candidate|guest|containers"; shift 0;;
     '-p'|'--pulp') REGISTRY="http://registry-proxy.engineering.redhat.com/rh-osbs"; EXCLUDES="candidate|guest|containers"; shift 0;;
     '-d'|'--docker') REGISTRY="http://docker.io"; shift 0;;
@@ -185,7 +186,7 @@ for key in "$@"; do
            --pushtoquay=*) PUSHTOQUAY=1; PUSHTOQUAYTAGS="$(echo "${key#*=}")"; shift 0;;
     '-n') NUMTAGS="$2"; shift 1;;
     '--dockerfile') SHOWHISTORY=1; shift 0;;
-    '--nvr') SHOWNVR=1; shift 0;;
+    '--nvr') CONTAINERS="${CRW21_CONTAINERS_PULP}"; SHOWNVR=1; shift 0;;
     '--log') SHOWLOG=1; shift 0;;
     '-h') usage;;
   esac
@@ -196,21 +197,22 @@ if [[ ${REGISTRY} != "" ]]; then
 	REGISTRYSTRING="--registry ${REGISTRY}"
 	REGISTRYPRE="${REGISTRY##*://}/"
 	if [[ ${REGISTRY} == *"registry-proxy.engineering.redhat.com"* ]]; then
-		if [[ ${CONTAINERS} == "${CRW21_CONTAINERS_RHCC}" ]] || [[ ${CONTAINERS} == "" ]]; then CONTAINERS="${CRW21_CONTAINERS_PULP//codeready-workspaces\//codeready-workspaces-}"; fi
+		if [[ ${CONTAINERS} == "${CRW21_CONTAINERS_RHCC}" ]] || [[ ${CONTAINERS} == "" ]]; then 
+			CONTAINERS="${CRW21_CONTAINERS_PULP//codeready-workspaces\//codeready-workspaces-}"; 
+			# registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-operator-metadata:2.1-9
+			# registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-operator:2.1-10
+		fi
 		if [[ ${CONTAINERS} == "${CRW20_CONTAINERS_RHCC}" ]]; then CONTAINERS="${CRW20_CONTAINERS_PULP//codeready-workspaces\//codeready-workspaces-}"; fi
-	elif [[ ${REGISTRY} == *"brew-pulp-docker01"* ]]; then
-		if [[ ${CONTAINERS} == "${CRW21_CONTAINERS_RHCC}" ]] || [[ ${CONTAINERS} == "" ]]; then CONTAINERS="${CRW21_CONTAINERS_PULP}"; fi
-		if [[ ${CONTAINERS} == "${CRW20_CONTAINERS_RHCC}" ]]; then CONTAINERS="${CRW20_CONTAINERS_PULP}"; fi
 	elif [[ ${REGISTRY} == *"quay.io"* ]]; then
 		if [[ ${CONTAINERS} == "${CRW21_CONTAINERS_RHCC}" ]] || [[ ${CONTAINERS} == "" ]]; then
-			CONTAINERS="${CRW21_CONTAINERS_PULP}"; CONTAINERS="${CONTAINERS//codeready-workspaces/crw}"
-			# codeready-workspaces/rhel8-operator-metadata -> crw/operator-metadata
-			# codeready-workspaces/rhel8-operator-container -> crw/operator-rhel8
-			CONTAINERS="${CONTAINERS//rhel8-}"
-			CONTAINERS="${CONTAINERS//-container/-rhel8}"
+			CONTAINERS="${CRW21_CONTAINERS_PULP}"; 
+			CONTAINERS="${CONTAINERS//codeready-workspaces/crw}"
+			# codeready-workspaces/operator -> codeready-workspaces/operator-rhel8
+			CONTAINERS="${CONTAINERS//crw\/operator /crw\/operator-rhel8 }"
 		fi
 		if [[ ${CONTAINERS} == "${CRW20_CONTAINERS_RHCC}" ]]; then
-			CONTAINERS="${CRW20_CONTAINERS_PULP}"; CONTAINERS="${CONTAINERS//codeready-workspaces/crw}"
+			CONTAINERS="${CRW20_CONTAINERS_PULP}"; 
+			CONTAINERS="${CONTAINERS//codeready-workspaces/crw}"
 		fi
 	fi
 else
@@ -233,19 +235,24 @@ fi
 if [[ ${CONTAINERS} == "" ]]; then usage; fi
 
 # special case!
-if [[ ${REGISTRY} == *"registry-proxy.engineering.redhat.com"* ]] || [[ ${REGISTRY} == "http://brew-pulp-docker01.web.prod.ext.phx2.redhat.com:8888" ]]; then 
-  	if [[ ${SHOWNVR} -eq 1 ]]; then 
-		for containername in ${CONTAINERS}; do
-			candidateTag="crw-2.0-rhel-8-candidate"
-			if [[ ${SHOWLOG} -eq 1 ]]; then
-				brew list-tagged ${candidateTag} | grep "${containername/\//-}" | sort -V | tail -${NUMTAGS} | sed -e "s#[\ \t]\+${candidateTag}.\+##" | \
-					sed -e "s#\(.\+\)-container-\([0-9.]\+\)-\([0-9]\+\)#\0 - http://download.eng.bos.redhat.com/brewroot/packages/\1-container/\2/\3/data/logs/x86_64.log#"
-			else
-				brew list-tagged ${candidateTag} | grep "${containername/\//-}" | sort -V | tail -${NUMTAGS} | sed -e "s#[\ \t]\+${candidateTag}.\+##"
-			fi
-		done
-		exit
-	fi
+if [[ ${SHOWNVR} -eq 1 ]]; then 
+	for containername in ${CONTAINERS}; do
+		# codeready-workspaces/operator-metadata -> codeready-workspaces-rhel8-operator-metadata-container-2.1-9
+		# codeready-workspaces/operator -> codeready-workspaces-rhel8-operator-container-2.1-10
+		containername="${containername//workspaces-operator/workspaces-rhel8-operator}"
+		containername="${containername//\/operator/-rhel8-operator}"
+		candidateTag="crw-2.0-rhel-8-candidate"
+		if [[ ${VERBOSE} -eq 1 ]]; then
+			echo "brew list-tagged ${candidateTag} | grep \"${containername/\//-}-container\" | sort -V | tail -${NUMTAGS} | sed -e \"s#[\ \t]\+${candidateTag}.\+##\""
+		fi
+		if [[ ${SHOWLOG} -eq 1 ]]; then
+			brew list-tagged ${candidateTag} | grep "${containername/\//-}-container" | sort -V | tail -${NUMTAGS} | sed -e "s#[\ \t]\+${candidateTag}.\+##" | \
+				sed -e "s#\(.\+\)-container-\([0-9.]\+\)-\([0-9]\+\)#\0 - http://download.eng.bos.redhat.com/brewroot/packages/\1-container/\2/\3/data/logs/x86_64.log#"
+		else
+			brew list-tagged ${candidateTag} | grep "${containername/\//-}-container" | sort -V | tail -${NUMTAGS} | sed -e "s#[\ \t]\+${candidateTag}.\+##"
+		fi
+	done
+	exit
 fi
 
 echo ""
