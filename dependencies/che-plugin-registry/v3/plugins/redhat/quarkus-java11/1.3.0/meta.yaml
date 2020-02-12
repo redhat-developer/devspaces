@@ -23,6 +23,6 @@ spec:
       - mountPath: "/home/jboss/.m2"
         name: m2
   extensions:
-    - https://download.jboss.org/jbosstools/vscode/3rdparty/vscode-java-debug/vscode-java-debug-0.23.0.vsix
-    - https://download.jboss.org/jbosstools/static/jdt.ls/stable/java-0.50.0-1825.vsix
+    - https://download.jboss.org/jbosstools/vscode/3rdparty/vscode-java-debug/vscode-java-debug-0.24.0.vsix
+    - https://download.jboss.org/jbosstools/static/jdt.ls/stable/java-0.55.1-1984.vsix
     - https://download.jboss.org/jbosstools/vscode/stable/vscode-quarkus/vscode-quarkus-1.3.0-242.vsix
