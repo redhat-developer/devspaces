@@ -1,7 +1,7 @@
 apiVersion: v2
 publisher: redhat
 name: quarkus-java11
-version: 1.2.0
+version: 1.3.0
 type: VS Code extension
 displayName: Quarkus, Maven, Gradle and Java 11 Language Support
 title: Quarkus, Java 11, Maven, and Gradle Tools by Red Hat
@@ -9,10 +9,7 @@ description: Support for Quarkus, Maven, Gradle. Java Linting, Intellisense, for
 icon: https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/master/dependencies/che-plugin-registry/resources/images/default.svg?sanitize=true
 repository: https://github.com/redhat-developer/vscode-quarkus
 category: Language
-firstPublicationDate: "2020-01-22"
-deprecate:
-  automigrate: true
-  migrateTo: redhat/quarkus-java11/latest
+firstPublicationDate: "2020-02-12"
 spec:
   containers:
     - image: "registry.redhat.io/codeready-workspaces/plugin-java11-rhel8:2.1"
@@ -28,4 +25,4 @@ spec:
   extensions:
     - https://download.jboss.org/jbosstools/vscode/3rdparty/vscode-java-debug/vscode-java-debug-0.23.0.vsix
     - https://download.jboss.org/jbosstools/static/jdt.ls/stable/java-0.50.0-1825.vsix
-    - https://download.jboss.org/jbosstools/vscode/stable/vscode-quarkus/vscode-quarkus-1.2.0-186.vsix
+    - https://download.jboss.org/jbosstools/vscode/stable/vscode-quarkus/vscode-quarkus-1.3.0-242.vsix
