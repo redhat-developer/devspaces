@@ -65,7 +65,7 @@ WORKDIR /build/
 
 RUN ./check_mandatory_fields.sh devfiles
 RUN ./index.sh > /build/devfiles/index.json
-RUN ./list_referenced_images.sh devfiles > /build/devfiles/external_images.txt
+# TODO CRW-590 RUN ./list_referenced_images.sh devfiles > /build/devfiles/external_images.txt
 RUN chmod -R g+rwX /build/devfiles
 
 ################# 
@@ -97,14 +97,14 @@ WORKDIR /var/www/html
 RUN mkdir -m 777 /var/www/html/devfiles
 COPY .htaccess README.md /var/www/html/
 COPY --from=builder /build/devfiles /var/www/html/devfiles
-COPY ./images /var/www/html/images
+# TODO CRW-590 COPY ./images /var/www/html/images
 COPY ./build/dockerfiles/rhel.entrypoint.sh ./build/dockerfiles/entrypoint.sh /usr/local/bin/
 RUN chmod g+rwX /usr/local/bin/entrypoint.sh /usr/local/bin/rhel.entrypoint.sh
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 CMD ["/usr/local/bin/rhel.entrypoint.sh"]
 
 # Offline devfile registry build
-FROM builder AS offline-builder
+# FROM builder AS offline-builder
 # DO NOT USE FOR CRW (not tested yet)
 # Does not work in brew; need to run this online, cache in tarball and add to Brew
 # RUN ./cache_projects.sh devfiles resources && \
@@ -112,8 +112,9 @@ FROM builder AS offline-builder
 #     chmod -R g+rwX /build
 # DO NOT USE FOR CRW (not tested yet)
 
-FROM registry AS offline-registry
-COPY --from=offline-builder /build/devfiles /var/www/html/devfiles
-COPY --from=offline-builder /build/resources /var/www/html/resources
+# # TODO CRW-590 
+# FROM registry AS offline-registry
+# COPY --from=offline-builder /build/devfiles /var/www/html/devfiles
+# COPY --from=offline-builder /build/resources /var/www/html/resources
 
 # append Brew metadata here
