@@ -189,7 +189,7 @@ sed -i ${SOURCEDOCKERFILE} \
 	-e "s@# FROM builder AS offline-builder@FROM builder AS offline-builder@g"
 
 CONTAINERNAME="devfileregistryoffline"
-docker build -t ${CONTAINERNAME} . --no-cache --squash -f ${SOURCEDOCKERFILE} \
+docker build -t ${CONTAINERNAME} . --no-cache -f ${SOURCEDOCKERFILE} \
   --target=offline-builder --build-arg BOOTSTRAP=true 
 
 # update tarballs - step 2 - check old sources' tarballs
