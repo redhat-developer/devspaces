@@ -99,7 +99,7 @@ CMD ["/usr/local/bin/rhel.entrypoint.sh"]
 
 # Offline build: cache .theia and .vsix files in registry itself and update metas
 # multiple temp stages does not work in Brew
-FROM builder AS offline-builder
+# FROM builder AS offline-builder
 
 # built in Brew, use tarball in lookaside cache; built locally, comment this out
 # COPY v3.tgz /tmp/v3.tgz
@@ -112,18 +112,18 @@ FROM builder AS offline-builder
 
 # 2. then add it to dist-git so it's part of this repo
 #    rhpkg new-sources root-local.tgz v3.tgz
-RUN if [ ! -f /tmp/v3.tgz ] || [ ${BOOTSTRAP} == "true" ]; then \
+RUN if [[ ! -f /tmp/v3.tgz ]] || [[ "${BOOTSTRAP}" == "true" ]]; then \
       ./cache_artifacts.sh v3 && chmod -R g+rwX /build; \
     else \
       # in Brew use /var/www/html/; in upstream/ offline-builder use /build/
-      mkdir -p /build/v3/; tar xf /tmp/v3.tgz -C /build/v3/; rm -fr /tmp/v3.tgz; chmod -R g+rwX /build/v3/; \
+      mkdir -p /var/www/html/v3/; tar xf /tmp/v3.tgz -C /var/www/html/v3/; rm -fr /tmp/v3.tgz; chmod -R g+rwX /var/www/html/v3/; \
     fi
 
 # multiple temp stages does not work in Brew
-FROM registry AS offline-registry
+# FROM registry AS offline-registry
 USER 0
 
 # multiple temp stages does not work in Brew
-COPY --from=offline-builder /build/v3 /var/www/html/v3
+# COPY --from=offline-builder /build/v3 /var/www/html/v3
 
 # append Brew metadata here
