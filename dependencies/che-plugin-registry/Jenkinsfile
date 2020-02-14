@@ -188,15 +188,16 @@ curl -ssL ${artifactURL}vsix.tar.gz -o vsix.tar.gz
 
 # update tarballs - step 1 - build the container
 cd ${SOURCEDIR}
-# use Pulp to resolve deps
 # enable offline-builder ONLY for this bootstrap case
+# use Pulp to resolve deps
 # TODO use RHEL8 instead of EPEL7?
 sed -i ${SOURCEDOCKERFILE} \
-	-e "s@ *COPY \\(.\\+/content_sets\\)_epel7\\(.repo /etc/yum.repos.d\\)/@COPY \\1_rhel8\\2/@g"
+	-e "s@ *COPY \\(.\\+/content_sets\\)_epel7\\(.repo /etc/yum.repos.d\\)/@COPY \\1_rhel8\\2/@g" \
 	-e "s@# FROM builder AS offline-builder@FROM builder AS offline-builder@g"
 
 CONTAINERNAME="pluginregistryoffline"
-docker build -t ${CONTAINERNAME} . --no-cache --squash -f ${SOURCEDOCKERFILE} --build-arg BOOTSTRAP=true --build-arg LATEST_ONLY=true
+docker build -t ${CONTAINERNAME} . --no-cache --squash -f ${SOURCEDOCKERFILE} \
+  --target=offline-builder --build-arg BOOTSTRAP=true --build-arg LATEST_ONLY=true
 
 # update tarballs - step 2 - check old sources' tarballs
 cd ${WORKSPACE}/target

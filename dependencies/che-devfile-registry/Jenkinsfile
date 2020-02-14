@@ -181,12 +181,16 @@ cd ..
 
 # update tarballs - step 1 - build the container
 cd ${SOURCEDIR}
+# enable offline-builder ONLY for this bootstrap case
 # use Pulp to resolve deps
 # TODO use RHEL8 instead of EPEL7?
-sed -i ${SOURCEDOCKERFILE} -e "s@ *COPY \\(.\\+/content_sets\\)_epel7\\(.repo /etc/yum.repos.d\\)/@COPY \\1_rhel8\\2/@g"
+sed -i ${SOURCEDOCKERFILE} \
+  -e "s@ *COPY \\(.\\+/content_sets\\)_epel7\\(.repo /etc/yum.repos.d\\)/@COPY \\1_rhel8\\2/@g" \
+	-e "s@# FROM builder AS offline-builder@FROM builder AS offline-builder@g"
 
 CONTAINERNAME="devfileregistryoffline"
-docker build -t ${CONTAINERNAME} . --no-cache -f ${SOURCEDOCKERFILE} --build-arg BOOTSTRAP=true 
+docker build -t ${CONTAINERNAME} . --no-cache --squash -f ${SOURCEDOCKERFILE} \
+  --target=offline-builder --build-arg BOOTSTRAP=true 
 
 # update tarballs - step 2 - check old sources' tarballs
 cd ${WORKSPACE}/target
