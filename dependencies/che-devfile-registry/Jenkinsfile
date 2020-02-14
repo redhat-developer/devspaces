@@ -234,6 +234,7 @@ fi
 # clean up diff dirs
 sudo rm -fr /tmp/root-local /tmp/root-local-before /tmp/pr-res /tmp/pr-res-before
 
+# NOTE: this image needs to build in Brew, then rebuild for Quay, so use QUAY_REBUILD_PATH instead of QUAY_REPO_PATHs variable
 if [[ ''' + FORCE_BUILD + ''' == "true" ]]; then hasChanged=1; fi
 if [[ ${hasChanged} -eq 1 ]]; then
   for QRP in ''' + QUAY_PROJECT + '''; do
@@ -244,7 +245,7 @@ token=CI_BUILD&\
 cause=${QUAY_REPO_PATH}+respin+by+${BUILD_TAG}&\
 GIT_BRANCH=''' + GIT_BRANCH + '''&\
 GIT_PATHs=containers/codeready-workspaces-${QRP}&\
-QUAY_REPO_PATHs=${QUAY_REPO_PATH}&\
+QUAY_REBUILD_PATH=${QUAY_REPO_PATH}&\
 JOB_BRANCH=master&\
 FORCE_BUILD=true&\
 SCRATCH=''' + SCRATCH + '''"
