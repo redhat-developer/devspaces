@@ -125,15 +125,13 @@ cp -f ${SOURCEDOCKERFILE} ${WORKSPACE}/target/Dockerfile
 CRW_VERSION=`wget -qO- https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/master/dependencies/VERSION`
 # apply patches to transform CRW upstream to pkgs.devel version
 sed -i ${WORKSPACE}/target/Dockerfile \
-  -e "s%FROM registry.access.redhat.com/\\(ubi8-minimal\\)%FROM \\1%g" \
-  -e "s/# *COPY root/COPY root/g" \
   -e "s/ *COPY\\(.\\+content_set.\\+\\)/# COPY\\1/g" \
-  -e "s%^FROM \\(registry.access.redhat.com/rhscl/httpd-24-rhel7.\\+\\)%# FROM \\1%g" \
-  -e "s%# *FROM registry.redhat.io/\\(rhel8/httpd-24.\\+\\)%FROM \\1%g" \
-  -e "s%^FROM registry.redhat.io/\\(rhel8/httpd-24.\\+\\)%FROM \\1%g" \
-  -e "s%FROM builder%# FROM builder%g" \
-  -e "s%FROM registry %# FROM registry %g" \
-  -e "s%COPY --from=offline-builder%# COPY --from=offline-builder%g"
+  -e "s/^# *COPY root/COPY root/g" \
+  -e "s%^FROM registry.access.redhat.com/%FROM %g" \
+  -e "s%^FROM registry.redhat.io/%FROM %g" \
+  -e "s%^FROM builder%# FROM builder%g" \
+  -e "s%^FROM registry %# FROM registry %g" \
+  -e "s%^COPY --from=offline-builder%# COPY --from=offline-builder%g"
 
 cat ${WORKSPACE}/target/Dockerfile
 
