@@ -186,8 +186,7 @@ cd ${SOURCEDIR}
 sed -i ${SOURCEDOCKERFILE} -e "s@ *COPY \\(.\\+/content_sets\\)_epel7\\(.repo /etc/yum.repos.d\\)/@COPY \\1_rhel8\\2/@g"
 
 CONTAINERNAME="devfileregistryoffline"
-docker build -t ${CONTAINERNAME} . --no-cache -f ${SOURCEDOCKERFILE} \
-  --target=offline-builder --build-arg BOOTSTRAP=true 
+docker build -t ${CONTAINERNAME} . --no-cache -f ${SOURCEDOCKERFILE} --build-arg BOOTSTRAP=true 
 
 # update tarballs - step 2 - check old sources' tarballs
 cd ${WORKSPACE}/target
