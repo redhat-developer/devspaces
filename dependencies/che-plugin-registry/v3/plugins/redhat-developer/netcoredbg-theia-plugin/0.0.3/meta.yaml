@@ -12,7 +12,7 @@ category: Debugger
 firstPublicationDate: "2020-01-05"
 spec:
   containers:
-  - image: "vsvydenko/dotnet-30:test"
+  - image: "quay.io/crw/stacks-dotnet-rhel8:2.1-5"
     name: theia-netcoredbg
     memoryLimit: "512Mi"
     args:
