@@ -11,26 +11,32 @@ See: https://github.com/redhat-developer/codeready-workspaces/blob/master/devdoc
 
 ## Build Eclipse Che plugin registry container image
 
-Most of the time you won't need to rebuild the image because we build ```quay.io/eclipse/che-plugin-registry:nightly``` after every commit in master. In case you needed to change the content of the registry (e.g. add or modify some plugins meta.yaml) you can build your own image executing:
-
-```shell
-docker build --no-cache -t quay.io/eclipse/che-plugin-registry:nightly --target registry .
+The plugin registry is automatically built for every Che release (e.g. `quay.io/eclipse/che-plugin-registry:7.6.0`) in addition to nightly builds available at `quay.io/eclipse/che-plugin-registry:nightly`. If a custom build of the registry is desired, there is a `build.sh` script at the root of this repository that can be used to easily build the image:
+```
+Usage: ./build.sh [OPTIONS]
+Options:
+    --help
+        Print this message.
+    --tag, -t [TAG]
+        Docker image tag to be used for image; default: 'nightly'
+    --registry, -r [REGISTRY]
+        Docker registry to be used for image; default 'quay.io'
+    --organization, -o [ORGANIZATION]
+        Docker image organization to be used for image; default: 'eclipse'
+    --latest-only
+        Build registry to only contain 'latest' meta.yamls; default: 'false'
+    --offline
+        Build offline version of registry, with all extension artifacts
+        cached in the registry; disabled by default.
+    --rhel
+        Build using the rhel.Dockerfile instead of the default
 ```
 
-Where `--no-cache` is needed to prevent usage of cached layers with plugin registry files.
-Useful when you change plugin metadata files and rebuild the image.
-
-Note that the Dockerfiles feature multi-stage build, so it requires Docker version 17.05 or higher.
+Note that the Dockerfiles in this repository utilize multi-stage builds, so Docker version 17.05 or higher is required.
 
 ### Offline and airgapped registry images
 
-It's possible to build an image for the plugin registry that includes all referenced extension artifacts (i.e. all `.theia` and `.vsix` archives). This is done using the same `Dockerfile`, but performs additional steps to download artifacts and rewrite the plugin meta.yamls to use files cached in `v3/resources/`.
-
-```shell
-docker build --no-cache -t quay.io/eclipse/che-plugin-registry:offline --target offline-registry .
-```
-
-Note that support for relative extensions was added in `v0.20` of the plugin broker.
+Using the `--offline` option in `build.sh`, it's possible to build an image for the plugin registry that includes all referenced extension artifacts (i.e. all `.theia` and `.vsix` archives). The offline version of the plugin registry is useful in network-limited scenarios, as it avoids the need to download plugin extensions from the outside internet.
 
 ## Run Eclipse Che plugin registry on OpenShift
 
@@ -48,7 +54,6 @@ You can deploy Che plugin registry on Openshift with command.
 You can deploy Che plugin registry on Kubernetes using [helm](https://docs.helm.sh/). For example if you want to deploy it in the namespace `kube-che` and you are using `minikube` you can use the following command.
 
 ```bash
-
 NAMESPACE="kube-che"
 DOMAIN="$(minikube ip).nip.io"
 helm upgrade --install che-plugin-registry \
@@ -56,15 +61,12 @@ helm upgrade --install che-plugin-registry \
     --namespace ${NAMESPACE} \
     --set global.ingressDomain=${DOMAIN} \
     ./kubernetes/che-plugin-registry/
-
 ```
 
 You can use the following command to uninstall it.
 
 ```bash
-
 helm delete --purge che-plugin-registry
-
 ```
 
 ## Run Eclipse Che plugin registry using Docker
@@ -93,7 +95,7 @@ firstPublicationDate:  # optional; see [2]
 latestUpdateDate:      # optional; see [3]
 deprecate:             # optional; section for deprecating plugins in favor of others
   autoMigrate:         # boolean
-  migrateTo:           # new plugin id
+  migrateTo:           # new org/plugin-id/version, e.g. redhat/vscode-apache-camel/latest
 spec:                  # spec (used to be che-plugin.yaml)
   endpoints:           # optional; plugin endpoints -- see https://www.eclipse.org/che/docs/che-6/servers.html for more details
     - name:

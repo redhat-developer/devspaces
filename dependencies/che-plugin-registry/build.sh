@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Copyright (c) 2012-2018 Red Hat, Inc.
+# Copyright (c) 2018-2020 Red Hat, Inc.
 # This program and the accompanying materials are made
 # available under the terms of the Eclipse Public License 2.0
 # which is available at https://www.eclipse.org/legal/epl-2.0/
@@ -14,6 +14,7 @@ REGISTRY="quay.io"
 ORGANIZATION="eclipse"
 TAG="nightly"
 LATEST_ONLY=false
+USE_DIGESTS=false
 OFFLINE=false
 DOCKERFILE="./build/dockerfiles/Dockerfile"
 
@@ -30,6 +31,8 @@ Options:
         Docker image organization to be used for image; default: 'eclipse'
     --latest-only
         Build registry to only contain 'latest' meta.yamls; default: 'false'
+    --use-digests
+        Build registry to use images pinned by digest instead of tag
     --offline
         Build offline version of registry, with all extension artifacts
         cached in the registry; disabled by default.
@@ -61,6 +64,10 @@ function parse_arguments() {
             LATEST_ONLY=true
             shift
             ;;
+            --use-digests)
+            USE_DIGESTS=true
+            shift
+            ;;
             --offline)
             OFFLINE=true
             shift
@@ -86,6 +93,7 @@ if [ "$OFFLINE" = true ]; then
         -t "$IMAGE" \
         -f "$DOCKERFILE" \
         --build-arg LATEST_ONLY="${LATEST_ONLY}" \
+        --build-arg USE_DIGESTS="${USE_DIGESTS}" \
         --target offline-registry .
 else
     echo ""
@@ -93,5 +101,6 @@ else
         -t "$IMAGE" \
         -f "$DOCKERFILE" \
         --build-arg LATEST_ONLY="${LATEST_ONLY}" \
+        --build-arg USE_DIGESTS="${USE_DIGESTS}" \
         --target registry .
 fi
