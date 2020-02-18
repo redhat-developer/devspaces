@@ -8,12 +8,18 @@ projects:
     source:
       type: git
       location: "https://github.com/che-samples/dotnet-web-simple"
+      branch: netcoreapp3.1
 components:
   -
     type: chePlugin
     alias: omnisharp
     id: redhat-developer/che-omnisharp-plugin/latest
     memoryLimit: 1024Mi
+  -
+    type: chePlugin
+    alias: netcoredbg
+    id: redhat-developer/netcoredbg-theia-plugin/latest
+    memoryLimit: 512Mi
   -
     type: dockerimage
     alias: dotnet
@@ -24,8 +30,8 @@ components:
         port: 5000
     mountSources: true
     volumes:
-      - name: dotnet
-        containerPath: "/home/user"
+      - name: nuget
+        containerPath: "/home/jboss/.nuget"
 commands:
   -
     name: update dependencies
@@ -41,3 +47,30 @@ commands:
         component: dotnet
         command: "dotnet run"
         workdir: ${CHE_PROJECTS_ROOT}/dotnet-web-simple
+  -
+    name: build
+    actions:
+      - type: exec
+        component: dotnet
+        command: "dotnet build"
+        workdir: ${CHE_PROJECTS_ROOT}/dotnet-web-simple
+  - 
+    name: Launch .NET Web Application on Debug mode
+    actions:
+      - type: vscode-launch
+        referenceContent: |
+          {
+            "version": "0.2.0",
+              "configurations": [
+                 {
+                    "type": "netcoredbg",
+                    "request": "launch",
+                    "program": "/projects/dotnet-web-simple/bin/Debug/netcoreapp3.1/web.dll",
+                    "args": [],
+                    "name": ".NET Core Launch (console)",
+                    "stopAtEntry": true,
+                    "preLaunchTask": "build",
+                    "console": "internalConsole"
+                  }
+              ]
+          }
