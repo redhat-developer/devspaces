@@ -71,7 +71,7 @@ fi
 # REQUIRE: skopeo
 curl -L -s -S https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/master/product/updateBaseImages.sh -o /tmp/updateBaseImages.sh
 chmod +x /tmp/updateBaseImages.sh
-cd ${WORKSPACE}/sources
+cd ${SOURCEDIR}/
   git checkout --track origin/''' + SOURCE_BRANCH + ''' || true
   export GITHUB_TOKEN=''' + GITHUB_TOKEN + ''' # echo "''' + GITHUB_TOKEN + '''"
   git config user.email "nickboldt+devstudio-release@gmail.com"
@@ -108,13 +108,15 @@ cd ..
 # rsync files in github to dist-git
 SYNC_FILES="build openshift v3 .gitignore .htaccess LICENSE README.md VERSION"
 for d in ${SYNC_FILES}; do
-  if [[ -f ${WORKSPACE}/sources/${d} ]]; then
-    rsync -zrlt ${WORKSPACE}/sources/${d} ${WORKSPACE}/target/${d}
-  elif [[ -d ${WORKSPACE}/sources/${d} ]]; then
-    # copy over the files
-    rsync -zrlt ${WORKSPACE}/sources/${d}/* ${WORKSPACE}/target/${d}/
+  if [[ -f ${SOURCEDIR}/${d} ]]; then
+    rsync -azrlt ${SOURCEDIR}/${d} ${WORKSPACE}/target/${d}
+  elif [[ -d ${SOURCEDIR}/${d} ]]; then
+    # copy over the dir's contents
+    rsync -azrlt ${SOURCEDIR}/${d}/* ${WORKSPACE}/target/${d}/
     # sync the directory and delete from target if deleted from source
-    rsync -zrlt --delete ${WORKSPACE}/sources/${d}/ ${WORKSPACE}/target/${d}/
+    rsync -azrlt --delete ${SOURCEDIR}/${d}/ ${WORKSPACE}/target/${d}/
+  else
+    echo "[WARN] Could not find ${SOURCEDIR}/${d} to sync to ${WORKSPACE}/target/${d}"
   fi
 done
 
@@ -123,7 +125,6 @@ cp -f ${SOURCEDOCKERFILE} ${WORKSPACE}/target/Dockerfile
 # TODO should this be a branch instead of just master?
 CRW_VERSION=`wget -qO- https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/master/dependencies/VERSION`
 # apply patches to transform CRW upstream to pkgs.devel version
-# not needed:   -e "s%/build/v3/external_images.txt%/var/www/html/v3/external_images.txt%g" \
 sed -i ${WORKSPACE}/target/Dockerfile \
   -e "s/ *COPY\\(.\\+content_set.\\+\\)/# COPY\\1/g" \
   -e "s/^# *COPY root/COPY root/g" \
@@ -155,6 +156,10 @@ LABEL summary="$SUMMARY" \\\r
       usage="" \r'
 
 echo -e "$METADATA" >> ${WORKSPACE}/target/Dockerfile
+
+echo "======= DOWNSTREAM DOCKERFILE =======>"
+cat ${WORKSPACE}/target/Dockerfile
+echo "<======= DOWNSTREAM DOCKERFILE ======="
 
 # push changes in github to dist-git
 cd ${WORKSPACE}/target
@@ -198,8 +203,9 @@ cd ${WORKSPACE}/target
 rhpkg sources
 
 # update tarballs - step 3 - create tarballs in target folder
-mkdir -p /tmp/root-local/ && docker run --rm -v /tmp/root-local/:/tmp/root-local/ ${CONTAINERNAME} /bin/bash -c "cd /root/.local/ && cp -r bin/ lib/ /tmp/root-local/"
-mkdir -p /tmp/pr-res/ && docker run --rm -v /tmp/pr-res/:/tmp/pr-res/ ${CONTAINERNAME} /bin/bash -c "cd /build/v3/ && cp -r ./* /tmp/pr-res/"
+mkdir -p /tmp/root-local/ && docker run --rm -v \
+  /tmp/root-local/:/tmp/root-local/ ${CONTAINERNAME} /bin/bash \
+  -c "cd /root/.local/ && cp -r bin/ lib/ /tmp/root-local/"
 
 # check diff
 BEFORE_DIR=/tmp/root-local-before
@@ -212,15 +218,28 @@ if [[ ${TAR_DIFF} ]]; then
   pushd /tmp/root-local >/dev/null && sudo tar czf root-local.tgz lib/ bin/ && popd >/dev/null && mv -f /tmp/root-local/root-local.tgz . && sudo rm -fr /tmp/root-local/
 fi
 
+mkdir -p /tmp/pr-res/
+docker run --rm -v \
+  /tmp/pr-res/:/tmp/pr-res/ ${CONTAINERNAME} /bin/bash \
+  -c "cd /build/v3/ && cp -r ./* /tmp/pr-res/"
+
 # check diff
-BEFORE_DIR=/tmp/pr-res-before
-rm -fr ${BEFORE_DIR}; mkdir ${BEFORE_DIR} && tar xzf ${WORKSPACE}/target/v3.tgz -C ${BEFORE_DIR}
-TAR_DIFF2=$(sudo diff --suppress-common-lines -u -r ${BEFORE_DIR} /tmp/pr-res -x "resources/*" -x "*.vsix" -x "*.theia") || true
+if [[ -f ${WORKSPACE}/target/v3.tgz ]]; then
+  BEFORE_DIR=/tmp/pr-res-before
+  rm -fr ${BEFORE_DIR}; mkdir ${BEFORE_DIR} && tar xzf ${WORKSPACE}/target/v3.tgz -C ${BEFORE_DIR}
+  TAR_DIFF2=$(sudo diff --suppress-common-lines -u -r ${BEFORE_DIR} /tmp/pr-res -x "resources/*" -x "*.vsix" -x "*.theia") || true
+else
+  TAR_DIFF2="No such file ${WORKSPACE}/target/v3.tgz -- creating a new one for the first time"
+fi
 if [[ ${TAR_DIFF2} ]]; then
   echo "DIFF START *****"
   echo "${TAR_DIFF2}"
   echo "***** END DIFF"
-  pushd /tmp/pr-res >/dev/null && sudo tar czf v3.tgz ./* && popd >/dev/null && mv -f /tmp/pr-res/v3.tgz . && sudo rm -fr /tmp/pr-res/
+  pushd /tmp/pr-res >/dev/null && \
+    sudo tar czf v3.tgz ./* && \
+    popd >/dev/null && \
+    mv -f /tmp/pr-res/v3.tgz . && \
+    sudo rm -fr /tmp/pr-res/
 fi
 
 # update tarballs - step 4 - commit changes if diff different
