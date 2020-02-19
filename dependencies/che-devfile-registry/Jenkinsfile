@@ -106,7 +106,7 @@ cd ..
   	 	sh BOOTSTRAP + '''
 
 # rsync files in github to dist-git
-SYNC_FILES="arbitrary-users-patch build devfiles .gitignore .htaccess LICENSE README.md VERSION"
+SYNC_FILES="arbitrary-users-patch build devfiles .gitignore .htaccess images LICENSE README.md VERSION"
 for d in ${SYNC_FILES}; do
   if [[ -f ${WORKSPACE}/sources/${d} ]]; then
     rsync -zrlt ${WORKSPACE}/sources/${d} ${WORKSPACE}/target/${d}
@@ -145,9 +145,9 @@ sed -i ${WORKSPACE}/target/Dockerfile --regexp-extended \
   -e 's|^[^#]*--from=offline-builder.*|# &|' \
   `# Enable cache_projects.sh` \
   -e '/COPY --from=builder/a COPY --from=builder /build/resources /var/www/html/resources' \
-  -e '\\|RUN ./index.sh|i # Cache projects in CRW \
-COPY ./build/dockerfiles/rhel.cache_projects.sh devfiles.tgz /tmp/ \
-RUN /tmp/rhel.cache_projects.sh && rm -rf /tmp/rhel.cache_projects.sh /tmp/devfiles.tgz \
+  -e '\\|RUN ./index.sh|i # Cache projects in CRW \\
+COPY ./build/dockerfiles/rhel.cache_projects.sh resources.tgz /tmp/ \\
+RUN /tmp/rhel.cache_projects.sh && rm -rf /tmp/rhel.cache_projects.sh /tmp/resources.tgz \\
 '
 
 METADATA='ENV SUMMARY="Red Hat CodeReady Workspaces ''' + QUAY_PROJECT + ''' container" \\\r
@@ -169,7 +169,9 @@ LABEL summary="$SUMMARY" \\\r
 
 echo -e "$METADATA" >> ${WORKSPACE}/target/Dockerfile
 
+echo "======= DOWNSTREAM DOCKERFILE =======>"
 cat ${WORKSPACE}/target/Dockerfile
+echo "<======= DOWNSTREAM DOCKERFILE ======="
 
 # push changes in github to dist-git
 cd ${WORKSPACE}/target
@@ -194,20 +196,41 @@ else
 fi
 cd ..
 
+# TODO do we need to transform source dockerfile?
 # update tarballs - step 1 - build the container
 cd ${SOURCEDIR}
 # enable offline-builder ONLY for this bootstrap case
 # use Pulp to resolve deps
 # TODO use RHEL8 instead of EPEL7?
 sed -i ${SOURCEDOCKERFILE} --regexp-extended \
-  -e 's|COPY (.*) cached_projects.tgz (.*)|COPY \\1 \\2|' \
+  -e 's|COPY (.*) resources.tgz (.*)|COPY \\1 \\2|' \
   -e 's|ARG BOOTSTRAP=.*|ARG BOOTSTRAP=true|' \
   -e 's|^ *COPY root-local.tgz|# &|'
-
+echo "======= MIDSTREAM DOCKERFILE =======>"
 cat ${SOURCEDOCKERFILE}
+echo "<======= MIDSTREAM DOCKERFILE ======="
 
 CONTAINERNAME="devfileregistryoffline"
-docker build -t ${CONTAINERNAME} . --no-cache -f ${SOURCEDOCKERFILE}
+# TODO should we use http://registry-proxy.engineering.redhat.com/rh-osbs instead of RHCC?
+# transform Brew friendly Dockerfile so we can use it in Jenkins where base images need full registry path
+sed ${WORKSPACE}/target/Dockerfile --regexp-extended \
+  -e 's|COPY (.*) resources.tgz (.*)|COPY \\1 \\2|' \
+  -e 's|ARG BOOTSTRAP=.*|ARG BOOTSTRAP=true|' \
+  -e 's|^ *COPY root-local.tgz|# &|' \
+	-e "s#^FROM #FROM registry.redhat.io/#" \
+	-e "s#^FROM registry.redhat.io/registry.redhat.io/#FROM registry.redhat.io/#" \
+	-e "s#^FROM registry.redhat.io/registry.access.redhat.com/#FROM registry.redhat.io/#" \
+  -e 's|# (COPY .*content_sets.*)|\\1|' \
+  > ${WORKSPACE}/bootstrap.Dockerfile
+
+echo "======= BOOTSTRAP DOCKERFILE =======>"
+cat ${WORKSPACE}/bootstrap.Dockerfile
+echo "<======= BOOTSTRAP DOCKERFILE ======="
+
+echo "======= START BOOTSTRAP BUILD =======>"
+docker build -t ${CONTAINERNAME} . --no-cache -f ${WORKSPACE}/bootstrap.Dockerfile --build-arg BOOTSTRAP=true
+
+echo "<======= END BOOTSTRAP BUILD ======="
 
 # update tarballs - step 2 - check old sources' tarballs
 cd ${WORKSPACE}/target
@@ -225,7 +248,7 @@ if [[ ${TAR_DIFF} ]]; then
   echo "DIFF START *****"
   echo "${TAR_DIFF}"
   echo "***** END DIFF"
-  pushd /tmp/root-local >/dev/null && sudo tar czf root-local.tgz lib/ bin/ && popd >/dev/null && mv -f /tmp/root-local/root-local.tgz . && sudo rm -fr /tmp/root-local/
+  pushd /t  mp/root-local >/dev/null && sudo tar czf root-local.tgz lib/ bin/ && popd >/dev/null && mv -f /tmp/root-local/root-local.tgz . && sudo rm -fr /tmp/root-local/
 fi
 
 mkdir -p /tmp/devfiles/
@@ -235,16 +258,16 @@ docker run --rm -v /tmp/devfiles/:/tmp/devfiles/ \
 
 # check diff
 BEFORE_DIR=/tmp/devfiles-before
-rm -fr ${BEFORE_DIR}; mkdir ${BEFORE_DIR} && tar xzf ${WORKSPACE}/target/devfiles.tgz -C ${BEFORE_DIR}
+rm -fr ${BEFORE_DIR}; mkdir ${BEFORE_DIR} && tar xzf ${WORKSPACE}/target/resources.tgz -C ${BEFORE_DIR}
 TAR_DIFF2=$(sudo diff --suppress-common-lines -u -r ${BEFORE_DIR} /tmp/devfiles) || true
 if [[ ${TAR_DIFF2} ]]; then
   echo "DIFF START *****"
   echo "${TAR_DIFF2}"
   echo "***** END DIFF"
   pushd /tmp/devfiles/ >/dev/null && \
-    sudo tar czf devfiles.tgz ./* && \
+    sudo tar czf resources.tgz ./* && \
     popd >/dev/null && \
-    mv -f /tmp/devfiles/devfiles.tgz . && \
+    mv -f /tmp/devfiles/resources.tgz . && \
     sudo rm -fr /tmp/devfiles/
 fi
 
@@ -252,8 +275,8 @@ fi
 if [[ ${TAR_DIFF} ]] || [[ ${TAR_DIFF2} ]]; then
   hasChanged=1
   # TODO CRW-590 add tarball for devfile samples/images
-  rhpkg new-sources root-local.tgz devfiles.tgz
-  git commit -s -m "[tgz] Update root-local.tgz and devfiles.tgz" sources
+  rhpkg new-sources root-local.tgz resources.tgz
+  git commit -s -m "[tgz] Update root-local.tgz and resources.tgz" sources
   git push origin ''' + GIT_BRANCH + '''
 else
   echo "No changes since previous tarball was created."
