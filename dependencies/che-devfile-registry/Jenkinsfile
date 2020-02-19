@@ -126,7 +126,7 @@ CRW_VERSION=`wget -qO- https://raw.githubusercontent.com/redhat-developer/codere
 sed -i ${WORKSPACE}/target/Dockerfile --regexp-extended \
   `# Replace image used for registry with rhel8/httpd-24` \
   -e 's|^ *FROM registry.access.redhat.com/.* AS registry|# &|' \
-  -e 's|# *(FROM.*rhel8/httpd.*)|\1|' \
+  -e 's|# *(FROM.*rhel8/httpd.*)|\\1|' \
   `# Strip registry from image references` \
   -e 's|FROM registry.access.redhat.com/|FROM |' \
   -e 's|FROM registry.redhat.io/|FROM |' \
@@ -134,7 +134,7 @@ sed -i ${WORKSPACE}/target/Dockerfile --regexp-extended \
   -e 's|ARG USE_DIGESTS=.*|ARG USE_DIGESTS=true|' \
   -e 's|ARG BOOTSTRAP=.*|ARG BOOTSTRAP=false|' \
   `# Enable offline build - copy in built binaries` \
-  -e 's|# (COPY root-local.tgz)|\1|' \
+  -e 's|# (COPY root-local.tgz)|\\1|' \
   -e 's|^ *COPY .*content_sets.*|# &|' \
   `# Comment out PATCHED_* args from build and disable update_devfile_patched_image_tags.sh` \
   -e 's|^ *ARG PATCHED.*|# &|' \
@@ -200,9 +200,9 @@ cd ${SOURCEDIR}
 # use Pulp to resolve deps
 # TODO use RHEL8 instead of EPEL7?
 sed -i ${SOURCEDOCKERFILE} --regexp-extended \
-  -e 's|COPY (.*) cached_projects.tgz (.*)|COPY \1 \2|' \
+  -e 's|COPY (.*) cached_projects.tgz (.*)|COPY \\1 \\2|' \
   -e 's|ARG BOOTSTRAP=.*|ARG BOOTSTRAP=true|' \
-  -e 's| *COPY root-local.tgz|# &|'
+  -e 's|^ *COPY root-local.tgz|# &|'
 
 cat ${SOURCEDOCKERFILE}
 
