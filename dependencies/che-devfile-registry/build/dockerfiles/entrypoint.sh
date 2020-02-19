@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Copyright (c) 2012-2018 Red Hat, Inc.
+# Copyright (c) 2018-2020 Red Hat, Inc.
 # This program and the accompanying materials are made
 # available under the terms of the Eclipse Public License 2.0
 # which is available at https://www.eclipse.org/legal/epl-2.0/
@@ -40,9 +40,10 @@ INDEX_JSON="${DEVFILES_DIR}/index.json"
 #   \2 - Registry portion of image, e.g. (quay.io)/eclipse/che-theia:tag
 #   \3 - Organization portion of image, e.g. quay.io/(eclipse)/che-theia:tag
 #   \4 - Image name portion of image, e.g. quay.io/eclipse/(che-theia):tag
-#   \5 - Tag of image, e.g. quay.io/eclipse/che-theia:(tag)
-#   \6 - Optional quotation following image reference
-IMAGE_REGEX='([[:space:]]*"?)([._:a-zA-Z0-9-]*)/([._a-zA-Z0-9-]*)/([._a-zA-Z0-9-]*):([._a-zA-Z0-9-]*)("?)'
+#   \5 - Optional image digest identifier (empty for tags), e.g. quay.io/eclipse/che-theia(@sha256):digest
+#   \6 - Tag of image or digest, e.g. quay.io/eclipse/che-theia:(tag)
+#   \7 - Optional quotation following image reference
+IMAGE_REGEX='([[:space:]]*"?)([._:a-zA-Z0-9-]*)/([._a-zA-Z0-9-]*)/([._a-zA-Z0-9-]*)(@sha256)?:([._a-zA-Z0-9-]*)("?)'
 
 # We can't use the `-d` option for readarray because
 # registry.centos.org/centos/httpd-24-centos7 ships with Bash 4.2
@@ -55,15 +56,15 @@ for devfile in "${devfiles[@]}"; do
   # Defaults don't work because registry and tags may be different.
   if [ -n "$REGISTRY" ]; then
     echo "    Updating image registry to $REGISTRY"
-    sed -i -E "s|image:$IMAGE_REGEX|image:\1${REGISTRY}/\3/\4:\5\6|" "$devfile"
+    sed -i -E "s|image:$IMAGE_REGEX|image:\1${REGISTRY}/\3/\4\5:\6\7|" "$devfile"
   fi
   if [ -n "$ORGANIZATION" ]; then
     echo "    Updating image organization to $ORGANIZATION"
-    sed -i -E "s|image:$IMAGE_REGEX|image:\1\2/${ORGANIZATION}/\4:\5\6|" "$devfile"
+    sed -i -E "s|image:$IMAGE_REGEX|image:\1\2/${ORGANIZATION}/\4\5:\6\7|" "$devfile"
   fi
   if [ -n "$TAG" ]; then
     echo "    Updating image tag to $TAG"
-    sed -i -E "s|image:$IMAGE_REGEX|image:\1\2/\3/\4:${TAG}\6|" "$devfile"
+    sed -i -E "s|image:$IMAGE_REGEX|image:\1\2/\3/\4:${TAG}\7|" "$devfile"
   fi
 done
 

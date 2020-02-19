@@ -21,8 +21,8 @@ USER 0
 
 ARG BOOTSTRAP=false
 ENV BOOTSTRAP=${BOOTSTRAP}
-ARG LATEST_ONLY=false
-ENV LATEST_ONLY=${LATEST_ONLY}
+ARG USE_DIGESTS=false
+ENV USE_DIGESTS=${USE_DIGESTS}
 
 # to get all the python deps pre-fetched so we can build in Brew:
 # 1. extract files in the container to your local filesystem
@@ -39,33 +39,28 @@ ENV LATEST_ONLY=${LATEST_ONLY}
 
 # NOTE: uncomment for local build. Must also set full registry path in FROM to registry.redhat.io or registry.access.redhat.com
 # enable rhel 7 or 8 content sets (from Brew) to resolve jq as rpm
-COPY ./build/dockerfiles/content_sets_epel7.repo /etc/yum.repos.d/
+COPY ./build/dockerfiles/content_sets_centos8_appstream.repo /etc/yum.repos.d/
 
 COPY ./build/dockerfiles/rhel.install.sh /tmp
 RUN /tmp/rhel.install.sh && rm -f /tmp/rhel.install.sh
 
-# DO NOT USE FOR CRW
 # Registry, organization, and tag to use for base images in dockerfiles. Devfiles
 # will be rewritten during build to use these values for base images.
-# ARG PATCHED_IMAGES_REG="quay.io"
-# ARG PATCHED_IMAGES_ORG="crw"
-# ARG PATCHED_IMAGES_TAG="2.0"
-# DO NOT USE FOR CRW
+ARG PATCHED_IMAGES_REG="quay.io"
+ARG PATCHED_IMAGES_ORG="eclipse"
+ARG PATCHED_IMAGES_TAG="nightly"
 
 COPY ./build/scripts ./arbitrary-users-patch/base_images /build/
 COPY ./devfiles /build/devfiles
 WORKDIR /build/
-
-# DO NOT USE FOR CRW
-# RUN TAG=${PATCHED_IMAGES_TAG} \
-#     ORGANIZATION=${PATCHED_IMAGES_ORG} \
-#     REGISTRY=${PATCHED_IMAGES_REG} \
-#     ./update_devfile_patched_image_tags.sh
-# DO NOT USE FOR CRW
-
+RUN TAG=${PATCHED_IMAGES_TAG} \
+    ORGANIZATION=${PATCHED_IMAGES_ORG} \
+    REGISTRY=${PATCHED_IMAGES_REG} \
+    ./update_devfile_patched_image_tags.sh
 RUN ./check_mandatory_fields.sh devfiles
+RUN if [[ ${USE_DIGESTS} == "true" ]]; then ./write_image_digests.sh devfiles; fi
 RUN ./index.sh > /build/devfiles/index.json
-# TODO CRW-590 RUN ./list_referenced_images.sh devfiles > /build/devfiles/external_images.txt
+RUN ./list_referenced_images.sh devfiles > /build/devfiles/external_images.txt
 RUN chmod -R g+rwX /build/devfiles
 
 ################# 
@@ -75,11 +70,11 @@ RUN chmod -R g+rwX /build/devfiles
 # Build registry, copying meta.yamls and index.json from builder
 # UPSTREAM: use RHEL7/RHSCL/httpd image so we're not required to authenticate with registry.redhat.io
 # https://access.redhat.com/containers/?tab=tags#/registry.access.redhat.com/rhscl/httpd-24-rhel7
-# FROM registry.access.redhat.com/rhscl/httpd-24-rhel7:2.4-109 AS registry
+FROM registry.access.redhat.com/rhscl/httpd-24-rhel7:2.4-108.1575996463 AS registry
 
 # DOWNSTREAM: use RHEL8/httpd
 # https://access.redhat.com/containers/?tab=tags#/registry.access.redhat.com/rhel8/httpd-24
-FROM registry.redhat.io/rhel8/httpd-24:1-76 AS registry
+# FROM registry.redhat.io/rhel8/httpd-24:1-76 AS registry
 USER 0
 
 # BEGIN these steps might not be required
@@ -97,24 +92,20 @@ WORKDIR /var/www/html
 RUN mkdir -m 777 /var/www/html/devfiles
 COPY .htaccess README.md /var/www/html/
 COPY --from=builder /build/devfiles /var/www/html/devfiles
-# TODO CRW-590 COPY ./images /var/www/html/images
+COPY ./images /var/www/html/images
 COPY ./build/dockerfiles/rhel.entrypoint.sh ./build/dockerfiles/entrypoint.sh /usr/local/bin/
 RUN chmod g+rwX /usr/local/bin/entrypoint.sh /usr/local/bin/rhel.entrypoint.sh
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 CMD ["/usr/local/bin/rhel.entrypoint.sh"]
 
 # Offline devfile registry build
-# FROM builder AS offline-builder
-# DO NOT USE FOR CRW (not tested yet)
-# Does not work in brew; need to run this online, cache in tarball and add to Brew
-# RUN ./cache_projects.sh devfiles resources && \
-#     ./cache_images.sh devfiles resources && \
-#     chmod -R g+rwX /build
-# DO NOT USE FOR CRW (not tested yet)
+FROM builder AS offline-builder
+RUN ./cache_projects.sh devfiles resources && \
+    ./cache_images.sh devfiles resources && \
+    chmod -R g+rwX /build
 
-# # TODO CRW-590 
-# FROM registry AS offline-registry
-# COPY --from=offline-builder /build/devfiles /var/www/html/devfiles
-# COPY --from=offline-builder /build/resources /var/www/html/resources
+FROM registry AS offline-registry
+COPY --from=offline-builder /build/devfiles /var/www/html/devfiles
+COPY --from=offline-builder /build/resources /var/www/html/resources
 
 # append Brew metadata here
