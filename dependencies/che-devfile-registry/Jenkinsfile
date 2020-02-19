@@ -209,9 +209,9 @@ sed ${WORKSPACE}/target/Dockerfile --regexp-extended \
   -e 's|ARG BOOTSTRAP=.*|ARG BOOTSTRAP=true|' \
   -e 's|ARG USE_DIGESTS=.*|ARG USE_DIGESTS=false|' \
   -e 's|^ *COPY root-local.tgz|# &|' \
-	-e "s#^FROM #FROM registry.redhat.io/#" \
-	-e "s#^FROM registry.redhat.io/registry.redhat.io/#FROM registry.redhat.io/#" \
-	-e "s#^FROM registry.redhat.io/registry.access.redhat.com/#FROM registry.redhat.io/#" \
+  -e "s#^FROM #FROM registry.redhat.io/#" \
+  -e "s#^FROM registry.redhat.io/registry.redhat.io/#FROM registry.redhat.io/#" \
+  -e "s#^FROM registry.redhat.io/registry.access.redhat.com/#FROM registry.redhat.io/#" \
   -e 's|# (COPY .*content_sets.*)|\\1|' \
   > ${WORKSPACE}/bootstrap.Dockerfile
 
