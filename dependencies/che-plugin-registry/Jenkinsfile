@@ -73,10 +73,10 @@ curl -L -s -S https://raw.githubusercontent.com/redhat-developer/codeready-works
 chmod +x /tmp/updateBaseImages.sh
 cd ${WORKSPACE}/sources
   git checkout --track origin/''' + SOURCE_BRANCH + ''' || true
+  export GITHUB_TOKEN=''' + GITHUB_TOKEN + ''' # echo "''' + GITHUB_TOKEN + '''"
   git config user.email "nickboldt+devstudio-release@gmail.com"
   git config user.name "Red Hat Devstudio Release Bot"
   git config --global push.default matching
-  export GITHUB_TOKEN=''' + GITHUB_TOKEN + ''' # echo "''' + GITHUB_TOKEN + '''"
   OLD_SHA=$(git rev-parse HEAD) # echo ${OLD_SHA:0:8}
   pushd ${SOURCEDOCKERFILE%/*} >/dev/null
     /tmp/updateBaseImages.sh -b ''' + SOURCE_BRANCH + ''' -f ${SOURCEDOCKERFILE##*/} # just pass in rhel.Dockerfile
@@ -178,11 +178,6 @@ else
     cd ..
 fi
 cd ..
-
-# update tarballs - step 0 - get prebuilt vsix files from https://codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/CRW_CI/view/Builds/job/vscode-extensions-build-all/lastSuccessfulBuild/artifact/vsix.tar.gz
-cd ${SOURCEDIR}/v3/
-artifactURL=https://codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/vscode-extensions-build-all/lastSuccessfulBuild/artifact/
-curl -ssL ${artifactURL}vsix.tar.gz -o vsix.tar.gz
 
 # update tarballs - step 1 - build the container
 cd ${SOURCEDIR}
