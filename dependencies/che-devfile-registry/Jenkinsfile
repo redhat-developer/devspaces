@@ -124,31 +124,31 @@ cp -f ${SOURCEDOCKERFILE} ${WORKSPACE}/target/Dockerfile
 # TODO should this be a branch instead of just master?
 CRW_VERSION=`wget -qO- https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/master/dependencies/VERSION`
 # apply patches to transform CRW upstream to pkgs.devel version
-sed -i ${WORKSPACE}/target/Dockerfile \
+sed -i ${WORKSPACE}/target/Dockerfile --regexp-extended \
   `# Replace image used for registry with rhel8/httpd-24` \
-  -Ee 's|^ *FROM registry.access.redhat.com/.* AS registry|# &|' \
-  -Ee 's|# *(FROM.*rhel8/httpd.*)|\1|' \
+  -e 's|^ *FROM registry.access.redhat.com/.* AS registry|# &|' \
+  -e 's|# *(FROM.*rhel8/httpd.*)|\1|' \
   `# Strip registry from image references` \
-  -Ee 's|FROM registry.access.redhat.com/|FROM |' \
-  -Ee 's|FROM registry.redhat.io/|FROM |' \
+  -e 's|FROM registry.access.redhat.com/|FROM |' \
+  -e 's|FROM registry.redhat.io/|FROM |' \
   `# Set arg options: enable USE_DIGESTS and disable BOOTSTRAP` \
-  -Ee 's|ARG USE_DIGESTS=.*|ARG USE_DIGESTS=true|' \
-  -Ee 's|ARG BOOTSTRAP=.*|ARG BOOTSTRAP=false|' \
+  -e 's|ARG USE_DIGESTS=.*|ARG USE_DIGESTS=true|' \
+  -e 's|ARG BOOTSTRAP=.*|ARG BOOTSTRAP=false|' \
   `# Enable offline build - copy in built binaries` \
-  -Ee 's|# (COPY root-local.tgz)|\1|' \
-  -Ee 's|^ *COPY .*content_sets.*|# &|' \
+  -e 's|# (COPY root-local.tgz)|\1|' \
+  -e 's|^ *COPY .*content_sets.*|# &|' \
   `# Comment out PATCHED_* args from build and disable update_devfile_patched_image_tags.sh` \
-  -Ee 's|^ *ARG PATCHED.*|# &|' \
-  -Ee '/^ *RUN TAG/,+3 s|.*|# &| ' \
+  -e 's|^ *ARG PATCHED.*|# &|' \
+  -e '/^ *RUN TAG/,+3 s|.*|# &| ' \
   `# Disable intermediate build targets` \
-  -Ee 's|^ *FROM registry AS offline-registry|# &|' \
-  -Ee '/^ *FROM builder AS offline-builder/,+3 s|.*|# &|' \
-  -Ee 's|^[^#]*--from=offline-builder.*|# &|' \
+  -e 's|^ *FROM registry AS offline-registry|# &|' \
+  -e '/^ *FROM builder AS offline-builder/,+3 s|.*|# &|' \
+  -e 's|^[^#]*--from=offline-builder.*|# &|' \
   `# Enable cache_projects.sh` \
-  -Ee '/COPY --from=builder/a COPY --from=builder /build/resources /var/www/html/resources' \
-  -Ee '\|RUN ./index.sh|i # Cache projects in CRW\
-COPY ./build/dockerfiles/rhel.cache_projects.sh devfiles.tgz /tmp/\
-RUN /tmp/rhel.cache_projects.sh && rm -rf /tmp/rhel.cache_projects.sh /tmp/devfiles.tgz\
+  -e '/COPY --from=builder/a COPY --from=builder /build/resources /var/www/html/resources' \
+  -e '\\|RUN ./index.sh|i # Cache projects in CRW \
+COPY ./build/dockerfiles/rhel.cache_projects.sh devfiles.tgz /tmp/ \
+RUN /tmp/rhel.cache_projects.sh && rm -rf /tmp/rhel.cache_projects.sh /tmp/devfiles.tgz \
 '
 
 METADATA='ENV SUMMARY="Red Hat CodeReady Workspaces ''' + QUAY_PROJECT + ''' container" \\\r
@@ -200,10 +200,10 @@ cd ${SOURCEDIR}
 # enable offline-builder ONLY for this bootstrap case
 # use Pulp to resolve deps
 # TODO use RHEL8 instead of EPEL7?
-sed -i ${SOURCEDOCKERFILE} \
-  -Ee 's|COPY (.*) cached_projects.tgz (.*)|COPY \1 \2|' \
-  -Ee 's|ARG BOOTSTRAP=.*|ARG BOOTSTRAP=true|' \
-  -Ee 's| *COPY root-local.tgz|# &|'
+sed -i ${SOURCEDOCKERFILE} --regexp-extended \
+  -e 's|COPY (.*) cached_projects.tgz (.*)|COPY \1 \2|' \
+  -e 's|ARG BOOTSTRAP=.*|ARG BOOTSTRAP=true|' \
+  -e 's| *COPY root-local.tgz|# &|'
 
 cat ${SOURCEDOCKERFILE}
 
