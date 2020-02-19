@@ -197,18 +197,6 @@ fi
 cd ..
 
 # update tarballs - step 1 - build the container
-cd ${SOURCEDIR}
-# enable offline-builder ONLY for this bootstrap case
-# use Pulp to resolve deps
-# TODO use RHEL8 instead of EPEL7?
-sed -i ${SOURCEDOCKERFILE} --regexp-extended \
-  -e 's|COPY (.*) resources.tgz (.*)|COPY \\1 \\2|' \
-  -e 's|ARG BOOTSTRAP=.*|ARG BOOTSTRAP=true|' \
-  -e 's|^ *COPY root-local.tgz|# &|'
-echo "======= MIDSTREAM DOCKERFILE =======>"
-cat ${SOURCEDOCKERFILE}
-echo "<======= MIDSTREAM DOCKERFILE ======="
-
 CONTAINERNAME="devfileregistryoffline"
 # TODO should we use http://registry-proxy.engineering.redhat.com/rh-osbs instead of RHCC?
 # transform Brew friendly Dockerfile so we can use it in Jenkins where base images need full registry path
