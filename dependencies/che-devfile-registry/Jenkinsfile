@@ -197,12 +197,15 @@ fi
 cd ..
 
 # update tarballs - step 1 - build the container
+cd ${WORKSPACE}/target
+
 CONTAINERNAME="devfileregistryoffline"
 # TODO should we use http://registry-proxy.engineering.redhat.com/rh-osbs instead of RHCC?
 # transform Brew friendly Dockerfile so we can use it in Jenkins where base images need full registry path
 sed ${WORKSPACE}/target/Dockerfile --regexp-extended \
   -e 's|COPY (.*) resources.tgz (.*)|COPY \\1 \\2|' \
   -e 's|ARG BOOTSTRAP=.*|ARG BOOTSTRAP=true|' \
+  -e 's|ARG USE_DIGESTS=.*|ARG USE_DIGESTS=false|' \
   -e 's|^ *COPY root-local.tgz|# &|' \
 	-e "s#^FROM #FROM registry.redhat.io/#" \
 	-e "s#^FROM registry.redhat.io/registry.redhat.io/#FROM registry.redhat.io/#" \
@@ -216,7 +219,7 @@ echo "<======= BOOTSTRAP DOCKERFILE ======="
 
 echo "======= START BOOTSTRAP BUILD =======>"
 docker build -t ${CONTAINERNAME} . --no-cache -f ${WORKSPACE}/bootstrap.Dockerfile \
-  --target builder --build-arg BOOTSTRAP=true
+  --target builder --build-arg BOOTSTRAP=true --build-arg USE_DIGESTS=false
 
 echo "<======= END BOOTSTRAP BUILD ======="
 
@@ -247,9 +250,13 @@ docker run --rm -v /tmp/devfiles/:/tmp/devfiles/ \
   "cd /build && cp -r ./devfiles ./resources /tmp/devfiles/"
 
 # check diff
-BEFORE_DIR=/tmp/devfiles-before
-rm -fr ${BEFORE_DIR}; mkdir ${BEFORE_DIR} && tar xzf ${WORKSPACE}/target/resources.tgz -C ${BEFORE_DIR}
-TAR_DIFF2=$(sudo diff --suppress-common-lines -u -r ${BEFORE_DIR} /tmp/devfiles) || true
+if [[ -f ${WORKSPACE}/target/resources.tgz ]]; then
+  BEFORE_DIR=/tmp/devfiles-before
+  rm -fr ${BEFORE_DIR}; mkdir ${BEFORE_DIR} && tar xzf ${WORKSPACE}/target/resources.tgz -C ${BEFORE_DIR}
+  TAR_DIFF2=$(sudo diff --suppress-common-lines -u -r ${BEFORE_DIR} /tmp/devfiles) || true
+else
+  TAR_DIFF2="No such file ${WORKSPACE}/target/resources.tgz -- creating a new one for the first time"
+fi
 if [[ ${TAR_DIFF2} ]]; then
   echo "DIFF START *****"
   echo "${TAR_DIFF2}"
@@ -264,7 +271,6 @@ fi
 # update tarballs - step 4 - commit changes if diff different
 if [[ ${TAR_DIFF} ]] || [[ ${TAR_DIFF2} ]]; then
   hasChanged=1
-  # TODO CRW-590 add tarball for devfile samples/images
   rhpkg new-sources root-local.tgz resources.tgz
   git commit -s -m "[tgz] Update root-local.tgz and resources.tgz" sources
   git push origin ''' + GIT_BRANCH + '''
