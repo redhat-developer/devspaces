@@ -196,7 +196,6 @@ else
 fi
 cd ..
 
-# TODO do we need to transform source dockerfile?
 # update tarballs - step 1 - build the container
 cd ${SOURCEDIR}
 # enable offline-builder ONLY for this bootstrap case
@@ -228,7 +227,8 @@ cat ${WORKSPACE}/bootstrap.Dockerfile
 echo "<======= BOOTSTRAP DOCKERFILE ======="
 
 echo "======= START BOOTSTRAP BUILD =======>"
-docker build -t ${CONTAINERNAME} . --no-cache -f ${WORKSPACE}/bootstrap.Dockerfile --build-arg BOOTSTRAP=true
+docker build -t ${CONTAINERNAME} . --no-cache -f ${WORKSPACE}/bootstrap.Dockerfile \
+  --target builder --build-arg BOOTSTRAP=true
 
 echo "<======= END BOOTSTRAP BUILD ======="
 
@@ -238,7 +238,9 @@ cd ${WORKSPACE}/target
 rhpkg sources
 
 # update tarballs - step 3 - create tarballs in target folder
-mkdir -p /tmp/root-local/ && docker run --rm -v /tmp/root-local/:/tmp/root-local/ ${CONTAINERNAME} /bin/bash -c "cd /root/.local/ && cp -r bin/ lib/ /tmp/root-local/"
+mkdir -p /tmp/root-local/ && docker run --rm -v \
+  /tmp/root-local/:/tmp/root-local/ ${CONTAINERNAME} /bin/bash \
+  -c "cd /root/.local/ && cp -r bin/ lib/ /tmp/root-local/"
 
 # check diff
 BEFORE_DIR=/tmp/root-local-before
@@ -248,13 +250,13 @@ if [[ ${TAR_DIFF} ]]; then
   echo "DIFF START *****"
   echo "${TAR_DIFF}"
   echo "***** END DIFF"
-  pushd /t  mp/root-local >/dev/null && sudo tar czf root-local.tgz lib/ bin/ && popd >/dev/null && mv -f /tmp/root-local/root-local.tgz . && sudo rm -fr /tmp/root-local/
+  pushd /tmp/root-local >/dev/null && sudo tar czf root-local.tgz lib/ bin/ && popd >/dev/null && mv -f /tmp/root-local/root-local.tgz . && sudo rm -fr /tmp/root-local/
 fi
 
 mkdir -p /tmp/devfiles/
 docker run --rm -v /tmp/devfiles/:/tmp/devfiles/ \
   --entrypoint /bin/bash ${CONTAINERNAME} -c \
-  "cd /var/www/html && cp -r ./devfiles ./resources /tmp/devfiles/"
+  "cd /build && cp -r ./devfiles ./resources /tmp/devfiles/"
 
 # check diff
 BEFORE_DIR=/tmp/devfiles-before
