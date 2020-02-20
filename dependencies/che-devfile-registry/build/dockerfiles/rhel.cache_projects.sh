@@ -16,5 +16,6 @@ set -x
 if [[ ! -f /tmp/resources.tgz ]] || [[ ${BOOTSTRAP} == "true" ]]; then
   ./cache_projects.sh devfiles resources
 else
-  tar -xvf /tmp/resources.tgz -C "${WORKDIR}/"
+  # unpack into specified folder
+  tar -xvf /tmp/resources.tgz -C "$1/"
 fi
