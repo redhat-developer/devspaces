@@ -133,7 +133,7 @@ sed -i ${WORKSPACE}/target/Dockerfile --regexp-extended \
   -e 's|FROM registry.access.redhat.com/|FROM |' \
   -e 's|FROM registry.redhat.io/|FROM |' \
   `# Set arg options: enable USE_DIGESTS and disable BOOTSTRAP` \
-  -e 's|ARG USE_DIGESTS=.*|ARG USE_DIGESTS=true|' \
+  -e 's|ARG USE_DIGESTS=.*|ARG USE_DIGESTS=false|' \
   -e 's|ARG BOOTSTRAP=.*|ARG BOOTSTRAP=false|' \
   `# Enable offline build - copy in built binaries` \
   -e 's|# (COPY root-local.tgz)|\\1|' \
