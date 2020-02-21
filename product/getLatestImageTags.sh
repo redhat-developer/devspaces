@@ -243,6 +243,7 @@ if [[ ${SHOWNVR} -eq 1 ]]; then
 		# codeready-workspaces/operator -> codeready-workspaces-rhel8-operator-container-2.1-10
 		containername="${containername//workspaces-operator/workspaces-rhel8-operator}"
 		containername="${containername//\/operator/-rhel8-operator}"
+		containername="${containername//crw-2-/}"
 		candidateTag="crw-2.0-rhel-8-candidate"
 		if [[ ${VERBOSE} -eq 1 ]]; then
 			echo "brew list-tagged ${candidateTag} | grep \"${containername/\//-}-container\" | sort -V | tail -${NUMTAGS} | sed -e \"s#[\ \t]\+${candidateTag}.\+##\""
