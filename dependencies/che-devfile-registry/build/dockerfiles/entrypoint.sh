@@ -80,7 +80,9 @@ else
     # Experimental workaround -- detect service IP for che-devfile-registry
     # Depends on service used being named 'che-devfile-registry' and only works
     # within the cluster (i.e. browser-side retrieval won't work)
-    URL="http://${CHE_DEVFILE_REGISTRY_SERVICE_HOST}:${CHE_DEVFILE_REGISTRY_SERVICE_PORT}"
+    SERVICE_HOST=$(env | grep DEVFILE_REGISTRY_SERVICE_HOST= | cut -d '=' -f 2)
+    SERVICE_PORT=$(env | grep DEVFILE_REGISTRY_SERVICE_PORT= | cut -d '=' -f 2)
+    URL="http://${SERVICE_HOST}:${SERVICE_PORT}"
     sed -i "s|{{ DEVFILE_REGISTRY_URL }}|${URL}|" "${devfiles[@]}" "${metas[@]}" "$INDEX_JSON"
   fi
 fi
