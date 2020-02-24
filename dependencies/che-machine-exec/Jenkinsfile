@@ -2,7 +2,7 @@
 
 // PARAMETERS for this pipeline:
 // def FORCE_BUILD = "false"
-// def SOURCE_BRANCH = "7.8.x" // 7.3.x or 7.7.x :: branch of source repo from which to find and sync commits to pkgs.devel repo
+// def SOURCE_BRANCH = "7.9.x" // branch of source repo from which to find and sync commits to pkgs.devel repo
 
 def SOURCE_REPO = "eclipse/che-machine-exec" //source repo from which to find and sync commits to pkgs.devel repo
 def GIT_PATH = "containers/codeready-workspaces-machineexec" // dist-git repo to use as target
