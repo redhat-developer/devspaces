@@ -222,7 +222,6 @@ echo "<======= BOOTSTRAP DOCKERFILE ======="
 echo "======= START BOOTSTRAP BUILD =======>"
 docker build -t ${CONTAINERNAME} . --no-cache -f ${WORKSPACE}/bootstrap.Dockerfile \
   --target builder --build-arg BOOTSTRAP=true --build-arg USE_DIGESTS=false
-
 echo "<======= END BOOTSTRAP BUILD ======="
 
 # update tarballs - step 2 - check old sources' tarballs
