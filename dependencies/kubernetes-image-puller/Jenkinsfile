@@ -3,8 +3,8 @@
 // PARAMETERS for this pipeline:
 // def FORCE_BUILD = "false"
 // def SOURCE_BRANCH = "branch of source repo from which to find and sync commits to pkgs.devel repo
-// def SOURCE_REPO = "che-incubator/kubernetes-image-puller" //source repo from which to find and sync commits to pkgs.devel repo
 
+def SOURCE_REPO = "che-incubator/kubernetes-image-puller" //source repo from which to find and sync commits to pkgs.devel repo
 def GIT_PATH = "containers/codeready-workspaces-imagepuller" // dist-git repo to use as target
 
 def GIT_BRANCH = "crw-2.0-rhel-8" // target branch in dist-git repo, eg., crw-2.0-rhel-8
