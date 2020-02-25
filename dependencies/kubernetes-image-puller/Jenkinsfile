@@ -213,11 +213,17 @@ docker build -t ${CONTAINERNAME} . --no-cache -f ${WORKSPACE}/bootstrap.Dockerfi
   --target builder --build-arg BOOTSTRAP=true
 echo "<======= END BOOTSTRAP BUILD ======="
 
+# update tarballs - step 2 - create tarballs in target folder
 docker run --rm --entrypoint sh ${CONTAINERNAME} -c 'tar -pzcf - \
     /opt/app-root/src/go/pkg/mod' > /tmp/resources.tgz
-
 mkdir -p /tmp/resources
 tar xvzf /tmp/resources.tgz -C /tmp/resources
+
+# update tarballs - step 3 - check old sources' tarballs
+cd ${WORKSPACE}/target
+# TODO is there a better way to determine if we need to push sources? 
+rhpkg sources
+
 # check diff
 if [[ -f ${WORKSPACE}/target/resources.tgz ]]; then
   BEFORE_DIR=/tmp/resources-before
