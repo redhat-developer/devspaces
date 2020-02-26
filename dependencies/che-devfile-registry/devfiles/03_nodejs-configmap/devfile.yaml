@@ -1,0 +1,36 @@
+---
+apiVersion: 1.0.0
+metadata:
+  generateName: nodejs-configmap-
+projects:
+  - name: nodejs-configmap
+    source:
+      location: "https://github.com/nodeshift-starters/nodejs-configmap"
+      type: git
+      branch: master
+components:
+  - id: che-incubator/typescript/latest
+    type: chePlugin
+    memoryLimit: 512Mi
+  - mountSources: true
+    memoryLimit: 1Gi
+    type: dockerimage
+    alias: nodejs
+    image: registry.redhat.io/codeready-workspaces/stacks-node-rhel8:2.0-5.1580285284
+  - id: redhat/vscode-openshift-connector/latest
+    type: chePlugin
+    alias: openshift-connector
+    memoryLimit: 512Mi
+commands:
+  - name: 1. Install dependencies
+    actions:
+      - workdir: "${CHE_PROJECTS_ROOT}/nodejs-configmap"
+        type: exec
+        command: npm install
+        component: nodejs
+  - name: 2. Deploy application
+    actions:
+      - workdir: "${CHE_PROJECTS_ROOT}/nodejs-configmap"
+        type: exec
+        command: npm run openshift
+        component: nodejs
