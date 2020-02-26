@@ -149,7 +149,7 @@ timeout(180) {
 		// echo "CRW_SHAs = ${CRW_SHAs}"
 
 		// insert a longer version string which includes both CRW and Che, plus build and SHA info
-		sh "sed -i -e \"s#\\(.\\+productVersion = \\).\\+#\\1'${CRW_SHAs}';#g\" che/dashboard/src/components/branding/che-branding.factory.ts"
+		sh "sed -i -e \"s#\\(.\\+productVersion = \\).\\+#\\1'${CRW_SHAs}';#g\" che/dashboard/src/components/branding/che-branding.ts"
 
 		// apply CRW CSS
 		sh '''#!/bin/bash -xe
