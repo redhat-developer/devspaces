@@ -50,7 +50,7 @@ public class CodereadyOpenShiftLoginPage extends OpenShiftLoginPage {
     String PASSWORD_INPUT_NAME = "password";
     String CONFIRM_PASSWORD_INPUT_NAME = "password-confirm";
     String LOGIN_TITLE_ID = "brand";
-    String LOGIN_BUTTON_XPATH = "//button[text()='Log In']";
+    String LOGIN_BUTTON_XPATH = "//button[type=submit]";
     String REGISTER_LINK_XPATH = "//a[text()='Register']";
     String SUBMIT_BUTTON_XPATH = "//input[@value='Submit']";
     String APPROVE_BUTTON_NAME = "approve";
