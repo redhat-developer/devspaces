@@ -106,7 +106,7 @@
                                     <isset property="JOB_NAME" />
                                 </condition>
                                 <!--       this.$rootScope.productVersion = (info && info.implementationVersion) ? info.implementationVersion : ''; -->
-                                <replaceregexp byline="true" file="${project.build.directory}/source-war/components/branding/che-branding.factory.ts" match="(.+productVersion = ).+" replace="\1'${productVersion}';" />
+                                <replaceregexp byline="true" file="${project.build.directory}/source-war/components/branding/che-branding.ts" match="(.+productVersion = ).+" replace="\1'${productVersion}';" />
                             </tasks>
                         </configuration>
                     </execution>
