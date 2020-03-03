@@ -10,7 +10,7 @@
 #
 
 # https://access.redhat.com/containers/?tab=tags#/registry.access.redhat.com/openjdk/openjdk-8-rhel8
-FROM registry.redhat.io/openjdk/openjdk-8-rhel8:1.2-2.1580292295
+FROM registry.redhat.io/openjdk/openjdk-8-rhel8:1.2-3
 
 ENV SUMMARY="Red Hat CodeReady Workspaces Server container" \
     DESCRIPTION="Red Hat CodeReady Workspaces server container" \
