@@ -149,8 +149,8 @@ timeout(180) {
 		// echo "CRW_SHAs = ${CRW_SHAs}"
 
 		// insert a longer version string which includes both CRW and Che, plus build and SHA info
-		// Doesn't seem to do anything -- see assembly/codeready-workspaces-assembly-dashboard-war/pom.xml line 109
-		// sh "sed -i -e \"s#\\(.\\+productVersion = \\).\\+#\\1'${CRW_SHAs}';#g\" che/dashboard/src/components/branding/che-branding.ts"
+		// not sure if this does anything. See also assembly/codeready-workspaces-assembly-dashboard-war/pom.xml line 109
+		sh "sed -i -e \"s#\\(.\\+productVersion = \\).\\+#\\1'${CRW_SHAs}';#g\" che/dashboard/src/components/branding/che-branding.ts"
 
 		// apply CRW CSS
 		sh '''#!/bin/bash -xe
