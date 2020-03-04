@@ -15,6 +15,10 @@ spec:
     - image: "registry.redhat.io/codeready-workspaces/plugin-java11-rhel8:2.1"
       name: vscode-java
       memoryLimit: "1500Mi"
+      args:
+        - sh
+        - -c
+        - ${PLUGIN_REMOTE_ENDPOINT_EXECUTABLE}
       volumes:
       - mountPath: "/home/jboss/.m2"
         name: m2
