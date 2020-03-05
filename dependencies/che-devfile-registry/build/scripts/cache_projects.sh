@@ -24,14 +24,17 @@ TEMP_REPO="${TEMP_DIR}/cloned"
 # Clone a git repository and create an archive zip at a specified location
 # Args:
 #   $1 - URL of git repo
-#   $2 - (optional) branch to archive
+#   $2 - branch to archive
 #   $3 - destination path for the archived project zip file
 function cache_project() {
   local repo="$1"
   local branch="$2"
   local destination="$3"
-  git clone "$repo" -b "$branch" --depth 1 "$TEMP_REPO" &>/dev/null
-  git archive "$branch" --remote="$TEMP_REPO" --format zip --output "$destination"
+  rm -fr "$TEMP_REPO"
+  git clone "$repo" -b "$branch" --depth 1 "$TEMP_REPO" -q
+  pushd "$TEMP_REPO" &>/dev/null
+    git archive "$branch" -o "$destination"
+  popd &>/dev/null
   rm -rf "$TEMP_REPO"
 }
 
@@ -93,7 +96,6 @@ for devfile in "${devfiles[@]}"; do
   devfile_name=${devfile_name%-}
   for project in $(yq -c '.projects[]?' "$devfile"); do
     project_name=$(echo "$project" | jq -r '.name')
-    echo "    Caching project $project_name"
 
     type=$(echo "$project" | jq -r '.source.type')
     if [ "$type" != "git" ]; then
@@ -103,12 +105,14 @@ for devfile in "${devfiles[@]}"; do
 
     location=$(echo "$project" | jq -r '.source.location')
     branch=$(echo "$project" | jq -r '.source.branch')
-    if [ -n "$branch" ]; then
+    if [[ ! "$branch" ]] || [[ "$branch" == "null" ]]; then
       branch="master"
     fi
+    # echo "    Caching project $project_name from branch $branch"
     destination="${RESOURCES_DIR}/${devfile_name}-${project_name}-${branch}.zip"
     absolute_destination=$(realpath "$destination")
-    echo "    Caching project to $absolute_destination"
+    # echo "    Caching project to $absolute_destination"
+    echo "    Caching project from $location/blob/${branch} to $destination"
     cache_project "$location" "$branch" "$absolute_destination"
 
     echo "    Updating devfile $devfile to point at cached project zip $destination"
