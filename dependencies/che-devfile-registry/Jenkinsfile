@@ -12,6 +12,7 @@ def GIT_BRANCH = "crw-2.0-rhel-8" // target branch in dist-git repo, eg., crw-2.
 def SCRATCH = "false"
 def PUSH_TO_QUAY = "true"
 def QUAY_PROJECT = "devfileregistry" // also used for the Brew dockerfile params
+def USE_DIGESTS = "true" // if true, use @sha256:digest in registry; if false, use :tag
 
 def OLD_SHA=""
 
@@ -133,7 +134,7 @@ sed -i ${WORKSPACE}/target/Dockerfile --regexp-extended \
   -e 's|FROM registry.access.redhat.com/|FROM |' \
   -e 's|FROM registry.redhat.io/|FROM |' \
   `# Set arg options: enable USE_DIGESTS and disable BOOTSTRAP` \
-  -e 's|ARG USE_DIGESTS=.*|ARG USE_DIGESTS=false|' \
+  -e 's|ARG USE_DIGESTS=.*|ARG USE_DIGESTS=''' + USE_DIGESTS + '''|' \
   -e 's|ARG BOOTSTRAP=.*|ARG BOOTSTRAP=false|' \
   `# Enable offline build - copy in built binaries` \
   -e 's|# (COPY root-local.tgz)|\\1|' \
@@ -206,7 +207,7 @@ CONTAINERNAME="devfileregistryoffline"
 sed ${WORKSPACE}/target/Dockerfile --regexp-extended \
   -e 's|COPY (.*) resources.tgz (.*)|COPY \\1 \\2|' \
   -e 's|ARG BOOTSTRAP=.*|ARG BOOTSTRAP=true|' \
-  -e 's|ARG USE_DIGESTS=.*|ARG USE_DIGESTS=false|' \
+  -e 's|ARG USE_DIGESTS=.*|ARG USE_DIGESTS=''' + USE_DIGESTS + '''|' \
   -e 's|^ *COPY root-local.tgz|# &|' \
   `# replace org/container:tag with reg-proxy/rh-osbs/org-container:tag` \
   -e "s#^FROM ([^/:]+)/([^/:]+):([^/:]+)#FROM registry-proxy.engineering.redhat.com/rh-osbs/\\1-\\2:\\3#" \
@@ -220,6 +221,7 @@ cat ${WORKSPACE}/bootstrap.Dockerfile
 echo "<======= BOOTSTRAP DOCKERFILE ======="
 
 echo "======= START BOOTSTRAP BUILD =======>"
+# do not need digests in the BOOTSTRAP build so override default with false
 docker build -t ${CONTAINERNAME} . --no-cache -f ${WORKSPACE}/bootstrap.Dockerfile \
   --target builder --build-arg BOOTSTRAP=true --build-arg USE_DIGESTS=false
 echo "<======= END BOOTSTRAP BUILD ======="

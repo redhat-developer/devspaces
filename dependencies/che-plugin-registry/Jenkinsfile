@@ -12,6 +12,7 @@ def GIT_BRANCH = "crw-2.0-rhel-8" // target branch in dist-git repo, eg., crw-2.
 def SCRATCH = "false"
 def PUSH_TO_QUAY = "true"
 def QUAY_PROJECT = "pluginregistry" // also used for the Brew dockerfile params
+def USE_DIGESTS = "true" // if true, use @sha256:digest in registry; if false, use :tag
 
 def OLD_SHA=""
 
@@ -125,12 +126,14 @@ cp -f ${SOURCEDOCKERFILE} ${WORKSPACE}/target/Dockerfile
 # TODO should this be a branch instead of just master?
 CRW_VERSION=`wget -qO- https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/master/dependencies/VERSION`
 # apply patches to transform CRW upstream to pkgs.devel version
-sed -i ${WORKSPACE}/target/Dockerfile \
-  -e "s/ *COPY\\(.\\+content_set.\\+\\)/# COPY\\1/g" \
+sed -i ${WORKSPACE}/target/Dockerfile --regexp-extended \
+  -e "s/ *COPY\(.\+content_set.\+\)/# COPY\\1/g" \
   -e "s/^# *COPY root/COPY root/g" \
   -e "s%^FROM registry.access.redhat.com/%FROM %g" \
   -e "s%^FROM registry.redhat.io/%FROM %g" \
   -e "s%^FROM builder%# FROM builder%g" \
+  `# Set arg options: enable USE_DIGESTS` \
+  -e 's|ARG USE_DIGESTS=.*|ARG USE_DIGESTS=''' + USE_DIGESTS + '''|' \
   -e "s%^# *COPY v3%COPY v3%g" \
   -e "s%/build/v3/;%/var/www/html/v3/;%g" \
   -e "s%^FROM registry %# FROM registry %g" \
@@ -186,16 +189,33 @@ cd ..
 
 # update tarballs - step 1 - build the container
 cd ${SOURCEDIR}
-# enable offline-builder ONLY for this bootstrap case
-# use Pulp to resolve deps
-# TODO use RHEL8 instead of EPEL7?
-sed -i ${SOURCEDOCKERFILE} \
-	-e "s@ *COPY \\(.\\+/content_sets\\)_epel7\\(.repo /etc/yum.repos.d\\)/@COPY \\1_rhel8\\2/@g" \
-	-e "s@# FROM builder AS offline-builder@FROM builder AS offline-builder@g"
 
 CONTAINERNAME="pluginregistryoffline"
-docker build -t ${CONTAINERNAME} . --no-cache --squash -f ${SOURCEDOCKERFILE} \
-  --target=offline-builder --build-arg BOOTSTRAP=true --build-arg LATEST_ONLY=true
+# transform Brew friendly Dockerfile so we can use it in Jenkins where base images need full registry path
+sed ${WORKSPACE}/target/Dockerfile --regexp-extended \
+  -e 's|COPY (.*) resources.tgz (.*)|COPY \\1 \\2|' \
+  -e 's|ARG BOOTSTRAP=.*|ARG BOOTSTRAP=true|' \
+  -e 's|ARG USE_DIGESTS=.*|ARG USE_DIGESTS=''' + USE_DIGESTS + '''|' \
+  -e 's|^ *COPY root-local.tgz|# &|' \
+  -e 's|^ *COPY v3.tgz|# &|' \
+  `# replace org/container:tag with reg-proxy/rh-osbs/org-container:tag` \
+  -e "s#^FROM ([^/:]+)/([^/:]+):([^/:]+)#FROM registry-proxy.engineering.redhat.com/rh-osbs/\\1-\\2:\\3#" \
+  `# replace ubi8-minimal:tag with reg-proxy/rh-osbs/ubi-minimal:tag` \
+  -e "s#^FROM ([^/:]+):([^/:]+)#FROM registry-proxy.engineering.redhat.com/rh-osbs/\\1:\\2#" \
+  -e 's|# (COPY .*content_sets.*)|\\1|' \
+  `# enable offline-builder for BOOTSTRAP=true so we generate v3.tgz` \
+	-e "s@# FROM builder AS offline-builder@FROM builder AS offline-builder@g"
+  > ${WORKSPACE}/bootstrap.Dockerfile
+
+echo "======= BOOTSTRAP DOCKERFILE =======>"
+cat ${WORKSPACE}/bootstrap.Dockerfile
+echo "<======= BOOTSTRAP DOCKERFILE ======="
+
+echo "======= START BOOTSTRAP BUILD =======>"
+# do not need digests in the BOOTSTRAP build so override default with false
+docker build -t ${CONTAINERNAME} . --no-cache --squash -f ${WORKSPACE}/bootstrap.Dockerfile \
+  --target offline-builder --build-arg BOOTSTRAP=true --build-arg LATEST_ONLY=true --build-arg USE_DIGESTS=false
+echo "<======= END BOOTSTRAP BUILD ======="
 
 # update tarballs - step 2 - check old sources' tarballs
 cd ${WORKSPACE}/target
