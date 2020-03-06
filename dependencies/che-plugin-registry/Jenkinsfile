@@ -204,7 +204,7 @@ sed ${WORKSPACE}/target/Dockerfile --regexp-extended \
   -e "s#^FROM ([^/:]+):([^/:]+)#FROM registry-proxy.engineering.redhat.com/rh-osbs/\\1:\\2#" \
   -e 's|# (COPY .*content_sets.*)|\\1|' \
   `# enable offline-builder for BOOTSTRAP=true so we generate v3.tgz` \
-	-e "s@# FROM builder AS offline-builder@FROM builder AS offline-builder@g"
+	-e 's|# FROM builder AS offline-builder|FROM builder AS offline-builder|g' \
   > ${WORKSPACE}/bootstrap.Dockerfile
 
 echo "======= BOOTSTRAP DOCKERFILE =======>"
