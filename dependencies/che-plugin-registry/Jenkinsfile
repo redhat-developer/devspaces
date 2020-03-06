@@ -192,7 +192,7 @@ cd ${SOURCEDIR}
 sed ${SOURCEDOCKERFILE} --regexp-extended \
   -e "s@ *COPY (.+/content_sets)_epel7(.repo /etc/yum.repos.d)/@COPY \\1_rhel8\\2/@g" \
   -e 's|ARG USE_DIGESTS=.*|ARG USE_DIGESTS=''' + USE_DIGESTS + '''|' \
-  -e "s@# FROM builder AS offline-builder@FROM builder AS offline-builder@g"
+  -e "s@# FROM builder AS offline-builder@FROM builder AS offline-builder@g" \
   > ${WORKSPACE}/bootstrap.Dockerfile
 
 # NOT WORKING YET, so so use SOURCEDOCKERFILE for now
