@@ -27,7 +27,7 @@ components:
     mountSources: true
   - type: dockerimage
     alias: mongo
-    image: registry.redhat.io/rhscl/mongodb-34-rhel7
+    image: registry.redhat.io/rhscl/mongodb-34-rhel7:1-56
     memoryLimit: 512Mi
     env:
       - name: MONGODB_USER
