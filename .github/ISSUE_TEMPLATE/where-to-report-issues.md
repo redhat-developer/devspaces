@@ -1,6 +1,6 @@
 ---
 name: "⚠️ Where to report issues ?"
-about: Do not reporting issues here. Use https://issues.redhat.com/browse/CRW
+about: Do not report issues here. Use https://issues.redhat.com/browse/CRW
 title: Issues must to be filed in CRW JIRA
 labels: ''
 assignees: ''
