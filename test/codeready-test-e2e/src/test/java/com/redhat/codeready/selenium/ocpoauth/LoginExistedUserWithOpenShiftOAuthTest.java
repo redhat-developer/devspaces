@@ -19,8 +19,8 @@ import static org.testng.AssertJUnit.assertTrue;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import com.redhat.codeready.selenium.pageobject.CodereadyOpenShiftLoginPage;
+import com.redhat.codeready.selenium.pageobject.dashboard.CodereadyNewWorkspace;
 import com.redhat.codeready.selenium.pageobject.site.CodereadyLoginPage;
-import java.util.Collections;
 import org.eclipse.che.selenium.core.SeleniumWebDriver;
 import org.eclipse.che.selenium.core.TestGroup;
 import org.eclipse.che.selenium.core.client.TestWorkspaceServiceClient;
@@ -69,6 +69,7 @@ public class LoginExistedUserWithOpenShiftOAuthTest {
   @Inject private TheiaIde theiaIde;
   @Inject private TestWorkspaceServiceClient defaultUserWorkspaceServiceClient;
   @Inject private CheLoginPage cheLoginPage;
+  @Inject private CodereadyNewWorkspace codereadyNewWorkspace;
 
   @AfterClass
   private void removeTestWorkspace() throws Exception {
@@ -110,8 +111,9 @@ public class LoginExistedUserWithOpenShiftOAuthTest {
     assertTrue(codereadyLoginPage.getInfoAlert().contains(expectedInfo));
     codereadyLoginPage.loginWithPredefinedUsername(testUser.getPassword());
 
-    createWorkspaceHelper.createAndStartWorkspaceFromStack(
-        Devfile.JAVA_MAVEN, WORKSPACE_NAME, Collections.emptyList(), null);
+    dashboard.waitDashboardToolbarTitle();
+    codereadyNewWorkspace.openNewWorkspacePageFromGetStartedPage(
+        Devfile.JAVA_MAVEN, WORKSPACE_NAME);
 
     // switch to the Codeready IDE and wait until workspace is ready to use
     theiaIde.switchToIdeFrame();

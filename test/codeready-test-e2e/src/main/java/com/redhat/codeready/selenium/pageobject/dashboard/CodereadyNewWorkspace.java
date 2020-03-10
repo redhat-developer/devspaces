@@ -152,4 +152,17 @@ public class CodereadyNewWorkspace extends NewWorkspace {
   public void clickOnOpenInIDEButton() {
     seleniumWebDriverHelper.waitAndClick(By.xpath(OPEN_IN_IDE_DIALOG_BUTTON), ELEMENT_TIMEOUT_SEC);
   }
+
+  public void openNewWorkspacePageFromGetStartedPage(Devfile devfile, String workspaceName) {
+    String getStartedItem = "//*[@aria-label='Get Started']";
+    String createCustomWorkspaceButton = "//*[@che-button-title='Create a Custom Workspace']";
+
+    seleniumWebDriverHelper.waitAndClick(By.xpath(getStartedItem));
+    seleniumWebDriverHelper.waitAndClick(By.xpath(createCustomWorkspaceButton));
+
+    waitToolbar();
+    selectDevfile(devfile);
+    typeWorkspaceName(workspaceName);
+    clickOnCreateButtonAndOpenInIDE();
+  }
 }
