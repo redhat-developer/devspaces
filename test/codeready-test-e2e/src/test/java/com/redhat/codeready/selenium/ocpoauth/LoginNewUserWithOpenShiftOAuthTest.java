@@ -16,7 +16,7 @@ import static org.eclipse.che.commons.lang.NameGenerator.generate;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import com.redhat.codeready.selenium.pageobject.CodereadyOpenShiftLoginPage;
-import java.util.Collections;
+import com.redhat.codeready.selenium.pageobject.dashboard.CodereadyNewWorkspace;
 import org.eclipse.che.selenium.core.SeleniumWebDriver;
 import org.eclipse.che.selenium.core.TestGroup;
 import org.eclipse.che.selenium.core.client.TestWorkspaceServiceClient;
@@ -59,6 +59,7 @@ public class LoginNewUserWithOpenShiftOAuthTest {
   @Inject private TheiaIde theiaIde;
   @Inject private TestWorkspaceServiceClient defaultUserWorkspaceServiceClient;
   @Inject private CheLoginPage cheLoginPage;
+  @Inject private CodereadyNewWorkspace codereadyNewWorkspace;
 
   @AfterClass
   private void removeTestWorkspace() throws Exception {
@@ -88,8 +89,9 @@ public class LoginNewUserWithOpenShiftOAuthTest {
 
     codereadyOpenShiftLoginPage.submit(openShiftUsername, openShiftEmail);
 
-    createWorkspaceHelper.createAndStartWorkspaceFromStack(
-        Devfile.JAVA_MAVEN, WORKSPACE_NAME, Collections.emptyList(), null);
+    dashboard.waitDashboardToolbarTitle();
+    codereadyNewWorkspace.openNewWorkspacePageFromGetStartedPage(
+        Devfile.JAVA_MAVEN, WORKSPACE_NAME);
 
     // switch to the Codeready IDE and wait until workspace is ready to use
     theiaIde.switchToIdeFrame();
