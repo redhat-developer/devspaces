@@ -15,9 +15,15 @@ spec:
     - image: "registry.redhat.io/codeready-workspaces/plugin-java11-rhel8:2.1"
       name: vscode-java
       memoryLimit: "1500Mi"
+      args:
+        - sh
+        - -c
+        - ${PLUGIN_REMOTE_ENDPOINT_EXECUTABLE}
       volumes:
       - mountPath: "/home/jboss/.m2"
         name: m2
+      - mountPath: "/home/jboss/.gradle"
+        name: gradle
   extensions:
     - https://download.jboss.org/jbosstools/vscode/3rdparty/vscode-java-debug/vscode-java-debug-0.23.0.vsix
     - https://download.jboss.org/jbosstools/static/jdt.ls/stable/java-0.50.0-1825.vsix
