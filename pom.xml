@@ -38,7 +38,8 @@
     </modules>
     <properties>
         <che.dashboard.version>${che.version}</che.dashboard.version>
-        <che.version>7.9.1</che.version>
+        <che.parent.version>7.9.1</che.parent.version>
+        <che.version>7.9.2-SNAPSHOT</che.version>
         <crw.dashboard.version>${crw.version} (Eclipse Che ${che.version})</crw.dashboard.version>
         <crw.docs.version>2.1</crw.docs.version>
         <crw.version>2.1.0.GA</crw.version>
@@ -58,7 +59,7 @@
             <dependency>
                 <groupId>org.eclipse.che</groupId>
                 <artifactId>che-parent</artifactId>
-                <version>${che.version}</version>
+                <version>${che.parent.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
