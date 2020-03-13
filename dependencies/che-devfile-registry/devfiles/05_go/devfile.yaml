@@ -42,7 +42,7 @@ commands:
   - type: exec
     component: go-cli
     command: go get -d && go run main.go
-    workdir: ${CHE_PROJECTS_ROOT}/src/github.com/golang/example/outyet
+    workdir: ${CHE_PROJECTS_ROOT}/example/outyet
 -
   name: stop outyet
   actions:
@@ -55,7 +55,7 @@ commands:
   - type: exec
     component: go-cli
     command: go test
-    workdir: ${CHE_PROJECTS_ROOT}/src/github.com/golang/example/outyet
+    workdir: ${CHE_PROJECTS_ROOT}/example/outyet
 -
   name: run current file
   actions:
