@@ -8,7 +8,7 @@ projects:
     source:
       type: git
       location: "https://github.com/quarkusio/quarkus-quickstarts.git"
-      sparseCheckoutDir: /getting-started/
+      sparseCheckoutDir: getting-started
 components:
   -
     type: chePlugin
