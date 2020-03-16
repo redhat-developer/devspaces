@@ -69,17 +69,20 @@ fi
 # REQUIRE: skopeo
 curl -L -s -S https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/master/product/updateBaseImages.sh -o /tmp/updateBaseImages.sh
 chmod +x /tmp/updateBaseImages.sh
-cd ${WORKSPACE}/sources
-  git checkout --track origin/''' + SOURCE_BRANCH + ''' || true
-  export GITHUB_TOKEN=''' + GITHUB_TOKEN + ''' # echo "''' + GITHUB_TOKEN + '''"
-  git config user.email "nickboldt+devstudio-release@gmail.com"
-  git config user.name "Red Hat Devstudio Release Bot"
-  git config --global push.default matching
+# don't bother to check/update if we're using a tag instead of a branch
+if [[ "''' + SOURCE_BRANCH + '''" != "refs/tags/"* ]]; then
+  cd ${WORKSPACE}/sources
+    git checkout --track origin/''' + SOURCE_BRANCH + ''' || true
+    export GITHUB_TOKEN=''' + GITHUB_TOKEN + ''' # echo "''' + GITHUB_TOKEN + '''"
+    git config user.email "nickboldt+devstudio-release@gmail.com"
+    git config user.name "Red Hat Devstudio Release Bot"
+    git config --global push.default matching
 
-  # can't yet generate a PR against eclipse/che-* repos, and can't push directly
-  # so check for a new base image but DO NOT commit/push/pull-request
-  /tmp/updateBaseImages.sh -b ''' + SOURCE_BRANCH + ''' -f ${SOURCEDOCKERFILE##*/} --nocommit
-cd ..
+    # can't yet generate a PR against eclipse/che-* repos, and can't push directly
+    # so check for a new base image but DO NOT commit/push/pull-request
+    /tmp/updateBaseImages.sh -b ''' + SOURCE_BRANCH + ''' -f ${SOURCEDOCKERFILE##*/} --nocommit
+  cd ..
+fi
 
 # fetch sources to be updated
 if [[ ! -d ${WORKSPACE}/target ]]; then git clone ssh://crw-build@pkgs.devel.redhat.com/''' + GIT_PATH + ''' target; fi
