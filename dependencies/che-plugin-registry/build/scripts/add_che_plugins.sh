@@ -3,6 +3,7 @@
 # Used to create new che-theia and machine-exec plugins and commit changes more easily.
 
 NOCOMMIT=0
+BRANCH="master"
 
 while [[ "$#" -gt 0 ]]; do
   case $1 in
@@ -49,7 +50,7 @@ createNewPlugins "${VERSION}"
 
 # commit change into branch
 if [[ ${NOCOMMIT} -eq 0 ]]; then
-  COMMIT_MSG="[release] Bump to ${VERSION} in ${BRANCH}"
+  COMMIT_MSG="[release] Add che-theia and che-machine-exec plugins ${VERSION} in ${BRANCH}"
   git add v3/plugins/eclipse/ || true
   git commit -s -m "${COMMIT_MSG}" VERSION v3/plugins/eclipse/
   git pull origin "${BRANCH}"
