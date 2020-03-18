@@ -150,8 +150,9 @@ timeout(180) {
 
 		// insert a longer version string which includes both CRW and Che, plus build and SHA info
 		// not sure if this does anything. See also assembly/codeready-workspaces-assembly-dashboard-war/pom.xml line 109
-		sh "sed -i -e \"s#\\(.\\+productVersion = \\).\\+#\\1'${CRW_SHAs}';#g\" che/dashboard/src/components/api/che-service.factory.ts"
-
+		sh "egrep 'productVersion = ' che/dashboard/src/components/api/che-service.factory.ts"
+		sh "sed -i -e \"s#\\(.\\+productVersion = \\).\\+#\\1'${CRW_SHAs}';#g\" che/dashboard/src/components/api/che-service.factory.ts;"
+		sh "egrep 'productVersion = ' che/dashboard/src/components/api/che-service.factory.ts"
 		// apply CRW CSS
 		sh '''#!/bin/bash -xe
 			rawBranch=${branchToBuildCRW##*/}
