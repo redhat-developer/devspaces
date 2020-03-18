@@ -6,16 +6,16 @@ NOCOMMIT=0
 
 while [[ "$#" -gt 0 ]]; do
   case $1 in
-    '-v'|'--version') VERSION="$2"; shift 1;;
     '-n'|'--no-commit') NOCOMMIT=1; shift 0;;
+    *) VERSION="$1"; shift 0;;
   esac
   shift 1
 done
 
 usage ()
 {
-  echo "Usage:   $0 --version [VERSION TO ADD] [--no-commit]"
-  echo "Example: $0 --version 7.9.2"; echo
+  echo "Usage:   $0 [VERSION TO ADD] [--no-commit]"
+  echo "Example: $0 7.9.2"; echo
 }
 
 if [[ ! ${VERSION} ]]; then
