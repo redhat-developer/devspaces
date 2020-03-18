@@ -24,13 +24,11 @@ components:
   memoryLimit: 512Mi
   mountSources: true
   endpoints:
-    - name: '8000-tcp'
-      port: 8000
+    - name: '8080-tcp'
+      port: 8080
   volumes:
     - name: composer
       containerPath: "/home/jboss/.composer"
-    - name: symfony
-      containerPath: "/home/jboss/.symfony"
 commands:
 -
   name: Install dependencies

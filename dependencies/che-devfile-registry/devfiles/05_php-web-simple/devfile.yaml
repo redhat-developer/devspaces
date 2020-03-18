@@ -29,8 +29,6 @@ components:
   volumes:
     - name: composer
       containerPath: "/home/jboss/.composer"
-    - name: symfony
-      containerPath: "/home/jboss/.symfony"
 commands:
 -
   name: Start Apache Web Server
