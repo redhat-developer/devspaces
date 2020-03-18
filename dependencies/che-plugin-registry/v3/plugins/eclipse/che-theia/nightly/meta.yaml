@@ -1,7 +1,7 @@
 apiVersion: v2
 publisher: eclipse
 name: che-theia
-version: 7.8.0
+version: nightly
 type: Che Editor
 displayName: theia-ide
 title: Eclipse Theia
@@ -9,7 +9,7 @@ description: Eclipse Theia
 icon: https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/master/dependencies/che-plugin-registry/resources/images/default.svg?sanitize=true
 category: Editor
 repository: https://github.com/eclipse/che-theia
-firstPublicationDate: "2020-01-29"
+firstPublicationDate: "2020-03-17"
 spec:
   endpoints:
    -  name: "theia"
@@ -21,6 +21,16 @@ spec:
         secure: true
         cookiesAuthEnabled: true
         discoverable: false
+   -  name: "webviews"
+      public: true
+      targetPort: 3100
+      attributes:
+        protocol: http
+        type: webview
+        secure: true
+        cookiesAuthEnabled: true
+        discoverable: false
+        unique: true
    -  name: "theia-dev"
       public: true
       targetPort: 3130
@@ -56,6 +66,8 @@ spec:
            value: 0.0.0.0
          - name: HOSTED_PLUGIN_PORT
            value: "3130"
+         - name: THEIA_HOST
+           value: 127.0.0.1
      volumes:
          - mountPath: "/plugins"
            name: plugins
