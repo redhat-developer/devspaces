@@ -24,7 +24,7 @@ components:
   memoryLimit: 512Mi
   mountSources: true
   endpoints:
-    - name: '8080/tcp'
+    - name: '8080-tcp'
       port: 8080
   volumes:
     - name: composer
