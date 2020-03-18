@@ -24,13 +24,11 @@ components:
   memoryLimit: 512Mi
   mountSources: true
   endpoints:
-    - name: '8080/tcp'
+    - name: '8080-tcp'
       port: 8080
   volumes:
     - name: composer
       containerPath: "/home/jboss/.composer"
-    - name: symfony
-      containerPath: "/home/jboss/.symfony"
 commands:
 -
   name: Start Apache Web Server
