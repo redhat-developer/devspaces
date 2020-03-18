@@ -37,22 +37,37 @@ commands:
   actions:
     - type: exec
       component: php
-      command: "composer install --no-interaction && wget https://get.symfony.com/cli/installer -O - | bash"
+      command: "composer install --no-interaction"
       workdir: "${CHE_PROJECTS_ROOT}/cakephp-ex"
-- 
-  name: Start Symfony Web Server
-  actions:
-    - type: exec
-      component: php
-      command: '$HOME/.symfony/bin/symfony server:start --no-tls'
-      workdir: '${CHE_PROJECTS_ROOT}/cakephp-ex'
 -
-  name: Stop Symfony Web Server
+  name: Start Apache Web Server
   actions:
     - type: exec
       component: php
-      command: '$HOME/.symfony/bin/symfony server:stop'
-      workdir: '${CHE_PROJECTS_ROOT}/cakephp-ex'
+      command: "httpd -k start\ntail -f /etc/httpd/logs/access_log &\ntail -f /etc/httpd/logs/error_log"
+-
+  name: Stop Apache Web Server
+  actions:
+    - type: exec
+      component: php
+      command: "httpd -k stop"
+-
+  name: Restart Apache Web Server
+  actions:
+    - type: exec
+      component: php
+      command: "httpd -k restart"
+-
+  name: Configure Apache Web Server DocumentRoot
+  actions:
+    - type: exec
+      component: php
+      command: |
+        if grep -q '\"/projects\"$' /etc/httpd/conf/httpd.conf; then
+          sed -i 's|DocumentRoot.*|DocumentRoot \"/projects/cakephp-ex\"|' /etc/httpd/conf/httpd.conf
+        else
+          echo "DocumentRoot already configured!"
+        fi
 -
   name: Debug current file
   actions:
