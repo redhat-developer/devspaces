@@ -14,7 +14,7 @@ components:
     type: chePlugin
   - mountSources: true
     endpoints:
-      - name: 8080/tcp
+      - name: 8080-tcp
         port: 8080
     memoryLimit: 512Mi
     type: dockerimage
