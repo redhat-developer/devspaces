@@ -42,7 +42,11 @@ commands:
       -
         type: exec
         component: maven
-        command: "mvn clean install && cp target/*.war /opt/eap/standalone/deployments/ROOT.war && export JAVA_OPTS_APPEND=-Dsun.util.logging.disableCallerCheck=true && /opt/eap/bin/openshift-launch.sh -b 0.0.0.0 --debug 8000"
+        command: >-
+          mvn clean install && 
+          cp target/*.war /opt/eap/standalone/deployments/ROOT.war && 
+          export JAVA_OPTS_APPEND="-Xrunjdwp:transport=dt_socket,address=8000,server=y,suspend=n -Dsun.util.logging.disableCallerCheck=true" && 
+          /opt/eap/bin/openshift-launch.sh
         workdir: ${CHE_PROJECTS_ROOT}/kitchensink-example
   -
     name: copy war
