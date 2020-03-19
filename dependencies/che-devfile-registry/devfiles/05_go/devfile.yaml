@@ -31,7 +31,7 @@ components:
       # between the two
       value: /tmp/.cache
   endpoints:
-    - name: '8080/tcp'
+    - name: '8080-tcp'
       port: 8080
   memoryLimit: 512Mi
   mountSources: true
