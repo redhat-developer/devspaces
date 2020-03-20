@@ -67,7 +67,7 @@
                 <version>1.8</version>
                 <executions>
                     <execution>
-                        <id>update-docs-version-product-json</id>
+                        <id>update-product-json</id>
                         <phase>validate</phase>
                         <goals>
                             <goal>run</goal>
@@ -76,6 +76,7 @@
                             <tasks>
                                 <copy file="${product.json.file}.template" overwrite="true" tofile="${product.json.file}" />
                                 <replace file="${product.json.file}" token="@@crw.docs.baseurl@@" value="${crw.docs.baseurl}" />
+                                <replace file="${product.json.file}" token="@@crw.version@@" value="${crw.dashboard.version} :: ${JOB_NAME} # ${BUILD_NUMBER} @ ${GIT_COMMIT} / ${GIT_BRANCH}" />
                             </tasks>
                         </configuration>
                     </execution>
@@ -90,23 +91,6 @@
                                 <copy overwrite="true" todir="${project.build.directory}/source-war">
                                     <fileset dir="${project.basedir}/src/main/webapp" />
                                 </copy>
-                            </tasks>
-                        </configuration>
-                    </execution>
-                    <!-- apply dashboard version string -->
-                    <execution>
-                        <id>dashboard-version-string-update</id>
-                        <phase>prepare-package</phase>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                        <configuration>
-                            <tasks>
-                                <condition else="${crw.dashboard.version}" property="productVersion" value="${crw.dashboard.version} :: ${JOB_NAME} # ${BUILD_NUMBER} @ ${GIT_COMMIT} / ${GIT_BRANCH}">
-                                    <isset property="JOB_NAME" />
-                                </condition>
-                                <!--       this.$rootScope.productVersion = (info && info.implementationVersion) ? info.implementationVersion : ''; -->
-                                <replaceregexp byline="true" file="${project.build.directory}/source-war/components/api/che-service.factory.ts" match="(.+productVersion = ).+" replace="\1'${productVersion}';" />
                             </tasks>
                         </configuration>
                     </execution>
