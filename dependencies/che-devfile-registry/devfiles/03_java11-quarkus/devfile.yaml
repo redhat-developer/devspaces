@@ -48,7 +48,7 @@ commands:
         command: "mvn package"
         workdir: ${CHE_PROJECTS_ROOT}/quarkus-quickstarts/getting-started
   -
-    name: Start development server (debug mode)
+    name: Start Quarkus in devmode (hot deploy + debug)
     actions:
       -
         type: exec
