@@ -80,7 +80,7 @@ RUN chmod -R g+rwX /build
 
 # DOWNSTREAM: use RHEL8/httpd
 # https://access.redhat.com/containers/?tab=tags#/registry.access.redhat.com/rhel8/httpd-24
-FROM registry.redhat.io/rhel8/httpd-24:1-76 AS registry
+FROM registry.redhat.io/rhel8/httpd-24:1-76.1584015406 AS registry
 USER 0
 RUN yum update -y systemd && yum clean all && rm -rf /var/cache/yum
 
