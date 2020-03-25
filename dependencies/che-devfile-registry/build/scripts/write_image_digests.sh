@@ -11,23 +11,31 @@
 LOG_FILE="/tmp/image_digests.log"
 
 function handle_error() {
-  echo "  Could not read image metadata through skopeo inspect; skipping"
+  the_image="$1"
+  echo "  Could not read image metadata through skopeo inspect; skip $the_image"
   echo -n "  Reason: "
   sed 's|^|    |g' $LOG_FILE
 }
 
 readarray -d '' devfiles < <(find "$1" -name 'devfile.yaml' -print0)
 for image in $(yq -r '.components[]?.image' "${devfiles[@]}" | grep -v "null" | sort | uniq); do
-  echo "Rewriting image $image"
-  # Need to look before we leap in case image is not accessible
-  if ! image_data=$(skopeo inspect "docker://${image}" 2>"$LOG_FILE"); then
-    handle_error
+  digest="$(skopeo inspect "docker://${image}" 2>"$LOG_FILE" | jq -r '.Digest')"
+  if [[ ${digest} ]]; then
+    echo "    $digest # ${image}"
+  else 
+    # for other build methods or for falling back to other registries when not found, can apply transforms here
+    if [[ -x "$(dirname "$0")/write_image_digests_alternate_urls.sh" ]]; then
+      # shellcheck source=./build/scripts/util.sh
+      source "$(dirname "$0")/write_image_digests_alternate_urls.sh"
+    fi
+  fi
+
+  # don't rewrite if we couldn't get a digest from either the basic image or the alternative image
+  if [[ ! ${digest} ]]; then
+    handle_error "$image"
     continue
   fi
-  # Grab digest from image metadata json
-  digest=$(echo "$image_data" | jq -r '.Digest')
 
-  echo "  to use digest $digest"
   digest_image="${image%:*}@${digest}"
 
   # Rewrite images to use sha-256 digests
