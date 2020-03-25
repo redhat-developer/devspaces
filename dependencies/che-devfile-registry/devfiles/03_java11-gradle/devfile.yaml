@@ -60,7 +60,7 @@ commands:
         command: gradle bootRun
         component: gradle
   -
-    name: Run tests
+    name: Run the tests
     actions:
       - workdir: '${CHE_PROJECTS_ROOT}/validating-form-input/complete'
         type: exec
