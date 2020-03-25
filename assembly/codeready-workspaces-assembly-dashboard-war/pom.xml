@@ -76,7 +76,7 @@
                             <tasks>
                                 <copy file="${product.json.file}.template" overwrite="true" tofile="${product.json.file}" />
                                 <replace file="${product.json.file}" token="@@crw.docs.baseurl@@" value="${crw.docs.baseurl}" />
-                                <replace file="${product.json.file}" token="@@crw.version@@" value="${crw.dashboard.version} :: ${JOB_NAME} # ${BUILD_NUMBER} @ ${GIT_COMMIT} / ${GIT_BRANCH}" />
+                                <replace file="${product.json.file}" token="@@crw.version@@" value="${crw.dashboard.version}" />
                             </tasks>
                         </configuration>
                     </execution>
