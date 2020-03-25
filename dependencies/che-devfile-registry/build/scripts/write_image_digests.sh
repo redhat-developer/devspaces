@@ -25,7 +25,8 @@ for image in $(yq -r '.components[]?.image' "${devfiles[@]}" | grep -v "null" | 
   else 
     # for other build methods or for falling back to other registries when not found, can apply transforms here
     if [[ -x "$(dirname "$0")/write_image_digests_alternate_urls.sh" ]]; then
-      # shellcheck source=./build/scripts/util.sh
+      # since extension file may not exist, disable this check
+      # shellcheck disable=SC1091
       source "$(dirname "$0")/write_image_digests_alternate_urls.sh"
     fi
   fi
