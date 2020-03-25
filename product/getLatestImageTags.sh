@@ -49,8 +49,8 @@ codeready-workspaces/plugin-java11-rhel8 \
 codeready-workspaces/plugin-kubernetes-rhel8 \
 codeready-workspaces/plugin-openshift-rhel8"
 
-# registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-operator-metadata:2.1-9
-# registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-operator:2.1-10
+# registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-operator-metadata:2.1-17
+# registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-operator:2.1-17 (NOT codeready-workspaces-operator-rhel8 -- OLD NAME)
 CRW21_CONTAINERS_PULP="\
 codeready-workspaces/operator-metadata \
 codeready-workspaces/operator \
@@ -210,7 +210,7 @@ if [[ ${REGISTRY} != "" ]]; then
 			CONTAINERS="${CRW21_CONTAINERS_PULP}"; 
 			CONTAINERS="${CONTAINERS//codeready-workspaces/crw}"
 			# codeready-workspaces/operator -> codeready-workspaces/operator-rhel8
-			CONTAINERS="${CONTAINERS//crw\/operator /crw\/operator-rhel8 }"
+			CONTAINERS="${CONTAINERS/operator /operator-rhel8 }"
 		fi
 		if [[ ${CONTAINERS} == "${CRW20_CONTAINERS_RHCC}" ]]; then
 			CONTAINERS="${CRW20_CONTAINERS_PULP}"; 
