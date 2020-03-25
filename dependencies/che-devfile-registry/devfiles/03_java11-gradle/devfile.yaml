@@ -4,11 +4,11 @@ metadata:
   generateName: java-gradle-
 projects:
   -
-    name: console-java-simple
+    name: validating-form-input
     source:
       type: git
-      location: "https://github.com/che-samples/console-java-simple.git"
-      branch: java1.11
+      location: "https://github.com/crw-samples/gs-validating-form-input.git"
+      sparseCheckoutDir: complete
 components:
   -
     type: chePlugin
@@ -26,30 +26,58 @@ components:
           -XX:MaxHeapFreeRatio=20 -XX:GCTimeRatio=4 -XX:AdaptiveSizePolicyWeight=90
           -Dsun.zip.disableMemoryMapping=true -Xms20m -Djava.security.egd=file:/dev/./urandom"
       - name: JAVA_TOOL_OPTIONS
-        value: "-XX:MaxRAMPercentage=50 -XX:+UseParallelGC -XX:MinHeapFreeRatio=10
-          -XX:MaxHeapFreeRatio=20 -XX:GCTimeRatio=4 -XX:AdaptiveSizePolicyWeight=90
-          -Dsun.zip.disableMemoryMapping=true -Xms20m -Djava.security.egd=file:/dev/./urandom"
+        value: $(JAVA_OPTS)
       - name: HOME
         value: /home/jboss
-    memoryLimit: 512Mi
+    memoryLimit: 640Mi
     volumes:
       - name: gradle
         containerPath: /home/jboss/.gradle
+    endpoints:
+      - name: input-form-endpoint
+        port: 8080
     mountSources: true
 commands:
-  -
-    name: gradle build
+  - 
+    name: Build
     actions:
-      -
+      - workdir: '${CHE_PROJECTS_ROOT}/validating-form-input/complete'
         type: exec
+        command: gradle build
         component: gradle
-        command: "gradle build"
-        workdir: ${CHE_PROJECTS_ROOT}/console-java-simple
   -
-    name: gradle run
+    name: Debug the application
     actions:
-      -
+      - workdir: '${CHE_PROJECTS_ROOT}/validating-form-input/complete'
         type: exec
+        command: gradle bootRun --debug-jvm
         component: gradle
-        command: "gradle run"
-        workdir: ${CHE_PROJECTS_ROOT}/console-java-simple
+  -
+    name: Run the application
+    actions:
+      - workdir: '${CHE_PROJECTS_ROOT}/validating-form-input/complete'
+        type: exec
+        command: gradle bootRun
+        component: gradle
+  -
+    name: Run tests
+    actions:
+      - workdir: '${CHE_PROJECTS_ROOT}/validating-form-input/complete'
+        type: exec
+        command: gradle test
+        component: gradle
+  - name: Debug remote java application
+    actions:
+      - referenceContent: |
+          {
+           "version": "0.2.0",
+           "configurations": [
+             {
+               "type": "java",
+               "name": "Debug (Attach) - Remote",
+               "request": "attach",
+               "hostName": "localhost",
+               "port": 5005
+             }]
+           }
+        type: vscode-launch
