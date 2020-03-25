@@ -24,6 +24,9 @@ spec:
         name: m2
       - mountPath: "/home/jboss/.gradle"
         name: gradle
+      env:
+        - name: GRADE_HOME
+          value: /opt/gradle/
   extensions:
     - https://download.jboss.org/jbosstools/vscode/3rdparty/vscode-java-debug/vscode-java-debug-0.23.0.vsix
     - https://download.jboss.org/jbosstools/static/jdt.ls/stable/java-0.50.0-1825.vsix
