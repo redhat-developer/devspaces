@@ -27,7 +27,7 @@ timeout(120) {
 		        poll: true,
 		        extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: "sources"]],
 		        submoduleCfg: [],
-		        userRemoteConfigs: [[url: "git@github.com:${SOURCE_REPO}.git"]]])
+		        userRemoteConfigs: [[url: "https://github.com/${SOURCE_REPO}.git"]]])
 
   		      def BOOTSTRAP = '''#!/bin/bash -xe
 
