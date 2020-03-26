@@ -20,7 +20,7 @@ components:
   - id: redhat/vscode-openshift-connector/latest
     type: chePlugin
     alias: openshift-connector
-    memoryLimit: 512Mi
+    memoryLimit: 1Gi
 commands:
   - name: 1. Install dependencies
     actions:
