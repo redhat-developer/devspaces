@@ -17,6 +17,6 @@ spec:
   containers:
     - image: "registry.redhat.io/codeready-workspaces/plugin-openshift-rhel8:2.1"
       name: "vscode-openshift-connector"
-      memoryLimit: "512Mi"
+      memoryLimit: "1280Mi"
   extensions:
     - https://github.com/redhat-developer/vscode-openshift-tools/releases/download/v0.1.2/openshift-connector-0.1.2-420.vsix
