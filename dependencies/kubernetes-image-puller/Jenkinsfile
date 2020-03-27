@@ -75,6 +75,7 @@ cd ${WORKSPACE}/sources
   git config user.email "nickboldt+devstudio-release@gmail.com"
   git config user.name "Red Hat Devstudio Release Bot"
   git config --global push.default matching
+  SOURCE_SHA=$(git rev-parse HEAD) # echo ${SOURCE_SHA:0:8}
 
   # can't yet generate a PR against eclipse/che-* repos, and can't push directly
   # so check for a new base image but DO NOT commit/push/pull-request

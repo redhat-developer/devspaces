@@ -77,10 +77,15 @@ if [[ "''' + SOURCE_BRANCH + '''" != "refs/tags/"* ]]; then
     git config user.email "nickboldt+devstudio-release@gmail.com"
     git config user.name "Red Hat Devstudio Release Bot"
     git config --global push.default matching
+    SOURCE_SHA=$(git rev-parse HEAD) # echo ${SOURCE_SHA:0:8}
 
     # can't yet generate a PR against eclipse/che-* repos, and can't push directly
     # so check for a new base image but DO NOT commit/push/pull-request
     /tmp/updateBaseImages.sh -b ''' + SOURCE_BRANCH + ''' -f ${SOURCEDOCKERFILE##*/} --nocommit
+  cd ..
+else
+  cd ${WORKSPACE}/sources
+    SOURCE_SHA=$(git rev-parse HEAD) # echo ${SOURCE_SHA:0:8}
   cd ..
 fi
 
@@ -104,7 +109,7 @@ cd ..
 		      sh BOOTSTRAP + '''
 
 # rsync files in github to dist-git
-SYNC_FILES="cmd  config  examples  jwt  proxy  stop  vendor  Gopkg.lock  Gopkg.toml  README.md  jwtproxy.go  Dockerfile"
+SYNC_FILES="cmd  config  examples  jwt  proxy  stop  vendor  Gopkg.lock  Gopkg.toml  README.md  jwtproxy.go"
 for d in ${SYNC_FILES}; do
   if [[ -f ${WORKSPACE}/sources/${d} ]]; then
     rsync -zrlt ${WORKSPACE}/sources/${d} ${WORKSPACE}/target/${d}
