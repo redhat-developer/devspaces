@@ -170,6 +170,7 @@ if [[ \$(git diff --name-only) ]]; then # file changed
 	OLD_SHA=\$(git rev-parse HEAD) # echo ${OLD_SHA:0:8}
 	git add Dockerfile ${SYNC_FILES}
   /tmp/updateBaseImages.sh -b ''' + GIT_BRANCH + ''' --nocommit 
+  # note this might fail if we're syncing from a tag vs. a branch
 	git commit -s -m "[sync] Update from ''' + SOURCE_REPO + ''' @ ${SOURCE_SHA:0:8}" Dockerfile ${SYNC_FILES}
 	git push origin ''' + GIT_BRANCH + '''
 	NEW_SHA=\$(git rev-parse HEAD) # echo ${NEW_SHA:0:8}
