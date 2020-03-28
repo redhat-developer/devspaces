@@ -18,7 +18,9 @@ timeout(120) {
                     userRemoteConfigs: [[url: "git@github.com:redhat-developer/codeready-workspaces.git"]]])
                     
             def NEW_IMAGES = sh (
-                script: 'cd ${WORKSPACE}/crw/product && ./getLatestImageTags.sh --crw21 --quay -q | tee ${WORKSPACE}/crw/dependencies/LATEST_IMAGES.new',
+                script: 'cd ${WORKSPACE}/crw/product && ./getLatestImageTags.sh \
+                    --crw21 --quay -q | sort | uniq | grep quay | \
+                    tee ${WORKSPACE}/crw/dependencies/LATEST_IMAGES.new',
                 returnStdout: true
             ).trim().split()
             echo "------"
@@ -56,12 +58,12 @@ timeout(120) {
                 //jobs.add(devRegJob)
                 //jobs.add(pluRegJob)
                 //parallel jobs
-                // TODO ensure operator build happens after previous images has been built
+                // TODO use -c "crw/devfileregistry-rhel8 crw/pluginregistry-rhel8" instead of --crw21 to only pull the two images we care about
                 while (true) {
                     def REBUILT_IMAGES = sh (
                     script: 'cd ${WORKSPACE}/crw/product && ./getLatestImageTags.sh \
-                    -c "crw/devfileregistry-rhel8 crw/pluginregistry-rhel8" --quay -q | \
-                    tee ${WORKSPACE}/crw/dependencies/LATEST_IMAGES.new',
+                        --crw21 --quay -q | sort | uniq | grep quay | \
+                        tee ${WORKSPACE}/crw/dependencies/LATEST_IMAGES.new',
                     returnStdout: true
                     ).trim().split()
                     def rebuiltImagesSet = REBUILT_IMAGES as Set
@@ -83,8 +85,6 @@ timeout(120) {
                   parameters: [[$class: 'BooleanParameterValue', name: 'FORCE_BUILD', value: true]]
                 )
 
-                
-                
                 sh '''#!/bin/bash -xe
 # bootstrapping: if keytab is lost, upload to 
 # https://codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/credentials/store/system/domain/_/
