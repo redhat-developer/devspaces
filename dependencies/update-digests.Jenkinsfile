@@ -1,19 +1,16 @@
 #!/usr/bin/env groovy
 
 // PARAMETERS for this pipeline:
-// (none)
-
-def GIT_BRANCH = "master"
-def buildNode = "rhel7-releng" // slave label
+// def SOURCE_BRANCH = "master"
 
 timeout(120) {
-    node("${buildNode}"){ stage "Check registries"
+    node("rhel7-releng"){ stage "Check registries"
         cleanWs()
         
         withCredentials([string(credentialsId:'devstudio-release.token', variable: 'GITHUB_TOKEN'), 
             file(credentialsId: 'crw-build.keytab', variable: 'CRW_KEYTAB')]) {
             checkout([$class: 'GitSCM', 
-                    branches: [[name: "${GIT_BRANCH}"]], 
+                    branches: [[name: "${SOURCE_BRANCH}"]], 
                     doGenerateSubmoduleConfigurations: false, 
                     poll: true,
                     extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: "crw"]], 
@@ -98,7 +95,7 @@ echo "pkgs.devel.redhat.com,10.19.208.80 ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAplq
 ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts
 
                 cd ${WORKSPACE}/crw/
-                git checkout --track origin/''' + GIT_BRANCH + ''' || true
+                git checkout --track origin/''' + SOURCE_BRANCH + ''' || true
                 git config user.email "nickboldt+devstudio-release@gmail.com"
                 git config user.name "Red Hat Devstudio Release Bot"
                 git config --global push.default matching
@@ -107,7 +104,7 @@ ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts
                 rm -f dependencies/LATEST_IMAGES.new
                 git add dependencies/LATEST_IMAGES || true
                 git commit -m "[update] Update dependencies/LATEST_IMAGES"
-                git push origin ''' + GIT_BRANCH + '''
+                git push origin ''' + SOURCE_BRANCH + '''
                 '''
             }
         }
