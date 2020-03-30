@@ -32,10 +32,7 @@
             <class name="org.eclipse.che.selenium.dashboard.organization.ShareWorkspaceOwnerTest"/>
             <class name="org.eclipse.che.selenium.dashboard.organization.ShareWorkspaceMemberTest"/>
             <class name="org.eclipse.che.selenium.dashboard.organization.SystemAdminOrganizationTest"/>
-            <class name="com.redhat.codeready.selenium.git.AuthorizeOnGithubFromDashboardTest"/>
-            <class name="org.eclipse.che.selenium.dashboard.ImportProjectFromGitHubTest"/>
-            <class name="org.eclipse.che.selenium.factory.DirectUrlFactoryWithKeepDirectoryTest"/>
-            <class name="org.eclipse.che.selenium.dashboard.workspaces.WorkspacesListTest"/>
+            <class name="com.redhat.codeready.selenium.dashboard.workspaces.WorkspacesListTest"/>
         </classes>
     </test>
 </suite>
