@@ -2,7 +2,7 @@
 #
 # For a given tag, produce a link to the commit that was used for that tag.
 # 
-# Eg., for quay.io/crw/stacks-java:1.2-10 get https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-stacks-java/commit?id=53306c3f99d3b35d4bdeb22b5ef2081e322db7f8
+# Eg., for quay.io/crw/stacks-java:2.1-10 get https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-stacks-java/commit?id=53306c3f99d3b35d4bdeb22b5ef2081e322db7f8
 
 if [[ ! -x /usr/bin/brew ]]; then 
 	echo "Brew is required. Please install brewkoji rpm from one of these repos:";
@@ -13,7 +13,7 @@ fi
 usage () {
 	echo "
 Usage: for 1 or more containes in quay or Pulp, compute the NVR, Build URL, and Source commit for that build. eg., 
-  $0  quay.io/crw/stacks-java-rhel8:1.2-10 quay.io/crw/stacks-java-rhel8:1.2-9 ...
+  $0  quay.io/crw/stacks-java-rhel8:2.1-10 quay.io/crw/stacks-java-rhel8:2.1-9 ...
   $0  registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-stacks-java-rhel8 -n 2      | show last 2 tags
 "
 exit
@@ -37,17 +37,18 @@ for d in $CONTAINERS; do
 	dd=${d#*/}
 	TAG=${dd##*:}; # echo $TAG
 	CONTNAME=${dd%%:${TAG}}; CONTNAME=${CONTNAME##*/}; CONTNAME=${CONTNAME%%-rhel8}
-	# echo "Searching for $CONTNAME :: $TAG ... "
+	echo "Search for $CONTNAME :: $TAG"
+	echo "  brew list-tagged crw-2.0-rhel-8-candidate | grep ${CONTNAME} | sed -r -e \"s#crw-2.0-rhel-8-candidate.+##\" | sort -V"
 	if [[ $TAG != ${dd} ]]; then
-		NVRs=$(brew list-tagged crw-1.2-rhel-8-candidate | grep ${CONTNAME} | sed -e "s#crw-1.2-rhel-8-candidate.\+##" | sort -V | grep ${TAG})
+		NVRs=$(brew list-tagged crw-2.0-rhel-8-candidate | grep ${CONTNAME} | sed -e "s#crw-2.0-rhel-8-candidate.\+##" | sort -V | grep ${TAG})
 	else
-		NVRs=$(brew list-tagged crw-1.2-rhel-8-candidate | grep ${CONTNAME} | sed -e "s#crw-1.2-rhel-8-candidate.\+##" | sort -Vr | head -${NUMTAGS})
+		NVRs=$(brew list-tagged crw-2.0-rhel-8-candidate | grep ${CONTNAME} | sed -e "s#crw-2.0-rhel-8-candidate.\+##" | sort -Vr | head -${NUMTAGS})
 	fi
 	for NVR in $NVRs; do
 		echo "     NVR: $NVR"
 		# get the BUILD URL
 		echo "   Build: "$(brew buildinfo $NVR | grep "BUILD" | sed -e "s#.\+\[\([0-9]\+\)\].*#https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=\1#")
-		# # get the sources URL
+		# get the sources URL
 		echo -n "  "; brew buildinfo $NVR | grep Source | sed -e "s#/containers#/cgit/containers#" -e "s#git:#https:#" -e "s%#%/commit?id=%"
 		echo
 	done
