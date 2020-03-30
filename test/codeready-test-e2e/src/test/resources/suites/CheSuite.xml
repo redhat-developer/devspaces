@@ -21,21 +21,19 @@
       <classes>
 
           <!-- upstream Eclipse Che tests adapted to CodeReady Workspaces -->
-          <class name="org.eclipse.che.selenium.dashboard.CreateAndDeleteProjectsTest"/>
+          <class name="com.redhat.codeready.selenium.dashboard.CreateAndDeleteProjectsTest"/>
           <class name="org.eclipse.che.selenium.dashboard.DeleteRunningWorkspaceTest"/>
           <class name="org.eclipse.che.selenium.dashboard.DeleteStoppingWorkspaceTest"/>
           <class name="org.eclipse.che.selenium.dashboard.ImportMavenProjectFromGitTest"/>
           <class name="com.redhat.codeready.selenium.dashboard.workspaces.details.WorkspaceDetailsOverviewTest"/>
-          <class name="org.eclipse.che.selenium.dashboard.workspaces.details.WorkspaceDetailsProjectsTest"/>
+          <class name="com.redhat.codeready.selenium.dashboard.workspaces.details.WorkspaceDetailsProjectsTest"/>
           <class name="org.eclipse.che.selenium.dashboard.RenameWorkspaceTest"/>
-          <class name="org.eclipse.che.selenium.dashboard.CreateWorkspaceTest"/>
+          <class name="com.redhat.codeready.selenium.dashboard.CreateWorkspaceTest"/>
           <class name="org.eclipse.che.selenium.dashboard.workspaces.NewWorkspacePageTest"/>
           <class name="org.eclipse.che.selenium.dashboard.organization.UserEmptyOrganizationTest"/>
-          <class name="org.eclipse.che.selenium.factory.DirectUrlFactoryWithRootFolderTest"/>
-          <class name="org.eclipse.che.selenium.factory.DirectUrlFactoryWithSpecificBranchTest"/>
           <class name="org.eclipse.che.selenium.swagger.SwaggerTest"/>
-          <class name="org.eclipse.che.selenium.workspaces.ProjectStateAfterRefreshTest"/>
-          <class name="org.eclipse.che.selenium.workspaces.ProjectStateAfterRenameWorkspaceTest"/>
+          <class name="com.redhat.codeready.selenium.workspaces.ProjectStateAfterRefreshTest"/>
+          <class name="com.redhat.codeready.selenium.workspaces.ProjectStateAfterRenameWorkspaceTest"/>
           <class name="org.eclipse.che.selenium.workspaces.ProjectStateAfterWorkspaceRestartTest"/>
           <class name="org.eclipse.che.selenium.workspaces.CheckStoppingWsByTimeoutTest"/>
           <class name="com.redhat.codeready.selenium.dashboard.AccountTest"/>
