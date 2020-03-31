@@ -150,7 +150,7 @@ ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts
                 '''
 
             }
-            archiveArtifacts fingerprint: false, artifacts:"crw/dependencies/LATEST_IMAGES.*"
+            archiveArtifacts fingerprint: false, artifacts:"crw/dependencies/LATEST_IMAGES*"
         }
     }
 }
