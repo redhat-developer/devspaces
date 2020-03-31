@@ -13,7 +13,11 @@ timeout(120) {
                     branches: [[name: "${SOURCE_BRANCH}"]], 
                     doGenerateSubmoduleConfigurations: false, 
                     poll: true,
-                    extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: "crw"]], 
+                    extensions: [
+                        [$class: 'RelativeTargetDirectory', relativeTargetDir: "crw"],
+                        [$class: 'PathRestriction', excludedRegions: '', includedRegions: 'dependencies/LATEST_IMAGES, dependencies/update-digests.Jenkinsfile'],
+                        [$class: 'DisableRemotePoll']
+                    ],
                     submoduleCfg: [], 
                     userRemoteConfigs: [[url: "git@github.com:redhat-developer/codeready-workspaces.git"]]])
                     
@@ -29,6 +33,13 @@ timeout(120) {
                 returnStdout: true
             ).trim().split()
     
+            sh '''#!/bin/bash -xe
+                cp ${WORKSPACE}/crw/dependencies/LATEST_IMAGES{,.prev}
+                echo "============ LATEST_IMAGES.prev ============>"
+                cat ${WORKSPACE}/crw/dependencies/LATEST_IMAGES.prev
+                echo "<============ LATEST_IMAGES ============"
+            '''
+
             // compare new and curent images
             def newSet = NEW_IMAGES as Set
             def currentSet = CURRENT_IMAGES as Set
@@ -42,8 +53,11 @@ timeout(120) {
             currentSet.each {
                 echo "Current: $it"
             }
-            sh "cat ${WORKSPACE}/crw/dependencies/LATEST_IMAGES.new"
-            
+            sh '''#!/bin/bash -xe
+                echo "============ LATEST_IMAGES.new 1 ============>"
+                cat ${WORKSPACE}/crw/dependencies/LATEST_IMAGES.new
+                echo "<============ LATEST_IMAGES.new 1 ============"
+            '''
             if (currentSet.equals(newSet)) {
                 echo "No new images detected"
                 currentBuild.result='UNSTABLE'
@@ -75,9 +89,13 @@ timeout(120) {
                         echo "Devfile and plugin registries have been rebuilt!"
                         break
                     }
-                
                     sleep(time:60,unit:"SECONDS")
                 }
+                sh '''#!/bin/bash -xe
+                    echo "============ LATEST_IMAGES.new 2 ============>"
+                    cat ${WORKSPACE}/crw/dependencies/LATEST_IMAGES.new
+                    echo "<============ LATEST_IMAGES.new 2 ============"
+                '''
                 build(
                   job: 'crw-operator-metadata_sync-github-to-pkgs.devel-pipeline',
                   wait: true,
@@ -106,8 +124,9 @@ ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts
                 git commit -m "[update] Update dependencies/LATEST_IMAGES"
                 git push origin ''' + SOURCE_BRANCH + '''
                 '''
+
             }
+            archiveArtifacts fingerprint: false, artifacts:"crw/dependencies/LATEST_IMAGES*"
         }
     }
 }
-
