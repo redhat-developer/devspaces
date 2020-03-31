@@ -56,7 +56,7 @@ timeout(120) {
             '''
             def DIFF_LATEST_IMAGES = sh (
                 // don't report a diff when new operator metadata or registries, or we'll never get out of this recursion loop
-                script: 'diff -u0 ${WORKSPACE}/crw/dependencies/LATEST_IMAGES.{prev,new} -I "devfileregistry\|pluginregistry\|operator-metadata" | grep -v "+++\|---\|@@',
+                script: 'diff -u0 ${WORKSPACE}/crw/dependencies/LATEST_IMAGES.{prev,new} -I "devfileregistry\\|pluginregistry\\|operator-metadata" | grep -v "+++\\|---\\|@@',
                 returnStdout: true
             ).trim().split()
 
