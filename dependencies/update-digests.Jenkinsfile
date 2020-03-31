@@ -15,7 +15,7 @@ timeout(120) {
                     poll: true,
                     extensions: [
                         [$class: 'RelativeTargetDirectory', relativeTargetDir: "crw"],
-                        [$class: 'PathRestriction', excludedRegions: '', includedRegions: 'dependencies/LATEST_IMAGES, dependencies/update-digests.Jenkinsfile'],
+                        [$class: 'PathRestriction', excludedRegions: '', includedRegions: 'dependencies/update-digests.Jenkinsfile'],
                         [$class: 'DisableRemotePoll']
                     ],
                     submoduleCfg: [], 
