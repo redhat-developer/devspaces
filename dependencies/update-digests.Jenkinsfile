@@ -120,8 +120,8 @@ timeout(120) {
 
                 sh '''#!/bin/bash -xe
                 cd ${WORKSPACE}/crw/product && ./getLatestImageTags.sh \
-                --crw21 --quay -q | sort | uniq | grep quay | \
-                tee ${WORKSPACE}/crw/dependencies/LATEST_IMAGES.new
+                --crw21 --quay -q | sort | uniq | grep quay > \
+                ${WORKSPACE}/crw/dependencies/LATEST_IMAGES.new
 
                 echo "============ LATEST_IMAGES.new 3 ============>"
                 cat ${WORKSPACE}/crw/dependencies/LATEST_IMAGES.new
