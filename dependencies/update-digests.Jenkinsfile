@@ -44,9 +44,9 @@ timeout(120) {
             def newSet = NEW_IMAGES as Set
             // def currentSet = CURRENT_IMAGES as Set
             def devfileRegistryImage = newSet.find { it.contains("devfileregistry") }
-            echo "${devfileRegistryImage}"
             def pluginRegistryImage = newSet.find { it.contains("pluginregistry") } 
-            echo "${pluginRegistryImage}"
+            // echo "${pluginRegistryImage}"
+            // echo "${devfileRegistryImage}"
             // newSet.each { echo "New: $it" }
             // currentSet.each { echo "Current: $it" }
             sh '''#!/bin/bash -xe
@@ -54,51 +54,63 @@ timeout(120) {
                 cat ${WORKSPACE}/crw/dependencies/LATEST_IMAGES.new
                 echo "<============ LATEST_IMAGES.new 1 ============"
             '''
-            def DIFF_LATEST_IMAGES = sh (
+            def DIFF_LATEST_IMAGES_WITH_REGISTRY = sh (
                 // don't report a diff when new operator metadata or registries, or we'll never get out of this recursion loop
-                script: 'diff -u0 ${WORKSPACE}/crw/dependencies/LATEST_IMAGES.{prev,new} -I "devfileregistry\\|pluginregistry\\|operator-metadata" | grep -v "+++\\|---\\|@@"',
+                script: 'diff -u0 ${WORKSPACE}/crw/dependencies/LATEST_IMAGES.{prev,new} -I operator-metadata || true',
                 returnStdout: true
-            ).trim().split()
+            ).trim()
+            def DIFF_LATEST_IMAGES_NO_REGISTRY = sh (
+                // do report a diff when new registries, so we can trigger new operator-metadata
+                script: 'diff -u0 ${WORKSPACE}/crw/dependencies/LATEST_IMAGES.{prev,new} -I operator-metadata | grep -v "@@" | grep -v "dependencies/LATEST_IMAGES" | grep -v registry  || true',
+                returnStdout: true
+            ).trim()
 
-            if (DIFF_LATEST_IMAGES.equals("")) {
-                echo "No new images detected"
+            // no changes
+            if (DIFF_LATEST_IMAGES_WITH_REGISTRY.equals("")) {
+                echo "No new images detected, including registries: nothing to do!"
                 currentBuild.result='UNSTABLE'
             } else {
-                echo "Detected new images, scheduling rebuild"
-                echo DIFF_LATEST_IMAGES
-                
-                parallel firstBranch: {
-                    build job: 'crw-devfileregistry_sync-github-to-pkgs.devel-pipeline', parameters: [[$class: 'BooleanParameterValue', name: 'FORCE_BUILD', value: true]]
-                }, secondBranch: {
-                    build job: 'crw-pluginregistry_sync-github-to-pkgs.devel-pipeline', parameters: [[$class: 'BooleanParameterValue', name: 'FORCE_BUILD', value: true]]
-                }
-                //jobs.add(devRegJob)
-                //jobs.add(pluRegJob)
-                //parallel jobs
-                // TODO use -c "crw/devfileregistry-rhel8 crw/pluginregistry-rhel8" instead of --crw21 to only pull the two images we care about
-                while (true) {
-                    def REBUILT_IMAGES = sh (
-                    script: 'cd ${WORKSPACE}/crw/product && ./getLatestImageTags.sh \
-                        --crw21 --quay -q | sort | uniq | grep quay | \
-                        tee ${WORKSPACE}/crw/dependencies/LATEST_IMAGES.new',
-                    returnStdout: true
-                    ).trim().split()
-                    def rebuiltImagesSet = REBUILT_IMAGES as Set
-                    def rebuiltDevfileRegistryImage = rebuiltImagesSet.find { it.contains("devfileregistry") }
-                    echo "${rebuiltDevfileRegistryImage}"
-                    def rebuiltPluginRegistryImage = rebuiltImagesSet.find { it.contains("pluginregistry") } 
-                    echo "${rebuiltPluginRegistryImage}"
-                    if (rebuiltDevfileRegistryImage!=devfileRegistryImage && rebuiltPluginRegistryImage!=pluginRegistryImage) {
-                        echo "Devfile and plugin registries have been rebuilt!"
-                        break
+                // changes that don't include registry
+                if (!DIFF_LATEST_IMAGES_NO_REGISTRY.equals("")) {
+                    echo "Detected new images (not registries): rebuilding registries"
+                    echo DIFF_LATEST_IMAGES_WITH_REGISTRY
+                    
+                    parallel firstBranch: {
+                        build job: 'crw-devfileregistry_sync-github-to-pkgs.devel-pipeline', parameters: [[$class: 'BooleanParameterValue', name: 'FORCE_BUILD', value: true]]
+                    }, secondBranch: {
+                        build job: 'crw-pluginregistry_sync-github-to-pkgs.devel-pipeline', parameters: [[$class: 'BooleanParameterValue', name: 'FORCE_BUILD', value: true]]
                     }
-                    sleep(time:60,unit:"SECONDS")
+                    //jobs.add(devRegJob)
+                    //jobs.add(pluRegJob)
+                    //parallel jobs
+                    // TODO use -c "crw/devfileregistry-rhel8 crw/pluginregistry-rhel8" instead of --crw21 to only pull the two images we care about
+                    while (true) {
+                        def REBUILT_IMAGES = sh (
+                        script: 'cd ${WORKSPACE}/crw/product && ./getLatestImageTags.sh \
+                            --crw21 --quay -q | sort | uniq | grep quay | \
+                            tee ${WORKSPACE}/crw/dependencies/LATEST_IMAGES.new',
+                        returnStdout: true
+                        ).trim().split()
+                        def rebuiltImagesSet = REBUILT_IMAGES as Set
+                        def rebuiltDevfileRegistryImage = rebuiltImagesSet.find { it.contains("devfileregistry") }
+                        echo "${rebuiltDevfileRegistryImage}"
+                        def rebuiltPluginRegistryImage = rebuiltImagesSet.find { it.contains("pluginregistry") } 
+                        echo "${rebuiltPluginRegistryImage}"
+                        if (rebuiltDevfileRegistryImage!=devfileRegistryImage && rebuiltPluginRegistryImage!=pluginRegistryImage) {
+                            echo "Devfile and plugin registries have been rebuilt!"
+                            break
+                        }
+                        sleep(time:60,unit:"SECONDS")
+                    }
+                    sh '''#!/bin/bash -xe
+                        echo "============ LATEST_IMAGES.new 2 ============>"
+                        cat ${WORKSPACE}/crw/dependencies/LATEST_IMAGES.new
+                        echo "<============ LATEST_IMAGES.new 2 ============"
+                    '''
+                } else {
+                    echo "Detected new images (registries only): skip rebuilding registries + proceed to rebuilding operator-metadata"
+                    echo DIFF_LATEST_IMAGES_WITH_REGISTRY
                 }
-                sh '''#!/bin/bash -xe
-                    echo "============ LATEST_IMAGES.new 2 ============>"
-                    cat ${WORKSPACE}/crw/dependencies/LATEST_IMAGES.new
-                    echo "<============ LATEST_IMAGES.new 2 ============"
-                '''
                 build(
                   job: 'crw-operator-metadata_sync-github-to-pkgs.devel-pipeline',
                   wait: true,
@@ -129,7 +141,7 @@ ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts
                 '''
 
             }
-            archiveArtifacts fingerprint: false, artifacts:"crw/dependencies/LATEST_IMAGES*"
+            archiveArtifacts fingerprint: false, artifacts:"crw/dependencies/LATEST_IMAGES.*"
         }
     }
 }
