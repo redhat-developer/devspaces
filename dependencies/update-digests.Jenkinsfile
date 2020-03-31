@@ -119,6 +119,14 @@ timeout(120) {
                 )
 
                 sh '''#!/bin/bash -xe
+                cd ${WORKSPACE}/crw/product && ./getLatestImageTags.sh \
+                --crw21 --quay -q | sort | uniq | grep quay | \
+                tee ${WORKSPACE}/crw/dependencies/LATEST_IMAGES.new
+
+                echo "============ LATEST_IMAGES.new 3 ============>"
+                cat ${WORKSPACE}/crw/dependencies/LATEST_IMAGES.new
+                echo "<============ LATEST_IMAGES.new 3 ============"
+
 # bootstrapping: if keytab is lost, upload to 
 # https://codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/credentials/store/system/domain/_/
 # then set Use secret text above and set Bindings > Variable (path to the file) as ''' + CRW_KEYTAB + '''
@@ -137,6 +145,7 @@ ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts
                 rm -f dependencies/LATEST_IMAGES.new
                 git add dependencies/LATEST_IMAGES || true
                 git commit -m "[update] Update dependencies/LATEST_IMAGES"
+                git pull origin ''' + SOURCE_BRANCH + ''' || true
                 git push origin ''' + SOURCE_BRANCH + '''
                 '''
 
