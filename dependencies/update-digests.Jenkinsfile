@@ -42,27 +42,30 @@ timeout(120) {
 
             // compare new and curent images
             def newSet = NEW_IMAGES as Set
-            def currentSet = CURRENT_IMAGES as Set
+            // def currentSet = CURRENT_IMAGES as Set
             def devfileRegistryImage = newSet.find { it.contains("devfileregistry") }
             echo "${devfileRegistryImage}"
             def pluginRegistryImage = newSet.find { it.contains("pluginregistry") } 
             echo "${pluginRegistryImage}"
-            newSet.each {
-                echo "New: $it"
-            }
-            currentSet.each {
-                echo "Current: $it"
-            }
+            // newSet.each { echo "New: $it" }
+            // currentSet.each { echo "Current: $it" }
             sh '''#!/bin/bash -xe
                 echo "============ LATEST_IMAGES.new 1 ============>"
                 cat ${WORKSPACE}/crw/dependencies/LATEST_IMAGES.new
                 echo "<============ LATEST_IMAGES.new 1 ============"
             '''
-            if (currentSet.equals(newSet)) {
+            def DIFF_LATEST_IMAGES = sh (
+                // don't report a diff when new operator metadata or registries, or we'll never get out of this recursion loop
+                script: 'diff -u0 ${WORKSPACE}/crw/dependencies/LATEST_IMAGES.{prev,new} -I "devfileregistry\|pluginregistry\|operator-metadata" | grep -v "+++\|---\|@@',
+                returnStdout: true
+            ).trim().split()
+
+            if (DIFF_LATEST_IMAGES.equals("")) {
                 echo "No new images detected"
                 currentBuild.result='UNSTABLE'
             } else {
                 echo "Detected new images, scheduling rebuild"
+                echo DIFF_LATEST_IMAGES
                 
                 parallel firstBranch: {
                     build job: 'crw-devfileregistry_sync-github-to-pkgs.devel-pipeline', parameters: [[$class: 'BooleanParameterValue', name: 'FORCE_BUILD', value: true]]
