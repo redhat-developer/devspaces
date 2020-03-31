@@ -18,18 +18,22 @@ def buildNode = "rhel7-releng" // slave label
 timeout(120) {
 	node("${buildNode}"){ stage "Sync repos"
 		cleanWs()
-	        withCredentials([string(credentialsId:'devstudio-release.token', variable: 'GITHUB_TOKEN'), 
-        file(credentialsId: 'crw-build.keytab', variable: 'CRW_KEYTAB')]) {
-		      checkout([$class: 'GitSCM',
-		        branches: [[name: "${SOURCE_BRANCH}"]],
-		        doGenerateSubmoduleConfigurations: false,
-		        credentialsId: 'devstudio-release',
-		        poll: true,
-		        extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: "sources"]],
-		        submoduleCfg: [],
-		        userRemoteConfigs: [[url: "https://github.com/${SOURCE_REPO}.git"]]])
+    withCredentials([string(credentialsId:'devstudio-release.token', variable: 'GITHUB_TOKEN'), 
+    file(credentialsId: 'crw-build.keytab', variable: 'CRW_KEYTAB')]) {
+      checkout([$class: 'GitSCM',
+        branches: [[name: "${SOURCE_BRANCH}"]],
+        doGenerateSubmoduleConfigurations: false,
+        credentialsId: 'devstudio-release',
+        poll: true,
+        extensions: [
+          [$class: 'RelativeTargetDirectory', relativeTargetDir: "sources"],
+          [$class: 'PathRestriction', excludedRegions: '', includedRegions: 'dependencies/kubernetes-image-puller/.*'],
+          [$class: 'DisableRemotePoll']
+        ],
+        submoduleCfg: [],
+        userRemoteConfigs: [[url: "https://github.com/${SOURCE_REPO}.git"]]])
 
-  		      def BOOTSTRAP = '''#!/bin/bash -xe
+        def BOOTSTRAP = '''#!/bin/bash -xe
 
 # bootstrapping: if keytab is lost, upload to
 # https://codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/credentials/store/system/domain/_/
@@ -115,14 +119,14 @@ git config --global push.default matching
 cd ..
 
 '''
-		      sh BOOTSTRAP
+      sh BOOTSTRAP
 
-		      OLD_SHA = sh(script: '''#!/bin/bash -xe
-		      cd ${WORKSPACE}/target; git rev-parse HEAD
-		      ''', returnStdout: true)
-		      println "Got OLD_SHA in target folder: " + OLD_SHA
+      OLD_SHA = sh(script: '''#!/bin/bash -xe
+      cd ${WORKSPACE}/target; git rev-parse HEAD
+      ''', returnStdout: true)
+      println "Got OLD_SHA in target folder: " + OLD_SHA
 
-		      sh BOOTSTRAP + '''
+      sh BOOTSTRAP + '''
 
 # rsync files in github to dist-git
 SYNC_FILES="cfg cmd deploy docker e2e hack pkg utils dev-guide.adoc go.mod go.sum LICENSE Makefile README.md"
@@ -275,14 +279,14 @@ if [[ ${hasChanged} -eq 0 ]]; then
   echo "No changes upstream, nothing to commit"
 fi
 '''
-    		}
-	        def NEW_SHA = sh(script: '''#!/bin/bash -xe
-	        cd ${WORKSPACE}/target; git rev-parse HEAD
-	        ''', returnStdout: true)
-	        println "Got NEW_SHA in target folder: " + NEW_SHA
+    }
+      def NEW_SHA = sh(script: '''#!/bin/bash -xe
+      cd ${WORKSPACE}/target; git rev-parse HEAD
+      ''', returnStdout: true)
+      println "Got NEW_SHA in target folder: " + NEW_SHA
 
-	        if (NEW_SHA.equals(OLD_SHA) && !FORCE_BUILD.equals("true")) {
-	          currentBuild.result='UNSTABLE'
-	        }
+      if (NEW_SHA.equals(OLD_SHA) && !FORCE_BUILD.equals("true")) {
+        currentBuild.result='UNSTABLE'
+      }
 	}
 }
