@@ -4,11 +4,11 @@ metadata:
   generateName: golang-
 projects:
 -
-  name: example
+  name: golang-health-check
   source:
     type: git
-    location: https://github.com/golang/example.git
-  clonePath: src/github.com/golang/example/
+    location: https://github.com/crw-samples/golang-health-check.git
+    branch: master
 components:
 -
   type: chePlugin
@@ -25,7 +25,7 @@ components:
   env:
     - name: GOPATH
       # replicate the GOPATH from the plugin
-      value: /go:$(CHE_PROJECTS_ROOT)
+      value: /projects/.che/gopath:$(CHE_PROJECTS_ROOT)
     - name: GOCACHE
       # replicate the GOCACHE from the plugin, even though the cache is not shared
       # between the two
@@ -37,34 +37,21 @@ components:
   mountSources: true
 commands:
 -
-  name: run outyet
+  name: Run the application
   actions:
   - type: exec
     component: go-cli
-    command: go get -d && go run main.go
-    workdir: ${CHE_PROJECTS_ROOT}/example/outyet
+    command: ./golang-health-check
+    workdir: ${CHE_PROJECTS_ROOT}/golang-health-check
 -
-  name: stop outyet
+  name: Build the application
   actions:
   - type: exec
     component: go-cli
-    command: kill $(pidof go)
+    command: go build
+    workdir: ${CHE_PROJECTS_ROOT}/golang-health-check
 -
-  name: test outyet
-  actions:
-  - type: exec
-    component: go-cli
-    command: go test
-    workdir: ${CHE_PROJECTS_ROOT}/example/outyet
--
-  name: run current file
-  actions:
-  - type: exec
-    component: go-cli
-    command: go get -d && go run ${file}
-    workdir: ${fileDirname}
--
-  name: Debug current file
+  name: Debug configuration
   actions:
   - type: vscode-launch
     referenceContent: |
@@ -77,6 +64,8 @@ commands:
             "request": "launch",
             "mode": "auto",
             "program": "${fileDirname}",
-          },
+            "env": {},
+            "args": []
+          }
         ]
       }
