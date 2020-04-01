@@ -37,27 +37,27 @@ components:
   mountSources: true
 commands:
 -
-  name: run outyet
+  name: Run outyet
   actions:
   - type: exec
     component: go-cli
     command: go get -d && go run main.go
     workdir: ${CHE_PROJECTS_ROOT}/example/outyet
 -
-  name: stop outyet
+  name: Stop outyet
   actions:
   - type: exec
     component: go-cli
     command: kill $(pidof go)
 -
-  name: test outyet
+  name: Test outyet
   actions:
   - type: exec
     component: go-cli
     command: go test
     workdir: ${CHE_PROJECTS_ROOT}/example/outyet
 -
-  name: run current file
+  name: Run current file
   actions:
   - type: exec
     component: go-cli
