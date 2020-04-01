@@ -65,14 +65,21 @@ timeout(120) {
                 returnStdout: true
             ).trim()
 
+
+            def buildDescription="Running..."
+
             // no changes
             if (DIFF_LATEST_IMAGES_WITH_REGISTRY.equals("")) {
-                echo "No new images detected, including registries: nothing to do!"
+                buildDescription="No new images detected, including registries: nothing to do!"
+                currentBuild.description=buildDescription
+                echo currentBuild.description
                 currentBuild.result='UNSTABLE'
             } else {
                 // changes that don't include registry
                 if (!DIFF_LATEST_IMAGES_NO_REGISTRY.equals("")) {
-                    echo "Detected new images (not registries): rebuilding registries"
+                    buildDescription="Detected new images (not registries): rebuild registries + operator-metadata"
+                    currentBuild.description=buildDescription
+                    echo currentBuild.description
                     echo DIFF_LATEST_IMAGES_WITH_REGISTRY
                     
                     parallel firstBranch: {
@@ -108,7 +115,9 @@ timeout(120) {
                         echo "<============ LATEST_IMAGES.new 2 ============"
                     '''
                 } else {
-                    echo "Detected new images (registries only): skip rebuilding registries + proceed to rebuilding operator-metadata"
+                    buildDescription="Detected new registries: rebuild operator-metadata"
+                    currentBuild.description=buildDescription
+                    echo currentBuild.description
                     echo DIFF_LATEST_IMAGES_WITH_REGISTRY
                 }
                 build(
@@ -141,14 +150,20 @@ ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts
                 git config user.name "Red Hat Devstudio Release Bot"
                 git config --global push.default matching
 
+                # replace LATES_IMAGES with new sorted/uniq'd values
                 cat dependencies/LATEST_IMAGES.new | sort | uniq | grep quay > dependencies/LATEST_IMAGES
                 rm -f dependencies/LATEST_IMAGES.new
-                git add dependencies/LATEST_IMAGES || true
-                git commit -m "[update] Update dependencies/LATEST_IMAGES"
+
+                # generate list of NVRs, builds, and commit SHAs
+                rm -f dependencies/LATEST_IMAGES_COMMITS
+                for d in $(cat dependencies/LATEST_IMAGES); do ./product/getCommitSHAForTag.sh $d >> dependencies/LATEST_IMAGES_COMMITS; done
+
+                # commit changes
+                git add dependencies/LATEST_IMAGES dependencies/LATEST_IMAGES_COMMITS || true
+                git commit -m "[update] Update dependencies/LATEST_IMAGES" dependencies/LATEST_IMAGES dependencies/LATEST_IMAGES_COMMITS
                 git pull origin ''' + SOURCE_BRANCH + ''' || true
                 git push origin ''' + SOURCE_BRANCH + '''
                 '''
-
             }
             archiveArtifacts fingerprint: false, artifacts:"crw/dependencies/LATEST_IMAGES*"
         }
