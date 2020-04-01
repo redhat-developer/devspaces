@@ -25,7 +25,7 @@ components:
   env:
     - name: GOPATH
       # replicate the GOPATH from the plugin
-      value: /go:$(CHE_PROJECTS_ROOT)
+      value: /projects/.che/gopath:$(CHE_PROJECTS_ROOT)
     - name: GOCACHE
       # replicate the GOCACHE from the plugin, even though the cache is not shared
       # between the two
