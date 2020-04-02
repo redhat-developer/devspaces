@@ -96,8 +96,8 @@ timeout(120) {
 				poll: true,
 				extensions: [
 					[$class: 'RelativeTargetDirectory', relativeTargetDir: "${CRW_path}"],
-					[$class: 'LocalBranch']
-					[$class: 'PathRestriction', excludedRegions: 'dependencies/**', includedRegions: ''],
+					[$class: 'LocalBranch'],
+					[$class: 'PathRestriction', excludedRegions: 'dependencies/**'],
 					[$class: 'DisableRemotePoll']
 				],
 				submoduleCfg: [], 
@@ -109,7 +109,7 @@ timeout(120) {
 				poll: true,
 				extensions: [
 					[$class: 'RelativeTargetDirectory', relativeTargetDir: "${CRW_path}"],
-					[$class: 'PathRestriction', excludedRegions: 'dependencies/**', includedRegions: ''],
+					[$class: 'PathRestriction', excludedRegions: 'dependencies/**'],
 					[$class: 'DisableRemotePoll']
 				],
 				submoduleCfg: [], 
@@ -196,8 +196,8 @@ timeout(120) {
 				poll: true,
 				extensions: [
 					[$class: 'RelativeTargetDirectory', relativeTargetDir: "${CRW_path}"],
-					[$class: 'LocalBranch']
-					[$class: 'PathRestriction', excludedRegions: 'dependencies/**', includedRegions: ''],
+					[$class: 'LocalBranch'],
+					[$class: 'PathRestriction', excludedRegions: 'dependencies/**'],
 					[$class: 'DisableRemotePoll']
 				],
 				submoduleCfg: [], 
@@ -209,7 +209,7 @@ timeout(120) {
 				poll: true,
 				extensions: [
 					[$class: 'RelativeTargetDirectory', relativeTargetDir: "${CRW_path}"],
-					[$class: 'PathRestriction', excludedRegions: 'dependencies/**', includedRegions: ''],
+					[$class: 'PathRestriction', excludedRegions: 'dependencies/**'],
 					[$class: 'DisableRemotePoll']
 				],
 				submoduleCfg: [], 
