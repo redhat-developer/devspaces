@@ -64,7 +64,14 @@ cd /mnt/rcm-guest/staging/crw && mkdir -p CRW-''' + CRW_VERSION + ''' && ls -la 
 "
 
 cd crw/product/manifest/
-./get-3rd-party-sources.sh --clean 
+./get-3rd-party-sources.sh --clean --workspace ${WORKSPACE} --debug
+
+rsync -Pzrlt --rsh=ssh --protocol=28 ${WORKSPACE}/NVR_SOURCES ${WORKSPACE}/VSIX_SOURCES ${WORKSPACE}/${mnt}-ssh/crw/CRW-2.1.0/
+
+ssh "crw-build/codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com@rcm-guest.app.eng.bos.redhat.com" "\
+cd /mnt/rcm-guest/staging/crw/CRW-''' + CRW_VERSION + '''/ && ls -la *_SOURCES/* \
+"
+
 '''
           }
     }

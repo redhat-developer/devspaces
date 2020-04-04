@@ -6,30 +6,30 @@
 
 CRW_BRANCH=crw-2.0-rhel-8
 DEBUG=0
+WORKSPACE=/tmp
 phases=""
-
-cd /tmp
-MANIFEST_FILE=/tmp/manifest-srcs.txt
 
 # a more extensive clean than the usual
 cleanup () {
-    sudo rm -fr /tmp/NVR_CHECKOUTS
-    rm -f /tmp/NVRs.txt
+    sudo rm -fr ${WORKSPACE}/NVR_CHECKOUTS
+    rm -f ${WORKSPACE}/NVRs.txt
 }
 
 # commandline args
 for key in "$@"; do
   case $key in
+    '--workspace') WORKSPACE="$2"; shift 1;;
     '--clean') cleanup;;
     '--debug') DEBUG=1;;
     *) phases="${phases} $1 ";;
   esac
   shift 1
 done
-
 if [[ ! ${phases} ]]; then phases=" 1 2 3 "; fi
 
-sudo rm -fr ${MANIFEST_FILE} /tmp/nvr-sources/ /tmp/NVR_SOURCES/ /tmp/VSIX_SOURCES/
+MANIFEST_FILE=${WORKSPACE}/manifest-srcs.txt
+
+sudo rm -fr ${MANIFEST_FILE} ${WORKSPACE}/nvr-sources/ ${WORKSPACE}/NVR_SOURCES/ ${WORKSPACE}/VSIX_SOURCES/
 
 mnf () {
     echo "$1" | tee -a ${MANIFEST_FILE}
@@ -59,22 +59,22 @@ maketarball ()
         subfolder=${subfolder//stacks-language-servers-dependencies-/}
         subfolder=${subfolder//.tar.gz/}
         subfolder=${subfolder//.tgz/}
-        mkdir -p /tmp/nvr-sources/${NVR}/${subfolder}
-        mnf "Unpack $(pwd)/${t//\.\//} to /tmp/nvr-sources/${NVR}/${subfolder}"
-        tar xzf $t -C /tmp/nvr-sources/${NVR}/${subfolder}
+        mkdir -p ${WORKSPACE}/nvr-sources/${NVR}/${subfolder}
+        mnf "Unpack $(pwd)/${t//\.\//} to ${WORKSPACE}/nvr-sources/${NVR}/${subfolder}"
+        tar xzf $t -C ${WORKSPACE}/nvr-sources/${NVR}/${subfolder}
     done
 
     # add in pkgs.devel sources
     SRC_DIR_IN_TARBALL="$(git remote -v | grep origin | grep pkgs | grep fetch | sed -e "s#.\+\(pkgs.devel.\+\) .\+#\1#")"
-    mkdir -p /tmp/nvr-sources/${NVR}/${SRC_DIR_IN_TARBALL}/
+    mkdir -p ${WORKSPACE}/nvr-sources/${NVR}/${SRC_DIR_IN_TARBALL}/
     pushd .. >/dev/null 
-        rsync -arz ${SOURCES_DIR} /tmp/nvr-sources/${NVR}/${SRC_DIR_IN_TARBALL}/ --exclude=".git" --exclude="*.tar.gz" --exclude="*.tgz"
+        rsync -arz ${SOURCES_DIR} ${WORKSPACE}/nvr-sources/${NVR}/${SRC_DIR_IN_TARBALL}/ --exclude=".git" --exclude="*.tar.gz" --exclude="*.tgz"
     popd >/dev/null 
 
-    if [[ -d /tmp/nvr-sources/${NVR} ]]; then
-        mnf "Create /tmp/NVR_SOURCES/${NVR}.tar.gz"
-        mkdir -p /tmp/NVR_SOURCES/
-        pushd /tmp/nvr-sources/${NVR} >/dev/null && tar czf /tmp/NVR_SOURCES/${NVR}.tar.gz ./* && popd >/dev/null 
+    if [[ -d ${WORKSPACE}/nvr-sources/${NVR} ]]; then
+        mnf "Create ${WORKSPACE}/NVR_SOURCES/${NVR}.tar.gz"
+        mkdir -p ${WORKSPACE}/NVR_SOURCES/
+        pushd ${WORKSPACE}/nvr-sources/${NVR} >/dev/null && tar czf ${WORKSPACE}/NVR_SOURCES/${NVR}.tar.gz ./* && popd >/dev/null 
         mnf "" 
     fi
     popd >/dev/null 
@@ -90,16 +90,16 @@ if [[ ${phases} == *"1"* ]]; then
     mnf ""
 
     # check NVR for a matching tarball or tarballs
-    if [[ ! -f /tmp/NVRs.txt ]]; then
+    if [[ ! -f ${WORKSPACE}/NVRs.txt ]]; then
         ../getLatestImageTags.sh \
-            --crw21 --nvr | tee /tmp/NVRs.txt
+            --crw21 --nvr | tee ${WORKSPACE}/NVRs.txt
     fi
-    cat /tmp/NVRs.txt | sort | tee -a ${MANIFEST_FILE}
+    cat ${WORKSPACE}/NVRs.txt | sort | tee -a ${MANIFEST_FILE}
     mnf ""
 
-    mkdir -p /tmp/NVR_CHECKOUTS
-    pushd /tmp/NVR_CHECKOUTS >/dev/null
-        for d in $(cat /tmp/NVRs.txt | sort); do
+    mkdir -p ${WORKSPACE}/NVR_CHECKOUTS
+    pushd ${WORKSPACE}/NVR_CHECKOUTS >/dev/null
+        for d in $(cat ${WORKSPACE}/NVRs.txt | sort); do
             NVR=${d}
             SOURCES_DIR=${d%-container-*}; SOURCES_DIR=${SOURCES_DIR/-rhel8}; SOURCES_DIR=${SOURCES_DIR/-server}; # echo $SOURCES_DIR
             echo "git clone ${SOURCES_DIR} from ${CRW_BRANCH} ..."
@@ -123,7 +123,7 @@ if [[ ${phases} == *"2"* ]]; then
     mnf ""
     mnf "Phase 2 - get vsix sources not included in rhpkg sources from GH"
     mnf ""
-    mkdir -p /tmp/VSIX_SOURCES/
+    mkdir -p ${WORKSPACE}/VSIX_SOURCES/
     pushd ../../dependencies/che-plugin-registry >/dev/null
         URLsAll=""
         URLs=""
@@ -144,7 +144,7 @@ if [[ ${phases} == *"2"* ]]; then
                 f=${s#https://}; f=${f//\//__}; # echo "-> $f"
                 echo -n "Fetch GH sources from "
                 mnf $s
-                curl -sSL $s -o /tmp/VSIX_SOURCES/$f
+                curl -sSL $s -o ${WORKSPACE}/VSIX_SOURCES/$f
             done
         fi
     popd >/dev/null
@@ -154,7 +154,7 @@ if [[ ${phases} == *"3"* ]]; then
     mnf ""
     mnf "Phase 3 - get vsix sources not included in rhpkg sources from download.jboss.org (or github)"
     mnf ""
-    mkdir -p /tmp/VSIX_SOURCES/
+    mkdir -p ${WORKSPACE}/VSIX_SOURCES/
     pushd ../../dependencies/che-plugin-registry >/dev/null
         URLsAll=""
         URLs=""
@@ -179,8 +179,8 @@ if [[ ${phases} == *"3"* ]]; then
                     fi
                 fi
                 f=${u#https://}; f=${f//\//__}; # echo "-> $f"
-                mkdir -p /tmp/VSIX_SOURCES/$f
-                pushd /tmp/VSIX_SOURCES/$f >/dev/null
+                mkdir -p ${WORKSPACE}/VSIX_SOURCES/$f
+                pushd ${WORKSPACE}/VSIX_SOURCES/$f >/dev/null
                     # different patterns for source tarballs
                     if [[ ${f} == *"static__jdt.ls__stable"* ]]; then # get from GH
                         # check https://github.com/redhat-developer/vscode-java/archive/v0.57.0.tar.gz
@@ -217,7 +217,7 @@ fi
 
 echo ""
 echo "Short MVN manifest is in file: ${MANIFEST_FILE}"
-echo "NVR Source tarballs are in /tmp/NVR_SOURCES/ and /tmp/VSIX_SOURCES/"
+echo "NVR Source tarballs are in ${WORKSPACE}/NVR_SOURCES/ and ${WORKSPACE}/VSIX_SOURCES/"
 echo ""
 
 ##################################
