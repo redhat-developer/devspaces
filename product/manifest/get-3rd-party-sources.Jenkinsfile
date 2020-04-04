@@ -52,6 +52,8 @@ export KRB5CCNAME=/var/tmp/crw-build_ccache
 kinit "crw-build/codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com@REDHAT.COM" -kt ''' + CRW_KEYTAB + '''
 klist # verify working
 
+cd crw/product/manifest/ && ./get-3rd-party-sources.sh --clean --debug
+
 DESTHOST="crw-build/codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com@rcm-guest.app.eng.bos.redhat.com"
 RCMG="${DESTHOST}:/mnt/rcm-guest/staging/crw"
 for mnt in RCMG; do 
@@ -62,10 +64,8 @@ done
 
 ssh "${DESTHOST}" "cd /mnt/rcm-guest/staging/crw && mkdir -p CRW-''' + CRW_VERSION + ''' && ls -la . "
 
-cd crw/product/manifest/ && ./get-3rd-party-sources.sh --clean --debug
-
 # DOESN'T WORK: rsync -Pzrlt --rsh=ssh --protocol=28 ... ${WORKSPACE}/${mnt}-ssh/crw/CRW-''' + CRW_VERSION + '''/
-scp -r ${WORKSPACE}/manifest-srcs.txt ${WORKSPACE}/NVR_SOURCES ${WORKSPACE}/VSIX_SOURCES ${RCMG}/CRW-''' + CRW_VERSION + '''/
+scp -r ${WORKSPACE}/manifest-srcs.txt ${WORKSPACE}/NVR_SOURCES ${WORKSPACE}/VSIX_SOURCES "${RCMG}/CRW-''' + CRW_VERSION + '''/"
 
 ssh "${DESTHOST}" "cd /mnt/rcm-guest/staging/crw/CRW-''' + CRW_VERSION + '''/ && ls -la manifest-srcs.txt *_SOURCES/* "
 '''
