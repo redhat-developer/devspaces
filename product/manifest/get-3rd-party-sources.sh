@@ -5,6 +5,7 @@
 # TODO: make this script ALSO fetch the tarballs from Jenkins so we can do historical sources
 
 CRW_BRANCH=crw-2.0-rhel-8
+PKGS_DEVEL_USER="crw-build"
 DEBUG=0
 WORKSPACE=/tmp
 phases=""
@@ -18,6 +19,7 @@ cleanup () {
 # commandline args
 for key in "$@"; do
   case $key in
+    '--pduser') PKGS_DEVEL_USER="$2"; shift 1;;
     '--workspace') WORKSPACE="$2"; shift 1;;
     '--clean') cleanup;;
     '--debug') DEBUG=1;;
@@ -103,7 +105,7 @@ if [[ ${phases} == *"1"* ]]; then
             NVR=${d}
             SOURCES_DIR=${d%-container-*}; SOURCES_DIR=${SOURCES_DIR/-rhel8}; SOURCES_DIR=${SOURCES_DIR/-server}; # echo $SOURCES_DIR
             echo "git clone ${SOURCES_DIR} from ${CRW_BRANCH} ..."
-            git clone -q ssh://nboldt@pkgs.devel.redhat.com/containers/${SOURCES_DIR} ${SOURCES_DIR} || true
+            git clone -q ssh://$PKGS_DEVEL_USER}@pkgs.devel.redhat.com/containers/${SOURCES_DIR} ${SOURCES_DIR} || true
             cd ${SOURCES_DIR} && git checkout ${CRW_BRANCH} -q && cd ..
             if [[ -d ${SOURCES_DIR} ]]; then
                 maketarball ${SOURCES_DIR} ${NVR}
