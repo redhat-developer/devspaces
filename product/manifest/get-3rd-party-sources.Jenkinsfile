@@ -52,26 +52,22 @@ export KRB5CCNAME=/var/tmp/crw-build_ccache
 kinit "crw-build/codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com@REDHAT.COM" -kt ''' + CRW_KEYTAB + '''
 klist # verify working
 
-RCMG="crw-build/codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com@rcm-guest.app.eng.bos.redhat.com:/mnt/rcm-guest/staging/crw"
+DESTHOST="crw-build/codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com@rcm-guest.app.eng.bos.redhat.com"
+RCMG="${DESTHOST}:/mnt/rcm-guest/staging/crw"
 for mnt in RCMG; do 
   mkdir -p ${WORKSPACE}/${mnt}-ssh; 
   if [[ $(file ${WORKSPACE}/${mnt}-ssh 2>&1) == *"Transport endpoint is not connected"* ]]; then fusermount -uz ${WORKSPACE}/${mnt}-ssh; fi
   if [[ -x sshfs ]] && [[ ! -d ${WORKSPACE}/${mnt}-ssh/crw ]]; then  sshfs ${!mnt} ${WORKSPACE}/${mnt}-ssh; fi
 done
 
-ssh "crw-build/codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com@rcm-guest.app.eng.bos.redhat.com" "\
-cd /mnt/rcm-guest/staging/crw && mkdir -p CRW-''' + CRW_VERSION + ''' && ls -la . \
-"
+ssh "${DESTHOST}" "cd /mnt/rcm-guest/staging/crw && mkdir -p CRW-''' + CRW_VERSION + ''' && ls -la . "
 
-cd crw/product/manifest/
-./get-3rd-party-sources.sh --clean --debug
+cd crw/product/manifest/ && ./get-3rd-party-sources.sh --clean --debug
 
-rsync -Pzrlt --rsh=ssh --protocol=28 ${WORKSPACE}/NVR_SOURCES ${WORKSPACE}/VSIX_SOURCES ${WORKSPACE}/${mnt}-ssh/crw/CRW-2.1.0/
+# DOESN'T WORK: rsync -Pzrlt --rsh=ssh --protocol=28 ... ${WORKSPACE}/${mnt}-ssh/crw/CRW-''' + CRW_VERSION + '''/
+scp -r ${WORKSPACE}/manifest-srcs.txt ${WORKSPACE}/NVR_SOURCES ${WORKSPACE}/VSIX_SOURCES ${RCMG}/CRW-''' + CRW_VERSION + '''/
 
-ssh "crw-build/codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com@rcm-guest.app.eng.bos.redhat.com" "\
-cd /mnt/rcm-guest/staging/crw/CRW-''' + CRW_VERSION + '''/ && ls -la *_SOURCES/* \
-"
-
+ssh "${DESTHOST}" "cd /mnt/rcm-guest/staging/crw/CRW-''' + CRW_VERSION + '''/ && ls -la manifest-srcs.txt *_SOURCES/* "
 '''
           }
     }

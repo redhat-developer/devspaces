@@ -1,5 +1,5 @@
 #!/bin/bash
-set -x
+set +x
 set -e
 
 # script to convert previously downloaded dist-git lookaside cached tarballs into format compatible with Legal requirements (NVR.tar.gz)
@@ -214,6 +214,8 @@ if [[ ${phases} == *"3"* ]]; then
         fi
     popd >/dev/null
 fi
+
+du -shc ${WORKSPACE}/NVR_SOURCES/* ${WORKSPACE}/VSIX_SOURCES/*
 
 ##################################
 
