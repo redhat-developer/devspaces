@@ -1,4 +1,6 @@
 #!/bin/bash
+set -x
+set -e
 
 # script to convert previously downloaded dist-git lookaside cached tarballs into format compatible with Legal requirements (NVR.tar.gz)
 
@@ -7,8 +9,7 @@
 CRW_BRANCH=crw-2.0-rhel-8
 PKGS_DEVEL_USER="crw-build"
 DEBUG=0
-WORKSPACE=/tmp
-phases=""
+phases=" 1 2 3 "
 
 # a more extensive clean than the usual
 cleanup () {
@@ -19,8 +20,6 @@ cleanup () {
 # commandline args
 for key in "$@"; do
   case $key in
-    '--pduser') PKGS_DEVEL_USER="$2"; shift 1;;
-    '--workspace') WORKSPACE="$2"; shift 1;;
     '--clean') cleanup;;
     '--debug') DEBUG=1;;
     *) phases="${phases} $1 ";;
@@ -28,6 +27,7 @@ for key in "$@"; do
   shift 1
 done
 if [[ ! ${phases} ]]; then phases=" 1 2 3 "; fi
+if [[ ! ${WORKSPACE} ]]; then WORKSPACE=/tmp; fi
 
 MANIFEST_FILE=${WORKSPACE}/manifest-srcs.txt
 

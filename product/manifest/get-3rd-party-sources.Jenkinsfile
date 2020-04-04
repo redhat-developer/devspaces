@@ -64,7 +64,7 @@ cd /mnt/rcm-guest/staging/crw && mkdir -p CRW-''' + CRW_VERSION + ''' && ls -la 
 "
 
 cd crw/product/manifest/
-./get-3rd-party-sources.sh --clean --workspace ${WORKSPACE} --debug
+./get-3rd-party-sources.sh --clean --debug
 
 rsync -Pzrlt --rsh=ssh --protocol=28 ${WORKSPACE}/NVR_SOURCES ${WORKSPACE}/VSIX_SOURCES ${WORKSPACE}/${mnt}-ssh/crw/CRW-2.1.0/
 
