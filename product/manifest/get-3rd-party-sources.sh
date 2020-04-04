@@ -91,7 +91,7 @@ if [[ ${phases} == *"1"* ]]; then
 
     # check NVR for a matching tarball or tarballs
     if [[ ! -f /tmp/NVRs.txt ]]; then
-        ${HOME}/51/codeready-workspaces/product/getLatestImageTags.sh \
+        ../getLatestImageTags.sh \
             --crw21 --nvr | tee /tmp/NVRs.txt
     fi
     cat /tmp/NVRs.txt | sort | tee -a ${MANIFEST_FILE}
@@ -124,7 +124,7 @@ if [[ ${phases} == *"2"* ]]; then
     mnf "Phase 2 - get vsix sources not included in rhpkg sources from GH"
     mnf ""
     mkdir -p /tmp/VSIX_SOURCES/
-    pushd ${HOME}/51/codeready-workspaces/dependencies/che-plugin-registry >/dev/null
+    pushd ../../dependencies/che-plugin-registry >/dev/null
         URLsAll=""
         URLs=""
         for d in $(find . -name meta.yaml | sort); do 
@@ -155,7 +155,7 @@ if [[ ${phases} == *"3"* ]]; then
     mnf "Phase 3 - get vsix sources not included in rhpkg sources from download.jboss.org (or github)"
     mnf ""
     mkdir -p /tmp/VSIX_SOURCES/
-    pushd ${HOME}/51/codeready-workspaces/dependencies/che-plugin-registry >/dev/null
+    pushd ../../dependencies/che-plugin-registry >/dev/null
         URLsAll=""
         URLs=""
         for d in $(find . -name meta.yaml | sort); do 
