@@ -19,6 +19,7 @@ function handle_error() {
   sed 's|^|    |g' $LOG_FILE
 }
 
+set -x
 readarray -d '' devfiles < <(find "$1" -name 'devfile.yaml' -print0)
 for image in $(yq -r '.components[]?.image' "${devfiles[@]}" | grep -v "null" | sort | uniq); do
   digest="$(skopeo --tls-verify=false inspect "docker://${image}" 2>"$LOG_FILE" | jq -r '.Digest')"
@@ -45,3 +46,4 @@ for image in $(yq -r '.components[]?.image' "${devfiles[@]}" | grep -v "null" | 
   sed -i -E 's|"?'"${image}"'"?|"'"${digest_image}"'" # tag: '"${image}"'|g' "${devfiles[@]}"
 done
 rm $LOG_FILE
+set +x
