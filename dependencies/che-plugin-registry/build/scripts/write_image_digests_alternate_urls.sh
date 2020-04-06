@@ -11,7 +11,7 @@
       digest="$(skopeo inspect --tls-verify=false "docker://${alt_image}" 2>"$LOG_FILE" | jq -r '.Digest')"
       if [[ ! ${digest} ]]; then
         handle_error "$alt_image + $image"
-        continue
+        exit 1
       else
         echo "    $digest # ${alt_image}"
       fi
