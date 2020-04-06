@@ -9,7 +9,7 @@
           > ${tmpfile}
       alt_image=$(cat ${tmpfile})
       rm -f ${tmpfile}
-      digest="$(skopeo inspect --tls-verify=false "docker://${alt_image}" 2>"$LOG_FILE" | jq -r '.Digest')"
+      digest="$(sleep 2s; skopeo inspect --tls-verify=false "docker://${alt_image}" 2>"$LOG_FILE" | jq -r '.Digest')"
       if [[ ! ${digest} ]]; then
         handle_error "$alt_image + $image"
         exit 1
