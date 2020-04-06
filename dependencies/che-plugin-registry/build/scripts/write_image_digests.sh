@@ -19,6 +19,7 @@ function handle_error() {
   sed 's|^|    |g' $LOG_FILE
 }
 
+set -x
 readarray -d '' metas < <(find "$1" -name 'meta.yaml' -print0)
 for image in $(yq -r '.spec | .containers[]?,.initContainers[]? | .image' "${metas[@]}" | sort | uniq); do
   digest="$(skopeo --tls-verify=false inspect "docker://${image}" 2>"$LOG_FILE" | jq -r '.Digest')"
@@ -45,3 +46,4 @@ for image in $(yq -r '.spec | .containers[]?,.initContainers[]? | .image' "${met
   sed -i -E 's|"?'"${image}"'"?|"'"${digest_image}"'" # tag: '"${image}"'|g' "${metas[@]}"
 done
 rm $LOG_FILE
+set +x
