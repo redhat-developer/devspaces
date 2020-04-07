@@ -153,7 +153,7 @@ sed -i ${WORKSPACE}/target/Dockerfile --regexp-extended \
   `# Enable cache_artifacts.sh` \
   -e '\\|write_image_digests.sh|i # Cache projects in CRW \\
 COPY ./build/dockerfiles/rhel.cache_artifacts.sh resources.tgz /tmp/ \\
-RUN /tmp/rhel.cache_artifacts.sh /build/ && rm -rf /tmp/rhel.artifacts.sh /tmp/resources.tgz \\
+RUN /tmp/rhel.cache_artifacts.sh /build/v3/ && rm -rf /tmp/rhel.cache_artifacts.sh /tmp/resources.tgz \\
 '
 
 METADATA='ENV SUMMARY="Red Hat CodeReady Workspaces ''' + QUAY_PROJECT + ''' container" \\\r
