@@ -1,11 +1,11 @@
 Compute list of latest crw-2.0-rhel-8-candidate NVRs ... 
 
 NVRs to query for installed rpms:
-   codeready-workspaces-rhel8-operator-metadata-container-2.1-39
+   codeready-workspaces-rhel8-operator-metadata-container-2.1-41
    codeready-workspaces-rhel8-operator-container-2.1-19
    codeready-workspaces-server-rhel8-container-2.1-19
-   codeready-workspaces-devfileregistry-rhel8-container-2.1-71
-   codeready-workspaces-pluginregistry-rhel8-container-2.1-84
+   codeready-workspaces-devfileregistry-rhel8-container-2.1-72
+   codeready-workspaces-pluginregistry-rhel8-container-2.1-86
    codeready-workspaces-imagepuller-rhel8-container-2.1-15
    codeready-workspaces-jwtproxy-rhel8-container-2.1-11
    codeready-workspaces-machineexec-rhel8-container-2.1-9
@@ -26,11 +26,11 @@ NVRs to query for installed rpms:
    codeready-workspaces-plugin-openshift-rhel8-container-2.1-7
 
 Brew logs:
-   http://download.eng.bos.redhat.com/brewroot/packages/codeready-workspaces-rhel8-operator-metadata-container/2.1/39/data/logs/x86_64-build.log
+   http://download.eng.bos.redhat.com/brewroot/packages/codeready-workspaces-rhel8-operator-metadata-container/2.1/41/data/logs/x86_64-build.log
    http://download.eng.bos.redhat.com/brewroot/packages/codeready-workspaces-rhel8-operator-container/2.1/19/data/logs/x86_64-build.log
    http://download.eng.bos.redhat.com/brewroot/packages/codeready-workspaces-server-rhel8-container/2.1/19/data/logs/x86_64-build.log
-   http://download.eng.bos.redhat.com/brewroot/packages/codeready-workspaces-devfileregistry-rhel8-container/2.1/71/data/logs/x86_64-build.log
-   http://download.eng.bos.redhat.com/brewroot/packages/codeready-workspaces-pluginregistry-rhel8-container/2.1/84/data/logs/x86_64-build.log
+   http://download.eng.bos.redhat.com/brewroot/packages/codeready-workspaces-devfileregistry-rhel8-container/2.1/72/data/logs/x86_64-build.log
+   http://download.eng.bos.redhat.com/brewroot/packages/codeready-workspaces-pluginregistry-rhel8-container/2.1/86/data/logs/x86_64-build.log
    http://download.eng.bos.redhat.com/brewroot/packages/codeready-workspaces-imagepuller-rhel8-container/2.1/15/data/logs/x86_64-build.log
    http://download.eng.bos.redhat.com/brewroot/packages/codeready-workspaces-jwtproxy-rhel8-container/2.1/11/data/logs/x86_64-build.log
    http://download.eng.bos.redhat.com/brewroot/packages/codeready-workspaces-machineexec-rhel8-container/2.1/9/data/logs/x86_64-build.log
@@ -51,11 +51,11 @@ Brew logs:
    http://download.eng.bos.redhat.com/brewroot/packages/codeready-workspaces-plugin-openshift-rhel8-container/2.1/7/data/logs/x86_64-build.log
 
 NVR build IDs:
-   codeready-workspaces-rhel8-operator-metadata-container-2.1-39 [1161618] - https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1161618
+   codeready-workspaces-rhel8-operator-metadata-container-2.1-41 [1161642] - https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1161642
    codeready-workspaces-rhel8-operator-container-2.1-19 [1161514] - https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1161514
    codeready-workspaces-server-rhel8-container-2.1-19 [1147523] - https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1147523
-   codeready-workspaces-devfileregistry-rhel8-container-2.1-71 [1161614] - https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1161614
-   codeready-workspaces-pluginregistry-rhel8-container-2.1-84 [1161607] - https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1161607
+   codeready-workspaces-devfileregistry-rhel8-container-2.1-72 [1161637] - https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1161637
+   codeready-workspaces-pluginregistry-rhel8-container-2.1-86 [1161639] - https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1161639
    codeready-workspaces-imagepuller-rhel8-container-2.1-15 [1161510] - https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1161510
    codeready-workspaces-jwtproxy-rhel8-container-2.1-11 [1161518] - https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1161518
    codeready-workspaces-machineexec-rhel8-container-2.1-9 [1161568] - https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1161568
@@ -80,11 +80,11 @@ Unique RPM manifest is in file: /tmp/manifest-rpms_uniq.txt
 Long RPM log is in file: /tmp/manifest-rpms_log.txt
 
 Individual RPM manifests:
-* /tmp/manifest-rpms-codeready-workspaces-rhel8-operator-metadata-container-2.1-39.txt
+* /tmp/manifest-rpms-codeready-workspaces-rhel8-operator-metadata-container-2.1-41.txt
 * /tmp/manifest-rpms-codeready-workspaces-rhel8-operator-container-2.1-19.txt
 * /tmp/manifest-rpms-codeready-workspaces-server-rhel8-container-2.1-19.txt
-* /tmp/manifest-rpms-codeready-workspaces-devfileregistry-rhel8-container-2.1-71.txt
-* /tmp/manifest-rpms-codeready-workspaces-pluginregistry-rhel8-container-2.1-84.txt
+* /tmp/manifest-rpms-codeready-workspaces-devfileregistry-rhel8-container-2.1-72.txt
+* /tmp/manifest-rpms-codeready-workspaces-pluginregistry-rhel8-container-2.1-86.txt
 * /tmp/manifest-rpms-codeready-workspaces-imagepuller-rhel8-container-2.1-15.txt
 * /tmp/manifest-rpms-codeready-workspaces-jwtproxy-rhel8-container-2.1-11.txt
 * /tmp/manifest-rpms-codeready-workspaces-machineexec-rhel8-container-2.1-9.txt
