@@ -31,7 +31,7 @@ if [[ ! ${WORKSPACE} ]]; then WORKSPACE=/tmp; fi
 
 MANIFEST_FILE=${WORKSPACE}/manifest-srcs.txt
 
-sudo rm -fr ${MANIFEST_FILE} ${WORKSPACE}/nvr-sources/ ${WORKSPACE}/NVR_SOURCES/ ${WORKSPACE}/VSIX_SOURCES/
+sudo rm -fr ${MANIFEST_FILE} ${WORKSPACE}/nvr-sources/ ${WORKSPACE}/sources/containers/ ${WORKSPACE}/sources/vscode/
 
 mnf () {
     echo "$1" | tee -a ${MANIFEST_FILE}
@@ -74,9 +74,9 @@ maketarball ()
     popd >/dev/null 
 
     if [[ -d ${WORKSPACE}/nvr-sources/${NVR} ]]; then
-        mnf "Create ${WORKSPACE}/NVR_SOURCES/${NVR}.tar.gz"
-        mkdir -p ${WORKSPACE}/NVR_SOURCES/
-        pushd ${WORKSPACE}/nvr-sources/${NVR} >/dev/null && tar czf ${WORKSPACE}/NVR_SOURCES/${NVR}.tar.gz ./* && popd >/dev/null 
+        mnf "Create ${WORKSPACE}/sources/containers/${NVR}.tar.gz"
+        mkdir -p ${WORKSPACE}/sources/containers/
+        pushd ${WORKSPACE}/nvr-sources/${NVR} >/dev/null && tar czf ${WORKSPACE}/sources/containers/${NVR}.tar.gz ./* && popd >/dev/null 
         mnf "" 
     fi
     popd >/dev/null 
@@ -125,7 +125,7 @@ if [[ ${phases} == *"2"* ]]; then
     mnf ""
     mnf "Phase 2 - get vsix sources not included in rhpkg sources from GH"
     mnf ""
-    mkdir -p ${WORKSPACE}/VSIX_SOURCES/
+    mkdir -p ${WORKSPACE}/sources/vscode/
     pushd ../../dependencies/che-plugin-registry >/dev/null
         URLsAll=""
         URLs=""
@@ -146,7 +146,7 @@ if [[ ${phases} == *"2"* ]]; then
                 f=${s#https://}; f=${f//\//__}; # echo "-> $f"
                 echo -n "Fetch GH sources from "
                 mnf $s
-                curl -sSL $s -o ${WORKSPACE}/VSIX_SOURCES/$f
+                curl -sSL $s -o ${WORKSPACE}/sources/vscode/$f
             done
         fi
     popd >/dev/null
@@ -156,7 +156,7 @@ if [[ ${phases} == *"3"* ]]; then
     mnf ""
     mnf "Phase 3 - get vsix sources not included in rhpkg sources from download.jboss.org (or github)"
     mnf ""
-    mkdir -p ${WORKSPACE}/VSIX_SOURCES/
+    mkdir -p ${WORKSPACE}/sources/vscode/
     pushd ../../dependencies/che-plugin-registry >/dev/null
         URLsAll=""
         URLs=""
@@ -181,8 +181,8 @@ if [[ ${phases} == *"3"* ]]; then
                     fi
                 fi
                 f=${u#https://}; f=${f//\//__}; # echo "-> $f"
-                mkdir -p ${WORKSPACE}/VSIX_SOURCES/$f
-                pushd ${WORKSPACE}/VSIX_SOURCES/$f >/dev/null
+                mkdir -p ${WORKSPACE}/sources/vscode/$f
+                pushd ${WORKSPACE}/sources/vscode/$f >/dev/null
                     # different patterns for source tarballs
                     if [[ ${f} == *"static__jdt.ls__stable"* ]]; then # get from GH
                         # check https://github.com/redhat-developer/vscode-java/archive/v0.57.0.tar.gz
@@ -215,13 +215,13 @@ if [[ ${phases} == *"3"* ]]; then
     popd >/dev/null
 fi
 
-du -shc ${WORKSPACE}/NVR_SOURCES/* ${WORKSPACE}/VSIX_SOURCES/*
+du -shc ${WORKSPACE}/sources/containers/* ${WORKSPACE}/sources/vscode/*
 
 ##################################
 
 echo ""
 echo "Short MVN manifest is in file: ${MANIFEST_FILE}"
-echo "NVR Source tarballs are in ${WORKSPACE}/NVR_SOURCES/ and ${WORKSPACE}/VSIX_SOURCES/"
+echo "NVR Source tarballs are in ${WORKSPACE}/sources/containers/ and ${WORKSPACE}/sources/vscode/"
 echo ""
 
 ##################################

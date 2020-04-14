@@ -66,10 +66,10 @@ for mnt in RCMG; do
 done
 
 # copy files to rcm-guest
-ssh "${DESTHOST}" "cd /mnt/rcm-guest/staging/crw && mkdir -p CRW-''' + CRW_VERSION + ''' && ls -la . "
-rsync -Pzrlt --rsh=ssh --protocol=28 \
-  ${WORKSPACE}/manifest-srcs.txt ${WORKSPACE}/NVR_SOURCES ${WORKSPACE}/VSIX_SOURCES \
-  ${WORKSPACE}/${mnt}-ssh/CRW-''' + CRW_VERSION + '''/
+ssh "${DESTHOST}" "cd /mnt/rcm-guest/staging/crw && mkdir -p CRW-''' + CRW_VERSION + '''/sources/containers CRW-''' + CRW_VERSION + '''/sources/vscode && ls -la . "
+rsync -zrlt --rsh=ssh --protocol=28 ${WORKSPACE}/manifest-srcs.txt  ${WORKSPACE}/${mnt}-ssh/CRW-''' + CRW_VERSION + '''/sources/
+rsync -zrlt --rsh=ssh --protocol=28  --delete ${WORKSPACE}/sources/containers/* ${WORKSPACE}/${mnt}-ssh/CRW-''' + CRW_VERSION + '''/sources/containers/
+rsync -zrlt --rsh=ssh --protocol=28  --delete ${WORKSPACE}/sources/vscode/*     ${WORKSPACE}/${mnt}-ssh/CRW-''' + CRW_VERSION + '''/sources/vscode/
 ssh "${DESTHOST}" "cd /mnt/rcm-guest/staging/crw/CRW-''' + CRW_VERSION + '''/ && tree"
 '''
           }
