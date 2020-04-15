@@ -15,11 +15,16 @@ cd /tmp/tmp-checkouts
 
 pkgs_devel_branch=crw-2.0-rhel-8
 for d in \
-codeready-workspaces codeready-workspaces-operator \
+codeready-workspaces-operator  codeready-workspaces-operator-metadata \
+codeready-workspaces \
+\
 codeready-workspaces-jwtproxy codeready-workspaces-machineexec \
 codeready-workspaces-devfileregistry codeready-workspaces-pluginregistry \
-codeready-workspaces-pluginbrokerinit codeready-workspaces-pluginbroker \
+codeready-workspaces-pluginbroker-metadata codeready-workspaces-pluginbroker-artifacts \
+codeready-workspaces-imagepuller \
+\
 codeready-workspaces-plugin-kubernetes codeready-workspaces-plugin-openshift \
+codeready-workspaces-plugin-java11 \
 codeready-workspaces-theia codeready-workspaces-theia-endpoint \
 codeready-workspaces-theia-dev codeready-workspaces-stacks-cpp \
 codeready-workspaces-stacks-dotnet codeready-workspaces-stacks-golang \
@@ -55,4 +60,5 @@ done
 
 # cleanup
 # cd /tmp
+echo "Temporary checkouts are in /tmp/tmp-checkouts"
 # rm -fr /tmp/tmp-checkouts
