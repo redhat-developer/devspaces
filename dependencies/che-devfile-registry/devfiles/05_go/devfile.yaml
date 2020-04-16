@@ -63,9 +63,7 @@ commands:
             "type": "go",
             "request": "launch",
             "mode": "auto",
-            "program": "${fileDirname}",
-            "env": {},
-            "args": []
+            "program": "${fileDirname}"
           }
         ]
       }

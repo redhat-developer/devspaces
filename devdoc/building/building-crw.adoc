@@ -244,31 +244,19 @@ mvn clean install
 . You should see something like this:
 +
 ```
-[INFO] Reactor Summary for CRW :: Parent 1.2.2.GA:
-[INFO]
-[INFO] CRW :: Parent .............................SUCCESS
-[INFO] CRW :: IDE :: Parent ......................SUCCESS
-[INFO] CRW :: Stacks .............................SUCCESS
-[INFO] CRW :: Samples ............................SUCCESS
-[INFO] CRW :: Product Info :: Client .............SUCCESS
-[INFO] CRW :: Plugins :: Parent ..................SUCCESS
-[INFO] CRW :: Plugins :: Bayesian LSP Agent ......SUCCESS
-[INFO] CRW :: Plugins :: Bayesian LSP Integration SUCCESS
-[INFO] CRW :: Che Assembly :: Parent .............SUCCESS
-[INFO] CRW :: GWT App ............................SUCCESS
-[INFO] CRW :: Assemblies :: IDE ..................SUCCESS
-[INFO] CRW :: Dashboard :: WAR ...................SUCCESS
-[INFO] CRW :: Workspace Master Assembly ..........SUCCESS
-[INFO] CRW :: Workspace Agent ....................SUCCESS
-[INFO] CRW :: Workspace Agent Server .............SUCCESS
-[INFO] CRW :: Tomcat Assembly ....................SUCCESS
-[INFO] CRW :: Test :: Parent .....................SUCCESS
-[INFO] CRW :: Test :: E2E ........................SUCCESS
-[INFO] CRW :: Test :: Performance ................SUCCESS
-[INFO] --------------------------------------------------
+[INFO] Reactor Summary:
+[INFO] 
+[INFO] CRW :: Parent 2.1.0.GA ............................. SUCCESS [  3.140 s]
+[INFO] CRW :: Assembly :: Parent .......................... SUCCESS [  0.092 s]
+[INFO] CRW :: Assembly :: Dashboard ....................... SUCCESS [  3.631 s]
+[INFO] CRW :: Assembly :: Tomcat .......................... SUCCESS [ 13.999 s]
+[INFO] CRW :: Test :: Parent .............................. SUCCESS [  0.101 s]
+[INFO] CRW :: Test :: E2E ................................. SUCCESS [ 18.682 s]
+[INFO] CRW :: Test :: Performance 2.1.0.GA ................ SUCCESS [  0.245 s]
+[INFO] ------------------------------------------------------------------------
 [INFO] BUILD SUCCESS
-[INFO] --------------------------------------------------
-[INFO] Total time:  06:47 min
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time: 41.154 s
 ```
 
 . Use the `Dockerfile` in this repo to build. Note: use the same image path and tag that you deployed to Minishift (or the alternate path/name:tag you set above).

@@ -14,14 +14,15 @@ LOG_FILE="/tmp/image_digests.log"
 function handle_error() {
   the_image="$1"
   # NOTE: need --tls-verify=false to bypass SSL/TLD Cert validation errors - https://github.com/nmasse-itix/OpenShift-Examples/blob/master/Using-Skopeo/README.md#ssltls-issues
-  echo "  Could not read image metadata through skopeo --tls-verify=false inspect; skip $the_image"
+  echo "  Could not read image metadata through skopeo inspect --tls-verify=false; skip $the_image"
   echo -n "  Reason: "
   sed 's|^|    |g' $LOG_FILE
 }
 
+set -x
 readarray -d '' devfiles < <(find "$1" -name 'devfile.yaml' -print0)
 for image in $(yq -r '.components[]?.image' "${devfiles[@]}" | grep -v "null" | sort | uniq); do
-  digest="$(skopeo --tls-verify=false inspect "docker://${image}" 2>"$LOG_FILE" | jq -r '.Digest')"
+  digest="$(skopeo inspect --tls-verify=false "docker://${image}" 2>"$LOG_FILE" | jq -r '.Digest')"
   if [[ ${digest} ]]; then
     echo "    $digest # ${image}"
   else 
@@ -45,3 +46,4 @@ for image in $(yq -r '.components[]?.image' "${devfiles[@]}" | grep -v "null" | 
   sed -i -E 's|"?'"${image}"'"?|"'"${digest_image}"'" # tag: '"${image}"'|g' "${devfiles[@]}"
 done
 rm $LOG_FILE
+set +x

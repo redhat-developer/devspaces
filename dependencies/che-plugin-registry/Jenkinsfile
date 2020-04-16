@@ -27,7 +27,11 @@ timeout(120) {
         doGenerateSubmoduleConfigurations: false,
         credentialsId: 'devstudio-release',
         poll: true,
-        extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: "sources"]],
+        extensions: [
+          [$class: 'RelativeTargetDirectory', relativeTargetDir: "sources"],
+          [$class: 'PathRestriction', excludedRegions: '', includedRegions: 'dependencies/che-plugin-registry/.*'],
+          [$class: 'DisableRemotePoll']
+        ],
         submoduleCfg: [],
         userRemoteConfigs: [[url: "https://github.com/${SOURCE_REPO}.git"]]])
 
@@ -127,19 +131,30 @@ cp -f ${SOURCEDOCKERFILE} ${WORKSPACE}/target/Dockerfile
 CRW_VERSION=`wget -qO- https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/master/dependencies/VERSION`
 # apply patches to transform CRW upstream to pkgs.devel version
 sed -i ${WORKSPACE}/target/Dockerfile --regexp-extended \
-  -e "s/ *COPY(.+content_set.+)/# COPY\\1/g" \
-  -e "s/^# *COPY root/COPY root/g" \
-  -e "s%^FROM registry.access.redhat.com/%FROM %g" \
-  -e "s%^FROM registry.redhat.io/%FROM %g" \
-  -e "s%^FROM builder%# FROM builder%g" \
-  `# Set arg options: enable USE_DIGESTS` \
+  `# Replace image used for registry with rhel8/httpd-24` \
+  -e 's|^ *FROM registry.access.redhat.com/.* AS registry|# &|' \
+  -e 's|# *(FROM.*rhel8/httpd.*)|\\1|' \
+  `# Strip registry from image references` \
+  -e 's|FROM registry.access.redhat.com/|FROM |' \
+  -e 's|FROM registry.redhat.io/|FROM |' \
+  `# Set arg options: enable USE_DIGESTS and disable BOOTSTRAP` \
   -e 's|ARG USE_DIGESTS=.*|ARG USE_DIGESTS=''' + USE_DIGESTS + '''|' \
-  -e "s%^# *COPY v3%COPY v3%g" \
-  -e "s%/build/v3/;%/var/www/html/v3/;%g" \
-  -e "s%^FROM registry %# FROM registry %g" \
-  -e "s%^COPY --from=offline-builder%# COPY --from=offline-builder%g"
-
-cat ${WORKSPACE}/target/Dockerfile
+  -e 's|ARG BOOTSTRAP=.*|ARG BOOTSTRAP=false|' \
+  `# Enable offline build - copy in built binaries` \
+  -e 's|# (COPY root-local.tgz)|\\1|' \
+  -e 's|^ *COPY .*content_sets.*|# &|' \
+  `# Comment out PATCHED_* args from build and disable update_devfile_patched_image_tags.sh` \
+  -e 's|^ *ARG PATCHED.*|# &|' \
+  -e '/^ *RUN TAG/,+3 s|.*|# &| ' \
+  `# Disable intermediate build targets` \
+  -e 's|^ *FROM registry AS offline-registry|# &|' \
+  -e '/^ *FROM builder AS offline-builder/,+3 s|.*|# &|' \
+  -e 's|^[^#]*--from=offline-builder.*|# &|' \
+  `# Enable cache_artifacts.sh` \
+  -e '\\|write_image_digests.sh|i # Cache projects in CRW \\
+COPY ./build/dockerfiles/rhel.cache_artifacts.sh resources.tgz /tmp/ \\
+RUN /tmp/rhel.cache_artifacts.sh /build/v3/ && rm -rf /tmp/rhel.cache_artifacts.sh /tmp/resources.tgz \\
+'
 
 METADATA='ENV SUMMARY="Red Hat CodeReady Workspaces ''' + QUAY_PROJECT + ''' container" \\\r
     DESCRIPTION="Red Hat CodeReady Workspaces ''' + QUAY_PROJECT + ''' container" \\\r
@@ -170,7 +185,7 @@ if [[ \$(git diff --name-only) ]]; then # file changed
 	OLD_SHA=\$(git rev-parse HEAD) # echo ${OLD_SHA:0:8}
 	git add Dockerfile ${SYNC_FILES}
   /tmp/updateBaseImages.sh -b ''' + GIT_BRANCH + ''' --nocommit 
-  # note this might fail if we're syncing from a tag vs. a branch
+  	# note this might fail if we're syncing from a tag vs. a branch
 	git commit -s -m "[sync] Update from ''' + SOURCE_REPO + ''' @ ${SOURCE_SHA:0:8}" Dockerfile ${SYNC_FILES}
 	git push origin ''' + GIT_BRANCH + '''
 	NEW_SHA=\$(git rev-parse HEAD) # echo ${NEW_SHA:0:8}
@@ -189,30 +204,22 @@ fi
 cd ..
 
 # update tarballs - step 1 - build the container
-cd ${SOURCEDIR}
-sed ${SOURCEDOCKERFILE} --regexp-extended \
-  -e "s@ *COPY (.+/content_sets)_epel7(.repo /etc/yum.repos.d)/@COPY \\1_rhel8\\2/@g" \
-  -e 's|ARG USE_DIGESTS=.*|ARG USE_DIGESTS=''' + USE_DIGESTS + '''|' \
-  -e "s@# FROM builder AS offline-builder@FROM builder AS offline-builder@g" \
-  > ${WORKSPACE}/bootstrap.Dockerfile
+cd ${WORKSPACE}/target
 
-# NOT WORKING YET, so so use SOURCEDOCKERFILE for now
-# # transform Brew friendly Dockerfile so we can use it in Jenkins where base images need full registry path
-# sed ${WORKSPACE}/target/Dockerfile --regexp-extended \
-#   -e 's|COPY (.*) resources.tgz (.*)|COPY \\1 \\2|' \
-#   -e 's|ARG BOOTSTRAP=.*|ARG BOOTSTRAP=true|' \
-#   -e 's|ARG USE_DIGESTS=.*|ARG USE_DIGESTS=''' + USE_DIGESTS + '''|' \
-#   -e 's|^ *COPY root-local.tgz|# &|' \
-#   -e 's|^ *COPY v3.tgz|# &|' \
-#   `# replace org/container:tag with reg-proxy/rh-osbs/org-container:tag` \
-#   -e "s#^FROM ([^/:]+)/([^/:]+):([^/:]+)#FROM registry-proxy.engineering.redhat.com/rh-osbs/\\1-\\2:\\3#" \
-#   `# replace ubi8-minimal:tag with reg-proxy/rh-osbs/ubi-minimal:tag` \
-#   -e "s#^FROM ([^/:]+):([^/:]+)#FROM registry-proxy.engineering.redhat.com/rh-osbs/\\1:\\2#" \
-#   -e 's|# (COPY .*content_sets.*)|\\1|' \
-#   `# enable offline-builder for BOOTSTRAP=true so we generate v3.tgz` \
-#   -e 's|# FROM builder AS offline-builder|FROM builder AS offline-builder|g' \
-#   > ${WORKSPACE}/bootstrap.Dockerfile
-# NOT WORKING YET
+# transform Brew friendly Dockerfile so we can use it in Jenkins where base images need full registry path
+sed ${WORKSPACE}/target/Dockerfile --regexp-extended \
+  -e 's|COPY (.*) resources.tgz (.*)|COPY \\1 \\2|' \
+  -e 's|ARG BOOTSTRAP=.*|ARG BOOTSTRAP=true|' \
+  `# enable LATEST_ONLY for bootstrap build only` \
+  -e 's|ARG LATEST_ONLY=.*|ARG LATEST_ONLY=true|' \
+  -e 's|ARG USE_DIGESTS=.*|ARG USE_DIGESTS=''' + USE_DIGESTS + '''|' \
+  -e 's|^ *COPY root-local.tgz|# &|' \
+  `# replace org/container:tag with reg-proxy/rh-osbs/org-container:tag` \
+  -e "s#^FROM ([^/:]+)/([^/:]+):([^/:]+)#FROM registry-proxy.engineering.redhat.com/rh-osbs/\\1-\\2:\\3#" \
+  `# replace ubi8-minimal:tag with reg-proxy/rh-osbs/ubi-minimal:tag` \
+  -e "s#^FROM ([^/:]+):([^/:]+)#FROM registry-proxy.engineering.redhat.com/rh-osbs/\\1:\\2#" \
+  -e 's|# (COPY .*content_sets.*)|\\1|' \
+  > ${WORKSPACE}/bootstrap.Dockerfile
 
 echo "======= BOOTSTRAP DOCKERFILE =======>"
 cat ${WORKSPACE}/bootstrap.Dockerfile
@@ -220,9 +227,9 @@ echo "<======= BOOTSTRAP DOCKERFILE ======="
 
 echo "======= START BOOTSTRAP BUILD =======>"
 # do not need digests in the BOOTSTRAP build so override default with false
-CONTAINERNAME="pluginregistryoffline"
-docker build -t ${CONTAINERNAME} . --no-cache --squash -f ${WORKSPACE}/bootstrap.Dockerfile \
-  --target offline-builder --build-arg BOOTSTRAP=true --build-arg LATEST_ONLY=true --build-arg USE_DIGESTS=false
+CONTAINERNAME="''' + QUAY_PROJECT + '''offline"
+docker build -t ${CONTAINERNAME} . --no-cache -f ${WORKSPACE}/bootstrap.Dockerfile \
+  --target builder --build-arg BOOTSTRAP=true --build-arg USE_DIGESTS=false
 echo "<======= END BOOTSTRAP BUILD ======="
 
 # update tarballs - step 2 - check old sources' tarballs
@@ -246,42 +253,42 @@ if [[ ${TAR_DIFF} ]]; then
   pushd /tmp/root-local >/dev/null && sudo tar czf root-local.tgz lib/ bin/ && popd >/dev/null && mv -f /tmp/root-local/root-local.tgz . && sudo rm -fr /tmp/root-local/
 fi
 
-mkdir -p /tmp/pr-res/
-docker run --rm -v \
-  /tmp/pr-res/:/tmp/pr-res/ ${CONTAINERNAME} /bin/bash \
-  -c "cd /build/v3/ && cp -r ./* /tmp/pr-res/"
+mkdir -p /tmp/''' + QUAY_PROJECT + '''-resources/
+docker run --rm -v /tmp/''' + QUAY_PROJECT + '''-resources/:/tmp/''' + QUAY_PROJECT + '''-resources/ \
+  --entrypoint /bin/bash ${CONTAINERNAME} -c \
+  "cd /build && cp -r v3/* /tmp/''' + QUAY_PROJECT + '''-resources/"
 
 # check diff
-if [[ -f ${WORKSPACE}/target/v3.tgz ]]; then
-  BEFORE_DIR=/tmp/pr-res-before
-  rm -fr ${BEFORE_DIR}; mkdir ${BEFORE_DIR} && tar xzf ${WORKSPACE}/target/v3.tgz -C ${BEFORE_DIR}
-  TAR_DIFF2=$(sudo diff --suppress-common-lines -u -r ${BEFORE_DIR} /tmp/pr-res -x "resources/*" -x "*.vsix" -x "*.theia") || true
+if [[ -f ${WORKSPACE}/target/resources.tgz ]]; then
+  BEFORE_DIR=/tmp/''' + QUAY_PROJECT + '''-resources-before
+  rm -fr ${BEFORE_DIR}; mkdir ${BEFORE_DIR} && tar xzf ${WORKSPACE}/target/resources.tgz -C ${BEFORE_DIR}
+  TAR_DIFF2=$(sudo diff --suppress-common-lines -u -r ${BEFORE_DIR} /tmp/''' + QUAY_PROJECT + '''-resources -x "resources/*" -x "*.vsix" -x "*.theia") || true
 else
-  TAR_DIFF2="No such file ${WORKSPACE}/target/v3.tgz -- creating a new one for the first time"
+  TAR_DIFF2="No such file ${WORKSPACE}/target/resources.tgz -- creating a new one for the first time"
 fi
 if [[ ${TAR_DIFF2} ]]; then
   echo "DIFF START *****"
   echo "${TAR_DIFF2}"
   echo "***** END DIFF"
-  pushd /tmp/pr-res >/dev/null && \
-    sudo tar czf v3.tgz ./* && \
+  pushd /tmp/''' + QUAY_PROJECT + '''-resources/ >/dev/null && \
+    sudo tar czf resources.tgz ./* && \
     popd >/dev/null && \
-    mv -f /tmp/pr-res/v3.tgz . && \
-    sudo rm -fr /tmp/pr-res/
+    mv -f /tmp/''' + QUAY_PROJECT + '''-resources/resources.tgz . && \
+    sudo rm -fr /tmp/''' + QUAY_PROJECT + '''-resources/
 fi
 
 # update tarballs - step 4 - commit changes if diff different
 if [[ ${TAR_DIFF} ]] || [[ ${TAR_DIFF2} ]]; then
   hasChanged=1
-  rhpkg new-sources root-local.tgz v3.tgz 
-  git commit -s -m "[tgz] Update root-local.tgz and v3.tgz" sources
+  rhpkg new-sources root-local.tgz resources.tgz
+  git commit -s -m "[tgz] Update root-local.tgz and resources.tgz" sources
   git push origin ''' + GIT_BRANCH + '''
 else
   echo "No changes since previous tarball was created."
 fi
 
 # clean up diff dirs
-sudo rm -fr /tmp/root-local /tmp/root-local-before /tmp/pr-res /tmp/pr-res-before
+sudo rm -fr /tmp/root-local /tmp/root-local-before /tmp/''' + QUAY_PROJECT + '''-resources /tmp/''' + QUAY_PROJECT + '''-resources-before
 
 # NOTE: this image needs to build in Brew, then rebuild for Quay, so use QUAY_REBUILD_PATH instead of QUAY_REPO_PATHs variable
 if [[ ''' + FORCE_BUILD + ''' == "true" ]]; then hasChanged=1; fi

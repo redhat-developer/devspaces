@@ -37,12 +37,12 @@ for d in $CONTAINERS; do
 	dd=${d#*/}
 	TAG=${dd##*:}; # echo $TAG
 	CONTNAME=${dd%%:${TAG}}; CONTNAME=${CONTNAME##*/}; CONTNAME=${CONTNAME%%-rhel8}
-	echo "Search for $CONTNAME :: $TAG"
-	echo "  brew list-tagged crw-2.0-rhel-8-candidate | grep ${CONTNAME} | sed -r -e \"s#crw-2.0-rhel-8-candidate.+##\" | sort -V"
+	# echo "Search for $CONTNAME :: $TAG"
+	# echo "  brew list-tagged crw-2.0-rhel-8-candidate | egrep \"${CONTNAME}-container|${CONTNAME}-rhel8-container\" | sed -r -e \"s#crw-2.0-rhel-8-candidate.+##\" | sort -V"
 	if [[ $TAG != ${dd} ]]; then
-		NVRs=$(brew list-tagged crw-2.0-rhel-8-candidate | grep ${CONTNAME} | sed -e "s#crw-2.0-rhel-8-candidate.\+##" | sort -V | grep ${TAG})
+		NVRs=$(brew list-tagged crw-2.0-rhel-8-candidate | egrep "${CONTNAME}-container|${CONTNAME}-rhel8-container" | sed -e "s#crw-2.0-rhel-8-candidate.\+##" | sort -V | grep ${TAG})
 	else
-		NVRs=$(brew list-tagged crw-2.0-rhel-8-candidate | grep ${CONTNAME} | sed -e "s#crw-2.0-rhel-8-candidate.\+##" | sort -Vr | head -${NUMTAGS})
+		NVRs=$(brew list-tagged crw-2.0-rhel-8-candidate | egrep "${CONTNAME}-container|${CONTNAME}-rhel8-container" | sed -e "s#crw-2.0-rhel-8-candidate.\+##" | sort -Vr | head -${NUMTAGS})
 	fi
 	for NVR in $NVRs; do
 		echo "     NVR: $NVR"

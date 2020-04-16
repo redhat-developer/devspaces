@@ -29,7 +29,11 @@ timeout(120) {
         doGenerateSubmoduleConfigurations: false,
         credentialsId: 'devstudio-release',
         poll: true,
-        extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: "sources"]], 
+        extensions: [
+          [$class: 'RelativeTargetDirectory', relativeTargetDir: "sources"],
+          [$class: 'PathRestriction', excludedRegions: '', includedRegions: 'dependencies/che-pluginbroker/.*'],
+          [$class: 'DisableRemotePoll']
+        ],
         submoduleCfg: [], 
         userRemoteConfigs: [[url: "https://github.com/${SOURCE_REPO}.git"]]])
 

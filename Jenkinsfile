@@ -94,7 +94,12 @@ timeout(120) {
 				branches: [[name: "FETCH_HEAD"]], 
 				doGenerateSubmoduleConfigurations: false, 
 				poll: true,
-				extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: "${CRW_path}"], [$class: 'LocalBranch']], 
+				extensions: [
+					[$class: 'RelativeTargetDirectory', relativeTargetDir: "${CRW_path}"],
+					[$class: 'LocalBranch'],
+					[$class: 'PathRestriction', excludedRegions: 'dependencies/**'],
+					[$class: 'DisableRemotePoll']
+				],
 				submoduleCfg: [], 
 				userRemoteConfigs: [[refspec: "+refs/pull/${env.ghprbPullId}/head:refs/remotes/origin/PR-${env.ghprbPullId}", url: "https://github.com/redhat-developer/${CRW_path}.git"]]])
 		} else {
@@ -102,7 +107,11 @@ timeout(120) {
 				branches: [[name: "${branchToBuildCRW}"]], 
 				doGenerateSubmoduleConfigurations: false, 
 				poll: true,
-				extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: "${CRW_path}"]], 
+				extensions: [
+					[$class: 'RelativeTargetDirectory', relativeTargetDir: "${CRW_path}"],
+					[$class: 'PathRestriction', excludedRegions: 'dependencies/**'],
+					[$class: 'DisableRemotePoll']
+				],
 				submoduleCfg: [], 
 				userRemoteConfigs: [[url: "https://github.com/redhat-developer/${CRW_path}.git"]]])
 		}
@@ -185,7 +194,12 @@ timeout(120) {
 				branches: [[name: "FETCH_HEAD"]], 
 				doGenerateSubmoduleConfigurations: false, 
 				poll: true,
-				extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: "${CRW_path}"], [$class: 'LocalBranch']], 
+				extensions: [
+					[$class: 'RelativeTargetDirectory', relativeTargetDir: "${CRW_path}"],
+					[$class: 'LocalBranch'],
+					[$class: 'PathRestriction', excludedRegions: 'dependencies/**'],
+					[$class: 'DisableRemotePoll']
+				],
 				submoduleCfg: [], 
 				userRemoteConfigs: [[refspec: "+refs/pull/${env.ghprbPullId}/head:refs/remotes/origin/PR-${env.ghprbPullId}", url: "https://github.com/redhat-developer/${CRW_path}.git"]]])
 		} else {
@@ -193,7 +207,11 @@ timeout(120) {
 				branches: [[name: "${branchToBuildCRW}"]], 
 				doGenerateSubmoduleConfigurations: false, 
 				poll: true,
-				extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: "${CRW_path}"]], 
+				extensions: [
+					[$class: 'RelativeTargetDirectory', relativeTargetDir: "${CRW_path}"],
+					[$class: 'PathRestriction', excludedRegions: 'dependencies/**'],
+					[$class: 'DisableRemotePoll']
+				],
 				submoduleCfg: [], 
 				userRemoteConfigs: [[url: "https://github.com/redhat-developer/${CRW_path}.git"]]])
 		}
