@@ -4,10 +4,10 @@ metadata:
   generateName: cpp-
 projects:
   -
-    name: CPP
+    name: cpp-hello-world
     source:
       type: git
-      location: 'https://github.com/crw-samples/C-Plus-Plus.git'
+      location: 'https://github.com/che-samples/cpp-hello-world'
 components:
 -
   type: chePlugin
@@ -24,21 +24,21 @@ components:
   mountSources: true
 commands:
   -
-    name: Build current algorithm
+    name: build
     actions:
       - type: exec
         component: cpp-dev
-        command: rm -f "${fileDirname}"/bin.out && g++ -g "${file}" -o bin.out && echo "Build complete"
-        workdir: '${fileDirname}'
+        command: g++ -g hello.cpp -o hello.out && echo "Build complete"
+        workdir: ${CHE_PROJECTS_ROOT}/cpp-hello-world
   -
-    name: Run current algorithm
+    name: run
     actions:
       - type: exec
         component: cpp-dev
-        command: ./bin.out
-        workdir: '${fileDirname}'
+        command: ./hello.out
+        workdir: ${CHE_PROJECTS_ROOT}/cpp-hello-world
   -
-    name: Debug current algorithm
+    name: debug
     actions:
       - type: vscode-launch
         referenceContent: >
@@ -47,9 +47,9 @@ commands:
             "configurations": [
                 {
                     "type": "gdb",
-                    "name": "Debug current algorithm",
+                    "name": "Debug c++ application",
                     "request": "launch",
-                    "program": "${fileDirname}/bin.out"
+                    "program": "/projects/cpp-hello-world/hello.out"
                 }
             ]
           }
