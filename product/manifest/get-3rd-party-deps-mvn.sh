@@ -7,7 +7,7 @@ CRW_VERSION=2.1
 CRW_TAG_OR_BRANCH=master
 
 # use x.y.z version
-CHE_VERSION=7.9.2
+CHE_VERSION=7.9.3
 
 cd /tmp
 MANIFEST_FILE=/tmp/manifest-mvn.txt
