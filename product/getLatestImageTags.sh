@@ -22,6 +22,9 @@ if [[ ! -x /usr/bin/jq ]]; then
 	exit 1
 fi
 
+candidateTag="crw-2.0-rhel-8-candidate"
+# candidateTag="crw-2.2-rhel-8-container-candidate"
+
 CRW21_CONTAINERS_RHCC="\
 codeready-workspaces/crw-2-rhel8-operator-metadata \
 codeready-workspaces/crw-2-rhel8-operator \
@@ -134,7 +137,7 @@ codeready-workspaces/plugin-openshift-rhel8"
 # regex pattern of container versions/names to exclude, eg., Beta1 (because version sort thinks 1.0.0.Beta1 > 1.0-12)
 EXCLUDES="\^" 
 
-QUIET=0 	# less output - omit container tag URLs
+QUIET=1 	# less output - omit container tag URLs
 VERBOSE=0	# more output
 NUMTAGS=1 # by default show only the latest tag for each container; or show n latest ones
 SHOWHISTORY=0 # compute the base images defined in the Dockerfile's FROM statement(s): NOTE: requires that the image be pulled first 
@@ -149,9 +152,9 @@ Usage:
   $0 --crw21 --stage                                         | use default list of CRW images in RHCC Stage
   $0 --crw21 --quay                                          | use default list of CRW images in quay.io/crw
 
-  $0 -c 'crw/theia-rhel8 crw/theia-endpoint-rhel8' --quay -q | check a specific image in quay; quieter output
+  $0 -c 'crw/theia-rhel8 crw/theia-endpoint-rhel8' --quay    | check a specific image in quay
   $0 -c 'rhoar-nodejs/nodejs-10 jboss-eap-7/eap72-openshift' | use specific list of RHCC images
-  $0 -c ubi7 -c ubi8:8.0 --pulp -n 5 -q                      | check pulp registry; show 8.0* tags; show 5 tags per container; quiet output
+  $0 -c ubi7 -c ubi8:8.0 --pulp -n 5                         | check pulp registry; show 8.0* tags; show 5 tags per container
   $0 -c ubi7 -c ubi8:8.0 --stage -n 5                        | check RHCC stage registry; show 8.0* tags; show 5 tags per container
   $0 -c pivotaldata/centos --docker --dockerfile             | check docker registry; show Dockerfile contents (requires dfimage)
   $0 -c codeready-workspaces-plugin-java11-rhel8 --pulp --pushtoquay='2.1 latest' 		| pull an image from pulp, push 3 tags to quay
@@ -171,8 +174,9 @@ CONTAINERS=""
 #   case $1 in
 for key in "$@"; do
   case $key in
-    '--crw'|'--crw20') CONTAINERS="${CRW20_CONTAINERS_RHCC}"; EXCLUDES="Beta1"; shift 0;;
-    '--crw21') CONTAINERS="${CRW21_CONTAINERS_RHCC}"; EXCLUDES="Beta1"; shift 0;;
+    '--crw'|'--crw20') CONTAINERS="${CRW20_CONTAINERS_RHCC}"; candidateTag="crw-2.0-rhel-8-candidate"; shift 0;;
+    '--crw21') CONTAINERS="${CRW21_CONTAINERS_RHCC}";         candidateTag="crw-2.0-rhel-8-candidate"; shift 0;;
+    '--crw22') CONTAINERS="${CRW21_CONTAINERS_RHCC}";         candidateTag="crw-2.2-rhel-8-container-candidate"; shift 0;;
     '-c') CONTAINERS="${CONTAINERS} $2"; shift 1;;
     '-x') EXCLUDES="$2"; shift 1;;
     '-q') QUIET=1; shift 0;;
@@ -244,7 +248,6 @@ if [[ ${SHOWNVR} -eq 1 ]]; then
 		containername="${containername//workspaces-operator/workspaces-rhel8-operator}"
 		containername="${containername//\/operator/-rhel8-operator}"
 		containername="${containername//crw-2-/}"
-		candidateTag="crw-2.0-rhel-8-candidate"
 		if [[ ${VERBOSE} -eq 1 ]]; then
 			echo "brew list-tagged ${candidateTag} | grep \"${containername/\//-}-container\" | sort -V | tail -${NUMTAGS} | sed -e \"s#[\ \t]\+${candidateTag}.\+##\""
 		fi
