@@ -77,7 +77,8 @@ FROM registry.access.redhat.com/rhscl/httpd-24-rhel7:2.4-110 AS registry
 # https://access.redhat.com/containers/?tab=tags#/registry.access.redhat.com/rhel8/httpd-24
 # FROM registry.redhat.io/rhel8/httpd-24:1-89 AS registry
 USER 0
-RUN yum update -y systemd && yum clean all && rm -rf /var/cache/yum
+RUN yum update -y systemd && yum clean all && rm -rf /var/cache/yum && \
+    echo "Installed Packages" && rpm -qa | sort -V && echo "End Of Installed Packages"
 
 # BEGIN these steps might not be required
 RUN sed -i /etc/httpd/conf/httpd.conf \
