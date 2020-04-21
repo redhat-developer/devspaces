@@ -6,8 +6,8 @@ SCRIPT=$(readlink -f "$0"); SCRIPTPATH=$(dirname "$SCRIPT"); # echo $SCRIPTPATH
 
 cd /tmp
 
-CRW_VERSION=2.1 # arbitrary version label to use when listing containers: 1.0, 1.0.1, 1.1, 1.2...
-CRW_BRANCH_TAG=2.1.0.GA # branch or tag must exist in codeready-workspaces-deprecated repo
+CRW_VERSION=2.1.1 # arbitrary version label to use when listing containers: 2.0, 2.1, 2.1.1
+CRW_BRANCH_TAG=2.1.1.GA # branch or tag must exist in codeready-workspaces-deprecated repo
 
 MANIFEST_FILE=/tmp/manifest.txt
 LOG_FILE=/tmp/manifest_log.txt
