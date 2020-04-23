@@ -9,31 +9,11 @@
 #   Red Hat, Inc. - initial API and implementation
 #
 
-# https://access.redhat.com/containers/?tab=tags#/registry.access.redhat.com/openjdk/openjdk-8-rhel8
-FROM registry.redhat.io/openjdk/openjdk-8-rhel8:1.2-3.1583838313
-
-ENV SUMMARY="Red Hat CodeReady Workspaces Server container" \
-    DESCRIPTION="Red Hat CodeReady Workspaces server container" \
-    PRODNAME="codeready-workspaces" \
-    COMPNAME="server-rhel8"
-
-LABEL summary="$SUMMARY" \
-      description="$DESCRIPTION" \
-      io.k8s.description="$DESCRIPTION" \
-      io.k8s.display-name="$DESCRIPTION" \
-      io.openshift.tags="$PRODNAME,$COMPNAME" \
-      com.redhat.component="$PRODNAME-$COMPNAME-container" \
-      name="$PRODNAME/$COMPNAME" \
-      version="2.1" \
-      license="EPLv2" \
-      maintainer="Nick Boldt <nboldt@redhat.com>" \
-      io.openshift.expose-services="" \
-      usage=""
-
+# https://access.redhat.com/containers/?tab=tags#/registry.access.redhat.com/ubi8/ubi-minimal
+FROM registry.access.redhat.com/ubi8/ubi-minimal
+RUN microdnf install java-11-openjdk-headless tar gzip shadow-utils
+ENV JAVA_HOME=/usr/lib/jvm/default-jvm/jre
 USER root
-
-# NOTE: uncomment for local build. Must also set full registry path in FROM to registry.access.redhat.com or registry.redhat.io
-# COPY content_sets.repo /etc/yum.repos.d/
 
 COPY entrypoint.sh /entrypoint.sh
 RUN mkdir -p /home/jboss/codeready
@@ -47,11 +27,32 @@ RUN tar xzf /tmp/codeready-workspaces-assembly-main.tar.gz --strip-components=1 
     rm -f /tmp/codeready-workspaces-assembly-main.tar.gz && \
     cp /etc/pki/java/cacerts /home/jboss/cacerts && chmod 644 /home/jboss/cacerts && \
     mkdir -p /logs /data && \
+    adduser jboss && \
     chgrp -R 0     /home/jboss /data /logs && \
     chmod -R g+rwX /home/jboss /data /logs && \
     chown -R jboss /home/jboss
-# NOTE: Can not run yum commands in upstream image -- fails due to lack of subscription / entitlement
-# RUN yum update -y python3-six pango && yum clean all && rm -rf /var/cache/yum && echo "Installed Packages" && rpm -qa | sort -V && echo "End Of Installed Packages"
+RUN microdnf remove -y tar gzip shadow-utils && \
+    microdnf clean all && rm -rf /var/cache/yum && echo "Installed Packages" && rpm -qa | sort -V && echo "End Of Installed Packages"
 
 USER jboss
 ENTRYPOINT ["/entrypoint.sh"]
+
+ENV SUMMARY="Red Hat CodeReady Workspaces Server container" \
+    DESCRIPTION="Red Hat CodeReady Workspaces server container" \
+    PRODNAME="codeready-workspaces" \
+    COMPNAME="server-rhel8"
+
+LABEL summary="$SUMMARY" \
+      description="$DESCRIPTION" \
+      io.k8s.description="$DESCRIPTION" \
+      io.k8s.display-name="$DESCRIPTION" \
+      io.openshift.tags="$PRODNAME,$COMPNAME" \
+      com.redhat.component="$PRODNAME-$COMPNAME-container" \
+      name="$PRODNAME/$COMPNAME" \
+      version="2.2" \
+      license="EPLv2" \
+      maintainer="Nick Boldt <nboldt@redhat.com>" \
+      io.openshift.expose-services="" \
+      usage=""
+
+# insert generated LABELs below this line
