@@ -1,17 +1,17 @@
-[rhel-8-for-x86_64-appstream-rpms-pulp]
-name=rhel-8-for-x86_64-appstream-rpms-pulp
-baseurl=http://pulp.dist.prod.ext.phx2.redhat.com/content/dist/rhel8/8/x86_64/appstream/os
+[rhel-8-for-appstream-rpms-pulp]
+name=rhel-8-for-appstream-rpms-pulp
+baseurl=http://pulp.dist.prod.ext.phx2.redhat.com/content/dist/rhel8/8/$basearch/appstream/os
 enabled=1
 gpgcheck=0
  
-[rhel-8-for-x86_64-baseos-rpms-pulp]
-name=rhel-8-for-x86_64-baseos-rpms-pulp
-baseurl=http://pulp.dist.prod.ext.phx2.redhat.com/content/dist/rhel8/8/x86_64/baseos/os
+[rhel-8-for-baseos-rpms-pulp]
+name=rhel-8-for-baseos-rpms-pulp
+baseurl=http://pulp.dist.prod.ext.phx2.redhat.com/content/dist/rhel8/8/$basearch/baseos/os
 enabled=1
 gpgcheck=0
 
-[codeready-builder-for-rhel-8-x86_64-rpms]
-name=codeready-builder-for-rhel-8-x86_64-rpms
-baseurl=http://pulp-read.dist.prod.ext.phx2.redhat.com/content/dist/rhel8/8/x86_64/codeready-builder/os/
+[codeready-builder-for-rhel-8-rpms]
+name=codeready-builder-for-rhel-8-rpms
+baseurl=http://pulp-read.dist.prod.ext.phx2.redhat.com/content/dist/rhel8/8/$basearch/codeready-builder/os/
 enabled=1
 gpgcheck=0
