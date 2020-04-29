@@ -7,43 +7,38 @@
 #
 # SPDX-License-Identifier: EPL-2.0
 #
-
+set -x
 SCRIPT_DIR=$(cd "$(dirname "$0")" || exit; pwd)
-LOG_FILE="/tmp/image_digests.log"
+YAML_ROOT="$1"
+[[ -z "$2" ]] && ARCH=$(uname -m) || ARCH="$2"
+[[ $ARCH == "x86_64" ]] && ARCH="amd64"
+LOG_FILE="$(mktemp)" && trap "rm -f $LOG_FILE" EXIT
 
 function handle_error() {
-  the_image="$1"
-  # NOTE: need --tls-verify=false to bypass SSL/TLD Cert validation errors - https://github.com/nmasse-itix/OpenShift-Examples/blob/master/Using-Skopeo/README.md#ssltls-issues
-  echo "  Could not read image metadata through skopeo inspect --tls-verify=false; skip $the_image"
-  echo -n "  Reason: "
-  sed 's|^|    |g' $LOG_FILE
+  local yaml_file="$1"
+  local image_url="$2"
+  if [[ -z "$(tail -1 $LOG_FILE | grep -v "no image found in manifest list for architecture $ARCH")" ]] ; then
+    echo "WARNING: Image $image_url not found for architecture $ARCH.  Removing $yaml_file from build."
+    mv "$yaml_file" "$yaml_file.removed"
+  else
+    echo "  Could not read image metadata through skopeo inspect --tls-verify=false; skip $image_url"
+    echo -n "  Reason: "
+    sed 's|^|    |g' $LOG_FILE
+    exit 1
+  fi
 }
 
-set -x
-readarray -d '' metas < <(find "$1" -name 'meta.yaml' -print0)
-for image in $(yq -r '.spec | .containers[]?,.initContainers[]? | .image' "${metas[@]}" | sort | uniq); do
-  digest="$(skopeo inspect --tls-verify=false "docker://${image}" 2>"$LOG_FILE" | jq -r '.Digest')"
-  if [[ ${digest} ]]; then
-    echo "    $digest # ${image}"
-  else 
-    # for other build methods or for falling back to other registries when not found, can apply transforms here
-    if [[ -x "${SCRIPT_DIR}/write_image_digests_alternate_urls.sh" ]]; then
-      # since extension file may not exist, disable this check
-      # shellcheck disable=SC1090
-      source "${SCRIPT_DIR}/write_image_digests_alternate_urls.sh"
+for image_url in $($SCRIPT_DIR/list_referenced_images.sh "$YAML_ROOT") ; do
+  digest=$($SCRIPT_DIR/find_image.sh "$image_url" $ARCH  2> $LOG_FILE | jq -r '.Digest')
+  for yaml_file in $($SCRIPT_DIR/list_yaml.sh "$YAML_ROOT") ; do
+    [[ -z "$($SCRIPT_DIR/list_referenced_images.sh "$yaml_file" | grep $image_url)" ]] && continue 
+
+    if [[ -z "$digest" ]] ; then
+      handle_error "$yaml_file" "$image_url"
+    else
+      # Rewrite image to use sha-256 digests
+      digest_image="${image_url%:*}@${digest}"
+      sed -i -E 's|"?'"${image_url}"'"?|"'"${digest_image}"'" # tag: '"${image_url}"'|g' "$yaml_file"
     fi
-  fi
-
-  # don't rewrite if we couldn't get a digest from either the basic image or the alternative image
-  if [[ ! ${digest} ]]; then
-    handle_error "$image"
-    continue
-  fi
-
-  digest_image="${image%:*}@${digest}"
-
-  # Rewrite images to use sha-256 digests
-  sed -i -E 's|"?'"${image}"'"?|"'"${digest_image}"'" # tag: '"${image}"'|g' "${metas[@]}"
+  done
 done
-rm $LOG_FILE
-set +x
