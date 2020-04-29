@@ -2,13 +2,16 @@
 
 # script to generate a manifest of all the rpms installed into the containers
 
+# candidateTag="crw-2.0-rhel-8-candidate" # 2.0, 2.1
+candidateTag="crw-2.2-rhel-8-container-candidate" # 2.2
+
 allNVRs=""
 MATCH=""
 quiet=0
 HELP="
 
 How to use this script:
-NVR1 NVR2 ...   | list of NVRs to query. If omitted, generate list from crw-2.0-rhel-8-candidate
+NVR1 NVR2 ...   | list of NVRs to query. If omitted, generate list from ${candidateTag}
 -h,     --help  | show this help menu
 -g \"regex\"      | if provided, grep resulting rpm logs for matching regex
 
@@ -90,7 +93,7 @@ function loadNVRlog() {
 }
 
 if [[ ${allNVRs} == "" ]]; then
-	log "Compute list of latest crw-2.0-rhel-8-candidate NVRs ... ";
+	log "Compute list of latest ${candidateTag} NVRs ... ";
 	loadNVRs; allNVRs="${allNVRs} ${loadNVRs_return}"
 	log ""
 fi
