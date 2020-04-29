@@ -75,7 +75,7 @@ FROM registry.access.redhat.com/rhscl/httpd-24-rhel7:2.4-110 AS registry
 
 # DOWNSTREAM: use RHEL8/httpd
 # https://access.redhat.com/containers/?tab=tags#/registry.access.redhat.com/rhel8/httpd-24
-# FROM registry.redhat.io/rhel8/httpd-24:1-89 AS registry
+# FROM registry.redhat.io/rhel8/httpd-24:1-92 AS registry
 USER 0
 RUN yum update -y systemd && yum clean all && rm -rf /var/cache/yum && \
     echo "Installed Packages" && rpm -qa | sort -V && echo "End Of Installed Packages"
