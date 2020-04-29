@@ -82,11 +82,16 @@ cd ${WORKSPACE}/sources
   git config user.email "nickboldt+devstudio-release@gmail.com"
   git config user.name "Red Hat Devstudio Release Bot"
   git config --global push.default matching
-  git config --global hub.protocol https # https://github.com/github/hub/issues/1644 # workaround for Fatal: Could not read Username for "https://github.com", No such device or address
   OLD_SHA=$(git rev-parse HEAD) # echo ${OLD_SHA:0:8}
   pushd ${SOURCEDOCKERFILE%/*} >/dev/null
-    /tmp/updateBaseImages.sh -b ''' + SOURCE_BRANCH + ''' -f ${SOURCEDOCKERFILE##*/} # just pass in rhel.Dockerfile
+    /tmp/updateBaseImages.sh --no-commit -b ''' + SOURCE_BRANCH + ''' -f ${SOURCEDOCKERFILE##*/} # just pass in rhel.Dockerfile
   popd >/dev/null
+  # https://github.com/github/hub/issues/1644 - Fatal: Could not read Username for "https://github.com", No such device or address
+  git config --global hub.protocol https
+  git remote -v
+  git remote set-url origin https://\$GITHUB_TOKEN:x-oauth-basic@github.com/''' + SOURCE_REPO + '''.git
+  git remote -v
+  git commit -s -m "[base] Update ${SOURCEDOCKERFILE}" ${SOURCEDOCKERFILE} && git push
   NEW_SHA=$(git rev-parse HEAD) # echo ${NEW_SHA:0:8}
   if [[ "${OLD_SHA}" != "${NEW_SHA}" ]]; then hasChanged=1; fi
   SOURCE_SHA=$(git rev-parse HEAD) # echo ${SOURCE_SHA:0:8}
