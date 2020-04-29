@@ -83,9 +83,9 @@ cd ${WORKSPACE}/sources
   git config user.name "Red Hat Devstudio Release Bot"
   git config --global push.default matching
 
+  # SOLVED :: Fatal: Could not read Username for "https://github.com", No such device or address :: https://github.com/github/hub/issues/1644
   git remote -v
   git config --global hub.protocol https
-  # https://github.com/github/hub/issues/1644 - Fatal: Could not read Username for "https://github.com", No such device or address
   git remote set-url origin https://\$GITHUB_TOKEN:x-oauth-basic@github.com/''' + SOURCE_REPO + '''.git
   git remote -v
 
@@ -93,7 +93,6 @@ cd ${WORKSPACE}/sources
   pushd ${SOURCEDOCKERFILE%/*} >/dev/null
     /tmp/updateBaseImages.sh -b ''' + SOURCE_BRANCH + ''' -f ${SOURCEDOCKERFILE##*/} # just pass in rhel.Dockerfile
   popd >/dev/null
-  # git commit -s -m "[base] Update ${SOURCEDOCKERFILE}" ${SOURCEDOCKERFILE} && git push
   NEW_SHA=$(git rev-parse HEAD) # echo ${NEW_SHA:0:8}
   if [[ "${OLD_SHA}" != "${NEW_SHA}" ]]; then hasChanged=1; fi
   SOURCE_SHA=$(git rev-parse HEAD) # echo ${SOURCE_SHA:0:8}
