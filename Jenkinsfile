@@ -13,7 +13,7 @@
 
 def installNPM(){
 	def yarnVersion="1.21.0"
-	def nodeHome = tool 'nodejs-10.15.3'
+	def nodeHome = tool 'nodejs-10.19.0'
 	env.PATH="${nodeHome}/bin:${env.PATH}"
 	sh '''#!/bin/bash -xe
 rm -f ${HOME}/.npmrc ${HOME}/.yarnrc
