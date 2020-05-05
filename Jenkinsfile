@@ -203,8 +203,7 @@ timeout(240) {
 
 		// TODO does crw.dashboard.version still work here? Or should we do this higher up? 
 		// NOTE: VER_CHE could be 7.12.2-SNAPSHOT if we're using a .x branch instead of a tag. So this overrides what's in the crw root pom.xml
-		sh "mvn clean install ${MVN_FLAGS} -f ${CRW_path}/pom.xml -Dche.version=\"${VER_CHE}\" -Dcrw.dashboard.version=\"${CRW_SHAs}\" ${MVN_EXTRA_FLAGS}"
-		archiveArtifacts fingerprint: true, artifacts:""
+		sh "mvn clean install ${MVN_FLAGS} -f ${CRW_path}/pom.xml -Dparent.version=\"${VER_CHE}\" -Dche.version=\"${VER_CHE}\" -Dcrw.dashboard.version=\"${CRW_SHAs}\" ${MVN_EXTRA_FLAGS}"
 		archiveArtifacts fingerprint: true, artifacts:"**/*.log, **/assembly/*xml, **/assembly/**/*xml, ${CRW_path}/assembly/${CRW_path}-assembly-main/target/*.tar.*"
 
 		echo "<===== Build CRW server assembly ====="

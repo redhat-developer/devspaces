@@ -15,6 +15,11 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
+        <!-- switch to use
+        <artifactId>maven-parent-pom</artifactId>
+        <groupId>org.eclipse.che.parent</groupId>
+        <version>7.13.0</version>
+        as of Che 7.13 -->
         <artifactId>maven-depmgt-pom</artifactId>
         <groupId>org.eclipse.che.depmgt</groupId>
         <version>7.12.1</version>
