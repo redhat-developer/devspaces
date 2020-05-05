@@ -41,7 +41,7 @@
         <che.version>7.12.1</che.version>
         <crw.dashboard.version>${crw.version} (Eclipse Che ${che.version})</crw.dashboard.version>
         <crw.docs.version>2.2</crw.docs.version>
-        <crw.version>2.2.0.RC0</crw.version>
+        <crw.version>${project.version}</crw.version>
         <license_years>2019-2020</license_years>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
