@@ -4,11 +4,11 @@ metadata:
   generateName: golang-
 projects:
 -
-  name: example
+  name: golang-health-check
   source:
     type: git
-    location: https://github.com/golang/example.git
-  clonePath: src/github.com/golang/example/
+    location: https://github.com/crw-samples/golang-health-check.git
+    branch: master
 components:
 -
   type: chePlugin
@@ -37,34 +37,21 @@ components:
   mountSources: true
 commands:
 -
-  name: Run outyet
+  name: Run the application
   actions:
   - type: exec
     component: go-cli
-    command: go get -d && go run main.go
-    workdir: ${CHE_PROJECTS_ROOT}/example/outyet
+    command: ./golang-health-check
+    workdir: ${CHE_PROJECTS_ROOT}/golang-health-check
 -
-  name: Stop outyet
+  name: Build the application
   actions:
   - type: exec
     component: go-cli
-    command: kill $(pidof go)
+    command: go build
+    workdir: ${CHE_PROJECTS_ROOT}/golang-health-check
 -
-  name: Test outyet
-  actions:
-  - type: exec
-    component: go-cli
-    command: go test
-    workdir: ${CHE_PROJECTS_ROOT}/example/outyet
--
-  name: Run current file
-  actions:
-  - type: exec
-    component: go-cli
-    command: go get -d && go run ${file}
-    workdir: ${fileDirname}
--
-  name: Debug current file
+  name: Debug configuration
   actions:
   - type: vscode-launch
     referenceContent: |
