@@ -34,12 +34,41 @@ def buildMaven(){
 	env.PATH="${env.PATH}:${mvnHome}/bin"
 }
 
+def CRW_SHAs = ""
+
 def DEV_path = "che-dev"
 def VER_DEV = "VER_DEV"
 def SHA_DEV = "SHA_DEV"
-timeout(120) {
-	node("${node}"){ stage "Build ${DEV_path}"
+
+def PAR_path = "che-parent"
+def VER_PAR = "VER_PAR"
+def SHA_PAR = "SHA_PAR"
+
+def CHE_DB_path = "che-dashboard"
+def VER_CHE_DB = "VER_CHE_DB"
+def SHA_CHE_DB = "SHA_CHE_DB"
+
+def CHE_WL_path = "che-workspace-loader"
+def VER_CHE_WL = "VER_CHE_WL"
+def SHA_CHE_WL = "SHA_CHE_WL"
+
+def CHE_path = "che"
+def VER_CHE = "VER_CHE"
+def SHA_CHE = "SHA_CHE"
+
+def CRW_path = "codeready-workspaces"
+def VER_CRW = "VER_CRW"
+def SHA_CRW = "SHA_CRW"
+
+timeout(240) {
+	node("${node}"){ stage "Build ${DEV_path}, ${PAR_path}, ${CHE_DB_path}, ${CHE_WL_path}, and ${CRW_path}"
 		cleanWs()
+		buildMaven()
+		installNPM()
+		installGo()
+
+		// Build che-dev
+
 		checkout([$class: 'GitSCM', 
 			branches: [[name: "${branchToBuildDev}"]], 
 			doGenerateSubmoduleConfigurations: false, 
@@ -47,21 +76,14 @@ timeout(120) {
 			extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: "${DEV_path}"]], 
 			submoduleCfg: [], 
 			userRemoteConfigs: [[url: "https://github.com/eclipse/${DEV_path}.git"]]])
-		buildMaven()
 		sh "mvn clean install ${MVN_FLAGS} -f ${DEV_path}/pom.xml ${MVN_EXTRA_FLAGS}"
 		stash name: 'stashDev', includes: findFiles(glob: '.repository/**').join(", ")
 
 		VER_DEV = sh(returnStdout:true,script:"egrep \"<version>\" ${DEV_path}/pom.xml|head -1|sed -e \"s#.*<version>\\(.\\+\\)</version>#\\1#\"").trim()
 		SHA_DEV = sh(returnStdout:true,script:"cd ${DEV_path}/ && git rev-parse --short=4 HEAD").trim()
-	}
-}
 
-def PAR_path = "che-parent"
-def VER_PAR = "VER_PAR"
-def SHA_PAR = "SHA_PAR"
-timeout(120) {
-	node("${node}"){ stage "Build ${PAR_path}"
-		cleanWs()
+		// Build che-parent
+
 		checkout([$class: 'GitSCM', 
 			branches: [[name: "${branchToBuildParent}"]], 
 			doGenerateSubmoduleConfigurations: false, 
@@ -69,27 +91,14 @@ timeout(120) {
 			extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: "${PAR_path}"]], 
 			submoduleCfg: [], 
 			userRemoteConfigs: [[url: "https://github.com/eclipse/${PAR_path}.git"]]])
-		unstash 'stashDev'
-		buildMaven()
 		sh "mvn clean install ${MVN_FLAGS} -f ${PAR_path}/pom.xml ${MVN_EXTRA_FLAGS}"
-		stash name: 'stashParent', includes: findFiles(glob: '.repository/**').join(", ")
 
 		VER_PAR = sh(returnStdout:true,script:"egrep \"<version>\" ${PAR_path}/pom.xml|head -1|sed -e \"s#.*<version>\\(.\\+\\)</version>#\\1#\"").trim()
 		SHA_PAR = sh(returnStdout:true,script:"cd ${PAR_path}/ && git rev-parse --short=4 HEAD").trim()
-	}
-}
 
+		// Get CRW version
 
-def CRW_SHAs = ""
-
-def CRW_path = "codeready-workspaces"
-def VER_CRW = "VER_CRW"
-def SHA_CRW = "SHA_CRW"
-timeout(120) {
-	node("${node}"){ stage "Get ${CRW_path} version and patches"
-		cleanWs()
-		// for private repo, use checkout(credentialsId: 'devstudio-release')
-		if (env.ghprbPullId && env.ghprbPullId?.trim()) { 
+		if (env.ghprbPullId && env.ghprbPullId?.trim()) {
 			checkout([$class: 'GitSCM', 
 				branches: [[name: "FETCH_HEAD"]], 
 				doGenerateSubmoduleConfigurations: false, 
@@ -117,37 +126,19 @@ timeout(120) {
 		}
 		VER_CRW = sh(returnStdout:true,script:"egrep \"<version>\" ${CRW_path}/pom.xml|head -2|tail -1|sed -e \"s#.*<version>\\(.\\+\\)</version>#\\1#\"").trim()
 		SHA_CRW = sh(returnStdout:true,script:"cd ${CRW_path}/ && git rev-parse --short=4 HEAD").trim()
-		// stash name: 'stashCRWPatches', includes: findFiles(glob: CRW_path + '/patches/**').join(", ")
-	}
-}
 
-def CHE_path = "che"
-def VER_CHE = "VER_CHE"
-def SHA_CHE = "SHA_CHE"
-timeout(180) {
-	node("${nodeBig}"){ stage "Build ${CHE_path}"
-		cleanWs()
+		// Build che-dashboard
+
 		checkout([$class: 'GitSCM', 
 			branches: [[name: "${branchToBuildChe}"]], 
 			doGenerateSubmoduleConfigurations: false, 
 			poll: true,
-			extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: "${CHE_path}"]], 
+			extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: "${CHE_DB_path}"]], 
 			submoduleCfg: [], 
-			userRemoteConfigs: [[url: "https://github.com/eclipse/${CHE_path}.git"]]])
-		unstash 'stashParent'
-		installNPM()
-		installGo()
-		buildMaven()
+			userRemoteConfigs: [[url: "https://github.com/eclipse/${CHE_DB_path}.git"]]])
 
-		// disable docs from assembly main and root pom as we don't need them in CRW
-		sh '''#!/bin/bash -xe
-			perl -0777 -p -i -e 's|(\\ +<dependency>.*?<\\/dependency>)| ${1} =~ /<artifactId>che-docs<\\/artifactId>/?\"\":${1}|gse' che/assembly/assembly-main/pom.xml
-			perl -0777 -p -i -e 's|(\\ +<dependencySet>.*?<\\/dependencySet>)| ${1} =~ /<include>org.eclipse.che.docs:che-docs<\\/include>/?\"\":${1}|gse' che/assembly/assembly-main/src/assembly/assembly.xml
-			perl -0777 -p -i -e 's|(\\ +<dependency>.*?<\\/dependency>)| ${1} =~ /<artifactId>che-docs<\\/artifactId>/?\"\":${1}|gse' che/pom.xml
-		'''
-
-		VER_CHE = sh(returnStdout:true,script:"egrep \"<version>\" ${CHE_path}/pom.xml|head -2|tail -1|sed -e \"s#.*<version>\\(.\\+\\)</version>#\\1#\"").trim()
-		SHA_CHE = sh(returnStdout:true,script:"cd ${CHE_path}/ && git rev-parse --short=4 HEAD").trim()
+		VER_CHE_DB = sh(returnStdout:true,script:"egrep \"<version>\" ${CHE_DB_path}/pom.xml|head -2|tail -1|sed -e \"s#.*<version>\\(.\\+\\)</version>#\\1#\"").trim()
+		SHA_CHE_DB = sh(returnStdout:true,script:"cd ${CHE_DB_path}/ && git rev-parse --short=4 HEAD").trim()
 
 		// set correct version of CRW Dashboard
 		CRW_SHAs="${VER_CRW} :: ${BUILDINFO} \
@@ -159,64 +150,51 @@ timeout(180) {
 
 		// insert a longer version string which includes both CRW and Che, plus build and SHA info
 		// not sure if this does anything. See also assembly/codeready-workspaces-assembly-dashboard-war/pom.xml line 109
-		sh "egrep 'productVersion = ' che/dashboard/src/components/api/che-service.factory.ts"
-		sh "sed -i -e \"s#\\(.\\+productVersion = \\).\\+#\\1'${CRW_SHAs}';#g\" che/dashboard/src/components/api/che-service.factory.ts;"
-		sh "egrep 'productVersion = ' che/dashboard/src/components/api/che-service.factory.ts"
+		sh "egrep 'productVersion = ' ${CHE_DB_path}/src/components/api/che-service.factory.ts"
+		sh "sed -i -e \"s#\\(.\\+productVersion = \\).\\+#\\1'${CRW_SHAs}';#g\" ${CHE_DB_path}/src/components/api/che-service.factory.ts;"
+		sh "egrep 'productVersion = ' ${CHE_DB_path}/src/components/api/che-service.factory.ts"
 		// apply CRW CSS
 		sh '''#!/bin/bash -xe
 			rawBranch=${branchToBuildCRW##*/}
-			curl -S -L --create-dirs -o che/dashboard/src/assets/branding/branding.css \
+			curl -S -L --create-dirs -o ${CHE_DB_path}/src/assets/branding/branding.css \
 				https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/${rawBranch}/assembly/codeready-workspaces-assembly-dashboard-war/src/main/webapp/assets/branding/branding-crw.css
-			cat che/dashboard/src/assets/branding/branding.css
+			cat ${CHE_DB_path}/src/assets/branding/branding.css
 		'''
-		// unstash 'stashCRWPatches'
-		// sh '''#!/bin/bash -xe
-		// 	cp ''' + CRW_path + '''/patches/0001-Provision-proxy-settings-on-init-containers.patch ''' + CHE_path + '''
-		// 	pushd ''' + CHE_path + ''' > /dev/null
-		// 	git am < 0001-Provision-proxy-settings-on-init-containers.patch
-		// 	popd > /dev/null
-		// '''
 
+		sh "mvn clean install ${MVN_FLAGS} -P native -f ${CHE_DB_path}/pom.xml ${MVN_EXTRA_FLAGS}"
+		echo "[INFO] Built ${CHE_DB_path}"
+
+		// Build che-workspace-loader
+
+		checkout([$class: 'GitSCM', 
+			branches: [[name: "${branchToBuildChe}"]], 
+			doGenerateSubmoduleConfigurations: false, 
+			poll: true,
+			extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: "${CHE_WL_path}"]], 
+			submoduleCfg: [], 
+			userRemoteConfigs: [[url: "https://github.com/eclipse/${CHE_WL_path}.git"]]])
+
+		VER_CHE_WL = sh(returnStdout:true,script:"egrep \"<version>\" ${CHE_WL_path}/pom.xml|head -2|tail -1|sed -e \"s#.*<version>\\(.\\+\\)</version>#\\1#\"").trim()
+		SHA_CHE_WL = sh(returnStdout:true,script:"cd ${CHE_WL_path}/ && git rev-parse --short=4 HEAD").trim()
+		sh "mvn clean install ${MVN_FLAGS} -P native -f ${CHE_WL_path}/pom.xml ${MVN_EXTRA_FLAGS}"
+		echo "[INFO] Built ${CHE_WL_path}"
+
+		// Build che server assembly 
+
+		checkout([$class: 'GitSCM', 
+			branches: [[name: "${branchToBuildChe}"]], 
+			doGenerateSubmoduleConfigurations: false, 
+			poll: true,
+			extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: "${CHE_path}"]], 
+			submoduleCfg: [], 
+			userRemoteConfigs: [[url: "https://github.com/eclipse/${CHE_path}.git"]]])
+
+		VER_CHE = sh(returnStdout:true,script:"egrep \"<version>\" ${CHE_path}/pom.xml|head -2|tail -1|sed -e \"s#.*<version>\\(.\\+\\)</version>#\\1#\"").trim()
+		SHA_CHE = sh(returnStdout:true,script:"cd ${CHE_path}/ && git rev-parse --short=4 HEAD").trim()
 		sh "mvn clean install ${MVN_FLAGS} -P native -f ${CHE_path}/pom.xml ${MVN_EXTRA_FLAGS}"
-		stash name: 'stashChe', includes: findFiles(glob: '.repository/**').join(", ")
-		archiveArtifacts fingerprint: false, artifacts:"**/*.log, **/${CHE_path}/pom.xml, **/${CHE_path}/assembly/assembly-main/pom.xml, **/${CHE_path}/assembly/assembly-main/src/assembly/assembly.xml"
-
 		echo "[INFO] Built ${CHE_path} :: ${CRW_SHAs}"
-	}
-}
 
-timeout(120) {
-	node("${node}"){ stage "Build ${CRW_path}"
-		cleanWs()
-		// for private repo, use checkout(credentialsId: 'devstudio-release')
-		if (env.ghprbPullId && env.ghprbPullId?.trim()) { 
-			checkout([$class: 'GitSCM', 
-				branches: [[name: "FETCH_HEAD"]], 
-				doGenerateSubmoduleConfigurations: false, 
-				poll: true,
-				extensions: [
-					[$class: 'RelativeTargetDirectory', relativeTargetDir: "${CRW_path}"],
-					[$class: 'LocalBranch'],
-					[$class: 'PathRestriction', excludedRegions: 'dependencies/**'],
-					[$class: 'DisableRemotePoll']
-				],
-				submoduleCfg: [], 
-				userRemoteConfigs: [[refspec: "+refs/pull/${env.ghprbPullId}/head:refs/remotes/origin/PR-${env.ghprbPullId}", url: "https://github.com/redhat-developer/${CRW_path}.git"]]])
-		} else {
-			checkout([$class: 'GitSCM', 
-				branches: [[name: "${branchToBuildCRW}"]], 
-				doGenerateSubmoduleConfigurations: false, 
-				poll: true,
-				extensions: [
-					[$class: 'RelativeTargetDirectory', relativeTargetDir: "${CRW_path}"],
-					[$class: 'PathRestriction', excludedRegions: 'dependencies/**'],
-					[$class: 'DisableRemotePoll']
-				],
-				submoduleCfg: [], 
-				userRemoteConfigs: [[url: "https://github.com/redhat-developer/${CRW_path}.git"]]])
-		}
-		unstash 'stashChe'
-		buildMaven()
+		// Build CRW server assembly 
 
 		CRW_SHAs="${VER_CRW} :: ${BUILDINFO} \
 :: ${DEV_path} @ ${SHA_DEV} (${VER_DEV}) \
@@ -225,8 +203,10 @@ timeout(120) {
 :: ${CRW_path} @ ${SHA_CRW} (${VER_CRW})"
 		// echo "CRW_SHAs = ${CRW_SHAs}"
 
+		// TODO does crw.dashboard.version still work here? Or should we do this higher up? 
 		sh "mvn clean install ${MVN_FLAGS} -f ${CRW_path}/pom.xml -Dcrw.dashboard.version=\"${CRW_SHAs}\" ${MVN_EXTRA_FLAGS}"
-		archiveArtifacts fingerprint: true, artifacts:"${CRW_path}/assembly/${CRW_path}-assembly-main/target/*.tar.*"
+		archiveArtifacts fingerprint: true, artifacts:""
+		archiveArtifacts fingerprint: true, artifacts:"**/*.log, **/assembly/*xml, **/assembly/**/*xml, ${CRW_path}/assembly/${CRW_path}-assembly-main/target/*.tar.*"
 
 		echo "[INFO] Built ${CRW_path} :: ${CRW_SHAs}"
 
