@@ -67,8 +67,7 @@ timeout(240) {
 		installNPM()
 		installGo()
 
-		// Build che-dev
-
+		echo "===== Build che-dev =====>"
 		checkout([$class: 'GitSCM', 
 			branches: [[name: "${branchToBuildDev}"]], 
 			doGenerateSubmoduleConfigurations: false, 
@@ -81,9 +80,9 @@ timeout(240) {
 
 		VER_DEV = sh(returnStdout:true,script:"egrep \"<version>\" ${DEV_path}/pom.xml|head -1|sed -e \"s#.*<version>\\(.\\+\\)</version>#\\1#\"").trim()
 		SHA_DEV = sh(returnStdout:true,script:"cd ${DEV_path}/ && git rev-parse --short=4 HEAD").trim()
+		echo "<===== Build che-dev ====="
 
-		// Build che-parent
-
+		echo "===== Build che-parent =====>"
 		checkout([$class: 'GitSCM', 
 			branches: [[name: "${branchToBuildParent}"]], 
 			doGenerateSubmoduleConfigurations: false, 
@@ -95,9 +94,9 @@ timeout(240) {
 
 		VER_PAR = sh(returnStdout:true,script:"egrep \"<version>\" ${PAR_path}/pom.xml|head -1|sed -e \"s#.*<version>\\(.\\+\\)</version>#\\1#\"").trim()
 		SHA_PAR = sh(returnStdout:true,script:"cd ${PAR_path}/ && git rev-parse --short=4 HEAD").trim()
+		echo "<===== Build che-parent ====="
 
-		// Get CRW version
-
+		echo "===== Get CRW version =====>"
 		if (env.ghprbPullId && env.ghprbPullId?.trim()) {
 			checkout([$class: 'GitSCM', 
 				branches: [[name: "FETCH_HEAD"]], 
@@ -126,9 +125,9 @@ timeout(240) {
 		}
 		VER_CRW = sh(returnStdout:true,script:"egrep \"<version>\" ${CRW_path}/pom.xml|head -2|tail -1|sed -e \"s#.*<version>\\(.\\+\\)</version>#\\1#\"").trim()
 		SHA_CRW = sh(returnStdout:true,script:"cd ${CRW_path}/ && git rev-parse --short=4 HEAD").trim()
+		echo "<===== Get CRW version ====="
 
-		// Build che-dashboard
-
+		echo "===== Build che-dashboard =====>"
 		checkout([$class: 'GitSCM', 
 			branches: [[name: "${branchToBuildChe}"]], 
 			doGenerateSubmoduleConfigurations: false, 
@@ -162,10 +161,9 @@ timeout(240) {
 		'''
 
 		sh "mvn clean install ${MVN_FLAGS} -P native -f ${CHE_DB_path}/pom.xml ${MVN_EXTRA_FLAGS}"
-		echo "[INFO] Built ${CHE_DB_path}"
+		echo "<===== Build che-dashboard ====="
 
-		// Build che-workspace-loader
-
+		echo "===== Build che-workspace-loader =====>"
 		checkout([$class: 'GitSCM', 
 			branches: [[name: "${branchToBuildChe}"]], 
 			doGenerateSubmoduleConfigurations: false, 
@@ -177,10 +175,9 @@ timeout(240) {
 		VER_CHE_WL = sh(returnStdout:true,script:"egrep \"<version>\" ${CHE_WL_path}/pom.xml|head -2|tail -1|sed -e \"s#.*<version>\\(.\\+\\)</version>#\\1#\"").trim()
 		SHA_CHE_WL = sh(returnStdout:true,script:"cd ${CHE_WL_path}/ && git rev-parse --short=4 HEAD").trim()
 		sh "mvn clean install ${MVN_FLAGS} -P native -f ${CHE_WL_path}/pom.xml ${MVN_EXTRA_FLAGS}"
-		echo "[INFO] Built ${CHE_WL_path}"
+		echo "<===== Build che-workspace-loader ====="
 
-		// Build che server assembly 
-
+		echo "===== Build che server assembly =====>"
 		checkout([$class: 'GitSCM', 
 			branches: [[name: "${branchToBuildChe}"]], 
 			doGenerateSubmoduleConfigurations: false, 
@@ -192,10 +189,9 @@ timeout(240) {
 		VER_CHE = sh(returnStdout:true,script:"egrep \"<version>\" ${CHE_path}/pom.xml|head -2|tail -1|sed -e \"s#.*<version>\\(.\\+\\)</version>#\\1#\"").trim()
 		SHA_CHE = sh(returnStdout:true,script:"cd ${CHE_path}/ && git rev-parse --short=4 HEAD").trim()
 		sh "mvn clean install ${MVN_FLAGS} -P native -f ${CHE_path}/pom.xml ${MVN_EXTRA_FLAGS}"
-		echo "[INFO] Built ${CHE_path} :: ${CRW_SHAs}"
+		echo "<==== Build che server assembly ====="
 
-		// Build CRW server assembly 
-
+		echo "===== Build CRW server assembly =====>"
 		CRW_SHAs="${VER_CRW} :: ${BUILDINFO} \
 :: ${DEV_path} @ ${SHA_DEV} (${VER_DEV}) \
 :: ${PAR_path} @ ${SHA_PAR} (${VER_PAR}) \
@@ -207,8 +203,9 @@ timeout(240) {
 		sh "mvn clean install ${MVN_FLAGS} -f ${CRW_path}/pom.xml -Dcrw.dashboard.version=\"${CRW_SHAs}\" ${MVN_EXTRA_FLAGS}"
 		archiveArtifacts fingerprint: true, artifacts:""
 		archiveArtifacts fingerprint: true, artifacts:"**/*.log, **/assembly/*xml, **/assembly/**/*xml, ${CRW_path}/assembly/${CRW_path}-assembly-main/target/*.tar.*"
-
 		echo "[INFO] Built ${CRW_path} :: ${CRW_SHAs}"
+
+		echo "<===== Build CRW server assembly ====="
 
 		def brewwebQuery = \
 			"https://brewweb.engineering.redhat.com/brew/tasks?method=buildContainer&owner=crw-build/codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com&state=all&view=flat&order=-id"
