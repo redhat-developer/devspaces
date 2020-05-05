@@ -7,7 +7,7 @@
 def SOURCE_REPO = "eclipse/che-jwtproxy" //source repo from which to find and sync commits to pkgs.devel repo
 def GIT_PATH = "containers/codeready-workspaces-jwtproxy" // dist-git repo to use as target
 
-def GIT_BRANCH = "crw-2.0-rhel-8" // target branch in dist-git repo, eg., crw-2.0-rhel-8
+def GIT_BRANCH = "crw-2.2-rhel-8" // target branch in dist-git repo, eg., crw-2.2-rhel-8
 def SCRATCH = "false"
 def PUSH_TO_QUAY = "true"
 def QUAY_PROJECT = "jwtproxy" // also used for the Brew dockerfile params
