@@ -156,9 +156,9 @@ timeout(240) {
 		// apply CRW CSS
 		sh '''#!/bin/bash -xe
 			rawBranch=${branchToBuildCRW##*/}
-			curl -S -L --create-dirs -o ${CHE_DB_path}/src/assets/branding/branding.css \
+			curl -S -L --create-dirs -o ''' + CHE_DB_path + '''/src/assets/branding/branding.css \
 				https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/${rawBranch}/assembly/codeready-workspaces-assembly-dashboard-war/src/main/webapp/assets/branding/branding-crw.css
-			cat ${CHE_DB_path}/src/assets/branding/branding.css
+			cat ''' + CHE_DB_path + '''/src/assets/branding/branding.css
 		'''
 
 		sh "mvn clean install ${MVN_FLAGS} -P native -f ${CHE_DB_path}/pom.xml ${MVN_EXTRA_FLAGS}"
