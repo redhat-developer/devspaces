@@ -15,7 +15,7 @@ deprecate:
   migrateTo: ms-kubernetes-tools/ms-kubernetes-tools/latest
 spec:
   containers:
-    - image: "registry.redhat.io/codeready-workspaces/plugin-kubernetes-rhel8:2.1"
+    - image: "registry.redhat.io/codeready-workspaces/plugin-kubernetes-rhel8:2.2"
       name: "vscode-kubernetes-tools"
       memoryLimit: "1G"
   extensions:

@@ -18,7 +18,7 @@ components:
   -
     type: dockerimage
     alias: maven
-    image: registry.redhat.io/codeready-workspaces/stacks-java-rhel8:2.1
+    image: registry.redhat.io/codeready-workspaces/stacks-java-rhel8:2.2
     env:
       - name: JAVA_OPTS
         value: "-XX:MaxRAMPercentage=50.0 -XX:+UseParallelGC -XX:MinHeapFreeRatio=10

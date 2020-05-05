@@ -16,7 +16,7 @@ components:
   -
     type: dockerimage
     alias: python
-    image: registry.redhat.io/codeready-workspaces/stacks-python-rhel8:2.1
+    image: registry.redhat.io/codeready-workspaces/stacks-python-rhel8:2.2
     memoryLimit: 512Mi
     mountSources: true
 commands:
