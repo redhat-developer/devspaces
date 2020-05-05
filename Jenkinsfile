@@ -145,7 +145,7 @@ timeout(240) {
 :: ${PAR_path} @ ${SHA_PAR} (${VER_PAR}) \
 :: ${CHE_path} @ ${SHA_CHE} (${VER_CHE}) \
 :: ${CRW_path} @ ${SHA_CRW} (${VER_CRW})"
-		// echo "CRW_SHAs = ${CRW_SHAs}"
+		echo "CRW_SHAs (for dashboard) = ${CRW_SHAs}"
 
 		// insert a longer version string which includes both CRW and Che, plus build and SHA info
 		// not sure if this does anything. See also assembly/codeready-workspaces-assembly-dashboard-war/pom.xml line 109
@@ -195,15 +195,17 @@ timeout(240) {
 		CRW_SHAs="${VER_CRW} :: ${BUILDINFO} \
 :: ${DEV_path} @ ${SHA_DEV} (${VER_DEV}) \
 :: ${PAR_path} @ ${SHA_PAR} (${VER_PAR}) \
+:: ${CHE_DB_path} @ ${SHA_CHE_DB} (${VER_CHE_DB}) \
+:: ${CHE_WL_path} @ ${SHA_CHE_WL} (${VER_CHE_WL}) \
 :: ${CHE_path} @ ${SHA_CHE} (${VER_CHE}) \
 :: ${CRW_path} @ ${SHA_CRW} (${VER_CRW})"
-		// echo "CRW_SHAs = ${CRW_SHAs}"
+		echo "CRW_SHAs (overall) = ${CRW_SHAs}"
 
 		// TODO does crw.dashboard.version still work here? Or should we do this higher up? 
-		sh "mvn clean install ${MVN_FLAGS} -f ${CRW_path}/pom.xml -Dcrw.dashboard.version=\"${CRW_SHAs}\" ${MVN_EXTRA_FLAGS}"
+		// NOTE: VER_CHE could be 7.12.2-SNAPSHOT if we're using a .x branch instead of a tag. So this overrides what's in the crw root pom.xml
+		sh "mvn clean install ${MVN_FLAGS} -f ${CRW_path}/pom.xml -Dche.version=\"${VER_CHE}\" -Dcrw.dashboard.version=\"${CRW_SHAs}\" ${MVN_EXTRA_FLAGS}"
 		archiveArtifacts fingerprint: true, artifacts:""
 		archiveArtifacts fingerprint: true, artifacts:"**/*.log, **/assembly/*xml, **/assembly/**/*xml, ${CRW_path}/assembly/${CRW_path}-assembly-main/target/*.tar.*"
-		echo "[INFO] Built ${CRW_path} :: ${CRW_SHAs}"
 
 		echo "<===== Build CRW server assembly ====="
 
