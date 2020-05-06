@@ -7,7 +7,7 @@
 #
 # SPDX-License-Identifier: EPL-2.0
 #
-set -x
+set +x
 SCRIPT_DIR=$(cd "$(dirname "$0")" || exit; pwd)
 YAML_ROOT="$1"
 [[ -z "$2" ]] && ARCH=$(uname -m) || ARCH="$2"
@@ -18,12 +18,17 @@ function handle_error() {
   local yaml_file="$1"
   local image_url="$2"
   if [[ -z "$(tail -1 $LOG_FILE | grep -v "no image found in manifest list for architecture $ARCH")" ]] ; then
-    echo "WARNING: Image $image_url not found for architecture $ARCH.  Removing $yaml_file from build."
+    echo "[WARN] Image $image_url not found for architecture $ARCH: remove $yaml_file from build."
+    mv "$yaml_file" "$yaml_file.removed"
+  elif [[ $(egrep "404|File not found" ${LOG_FILE}) ]]; then
+    echo "[WARN] Image $image_url not found (404): remove $yaml_file from build."
     mv "$yaml_file" "$yaml_file.removed"
   else
-    echo "  Could not read image metadata through skopeo inspect --tls-verify=false; skip $image_url"
+    echo "[ERROR] Could not read image metadata through skopeo inspect --tls-verify=false; skip $image_url"
+    echo "[ERROR] Remove $yaml_file from build."
     echo -n "  Reason: "
     sed 's|^|    |g' $LOG_FILE
+    mv "$yaml_file" "$yaml_file.removed"
     exit 1
   fi
 }
@@ -32,13 +37,13 @@ for image_url in $($SCRIPT_DIR/list_referenced_images.sh "$YAML_ROOT") ; do
   digest=$($SCRIPT_DIR/find_image.sh "$image_url" $ARCH  2> $LOG_FILE | jq -r '.Digest')
   for yaml_file in $($SCRIPT_DIR/list_yaml.sh "$YAML_ROOT") ; do
     [[ -z "$($SCRIPT_DIR/list_referenced_images.sh "$yaml_file" | grep $image_url)" ]] && continue 
-
     if [[ -z "$digest" ]] ; then
       handle_error "$yaml_file" "$image_url"
     else
       # Rewrite image to use sha-256 digests
       digest_image="${image_url%:*}@${digest}"
       sed -i -E 's|"?'"${image_url}"'"?|"'"${digest_image}"'" # tag: '"${image_url}"'|g' "$yaml_file"
+       echo "[INFO] Update $yaml_file with $digest_image"
     fi
   done
 done
