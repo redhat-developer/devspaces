@@ -118,7 +118,6 @@ timeout(240) {
 				extensions: [
 					[$class: 'RelativeTargetDirectory', relativeTargetDir: "${CRW_path}"],
 					[$class: 'PathRestriction', excludedRegions: 'dependencies/**'],
-					[$class: 'DisableRemotePoll']
 				],
 				submoduleCfg: [], 
 				userRemoteConfigs: [[url: "https://github.com/redhat-developer/${CRW_path}.git"]]])
