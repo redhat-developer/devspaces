@@ -62,6 +62,7 @@ def SHA_CRW = "SHA_CRW"
 
 timeout(240) {
 	node("${node}"){ stage "Build ${DEV_path}, ${PAR_path}, ${CHE_DB_path}, ${CHE_WL_path}, and ${CRW_path}"
+	  wrap([$class: 'TimestamperBuildWrapper']) {
 		cleanWs()
 		buildMaven()
 		installNPM()
@@ -226,6 +227,7 @@ timeout(240) {
  :: ${CRW_path} @ ${SHA_CRW} (${VER_CRW})"
 		echo "${descriptString}"
 		currentBuild.description="${descriptString}"
+	  }
 	}
 }
 
