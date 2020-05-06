@@ -10,12 +10,14 @@ icon: https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/ma
 repository: https://github.com/camel-tooling/vscode-camelk
 category: Language
 firstPublicationDate: '2020-02-05'
+deprecate:
+  automigrate: true
+  migrateTo: redhat/vscode-camelk/latest
 spec:
   containers:
-  - image: "registry.redhat.io/codeready-workspaces/plugin-kubernetes-rhel8:2.1"
+  - image: "registry.redhat.io/codeready-workspaces/plugin-kubernetes-rhel8:2.2"
     name: vscode-camelk
     memoryLimit: "1G"
   extensions:
   - https://download.jboss.org/jbosstools/vscode/stable/vscode-camelk/vscode-camelk-0.0.12-353.vsix
   - https://download.jboss.org/jbosstools/vscode/3rdparty/vscode-kubernetes-tools/vscode-kubernetes-tools-1.0.4.vsix
-  - https://github.com/redhat-developer/vscode-yaml/releases/download/0.4.0/redhat.vscode-yaml-0.4.0.vsix

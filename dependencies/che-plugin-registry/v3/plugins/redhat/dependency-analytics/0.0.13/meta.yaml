@@ -12,7 +12,7 @@ category: Other
 firstPublicationDate: '2019-09-12'
 spec:
   containers:
-    - image: "registry.redhat.io/codeready-workspaces/stacks-java-rhel8:2.1"
+    - image: "registry.redhat.io/codeready-workspaces/stacks-java-rhel8:2.2"
       name: dependency-analytics
       memoryLimit: "512Mi"
       args:

@@ -19,6 +19,9 @@ Usage: for 1 or more containes in quay or Pulp, compute the NVR, Build URL, and 
 exit
 }
 
+# candidateTag="crw-2.0-rhel-8-candidate" # 2.0, 2.1
+candidateTag="crw-2.2-rhel-8-container-candidate" # 2.2
+
 if [[ $# -lt 1 ]]; then usage; fi
 
 NUMTAGS=1 # by default show only the latest tag for each container; or show n latest ones
@@ -38,11 +41,11 @@ for d in $CONTAINERS; do
 	TAG=${dd##*:}; # echo $TAG
 	CONTNAME=${dd%%:${TAG}}; CONTNAME=${CONTNAME##*/}; CONTNAME=${CONTNAME%%-rhel8}
 	# echo "Search for $CONTNAME :: $TAG"
-	# echo "  brew list-tagged crw-2.0-rhel-8-candidate | egrep \"${CONTNAME}-container|${CONTNAME}-rhel8-container\" | sed -r -e \"s#crw-2.0-rhel-8-candidate.+##\" | sort -V"
+	# echo "  brew list-tagged ${candidateTag} | egrep \"${CONTNAME}-container|${CONTNAME}-rhel8-container\" | sed -r -e \"s#${candidateTag}.+##\" | sort -V"
 	if [[ $TAG != ${dd} ]]; then
-		NVRs=$(brew list-tagged crw-2.0-rhel-8-candidate | egrep "${CONTNAME}-container|${CONTNAME}-rhel8-container" | sed -e "s#crw-2.0-rhel-8-candidate.\+##" | sort -V | grep ${TAG})
+		NVRs=$(brew list-tagged ${candidateTag} | egrep "${CONTNAME}-container|${CONTNAME}-rhel8-container" | sed -e "s#${candidateTag}.\+##" | sort -V | grep ${TAG})
 	else
-		NVRs=$(brew list-tagged crw-2.0-rhel-8-candidate | egrep "${CONTNAME}-container|${CONTNAME}-rhel8-container" | sed -e "s#crw-2.0-rhel-8-candidate.\+##" | sort -Vr | head -${NUMTAGS})
+		NVRs=$(brew list-tagged ${candidateTag} | egrep "${CONTNAME}-container|${CONTNAME}-rhel8-container" | sed -e "s#${candidateTag}.\+##" | sort -Vr | head -${NUMTAGS})
 	fi
 	for NVR in $NVRs; do
 		echo "     NVR: $NVR"

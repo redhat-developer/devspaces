@@ -15,7 +15,7 @@ deprecate:
   migrateTo: redhat/vscode-openshift-connector/latest
 spec:
   containers:
-    - image: "registry.redhat.io/codeready-workspaces/plugin-openshift-rhel8:2.1"
+    - image: "registry.redhat.io/codeready-workspaces/plugin-openshift-rhel8:2.2"
       name: "vscode-openshift-connector"
       memoryLimit: "1280Mi"
   extensions:

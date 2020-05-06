@@ -20,7 +20,7 @@ components:
 -
   type: dockerimage
   alias: php
-  image: registry.redhat.io/codeready-workspaces/stacks-php-rhel8:2.1
+  image: registry.redhat.io/codeready-workspaces/stacks-php-rhel8:2.2
   memoryLimit: 512Mi
   mountSources: true
   endpoints:

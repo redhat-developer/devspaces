@@ -16,7 +16,7 @@ done
 usage ()
 {
   echo "Usage:   $0 [VERSION TO ADD] [--no-commit]"
-  echo "Example: $0 7.9.2"; echo
+  echo "Example: $0 7.9.3"; echo
 }
 
 if [[ ! ${VERSION} ]]; then

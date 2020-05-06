@@ -12,7 +12,7 @@ category: Linter
 repository: https://www.sonarlint.org/
 spec:
   containers:
-    - image: "registry.redhat.io/codeready-workspaces/stacks-java-rhel8:2.1"
+    - image: "registry.redhat.io/codeready-workspaces/stacks-java-rhel8:2.2"
       name: vscode-sonarlint
       memoryLimit: "512Mi"
   extensions:

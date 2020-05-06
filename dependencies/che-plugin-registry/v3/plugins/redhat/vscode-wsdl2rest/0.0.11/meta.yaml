@@ -12,7 +12,7 @@ category: Other
 firstPublicationDate: "2020-01-13"
 spec:
   containers:
-    - image: "registry.redhat.io/codeready-workspaces/stacks-java-rhel8:2.1"
+    - image: "registry.redhat.io/codeready-workspaces/stacks-java-rhel8:2.2"
       memoryLimit: "256Mi"
       args:
         - sh

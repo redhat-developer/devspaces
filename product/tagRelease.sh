@@ -4,22 +4,32 @@
 
 if [[ ! $1 ]]; then
 	echo "Usage: $0 version-to-tag"
-	echo "Example: $0 2.0.0.GA"
+	echo "Example: $0 2.1.1.GA"
 	exit 1
 else
 	TAG="$1"
 fi
 
+# source branches to tag
+pkgs_devel_branch=crw-2.0-rhel-8
+che_operator_branch=crw-2.1
+crw_repos_branch=master 
+# source branches to tag
+
 mkdir -p /tmp/tmp-checkouts
 cd /tmp/tmp-checkouts
 
-pkgs_devel_branch=crw-2.0-rhel-8
 for d in \
-codeready-workspaces codeready-workspaces-operator \
+codeready-workspaces-operator  codeready-workspaces-operator-metadata \
+codeready-workspaces \
+\
 codeready-workspaces-jwtproxy codeready-workspaces-machineexec \
 codeready-workspaces-devfileregistry codeready-workspaces-pluginregistry \
-codeready-workspaces-pluginbrokerinit codeready-workspaces-pluginbroker \
+codeready-workspaces-pluginbroker-metadata codeready-workspaces-pluginbroker-artifacts \
+codeready-workspaces-imagepuller \
+\
 codeready-workspaces-plugin-kubernetes codeready-workspaces-plugin-openshift \
+codeready-workspaces-plugin-java11 \
 codeready-workspaces-theia codeready-workspaces-theia-endpoint \
 codeready-workspaces-theia-dev codeready-workspaces-stacks-cpp \
 codeready-workspaces-stacks-dotnet codeready-workspaces-stacks-golang \
@@ -33,7 +43,6 @@ codeready-workspaces-stacks-php codeready-workspaces-stacks-python \
 	cd ..
 done
 
-che_operator_branch=crw-2.0
 for d in che-operator; do
 	echo; echo "== $d =="
 	if [[ ! -d ${d} ]]; then git clone --depth 1 -b ${che_operator_branch} git@github.com:eclipse/${d}.git projects_${d}; fi
@@ -42,9 +51,21 @@ for d in che-operator; do
 	cd ..
 done
 
-crw_repos_branch=master 
-for d in codeready-workspaces codeready-workspaces-deprecated \
-		 codeready-workspaces-operator codeready-workspaces-chectl \
+for d in codeready-workspaces-operator; do
+	echo; echo "== $d =="
+	if [[ ! -d ${d} ]]; then git clone --depth 1 -b ${crw_repos_branch} git@github.com:redhat-developer/${d}.git projects_${d}; fi 
+	cd projects_${d} && git checkout ${crw_repos_branch} -q && git pull -q
+
+	# CRW-833 inject latest CSV files w/ latest digests
+	rsync -aPr ../containers_codeready-workspaces-operator-metadata/controller-manifests/* ./controller-manifests/
+	git add ./controller-manifests/
+	git commit -s -m "[release] copy generated controller-manifests content back to codeready-workspaces-operator before tagging" ./controller-manifests/
+	git push origin ${crw_repos_branch}
+	git tag ${TAG}; git push origin ${TAG}
+	cd ..
+done
+
+for d in codeready-workspaces codeready-workspaces-deprecated codeready-workspaces-chectl \
 		 codeready-workspaces-theia codeready-workspaces-productization; do
 	echo; echo "== $d =="
 	if [[ ! -d ${d} ]]; then git clone --depth 1 -b ${crw_repos_branch} git@github.com:redhat-developer/${d}.git projects_${d}; fi 
@@ -55,4 +76,5 @@ done
 
 # cleanup
 # cd /tmp
+echo "Temporary checkouts are in /tmp/tmp-checkouts"
 # rm -fr /tmp/tmp-checkouts

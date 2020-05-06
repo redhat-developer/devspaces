@@ -15,7 +15,7 @@ deprecate:
   migrateTo: redhat/vscode-wsdl2rest/latest
 spec:
   containers:
-    - image: "registry.redhat.io/codeready-workspaces/stacks-java-rhel8:2.1"
+    - image: "registry.redhat.io/codeready-workspaces/stacks-java-rhel8:2.2"
       memoryLimit: "256Mi"
       args:
         - sh

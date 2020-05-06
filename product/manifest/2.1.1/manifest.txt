@@ -1,0 +1,385 @@
+containers/codeready-workspaces-server-rhel8-container:2.1.1/openjdk/openjdk-8-rhel8:1.2-3.1583838313
+containers/codeready-workspaces-operator-rhel8-container:2.1.1/devtools/go-toolset-rhel7:1.12.12-4  as builder
+containers/codeready-workspaces-operator-rhel8-container:2.1.1/ubi8-minimal:8.1-409
+containers/codeready-workspaces-operator-metadata-rhel8-container:2.1.1/scratch
+containers/codeready-workspaces-jwtproxy-rhel8-container:2.1.1/rhel8/go-toolset:1.12.8-45 as builder
+containers/codeready-workspaces-jwtproxy-rhel8-container:2.1.1/ubi8-minimal:8.1-409
+containers/codeready-workspaces-machineexec-rhel8-container:2.1.1/rhel8/go-toolset:1.12.8-45 as builder
+containers/codeready-workspaces-machineexec-rhel8-container:2.1.1/scratch
+containers/codeready-workspaces-devfileregistry-rhel8-container:2.1.1/ubi8-minimal:8.1-409 as builder
+containers/codeready-workspaces-devfileregistry-rhel8-container:2.1.1/rhel8/httpd-24:1-89 AS registry
+containers/codeready-workspaces-pluginregistry-rhel8-container:2.1.1/ubi8-minimal:8.1-409 as builder
+containers/codeready-workspaces-pluginregistry-rhel8-container:2.1.1/rhel8/httpd-24:1-89 AS registry
+containers/codeready-workspaces-pluginbroker-metadata-rhel8-container:2.1.1/devtools/go-toolset-rhel7:1.12.12-4 as builder
+containers/codeready-workspaces-pluginbroker-metadata-rhel8-container:2.1.1/ubi8-minimal:8.1-409
+
+containers/codeready-workspaces-plugin-kubernetes-rhel8-container:2.1.1/ubi8-minimal:8.1-409
+containers/codeready-workspaces-plugin-openshift-rhel8-container:2.1.1/ubi8-minimal:8.1-409
+containers/codeready-workspaces-imagepuller-rhel8-container:2.1.1/devtools/go-toolset-rhel7:1.12.12-4 as builder
+containers/codeready-workspaces-imagepuller-rhel8-container:2.1.1/ubi8-minimal:8.1-409
+containers/codeready-workspaces-theia-dev-rhel8-container:2.1.1/ubi8/nodejs-10:1-66.1584015429
+containers/codeready-workspaces-theia-rhel8-container:2.1.1/registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-theia-dev-rhel8:2.1 as builder
+containers/codeready-workspaces-theia-rhel8-container:2.1.1/ubi8/nodejs-10:1-66.1584015429 as runtime
+containers/codeready-workspaces-theia-endpoint-rhel8-container:2.1.1/registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-theia-rhel8:2.1 as builder
+containers/codeready-workspaces-theia-endpoint-rhel8-container:2.1.1/ubi8-minimal:8.1-409 as runtime
+containers/codeready-workspaces-stacks-cpp-rhel8-container:2.1.1/rhel8/llvm-toolset:8.0.1-37
+containers/codeready-workspaces-stacks-dotnet-rhel8-container:2.1.1/ubi8/dotnet-31:3.1-3.20200129203434
+containers/codeready-workspaces-stacks-golang-rhel8-container:2.1.1/rhel8/go-toolset:1.12.8-45
+containers/codeready-workspaces-stacks-java-rhel8-container:2.1.1/jboss-eap-7/eap72-openjdk11-openshift-rhel8:1.2-16
+containers/codeready-workspaces-stacks-node-rhel8-container:2.1.1/ubi8/nodejs-10:1-66.1584015429
+containers/codeready-workspaces-stacks-php-rhel8-container:2.1.1/ubi8/php-73:1-23.1584015436
+containers/codeready-workspaces-stacks-python-rhel8-container:2.1.1/ubi8/python-36:1-75.1584015428
+containers/codeready-workspaces-plugin-java11-rhel8-container:2.1.1/ubi8-minimal:8.1-409
+
+codeready-workspaces-stacks-golang-container:2.1.1/go-language-server:0.1.7
+  codeready-workspaces-stacks-golang-container:2.1.1/github.com/acroca/go-symbols:b3af8b100b8a7d0136e0c17820a066d8365f1316
+  codeready-workspaces-stacks-golang-container:2.1.1/github.com/beorn7/perks:37c8de3658fcb183f997c4e13e8337516ab753e6
+  codeready-workspaces-stacks-golang-container:2.1.1/github.com/BurntSushi/toml:3012a1dbe2e4bd1391d42b32f0577cb7bbc7f005
+  codeready-workspaces-stacks-golang-container:2.1.1/github.com/cespare/xxhash:d7df74196a9e781ede915320c11c378c1b2f3a1f
+  codeready-workspaces-stacks-golang-container:2.1.1/github.com/cweill/gotests:2435ae532b971c836a98aa497a0f3a07b73c3488
+  codeready-workspaces-stacks-golang-container:2.1.1/github.com/davidrjenni/reftools:65925cf013156409e591f7a1be4df96f640d02f4
+  codeready-workspaces-stacks-golang-container:2.1.1/github.com/die-net/lrucache:883874fe3947ad170a49fe32e36091ab5a6d16a9
+  codeready-workspaces-stacks-golang-container:2.1.1/github.com/fatih/gomodifytags:86adea364419438461f8a0d2dfea3f37547a4933
+  codeready-workspaces-stacks-golang-container:2.1.1/github.com/fhs/go-netrc:4ffed54ee5c32ebfb1b8c7c72fc90bb08dc3ff43
+  codeready-workspaces-stacks-golang-container:2.1.1/github.com/go-delve/delve:9c24b56f62caffbd072e721b1edd13b1bdb3d621
+  codeready-workspaces-stacks-golang-container:2.1.1/github.com/gogo/protobuf:5628607bb4c51c3157aacc3a50f0ab707582b805
+  codeready-workspaces-stacks-golang-container:2.1.1/github.com/golang/protobuf:fa093f59480c0adaaabf88a72a0b0e48b95aec25
+  codeready-workspaces-stacks-golang-container:2.1.1/github.com/google/renameio:353f8196982447d8b12c64f69530e657331e3dbc
+  codeready-workspaces-stacks-golang-container:2.1.1/github.com/gorilla/websocket:b65e62901fc1c0d968042419e74789f6af455eb9
+  codeready-workspaces-stacks-golang-container:2.1.1/github.com/go-stack/stack:2fee6af1a9795aafbe0253a0cfbdf668e1fb8a9a
+  codeready-workspaces-stacks-golang-container:2.1.1/github.com/gregjones/httpcache:901d90724c7919163f472a9812253fb26761123d
+  codeready-workspaces-stacks-golang-container:2.1.1/github.com/hashicorp/errwrap:8a6fb523712970c966eefc6b39ed2c5e74880354
+  codeready-workspaces-stacks-golang-container:2.1.1/github.com/hashicorp/golang-lru:14eae340515388ca95aa8e7b86f0de668e981f54
+  codeready-workspaces-stacks-golang-container:2.1.1/github.com/hashicorp/go-multierror:2004d9dba6b07a5b8d133209244f376680f9d472
+  codeready-workspaces-stacks-golang-container:2.1.1/github.com/haya14busa/goplay:f2d63a841a096a18bc5a974563dee7706af5708e
+  codeready-workspaces-stacks-golang-container:2.1.1/github.com/josharian/impl:6b9658ad00c7fbd61a7b50c195754413f6c4142c
+  codeready-workspaces-stacks-golang-container:2.1.1/github.com/karrick/godirwalk:99bb3743ba1bdd193cd193bcc0aeced2dd577c4d
+  codeready-workspaces-stacks-golang-container:2.1.1/github.com/keegancsmith/tmpfriend:86e88902a513d613222857ee0f6e0e90f0a3adf7
+  codeready-workspaces-stacks-golang-container:2.1.1/github.com/kisielk/gotool:80517062f582ea3340cd4baf70e86d539ae7d84d
+  codeready-workspaces-stacks-golang-container:2.1.1/github.com/lightstep/lightstep-tracer-common:adf4263e074b663174fcd92064872ba3b18ef0c8
+  codeready-workspaces-stacks-golang-container:2.1.1/github.com/lightstep/lightstep-tracer-go:17fbf59446c267827d5f6888490de8b1903abb9c
+  codeready-workspaces-stacks-golang-container:2.1.1/github.com/mattn/go-colorable:4e32bdb9fe4eefa9b10cb112e44debf77784ff7a
+  codeready-workspaces-stacks-golang-container:2.1.1/github.com/mattn/go-isatty:cb30d6282491c185f77d9bec5d25de1bb61a06bc
+  codeready-workspaces-stacks-golang-container:2.1.1/github.com/matttproud/golang_protobuf_extensions:c182affec369e30f25d3eb8cd8a478dee585ae7d
+  codeready-workspaces-stacks-golang-container:2.1.1/github.com/neelance/parallel:4de9ce63d14c18517a79efe69e10e99d32c850c3
+  codeready-workspaces-stacks-golang-container:2.1.1/github.com/opentracing/basictracer-go:98b91394c2def4a44acff5e100538b4812f2f694
+  codeready-workspaces-stacks-golang-container:2.1.1/github.com/opentracing/opentracing-go:9b906502e23c426fb1483e9783e7f46b06d19940
+  codeready-workspaces-stacks-golang-container:2.1.1/github.com/pelletier/go-toml:e872682c7887a7442c78554abdbfb4176867a008
+  codeready-workspaces-stacks-golang-container:2.1.1/github.com/pkg/errors:614d223910a179a466c1767a985424175c39b465
+  codeready-workspaces-stacks-golang-container:2.1.1/github.com/pmezard/go-difflib:5d4384ee4fb2527b0a1256a821ebfc92f91efefc
+  codeready-workspaces-stacks-golang-container:2.1.1/github.com/prometheus/client_golang:efb148ca4d15e997974a39286df2ab0697d2b2c0
+  codeready-workspaces-stacks-golang-container:2.1.1/github.com/prometheus/client_model:7bc5445566f0fe75b15de23e6b93886e982d7bf9
+  codeready-workspaces-stacks-golang-container:2.1.1/github.com/prometheus/common:4d5f8c2d7693d26ae0f7ee60cca915826f82b5ab
+  codeready-workspaces-stacks-golang-container:2.1.1/github.com/prometheus/procfs:0f5e4f3adc672241b4ada841d1e556d4b1e1c31b
+  codeready-workspaces-stacks-golang-container:2.1.1/github.com/ramya-rao-a/go-outline:2a048b4510eb36ad1bb2913a1f5c95605d819f32
+  codeready-workspaces-stacks-golang-container:2.1.1/github.com/rogpeppe/godef:8318a6814d22e99151760ac2fc890f55088a3192
+  codeready-workspaces-stacks-golang-container:2.1.1/github.com/rogpeppe/go-internal:bc89b17ba21ce5b8a495fa55a94e3fe32ecf4ed8
+  codeready-workspaces-stacks-golang-container:2.1.1/github.com/sergi/go-diff:58c5cb1602ee9676b5d3590d782bedde80706fcc
+  codeready-workspaces-stacks-golang-container:2.1.1/github.com/shirou/gopsutil:93a90ccfca5bee70259f038bf53db67f5c998a5c
+  codeready-workspaces-stacks-golang-container:2.1.1/github.com/skratchdot/open-golang:eef8423979666925a58eb77f9db583e54320d5a4
+  codeready-workspaces-stacks-golang-container:2.1.1/github.com/slimsag/godocmd:a1005ad29fe3e4831773a8184ee7ebb3a41d1347
+  codeready-workspaces-stacks-golang-container:2.1.1/github.com/sourcegraph/ctxvfs:2b65f1b1ea81f660ad7bc9931991f39617eb783e
+  codeready-workspaces-stacks-golang-container:2.1.1/github.com/sourcegraph/go-langserver:46b1224662e1c621287c2039a8db7cd67a1d83c5
+  codeready-workspaces-stacks-golang-container:2.1.1/github.com/sourcegraph/go-lsp:5fd3a24e95c34c118b8933047ebef669bff56079
+  codeready-workspaces-stacks-golang-container:2.1.1/github.com/sourcegraph/jsonrpc2:96c4efab7ee28f3d1cf1d248a0139cea37368b18
+  codeready-workspaces-stacks-golang-container:2.1.1/github.com/sourcegraph/jsonx:ba8cb36a861413347e21cd119bc0f40e1b131203
+  codeready-workspaces-stacks-golang-container:2.1.1/github.com/sqs/goreturns:538ac601451833c7c4449f8431d65d53c1c60e41
+  codeready-workspaces-stacks-golang-container:2.1.1/github.com/stamblerre/gocode:8dd429b5cc9e0b9738d9aae1ad3bbcf77c3ed968
+  codeready-workspaces-stacks-golang-container:2.1.1/github.com/uber/jaeger-client-go:40f03b6cc2ba94216b1a60785fe4c718cee81682
+  codeready-workspaces-stacks-golang-container:2.1.1/github.com/uber/jaeger-client-go/idl:cfd3d58c9ac66bb410ff378de1d77ad378142c15
+  codeready-workspaces-stacks-golang-container:2.1.1/github.com/uber/jaeger-lib:a87ae9d84fb038a8d79266298970720be7c80fcd
+  codeready-workspaces-stacks-golang-container:2.1.1/github.com/uudashr/gopkgs:e4fbea26bc05cae7bb18da0f8ccbb8f54d2beb86
+  codeready-workspaces-stacks-golang-container:2.1.1/github.com/zmb3/gogetdoc:b37376c5da6aeb900611837098f40f81972e63e4
+  codeready-workspaces-stacks-golang-container:2.1.1/golang.org/x/lint:738671d3881b9731cc63024d5d88cf28db875626
+  codeready-workspaces-stacks-golang-container:2.1.1/golang.org/x/mod:2addee1ccfb22349ab47953a3046338e461eb4d1
+  codeready-workspaces-stacks-golang-container:2.1.1/golang.org/x/net:d3edc9973b7eb1fb302b0ff2c62357091cea9a30
+  codeready-workspaces-stacks-golang-container:2.1.1/golang.org/x/sync:43a5402ce75a95522677f77c619865d66b8c57ab
+  codeready-workspaces-stacks-golang-container:2.1.1/golang.org/x/sys:1957bb5e6d1f523308b49060df02171d06ddfc77
+  codeready-workspaces-stacks-golang-container:2.1.1/golang.org/x/text:06d492aade888ab8698aad35476286b7b555c961
+  codeready-workspaces-stacks-golang-container:2.1.1/golang.org/x/tools:7504fd22198d4a6fed994e56ae6795888bb880e4
+  codeready-workspaces-stacks-golang-container:2.1.1/golang.org/x/xerrors:9bdfabe68543c54f90421aeb9a60ef8061b5b544
+  codeready-workspaces-stacks-golang-container:2.1.1/google.golang.org/genproto:e5e8543f8aebd76d013f016a36d01579b1e69281
+  codeready-workspaces-stacks-golang-container:2.1.1/google.golang.org/grpc:03def2a1f3d4fd22fb566d561195c31330984c29
+  codeready-workspaces-stacks-golang-container:2.1.1/google.golang.org/protobuf:33f8c03eac3bcac50665225612f3443d13ce7704
+  codeready-workspaces-stacks-golang-container:2.1.1/gopkg.in/inconshreveable/log15.v2:b30bc20e4fd12cec79a9aae62e91cfcf458bd253
+  codeready-workspaces-stacks-golang-container:2.1.1/gopkg.in/yaml.v2:53403b58ad1b561927d19068c655246f2db79d48
+  codeready-workspaces-stacks-golang-container:2.1.1/go.uber.org/atomic:b2c105d12ef6919fdf9e32b217d66ffe86e6a6f6
+  codeready-workspaces-stacks-golang-container:2.1.1/honnef.co/go/tools:f5dad9985ec1f17637161853ddde7e976835b90d
+  codeready-workspaces-stacks-golang-container:2.1.1/mvdan.cc/xurls:1707d8b9d1bb348e31acf8dd2a60bdfb85517125
+  codeready-workspaces-stacks-golang-container:2.1.1/sourcegraph.com/sqs/goreturns:538ac601451833c7c4449f8431d65d53c1c60e41
+
+codeready-workspaces-stacks-golang-container:2.1.1/go-language-server:0.1.7
+  codeready-workspaces-stacks-golang-container:2.1.1/ansi-regex:2.1.1
+  codeready-workspaces-stacks-golang-container:2.1.1/ansi-styles:2.2.1
+  codeready-workspaces-stacks-golang-container:2.1.1/applicationinsights:0.18.0
+  codeready-workspaces-stacks-golang-container:2.1.1/array-find-index:1.0.2
+  codeready-workspaces-stacks-golang-container:2.1.1/better-curry:1.6.0
+  codeready-workspaces-stacks-golang-container:2.1.1/camelcase:2.1.1
+  codeready-workspaces-stacks-golang-container:2.1.1/camelcase-keys:2.1.0
+  codeready-workspaces-stacks-golang-container:2.1.1/chalk:1.1.3
+  codeready-workspaces-stacks-golang-container:2.1.1/commander:2.20.3
+  codeready-workspaces-stacks-golang-container:2.1.1/command-exists:1.2.9
+  codeready-workspaces-stacks-golang-container:2.1.1/console-stamp:0.2.9
+  codeready-workspaces-stacks-golang-container:2.1.1/currently-unhandled:0.4.1
+  codeready-workspaces-stacks-golang-container:2.1.1/dateformat:1.0.12
+  codeready-workspaces-stacks-golang-container:2.1.1/debug:2.6.9
+  codeready-workspaces-stacks-golang-container:2.1.1/decamelize:1.2.0
+  codeready-workspaces-stacks-golang-container:2.1.1/diff:3.3.1
+  codeready-workspaces-stacks-golang-container:2.1.1/error-ex:1.3.2
+  codeready-workspaces-stacks-golang-container:2.1.1/es5class:2.3.1
+  codeready-workspaces-stacks-golang-container:2.1.1/escape-string-regexp:1.0.5
+  codeready-workspaces-stacks-golang-container:2.1.1/eventemitter3:1.2.0
+  codeready-workspaces-stacks-golang-container:2.1.1/faye-websocket:0.11.3
+  codeready-workspaces-stacks-golang-container:2.1.1/find-up:1.1.2
+  codeready-workspaces-stacks-golang-container:2.1.1/fs-extra:4.0.3
+  codeready-workspaces-stacks-golang-container:2.1.1/get-stdin:4.0.1
+  codeready-workspaces-stacks-golang-container:2.1.1/go-language-server:0.1.7
+  codeready-workspaces-stacks-golang-container:2.1.1/graceful-fs:4.2.3
+  codeready-workspaces-stacks-golang-container:2.1.1/has-ansi:2.0.0
+  codeready-workspaces-stacks-golang-container:2.1.1/hosted-git-info:2.8.8
+  codeready-workspaces-stacks-golang-container:2.1.1/http-parser-js:0.4.10
+  codeready-workspaces-stacks-golang-container:2.1.1/indent-string:2.1.0
+  codeready-workspaces-stacks-golang-container:2.1.1/is-arrayish:0.2.1
+  codeready-workspaces-stacks-golang-container:2.1.1/is-finite:1.1.0
+  codeready-workspaces-stacks-golang-container:2.1.1/is-utf8:0.2.1
+  codeready-workspaces-stacks-golang-container:2.1.1/jsonfile:4.0.0
+  codeready-workspaces-stacks-golang-container:2.1.1/jsonparse:1.3.1
+  codeready-workspaces-stacks-golang-container:2.1.1/json-rpc2:1.0.2
+  codeready-workspaces-stacks-golang-container:2.1.1/load-json-file:1.1.0
+  codeready-workspaces-stacks-golang-container:2.1.1/lodash:3.10.1
+  codeready-workspaces-stacks-golang-container:2.1.1/loud-rejection:1.6.0
+  codeready-workspaces-stacks-golang-container:2.1.1/map-obj:1.0.1
+  codeready-workspaces-stacks-golang-container:2.1.1/meow:3.7.0
+  codeready-workspaces-stacks-golang-container:2.1.1/merge:1.2.1
+  codeready-workspaces-stacks-golang-container:2.1.1/minimist:1.2.5
+  codeready-workspaces-stacks-golang-container:2.1.1/ms:2.0.0
+  codeready-workspaces-stacks-golang-container:2.1.1/normalize-package-data:2.5.0
+  codeready-workspaces-stacks-golang-container:2.1.1/object-assign:4.1.1
+  codeready-workspaces-stacks-golang-container:2.1.1/parse-json:2.2.0
+  codeready-workspaces-stacks-golang-container:2.1.1/path-exists:2.1.0
+  codeready-workspaces-stacks-golang-container:2.1.1/path-parse:1.0.6
+  codeready-workspaces-stacks-golang-container:2.1.1/path-type:1.1.0
+  codeready-workspaces-stacks-golang-container:2.1.1/pify:2.3.0
+  codeready-workspaces-stacks-golang-container:2.1.1/pinkie:2.0.4
+  codeready-workspaces-stacks-golang-container:2.1.1/pinkie-promise:2.0.1
+  codeready-workspaces-stacks-golang-container:2.1.1/pkginfo:0.4.1
+  codeready-workspaces-stacks-golang-container:2.1.1/read-pkg:1.1.0
+  codeready-workspaces-stacks-golang-container:2.1.1/read-pkg-up:1.0.1
+  codeready-workspaces-stacks-golang-container:2.1.1/redent:1.0.0
+  codeready-workspaces-stacks-golang-container:2.1.1/repeating:2.0.1
+  codeready-workspaces-stacks-golang-container:2.1.1/resolve:1.16.1
+  codeready-workspaces-stacks-golang-container:2.1.1/safe-buffer:5.2.0
+  codeready-workspaces-stacks-golang-container:2.1.1/semver:5.7.1
+  codeready-workspaces-stacks-golang-container:2.1.1/signal-exit:3.0.3
+  codeready-workspaces-stacks-golang-container:2.1.1/spdx-correct:3.1.0
+  codeready-workspaces-stacks-golang-container:2.1.1/spdx-exceptions:2.3.0
+  codeready-workspaces-stacks-golang-container:2.1.1/spdx-expression-parse:3.0.0
+  codeready-workspaces-stacks-golang-container:2.1.1/spdx-license-ids:3.0.5
+  codeready-workspaces-stacks-golang-container:2.1.1/strip-ansi:3.0.1
+  codeready-workspaces-stacks-golang-container:2.1.1/strip-bom:2.0.0
+  codeready-workspaces-stacks-golang-container:2.1.1/strip-indent:1.0.1
+  codeready-workspaces-stacks-golang-container:2.1.1/supports-color:2.0.0
+  codeready-workspaces-stacks-golang-container:2.1.1//tmp/npm-deps-tmp
+  codeready-workspaces-stacks-golang-container:2.1.1/trim-newlines:1.0.0
+  codeready-workspaces-stacks-golang-container:2.1.1/universalify:0.1.2
+  codeready-workspaces-stacks-golang-container:2.1.1/validate-npm-package-license:3.0.4
+  codeready-workspaces-stacks-golang-container:2.1.1/vscode-debugprotocol:1.40.0
+  codeready-workspaces-stacks-golang-container:2.1.1/vscode-extension-telemetry:0.0.10
+  codeready-workspaces-stacks-golang-container:2.1.1/vscode-jsonrpc:2.4.0
+  codeready-workspaces-stacks-golang-container:2.1.1/vscode-jsonrpc:3.5.0extraneous
+  codeready-workspaces-stacks-golang-container:2.1.1/vscode-languageclient:2.6.3
+  codeready-workspaces-stacks-golang-container:2.1.1/vscode-languageserver:3.5.1
+  codeready-workspaces-stacks-golang-container:2.1.1/vscode-languageserver-protocol:3.5.1
+  codeready-workspaces-stacks-golang-container:2.1.1/vscode-languageserver-types:1.0.4
+  codeready-workspaces-stacks-golang-container:2.1.1/vscode-languageserver-types:3.5.0extraneous
+  codeready-workspaces-stacks-golang-container:2.1.1/vscode-uri:1.0.8
+  codeready-workspaces-stacks-golang-container:2.1.1/websocket-driver:0.7.3
+  codeready-workspaces-stacks-golang-container:2.1.1/websocket-extensions:0.1.3
+  codeready-workspaces-stacks-golang-container:2.1.1/winreg:1.2.3
+
+codeready-workspaces-stacks-node-container:2.1.1/typescript:3.4.5
+codeready-workspaces-stacks-node-container:2.1.1/typescript-language-server:0.3.7
+  codeready-workspaces-stacks-node-container:2.1.1/commander:2.20.3
+  codeready-workspaces-stacks-node-container:2.1.1/command-exists:1.2.6
+  codeready-workspaces-stacks-node-container:2.1.1/crypto-random-string:1.0.0
+  codeready-workspaces-stacks-node-container:2.1.1/fs-extra:7.0.1
+  codeready-workspaces-stacks-node-container:2.1.1/graceful-fs:4.2.3
+  codeready-workspaces-stacks-node-container:2.1.1/jsonfile:4.0.0
+  codeready-workspaces-stacks-node-container:2.1.1/p-debounce:1.0.0
+  codeready-workspaces-stacks-node-container:2.1.1/temp-dir:1.0.0
+  codeready-workspaces-stacks-node-container:2.1.1/tempy:0.2.1
+  codeready-workspaces-stacks-node-container:2.1.1//tmp/npm-deps-tmp
+  codeready-workspaces-stacks-node-container:2.1.1/typescript:3.4.5
+  codeready-workspaces-stacks-node-container:2.1.1/typescript-language-server:0.3.7
+  codeready-workspaces-stacks-node-container:2.1.1/unique-string:1.0.0
+  codeready-workspaces-stacks-node-container:2.1.1/universalify:0.1.2
+  codeready-workspaces-stacks-node-container:2.1.1/vscode-jsonrpc:5.0.1
+  codeready-workspaces-stacks-node-container:2.1.1/vscode-languageserver:4.4.2
+  codeready-workspaces-stacks-node-container:2.1.1/vscode-languageserver-protocol:3.15.3
+  codeready-workspaces-stacks-node-container:2.1.1/vscode-languageserver-types:3.15.1
+  codeready-workspaces-stacks-node-container:2.1.1/vscode-uri:1.0.8
+
+codeready-workspaces-stacks-php-container:2.1.1/jetbrains/phpstorm-stubs:dev-master
+codeready-workspaces-stacks-php-container:2.1.1/felixfbecker/language-server:5.4.6
+  codeready-workspaces-stacks-php-container:2.1.1/composer/xdebughandler
+  codeready-workspaces-stacks-php-container:2.1.1/^1.0
+  codeready-workspaces-stacks-php-container:2.1.1/extjson
+  codeready-workspaces-stacks-php-container:2.1.1/composer.json
+  codeready-workspaces-stacks-php-container:2.1.1/composer.lock
+  codeready-workspaces-stacks-php-container:2.1.1/composer.phar
+  codeready-workspaces-stacks-php-container:2.1.1/vendor
+  codeready-workspaces-stacks-php-container:2.1.1/extjson
+  codeready-workspaces-stacks-php-container:2.1.1/composer.json
+  codeready-workspaces-stacks-php-container:2.1.1/composer.lock
+  codeready-workspaces-stacks-php-container:2.1.1/composer.phar
+  codeready-workspaces-stacks-php-container:2.1.1/vendor
+  codeready-workspaces-stacks-php-container:2.1.1/extpcre
+  codeready-workspaces-stacks-php-container:2.1.1/composer.json
+  codeready-workspaces-stacks-php-container:2.1.1/composer.lock
+  codeready-workspaces-stacks-php-container:2.1.1/composer.phar
+  codeready-workspaces-stacks-php-container:2.1.1/vendor
+  codeready-workspaces-stacks-php-container:2.1.1/extpcre
+  codeready-workspaces-stacks-php-container:2.1.1/composer.json
+  codeready-workspaces-stacks-php-container:2.1.1/composer.lock
+  codeready-workspaces-stacks-php-container:2.1.1/composer.phar
+  codeready-workspaces-stacks-php-container:2.1.1/vendor
+  codeready-workspaces-stacks-php-container:2.1.1/extreflection
+  codeready-workspaces-stacks-php-container:2.1.1/composer.json
+  codeready-workspaces-stacks-php-container:2.1.1/composer.lock
+  codeready-workspaces-stacks-php-container:2.1.1/composer.phar
+  codeready-workspaces-stacks-php-container:2.1.1/vendor
+  codeready-workspaces-stacks-php-container:2.1.1/extreflection
+  codeready-workspaces-stacks-php-container:2.1.1/composer.json
+  codeready-workspaces-stacks-php-container:2.1.1/composer.lock
+  codeready-workspaces-stacks-php-container:2.1.1/composer.phar
+  codeready-workspaces-stacks-php-container:2.1.1/vendor
+  codeready-workspaces-stacks-php-container:2.1.1/extspl
+  codeready-workspaces-stacks-php-container:2.1.1/composer.json
+  codeready-workspaces-stacks-php-container:2.1.1/composer.lock
+  codeready-workspaces-stacks-php-container:2.1.1/composer.phar
+  codeready-workspaces-stacks-php-container:2.1.1/vendor
+  codeready-workspaces-stacks-php-container:2.1.1/extspl
+  codeready-workspaces-stacks-php-container:2.1.1/composer.json
+  codeready-workspaces-stacks-php-container:2.1.1/composer.lock
+  codeready-workspaces-stacks-php-container:2.1.1/composer.phar
+  codeready-workspaces-stacks-php-container:2.1.1/vendor
+  codeready-workspaces-stacks-php-container:2.1.1/felixfbecker/advancedjsonrpc
+  codeready-workspaces-stacks-php-container:2.1.1/^3.0.0
+  codeready-workspaces-stacks-php-container:2.1.1/felixfbecker/languageserverprotocol
+  codeready-workspaces-stacks-php-container:2.1.1/^1.0.1
+  codeready-workspaces-stacks-php-container:2.1.1/felixfbecker/languageserver
+  codeready-workspaces-stacks-php-container:2.1.1/v5.4.6
+  codeready-workspaces-stacks-php-container:2.1.1/jetbrains/phpstormstubs
+  codeready-workspaces-stacks-php-container:2.1.1/devmaster
+  codeready-workspaces-stacks-php-container:2.1.1/microsoft/tolerantphpparser:0.0.*
+  codeready-workspaces-stacks-php-container:2.1.1/netresearch/jsonmapper
+  codeready-workspaces-stacks-php-container:2.1.1/^1.0
+  codeready-workspaces-stacks-php-container:2.1.1/netresearch/jsonmapper
+  codeready-workspaces-stacks-php-container:2.1.1/^1.0
+  codeready-workspaces-stacks-php-container:2.1.1/^2.0
+  codeready-workspaces-stacks-php-container:2.1.1/php
+  codeready-workspaces-stacks-php-container:2.1.1/>=5.3.0
+  codeready-workspaces-stacks-php-container:2.1.1/php
+  codeready-workspaces-stacks-php-container:2.1.1/>=5.3.0
+  codeready-workspaces-stacks-php-container:2.1.1/php
+  codeready-workspaces-stacks-php-container:2.1.1/^5.3.2
+  codeready-workspaces-stacks-php-container:2.1.1/^7.0
+  codeready-workspaces-stacks-php-container:2.1.1/^8.0
+  codeready-workspaces-stacks-php-container:2.1.1/php
+  codeready-workspaces-stacks-php-container:2.1.1/>=5.3.3
+  codeready-workspaces-stacks-php-container:2.1.1/php
+  codeready-workspaces-stacks-php-container:2.1.1/>=5.3.3
+  codeready-workspaces-stacks-php-container:2.1.1/php
+  codeready-workspaces-stacks-php-container:2.1.1/>=5.3.3
+  codeready-workspaces-stacks-php-container:2.1.1/php
+  codeready-workspaces-stacks-php-container:2.1.1/>=5.3.3
+  codeready-workspaces-stacks-php-container:2.1.1/php
+  codeready-workspaces-stacks-php-container:2.1.1/>=5.3.3
+  codeready-workspaces-stacks-php-container:2.1.1/php
+  codeready-workspaces-stacks-php-container:2.1.1/^5.3.3
+  codeready-workspaces-stacks-php-container:2.1.1/^7.0
+  codeready-workspaces-stacks-php-container:2.1.1/php
+  codeready-workspaces-stacks-php-container:2.1.1/^5.3.3
+  codeready-workspaces-stacks-php-container:2.1.1/^7.0
+  codeready-workspaces-stacks-php-container:2.1.1/php
+  codeready-workspaces-stacks-php-container:2.1.1/^5.3.3
+  codeready-workspaces-stacks-php-container:2.1.1/^7.0
+  codeready-workspaces-stacks-php-container:2.1.1/php
+  codeready-workspaces-stacks-php-container:2.1.1/^5.3.3
+  codeready-workspaces-stacks-php-container:2.1.1/^7.0
+  codeready-workspaces-stacks-php-container:2.1.1/php
+  codeready-workspaces-stacks-php-container:2.1.1/>=5.6
+  codeready-workspaces-stacks-php-container:2.1.1/php
+  codeready-workspaces-stacks-php-container:2.1.1/>=5.6
+  codeready-workspaces-stacks-php-container:2.1.1/php
+  codeready-workspaces-stacks-php-container:2.1.1/^7.0
+  codeready-workspaces-stacks-php-container:2.1.1/php
+  codeready-workspaces-stacks-php-container:2.1.1/>=7.0
+  codeready-workspaces-stacks-php-container:2.1.1/php
+  codeready-workspaces-stacks-php-container:2.1.1/^7.0
+  codeready-workspaces-stacks-php-container:2.1.1/php
+  codeready-workspaces-stacks-php-container:2.1.1/^7.0
+  codeready-workspaces-stacks-php-container:2.1.1/php
+  codeready-workspaces-stacks-php-container:2.1.1/>=7.1
+  codeready-workspaces-stacks-php-container:2.1.1/php
+  codeready-workspaces-stacks-php-container:2.1.1/>=7.1
+  codeready-workspaces-stacks-php-container:2.1.1/php
+  codeready-workspaces-stacks-php-container:2.1.1/>=7.1
+  codeready-workspaces-stacks-php-container:2.1.1/php
+  codeready-workspaces-stacks-php-container:2.1.1/^7.1
+  codeready-workspaces-stacks-php-container:2.1.1/php
+  codeready-workspaces-stacks-php-container:2.1.1/^7.2
+  codeready-workspaces-stacks-php-container:2.1.1/php
+  codeready-workspaces-stacks-php-container:2.1.1/^7.2
+  codeready-workspaces-stacks-php-container:2.1.1/phpdocumentor/reflectioncommon
+  codeready-workspaces-stacks-php-container:2.1.1/^1.0.0
+  codeready-workspaces-stacks-php-container:2.1.1/^2.0.0
+  codeready-workspaces-stacks-php-container:2.1.1/phpdocumentor/reflectioncommon
+  codeready-workspaces-stacks-php-container:2.1.1/^1.0.0
+  codeready-workspaces-stacks-php-container:2.1.1/^2.0.0
+  codeready-workspaces-stacks-php-container:2.1.1/phpdocumentor/reflectioncommon
+  codeready-workspaces-stacks-php-container:2.1.1/^2.0
+  codeready-workspaces-stacks-php-container:2.1.1/phpdocumentor/reflectioncommon
+  codeready-workspaces-stacks-php-container:2.1.1/^2.0
+  codeready-workspaces-stacks-php-container:2.1.1/phpdocumentor/reflectiondocblock
+  codeready-workspaces-stacks-php-container:2.1.1/^4.0.0
+  codeready-workspaces-stacks-php-container:2.1.1/phpdocumentor/reflectiondocblock
+  codeready-workspaces-stacks-php-container:2.1.1/^4.0.0
+  codeready-workspaces-stacks-php-container:2.1.1/^5.0.0
+  codeready-workspaces-stacks-php-container:2.1.1/phpdocumentor/typeresolver:0.4
+  codeready-workspaces-stacks-php-container:2.1.1/^1.0.0
+  codeready-workspaces-stacks-php-container:2.1.1/psr/log
+  codeready-workspaces-stacks-php-container:2.1.1/^1.0
+  codeready-workspaces-stacks-php-container:2.1.1/psr/log
+  codeready-workspaces-stacks-php-container:2.1.1/^1.0
+  codeready-workspaces-stacks-php-container:2.1.1/sabre/event
+  codeready-workspaces-stacks-php-container:2.1.1/^5.0
+  codeready-workspaces-stacks-php-container:2.1.1/sabre/uri
+  codeready-workspaces-stacks-php-container:2.1.1/^2.0
+  codeready-workspaces-stacks-php-container:2.1.1/symfony/polyfillctype
+  codeready-workspaces-stacks-php-container:2.1.1/^1.8
+  codeready-workspaces-stacks-php-container:2.1.1/symfony/polyfillctype
+  codeready-workspaces-stacks-php-container:2.1.1/^1.8
+  codeready-workspaces-stacks-php-container:2.1.1/symfony/polyfillctype
+  codeready-workspaces-stacks-php-container:2.1.1/^1.8
+  codeready-workspaces-stacks-php-container:2.1.1/webmozart/assert
+  codeready-workspaces-stacks-php-container:2.1.1/^1.0
+  codeready-workspaces-stacks-php-container:2.1.1/webmozart/assert
+  codeready-workspaces-stacks-php-container:2.1.1/^1.0
+  codeready-workspaces-stacks-php-container:2.1.1/webmozart/assert:1.0
+  codeready-workspaces-stacks-php-container:2.1.1/webmozart/glob
+  codeready-workspaces-stacks-php-container:2.1.1/^4.1
+  codeready-workspaces-stacks-php-container:2.1.1/webmozart/pathutil
+  codeready-workspaces-stacks-php-container:2.1.1/^2.2
+  codeready-workspaces-stacks-php-container:2.1.1/webmozart/pathutil
+  codeready-workspaces-stacks-php-container:2.1.1/^2.3
+
+codeready-workspaces-stacks-python-container:2.1.1/python-language-server[all]:0.21.5
+  codeready-workspaces-stacks-python-container:2.1.1/importlib-metadata:1.6.0
+  codeready-workspaces-stacks-python-container:2.1.1/jedi:0.17.0
+  codeready-workspaces-stacks-python-container:2.1.1/parso:0.7.0
+  codeready-workspaces-stacks-python-container:2.1.1/pip:20.0.2
+  codeready-workspaces-stacks-python-container:2.1.1/pluggy:0.13.1
+  codeready-workspaces-stacks-python-container:2.1.1/setuptools:46.1.3
+  codeready-workspaces-stacks-python-container:2.1.1/wheel:0.34.2
+  codeready-workspaces-stacks-python-container:2.1.1/zipp:3.1.0

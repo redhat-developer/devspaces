@@ -15,7 +15,7 @@ deprecate:
   migrateTo: redhat/vscode-apache-camel/latest
 spec:
   containers:
-  - image: "registry.redhat.io/codeready-workspaces/stacks-java-rhel8:2.1"
+  - image: "registry.redhat.io/codeready-workspaces/stacks-java-rhel8:2.2"
     name: vscode-apache-camel
     memoryLimit: "512Mi"
     args:

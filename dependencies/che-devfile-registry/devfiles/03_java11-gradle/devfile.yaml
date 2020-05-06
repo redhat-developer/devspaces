@@ -4,11 +4,11 @@ metadata:
   generateName: java-gradle-
 projects:
   -
-    name: console-java-simple
+    name: validating-form-input
     source:
       type: git
-      location: "https://github.com/che-samples/console-java-simple.git"
-      branch: java1.11
+      location: "https://github.com/crw-samples/gs-validating-form-input.git"
+      sparseCheckoutDir: complete
 components:
   -
     type: chePlugin
@@ -17,7 +17,7 @@ components:
     type: dockerimage
     alias: gradle
     # image: quay.io/crw/plugin-java11-rhel8:latest
-    image: registry.redhat.io/codeready-workspaces/plugin-java11-rhel8:2.1
+    image: registry.redhat.io/codeready-workspaces/plugin-java11-rhel8:2.2
     env:
       - name: GRADLE_USER_HOME
         value: /home/jboss/.gradle
@@ -33,32 +33,39 @@ components:
     volumes:
       - name: gradle
         containerPath: /home/jboss/.gradle
+    endpoints:
+      - name: input-form-endpoint
+        port: 8080
     mountSources: true
 commands:
-  -
-    name: Build application
+  - 
+    name: Build
     actions:
-      -
+      - workdir: '${CHE_PROJECTS_ROOT}/validating-form-input/complete'
         type: exec
+        command: gradle build
         component: gradle
-        command: "gradle build"
-        workdir: ${CHE_PROJECTS_ROOT}/console-java-simple
-  -
-    name: Run application
-    actions:
-      -
-        type: exec
-        component: gradle
-        command: "gradle run"
-        workdir: ${CHE_PROJECTS_ROOT}/console-java-simple
   -
     name: Debug application
     actions:
-      -
+      - workdir: '${CHE_PROJECTS_ROOT}/validating-form-input/complete'
         type: exec
+        command: gradle bootRun --debug-jvm
         component: gradle
-        command: "gradle run --debug-jvm"
-        workdir: ${CHE_PROJECTS_ROOT}/console-java-simple
+  -
+    name: Run application
+    actions:
+      - workdir: '${CHE_PROJECTS_ROOT}/validating-form-input/complete'
+        type: exec
+        command: gradle bootRun
+        component: gradle
+  -
+    name: Run tests
+    actions:
+      - workdir: '${CHE_PROJECTS_ROOT}/validating-form-input/complete'
+        type: exec
+        command: gradle test
+        component: gradle
   - name: Debug remote java application
     actions:
       - referenceContent: |

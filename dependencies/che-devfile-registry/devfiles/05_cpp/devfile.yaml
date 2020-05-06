@@ -4,10 +4,10 @@ metadata:
   generateName: cpp-
 projects:
   -
-    name: cpp-hello-world
+    name: CPP
     source:
       type: git
-      location: 'https://github.com/che-samples/cpp-hello-world'
+      location: 'https://github.com/crw-samples/C-Plus-Plus.git'
 components:
 -
   type: chePlugin
@@ -19,26 +19,26 @@ components:
 -
   type: dockerimage
   alias: cpp-dev
-  image: registry.redhat.io/codeready-workspaces/stacks-cpp-rhel8:2.1
+  image: registry.redhat.io/codeready-workspaces/stacks-cpp-rhel8:2.2
   memoryLimit: 512Mi
   mountSources: true
 commands:
   -
-    name: build
+    name: Build current algorithm
     actions:
       - type: exec
         component: cpp-dev
-        command: g++ -g hello.cpp -o hello.out && echo "Build complete"
-        workdir: ${CHE_PROJECTS_ROOT}/cpp-hello-world
+        command: rm -f "${fileDirname}"/bin.out && g++ -g "${file}" -o bin.out && echo "Build complete"
+        workdir: '${fileDirname}'
   -
-    name: run
+    name: Run current algorithm
     actions:
       - type: exec
         component: cpp-dev
-        command: ./hello.out
-        workdir: ${CHE_PROJECTS_ROOT}/cpp-hello-world
+        command: ./bin.out
+        workdir: '${fileDirname}'
   -
-    name: debug
+    name: Debug current algorithm
     actions:
       - type: vscode-launch
         referenceContent: >
@@ -47,9 +47,9 @@ commands:
             "configurations": [
                 {
                     "type": "gdb",
-                    "name": "Debug c++ application",
+                    "name": "Debug current algorithm",
                     "request": "launch",
-                    "program": "/projects/cpp-hello-world/hello.out"
+                    "program": "${fileDirname}/bin.out"
                 }
             ]
           }
