@@ -18,14 +18,17 @@ function handle_error() {
   local yaml_file="$1"
   local image_url="$2"
   if [[ -z "$(tail -1 $LOG_FILE | grep -v "no image found in manifest list for architecture $ARCH")" ]] ; then
-    echo "[WARN] Image $image_url not found for architecture $ARCH: remove $yaml_file from build."
+    echo "[WARN] Image $image_url not found for architecture $ARCH: remove $yaml_file from registry."
     mv "$yaml_file" "$yaml_file.removed"
   elif [[ $(egrep "404|File not found" ${LOG_FILE}) ]]; then
-    echo "[WARN] Image $image_url not found (404): remove $yaml_file from build."
+    echo "[WARN] Image $image_url not found (404): remove $yaml_file from registry."
+    mv "$yaml_file" "$yaml_file.removed"
+  elif [[ $(egrep "manifest unknown|Error reading manifest" ${LOG_FILE}) ]]; then
+    echo "[WARN] Manifest for $image_url not found: remove $yaml_file from registry."
     mv "$yaml_file" "$yaml_file.removed"
   else
     echo "[ERROR] Could not read image metadata through skopeo inspect --tls-verify=false; skip $image_url"
-    echo "[ERROR] Remove $yaml_file from build."
+    echo "[ERROR] Remove $yaml_file from registry."
     echo -n "  Reason: "
     sed 's|^|    |g' $LOG_FILE
     mv "$yaml_file" "$yaml_file.removed"
