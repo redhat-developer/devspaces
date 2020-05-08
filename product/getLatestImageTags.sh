@@ -22,8 +22,8 @@ if [[ ! -x /usr/bin/jq ]]; then
 	exit 1
 fi
 
-candidateTag="crw-2.0-rhel-8-candidate"
-# candidateTag="crw-2.2-rhel-8-container-candidate"
+# candidateTag="crw-2.0-rhel-8-candidate"
+candidateTag="crw-2.2-rhel-8-container-candidate"
 
 CRW21_CONTAINERS_RHCC="\
 codeready-workspaces/crw-2-rhel8-operator-metadata \
@@ -148,9 +148,9 @@ PUSHTOQUAYTAGS=""; # utility method to pull then push to quay (extra tags to pus
 usage () {
 	echo "
 Usage: 
-  $0 --crw21                                                 | use default list of CRW images in RHCC Prod
-  $0 --crw21 --stage                                         | use default list of CRW images in RHCC Stage
-  $0 --crw21 --quay                                          | use default list of CRW images in quay.io/crw
+  $0 --crw22, --crw21                                        | use default list of CRW images in RHCC Prod
+  $0 --crw22 --stage                                         | use default list of CRW images in RHCC Stage
+  $0 --crw22 --quay                                          | use default list of CRW images in quay.io/crw
 
   $0 -c 'crw/theia-rhel8 crw/theia-endpoint-rhel8' --quay    | check a specific image in quay
   $0 -c 'rhoar-nodejs/nodejs-10 jboss-eap-7/eap72-openshift' | use specific list of RHCC images
@@ -159,9 +159,9 @@ Usage:
   $0 -c pivotaldata/centos --docker --dockerfile             | check docker registry; show Dockerfile contents (requires dfimage)
   $0 -c codeready-workspaces-plugin-java11-rhel8 --pulp --pushtoquay='2.1 latest' 		| pull an image from pulp, push 3 tags to quay
 
-  $0 --crw21 --nvr --log                                     | check images in brew; output NVRs can be copied to Errata; show links to Brew logs
-  $0 --crw21 --pulp                                          | check images in pulp ( registry-proxy.engineering.redhat.com/rh-osbs )
-  $0 --crw21 --pulp --pushtoquay='2.1 latest'                | pull images from pulp, then push matching tag to quay, including extra tags if set
+  $0 --crw22 --nvr --log                                     | check images in brew; output NVRs can be copied to Errata; show links to Brew logs
+  $0 --crw22 --pulp                                          | check images in pulp ( registry-proxy.engineering.redhat.com/rh-osbs )
+  $0 --crw22 --pulp --pushtoquay='2.2 latest'                | pull images from pulp, then push matching tag to quay, including extra tags if set
 
 "
 	exit

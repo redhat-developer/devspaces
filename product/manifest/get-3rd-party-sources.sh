@@ -6,7 +6,7 @@ set -e
 
 # TODO: make this script ALSO fetch the tarballs from Jenkins so we can do historical sources
 
-CRW_BRANCH=crw-2.0-rhel-8
+CRW_BRANCH=crw-2.2-rhel-8
 PKGS_DEVEL_USER="crw-build"
 DEBUG=0
 phases=" 1 2 3 "

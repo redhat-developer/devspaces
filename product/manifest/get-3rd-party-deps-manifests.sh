@@ -116,8 +116,8 @@ codeready-workspaces-stacks-python codeready-workspaces-plugin-java11 \
 	fi
 	# echo $containerName
 	log ""
-	log "== ${d} (crw-2.0-rhel-8) =="
-	logDockerDetails http://pkgs.devel.redhat.com/cgit/containers/${d}/plain/Dockerfile?h=crw-2.0-rhel-8 "containers/${containerName/}:${CRW_VERSION}/"
+	log "== ${d} (crw-2.2-rhel-8) =="
+	logDockerDetails http://pkgs.devel.redhat.com/cgit/containers/${d}/plain/Dockerfile?h=crw-2.2-rhel-8 "containers/${containerName/}:${CRW_VERSION}/"
 done
 bth ""
 
@@ -293,7 +293,7 @@ ${SCRIPTPATH}/${0/manifests/mvn}
 ##################################
 
 log ""
-log "7. Collect Theia deps (NEW for CRW 2.0)"
+log "7. Collect Theia deps"
 log ""
 cd /tmp
 ${SCRIPTPATH}/${0/manifests/theia}

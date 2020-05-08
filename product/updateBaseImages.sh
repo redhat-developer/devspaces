@@ -19,7 +19,7 @@ fi
 QUIET=0 	# less output - omit container tag URLs
 VERBOSE=0	# more output
 WORKDIR=`pwd`
-BRANCH=crw-2.0-rhel-8 # not master
+BRANCH=crw-2.2-rhel-8 # not master
 DOCKERFILE="Dockerfile" # or "rhel.Dockerfile"
 MAXDEPTH=2
 docommit=1 # by default DO commit the change and push it
@@ -43,7 +43,7 @@ checkrecentupdates () {
 
 usage () {
 	echo "Usage:   $0 -b [BRANCH] [-w WORKDIR] [-f DOCKERFILE] [-maxdepth MAXDEPTH]"
-	echo "Example: $0 -b crw-2.0-rhel-8 -w $(pwd) -f rhel.Dockerfile -maxdepth 2"
+	echo "Example: $0 -b crw-2.2-rhel-8 -w $(pwd) -f rhel.Dockerfile -maxdepth 2"
 	echo "Options: 
 	--no-commit, -n    do not push to BRANCH
 	-q, -v             quiet, verbose output
