@@ -24,6 +24,7 @@ fi
 
 # candidateTag="crw-2.0-rhel-8-candidate"
 candidateTag="crw-2.2-rhel-8-container-candidate"
+BASETAG=2.2 # tag to search for in quay
 
 CRW21_CONTAINERS_RHCC="\
 codeready-workspaces/crw-2-rhel8-operator-metadata \
@@ -174,9 +175,9 @@ CONTAINERS=""
 #   case $1 in
 for key in "$@"; do
   case $key in
-    '--crw'|'--crw20') CONTAINERS="${CRW20_CONTAINERS_RHCC}"; candidateTag="crw-2.0-rhel-8-candidate"; shift 0;;
-    '--crw21') CONTAINERS="${CRW21_CONTAINERS_RHCC}";         candidateTag="crw-2.0-rhel-8-candidate"; shift 0;;
-    '--crw22') CONTAINERS="${CRW21_CONTAINERS_RHCC}";         candidateTag="crw-2.2-rhel-8-container-candidate"; shift 0;;
+    '--crw'|'--crw20') CONTAINERS="${CRW20_CONTAINERS_RHCC}"; candidateTag="crw-2.0-rhel-8-candidate";			 BASETAG=2.0; shift 0;;
+    '--crw21') CONTAINERS="${CRW21_CONTAINERS_RHCC}";         candidateTag="crw-2.0-rhel-8-candidate";			 BASETAG=2.1; shift 0;;
+    '--crw22') CONTAINERS="${CRW21_CONTAINERS_RHCC}";         candidateTag="crw-2.2-rhel-8-container-candidate"; BASETAG=2.2; shift 0;;
     '-c') CONTAINERS="${CONTAINERS} $2"; shift 1;;
     '-x') EXCLUDES="$2"; shift 1;;
     '-q') QUIET=1; shift 0;;
@@ -289,15 +290,15 @@ for URLfrag in $CONTAINERS; do
 		# if [[ $VERBOSE -eq 1 ]]; then echo "URL=$URL"; fi
 		QUERY="$(echo $URL | sed -e "s#.\+\(registry.redhat.io\|registry.access.redhat.com\)/#skopeo inspect docker://${REGISTRYPRE}#g")"
 		if [[ $VERBOSE -eq 1 ]]; then 
-			echo ""; echo "# $QUERY | jq .RepoTags | egrep -v \"\[|\]|latest\" | sed -e 's#.*\"\(.\+\)\",*#- \1#' | sort -V|tail -5"
+			echo ""; echo "# $QUERY | jq .RepoTags | egrep -v \"\[|\]|latest\" | grep "${BASETAG}" | sed -e 's#.*\"\(.\+\)\",*#- \1#' | sort -V|tail -5"
 		fi
-		LATESTTAGs=$(${QUERY} 2>/dev/null | jq .RepoTags | egrep -v "\[|\]|latest" | sed -e 's#.*\"\(.\+\)\",*#- \1#' | sort -V | grep "${URLfragtag}"|egrep -v "\"|latest"|egrep -v "${EXCLUDES}"|sed -e "s#^-##" -e "s#[\n\r\ ]\+##g"|tail -${NUMTAGS})
+		LATESTTAGs=$(${QUERY} 2>/dev/null | jq .RepoTags | egrep -v "\[|\]|latest" | grep "${BASETAG}" | sed -e 's#.*\"\(.\+\)\",*#- \1#' | sort -V | grep "${URLfragtag}"|egrep -v "\"|latest"|egrep -v "${EXCLUDES}"|sed -e "s#^-##" -e "s#[\n\r\ ]\+##g"|tail -${NUMTAGS})
 		if [[ ! ${LATESTTAGs} ]]; then # try again with -container suffix
 			QUERY="$(echo ${URL}-container | sed -e "s#.\+\(registry.redhat.io\|registry.access.redhat.com\)/#skopeo inspect docker://${REGISTRYPRE}#g")"
 			if [[ $VERBOSE -eq 1 ]]; then 
-				echo ""; echo "# $QUERY | jq .RepoTags | egrep -v \"\[|\]|latest\" | sed -e 's#.*\"\(.\+\)\",*#- \1#' | sort -V|tail -5" 
+				echo ""; echo "# $QUERY | jq .RepoTags | egrep -v \"\[|\]|latest\" | grep "${BASETAG}" | sed -e 's#.*\"\(.\+\)\",*#- \1#' | sort -V|tail -5" 
 			fi
-			LATESTTAGs=$(${QUERY} 2>/dev/null | jq .RepoTags | egrep -v "\[|\]|latest" | sed -e 's#.*\"\(.\+\)\",*#- \1#' | sort -V | grep "${URLfragtag}"|egrep -v "\"|latest"|egrep -v "${EXCLUDES}"|sed -e "s#^-##" -e "s#[\n\r\ ]\+##g"|tail -${NUMTAGS})
+			LATESTTAGs=$(${QUERY} 2>/dev/null | jq .RepoTags | egrep -v "\[|\]|latest" | grep "${BASETAG}" | sed -e 's#.*\"\(.\+\)\",*#- \1#' | sort -V | grep "${URLfragtag}"|egrep -v "\"|latest"|egrep -v "${EXCLUDES}"|sed -e "s#^-##" -e "s#[\n\r\ ]\+##g"|tail -${NUMTAGS})
 		fi
 	fi
 
