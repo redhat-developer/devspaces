@@ -128,7 +128,7 @@ done
 cp -f ${SOURCEDOCKERFILE} ${WORKSPACE}/target/Dockerfile
 
 # TODO should this be a branch instead of just master?
-CRW_VERSION=`wget -qO- https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/master/dependencies/VERSION`
+CRW_VERSION=`wget -qO- https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/2.1.x/dependencies/VERSION`
 #apply patches
 sed -i ${WORKSPACE}/target/Dockerfile \
   -e "s@^FROM \\(registry.access.redhat.com/devtools/.\\+\\)@# FROM \\1@g" \

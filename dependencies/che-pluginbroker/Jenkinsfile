@@ -144,7 +144,7 @@ for targetN in target1 target2; do
     fi
 
     # TODO should this be a branch instead of just master?
-    CRW_VERSION=`wget -qO- https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/master/dependencies/VERSION`
+    CRW_VERSION=`wget -qO- https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/2.1.x/dependencies/VERSION`
     #apply patches
     if [[ ${SOURCEDOCKERFILE} != "" ]] && [[ ${TARGETDOCKERFILE} != "" ]]; then
       sed ${SOURCEDOCKERFILE} \
