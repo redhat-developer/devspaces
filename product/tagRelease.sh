@@ -11,8 +11,9 @@ else
 fi
 
 # source branches to tag
-pkgs_devel_branch=crw-2.0-rhel-8
-che_operator_branch=crw-2.1
+pkgs_devel_branch=crw-2.2-rhel-8
+# TODO is this branch still required for 2.2?
+che_operator_branch=crw-2.2
 crw_repos_branch=master 
 # source branches to tag
 
