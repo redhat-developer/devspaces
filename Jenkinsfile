@@ -251,7 +251,7 @@ timeout(120) {
 }
 
 timeout(120) {
-	node("${node}"){ stage "Run get-sources-rhpkg-container-build"
+	node("${node}"){ stage "Run get-sources-rhpkg-container-build_2.1"
 		def QUAY_REPO_PATHs=(env.ghprbPullId && env.ghprbPullId?.trim()?"":("${SCRATCH}"=="true"?"":"server-rhel8"))
 
 		def matcher = ( "${JOB_NAME}" =~ /.*_(stable-branch|master).*/ )
@@ -260,12 +260,12 @@ timeout(120) {
 		def matcher2 = ( "${JOB_NAME}" =~ /.*(_PR).*/ )
 		def PR_SUFFIX = (matcher2.matches() ? matcher2[0][1] : "")
 
-		echo "[INFO] Trigger get-sources-rhpkg-container-build " + (env.ghprbPullId && env.ghprbPullId?.trim()?"for PR-${ghprbPullId} ":"") + \
+		echo "[INFO] Trigger get-sources-rhpkg-container-build_2.1 " + (env.ghprbPullId && env.ghprbPullId?.trim()?"for PR-${ghprbPullId} ":"") + \
 		"with SCRATCH = ${SCRATCH}, QUAY_REPO_PATHs = ${QUAY_REPO_PATHs}, JOB_BRANCH = ${JOB_BRANCH}${PR_SUFFIX}"
 
 		// trigger OSBS build
 		build(
-		  job: 'get-sources-rhpkg-container-build',
+		  job: 'get-sources-rhpkg-container-build_2.1',
 		  wait: false,
 		  propagate: false,
 		  parameters: [
