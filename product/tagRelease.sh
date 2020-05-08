@@ -13,7 +13,7 @@ fi
 # source branches to tag
 pkgs_devel_branch=crw-2.0-rhel-8
 che_operator_branch=crw-2.1
-crw_repos_branch=master 
+crw_repos_branch=2.1.x
 # source branches to tag
 
 mkdir -p /tmp/tmp-checkouts
