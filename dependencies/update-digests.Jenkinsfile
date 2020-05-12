@@ -2,6 +2,7 @@
 
 // PARAMETERS for this pipeline:
 // def SOURCE_BRANCH = "master"
+// def getLatestImageTagsFlags = "--crw22"
 
 timeout(120) {
     node("rhel7-releng"){ stage "Check registries"
@@ -23,7 +24,7 @@ timeout(120) {
                     
             def NEW_IMAGES = sh (
                 script: 'cd ${WORKSPACE}/crw/product && ./getLatestImageTags.sh \
-                    --crw21 --quay -q | sort | uniq | grep quay | \
+                    ${getLatestImageTagsFlags} --quay | sort | uniq | grep quay | \
                     tee ${WORKSPACE}/crw/dependencies/LATEST_IMAGES.new',
                 returnStdout: true
             ).trim().split()
