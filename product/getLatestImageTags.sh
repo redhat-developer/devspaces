@@ -40,8 +40,8 @@ codeready-workspaces/machineexec-rhel8 \
 codeready-workspaces/pluginbroker-metadata-rhel8 \
 codeready-workspaces/pluginbroker-artifacts-rhel8 \
 \
-codeready-workspaces/theia-rhel8 \
 codeready-workspaces/theia-dev-rhel8 \
+codeready-workspaces/theia-rhel8 \
 codeready-workspaces/theia-endpoint-rhel8 \
 \
 codeready-workspaces/stacks-cpp-rhel8  codeready-workspaces/stacks-dotnet-rhel8 \
@@ -69,8 +69,8 @@ codeready-workspaces/machineexec-rhel8 \
 codeready-workspaces/pluginbroker-metadata-rhel8 \
 codeready-workspaces/pluginbroker-artifacts-rhel8 \
 \
-codeready-workspaces/theia-rhel8 \
 codeready-workspaces/theia-dev-rhel8 \
+codeready-workspaces/theia-rhel8 \
 codeready-workspaces/theia-endpoint-rhel8 \
 \
 codeready-workspaces/stacks-cpp-rhel8  codeready-workspaces/stacks-dotnet-rhel8 \
@@ -95,8 +95,8 @@ codeready-workspaces/jwtproxy-rhel8 \
 codeready-workspaces/pluginbrokerinit-rhel8 \
 codeready-workspaces/pluginbroker-rhel8 \
 \
-codeready-workspaces/theia-rhel8 \
 codeready-workspaces/theia-dev-rhel8 \
+codeready-workspaces/theia-rhel8 \
 codeready-workspaces/theia-endpoint-rhel8 \
 \
 codeready-workspaces/stacks-cpp-rhel8  codeready-workspaces/stacks-dotnet-rhel8 \
@@ -121,8 +121,8 @@ codeready-workspaces/jwtproxy-rhel8 \
 codeready-workspaces/pluginbrokerinit-rhel8 \
 codeready-workspaces/pluginbroker-rhel8 \
 \
-codeready-workspaces/theia-rhel8 \
 codeready-workspaces/theia-dev-rhel8 \
+codeready-workspaces/theia-rhel8 \
 codeready-workspaces/theia-endpoint-rhel8 \
 \
 codeready-workspaces/stacks-cpp-rhel8  codeready-workspaces/stacks-dotnet-rhel8 \
