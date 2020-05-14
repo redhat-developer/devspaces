@@ -140,6 +140,7 @@ EXCLUDES="\^"
 
 QUIET=1 	# less output - omit container tag URLs
 VERBOSE=0	# more output
+ARCHES=0	# show architectures
 NUMTAGS=1 # by default show only the latest tag for each container; or show n latest ones
 SHOWHISTORY=0 # compute the base images defined in the Dockerfile's FROM statement(s): NOTE: requires that the image be pulled first 
 SHOWNVR=0; # show NVR format instead of repo/container:tag format
@@ -151,7 +152,7 @@ usage () {
 Usage: 
   $0 --crw22, --crw21                                        | use default list of CRW images in RHCC Prod
   $0 --crw22 --stage                                         | use default list of CRW images in RHCC Stage
-  $0 --crw22 --quay                                          | use default list of CRW images in quay.io/crw
+  $0 --crw22 --quay --arches                                 | use default list of CRW images in quay.io/crw; show arches
 
   $0 -c 'crw/theia-rhel8 crw/theia-endpoint-rhel8' --quay    | check a specific image in quay
   $0 -c 'rhoar-nodejs/nodejs-10 jboss-eap-7/eap72-openshift' | use specific list of RHCC images
@@ -182,6 +183,7 @@ for key in "$@"; do
     '-x') EXCLUDES="$2"; shift 1;;
     '-q') QUIET=1; shift 0;;
     '-v') QUIET=0; VERBOSE=1; shift 0;;
+    '-a'|'--arches') ARCHES=1; shift 0;;
     '-r') REGISTRY="$2"; shift 1;;
     '--rhcc') REGISTRY="http://registry.redhat.io"; shift 1;;
     '--stage') REGISTRY="http://registry.stage.redhat.io"; shift 1;;
@@ -273,33 +275,17 @@ for URLfrag in $CONTAINERS; do
 		URLfragtag="^- ${URLfragtag}"
 	fi
 
-	if [[ ${REGISTRY} == *"registry-proxy.engineering.redhat.com"* ]]; then
-		QUERY="$(echo $URL | sed -e "s#.\+\(registry.redhat.io\|registry.access.redhat.com\)/#skopeo inspect docker://${REGISTRYPRE}#g")"
+	QUERY="$(echo $URL | sed -e "s#.\+\(registry.redhat.io\|registry.access.redhat.com\)/#skopeo inspect docker://${REGISTRYPRE}#g")"
+	if [[ $VERBOSE -eq 1 ]]; then 
+		echo ""; echo "# $QUERY | jq .RepoTags | egrep -v \"\[|\]|latest\" | grep -F "${BASETAG}" | sed -e 's#.*\"\(.\+\)\",*#- \1#' | sort -V|tail -5"
+	fi
+	LATESTTAGs=$(${QUERY} 2>/dev/null | jq .RepoTags | egrep -v "\[|\]|latest" | grep -F "${BASETAG}" | sed -e 's#.*\"\(.\+\)\",*#- \1#' | sort -V | grep "${URLfragtag}"|egrep -v "\"|latest"|egrep -v "${EXCLUDES}"|sed -e "s#^-##" -e "s#[\n\r\ ]\+##g"|tail -${NUMTAGS})
+	if [[ ! ${LATESTTAGs} ]]; then # try again with -container suffix
+		QUERY="$(echo ${URL}-container | sed -e "s#.\+\(registry.redhat.io\|registry.access.redhat.com\)/#skopeo inspect docker://${REGISTRYPRE}#g")"
 		if [[ $VERBOSE -eq 1 ]]; then 
-			echo ""; echo "# $QUERY | jq .Labels.url | sed -e 's#.\+/images/\(.\+\)\".*#\1#'"
-		fi
-		LATESTTAGs=$(${QUERY} 2>/dev/null | jq .Labels.url | sed -e 's#.\+/images/\(.\+\)\".*#\1#')
-		if [[ ! ${LATESTTAGs} ]]; then # try again with -container suffix
-			QUERY="$(echo ${URL}-container | sed -e "s#.\+\(registry.redhat.io\|registry.access.redhat.com\)/#skopeo inspect docker://${REGISTRYPRE}#g")"
-			if [[ $VERBOSE -eq 1 ]]; then 
-				echo ""; echo "# $QUERY | jq .Labels.url | sed -e 's#.\+/images/\(.\+\)\".*#\1#'" 
-			fi
-			LATESTTAGs=$(${QUERY} 2>/dev/null | jq .Labels.url | sed -e 's#.\+/images/\(.\+\)\".*#\1#')
-		fi
-	else
-		# if [[ $VERBOSE -eq 1 ]]; then echo "URL=$URL"; fi
-		QUERY="$(echo $URL | sed -e "s#.\+\(registry.redhat.io\|registry.access.redhat.com\)/#skopeo inspect docker://${REGISTRYPRE}#g")"
-		if [[ $VERBOSE -eq 1 ]]; then 
-			echo ""; echo "# $QUERY | jq .RepoTags | egrep -v \"\[|\]|latest\" | grep -F "${BASETAG}" | sed -e 's#.*\"\(.\+\)\",*#- \1#' | sort -V|tail -5"
+			echo ""; echo "# $QUERY | jq .RepoTags | egrep -v \"\[|\]|latest\" | grep -F "${BASETAG}" | sed -e 's#.*\"\(.\+\)\",*#- \1#' | sort -V|tail -5" 
 		fi
 		LATESTTAGs=$(${QUERY} 2>/dev/null | jq .RepoTags | egrep -v "\[|\]|latest" | grep -F "${BASETAG}" | sed -e 's#.*\"\(.\+\)\",*#- \1#' | sort -V | grep "${URLfragtag}"|egrep -v "\"|latest"|egrep -v "${EXCLUDES}"|sed -e "s#^-##" -e "s#[\n\r\ ]\+##g"|tail -${NUMTAGS})
-		if [[ ! ${LATESTTAGs} ]]; then # try again with -container suffix
-			QUERY="$(echo ${URL}-container | sed -e "s#.\+\(registry.redhat.io\|registry.access.redhat.com\)/#skopeo inspect docker://${REGISTRYPRE}#g")"
-			if [[ $VERBOSE -eq 1 ]]; then 
-				echo ""; echo "# $QUERY | jq .RepoTags | egrep -v \"\[|\]|latest\" | grep -F "${BASETAG}" | sed -e 's#.*\"\(.\+\)\",*#- \1#' | sort -V|tail -5" 
-			fi
-			LATESTTAGs=$(${QUERY} 2>/dev/null | jq .RepoTags | egrep -v "\[|\]|latest" | grep -F "${BASETAG}" | sed -e 's#.*\"\(.\+\)\",*#- \1#' | sort -V | grep "${URLfragtag}"|egrep -v "\"|latest"|egrep -v "${EXCLUDES}"|sed -e "s#^-##" -e "s#[\n\r\ ]\+##g"|tail -${NUMTAGS})
-		fi
 	fi
 
 	if [[ ! ${LATESTTAGs} ]]; then
@@ -314,8 +300,17 @@ for URLfrag in $CONTAINERS; do
 				echo "* ${URLfrag%%:*}:${LATESTTAG} :: https://access.redhat.com/containers/#/registry.access.redhat.com/${URLfrag}/images/${LATESTTAG}"
 			fi
 		elif [[ "${REGISTRY}" != "" ]]; then
-			if [[ $VERBOSE -eq 1 ]]; then 
-				echo "${REGISTRYPRE}${URLfrag%%:*}:${LATESTTAG}"
+			if [[ $ARCHES -eq 1 ]]; then
+				arches=""
+				arch_string=""
+				raw_inspect=$(skopeo inspect --raw docker://${REGISTRYPRE}${URLfrag%%:*}:${LATESTTAG})
+				if [[ $(echo "${raw_inspect}" | grep "architecture") ]]; then 
+					arches=$(echo $raw_inspect | yq .manifests[].platform.architecture -r)
+				else
+					arches="unknown (amd64 only?)"
+				fi
+				for arch in $arches; do arch_string="${arch_string} ${arch}"; done
+				echo "${REGISTRYPRE}${URLfrag%%:*}:${LATESTTAG} ::${arch_string}"
 			elif [[ ${SHOWNVR} -eq 1 ]]; then
 				ufrag=${URLfrag%%:*}; ufrag=${ufrag/\//-}
 				if [[ ${SHOWLOG} -eq 1 ]]; then
