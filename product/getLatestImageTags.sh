@@ -1,7 +1,7 @@
 #!/bin/bash
 #
 # script to query latest tags for a given list of imags in RHCC
-# requires brew for pulp queries, skopeo (for authenticated registry queries) and jq to do json queries
+# requires brew for OSBS queries, skopeo (for authenticated registry queries) and jq to do json queries
 # 
 # https://registry.redhat.io is v2 and requires authentication to query, so login in first like this:
 # docker login registry.redhat.io -u=USERNAME -p=PASSWORD
@@ -55,7 +55,7 @@ codeready-workspaces/plugin-openshift-rhel8"
 
 # registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-operator-metadata:2.1-17
 # registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-operator:2.1-17 (NOT codeready-workspaces-operator-rhel8 -- OLD NAME)
-CRW21_CONTAINERS_PULP="\
+CRW21_CONTAINERS_OSBS="\
 codeready-workspaces/operator-metadata \
 codeready-workspaces/operator \
 codeready-workspaces/server-rhel8 \
@@ -109,7 +109,7 @@ codeready-workspaces/plugin-kubernetes-rhel8 \
 codeready-workspaces/plugin-openshift-rhel8"
 # codeready-workspaces/plugin-dependencyanalytics-rhel8 \
 
-CRW20_CONTAINERS_PULP="\
+CRW20_CONTAINERS_OSBS="\
 codeready-workspaces/operator-rhel8 \
 codeready-workspaces/server-rhel8 \
 \
@@ -156,14 +156,14 @@ Usage:
 
   $0 -c 'crw/theia-rhel8 crw/theia-endpoint-rhel8' --quay    | check a specific image in quay
   $0 -c 'rhoar-nodejs/nodejs-10 jboss-eap-7/eap72-openshift' | use specific list of RHCC images
-  $0 -c ubi7 -c ubi8:8.0 --pulp -n 5                         | check pulp registry; show 8.0* tags; show 5 tags per container
+  $0 -c ubi7 -c ubi8:8.0 --osbs -n 5                         | check OSBS registry; show 8.0* tags; show 5 tags per container
   $0 -c ubi7 -c ubi8:8.0 --stage -n 5                        | check RHCC stage registry; show 8.0* tags; show 5 tags per container
   $0 -c pivotaldata/centos --docker --dockerfile             | check docker registry; show Dockerfile contents (requires dfimage)
-  $0 -c codeready-workspaces-plugin-java11-rhel8 --pulp --pushtoquay='2.1 latest' 		| pull an image from pulp, push 3 tags to quay
+  $0 -c codeready-workspaces-plugin-java11-rhel8 --osbs --pushtoquay='2.1 latest' 		| pull an image from osbs, push 3 tags to quay
 
   $0 --crw22 --nvr --log                                     | check images in brew; output NVRs can be copied to Errata; show links to Brew logs
-  $0 --crw22 --pulp                                          | check images in pulp ( registry-proxy.engineering.redhat.com/rh-osbs )
-  $0 --crw22 --pulp --pushtoquay='2.2 latest'                | pull images from pulp, then push matching tag to quay, including extra tags if set
+  $0 --crw22 --osbs                                          | check images in OSBS ( registry-proxy.engineering.redhat.com/rh-osbs )
+  $0 --crw22 --osbs --pushtoquay='2.2 latest'                | pull images from OSBS, then push matching tag to quay, including extra tags if set
 
 "
 	exit
@@ -188,14 +188,14 @@ for key in "$@"; do
     '--rhcc') REGISTRY="http://registry.redhat.io"; shift 1;;
     '--stage') REGISTRY="http://registry.stage.redhat.io"; shift 1;;
     '--pulp-old') REGISTRY="http://brew-pulp-docker01.web.prod.ext.phx2.redhat.com:8888"; EXCLUDES="candidate|guest|containers"; shift 0;;
-    '-p'|'--pulp') REGISTRY="http://registry-proxy.engineering.redhat.com/rh-osbs"; EXCLUDES="candidate|guest|containers"; shift 0;;
+    '-p'|'--osbs') REGISTRY="http://registry-proxy.engineering.redhat.com/rh-osbs"; EXCLUDES="candidate|guest|containers"; shift 0;;
     '-d'|'--docker') REGISTRY="http://docker.io"; shift 0;;
            '--quay') REGISTRY="http://quay.io"; shift 0;;
            '--pushtoquay') PUSHTOQUAY=1; PUSHTOQUAYTAGS=""; shift 0;;
            --pushtoquay=*) PUSHTOQUAY=1; PUSHTOQUAYTAGS="$(echo "${key#*=}")"; shift 0;;
     '-n') NUMTAGS="$2"; shift 1;;
     '--dockerfile') SHOWHISTORY=1; shift 0;;
-    '--nvr') if [[ ! $CONTAINERS ]]; then CONTAINERS="${CRW21_CONTAINERS_PULP}"; fi; SHOWNVR=1; shift 0;;
+    '--nvr') if [[ ! $CONTAINERS ]]; then CONTAINERS="${CRW21_CONTAINERS_OSBS}"; fi; SHOWNVR=1; shift 0;;
     '--log') SHOWLOG=1; shift 0;;
     '-h') usage;;
   esac
@@ -207,20 +207,20 @@ if [[ ${REGISTRY} != "" ]]; then
 	REGISTRYPRE="${REGISTRY##*://}/"
 	if [[ ${REGISTRY} == *"registry-proxy.engineering.redhat.com"* ]]; then
 		if [[ ${CONTAINERS} == "${CRW21_CONTAINERS_RHCC}" ]] || [[ ${CONTAINERS} == "" ]]; then 
-			CONTAINERS="${CRW21_CONTAINERS_PULP//codeready-workspaces\//codeready-workspaces-}"; 
+			CONTAINERS="${CRW21_CONTAINERS_OSBS//codeready-workspaces\//codeready-workspaces-}"; 
 			# registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-operator-metadata:2.1-9
 			# registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-operator:2.1-10
 		fi
-		if [[ ${CONTAINERS} == "${CRW20_CONTAINERS_RHCC}" ]]; then CONTAINERS="${CRW20_CONTAINERS_PULP//codeready-workspaces\//codeready-workspaces-}"; fi
+		if [[ ${CONTAINERS} == "${CRW20_CONTAINERS_RHCC}" ]]; then CONTAINERS="${CRW20_CONTAINERS_OSBS//codeready-workspaces\//codeready-workspaces-}"; fi
 	elif [[ ${REGISTRY} == *"quay.io"* ]]; then
 		if [[ ${CONTAINERS} == "${CRW21_CONTAINERS_RHCC}" ]] || [[ ${CONTAINERS} == "" ]]; then
-			CONTAINERS="${CRW21_CONTAINERS_PULP}"; 
+			CONTAINERS="${CRW21_CONTAINERS_OSBS}"; 
 			CONTAINERS="${CONTAINERS//codeready-workspaces/crw}"
 			# codeready-workspaces/operator -> codeready-workspaces/operator-rhel8
 			CONTAINERS="${CONTAINERS/operator /operator-rhel8 }"
 		fi
 		if [[ ${CONTAINERS} == "${CRW20_CONTAINERS_RHCC}" ]]; then
-			CONTAINERS="${CRW20_CONTAINERS_PULP}"; 
+			CONTAINERS="${CRW20_CONTAINERS_OSBS}"; 
 			CONTAINERS="${CONTAINERS//codeready-workspaces/crw}"
 		fi
 	fi
