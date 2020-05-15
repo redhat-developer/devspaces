@@ -146,8 +146,12 @@ cp -f ${SOURCEDOCKERFILE} ${WORKSPACE}/target/Dockerfile
 
 # TODO should this be a branch instead of just master?
 CRW_VERSION=`wget -qO- https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/master/dependencies/VERSION`
-#apply patches
+# apply patches to transform Che upstream to pkgs.devel version
 sed -i ${WORKSPACE}/target/Dockerfile --regexp-extended \
+  `# Replace go-toolset rhel7 with rhel8 version` \
+  -e "s#devtools/go-toolset-rhel7#rhel8/go-toolset#g" \
+  -e "s#PATH=/opt/rh/go-toolset-1.12/root/usr/bin:\$PATH ##" \
+  `# more replacements` \
   -e "s#FROM registry.redhat.io/#FROM #g" \
   -e "s#FROM registry.access.redhat.com/#FROM #g" \
   -e 's|ARG BOOTSTRAP=.*|ARG BOOTSTRAP=false|' \
