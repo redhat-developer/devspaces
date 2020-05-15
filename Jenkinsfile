@@ -127,6 +127,10 @@ timeout(240) {
 		SHA_CRW = sh(returnStdout:true,script:"cd ${CRW_path}/ && git rev-parse --short=4 HEAD").trim()
 		echo "<===== Get CRW version ====="
 
+		// TODO CRW-881 insert branding elements into dashboard when building it the first time
+		// once we're building this separately we won't need to rebuild it here -- instead we can pull Jenkins artifacts to get the tarball we need in the assembly below
+		// or if we don't need to build the server here, we can just put the asset-dashboard.tgz into pkgs.devel directly
+
 		echo "===== Build che-dashboard =====>"
 		checkout([$class: 'GitSCM', 
 			branches: [[name: "${branchToBuildChe}"]], 
@@ -163,6 +167,9 @@ timeout(240) {
 		sh "mvn clean install ${MVN_FLAGS} -P native -f ${CHE_DB_path}/pom.xml ${MVN_EXTRA_FLAGS}"
 		echo "<===== Build che-dashboard ====="
 
+		// TODO collect assets from dashboard like this?
+		//docker run --rm --entrypoint sh che-dashboard:next -c 'tar -pzcf - /usr/local/apache2/htdocs/dashboard ' > asset-che-dashboard.tar.gz
+
 		echo "===== Build che-workspace-loader =====>"
 		checkout([$class: 'GitSCM', 
 			branches: [[name: "${branchToBuildChe}"]], 
@@ -176,6 +183,9 @@ timeout(240) {
 		SHA_CHE_WL = sh(returnStdout:true,script:"cd ${CHE_WL_path}/ && git rev-parse --short=4 HEAD").trim()
 		sh "mvn clean install ${MVN_FLAGS} -P native -f ${CHE_WL_path}/pom.xml ${MVN_EXTRA_FLAGS}"
 		echo "<===== Build che-workspace-loader ====="
+
+		// TODO collect assets from dashboard like this?
+		//docker run --rm --entrypoint sh che-workspace-loader:next -c 'tar -pzcf - /usr/local/apache2/htdocs/workspace-loader ' > asset-che-workspace-loader.tar.gz
 
 		echo "===== Build che server assembly =====>"
 		checkout([$class: 'GitSCM', 
@@ -203,6 +213,10 @@ timeout(240) {
 
 		// TODO does crw.dashboard.version still work here? Or should we do this higher up? 
 		// NOTE: VER_CHE could be 7.12.2-SNAPSHOT if we're using a .x branch instead of a tag. So this overrides what's in the crw root pom.xml
+
+		// unpack asset-*.tgz into folder where mvn can access it
+		// use that content when building assembly main and ws assembly?
+
 		sh "mvn clean install ${MVN_FLAGS} -f ${CRW_path}/pom.xml -Dparent.version=\"${VER_CHE}\" -Dche.version=\"${VER_CHE}\" -Dcrw.dashboard.version=\"${CRW_SHAs}\" ${MVN_EXTRA_FLAGS}"
 		archiveArtifacts fingerprint: true, artifacts:"**/*.log, **/assembly/*xml, **/assembly/**/*xml, ${CRW_path}/assembly/${CRW_path}-assembly-main/target/*.tar.*"
 

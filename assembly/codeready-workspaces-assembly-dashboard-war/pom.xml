@@ -48,6 +48,9 @@
                             <goal>unpack</goal>
                         </goals>
                         <configuration>
+                            <!-- TODO: unpack upstream dashboard 7.13.x container build's tarball into this folder 
+                                or CRW-881 maybe we no longer need to do this at all, if the dashboard is a tarball we can just unpack when doing the Dockerfile build in Brew?
+                            -->
                             <outputDirectory>${project.build.directory}/source-war</outputDirectory>
                             <artifactItems>
                                 <artifactItem>
