@@ -129,7 +129,7 @@ pushedIn=0
 for d in $(find ${WORKDIR} -maxdepth ${MAXDEPTH} -name ${DOCKERFILE} | sort); do
 	if [[ -f ${d} ]]; then
 		echo ""
-		echo "# Checking ${d%/${DOCKERFILE}} ..."
+		echo "# Checking ${d%/${DOCKERFILE}} / ${DOCKERFILE} ..."
 		# pull latest commits
 		if [[ -d ${d%%/${DOCKERFILE}} ]]; then pushd ${d%%/${DOCKERFILE}} >/dev/null; pushedIn=1; fi
 		if [[ "${d%/${DOCKERFILE}}" == *"-rhel8" ]]; then
