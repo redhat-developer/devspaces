@@ -129,7 +129,7 @@ pushedIn=0
 for d in $(find ${WORKDIR} -maxdepth ${MAXDEPTH} -name ${DOCKERFILE} | sort); do
 	if [[ -f ${d} ]]; then
 		echo ""
-		echo "# Checking ${d%/${DOCKERFILE}} / ${DOCKERFILE} ..."
+		echo "# Checking ${d} ..."
 		# pull latest commits
 		if [[ -d ${d%%/${DOCKERFILE}} ]]; then pushd ${d%%/${DOCKERFILE}} >/dev/null; pushedIn=1; fi
 		if [[ "${d%/${DOCKERFILE}}" == *"-rhel8" ]]; then
@@ -196,7 +196,7 @@ for d in $(find ${WORKDIR} -maxdepth ${MAXDEPTH} -name ${DOCKERFILE} | sort); do
 									if [[ $? -gt 0 ]] || [[ $PUSH_TRY == *"protected branch hook declined"* ]]; then
 										PR_BRANCH=pr-master-to-newer-from
 										# create pull request for master branch, as branch is restricted
-										git branch "${PR_BRANCH}"
+										git branch git branch --set-upstream-to=origin/"${PR_BRANCH}" "${PR_BRANCH}" || true
 										git checkout "${PR_BRANCH}"
 										git pull origin "${PR_BRANCH}"
 										git push origin "${PR_BRANCH}"
