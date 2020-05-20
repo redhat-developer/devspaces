@@ -1,5 +1,13 @@
 #!/bin/bash -e
 #
+# Copyright (c) 2019-2020 Red Hat, Inc.
+# This program and the accompanying materials are made
+# available under the terms of the Eclipse Public License 2.0
+# which is available at https://www.eclipse.org/legal/epl-2.0/
+#
+# SPDX-License-Identifier: EPL-2.0
+#
+
 # script to query latest tags of the FROM repos, and update Dockerfiles using the latest base images
 # requires skopeo (for authenticated registry queries) and jq to do json queries
 # 
@@ -196,15 +204,15 @@ for d in $(find ${WORKDIR} -maxdepth ${MAXDEPTH} -name ${DOCKERFILE} | sort); do
 									if [[ $? -gt 0 ]] || [[ $PUSH_TRY == *"protected branch hook declined"* ]]; then
 										PR_BRANCH=pr-master-to-newer-from
 										# create pull request for master branch, as branch is restricted
-										git branch git branch --set-upstream-to=origin/"${PR_BRANCH}" "${PR_BRANCH}" || true
-										git checkout "${PR_BRANCH}"
-										git pull origin "${PR_BRANCH}"
-										git push origin "${PR_BRANCH}"
+										git branch --set-upstream-to "origin/${PR_BRANCH}" "${PR_BRANCH}" || true
+										git checkout "${PR_BRANCH}" || true
+										git pull origin "${PR_BRANCH}" || true
+										git push --set-upstream origin "${PR_BRANCH}"
 										lastCommitComment="$(git log -1 --pretty=%B)"
 										if [[ $(/usr/local/bin/hub version 2>/dev/null || true) ]] || [[ $(which hub 2>/dev/null || true) ]]; then
 											hub pull-request -o -f -m "${lastCommitComment}
 
-${lastCommitComment}" -b "${BRANCHUSED}" -h "${PR_BRANCH}"
+${lastCommitComment}" -b "${BRANCHUSED}" -h "${PR_BRANCH}" || true
 										else
 											echo "# Warning: hub is required to generate pull requests. See https://hub.github.com/ to install it."
 											echo -n "# To manually create a pull request, go here: "
