@@ -30,6 +30,8 @@ WORKDIR=`pwd`
 BRANCH=crw-2.2-rhel-8 # not master
 DOCKERFILE="Dockerfile" # or "rhel.Dockerfile"
 MAXDEPTH=2
+PR_BRANCH="pr-master-new-base-images-$(date +%s)"
+OPENBROWSERFLAG="" # if a PR is generated, open it in a browser
 docommit=1 # by default DO commit the change
 dopush=1 # by default DO push the change
 buildCommand="echo" # By default, no build will be triggered when a change occurs; use -c for a container-build (or -s for scratch).
@@ -56,6 +58,8 @@ usage () {
 	echo "Options: 
 	--no-commit, -n    do not commit to BRANCH
 	--no-push, -p      do not push to BRANCH
+	-prb               set a PR_BRANCH; default: pr-master-new-base-images-(timestamp)
+	-o                 open browser if PR generated
 	-q, -v             quiet, verbose output
 	--help, -h         help
 	--check-recent-updates-only   
@@ -76,10 +80,12 @@ while [[ "$#" -gt 0 ]]; do
     '-s') buildCommand="rhpkg container-build --scratch"; shift 0;;
     '-n'|'--no-commit') docommit=0; dopush=0; shift 0;;
     '-p'|'--no-push') dopush=0; shift 0;;
+    '-prb') PR_BRANCH="$1"; shift 1;;
+    '-o') OPENBROWSERFLAG="-o"; shift 0;;
     '-q') QUIET=1; shift 0;;
     '-v') QUIET=0; VERBOSE=1; shift 0;;
-	'--check-recent-updates-only') QUIET=0; VERBOSE=1; checkrecentupdates; shift 0; exit;;
-	'--help'|'-h') usage; exit;;
+    '--check-recent-updates-only') QUIET=0; VERBOSE=1; checkrecentupdates; shift 0; exit;;
+    '--help'|'-h') usage; exit;;
     *) OTHER="${OTHER} $1"; shift 0;; 
   esac
   shift 1
@@ -193,6 +199,7 @@ for d in $(find ${WORKDIR} -maxdepth ${MAXDEPTH} -name ${DOCKERFILE} | sort); do
 
 							# commit change and push it
 							if [[ -d ${d%%/${DOCKERFILE}} ]]; then pushd ${d%%/${DOCKERFILE}} >/dev/null; pushedIn=1; fi
+							set -x
 							if [[ ${docommit} -eq 1 ]]; then 
 								git add ${DOCKERFILE} || true
 								git commit -s -m "[base] Update from ${URL} to ${FROMPREFIX}:${LATESTTAG}" ${DOCKERFILE}
@@ -202,26 +209,25 @@ for d in $(find ${WORKDIR} -maxdepth ${MAXDEPTH} -name ${DOCKERFILE} | sort); do
 
 									# shellcheck disable=SC2181
 									if [[ $? -gt 0 ]] || [[ $PUSH_TRY == *"protected branch hook declined"* ]]; then
-										PR_BRANCH=pr-master-to-newer-from
 										# create pull request for master branch, as branch is restricted
-										git branch --set-upstream-to "origin/${PR_BRANCH}" "${PR_BRANCH}" || true
+										git branch "${PR_BRANCH}" || true
 										git checkout "${PR_BRANCH}" || true
 										git pull origin "${PR_BRANCH}" || true
-										git push --set-upstream origin "${PR_BRANCH}"
+										git push origin "${PR_BRANCH}"
 										lastCommitComment="$(git log -1 --pretty=%B)"
 										if [[ $(/usr/local/bin/hub version 2>/dev/null || true) ]] || [[ $(which hub 2>/dev/null || true) ]]; then
-											hub pull-request -o -f -m "${lastCommitComment}
+											hub pull-request -f -m "${lastCommitComment}
 
-${lastCommitComment}" -b "${BRANCHUSED}" -h "${PR_BRANCH}" || true
+${lastCommitComment}" -b "${BRANCHUSED}" -h "${PR_BRANCH}" "${OPENBROWSERFLAG}"
 										else
 											echo "# Warning: hub is required to generate pull requests. See https://hub.github.com/ to install it."
 											echo -n "# To manually create a pull request, go here: "
 											git config --get remote.origin.url | sed -r -e "s#:#/#" -e "s#git@#https://#" -e "s#\.git#/tree/${PR_BRANCH}/#"
 										fi
-
 									fi
 								fi
 							fi
+							set +x
 							if [[ ${buildCommand} != "echo" ]] || [[ $VERBOSE -eq 1 ]]; then echo "# ${buildCommand}"; fi
 							${buildCommand} &
 							echo
