@@ -1,5 +1,13 @@
 #!/bin/bash
 #
+# Copyright (c) 2019-2020 Red Hat, Inc.
+# This program and the accompanying materials are made
+# available under the terms of the Eclipse Public License 2.0
+# which is available at https://www.eclipse.org/legal/epl-2.0/
+#
+# SPDX-License-Identifier: EPL-2.0
+#
+
 # For a given tag, produce a link to the commit that was used for that tag.
 # 
 # Eg., for quay.io/crw/stacks-java:2.1-10 get https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-stacks-java/commit?id=53306c3f99d3b35d4bdeb22b5ef2081e322db7f8

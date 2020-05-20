@@ -1,5 +1,13 @@
 #!/bin/bash -e
 #
+# Copyright (c) 2019-2020 Red Hat, Inc.
+# This program and the accompanying materials are made
+# available under the terms of the Eclipse Public License 2.0
+# which is available at https://www.eclipse.org/legal/epl-2.0/
+#
+# SPDX-License-Identifier: EPL-2.0
+#
+
 # script to query the Brew BUILD ID for a given list of NVRs, then produce the list of SHAs associated with those builds
 # requires brew CLI to be installed, and an active Kerberos ticket (kinit)
 
