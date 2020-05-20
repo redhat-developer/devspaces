@@ -22,7 +22,8 @@ WORKDIR=`pwd`
 BRANCH=crw-2.2-rhel-8 # not master
 DOCKERFILE="Dockerfile" # or "rhel.Dockerfile"
 MAXDEPTH=2
-docommit=1 # by default DO commit the change and push it
+docommit=1 # by default DO commit the change
+dopush=1 # by default DO push the change
 buildCommand="echo" # By default, no build will be triggered when a change occurs; use -c for a container-build (or -s for scratch).
 
 checkrecentupdates () {
@@ -45,7 +46,8 @@ usage () {
 	echo "Usage:   $0 -b [BRANCH] [-w WORKDIR] [-f DOCKERFILE] [-maxdepth MAXDEPTH]"
 	echo "Example: $0 -b crw-2.2-rhel-8 -w $(pwd) -f rhel.Dockerfile -maxdepth 2"
 	echo "Options: 
-	--no-commit, -n    do not push to BRANCH
+	--no-commit, -n    do not commit to BRANCH
+	--no-push, -p      do not push to BRANCH
 	-q, -v             quiet, verbose output
 	--help, -h         help
 	--check-recent-updates-only   
@@ -64,7 +66,8 @@ while [[ "$#" -gt 0 ]]; do
     '-maxdepth') MAXDEPTH="$2"; shift 1;;
     '-c') buildCommand="rhpkg container-build"; shift 0;; # NOTE: will trigger a new build for each commit, rather than for each change set (eg., Dockefiles with more than one FROM)
     '-s') buildCommand="rhpkg container-build --scratch"; shift 0;;
-    '-n'|'--nocommit') docommit=0; shift 0;;
+    '-n'|'--no-commit') docommit=0; dopush=0; shift 0;;
+    '-p'|'--no-push') dopush=0; shift 0;;
     '-q') QUIET=1; shift 0;;
     '-v') QUIET=0; VERBOSE=1; shift 0;;
 	'--check-recent-updates-only') QUIET=0; VERBOSE=1; checkrecentupdates; shift 0; exit;;
@@ -183,7 +186,25 @@ for d in $(find ${WORKDIR} -maxdepth ${MAXDEPTH} -name ${DOCKERFILE} | sort); do
 							# commit change and push it
 							if [[ -d ${d%%/${DOCKERFILE}} ]]; then pushd ${d%%/${DOCKERFILE}} >/dev/null; pushedIn=1; fi
 							if [[ ${docommit} -eq 1 ]]; then 
-								git commit -s -m "[base] Update from ${URL} to ${FROMPREFIX}:${LATESTTAG}" ${DOCKERFILE} && git push origin ${BRANCHUSED}
+								git add ${DOCKERFILE} || true
+								git commit -s -m "[base] Update from ${URL} to ${FROMPREFIX}:${LATESTTAG}" ${DOCKERFILE}
+								git pull origin "${BRANCHUSED}"
+								if [[ ${dopush} -eq 1 ]]; then
+									PUSH_TRY="$(git push origin ${BRANCHUSED}")"
+									# shellcheck disable=SC2181
+									if [[ $? -gt 0 ]] || [[ $PUSH_TRY == *"protected branch hook declined"* ]]; then
+										PR_BRANCH=pr-master-to-newer-from
+										# create pull request for master branch, as branch is restricted
+										git branch "${PR_BRANCH}"
+										git checkout "${PR_BRANCH}"
+										git pull origin "${PR_BRANCH}"
+										git push origin "${PR_BRANCH}"
+										lastCommitComment="$(git log -1 --pretty=%B)"
+										hub pull-request -o -f -m "${lastCommitComment}
+
+${lastCommitComment}" -b "${BRANCHUSED}" -h "${PR_BRANCH}"
+									fi
+								fi
 							fi
 							if [[ ${buildCommand} != "echo" ]] || [[ $VERBOSE -eq 1 ]]; then echo "# ${buildCommand}"; fi
 							${buildCommand} &
