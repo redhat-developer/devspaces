@@ -191,6 +191,7 @@ for d in $(find ${WORKDIR} -maxdepth ${MAXDEPTH} -name ${DOCKERFILE} | sort); do
 								git pull origin "${BRANCHUSED}"
 								if [[ ${dopush} -eq 1 ]]; then
 									PUSH_TRY="$(git push origin ${BRANCHUSED}")"
+
 									# shellcheck disable=SC2181
 									if [[ $? -gt 0 ]] || [[ $PUSH_TRY == *"protected branch hook declined"* ]]; then
 										PR_BRANCH=pr-master-to-newer-from
@@ -200,9 +201,16 @@ for d in $(find ${WORKDIR} -maxdepth ${MAXDEPTH} -name ${DOCKERFILE} | sort); do
 										git pull origin "${PR_BRANCH}"
 										git push origin "${PR_BRANCH}"
 										lastCommitComment="$(git log -1 --pretty=%B)"
-										hub pull-request -o -f -m "${lastCommitComment}
+										if [[ $(/usr/local/bin/hub version 2>/dev/null || true) ]] || [[ $(which hub 2>/dev/null || true) ]]; then
+											hub pull-request -o -f -m "${lastCommitComment}
 
 ${lastCommitComment}" -b "${BRANCHUSED}" -h "${PR_BRANCH}"
+										else
+											echo "# Warning: hub is required to generate pull requests. See https://hub.github.com/ to install it."
+											echo -n "# To manually create a pull request, go here: "
+											git config --get remote.origin.url | sed -r -e "s#:#/#" -e "s#git@#https://#" -e "s#\.git#/tree/${PR_BRANCH}/#"
+										fi
+
 									fi
 								fi
 							fi
