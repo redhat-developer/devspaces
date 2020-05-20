@@ -80,7 +80,7 @@ while [[ "$#" -gt 0 ]]; do
     '-s') buildCommand="rhpkg container-build --scratch"; shift 0;;
     '-n'|'--no-commit') docommit=0; dopush=0; shift 0;;
     '-p'|'--no-push') dopush=0; shift 0;;
-    '-prb') PR_BRANCH="$1"; shift 1;;
+    '-prb') PR_BRANCH="$2"; shift 1;;
     '-o') OPENBROWSERFLAG="-o"; shift 0;;
     '-q') QUIET=1; shift 0;;
     '-v') QUIET=0; VERBOSE=1; shift 0;;
@@ -205,7 +205,7 @@ for d in $(find ${WORKDIR} -maxdepth ${MAXDEPTH} -name ${DOCKERFILE} | sort); do
 								git commit -s -m "[base] Update from ${URL} to ${FROMPREFIX}:${LATESTTAG}" ${DOCKERFILE}
 								git pull origin "${BRANCHUSED}"
 								if [[ ${dopush} -eq 1 ]]; then
-									PUSH_TRY="$(git push origin "${BRANCHUSED}" 2>&1 || true)"
+									PUSH_TRY="$(git push origin "${BRANCHUSED}" 2>&1 || git push origin "${PR_PRANCH}" || true)"
 
 									# shellcheck disable=SC2181
 									if [[ $? -gt 0 ]] || [[ $PUSH_TRY == *"protected branch hook declined"* ]]; then
