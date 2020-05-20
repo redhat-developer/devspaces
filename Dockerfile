@@ -9,8 +9,8 @@
 #   Red Hat, Inc. - initial API and implementation
 #
 
-# https://access.redhat.com/containers/?tab=tags#/registry.access.redhat.com/openjdk/openjdk-8-rhel8
-FROM registry.redhat.io/openjdk/openjdk-8-ubi8:1.3-2
+# https://access.redhat.com/containers/?tab=tags#/registry.access.redhat.com/ubi8/openjdk-8
+FROM registry.redhat.io/ubi8/openjdk-8:1.3-2
 USER root
 
 # NOTE: uncomment for local build. Must also set full registry path in FROM to registry.access.redhat.com or registry.redhat.io
