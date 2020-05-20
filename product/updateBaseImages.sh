@@ -190,7 +190,7 @@ for d in $(find ${WORKDIR} -maxdepth ${MAXDEPTH} -name ${DOCKERFILE} | sort); do
 								git commit -s -m "[base] Update from ${URL} to ${FROMPREFIX}:${LATESTTAG}" ${DOCKERFILE}
 								git pull origin "${BRANCHUSED}"
 								if [[ ${dopush} -eq 1 ]]; then
-									PUSH_TRY="$(git push origin "${BRANCHUSED}")"
+									PUSH_TRY="$(git push origin "${BRANCHUSED}" 2>&1 || true)"
 
 									# shellcheck disable=SC2181
 									if [[ $? -gt 0 ]] || [[ $PUSH_TRY == *"protected branch hook declined"* ]]; then
