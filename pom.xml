@@ -19,9 +19,9 @@
         <artifactId>maven-parent-pom</artifactId>
         <groupId>org.eclipse.che.parent</groupId>
         as of Che 7.13 -->
-        <artifactId>maven-depmgt-pom</artifactId>
-        <groupId>org.eclipse.che.depmgt</groupId>
-        <version>7.12.1</version>
+        <artifactId>maven-parent-pom</artifactId>
+        <groupId>org.eclipse.che.parent</groupId>
+        <version>7.13.0</version>
     </parent>
     <groupId>com.redhat</groupId>
     <artifactId>codeready</artifactId>
@@ -42,7 +42,7 @@
     </modules>
     <properties>
         <che.dashboard.version>${che.version}</che.dashboard.version>
-        <che.version>7.12.1</che.version>
+        <che.version>7.13.0</che.version>
         <crw.dashboard.version>${crw.version} (Eclipse Che ${che.version})</crw.dashboard.version>
         <crw.docs.version>2.2</crw.docs.version>
         <crw.version>${project.version}</crw.version>
