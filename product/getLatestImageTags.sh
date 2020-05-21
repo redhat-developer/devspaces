@@ -337,16 +337,12 @@ for URLfrag in $CONTAINERS; do
 
 		if [[ ${PUSHTOQUAY} -eq 1 ]] && [[ ${REGISTRY} != *"quay.io"* ]]; then
 		    QUAYDEST="${REGISTRYPRE}${URLfrag}"; QUAYDEST="quay.io/crw/${QUAYDEST##*codeready-workspaces-}"
-			if [[ $VERBOSE -eq 1 ]]; then echo "Push ${REGISTRYPRE}${URLfrag}:${LATESTTAG} to ${QUAYDEST}:${LATESTTAG}"; fi
-			docker pull ${REGISTRYPRE}${URLfrag}:${LATESTTAG}
-			docker tag ${REGISTRYPRE}${URLfrag}:${LATESTTAG} ${QUAYDEST}:${LATESTTAG} && docker push ${QUAYDEST}:${LATESTTAG} && \
-			docker image rm -f ${QUAYDEST}:${LATESTTAG} >/dev/null
+			if [[ $VERBOSE -eq 1 ]]; then echo "Copy ${REGISTRYPRE}${URLfrag}:${LATESTTAG} to ${QUAYDEST}:${LATESTTAG}"; fi
+			CMD="skopeo copy --all docker://${REGISTRYPRE}${URLfrag}:${LATESTTAG} docker://${QUAYDEST}:${LATESTTAG}"; echo $CMD; $CMD
 			for qtag in ${PUSHTOQUAYTAGS}; do
-				if [[ $VERBOSE -eq 1 ]]; then echo "Push ${REGISTRYPRE}${URLfrag}:${LATESTTAG} to ${QUAYDEST}:${qtag}"; fi
-				docker tag ${REGISTRYPRE}${URLfrag}:${LATESTTAG} ${QUAYDEST}:${qtag} && docker push ${QUAYDEST}:${qtag} && \
-				docker image rm -f ${QUAYDEST}:${qtag} >/dev/null
+				if [[ $VERBOSE -eq 1 ]]; then echo "Copy ${REGISTRYPRE}${URLfrag}:${LATESTTAG} to ${QUAYDEST}:${qtag}"; fi
+				CMD="skopeo copy --all docker://${REGISTRYPRE}${URLfrag}:${LATESTTAG} docker://${QUAYDEST}:${qtag}"; echo $CMD; $CMD
 			done
-			docker image rm -f ${REGISTRYPRE}${URLfrag}:${LATESTTAG} >/dev/null
 		fi
 
 		if [[ ${SHOWHISTORY} -eq 1 ]]; then
