@@ -17,14 +17,12 @@ LOG_FILE="$(mktemp)" && trap "rm -f $LOG_FILE" EXIT
 function handle_error() {
   local yaml_file="$1"
   local image_url="$2"
-  if [[ -z "$(tail -1 $LOG_FILE | grep -v "no image found in manifest list for architecture $ARCH")" ]] ; then
-    echo "[WARN] Image $image_url not found for architecture $ARCH: remove $yaml_file from registry."
-    mv "$yaml_file" "$yaml_file.removed"
-  elif [[ ! -z "$($SCRIPT_DIR/find_image.sh "${image_url%:*}" $ARCH | jq -r '.Digest')" ]] ; then
-    echo "[WARN] Image $image_url not found (404): remove $yaml_file from registry."
-    mv "$yaml_file" "$yaml_file.removed"
-  elif [[ $(egrep "manifest unknown|Error reading manifest" ${LOG_FILE}) ]]; then
-    echo "[WARN] Manifest for $image_url not found: remove $yaml_file from registry."
+  if [[ ! -z "$($SCRIPT_DIR/find_image.sh "${image_url%:*}" x86_64 2> /dev/null | jq -r '.Digest')" ]] ; then
+    if [[ "$ARCH" == "x86_64" ]] ; then
+      echo "[WARN] Image $image_url version not found: remove $yaml_file from registry."
+    else
+      echo "[WARN] Image $image_url not found for architecture $ARCH: remove $yaml_file from registry."
+    fi
     mv "$yaml_file" "$yaml_file.removed"
   else
     echo "[ERROR] Could not read image metadata through skopeo inspect --tls-verify=false; skip $image_url"
