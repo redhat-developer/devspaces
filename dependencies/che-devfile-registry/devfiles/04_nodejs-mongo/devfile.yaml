@@ -27,7 +27,7 @@ components:
     mountSources: true
   - type: dockerimage
     alias: mongo
-    image: registry.redhat.io/rhscl/mongodb-34-rhel7:1-57
+    image: registry.redhat.io/rhscl/mongodb-36-rhel7:1-50
     memoryLimit: 512Mi
     env:
       - name: MONGODB_USER
@@ -42,7 +42,7 @@ components:
       - name: mongo-storage
         containerPath: /var/lib/mongodb/data
     endpoints:
-      - name: mongodb-34-rhel7
+      - name: mongodb-36-rhel7
         port: 27017
         attributes:
           discoverable: "true"
