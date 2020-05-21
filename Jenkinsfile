@@ -159,8 +159,22 @@ timeout(240) {
 				https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/${rawBranch}/assembly/codeready-workspaces-assembly-dashboard-war/src/main/webapp/assets/branding/branding-crw.css
 			cat ''' + CHE_DB_path + '''/src/assets/branding/branding.css
 		'''
+		sh "cp ${CRW_path}/assembly/assembly-codeready-workspaces-assembly-dashboard/src/main/webapp/assets/branding dashboard/assets/branding"
 
-		sh "mvn clean install ${MVN_FLAGS} -P native -f ${CHE_DB_path}/pom.xml ${MVN_EXTRA_FLAGS}"
+		// process product.json template
+		sh "cp dashboard/assets/branding/product.json.template dashboard/assets/branding/product.json"
+		sh "sed -i -e \"s#@@crw.version@@#${CRW_SHAs}#g\" dashboard/assets/branding/product.json"
+		
+		DOCS_VERSION = sh(returnStdout:true,script:"mvn ${MVN_FLAGS} -f ${CRW_path}/pom.xml help:evaluate -Dexpression=crw.docs.version | grep "^[^\[]" ")
+		CRW_DOCS_BASEURL="https://access.redhat.com/documentation/en-us/red_hat_codeready_workspaces/" + DOCS_VERSION
+		sh "sed -i -e \"s#@@crw.docs.baseurl@@#${CRW_DOCS_BASEURL}#g\" dashboard/assets/branding/product.json"
+
+		sh '''#!/bin/bash -xe
+			docker build -f apache.Dockerfile -t che-dashboard:tmp.
+			docker create -ti --name dashboard-container crw-dashboard:tmp bash
+			docker cp dashboard-container:/usr/local/apache2/htdocs/dashboard dashboard
+		'''
+
 		echo "<===== Build che-dashboard ====="
 
 		echo "===== Build che-workspace-loader =====>"
@@ -174,7 +188,13 @@ timeout(240) {
 
 		VER_CHE_WL = sh(returnStdout:true,script:"egrep \"<version>\" ${CHE_WL_path}/pom.xml|head -2|tail -1|sed -e \"s#.*<version>\\(.\\+\\)</version>#\\1#\"").trim()
 		SHA_CHE_WL = sh(returnStdout:true,script:"cd ${CHE_WL_path}/ && git rev-parse --short=4 HEAD").trim()
-		sh "mvn clean install ${MVN_FLAGS} -P native -f ${CHE_WL_path}/pom.xml ${MVN_EXTRA_FLAGS}"
+		
+		sh '''#!/bin/bash -xe
+			docker build -f apache.Dockerfile -t che-workspace-loader:tmp .
+			docker create -ti --name workspace-loader-container che-workspace-loader:tmp bash
+			docker cp workspace-loader-container:/usr/local/apache2/htdocs/workspace-loader workspace-loader
+		'''
+
 		echo "<===== Build che-workspace-loader ====="
 
 		echo "===== Build che server assembly =====>"
@@ -204,6 +224,12 @@ timeout(240) {
 		// TODO does crw.dashboard.version still work here? Or should we do this higher up? 
 		// NOTE: VER_CHE could be 7.12.2-SNAPSHOT if we're using a .x branch instead of a tag. So this overrides what's in the crw root pom.xml
 		sh "mvn clean install ${MVN_FLAGS} -f ${CRW_path}/pom.xml -Dparent.version=\"${VER_CHE}\" -Dche.version=\"${VER_CHE}\" -Dcrw.dashboard.version=\"${CRW_SHAs}\" ${MVN_EXTRA_FLAGS}"
+
+		// Add dashboard and workspace-loader that were built in container earlier
+		sh "gunzip ${CRW_path}/assembly/${CRW_path}-assembly-main/target/*.tar.*"
+		sh "tar rvf ${CRW_path}/assembly/${CRW_path}-assembly-main/target/*.tar --transform 's,^,codeready-workspaces-assembly-main/tomcat/webapps,'"
+		sh "gzip ${CRW_path}/assembly/${CRW_path}-assembly-main/target/*.tar"
+
 		archiveArtifacts fingerprint: true, artifacts:"**/*.log, **/assembly/*xml, **/assembly/**/*xml, ${CRW_path}/assembly/${CRW_path}-assembly-main/target/*.tar.*"
 
 		echo "<===== Build CRW server assembly ====="
