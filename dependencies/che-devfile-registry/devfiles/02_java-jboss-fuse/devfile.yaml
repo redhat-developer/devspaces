@@ -18,8 +18,7 @@ components:
   -
     type: dockerimage
     alias: maven
-    # Note: use EAP 7.3 OpenJDK 8 RHEL 7 image for Fuse support
-    image: registry.redhat.io/jboss-eap-7/eap73-openjdk8-openshift-rhel7:latest
+    image: registry.redhat.io/codeready-workspaces/stacks-java-rhel8:2.2
     env:
       - name: JAVA_OPTS
         value: "-XX:MaxRAMPercentage=50.0 -XX:+UseParallelGC -XX:MinHeapFreeRatio=10
