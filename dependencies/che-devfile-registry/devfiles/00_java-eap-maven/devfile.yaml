@@ -11,11 +11,17 @@ projects:
 components:
   -
     type: chePlugin
-    id: redhat/java8/latest
+    id: redhat/java11/latest
+  -
+    # NOTE: instead of the old stack-analysis script, should be able to use the latest dependency-analysis plugin instead
+    type: chePlugin
+    id: redhat/dependency-analytics/latest
   -
     type: dockerimage
     alias: maven
-    image: registry.redhat.io/codeready-workspaces/stacks-java-rhel8:2.2
+    # TODO: For Z and Power, likely need to switch at build time to an openj9-11 image, if it exists (CRW-758)
+    # TODO: switch to registry.redhat.io/jboss-eap-7/eap-xp1-openjdk11-openshift-rhel8:1.0 when it's live (June 1?)
+    image: registry-proxy.engineering.redhat.com/rh-osbs/jboss-eap-7-eap-xp1-openjdk11-openshift-rhel8:latest
     env:
       - name: MAVEN_OPTS
         value: "-Xmx200m -XX:MaxRAMPercentage=50.0 -XX:+UseParallelGC -XX:MinHeapFreeRatio=10 -XX:MaxHeapFreeRatio=20 -XX:GCTimeRatio=4 -XX:AdaptiveSizePolicyWeight=90 -Dsun.zip.disableMemoryMapping=true -Xms20m -Djava.security.egd=file:/dev/./urandom -Duser.home=/home/jboss"
@@ -64,13 +70,6 @@ commands:
         component: maven
         command: "mvn clean install && cp target/*.war /opt/eap/standalone/deployments/ROOT.war"
         workdir: ${CHE_PROJECTS_ROOT}/kitchensink-example
-  -
-    name: dependency analysis
-    actions:
-      -
-        type: exec
-        component: maven
-        command: "${HOME}/stack-analysis.sh -f ${CHE_PROJECTS_ROOT}/kitchensink-example/pom.xml -p ${CHE_PROJECTS_ROOT}/kitchensink-example"
   -
     name: Debug (Attach)
     actions:

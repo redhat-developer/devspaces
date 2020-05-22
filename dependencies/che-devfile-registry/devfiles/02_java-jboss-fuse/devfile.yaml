@@ -16,9 +16,18 @@ components:
     type: chePlugin
     id: redhat/vscode-apache-camel/latest
   -
+    # NOTE: instead of the old stack-analysis script, should be able to use the latest dependency-analysis plugin instead
+    type: chePlugin
+    id: redhat/dependency-analytics/latest
+  -
     type: dockerimage
     alias: maven
-    image: registry.redhat.io/codeready-workspaces/stacks-java-rhel8:2.2
+    # NOTE: Need EAP 7.3 RHEL 7 / JDK 8 image for Fuse support (not RHEL 8 / JDK 11)
+    # NOTE: registry.redhat.io/jboss-eap-7/eap73-openjdk8-openshift-rhel7 == 7.3.0, but we can use the newer 7.3.1 / XP 1.0 image (CRW-876, CRW-871)
+
+    # TODO: For Z and Power, likely need to switch at build time to an openj9-8 image, if it exists (CRW-758)
+    # TODO: switch to registry.redhat.io/jboss-eap-7/eap-xp1-openjdk8-openshift-rhel7:1.0 when it's live (June 1?)
+    image: registry-proxy.engineering.redhat.com/rh-osbs/jboss-eap-7-eap-xp1-openjdk8-openshift-rhel7:latest
     env:
       - name: JAVA_OPTS
         value: "-XX:MaxRAMPercentage=50.0 -XX:+UseParallelGC -XX:MinHeapFreeRatio=10
@@ -42,7 +51,7 @@ commands:
       -
         type: exec
         component: maven
-        command: "MAVEN_OPTS='-Xmx200m' && mvn clean package"
+        command: "MAVEN_OPTS='-Xmx200m' && scl enable rh-maven35 'mvn clean package'"
         workdir: "${CHE_PROJECTS_ROOT}/java-jboss-fuse"
   -
     name: run app
@@ -50,7 +59,7 @@ commands:
       -
         type: exec
         component: maven
-        command: "mvn spring-boot:run"
+        command: "scl enable rh-maven35 'mvn spring-boot:run'"
         workdir: "${CHE_PROJECTS_ROOT}/java-jboss-fuse"
   -
     name: deploy to OpenShift
@@ -58,23 +67,15 @@ commands:
       -
         type: exec
         component: maven
-        command: "mvn fabric8:deploy -Popenshift -DskipTests"
+        command: "scl enable rh-maven35 'mvn fabric8:deploy -Popenshift -DskipTests'"
         workdir: "${CHE_PROJECTS_ROOT}/java-jboss-fuse"
-  -
-    name: dependency analysis
-    actions:
-        -
-          type: exec
-          component: maven
-          command: "${HOME}/stack-analysis.sh -f ${CHE_PROJECTS_ROOT}/java-jboss-fuse/pom.xml -p ${CHE_PROJECTS_ROOT}/java-jboss-fuse"
-          workdir: "${CHE_PROJECTS_ROOT}/java-jboss-fuse"
   -
     name: debug
     actions:
       -
         type: exec
         component: maven
-        command: "mvn spring-boot:run -Drun.jvmArguments=\"-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005\""
+        command: "scl enable rh-maven35 'mvn spring-boot:run -Drun.jvmArguments=\"-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005\"'"
         workdir: "${CHE_PROJECTS_ROOT}/java-jboss-fuse"
   -
     name: Debug remote java application
