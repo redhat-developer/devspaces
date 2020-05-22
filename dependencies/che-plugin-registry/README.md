@@ -6,12 +6,14 @@
 
 # Eclipse Che plugin registry
 
+This repository holds ready-to-use plugins for different languages and technologies.
+
 ## Building and publishing third party VSIX extensions for plugin registry
 See: https://github.com/redhat-developer/codeready-workspaces/blob/master/devdoc/building/build-vsix-extension.adoc
 
-## Build Eclipse Che plugin registry container image
+## Build registry container image
 
-The plugin registry is automatically built for every Che release (e.g. `quay.io/eclipse/che-plugin-registry:7.6.0`) in addition to nightly builds available at `quay.io/eclipse/che-plugin-registry:nightly`. If a custom build of the registry is desired, there is a `build.sh` script at the root of this repository that can be used to easily build the image:
+This repository contains a `build.sh` script at its root that can be used to build the registry:
 ```
 Usage: ./build.sh [OPTIONS]
 Options:
@@ -26,50 +28,30 @@ Options:
     --latest-only
         Build registry to only contain 'latest' meta.yamls; default: 'false'
     --offline
-        Build offline version of registry, with all extension artifacts
+        Build offline version of registry, with all artifacts included
         cached in the registry; disabled by default.
     --rhel
-        Build using the rhel.Dockerfile instead of the default
+        Build using the rhel.Dockerfile (UBI images) instead of default
 ```
 
 Note that the Dockerfiles in this repository utilize multi-stage builds, so Docker version 17.05 or higher is required.
 
 ### Offline and airgapped registry images
 
-Using the `--offline` option in `build.sh`, it's possible to build an image for the plugin registry that includes all referenced extension artifacts (i.e. all `.theia` and `.vsix` archives). The offline version of the plugin registry is useful in network-limited scenarios, as it avoids the need to download plugin extensions from the outside internet.
+Using the `--offline` option in `build.sh` will build the registry to contain all referenced extension artifacts (i.e. all `.theia` and `.vsix` archives). The offline version of the plugin registry is useful in network-limited scenarios, as it avoids the need to download plugin extensions from the outside internet.
 
-## Run Eclipse Che plugin registry on OpenShift
+## Deploy the registry to OpenShift
 
-You can deploy Che plugin registry on Openshift with command.
+You can deploy the registry to Openshift as follows:
 
 ```bash
-  oc new-app -f openshift/che-plugin-registry.yml \
+  oc new-app -f deploy/openshift/che-plugin-registry.yml \
              -p IMAGE="quay.io/eclipse/che-plugin-registry" \
              -p IMAGE_TAG="nightly" \
-             -p PULL_POLICY="IfNotPresent"
+             -p PULL_POLICY="Always"
 ```
 
-## Run Eclipse Che plugin registry on Kubernetes
-
-You can deploy Che plugin registry on Kubernetes using [helm](https://docs.helm.sh/). For example if you want to deploy it in the namespace `kube-che` and you are using `minikube` you can use the following command.
-
-```bash
-NAMESPACE="kube-che"
-DOMAIN="$(minikube ip).nip.io"
-helm upgrade --install che-plugin-registry \
-    --debug \
-    --namespace ${NAMESPACE} \
-    --set global.ingressDomain=${DOMAIN} \
-    ./kubernetes/che-plugin-registry/
-```
-
-You can use the following command to uninstall it.
-
-```bash
-helm delete --purge che-plugin-registry
-```
-
-## Run Eclipse Che plugin registry using Docker
+## Run the registry using podman
 
 ```bash
 docker run -it  --rm  -p 8080:8080 quay.io/eclipse/che-plugin-registry:nightly

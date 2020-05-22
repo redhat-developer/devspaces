@@ -6,6 +6,10 @@
 #
 # SPDX-License-Identifier: EPL-2.0
 #
+# Contributors:
+#   Red Hat, Inc. - initial API and implementation
+#
+
 FROM alpine:3.10 AS builder
 RUN apk add --no-cache py-pip jq bash wget git skopeo && pip install yq
 
