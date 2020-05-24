@@ -91,12 +91,10 @@ timeout(120) {
                     //jobs.add(devRegJob)
                     //jobs.add(pluRegJob)
                     //parallel jobs
-                    // TODO use -c "crw/devfileregistry-rhel8 crw/pluginregistry-rhel8" instead of --crw21 to only pull the two images we care about
                     while (true) {
                         def REBUILT_IMAGES = sh (
-                        script: 'cd ${WORKSPACE}/crw/product && ./getLatestImageTags.sh \
-                            --crw21 --quay -q | sort | uniq | grep quay | \
-                            tee ${WORKSPACE}/crw/dependencies/LATEST_IMAGES.new',
+                        script: 'cd ${WORKSPACE}/crw/product && ./getLatestImageTags.sh -c "crw/devfileregistry-rhel8 crw/pluginregistry-rhel8" --quay | \
+                            sort | uniq | grep quay | tee ${WORKSPACE}/crw/dependencies/LATEST_IMAGES.new',
                         returnStdout: true
                         ).trim().split()
                         def rebuiltImagesSet = REBUILT_IMAGES as Set
@@ -129,9 +127,7 @@ timeout(120) {
                 )
 
                 sh '''#!/bin/bash -xe
-                cd ${WORKSPACE}/crw/product && ./getLatestImageTags.sh \
-                --crw21 --quay -q | sort | uniq | grep quay > \
-                ${WORKSPACE}/crw/dependencies/LATEST_IMAGES.new
+                cd ${WORKSPACE}/crw/product && ./getLatestImageTags.sh --quay -q | sort | uniq | grep quay > ${WORKSPACE}/crw/dependencies/LATEST_IMAGES.new
 
                 echo "============ LATEST_IMAGES.new 3 ============>"
                 cat ${WORKSPACE}/crw/dependencies/LATEST_IMAGES.new
