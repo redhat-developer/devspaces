@@ -23,8 +23,7 @@ timeout(120) {
                     userRemoteConfigs: [[url: "git@github.com:redhat-developer/codeready-workspaces.git"]]])
                     
             def NEW_IMAGES = sh (
-                script: 'cd ${WORKSPACE}/crw/product && ./getLatestImageTags.sh \
-                    ${getLatestImageTagsFlags} --quay | sort | uniq | grep quay | \
+                script: 'cd ${WORKSPACE}/crw/product && ./getLatestImageTags.sh ${getLatestImageTagsFlags} --quay | sort | uniq | grep quay | \
                     tee ${WORKSPACE}/crw/dependencies/LATEST_IMAGES.new',
                 returnStdout: true
             ).trim().split()
@@ -127,7 +126,7 @@ timeout(120) {
                 )
 
                 sh '''#!/bin/bash -xe
-                cd ${WORKSPACE}/crw/product && ./getLatestImageTags.sh --quay -q | sort | uniq | grep quay > ${WORKSPACE}/crw/dependencies/LATEST_IMAGES.new
+                cd ${WORKSPACE}/crw/product && ./getLatestImageTags.sh ${getLatestImageTagsFlags} --quay | sort | uniq | grep quay > ${WORKSPACE}/crw/dependencies/LATEST_IMAGES.new
 
                 echo "============ LATEST_IMAGES.new 3 ============>"
                 cat ${WORKSPACE}/crw/dependencies/LATEST_IMAGES.new
