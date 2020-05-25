@@ -159,24 +159,32 @@ timeout(240) {
 		// apply CRW CSS
 		sh '''#!/bin/bash -xe
 			rawBranch=${branchToBuildCRW##*/}
-			curl -S -L --create-dirs -o ''' + CHE_DB_path + '''/src/assets/branding/branding.css \
+			curl -sSL --create-dirs -o ''' + CHE_DB_path + '''/src/assets/branding/branding.css \
 				https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/${rawBranch}/assembly/codeready-workspaces-assembly-dashboard-war/src/main/webapp/assets/branding/branding-crw.css
-			cat ''' + CHE_DB_path + '''/src/assets/branding/branding.css
+			# cat ''' + CHE_DB_path + '''/src/assets/branding/branding.css
 		'''
-		sh "cp ${CRW_path}/assembly/assembly-codeready-workspaces-assembly-dashboard/src/main/webapp/assets/branding dashboard/assets/branding"
 
-		// process product.json template
-		sh "cp dashboard/assets/branding/product.json.template dashboard/assets/branding/product.json"
-		sh "sed -i -e \"s#@@crw.version@@#${CRW_SHAs}#g\" dashboard/assets/branding/product.json"
-		
-		DOCS_VERSION = sh(returnStdout:true,script:"mvn ${MVN_FLAGS} -f ${CRW_path}/pom.xml help:evaluate -Dexpression=crw.docs.version | grep "^[^\[]" ")
-		CRW_DOCS_BASEURL="https://access.redhat.com/documentation/en-us/red_hat_codeready_workspaces/" + DOCS_VERSION
-		sh "sed -i -e \"s#@@crw.docs.baseurl@@#${CRW_DOCS_BASEURL}#g\" dashboard/assets/branding/product.json"
+		DOCS_VERSION = sh(returnStdout:true,script:"grep crw.docs.version ${CRW_path}/pom.xml | sed -r -e \"s#.*<.+>([0-9.SNAPSHOT-]+)</.+>#\\1#\"")
+		def CRW_DOCS_BASEURL = ("https://access.redhat.com/documentation/en-us/red_hat_codeready_workspaces/" + DOCS_VERSION).trim()
+		echo "CRW_DOCS_BASEURL = ${CRW_DOCS_BASEURL}"
 
 		sh '''#!/bin/bash -xe
-			docker build -f apache.Dockerfile -t che-dashboard:tmp.
-			docker create -ti --name dashboard-container crw-dashboard:tmp bash
-			docker cp dashboard-container:/usr/local/apache2/htdocs/dashboard dashboard
+		cd ''' + CHE_DB_path + '''
+		# ls -la src/assets/branding/
+		rsync -aPr ../''' + CRW_path + '''/assembly/codeready-workspaces-assembly-dashboard-war/src/main/webapp/assets/branding/* src/assets/branding/
+		# ls -la src/assets/branding/
+		mv -f src/assets/branding/branding{-crw,}.css
+
+		# process product.json template
+        sed -r \
+          -e "s#@@crw.version@@#'''+CRW_SHAs + '''#g" \
+ 		  -e "s#@@crw.docs.baseurl@@#''' + CRW_DOCS_BASEURL + '''#g" \
+        src/assets/branding/product.json.template > src/assets/branding/product.json
+		rm -f src/assets/branding/product.json.template
+		# cat src/assets/branding/product.json
+	
+		docker build -f apache.Dockerfile -t crw-dashboard:tmp .
+		docker run --rm --entrypoint sh crw-dashboard:tmp -c 'tar -pzcf - /usr/local/apache2/htdocs/dashboard' > asset-dashboard.tar.gz
 		'''
 
 		echo "<===== Build che-dashboard ====="
@@ -197,9 +205,9 @@ timeout(240) {
 		SHA_CHE_WL = sh(returnStdout:true,script:"cd ${CHE_WL_path}/ && git rev-parse --short=4 HEAD").trim()
 		
 		sh '''#!/bin/bash -xe
-			docker build -f apache.Dockerfile -t che-workspace-loader:tmp .
-			docker create -ti --name workspace-loader-container che-workspace-loader:tmp bash
-			docker cp workspace-loader-container:/usr/local/apache2/htdocs/workspace-loader workspace-loader
+			cd ''' + CHE_WL_path + '''
+			docker build -f apache.Dockerfile -t crw-workspace-loader:tmp .
+			docker run --rm --entrypoint sh crw-workspace-loader:tmp -c 'tar -pzcf - /usr/local/apache2/htdocs/workspace-loader' > asset-workspace-loader.tar.gz
 		'''
 
 		echo "<===== Build che-workspace-loader ====="
@@ -239,12 +247,37 @@ timeout(240) {
 
 		sh "mvn clean install ${MVN_FLAGS} -f ${CRW_path}/pom.xml -Dparent.version=\"${VER_CHE}\" -Dche.version=\"${VER_CHE}\" -Dcrw.dashboard.version=\"${CRW_SHAs}\" ${MVN_EXTRA_FLAGS}"
 
-		// Add dashboard and workspace-loader that were built in container earlier
-		sh "gunzip ${CRW_path}/assembly/${CRW_path}-assembly-main/target/*.tar.*"
-		sh "tar rvf ${CRW_path}/assembly/${CRW_path}-assembly-main/target/*.tar --transform 's,^,codeready-workspaces-assembly-main/tomcat/webapps,'"
-		sh "gzip ${CRW_path}/assembly/${CRW_path}-assembly-main/target/*.tar"
+		// Add dashboard and workspace-loader to server assembly
+		sh '''#!/bin/bash -xe
+			# unpack incomplete assembly
+			mkdir -p /tmp/''' + CRW_path + '''-assembly-main/tomcat/webapps/dashboard/ /tmp/''' + CRW_path + '''-assembly-main/tomcat/webapps/workspace-loader/
+			tar xvzf ''' + CRW_path + '''/assembly/''' + CRW_path + '''-assembly-main/target/codeready-workspaces-assembly-main.tar.gz -C /tmp/''' + CRW_path + '''-assembly-main/
 
-		archiveArtifacts fingerprint: true, artifacts:"**/*.log, **/assembly/*xml, **/assembly/**/*xml, ${CRW_path}/assembly/${CRW_path}-assembly-main/target/*.tar.*"
+			# rename incomplete assembly
+			mv ''' + CRW_path + '''/assembly/''' + CRW_path + '''-assembly-main/target/codeready-workspaces-assembly-main{,-no-dashboard-no-workspace-loader}.tar.gz 
+
+			# unpack + move dashboard artifacts
+			tar xvzf ''' + CHE_DB_path + '''/asset-dashboard.tar.gz -C /tmp/''' + CRW_path + '''-assembly-main/tomcat/webapps/dashboard/
+			mv /tmp/''' + CRW_path + '''-assembly-main/tomcat/webapps/dashboard/usr/local/apache2/htdocs/dashboard/* \
+			   /tmp/''' + CRW_path + '''-assembly-main/codeready-workspaces-assembly-main/tomcat/webapps/dashboard/
+
+			# unpack + move workspace-loader artifacts
+			tar xvzf ''' + CHE_WL_path + '''/asset-workspace-loader.tar.gz -C /tmp/''' + CRW_path + '''-assembly-main/tomcat/webapps/workspace-loader/
+			mv /tmp/''' + CRW_path + '''-assembly-main/tomcat/webapps/workspace-loader/usr/local/apache2/htdocs/workspace-loader/* \
+			   /tmp/''' + CRW_path + '''-assembly-main/codeready-workspaces-assembly-main/tomcat/webapps/workspace-loader/
+
+			# clean up temp folder
+			rm -fr /tmp/''' + CRW_path + '''-assembly-main/tomcat/
+
+			# build new complete tarball assemlby with che server, dashboard, and workspace-loader
+			pushd /tmp/''' + CRW_path + '''-assembly-main/ >/dev/null; tar -pzcf codeready-workspaces-assembly-main.tar.gz ./*; popd >/dev/null
+			mv /tmp/''' + CRW_path + '''-assembly-main/codeready-workspaces-assembly-main.tar.gz ''' + CRW_path + '''/assembly/''' + CRW_path + '''-assembly-main/target/
+
+			# clean up incomplete assembly
+			rm -f ''' + CRW_path + '''/assembly/''' + CRW_path + '''-assembly-main/target/codeready-workspaces-assembly-main-no-dashboard-no-workspace-loader.tar.gz
+		'''
+
+		archiveArtifacts fingerprint: true, artifacts:"**/*.log, **/assembly/*xml, **/assembly/**/*xml, ${CRW_path}/assembly/${CRW_path}-assembly-main/target/*.tar.*, **/asset-*.gz"
 
 		echo "<===== Build CRW server assembly ====="
 

@@ -26,13 +26,6 @@
     <properties>
         <jbossNexus>repository.jboss.org</jbossNexus>
     </properties>
-    <dependencies>
-        <dependency>
-            <groupId>com.redhat</groupId>
-            <artifactId>codeready-workspaces-assembly-dashboard-war</artifactId>
-            <type>war</type>
-        </dependency>
-    </dependencies>
     <build>
         <plugins>
             <plugin>
