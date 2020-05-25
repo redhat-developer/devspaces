@@ -150,7 +150,8 @@ sed -i ${WORKSPACE}/target/Dockerfile --regexp-extended \
   -e 's|ARG BOOTSTRAP=.*|ARG BOOTSTRAP=false|' \
   `# Enable offline build - copy in built binaries` \
   -e 's|# (COPY root-local.tgz)|\\1|' \
-  -e 's|^ *COPY .*content_set.*|# &|' \
+  `# only enable rhel8 here -- don't want centos or epel ` \
+  -e 's|^ *(COPY .*)/content_set.*repo (.+)|\\1/content_sets_rhel8.repo \\2|' \
   `# Comment out PATCHED_* args from build and disable update_devfile_patched_image_tags.sh` \
   -e 's|^ *ARG PATCHED.*|# &|' \
   -e '/^ *RUN TAG/,+3 s|.*|# &| ' \
