@@ -152,26 +152,17 @@ timeout(240) {
 		echo "CRW_SHAs (for dashboard) = ${CRW_SHAs}"
 
 		// insert a longer version string which includes both CRW and Che, plus build and SHA info
-		// not sure if this does anything. See also assembly/codeready-workspaces-assembly-dashboard-war/pom.xml line 109
+		sh "sed -r -i -e \"s#(.+productVersion = ).+#\\1'${CRW_SHAs}';#g\" ${CHE_DB_path}/src/components/api/che-service.factory.ts"
 		sh "egrep 'productVersion = ' ${CHE_DB_path}/src/components/api/che-service.factory.ts"
-		sh "sed -i -e \"s#\\(.\\+productVersion = \\).\\+#\\1'${CRW_SHAs}';#g\" ${CHE_DB_path}/src/components/api/che-service.factory.ts;"
-		sh "egrep 'productVersion = ' ${CHE_DB_path}/src/components/api/che-service.factory.ts"
-		// apply CRW CSS
-		sh '''#!/bin/bash -xe
-			rawBranch=${branchToBuildCRW##*/}
-			curl -sSL --create-dirs -o ''' + CHE_DB_path + '''/src/assets/branding/branding.css \
-				https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/${rawBranch}/assembly/codeready-workspaces-assembly-dashboard-war/src/main/webapp/assets/branding/branding-crw.css
-			# cat ''' + CHE_DB_path + '''/src/assets/branding/branding.css
-		'''
 
+		// apply CRW CSS + fix doc links
 		DOCS_VERSION = sh(returnStdout:true,script:"grep crw.docs.version ${CRW_path}/pom.xml | sed -r -e \"s#.*<.+>([0-9.SNAPSHOT-]+)</.+>#\\1#\"")
 		def CRW_DOCS_BASEURL = ("https://access.redhat.com/documentation/en-us/red_hat_codeready_workspaces/" + DOCS_VERSION).trim()
 		echo "CRW_DOCS_BASEURL = ${CRW_DOCS_BASEURL}"
-
 		sh '''#!/bin/bash -xe
 		cd ''' + CHE_DB_path + '''
 		# ls -la src/assets/branding/
-		rsync -aPr ../''' + CRW_path + '''/assembly/codeready-workspaces-assembly-dashboard-war/src/main/webapp/assets/branding/* src/assets/branding/
+		rsync -aPr ../''' + CRW_path + '''/assembly/branding/* src/assets/branding/
 		# ls -la src/assets/branding/
 		mv -f src/assets/branding/branding{-crw,}.css
 
