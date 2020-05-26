@@ -127,9 +127,18 @@ timeout(240) {
 		SHA_CRW = sh(returnStdout:true,script:"cd ${CRW_path}/ && git rev-parse --short=4 HEAD").trim()
 		echo "<===== Get CRW version ====="
 
-		// TODO CRW-881 insert branding elements into dashboard when building it the first time
-		// once we're building this separately we won't need to rebuild it here -- instead we can pull Jenkins artifacts to get the tarball we need in the assembly below
-		// or if we don't need to build the server here, we can just put the asset-dashboard.tgz into pkgs.devel directly
+		echo "===== Get Che version =====>"
+		checkout([$class: 'GitSCM', 
+			branches: [[name: "${branchToBuildChe}"]], 
+			doGenerateSubmoduleConfigurations: false, 
+			poll: true,
+			extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: "${CHE_path}"]], 
+			submoduleCfg: [], 
+			userRemoteConfigs: [[url: "https://github.com/eclipse/${CHE_path}.git"]]])
+
+		VER_CHE = sh(returnStdout:true,script:"egrep \"<version>\" ${CHE_path}/pom.xml|head -2|tail -1|sed -e \"s#.*<version>\\(.\\+\\)</version>#\\1#\"").trim()
+		SHA_CHE = sh(returnStdout:true,script:"cd ${CHE_path}/ && git rev-parse --short=4 HEAD").trim()
+		echo "<==== Get Che version ====="
 
 		echo "===== Build che-dashboard =====>"
 		checkout([$class: 'GitSCM', 
@@ -159,6 +168,7 @@ timeout(240) {
 		DOCS_VERSION = sh(returnStdout:true,script:"grep crw.docs.version ${CRW_path}/pom.xml | sed -r -e \"s#.*<.+>([0-9.SNAPSHOT-]+)</.+>#\\1#\"")
 		def CRW_DOCS_BASEURL = ("https://access.redhat.com/documentation/en-us/red_hat_codeready_workspaces/" + DOCS_VERSION).trim()
 		echo "CRW_DOCS_BASEURL = ${CRW_DOCS_BASEURL}"
+
 		sh '''#!/bin/bash -xe
 		cd ''' + CHE_DB_path + '''
 		# ls -la src/assets/branding/
@@ -203,20 +213,7 @@ timeout(240) {
 
 		echo "<===== Build che-workspace-loader ====="
 
-		// TODO collect assets from dashboard like this?
-		//docker run --rm --entrypoint sh che-workspace-loader:next -c 'tar -pzcf - /usr/local/apache2/htdocs/workspace-loader ' > asset-che-workspace-loader.tar.gz
-
 		echo "===== Build che server assembly =====>"
-		checkout([$class: 'GitSCM', 
-			branches: [[name: "${branchToBuildChe}"]], 
-			doGenerateSubmoduleConfigurations: false, 
-			poll: true,
-			extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: "${CHE_path}"]], 
-			submoduleCfg: [], 
-			userRemoteConfigs: [[url: "https://github.com/eclipse/${CHE_path}.git"]]])
-
-		VER_CHE = sh(returnStdout:true,script:"egrep \"<version>\" ${CHE_path}/pom.xml|head -2|tail -1|sed -e \"s#.*<version>\\(.\\+\\)</version>#\\1#\"").trim()
-		SHA_CHE = sh(returnStdout:true,script:"cd ${CHE_path}/ && git rev-parse --short=4 HEAD").trim()
 		sh "mvn clean install ${MVN_FLAGS} -P native -f ${CHE_path}/pom.xml ${MVN_EXTRA_FLAGS}"
 		echo "<==== Build che server assembly ====="
 
