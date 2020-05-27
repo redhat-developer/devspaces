@@ -9,10 +9,10 @@ description: This VS Code extension provides support for creating and editing XM
 icon: https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/master/dependencies/che-plugin-registry/resources/images/default.svg?sanitize=true
 repository: https://github.com/redhat-developer/vscode-xml
 category: Language
-firstPublicationDate: "2020-04-15"
+firstPublicationDate: "2020-05-27"
 spec:
   containers:
-    - image: "registry.redhat.io/codeready-workspaces/stacks-java-rhel8:2.2"
+    - image: "registry-proxy.engineering.redhat.com/rh-osbs/jboss-eap-7-eap-xp1-openjdk8-openshift-rhel7:1.0"
       name: vscode-xml
       memoryLimit: "768Mi"
       args:
