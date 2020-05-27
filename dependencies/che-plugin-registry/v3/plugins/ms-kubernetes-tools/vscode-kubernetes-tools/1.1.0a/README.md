@@ -4,9 +4,9 @@
 
 The Plugin relies on `kubectl` to communicate with a Kubernetes cluster. So, the access to a cluster should be set in a `kubeconfig` in plugin sidecar.
 
-`chectl` provides the [command](https://github.com/che-incubator/chectl#chectl-workspaceinject) that simplifies injecting local `kubeconfig` into a Che Workspace. When your Workspace is running, call the following command:
+`crwctl` provides the [command](https://github.com/redhat-developer/codeready-workspaces-chectl/#crwctl-workspaceinject) that simplifies injecting local `kubeconfig` into a Che Workspace. When your Workspace is running, call the following command:
 ```shell
-chectl workspace:inject -k
+crwctl workspace:inject -k
 ```
 Then refresh the `Clusters` view.
 
