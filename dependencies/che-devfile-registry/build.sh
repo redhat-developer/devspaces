@@ -78,22 +78,12 @@ function parse_arguments() {
 
 parse_arguments "$@"
 
-# build with podman if present
-PODMAN=$(which podman 2>/dev/null || true)
-if [[ ${PODMAN} ]]; then
-  DOCKER="${PODMAN} --cgroup-manager=cgroupfs --runtime=/usr/bin/crun"
-  DOCKERRUN="${PODMAN}"
-else
-  DOCKER="docker"
-  DOCKERRUN="docker"
-fi
-
 IMAGE="${REGISTRY}/${ORGANIZATION}/che-devfile-registry:${TAG}"
 VERSION=$(head -n 1 VERSION)
 case $VERSION in
   *SNAPSHOT)
     echo "Snapshot version (${VERSION}) specified in $(find . -name VERSION): building nightly plugin registry."
-    ${DOCKER} build \
+    docker build \
         -t "${IMAGE}" \
         -f ${DOCKERFILE} \
         --build-arg "USE_DIGESTS=${USE_DIGESTS}" \
@@ -101,7 +91,7 @@ case $VERSION in
     ;;
   *)
     echo "Release version specified in $(find . -name VERSION): Building plugin registry for release ${VERSION}."
-    ${DOCKER} build \
+    docker build \
         -t "${IMAGE}" \
         -f "${DOCKERFILE}" \
         --build-arg "PATCHED_IMAGES_TAG=${VERSION}" \
