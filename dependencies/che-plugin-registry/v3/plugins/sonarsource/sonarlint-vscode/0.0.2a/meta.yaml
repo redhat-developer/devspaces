@@ -1,21 +1,18 @@
 apiVersion: v2
 publisher: sonarsource
 name: sonarlint-vscode
-version: 0.0.2
+version: 0.0.2a
 type: VS Code extension
 displayName: vscode-sonarlint
 title: Sonarlint code intelligence
 description: VS Code extension that provides sonarlint features
 icon: https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/master/dependencies/che-plugin-registry/resources/images/default.svg?sanitize=true
-firstPublicationDate: "2020-01-13"
-deprecate:
-  automigrate: true
-  migrateTo: sonarsource/sonarlint-vscode/latest
+firstPublicationDate: "2020-05-27"
 category: Linter
 repository: https://www.sonarlint.org/
 spec:
   containers:
-    - image: "registry.redhat.io/codeready-workspaces/stacks-java-rhel8:2.1"
+    - image: "registry-proxy.engineering.redhat.com/rh-osbs/jboss-eap-7-eap-xp1-openjdk8-openshift-rhel7:1.0"
       name: vscode-sonarlint
       memoryLimit: "512Mi"
   extensions:
