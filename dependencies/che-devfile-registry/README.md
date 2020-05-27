@@ -27,6 +27,7 @@ Options:
     --rhel
         Build using the rhel.Dockerfile (UBI images) instead of default
 ```
+By default, the built registry will be tagged `quay.io/eclipse/che-devfile-registry:nightly`, and will be built with offline mode disabled.
 
 Note that the Dockerfiles in this repository utilize multi-stage builds, so Docker version 17.05 or higher is required.
 
@@ -50,7 +51,7 @@ You can deploy the registry to Openshift as follows:
              -p PULL_POLICY="Always"
 ```
 
-## Run the registry using podman
+## Run the registry
 
 ```bash
 docker run -it --rm -p 8080:8080 quay.io/eclipse/che-devfile-registry:nightly
