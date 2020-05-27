@@ -40,7 +40,6 @@ ENV USE_DIGESTS=${USE_DIGESTS}
 # NOTE: uncomment for local build. Must also set full registry path in FROM to registry.redhat.io or registry.access.redhat.com
 # enable rhel 7 or 8 content sets (from Brew) to resolve jq as rpm
 COPY ./build/dockerfiles/content_set*.repo /etc/yum.repos.d/
-
 COPY ./build/dockerfiles/rhel.install.sh /tmp
 RUN /tmp/rhel.install.sh && rm -f /tmp/rhel.install.sh
 
@@ -57,7 +56,6 @@ RUN TAG=${PATCHED_IMAGES_TAG} \
     ORGANIZATION=${PATCHED_IMAGES_ORG} \
     REGISTRY=${PATCHED_IMAGES_REG} \
     ./update_devfile_patched_image_tags.sh
-
 RUN ./check_mandatory_fields.sh devfiles
 RUN if [[ ${USE_DIGESTS} == "true" ]]; then ./write_image_digests.sh devfiles; fi
 RUN ./index.sh > /build/devfiles/index.json
