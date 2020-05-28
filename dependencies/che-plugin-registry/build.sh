@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Copyright (c) 2019-2020 Red Hat, Inc.
+# Copyright (c) 2018-2020 Red Hat, Inc.
 # This program and the accompanying materials are made
 # available under the terms of the Eclipse Public License 2.0
 # which is available at https://www.eclipse.org/legal/epl-2.0/
@@ -85,22 +85,12 @@ function parse_arguments() {
 
 parse_arguments "$@"
 
-# build with podman if present
-PODMAN=$(which podman 2>/dev/null || true)
-if [[ ${PODMAN} ]]; then
-  DOCKER="${PODMAN} --cgroup-manager=cgroupfs --runtime=/usr/bin/crun"
-  DOCKERRUN="${PODMAN}"
-else
-  DOCKER="docker"
-  DOCKERRUN="docker"
-fi
-
 IMAGE="${REGISTRY}/${ORGANIZATION}/che-plugin-registry:${TAG}"
 VERSION=$(head -n 1 VERSION)
 case $VERSION in
   *SNAPSHOT)
     echo "Snapshot version (${VERSION}) specified in $(find . -name VERSION): building nightly plugin registry."
-    ${DOCKER} build \
+    docker build \
         -t "${IMAGE}" \
         -f ${DOCKERFILE} \
         --build-arg LATEST_ONLY="${LATEST_ONLY}" \
@@ -109,7 +99,7 @@ case $VERSION in
     ;;
   *)
     echo "Release version specified in $(find . -name VERSION): Building plugin registry for release ${VERSION}."
-    ${DOCKER} build \
+    docker build \
         -t "${IMAGE}" \
         -f "${DOCKERFILE}" \
         --build-arg "PATCHED_IMAGES_TAG=${VERSION}" \

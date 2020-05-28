@@ -17,9 +17,8 @@
       "pattern": "^[-._a-zA-Z0-9]+$"
     },
     "version": {
-      "type": ["number", "string"],
-      "pattern": "^[-._a-zA-Z0-9]+$",
-      "minimum": 0
+      "type": ["string"],
+      "pattern": "^[-._a-zA-Z0-9]+$"
     },
     "type": {
       "type": "string",
@@ -34,7 +33,7 @@
     },
     "icon": {
       "type": "string",
-      "pattern": "[-._a-zA-Z0-9]+.svg[^.]*$"
+      "pattern": "[-._a-zA-Z0-9]+?(?:\\?.*)?$"
     },
     "description": {
       "type": "string"
@@ -118,7 +117,19 @@
               },
               "memoryLimit": {
                 "type": "string",
-                "pattern": "[1-9][0-9]*([Gg]i|(Mm)i|(Kk)i|b)?"
+                "pattern": "^[1-9][0-9]*([Gg]i?|[Mm]i?|[Kk]i?|b)?$"
+              },
+              "memoryRequest": {
+                 "type": "string",
+                 "pattern": "^[1-9][0-9]*([Gg]i?|[Mm]i?|[Kk]i?|b)?$"
+              },
+              "cpuLimit": {
+                 "type": "string",
+                 "pattern": "^[1-9]+[0-9]*(\\.[0-9]+)?$|^[1-9][0-9]*m$"
+              },
+              "cpuRequest": {
+                 "type": "string",
+                 "pattern": "^[1-9]+[0-9]*(\\.[0-9]+)?$|^[1-9][0-9]*m$"
               },
               "env": {
                 "type": "array",
@@ -208,9 +219,38 @@
                         "type": "string",
                         "pattern": "^[-._a-zA-Z0-9]+$"
                       }
-                    },
-                    "mountSources": {
-                      "type": "boolean"
+                    }
+                  }
+                }
+              },
+              "mountSources": {
+                "type": "boolean"
+              }
+            },
+            "lifecycle": {
+              "type": "object",
+              "postStart": {
+                "type": "object",
+                "exec": {
+                  "type": "object",
+                  "command": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "pattern": "^.+$"
+                    }
+                  }
+                }
+              },
+              "preStop": {
+                "type": "object",
+                "exec": {
+                  "type": "object",
+                  "command": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "pattern": "^.+$"
                     }
                   }
                 }

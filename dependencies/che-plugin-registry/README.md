@@ -51,7 +51,7 @@ You can deploy the registry to Openshift as follows:
              -p PULL_POLICY="Always"
 ```
 
-## Run the registry using podman
+## Run the registry 
 
 ```bash
 docker run -it  --rm  -p 8080:8080 quay.io/eclipse/che-plugin-registry:nightly
@@ -70,7 +70,7 @@ type:                  # plugin type; e.g. "Theia plugin", "Che Editor"
 displayName:           # name shown in user dashboard
 title:                 # plugin title
 description:           # short description of plugin's purpose
-icon:                  # link to SVG icon
+icon:                  # link to SVG or PNG icon
 repository:            # URL for plugin (e.g. Github repo)
 category:              # see [1]
 firstPublicationDate:  # optional; see [2]
@@ -93,7 +93,10 @@ spec:                  # spec (used to be che-plugin.yaml)
   containers:          # optional; sidecar containers for plugin
     - image:
       name:              # name used for sidecar container
-      memorylimit:       # Kubernetes/OpenShift-spec memory limit string (e.g. "512Mi")
+      memoryLimit:       # Kubernetes/OpenShift-spec memory limit string (e.g. "512Mi"). Refer to https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/#meaning-of-memory for details.
+      memoryRequest:     # Kubernetes/OpenShift-spec memory request string (e.g. "256Mi"). Refer to https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/#meaning-of-memory for details.
+      cpuLimit:          # Kubernetes/OpenShift-spec CPU limit string (e.g. "500m"). Refer to https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/#meaning-of-cpu for details.
+      cpuRequest:        # Kubernetes/OpenShift-spec CPU request string (e.g. "125m"). Refer to https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/#meaning-of-cpu for details.
       env:               # list of env vars to set in sidecar
         - name:
           value:
@@ -116,6 +119,21 @@ spec:                  # spec (used to be che-plugin.yaml)
             - -rf
             - /cache/.m2/repository
       mountSources:      # boolean
+      lifecycle:         # container lifecycle hooks -- see https://kubernetes.io/docs/concepts/containers/container-lifecycle-hooks/
+        postStart:       # the postStart event immediately after a Container is started -- see https://kubernetes.io/docs/tasks/configure-pod-container/attach-handler-lifecycle-event/
+          exec:          # Executes a specific command, resources consumed by the command are counted against the Container
+            command: ["/bin/sh", "-c", "/bin/post-start.sh"]  # Command is the command line to execute inside the container, the working directory for the command is root ('/') 
+                                                              # in the container's filesystem. The command is simply exec'd, it is not run inside a shell, so traditional shell
+                                                              # instructions ('|', etc) won't work. To use a shell, you need to explicitly call out to that shell. Exit status 
+                                                              # of 0 is treated as live/healthy and non-zero is unhealthy
+                                                              # -- see https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.18/#execaction-v1-core
+        preStop:         # the preStop event immediately before the Container is terminated -- see https://kubernetes.io/docs/tasks/configure-pod-container/attach-handler-lifecycle-event/
+          exec:          # Executes a specific command, resources consumed by the command are counted against the Container
+            command: ["/bin/sh","-c","/bin/pre-stop.sh"]      # Command is the command line to execute inside the container, the working directory for the command is root ('/') 
+                                                              # in the container's filesystem. The command is simply exec'd, it is not run inside a shell, so traditional shell
+                                                              # instructions ('|', etc) won't work. To use a shell, you need to explicitly call out to that shell. Exit status 
+                                                              # of 0 is treated as live/healthy and non-zero is unhealthy
+                                                              # -- see https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.18/#execaction-v1-core
   initContainers:      # optional; init containers for sidecar plugin
     - image:
       name:              # name used for sidecar container

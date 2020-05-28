@@ -46,6 +46,10 @@ COPY ./build/dockerfiles/content_set*.repo /etc/yum.repos.d/
 COPY ./build/dockerfiles/rhel.install.sh /tmp
 RUN /tmp/rhel.install.sh && rm -f /tmp/rhel.install.sh
 
+################# 
+# PHASE TWO: configure registry image
+#################
+
 COPY ./build/scripts/*.sh ./build/scripts/meta.yaml.schema /build/
 COPY ./v3 /build/v3
 WORKDIR /build/
@@ -65,7 +69,7 @@ RUN ./list_referenced_images.sh v3 > /build/v3/external_images.txt
 RUN chmod -R g+rwX /build
 
 ################# 
-# PHASE TWO: configure registry image
+# PHASE THREE: configure registry image
 ################# 
 
 # Build registry, copying meta.yamls and index.json from builder
@@ -96,14 +100,15 @@ STOPSIGNAL SIGWINCH
 WORKDIR /var/www/html
 
 RUN mkdir -m 777 /var/www/html/v3
-COPY .htaccess README.md /var/www/html/
+COPY README.md .htaccess /var/www/html/
 COPY --from=builder /build/v3 /var/www/html/v3
 COPY ./build/dockerfiles/rhel.entrypoint.sh ./build/dockerfiles/entrypoint.sh /usr/local/bin/
 RUN chmod g+rwX /usr/local/bin/entrypoint.sh /usr/local/bin/rhel.entrypoint.sh
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 CMD ["/usr/local/bin/rhel.entrypoint.sh"]
 
-# Offline registry build
+# Offline build: cache .theia and .vsix files in registry itself and update metas
+# multiple temp stages does not work in Brew
 FROM builder AS offline-builder
 RUN ./cache_artifacts.sh v3 && \
     chmod -R g+rwX /build
