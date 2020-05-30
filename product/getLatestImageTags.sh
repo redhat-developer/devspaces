@@ -36,59 +36,52 @@ BASETAG=2.2 # tag to search for in quay
 
 CRW21_CONTAINERS_RHCC="\
 codeready-workspaces/crw-2-rhel8-operator-metadata \
-codeready-workspaces/crw-2-rhel8-operator \
-codeready-workspaces/server-rhel8 \
-\
 codeready-workspaces/devfileregistry-rhel8 \
 codeready-workspaces/pluginregistry-rhel8 \
+codeready-workspaces/server-rhel8 \
+codeready-workspaces/crw-2-rhel8-operator \
 \
-codeready-workspaces/imagepuller-rhel8 \
 codeready-workspaces/jwtproxy-rhel8 \
+codeready-workspaces/imagepuller-rhel8 \
 codeready-workspaces/machineexec-rhel8 \
 codeready-workspaces/pluginbroker-metadata-rhel8 \
 codeready-workspaces/pluginbroker-artifacts-rhel8 \
 \
-codeready-workspaces/theia-dev-rhel8 \
-codeready-workspaces/theia-rhel8 \
-codeready-workspaces/theia-endpoint-rhel8 \
+codeready-workspaces/theia-dev-rhel8      codeready-workspaces/theia-rhel8              codeready-workspaces/theia-endpoint-rhel8 \
 \
-codeready-workspaces/stacks-cpp-rhel8  codeready-workspaces/stacks-dotnet-rhel8 \
-codeready-workspaces/stacks-golang-rhel8 codeready-workspaces/stacks-java-rhel8 \
-codeready-workspaces/stacks-node-rhel8    codeready-workspaces/stacks-php-rhel8 \
-codeready-workspaces/stacks-python-rhel8 \
+codeready-workspaces/plugin-java11-rhel8  codeready-workspaces/plugin-kubernetes-rhel8  codeready-workspaces/plugin-openshift-rhel8 \
 \
-codeready-workspaces/plugin-java11-rhel8 \
-codeready-workspaces/plugin-kubernetes-rhel8 \
-codeready-workspaces/plugin-openshift-rhel8"
+codeready-workspaces/stacks-cpp-rhel8     codeready-workspaces/stacks-golang-rhel8      codeready-workspaces/stacks-node-rhel8 \
+codeready-workspaces/stacks-php-rhel8     codeready-workspaces/stacks-python-rhel8 \
+\
+codeready-workspaces/stacks-dotnet-rhel8 \
+codeready-workspaces/stacks-java-rhel8"
 
 # registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-operator-metadata:2.1-17
 # registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-operator:2.1-17 (NOT codeready-workspaces-operator-rhel8 -- OLD NAME)
 CRW21_CONTAINERS_OSBS="\
 codeready-workspaces/operator-metadata \
-codeready-workspaces/operator \
-codeready-workspaces/server-rhel8 \
-\
 codeready-workspaces/devfileregistry-rhel8 \
 codeready-workspaces/pluginregistry-rhel8 \
+codeready-workspaces/server-rhel8 \
+codeready-workspaces/operator \
 \
-codeready-workspaces/imagepuller-rhel8 \
 codeready-workspaces/jwtproxy-rhel8 \
+codeready-workspaces/imagepuller-rhel8 \
 codeready-workspaces/machineexec-rhel8 \
 codeready-workspaces/pluginbroker-metadata-rhel8 \
 codeready-workspaces/pluginbroker-artifacts-rhel8 \
 \
-codeready-workspaces/theia-dev-rhel8 \
-codeready-workspaces/theia-rhel8 \
-codeready-workspaces/theia-endpoint-rhel8 \
+codeready-workspaces/theia-dev-rhel8      codeready-workspaces/theia-rhel8              codeready-workspaces/theia-endpoint-rhel8 \
 \
-codeready-workspaces/stacks-cpp-rhel8  codeready-workspaces/stacks-dotnet-rhel8 \
-codeready-workspaces/stacks-golang-rhel8 codeready-workspaces/stacks-java-rhel8 \
-codeready-workspaces/stacks-node-rhel8    codeready-workspaces/stacks-php-rhel8 \
-codeready-workspaces/stacks-python-rhel8 \
+codeready-workspaces/plugin-java11-rhel8  codeready-workspaces/plugin-kubernetes-rhel8  codeready-workspaces/plugin-openshift-rhel8 \
 \
-codeready-workspaces/plugin-java11-rhel8 \
-codeready-workspaces/plugin-kubernetes-rhel8 \
-codeready-workspaces/plugin-openshift-rhel8"
+codeready-workspaces/stacks-cpp-rhel8     codeready-workspaces/stacks-golang-rhel8      codeready-workspaces/stacks-node-rhel8 \
+codeready-workspaces/stacks-php-rhel8     codeready-workspaces/stacks-python-rhel8 \
+\
+codeready-workspaces/stacks-dotnet-rhel8 \
+codeready-workspaces/stacks-java-rhel8
+"
 
 # OLD WAY: codeready-workspaces/server-operator-rhel8 \
 CRW20_CONTAINERS_RHCC="\
