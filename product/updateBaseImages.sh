@@ -183,6 +183,12 @@ for d in $(find ${WORKDIR} -maxdepth ${MAXDEPTH} -name ${DOCKERFILE} | sort); do
 					CURR_TAGrev=${URL##*-} # 15.1553789946 or 15
 					CURR_TAGrevbase=${CURR_TAGrev%%.*} # 15
 					CURR_TAGrevsuf=${CURR_TAGrev##*.} # 1553789946 or 15
+					# if any of the rev varibles contain a colon, then set them to 0 instead to avoid string to number mismatch
+					if [[ "${CURR_TAGrev}" == *":"* ]] || [[ "${CURR_TAGrevbase}" == *":"* ]] || [[ "${CURR_TAGrevsuf}" == *":"* ]]; then
+						CURR_TAGrev=0
+						CURR_TAGrevbase=0
+						CURR_TAGrevsuf=0
+					fi
 					if [[ $VERBOSE -eq 1 ]]; then echo "[DEBUG] 
 #CURR_TAGver=$CURR_TAGver; CURR_TAGrev=$CURR_TAGrev; CURR_TAGrevbase=$CURR_TAGrevbase; CURR_TAGrevsuf=$CURR_TAGrevsuf
 #LATE_TAGver=$LATE_TAGver; LATE_TAGrev=$LATE_TAGrev; LATE_TAGrevbase=$LATE_TAGrevbase; LATE_TAGrevsuf=$LATE_TAGrevsuf"; fi
