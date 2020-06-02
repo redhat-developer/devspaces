@@ -1,7 +1,7 @@
 apiVersion: v2
 publisher: redhat
 name: java11
-version: 0.57.0
+version: 0.62.0
 type: VS Code extension
 displayName: Maven, Gradle, and Java 11 Language Support
 title: Java 11, Maven, and Gradle Tools by Red Hat
@@ -9,20 +9,17 @@ description: Support for Maven, Gradle. Java Linting, Intellisense, formatting, 
 icon: https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/master/dependencies/che-plugin-registry/resources/images/default.svg?sanitize=true
 repository: https://github.com/redhat-developer/vscode-java
 category: Language
-firstPublicationDate: "2020-02-20"
-deprecate:
-    automigrate: true
-    migrateTo: redhat/java11/latest
-  spec:
+firstPublicationDate: "2020-06-02"
+spec:
   containers:
     - image: "registry.redhat.io/codeready-workspaces/plugin-java11-rhel8:2.2"
-      name: vscode-java
-      memoryLimit: "1500Mi"
-      args:
-        - sh
-        - -c
-        - ${PLUGIN_REMOTE_ENDPOINT_EXECUTABLE}
-      volumes:
+    name: vscode-java
+    memoryLimit: "1500Mi"
+    args:
+      - sh
+      - -c
+      - ${PLUGIN_REMOTE_ENDPOINT_EXECUTABLE}
+    volumes:
       - mountPath: "/home/jboss/.m2"
         name: m2
       - mountPath: "/home/jboss/.gradle"
@@ -31,5 +28,5 @@ deprecate:
         - name: GRADLE_HOME
           value: /opt/gradle/
   extensions:
-    - https://download.jboss.org/jbosstools/vscode/3rdparty/vscode-java-debug/vscode-java-debug-0.24.0.vsix
-    - https://download.jboss.org/jbosstools/static/jdt.ls/stable/java-0.57.0-2029.vsix
+  - https://download.jboss.org/jbosstools/vscode/3rdparty/vscode-java-debug/vscode-java-debug-0.24.0.vsix
+  - https://download.jboss.org/jbosstools/static/jdt.ls/stable/java-0.62.0-2157.vsix
