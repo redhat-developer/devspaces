@@ -22,9 +22,11 @@ RUN mkdir -p /home/jboss/codeready
 # then copy /home/${USER}/projects/codeready-workspaces/assembly/codeready-workspaces-assembly-main/target/codeready-workspaces-assembly-main.tar.gz into this folder
 COPY assembly/codeready-workspaces-assembly-main/target/codeready-workspaces-assembly-main.tar.gz /tmp/codeready-workspaces-assembly-main.tar.gz
 RUN tar xzf /tmp/codeready-workspaces-assembly-main.tar.gz --transform="s#.*codeready-workspaces-assembly-main/*##" -C /home/jboss/codeready && \
-    echo -n "Server startup script in: " && find /home/jboss/codeready -name catalina.sh && \
-    rm -f /tmp/codeready-workspaces-assembly-main.tar.gz && \
-    cp /etc/pki/java/cacerts /home/jboss/cacerts && chmod 644 /home/jboss/cacerts && \
+    rm -f /tmp/codeready-workspaces-assembly-main.tar.gz
+# this should fail if the startup script is not found in correct path /home/jboss/codeready/tomcat/bin/catalina.sh
+RUN echo -n "Server startup script in: " && find /home/jboss/codeready -name catalina.sh | grep -z /home/jboss/codeready/tomcat/bin/catalina.sh
+
+RUN cp /etc/pki/java/cacerts /home/jboss/cacerts && chmod 644 /home/jboss/cacerts && \
     mkdir -p /logs /data && \
     chgrp -R 0     /home/jboss /data /logs && \
     chmod -R g+rwX /home/jboss /data /logs && \
