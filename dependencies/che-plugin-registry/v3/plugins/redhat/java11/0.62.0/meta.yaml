@@ -13,13 +13,13 @@ firstPublicationDate: "2020-06-02"
 spec:
   containers:
     - image: "registry.redhat.io/codeready-workspaces/plugin-java11-rhel8:2.2"
-    name: vscode-java
-    memoryLimit: "1500Mi"
-    args:
-      - sh
-      - -c
-      - ${PLUGIN_REMOTE_ENDPOINT_EXECUTABLE}
-    volumes:
+      name: vscode-java
+      memoryLimit: "1500Mi"
+      args:
+        - sh
+        - -c
+        - ${PLUGIN_REMOTE_ENDPOINT_EXECUTABLE}
+      volumes:
       - mountPath: "/home/jboss/.m2"
         name: m2
       - mountPath: "/home/jboss/.gradle"
@@ -28,5 +28,5 @@ spec:
         - name: GRADLE_HOME
           value: /opt/gradle/
   extensions:
-  - https://download.jboss.org/jbosstools/vscode/3rdparty/vscode-java-debug/vscode-java-debug-0.24.0.vsix
-  - https://download.jboss.org/jbosstools/static/jdt.ls/stable/java-0.62.0-2157.vsix
+    - https://download.jboss.org/jbosstools/vscode/3rdparty/vscode-java-debug/vscode-java-debug-0.24.0.vsix
+    - https://download.jboss.org/jbosstools/static/jdt.ls/stable/java-0.62.0-2157.vsix
