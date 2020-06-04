@@ -22,12 +22,8 @@ components:
   -
     type: dockerimage
     alias: maven
-    # NOTE: Need EAP 7.3 RHEL 7 / JDK 8 image for Fuse support (not RHEL 8 / JDK 11)
-    # NOTE: registry.redhat.io/jboss-eap-7/eap73-openjdk8-openshift-rhel7 == 7.3.0, but we can use the newer 7.3.1 / XP 1.0 image (CRW-876, CRW-871)
-
-    # TODO: For Z and Power, likely need to switch at build time to an openj9-8 image, if it exists (CRW-758)
-    # TODO: switch to registry.redhat.io/jboss-eap-7/eap-xp1-openjdk8-openshift-rhel7:1.0 when it's live (June 1?)
-    image: registry-proxy.engineering.redhat.com/rh-osbs/jboss-eap-7-eap-xp1-openjdk8-openshift-rhel7:latest
+    # might be able to use JDK 11 here but 8 is multi-arch too (x86_64, s390x, ppc64le)
+    image: registry.redhat.io/ubi8/openjdk-8:1.3
     env:
       - name: JAVA_OPTS
         value: "-XX:MaxRAMPercentage=50.0 -XX:+UseParallelGC -XX:MinHeapFreeRatio=10
@@ -51,7 +47,7 @@ commands:
       -
         type: exec
         component: maven
-        command: "MAVEN_OPTS='-Xmx200m' && scl enable rh-maven35 'mvn clean package'"
+        command: "MAVEN_OPTS='-Xmx200m' && mvn clean package"
         workdir: "${CHE_PROJECTS_ROOT}/java-jboss-fuse"
   -
     name: run app
@@ -59,7 +55,7 @@ commands:
       -
         type: exec
         component: maven
-        command: "scl enable rh-maven35 'mvn spring-boot:run'"
+        command: "mvn spring-boot:run"
         workdir: "${CHE_PROJECTS_ROOT}/java-jboss-fuse"
   -
     name: deploy to OpenShift
@@ -67,7 +63,7 @@ commands:
       -
         type: exec
         component: maven
-        command: "scl enable rh-maven35 'mvn fabric8:deploy -Popenshift -DskipTests'"
+        command: "mvn fabric8:deploy -Popenshift -DskipTests"
         workdir: "${CHE_PROJECTS_ROOT}/java-jboss-fuse"
   -
     name: debug
@@ -75,7 +71,7 @@ commands:
       -
         type: exec
         component: maven
-        command: "scl enable rh-maven35 'mvn spring-boot:run -Drun.jvmArguments=\"-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005\"'"
+        command: "mvn spring-boot:run -Drun.jvmArguments=\"-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005\""
         workdir: "${CHE_PROJECTS_ROOT}/java-jboss-fuse"
   -
     name: Debug remote java application
