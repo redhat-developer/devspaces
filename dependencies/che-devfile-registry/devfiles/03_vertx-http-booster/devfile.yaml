@@ -13,6 +13,15 @@ components:
   - id: redhat/dependency-analytics/latest
     # NOTE: instead of the old stack-analysis script, should be able to use the latest dependency-analysis plugin instead
     type: chePlugin
+  -
+    type: dockerimage
+    mountSources: true
+    memoryLimit: 512Mi
+    volumes:
+      - name: m2
+        containerPath: /home/jboss/.m2
+    image: 'registry.redhat.io/codeready-workspaces/plugin-java11-rhel8:2.2'
+    alias: deployment
   - mountSources: true
     endpoints:
       - name: 8080-tcp
@@ -86,4 +95,4 @@ commands:
         command: >-
           MAVEN_OPTS="-Xmx200m" &&  mvn fabric8:deploy -Popenshift -DskipTests
           -Dvertx.disableDnsResolver=true
-        component: maven
+        component: deployment
