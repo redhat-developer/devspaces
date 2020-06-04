@@ -7,7 +7,7 @@ projects:
     name: java-jboss-fuse
     source:
       type: git
-      location: "https://github.com/jboss-fuse/fuse-rest-http-booster/"
+      location: "https://github.com/crw-samples/fuse-rest-http-booster/"
 components:
   -
     type: chePlugin
@@ -21,6 +21,15 @@ components:
     id: redhat/dependency-analytics/latest
   -
     type: dockerimage
+    mountSources: true
+    memoryLimit: 512Mi
+    volumes:
+      - name: m2
+        containerPath: /home/jboss/.m2
+    image: 'registry.redhat.io/codeready-workspaces/plugin-java11-rhel8:2.2'
+    alias: deployment
+  -
+    type: dockerimage
     alias: maven
     # NOTE: Need EAP 7.3 RHEL 7 / JDK 8 image for Fuse support (not RHEL 8 / JDK 11)
     # NOTE: registry.redhat.io/jboss-eap-7/eap73-openjdk8-openshift-rhel7 == 7.3.0, but we can use the newer 7.3.1 / XP 1.0 image (CRW-876, CRW-871)
@@ -29,17 +38,15 @@ components:
     # TODO: switch to registry.redhat.io/jboss-eap-7/eap-xp1-openjdk8-openshift-rhel7:1.0 when it's live (June 1?)
     image: registry-proxy.engineering.redhat.com/rh-osbs/jboss-eap-7-eap-xp1-openjdk8-openshift-rhel7:latest
     env:
-      - name: JAVA_OPTS
+      - name: MAVEN_OPTS
         value: "-XX:MaxRAMPercentage=50.0 -XX:+UseParallelGC -XX:MinHeapFreeRatio=10
           -XX:MaxHeapFreeRatio=20 -XX:GCTimeRatio=4 -XX:AdaptiveSizePolicyWeight=90
           -Dsun.zip.disableMemoryMapping=true -Xms20m -Djava.security.egd=file:/dev/./urandom
           -Duser.home=/home/jboss"
-      - name: MAVEN_OPTS
-        value: $(JAVA_OPTS)
     memoryLimit: 768Mi
     endpoints:
-      - name: '8080'
-        port: 8080
+      - name: '8000'
+        port: 8000
     mountSources: true
     volumes:
       - name: m2
@@ -66,8 +73,8 @@ commands:
     actions:
       -
         type: exec
-        component: maven
-        command: "scl enable rh-maven35 'mvn fabric8:deploy -Popenshift -DskipTests'"
+        component: deployment
+        command: "mvn fabric8:deploy -Popenshift -DskipTests"
         workdir: "${CHE_PROJECTS_ROOT}/java-jboss-fuse"
   -
     name: debug
