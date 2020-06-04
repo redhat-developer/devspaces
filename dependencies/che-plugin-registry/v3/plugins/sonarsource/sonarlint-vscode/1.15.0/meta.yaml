@@ -12,7 +12,7 @@ category: Linter
 repository: https://www.sonarlint.org/
 spec:
   containers:
-    - image: "registry-proxy.engineering.redhat.com/rh-osbs/jboss-eap-7-eap-xp1-openjdk8-openshift-rhel7:1.0"
+    - image: "registry.redhat.io/ubi8/openjdk-11:1.3"
       name: vscode-sonarlint
       memoryLimit: "512Mi"
   extensions:
