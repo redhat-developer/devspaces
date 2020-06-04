@@ -19,9 +19,12 @@ components:
   -
     type: dockerimage
     alias: maven
-    # TODO: For Z and Power, likely need to switch at build time to an openj9-11 image, if it exists (CRW-758)
-    # TODO: switch to registry.redhat.io/jboss-eap-7/eap-xp1-openjdk11-openshift-rhel8:1.0 when it's live (June 1?)
-    image: registry-proxy.engineering.redhat.com/rh-osbs/jboss-eap-7-eap-xp1-openjdk11-openshift-rhel8:latest
+    # NOTE: For Z and Power, likely need to switch at build time to an openj9-11 image, if it exists (CRW-758)
+    # NOTE: can test pre-release image: registry-proxy.engineering.redhat.com/rh-osbs/jboss-eap-7-eap-xp1-openjdk11-openshift-rhel8:latest
+    # NOTE: there's also a JDK8 version at registry.redhat.io/jboss-eap-7/eap73-openjdk8-openshift-rhel7:7.3.0 ...
+    #       BUT the JDK8/RHEL7 image requires using "scl enable rh-maven35 'mvn -version'" to run maven, so devfile will need adjustment.
+    # TODO: switch to registry.redhat.io/jboss-eap-7/eap-xp1-openjdk11-openshift-rhel8:1.0 when it's live
+    image: registry.redhat.io/jboss-eap-7/eap73-openjdk11-openshift-rhel8:7.3.0
     env:
       - name: MAVEN_OPTS
         value: "-Xmx200m -XX:MaxRAMPercentage=50.0 -XX:+UseParallelGC -XX:MinHeapFreeRatio=10 -XX:MaxHeapFreeRatio=20 -XX:GCTimeRatio=4 -XX:AdaptiveSizePolicyWeight=90 -Dsun.zip.disableMemoryMapping=true -Xms20m -Djava.security.egd=file:/dev/./urandom -Duser.home=/home/jboss"
