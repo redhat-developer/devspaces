@@ -1,7 +1,7 @@
-quay.io/crw/devfileregistry-rhel8:2.2-103
-     NVR: codeready-workspaces-devfileregistry-rhel8-container-2.2-103
-   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1214200
-  Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-devfileregistry/commit?id=40735f32e0c154b6d3615143f5523834d2f1b416
+quay.io/crw/devfileregistry-rhel8:2.2-104
+     NVR: codeready-workspaces-devfileregistry-rhel8-container-2.2-104
+   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1215615
+  Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-devfileregistry/commit?id=01a7621f81728b633c111297b27c32fb087f2d98
 
 quay.io/crw/imagepuller-rhel8:2.2-4
      NVR: codeready-workspaces-imagepuller-rhel8-container-2.2-4
@@ -18,10 +18,10 @@ quay.io/crw/machineexec-rhel8:2.2-5
    Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1213365
   Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-machineexec/commit?id=d903b2807d9fc14eab11b698b2a04ec413f64a70
 
-quay.io/crw/operator-metadata:2.2-15
-     NVR: codeready-workspaces-rhel8-operator-metadata-container-2.2-15
-   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1214137
-  Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-operator-metadata/commit?id=88b45694f750b4f348197cc810f3233de75471a7
+quay.io/crw/operator-metadata:2.2-16
+     NVR: codeready-workspaces-rhel8-operator-metadata-container-2.2-16
+   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1214237
+  Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-operator-metadata/commit?id=991aa5c18cd8aa1a5af08f39b419dd746cf8c66a
 
 quay.io/crw/operator-rhel8:2.2-10
      NVR: codeready-workspaces-rhel8-operator-container-2.2-10
@@ -53,15 +53,15 @@ quay.io/crw/plugin-openshift-rhel8:2.2-4
    Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1206151
   Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-plugin-openshift/commit?id=e5fd9299127c2b47701b2dce5851ea54726ccf3a
 
-quay.io/crw/pluginregistry-rhel8:2.2-111
-     NVR: codeready-workspaces-pluginregistry-rhel8-container-2.2-111
-   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1214204
-  Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-pluginregistry/commit?id=e7edc326acc66646a042bb396a5bfc88e6f53ce6
+quay.io/crw/pluginregistry-rhel8:2.2-112
+     NVR: codeready-workspaces-pluginregistry-rhel8-container-2.2-112
+   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1215619
+  Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-pluginregistry/commit?id=523ca20c1d4727ca04061a6cbb920470463878d8
 
-quay.io/crw/server-rhel8:2.2-5
-     NVR: codeready-workspaces-server-rhel8-container-2.2-5
-   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1213280
-  Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces/commit?id=4daa0859ae43312fa10754bb271a30b2c1a5c349
+quay.io/crw/server-rhel8:2.2-7
+     NVR: codeready-workspaces-server-rhel8-container-2.2-7
+   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1213314
+  Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces/commit?id=c2c6351ac3a0477e560525b8870188022a6da07d
 
 quay.io/crw/stacks-cpp-rhel8:2.2-5
      NVR: codeready-workspaces-stacks-cpp-rhel8-container-2.2-5
@@ -103,13 +103,13 @@ quay.io/crw/theia-dev-rhel8:2.2-20
    Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1214138
   Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-theia-dev/commit?id=d5cca33cf3adadbac67e9bf222e132e118a392f1
 
-quay.io/crw/theia-endpoint-rhel8:2.2-11
-     NVR: codeready-workspaces-theia-endpoint-rhel8-container-2.2-11
-   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1214140
-  Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-theia-endpoint/commit?id=4f7a8e9e198a9904b6a2d6deb9eb7adf2f289e8b
+quay.io/crw/theia-endpoint-rhel8:2.2-12
+     NVR: codeready-workspaces-theia-endpoint-rhel8-container-2.2-12
+   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1215389
+  Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-theia-endpoint/commit?id=30c4646024aebebde1cd525454df9308a0b3f0c4
 
-quay.io/crw/theia-rhel8:2.2-8
-     NVR: codeready-workspaces-theia-rhel8-container-2.2-8
-   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1209477
-  Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-theia/commit?id=9d7aabb43e157fd50a1b589ae110509ea52b429f
+quay.io/crw/theia-rhel8:2.2-9
+     NVR: codeready-workspaces-theia-rhel8-container-2.2-9
+   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1214141
+  Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-theia/commit?id=1f74738a52ec1c5c70cf18c4a822a86bfc82380a
 
