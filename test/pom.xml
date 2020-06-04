@@ -27,6 +27,9 @@
         <module>codeready-test-e2e</module>
         <module>codeready-test-performance</module>
     </modules>
+    <properties>
+        <che.version>7.14.0-SNAPSHOT</che.version>
+    </properties>
     <dependencyManagement>
         <dependencies>
             <dependency>
