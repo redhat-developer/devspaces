@@ -14,12 +14,10 @@ package com.redhat.codeready.selenium.workspaces;
 import static org.eclipse.che.commons.lang.NameGenerator.generate;
 
 import com.google.inject.Inject;
-import java.util.Collections;
 import org.eclipse.che.selenium.core.client.TestWorkspaceServiceClient;
 import org.eclipse.che.selenium.core.user.DefaultTestUser;
 import org.eclipse.che.selenium.pageobject.dashboard.CreateWorkspaceHelper;
 import org.eclipse.che.selenium.pageobject.dashboard.Dashboard;
-import org.eclipse.che.selenium.pageobject.dashboard.NewWorkspace.Devfile;
 import org.eclipse.che.selenium.pageobject.dashboard.workspaces.WorkspaceDetails;
 import org.eclipse.che.selenium.pageobject.dashboard.workspaces.WorkspaceOverview;
 import org.eclipse.che.selenium.pageobject.dashboard.workspaces.Workspaces;
@@ -54,8 +52,9 @@ public class ProjectStateAfterRenameWorkspaceTest {
   @BeforeClass
   public void setUp() throws Exception {
     dashboard.open();
-    createWorkspaceHelper.createAndStartWorkspaceFromStack(
-        Devfile.JAVA_MAVEN, WORKSPACE_NAME, Collections.emptyList(), null);
+    //    TODO https://issues.redhat.com/browse/CRW-940
+    //    createWorkspaceHelper.createAndStartWorkspaceFromStack(
+    //        Devfile.JAVA_MAVEN, WORKSPACE_NAME, Collections.emptyList(), null);
   }
 
   @AfterClass

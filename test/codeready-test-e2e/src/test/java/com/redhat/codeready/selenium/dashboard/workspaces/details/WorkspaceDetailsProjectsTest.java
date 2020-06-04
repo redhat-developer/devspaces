@@ -20,12 +20,10 @@ import static org.eclipse.che.selenium.pageobject.dashboard.workspaces.Workspace
 import static org.eclipse.che.selenium.pageobject.dashboard.workspaces.WorkspaceProjectsSamples.TabButton.GIT_BUTTON;
 
 import com.google.inject.Inject;
-import java.util.Collections;
 import org.eclipse.che.selenium.core.client.TestWorkspaceServiceClient;
 import org.eclipse.che.selenium.core.user.DefaultTestUser;
 import org.eclipse.che.selenium.pageobject.dashboard.CreateWorkspaceHelper;
 import org.eclipse.che.selenium.pageobject.dashboard.Dashboard;
-import org.eclipse.che.selenium.pageobject.dashboard.NewWorkspace.Devfile;
 import org.eclipse.che.selenium.pageobject.dashboard.ProjectSourcePage;
 import org.eclipse.che.selenium.pageobject.dashboard.workspaces.WorkspaceDetails;
 import org.eclipse.che.selenium.pageobject.dashboard.workspaces.WorkspaceOverview;
@@ -60,8 +58,9 @@ public class WorkspaceDetailsProjectsTest {
   @BeforeClass
   public void setup() {
     dashboard.open();
-    createWorkspaceHelper.createAndEditWorkspaceFromStack(
-        Devfile.JAVA_MAVEN, WORKSPACE_NAME, Collections.emptyList(), null);
+    // TODO https://issues.redhat.com/browse/CRW-940
+    //    createWorkspaceHelper.createAndEditWorkspaceFromStack(
+    //        Devfile.JAVA_MAVEN, WORKSPACE_NAME, Collections.emptyList(), null);
     workspaceOverview.checkNameWorkspace(WORKSPACE_NAME);
   }
 
