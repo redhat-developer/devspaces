@@ -26,7 +26,8 @@ components:
     volumes:
       - name: m2
         containerPath: /home/jboss/.m2
-    image: 'registry.redhat.io/codeready-workspaces/plugin-java11-rhel8:2.2'
+    # use quay.io/crw/plugin-java8-rhel8:2.2 until this image is live
+    image: 'registry.redhat.io/codeready-workspaces/plugin-java8-rhel8:2.2'
     alias: deployment
   -
     type: dockerimage
