@@ -146,7 +146,7 @@ CRW_VERSION=`wget -qO- https://raw.githubusercontent.com/redhat-developer/codere
 # apply patches to transform Che upstream to pkgs.devel version
 sed -i ${WORKSPACE}/target/Dockerfile --regexp-extended \
   `# Replace ubi8 with rhel8 version` \
-  `# DISABLED -e "s#ubi8/go-toolset#rhel8/go-toolset#g"` \
+  -e "s#ubi8/go-toolset#rhel8/go-toolset#g" \
   `# more replacements` \
   -e "s#FROM registry.redhat.io/#FROM #g" \
   -e "s#FROM registry.access.redhat.com/#FROM #g" \
