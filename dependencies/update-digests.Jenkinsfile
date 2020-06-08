@@ -20,7 +20,7 @@ timeout(120) {
                         [$class: 'DisableRemotePoll']
                     ],
                     submoduleCfg: [], 
-                    userRemoteConfigs: [[url: "git@github.com:redhat-developer/codeready-workspaces.git"]]])
+                    userRemoteConfigs: [[url: "https://github.com/redhat-developer/codeready-workspaces.git"]]])
                     
             def NEW_IMAGES = sh (
                 script: 'cd ${WORKSPACE}/crw/product && ./getLatestImageTags.sh ${getLatestImageTagsFlags} --quay | sort | uniq | grep quay | \
@@ -145,6 +145,11 @@ ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts
                 git config user.email "nickboldt+devstudio-release@gmail.com"
                 git config user.name "Red Hat Devstudio Release Bot"
                 git config --global push.default matching
+				# SOLVED :: Fatal: Could not read Username for "https://github.com", No such device or address :: https://github.com/github/hub/issues/1644
+				git remote -v
+				git config --global hub.protocol https
+				git remote set-url origin https://\$GITHUB_TOKEN:x-oauth-basic@github.com/redhat-developer/codeready-workspaces.git
+				git remote -v
 
                 # replace LATES_IMAGES with new sorted/uniq'd values
                 cat dependencies/LATEST_IMAGES.new | sort | uniq | grep quay > dependencies/LATEST_IMAGES
