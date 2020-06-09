@@ -21,28 +21,21 @@ components:
     id: redhat/dependency-analytics/latest
   -
     type: dockerimage
-    mountSources: true
-    memoryLimit: 512Mi
-    volumes:
-      - name: m2
-        containerPath: /home/jboss/.m2
-    image: 'registry.redhat.io/codeready-workspaces/plugin-java11-rhel8:2.2'
-    alias: deployment
-  -
-    type: dockerimage
     alias: maven
-    # might be able to use JDK 11 here but 8 is multi-arch too (x86_64, s390x, ppc64le)
-    image: registry-proxy.engineering.redhat.com/rh-osbs/jboss-eap-7-eap-xp1-openjdk8-openshift-rhel7:latest
+    # image: quay.io/crw/plugin-java8-rhel8:2.2
+    image: registry.redhat.io/codeready-workspaces/plugin-java8-rhel8:2.2
     env:
-      - name: MAVEN_OPTS
+      - name: JAVA_OPTS
         value: "-XX:MaxRAMPercentage=50.0 -XX:+UseParallelGC -XX:MinHeapFreeRatio=10
           -XX:MaxHeapFreeRatio=20 -XX:GCTimeRatio=4 -XX:AdaptiveSizePolicyWeight=90
           -Dsun.zip.disableMemoryMapping=true -Xms20m -Djava.security.egd=file:/dev/./urandom
           -Duser.home=/home/jboss"
+      - name: MAVEN_OPTS
+        value: $(JAVA_OPTS)
     memoryLimit: 768Mi
     endpoints:
-      - name: '8000'
-        port: 8000
+      - name: '8080'
+        port: 8080
     mountSources: true
     volumes:
       - name: m2
@@ -54,7 +47,7 @@ commands:
       -
         type: exec
         component: maven
-        command: "MAVEN_OPTS='-Xmx200m' && scl enable rh-maven35 'mvn clean package'"
+        command: "MAVEN_OPTS='-Xmx200m' && mvn clean package"
         workdir: "${CHE_PROJECTS_ROOT}/java-jboss-fuse"
   -
     name: run app
@@ -62,14 +55,14 @@ commands:
       -
         type: exec
         component: maven
-        command: "scl enable rh-maven35 'mvn spring-boot:run -Drun.jvmArguments='-Dserver.port=8000''"
+        command: "mvn spring-boot:run"
         workdir: "${CHE_PROJECTS_ROOT}/java-jboss-fuse"
   -
     name: deploy to OpenShift
     actions:
       -
         type: exec
-        component: deployment
+        component: maven
         command: "mvn fabric8:deploy -Popenshift -DskipTests"
         workdir: "${CHE_PROJECTS_ROOT}/java-jboss-fuse"
   -
@@ -78,7 +71,7 @@ commands:
       -
         type: exec
         component: maven
-        command: "scl enable rh-maven35 'mvn spring-boot:run -Drun.jvmArguments=\"-Dserver.port=8000 -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005\"'"
+        command: "mvn spring-boot:run -Drun.jvmArguments=\"-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005\""
         workdir: "${CHE_PROJECTS_ROOT}/java-jboss-fuse"
   -
     name: Debug remote java application
