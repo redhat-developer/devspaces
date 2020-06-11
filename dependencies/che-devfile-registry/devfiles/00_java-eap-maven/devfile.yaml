@@ -52,7 +52,7 @@ commands:
           --user-name=sa --password=sa" && echo 'Server was configured'
         component: maven
   -
-    name: 3. Copy war2
+    name: 3. Copy war
     actions:
       -
         type: exec
@@ -66,7 +66,7 @@ commands:
       -
         type: exec
         component: maven
-        command: "mvn clean install && cp target/*.war /opt/eap/standalone/deployments/ROOT.war"
+        command: "scl enable rh-maven35 'mvn clean install' && sleep 2 && cp target/*.war /opt/eap/standalone/deployments/ROOT.war"
         workdir: ${CHE_PROJECTS_ROOT}/kitchensink-example
   -
     name: Debug (Attach)
