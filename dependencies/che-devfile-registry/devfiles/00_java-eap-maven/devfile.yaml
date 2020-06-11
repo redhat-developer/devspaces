@@ -11,7 +11,7 @@ projects:
 components:
   -
     type: chePlugin
-    id: redhat/java11/latest
+    id: redhat/java8/latest
   -
     # NOTE: instead of the old stack-analysis script, should be able to use the latest dependency-analysis plugin instead
     type: chePlugin
@@ -19,15 +19,12 @@ components:
   -
     type: dockerimage
     alias: maven
-    # NOTE: For Z and Power, likely need to switch at build time to an openj9-11 image, if it exists (CRW-758)
-    # NOTE: can test pre-release image: registry-proxy.engineering.redhat.com/rh-osbs/jboss-eap-7-eap-xp1-openjdk11-openshift-rhel8:latest
-    # NOTE: there's also a JDK8 version at registry.redhat.io/jboss-eap-7/eap73-openjdk8-openshift-rhel7:7.3.0 ...
-    #       BUT the JDK8/RHEL7 image requires using "scl enable rh-maven35 'mvn -version'" to run maven, so devfile will need adjustment.
-    # TODO: switch to registry.redhat.io/jboss-eap-7/eap-xp1-openjdk11-openshift-rhel8:1.0 when it's live
-    image: registry.redhat.io/jboss-eap-7/eap73-openjdk11-openshift-rhel8:7.3.0
+    image: registry.redhat.io/jboss-eap-7/eap73-openjdk8-openshift-rhel7:7.3.0
     env:
       - name: MAVEN_OPTS
         value: "-Xmx200m -XX:MaxRAMPercentage=50.0 -XX:+UseParallelGC -XX:MinHeapFreeRatio=10 -XX:MaxHeapFreeRatio=20 -XX:GCTimeRatio=4 -XX:AdaptiveSizePolicyWeight=90 -Dsun.zip.disableMemoryMapping=true -Xms20m -Djava.security.egd=file:/dev/./urandom -Duser.home=/home/jboss"
+      - name: JAVA_OPTS_APPEND
+        value: "-Xrunjdwp:transport=dt_socket,address=8000,server=y,suspend=n -Dsun.util.logging.disableCallerCheck=true"
     memoryLimit: 512Mi
     endpoints:
       - name: 'eap'
@@ -38,40 +35,38 @@ components:
         containerPath: /home/jboss/.m2
 commands:
   -
-    name: build
+    name: 1. Build
     actions:
-      -
+      - workdir: '${CHE_PROJECTS_ROOT}/kitchensink-example'
         type: exec
+        command: scl enable rh-maven35 'mvn clean install'
         component: maven
-        command: "mvn clean install"
-        workdir: ${CHE_PROJECTS_ROOT}/kitchensink-example
-  -
-    name: build and run in debug
+  - name: 2. Configure web server
     actions:
-      -
+      - workdir: /opt/eap/bin
         type: exec
-        component: maven
         command: >-
-          mvn clean install && 
-          cp target/*.war /opt/eap/standalone/deployments/ROOT.war && 
-          export JAVA_OPTS_APPEND="-Xrunjdwp:transport=dt_socket,address=8000,server=y,suspend=n -Dsun.util.logging.disableCallerCheck=true" && 
-          /opt/eap/bin/openshift-launch.sh
-        workdir: ${CHE_PROJECTS_ROOT}/kitchensink-example
+          ./jboss-cli.sh --connect --command="data-source add --name=ExampleDS
+          --jndi-name=java:jboss/datasources/ExampleDS --driver-name=h2
+          --connection-url=jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+          --user-name=sa --password=sa" && echo 'Server was configured'
+        component: maven
   -
-    name: copy war
+    name: 3. Copy war
     actions:
       -
         type: exec
         component: maven
-        command: "cp target/*.war /opt/eap/standalone/deployments/ROOT.war"
+        command: cp target/*.war /opt/eap/standalone/deployments/ROOT.war && 
+          echo 'Archive was deployed, click on eap endpoint from Workspace view to open the application'
         workdir: ${CHE_PROJECTS_ROOT}/kitchensink-example
   -
-    name: hot update
+    name: 4. Hot update
     actions:
       -
         type: exec
         component: maven
-        command: "mvn clean install && cp target/*.war /opt/eap/standalone/deployments/ROOT.war"
+        command: "scl enable rh-maven35 'mvn clean install' && sleep 2 && cp target/*.war /opt/eap/standalone/deployments/ROOT.war"
         workdir: ${CHE_PROJECTS_ROOT}/kitchensink-example
   -
     name: Debug (Attach)
