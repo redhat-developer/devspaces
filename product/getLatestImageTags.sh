@@ -52,9 +52,7 @@ codeready-workspaces/theia-dev-rhel8          codeready-workspaces/theia-rhel8  
 codeready-workspaces/plugin-java8-rhel8       codeready-workspaces/plugin-java11-rhel8  \
 codeready-workspaces/plugin-kubernetes-rhel8  codeready-workspaces/plugin-openshift-rhel8 \
 \
-codeready-workspaces/stacks-cpp-rhel8         codeready-workspaces/stacks-golang-rhel8      codeready-workspaces/stacks-node-rhel8 \
-codeready-workspaces/stacks-php-rhel8         codeready-workspaces/stacks-python-rhel8 \
-\
+codeready-workspaces/stacks-cpp-rhel8         codeready-workspaces/stacks-golang-rhel8      codeready-workspaces/stacks-php-rhel8 \
 codeready-workspaces/stacks-dotnet-rhel8 \
 "
 
@@ -76,9 +74,7 @@ codeready-workspaces/theia-dev-rhel8          codeready-workspaces/theia-rhel8  
 codeready-workspaces/plugin-java8-rhel8       codeready-workspaces/plugin-java11-rhel8  \
 codeready-workspaces/plugin-kubernetes-rhel8  codeready-workspaces/plugin-openshift-rhel8 \
 \
-codeready-workspaces/stacks-cpp-rhel8         codeready-workspaces/stacks-golang-rhel8      codeready-workspaces/stacks-node-rhel8 \
-codeready-workspaces/stacks-php-rhel8         codeready-workspaces/stacks-python-rhel8 \
-\
+codeready-workspaces/stacks-cpp-rhel8         codeready-workspaces/stacks-golang-rhel8      codeready-workspaces/stacks-php-rhel8 \
 codeready-workspaces/stacks-dotnet-rhel8 \
 "
 
