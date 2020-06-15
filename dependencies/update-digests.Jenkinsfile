@@ -34,11 +34,16 @@ timeout(120) {
                 // check for Quay outage
                 // See https://stackoverflow.com/questions/40454558/jenkins-pipeline-java-io-notserializableexception-java-util-regex-matcher-error
                 @NonCPS
-                def java.util.regex.Matcher noTagsMatching = (NEW_IMAGES =~ /No tags matching .+ found for quay.io/)**[0]**
-                if (noTagsMatching.getCount()>0)
+                int countMatches(String searchString, String regex)
+                {
+                    java.util.regex.Matcher matcher = Pattern.compile(regex).matcher(searchString)
+                    return matcher.getCount()
+                }
+                def matches = countMatches(NEW_IMAGES, "No tags matching .+ found for quay.io")
+                if (matches>0)
                 {
                     errorOccurred = true
-                    error('Missing '+noTagsMatching.getCount()+ ' tags when reading from quay.io: may be experiencing an outage. Abort!')
+                    error('Missing ' + matches + ' tags when reading from quay.io: may be experiencing an outage. Abort!')
                     currentBuild.result = 'ABORTED'
                 }
                 echo "------"
