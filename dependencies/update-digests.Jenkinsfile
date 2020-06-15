@@ -30,8 +30,10 @@ timeout(120) {
                         tee ${WORKSPACE}/crw/dependencies/LATEST_IMAGES.new',
                     returnStdout: true
                 ).trim().split()
+
                 // check for Quay outage
-                Matcher noTagsMatching = NEW_IMAGES =~ /No tags matching .+ found for quay.io/
+                @NonCPS
+                java.util.regex.Matcher noTagsMatching = NEW_IMAGES =~ /No tags matching .+ found for quay.io/
                 if (noTagsMatching.getCount()>0)
                 {
                     errorOccurred = true
