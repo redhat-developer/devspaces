@@ -5,13 +5,6 @@
 // def getLatestImageTagsFlags = "--crw22"
 
 def errorOccurred = false
-@NonCPS
-int countMatches(String searchString, String regex)
-{
-    java.util.regex.Matcher matcher = Pattern.compile(regex).matcher(searchString)
-    return matcher.getCount()
-}
-
 timeout(120) {
     node("rhel7-releng"){ 
         try { 
@@ -39,12 +32,10 @@ timeout(120) {
                 ).trim().split()
 
                 // check for Quay outage
-                // See https://stackoverflow.com/questions/40454558/jenkins-pipeline-java-io-notserializableexception-java-util-regex-matcher-error
-                def matches = countMatches(NEW_IMAGES, "No tags matching .+ found for quay.io")
-                if (matches>0)
+                if (NEW_IMAGES.indexOf("No tags matching")>-1)
                 {
                     errorOccurred = true
-                    error('Missing ' + matches + ' tags when reading from quay.io: may be experiencing an outage. Abort!')
+                    error('Missing tags when reading from quay.io: may be experiencing an outage. Abort!')
                     currentBuild.result = 'ABORTED'
                 }
                 echo "------"
