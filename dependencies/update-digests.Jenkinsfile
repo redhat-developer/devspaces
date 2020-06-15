@@ -32,7 +32,7 @@ timeout(120) {
                 ).trim().split()
 
                 // check for Quay outage
-                if (NEW_IMAGES.indexOf("No tags matching")>-1)
+                if (NEW_IMAGES.toString().indexOf("No tags matching")>-1)
                 {
                     errorOccurred = true
                     error('Missing tags when reading from quay.io: may be experiencing an outage. Abort!')
