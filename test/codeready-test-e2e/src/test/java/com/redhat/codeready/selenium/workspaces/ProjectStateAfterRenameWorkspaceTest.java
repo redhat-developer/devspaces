@@ -14,9 +14,9 @@ package com.redhat.codeready.selenium.workspaces;
 import static org.eclipse.che.commons.lang.NameGenerator.generate;
 
 import com.google.inject.Inject;
+import com.redhat.codeready.selenium.pageobject.dashboard.CodereadyCreateWorkspaceHelper;
 import org.eclipse.che.selenium.core.client.TestWorkspaceServiceClient;
 import org.eclipse.che.selenium.core.user.DefaultTestUser;
-import org.eclipse.che.selenium.pageobject.dashboard.CreateWorkspaceHelper;
 import org.eclipse.che.selenium.pageobject.dashboard.Dashboard;
 import org.eclipse.che.selenium.pageobject.dashboard.NewWorkspace.Devfile;
 import org.eclipse.che.selenium.pageobject.dashboard.workspaces.WorkspaceDetails;
@@ -40,7 +40,7 @@ public class ProjectStateAfterRenameWorkspaceTest {
   @Inject private Dashboard dashboard;
   @Inject private TestWorkspaceServiceClient workspaceServiceClient;
   @Inject private DefaultTestUser defaultTestUser;
-  @Inject private CreateWorkspaceHelper createWorkspaceHelper;
+  @Inject private CodereadyCreateWorkspaceHelper codereadyCreateWorkspaceHelper;
   @Inject private TheiaIde theiaIde;
   @Inject private TheiaProjectTree theiaProjectTree;
   @Inject private TheiaEditor theiaEditor;
@@ -53,7 +53,9 @@ public class ProjectStateAfterRenameWorkspaceTest {
   @BeforeClass
   public void setUp() throws Exception {
     dashboard.open();
-    workspaceName = createWorkspaceHelper.createAndStartWorkspace(Devfile.JAVA_MAVEN);
+    workspaceName =
+        codereadyCreateWorkspaceHelper.createAndStartWorkspace(
+            Devfile.JAVA_MAVEN, "vertx-health-checks");
   }
 
   @AfterClass

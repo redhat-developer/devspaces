@@ -16,11 +16,11 @@ import static org.eclipse.che.commons.lang.NameGenerator.generate;
 import static org.openqa.selenium.Keys.ESCAPE;
 
 import com.google.inject.Inject;
+import com.redhat.codeready.selenium.pageobject.dashboard.CodereadyCreateWorkspaceHelper;
 import java.util.List;
 import org.eclipse.che.selenium.core.client.TestWorkspaceServiceClient;
 import org.eclipse.che.selenium.core.user.DefaultTestUser;
 import org.eclipse.che.selenium.core.webdriver.SeleniumWebDriverHelper;
-import org.eclipse.che.selenium.pageobject.dashboard.CreateWorkspaceHelper;
 import org.eclipse.che.selenium.pageobject.dashboard.Dashboard;
 import org.eclipse.che.selenium.pageobject.dashboard.NewWorkspace.Devfile;
 import org.eclipse.che.selenium.pageobject.dashboard.workspaces.WorkspaceOverview;
@@ -46,7 +46,7 @@ public class WorkspaceDetailsOverviewTest {
   @Inject private Workspaces workspaces;
   @Inject private WorkspaceOverview workspaceOverview;
   @Inject private SeleniumWebDriverHelper seleniumWebDriverHelper;
-  @Inject private CreateWorkspaceHelper createWorkspaceHelper;
+  @Inject private CodereadyCreateWorkspaceHelper codereadyCreateWorkspaceHelper;
   @Inject private DefaultTestUser defaultTestUser;
   @Inject private TestWorkspaceServiceClient workspaceServiceClient;
 
@@ -60,7 +60,9 @@ public class WorkspaceDetailsOverviewTest {
   @Test()
   public void shouldCheckExportAsFile() {
     dashboard.open();
-    workspaceName = createWorkspaceHelper.createAndStartWorkspace(Devfile.JAVA_MAVEN);
+    workspaceName =
+        codereadyCreateWorkspaceHelper.createAndStartWorkspace(
+            Devfile.JAVA_MAVEN, "vertx-health-checks");
 
     dashboard.open();
     dashboard.waitDashboardToolbarTitle();

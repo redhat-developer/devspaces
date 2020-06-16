@@ -19,11 +19,11 @@ import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.fail;
 
 import com.google.inject.Inject;
+import com.redhat.codeready.selenium.pageobject.dashboard.CodereadyCreateWorkspaceHelper;
 import java.util.List;
 import org.eclipse.che.selenium.core.SeleniumWebDriver;
 import org.eclipse.che.selenium.core.client.TestWorkspaceServiceClient;
 import org.eclipse.che.selenium.core.user.DefaultTestUser;
-import org.eclipse.che.selenium.pageobject.dashboard.CreateWorkspaceHelper;
 import org.eclipse.che.selenium.pageobject.dashboard.Dashboard;
 import org.eclipse.che.selenium.pageobject.dashboard.NewWorkspace;
 import org.eclipse.che.selenium.pageobject.dashboard.NewWorkspace.Devfile;
@@ -59,7 +59,7 @@ public class WorkspacesListTest {
   @Inject private SeleniumWebDriver seleniumWebDriver;
   @Inject private WorkspaceOverview workspaceOverview;
   @Inject private TestWorkspaceServiceClient workspaceServiceClient;
-  @Inject private CreateWorkspaceHelper createWorkspaceHelper;
+  @Inject private CodereadyCreateWorkspaceHelper codereadyCreateWorkspaceHelper;
 
   private String workspaceName;
   private String workspaceName1;
@@ -67,9 +67,13 @@ public class WorkspacesListTest {
   @BeforeClass
   public void setUp() throws Exception {
     dashboard.open();
-    workspaceName = createWorkspaceHelper.createAndStartWorkspace(Devfile.JAVA_MAVEN);
+    workspaceName =
+        codereadyCreateWorkspaceHelper.createAndStartWorkspace(
+            Devfile.JAVA_MAVEN, "vertx-health-checks");
     dashboard.open();
-    workspaceName1 = createWorkspaceHelper.createAndStartWorkspace(Devfile.JAVA_MAVEN);
+    workspaceName1 =
+        codereadyCreateWorkspaceHelper.createAndStartWorkspace(
+            Devfile.JAVA_MAVEN, "vertx-health-checks");
   }
 
   @BeforeMethod

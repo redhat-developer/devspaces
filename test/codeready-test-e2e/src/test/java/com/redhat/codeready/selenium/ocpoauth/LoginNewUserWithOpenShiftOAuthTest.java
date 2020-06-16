@@ -14,11 +14,11 @@ package com.redhat.codeready.selenium.ocpoauth;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import com.redhat.codeready.selenium.pageobject.CodereadyOpenShiftLoginPage;
+import com.redhat.codeready.selenium.pageobject.dashboard.CodereadyCreateWorkspaceHelper;
 import org.eclipse.che.selenium.core.SeleniumWebDriver;
 import org.eclipse.che.selenium.core.TestGroup;
 import org.eclipse.che.selenium.core.client.TestWorkspaceServiceClient;
 import org.eclipse.che.selenium.core.provider.TestDashboardUrlProvider;
-import org.eclipse.che.selenium.pageobject.dashboard.CreateWorkspaceHelper;
 import org.eclipse.che.selenium.pageobject.dashboard.Dashboard;
 import org.eclipse.che.selenium.pageobject.dashboard.NewWorkspace.Devfile;
 import org.eclipse.che.selenium.pageobject.dashboard.workspaces.Workspaces;
@@ -50,7 +50,7 @@ public class LoginNewUserWithOpenShiftOAuthTest {
   @Inject private Workspaces workspaces;
   @Inject private SeleniumWebDriver seleniumWebDriver;
   @Inject private TestDashboardUrlProvider testDashboardUrlProvider;
-  @Inject private CreateWorkspaceHelper createWorkspaceHelper;
+  @Inject private CodereadyCreateWorkspaceHelper codereadyCreateWorkspaceHelper;
   @Inject private TestWorkspaceServiceClient defaultUserWorkspaceServiceClient;
   @Inject private CheLoginPage cheLoginPage;
 
@@ -84,7 +84,9 @@ public class LoginNewUserWithOpenShiftOAuthTest {
 
     codereadyOpenShiftLoginPage.submit(openShiftUsername, openShiftEmail);
 
-    workspaceName = createWorkspaceHelper.createAndStartWorkspace(Devfile.JAVA_MAVEN);
+    workspaceName =
+        codereadyCreateWorkspaceHelper.createAndStartWorkspace(
+            Devfile.JAVA_MAVEN, "vertx-health-checks");
 
     // delete the created workspace on Dashboard
     seleniumWebDriver.navigate().to(testDashboardUrlProvider.get());
