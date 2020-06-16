@@ -13,7 +13,7 @@ category: Language
 firstPublicationDate: "2020-05-27"
 spec:
   containers:
-  - image: "registry.redhat.io/ubi8/openjdk-8:1.3"
+  - image: "registry.redhat.io/codeready-workspaces/plugin-java8-rhel8:2.2"
     name: vscode-java
     memoryLimit: "1500Mi"
     args:
