@@ -42,7 +42,7 @@ components:
       - name: mongo-storage
         containerPath: /var/lib/mongodb/data
     endpoints:
-      - name: mongodb-36-rhel7
+      - name: mongodb
         port: 27017
         attributes:
           discoverable: "true"
