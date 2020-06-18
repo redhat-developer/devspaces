@@ -16,6 +16,7 @@ TAG="nightly"
 TARGET="registry" # or offline-registry
 USE_DIGESTS=false
 DOCKERFILE="./build/dockerfiles/Dockerfile"
+PODMAN="" # by default, use docker
 
 USAGE="
 Usage: ./build.sh [OPTIONS]
@@ -33,6 +34,10 @@ Options:
     --offline
         Build offline version of registry, with all artifacts included
         cached in the registry; disabled by default.
+    --builder
+        Create a dev image for building this registry. See also devfile.yaml.
+    --podman
+        Use podman instead of docker
     --rhel
         Build using the rhel.Dockerfile (UBI images) instead of default
 "
@@ -47,15 +52,15 @@ function parse_arguments() {
         case $key in
             -t|--tag)
             TAG="$2"
-            shift; shift;
+            shift 2
             ;;
             -r|--registry)
             REGISTRY="$2"
-            shift; shift;
+            shift 2
             ;;
             -o|--organization)
             ORGANIZATION="$2"
-            shift; shift;
+            shift 2
             ;;
             --use-digests)
             USE_DIGESTS=true
@@ -65,8 +70,16 @@ function parse_arguments() {
             TARGET="offline-registry"
             shift
             ;;
+            --builder)
+            TARGET="builder"
+            shift
+            ;;
             --rhel)
             DOCKERFILE="./build/dockerfiles/rhel.Dockerfile"
+            shift
+            ;;
+            '--podman')
+            PODMAN=$(which podman 2>/dev/null || true)
             shift
             ;;
             *)
@@ -78,12 +91,15 @@ function parse_arguments() {
 
 parse_arguments "$@"
 
+# to build with podman if present, use --podman flag, else use docker
+DOCKER="docker"; if [[ ${PODMAN} ]]; then DOCKER="${PODMAN}"; fi
+
 IMAGE="${REGISTRY}/${ORGANIZATION}/che-devfile-registry:${TAG}"
 VERSION=$(head -n 1 VERSION)
 case $VERSION in
   *SNAPSHOT)
     echo "Snapshot version (${VERSION}) specified in $(find . -name VERSION): building nightly plugin registry."
-    docker build \
+    ${DOCKER} build \
         -t "${IMAGE}" \
         -f ${DOCKERFILE} \
         --build-arg "USE_DIGESTS=${USE_DIGESTS}" \
@@ -91,7 +107,7 @@ case $VERSION in
     ;;
   *)
     echo "Release version specified in $(find . -name VERSION): Building plugin registry for release ${VERSION}."
-    docker build \
+    ${DOCKER} build \
         -t "${IMAGE}" \
         -f "${DOCKERFILE}" \
         --build-arg "PATCHED_IMAGES_TAG=${VERSION}" \
