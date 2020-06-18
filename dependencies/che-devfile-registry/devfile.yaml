@@ -2,7 +2,7 @@ apiVersion: 1.0.0
 metadata:
   name: crw-devfileregistry
 projects:
-  - name: crw-devfileregistry
+  - name: codeready-workspaces
     source:
       type: git
       location: 'https://github.com/redhat-developer/codeready-workspaces.git'
@@ -28,7 +28,7 @@ commands:
         component: registry-dev
         command: './build/scripts/write_image_digests.sh devfiles'
         workdir: /projects/codeready-workspaces/dependencies/che-devfile-registry
-  - name: '4. list referenced images'
+  - name: '3. list referenced images'
     actions:
       - type: exec
         component: registry-dev
