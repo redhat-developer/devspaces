@@ -12,6 +12,7 @@ set -e
 
 REGISTRY="quay.io"
 ORGANIZATION="eclipse"
+CONTAINERNAME="che-devfile-registry"
 TAG="nightly"
 TARGET="registry" # or offline-registry
 USE_DIGESTS=false
@@ -62,6 +63,10 @@ function parse_arguments() {
             ORGANIZATION="$2"
             shift 2
             ;;
+            -c|--container)
+            CONTAINERNAME="$2"
+            shift 2
+            ;;
             --use-digests)
             USE_DIGESTS=true
             shift
@@ -94,7 +99,7 @@ parse_arguments "$@"
 # to build with podman if present, use --podman flag, else use docker
 DOCKER="docker"; if [[ ${PODMAN} ]]; then DOCKER="${PODMAN}"; fi
 
-IMAGE="${REGISTRY}/${ORGANIZATION}/che-devfile-registry:${TAG}"
+IMAGE="${REGISTRY}/${ORGANIZATION}/${CONTAINERNAME}:${TAG}"
 VERSION=$(head -n 1 VERSION)
 case $VERSION in
   *SNAPSHOT)
