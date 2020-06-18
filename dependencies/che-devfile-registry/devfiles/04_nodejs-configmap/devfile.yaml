@@ -53,7 +53,7 @@ commands:
         type: exec
         command: npm run openshift
         component: nodejs
-      - name: Attach remote debugger
+  - name: Attach remote debugger
     actions:
       - type: vscode-launch
         referenceContent: |
