@@ -37,13 +37,23 @@ commands:
         type: exec
         command: node --inspect=9229 .
         component: nodejs
-  - name: 3. Deploy application
+  - name: 3. Log into deployment cluster
+    actions:
+      - workdir: "${CHE_PROJECTS_ROOT}/nodejs-configmap"
+        type: exec
+        command: |
+          echo
+          echo "Before you can deploy this application to an openshift cluster,"
+          echo "you must run 'oc login ...' in the nodejs terminal."
+          echo
+        component: nodejs
+  - name: 4. Deploy application
     actions:
       - workdir: "${CHE_PROJECTS_ROOT}/nodejs-configmap"
         type: exec
         command: npm run openshift
         component: nodejs
-  - name: Attach remote debugger
+      - name: Attach remote debugger
     actions:
       - type: vscode-launch
         referenceContent: |
