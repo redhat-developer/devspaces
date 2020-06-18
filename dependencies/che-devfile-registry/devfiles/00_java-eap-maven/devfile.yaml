@@ -25,7 +25,7 @@ components:
         value: "-Xmx200m -XX:MaxRAMPercentage=50.0 -XX:+UseParallelGC -XX:MinHeapFreeRatio=10 -XX:MaxHeapFreeRatio=20 -XX:GCTimeRatio=4 -XX:AdaptiveSizePolicyWeight=90 -Dsun.zip.disableMemoryMapping=true -Xms20m -Djava.security.egd=file:/dev/./urandom -Duser.home=/home/jboss"
       - name: JAVA_OPTS_APPEND
         value: "-Xrunjdwp:transport=dt_socket,address=8000,server=y,suspend=n -Dsun.util.logging.disableCallerCheck=true"
-    memoryLimit: 512Mi
+    memoryLimit: 1024Mi
     endpoints:
       - name: 'eap'
         port: 8080
