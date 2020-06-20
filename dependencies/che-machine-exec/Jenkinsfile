@@ -104,7 +104,7 @@ cd ..
 		      sh BOOTSTRAP + '''
 
 # rsync files in github to dist-git
-SYNC_FILES="api build cfg client cloud-shell exec exec-info filter kubeconfig mocks output shell vendor ws-conn compile.sh CONTRIBUTING.md devfile.yaml go.mod go.sum LICENSE main.go VERSION README.md"
+SYNC_FILES="activity api auth build cfg client cloud-shell common exec exec-info filter kubeconfig mocks output shell vendor ws-conn compile.sh CONTRIBUTING.md devfile.yaml go.mod go.sum LICENSE main.go VERSION README.md"
 for d in ${SYNC_FILES}; do
   if [[ -f ${WORKSPACE}/sources/${d} ]]; then
     rsync -zrlt ${WORKSPACE}/sources/${d} ${WORKSPACE}/target/${d}
