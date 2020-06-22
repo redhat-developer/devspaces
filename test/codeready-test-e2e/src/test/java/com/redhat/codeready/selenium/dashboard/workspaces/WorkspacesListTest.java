@@ -74,6 +74,7 @@ public class WorkspacesListTest {
     workspaceName1 =
         codereadyCreateWorkspaceHelper.createAndStartWorkspace(
             Devfile.JAVA_MAVEN, "vertx-health-checks");
+    dashboard.open();
   }
 
   @BeforeMethod
