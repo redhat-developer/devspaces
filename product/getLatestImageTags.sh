@@ -34,6 +34,50 @@ fi
 candidateTag="crw-2.2-rhel-8-container-candidate"
 BASETAG=2.2 # tag to search for in quay
 
+CRW22_CONTAINERS_RHCC="\
+codeready-workspaces/crw-2-rhel8-operator-metadata \
+codeready-workspaces/devfileregistry-rhel8 \
+codeready-workspaces/pluginregistry-rhel8 \
+codeready-workspaces/server-rhel8 \
+codeready-workspaces/crw-2-rhel8-operator \
+\
+codeready-workspaces/jwtproxy-rhel8 \
+codeready-workspaces/imagepuller-rhel8 \
+codeready-workspaces/machineexec-rhel8 \
+codeready-workspaces/pluginbroker-metadata-rhel8 \
+codeready-workspaces/pluginbroker-artifacts-rhel8 \
+\
+codeready-workspaces/theia-dev-rhel8          codeready-workspaces/theia-rhel8              codeready-workspaces/theia-endpoint-rhel8 \
+\
+codeready-workspaces/plugin-java8-rhel8       codeready-workspaces/plugin-java11-rhel8  \
+codeready-workspaces/plugin-kubernetes-rhel8  codeready-workspaces/plugin-openshift-rhel8 \
+\
+codeready-workspaces/stacks-cpp-rhel8         codeready-workspaces/stacks-golang-rhel8      codeready-workspaces/stacks-php-rhel8 \
+codeready-workspaces/stacks-dotnet-rhel8 \
+"
+
+CRW22_CONTAINERS_OSBS="\
+codeready-workspaces/operator-metadata \
+codeready-workspaces/devfileregistry-rhel8 \
+codeready-workspaces/pluginregistry-rhel8 \
+codeready-workspaces/server-rhel8 \
+codeready-workspaces/operator \
+\
+codeready-workspaces/jwtproxy-rhel8 \
+codeready-workspaces/imagepuller-rhel8 \
+codeready-workspaces/machineexec-rhel8 \
+codeready-workspaces/pluginbroker-metadata-rhel8 \
+codeready-workspaces/pluginbroker-artifacts-rhel8 \
+\
+codeready-workspaces/theia-dev-rhel8          codeready-workspaces/theia-rhel8              codeready-workspaces/theia-endpoint-rhel8 \
+\
+codeready-workspaces/plugin-java8-rhel8       codeready-workspaces/plugin-java11-rhel8  \
+codeready-workspaces/plugin-kubernetes-rhel8  codeready-workspaces/plugin-openshift-rhel8 \
+\
+codeready-workspaces/stacks-cpp-rhel8         codeready-workspaces/stacks-golang-rhel8      codeready-workspaces/stacks-php-rhel8 \
+codeready-workspaces/stacks-dotnet-rhel8 \
+"
+
 CRW21_CONTAINERS_RHCC="\
 codeready-workspaces/crw-2-rhel8-operator-metadata \
 codeready-workspaces/devfileregistry-rhel8 \
@@ -179,7 +223,7 @@ for key in "$@"; do
   case $key in
     '--crw'|'--crw20') CONTAINERS="${CRW20_CONTAINERS_RHCC}"; candidateTag="crw-2.0-rhel-8-candidate";			 BASETAG=2.0; shift 0;;
     '--crw21') CONTAINERS="${CRW21_CONTAINERS_RHCC}";         candidateTag="crw-2.0-rhel-8-candidate";			 BASETAG=2.1; shift 0;;
-    '--crw22') CONTAINERS="${CRW21_CONTAINERS_RHCC}";         candidateTag="crw-2.2-rhel-8-container-candidate"; BASETAG=2.2; shift 0;;
+    '--crw22') CONTAINERS="${CRW22_CONTAINERS_RHCC}";         candidateTag="crw-2.2-rhel-8-container-candidate"; BASETAG=2.2; shift 0;;
     '-c') CONTAINERS="${CONTAINERS} $2"; shift 1;;
     '-x') EXCLUDES="$2"; shift 1;;
     '-q') QUIET=1; shift 0;;
@@ -196,7 +240,7 @@ for key in "$@"; do
            --pushtoquay=*) PUSHTOQUAY=1; PUSHTOQUAYTAGS="$(echo "${key#*=}")"; shift 0;;
     '-n') NUMTAGS="$2"; shift 1;;
     '--dockerfile') SHOWHISTORY=1; shift 0;;
-    '--nvr') if [[ ! $CONTAINERS ]]; then CONTAINERS="${CRW21_CONTAINERS_OSBS}"; fi; SHOWNVR=1; shift 0;;
+    '--nvr') if [[ ! $CONTAINERS ]]; then CONTAINERS="${CRW22_CONTAINERS_OSBS}"; fi; SHOWNVR=1; shift 0;;
     '--log') SHOWLOG=1; shift 0;;
     '-h') usage;;
   esac
@@ -207,14 +251,16 @@ if [[ ${REGISTRY} != "" ]]; then
 	REGISTRYSTRING="--registry ${REGISTRY}"
 	REGISTRYPRE="${REGISTRY##*://}/"
 	if [[ ${REGISTRY} == *"registry-proxy.engineering.redhat.com"* ]]; then
-		if [[ ${CONTAINERS} == "${CRW21_CONTAINERS_RHCC}" ]] || [[ ${CONTAINERS} == "" ]]; then 
-			CONTAINERS="${CRW21_CONTAINERS_OSBS//codeready-workspaces\//codeready-workspaces-}"; 
-			# registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-operator-metadata:2.1-9
-			# registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-operator:2.1-10
-		fi
+		if [[ ${CONTAINERS} == "" ]]; then CONTAINERS="${CRW22_CONTAINERS_OSBS//codeready-workspaces\//codeready-workspaces-}"; fi
+		if [[ ${CONTAINERS} == "${CRW22_CONTAINERS_RHCC}" ]]; then CONTAINERS="${CRW22_CONTAINERS_OSBS//codeready-workspaces\//codeready-workspaces-}"; fi
+		if [[ ${CONTAINERS} == "${CRW21_CONTAINERS_RHCC}" ]]; then CONTAINERS="${CRW21_CONTAINERS_OSBS//codeready-workspaces\//codeready-workspaces-}"; fi
 		if [[ ${CONTAINERS} == "${CRW20_CONTAINERS_RHCC}" ]]; then CONTAINERS="${CRW20_CONTAINERS_OSBS//codeready-workspaces\//codeready-workspaces-}"; fi
 	elif [[ ${REGISTRY} == *"quay.io"* ]]; then
-		if [[ ${CONTAINERS} == "${CRW21_CONTAINERS_RHCC}" ]] || [[ ${CONTAINERS} == "" ]]; then
+		if [[ ${CONTAINERS} == "${CRW22_CONTAINERS_RHCC}" ]] || [[ ${CONTAINERS} == "" ]]; then
+			CONTAINERS="${CRW22_CONTAINERS_RHCC}"; 
+			CONTAINERS="${CONTAINERS//codeready-workspaces/crw}"
+		fi
+		if [[ ${CONTAINERS} == "${CRW21_CONTAINERS_RHCC}" ]]; then
 			CONTAINERS="${CRW21_CONTAINERS_OSBS}"; 
 			CONTAINERS="${CONTAINERS//codeready-workspaces/crw}"
 			# codeready-workspaces/operator -> codeready-workspaces/operator-rhel8

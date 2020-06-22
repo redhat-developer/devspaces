@@ -13,7 +13,7 @@ components:
     memoryLimit: 512Mi
   - type: dockerimage
     alias: nodejs
-    image: registry.redhat.io/codeready-workspaces/stacks-node-rhel8:2.2
+    image: registry.redhat.io/codeready-workspaces/plugin-java8-rhel8:2.2
     env:
       # The values below are used to set up the environment for running the application
       - name: SECRET
@@ -42,7 +42,7 @@ components:
       - name: mongo-storage
         containerPath: /var/lib/mongodb/data
     endpoints:
-      - name: mongodb-36-rhel7
+      - name: mongodb
         port: 27017
         attributes:
           discoverable: "true"

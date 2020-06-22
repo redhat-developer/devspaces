@@ -15,10 +15,6 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <!-- switch to use
-        <artifactId>maven-parent-pom</artifactId>
-        <groupId>org.eclipse.che.parent</groupId>
-        as of Che 7.13 -->
         <artifactId>maven-parent-pom</artifactId>
         <groupId>org.eclipse.che.parent</groupId>
         <version>7.13.0</version>
@@ -38,11 +34,15 @@
     </licenses>
     <modules>
         <module>assembly</module>
-        <module>test</module>
+        <!-- <module>test</module> -->
     </modules>
     <properties>
         <che.dashboard.version>${che.version}</che.dashboard.version>
-        <che.version>7.13.0</che.version>
+        <!-- 
+            IMPORTANT! when bumping this version, remember to add machine exec and theia plugins to the registry with 
+            cd dependencies/che-plugin-registry; ./build/scripts/add_che_plugins.sh
+        -->
+        <che.version>7.14.3</che.version>
         <crw.dashboard.version>${crw.version} (Eclipse Che ${che.version})</crw.dashboard.version>
         <crw.docs.version>2.2</crw.docs.version>
         <crw.version>${project.version}</crw.version>
