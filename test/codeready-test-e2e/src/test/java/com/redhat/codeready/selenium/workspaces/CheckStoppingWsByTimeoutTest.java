@@ -11,35 +11,42 @@
  */
 package com.redhat.codeready.selenium.workspaces;
 
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
+import static org.eclipse.che.api.core.model.workspace.WorkspaceStatus.STOPPED;
+import static org.eclipse.che.selenium.core.utils.WaitUtils.sleepQuietly;
+import static org.testng.Assert.assertEquals;
+
 import com.google.inject.Inject;
+import com.google.inject.name.Named;
 import com.redhat.codeready.selenium.pageobject.dashboard.CodereadyCreateWorkspaceHelper;
-import org.eclipse.che.selenium.core.SeleniumWebDriver;
+import org.eclipse.che.api.core.model.workspace.Workspace;
 import org.eclipse.che.selenium.core.client.TestWorkspaceServiceClient;
 import org.eclipse.che.selenium.core.user.DefaultTestUser;
+import org.eclipse.che.selenium.core.webdriver.SeleniumWebDriverHelper;
 import org.eclipse.che.selenium.pageobject.dashboard.Dashboard;
 import org.eclipse.che.selenium.pageobject.dashboard.NewWorkspace.Devfile;
-import org.eclipse.che.selenium.pageobject.theia.TheiaEditor;
 import org.eclipse.che.selenium.pageobject.theia.TheiaIde;
-import org.eclipse.che.selenium.pageobject.theia.TheiaProjectTree;
+import org.openqa.selenium.By;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-/** @author Andrey chizhikov */
-@Test
-public class ProjectStateAfterRefreshTest {
-  private static final String PROJECT_NAME = "vertx-health-checks-example-redhat";
-  private static final String PATH_TO_POM_FILE = PROJECT_NAME + "/" + "pom.xml";
-  private static final String PATH_TO_README_FILE = PROJECT_NAME + "/" + "README.md";
+public class CheckStoppingWsByTimeoutTest {
 
   @Inject private Dashboard dashboard;
   @Inject private TestWorkspaceServiceClient workspaceServiceClient;
   @Inject private DefaultTestUser defaultTestUser;
   @Inject private CodereadyCreateWorkspaceHelper codereadyCreateWorkspaceHelper;
   @Inject private TheiaIde theiaIde;
-  @Inject private TheiaProjectTree theiaProjectTree;
-  @Inject private SeleniumWebDriver seleniumWebDriver;
-  @Inject private TheiaEditor theiaEditor;
+  @Inject private SeleniumWebDriverHelper seleniumWebDriverHelper;
+
+  @Inject
+  @Named("che.workspace_agent_dev_inactive_stop_timeout_ms")
+  private int cheWorkspaceAgentDevInactiveStopTimeoutMilliseconds;
+
+  @Inject
+  @Named("che.workspace.activity_check_scheduler_period_s")
+  private int cheWorkspaceActivityCheckSchedulerPeriodInSeconds;
 
   private String workspaceName;
 
@@ -57,33 +64,22 @@ public class ProjectStateAfterRefreshTest {
   }
 
   @Test
-  public void checkRestoreStateOfProjectAfterRefreshTest() {
-    theiaProjectTree.waitFilesTab();
-    theiaProjectTree.clickOnFilesTab();
-    theiaProjectTree.waitProjectAreaOpened();
-    theiaProjectTree.waitItem(PROJECT_NAME);
-    theiaIde.waitAllNotificationsClosed();
+  public void checkStoppingByApi() throws Exception {
+    sleepQuietly(getCommonTimeoutInMilliSec(), MILLISECONDS);
 
-    openFilesInEditor();
-    checkFilesAreOpened();
-
-    seleniumWebDriver.navigate().refresh();
-    theiaIde.waitOpenedWorkspaceIsReadyToUse();
-
-    checkFilesAreOpened();
+    Workspace workspace =
+        workspaceServiceClient.getByName(workspaceName, defaultTestUser.getName());
+    assertEquals(workspace.getStatus(), STOPPED);
   }
 
-  private void openFilesInEditor() {
-    theiaProjectTree.expandItem(PROJECT_NAME);
-    theiaProjectTree.waitItem(PATH_TO_POM_FILE);
-    theiaProjectTree.waitItem(PATH_TO_README_FILE);
-
-    theiaProjectTree.openItem(PATH_TO_POM_FILE);
-    theiaProjectTree.openItem(PATH_TO_README_FILE);
+  @Test(priority = 1)
+  public void checkIdeStatusAfterStopping() {
+    seleniumWebDriverHelper.waitVisibility(
+        By.xpath("//div[@id='theia-statusBar']//div[@title='Cannot connect to backend.']"));
   }
 
-  private void checkFilesAreOpened() {
-    theiaEditor.waitEditorTab("pom.xml");
-    theiaEditor.waitEditorTab("README.md");
+  private int getCommonTimeoutInMilliSec() {
+    return cheWorkspaceAgentDevInactiveStopTimeoutMilliseconds
+        + cheWorkspaceActivityCheckSchedulerPeriodInSeconds * 1000;
   }
 }

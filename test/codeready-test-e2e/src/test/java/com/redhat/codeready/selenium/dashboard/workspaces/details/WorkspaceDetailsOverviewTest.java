@@ -16,19 +16,21 @@ import static org.eclipse.che.commons.lang.NameGenerator.generate;
 import static org.openqa.selenium.Keys.ESCAPE;
 
 import com.google.inject.Inject;
+import com.redhat.codeready.selenium.pageobject.dashboard.CodereadyCreateWorkspaceHelper;
 import java.util.List;
+import org.eclipse.che.selenium.core.client.TestWorkspaceServiceClient;
+import org.eclipse.che.selenium.core.user.DefaultTestUser;
 import org.eclipse.che.selenium.core.webdriver.SeleniumWebDriverHelper;
 import org.eclipse.che.selenium.pageobject.dashboard.Dashboard;
-import org.eclipse.che.selenium.pageobject.dashboard.NewWorkspace;
 import org.eclipse.che.selenium.pageobject.dashboard.NewWorkspace.Devfile;
 import org.eclipse.che.selenium.pageobject.dashboard.workspaces.WorkspaceOverview;
 import org.eclipse.che.selenium.pageobject.dashboard.workspaces.Workspaces;
+import org.testng.annotations.AfterClass;
 import org.testng.annotations.Test;
 
 public class WorkspaceDetailsOverviewTest {
 
-  private static final String WORKSPACE_NAME = generate("test-workspace", 4);
-  private static final String CHANGED_WORKSPACE_NAME = generate(WORKSPACE_NAME, 4);
+  private static final String CHANGED_WORKSPACE_NAME = generate("wksp-name-", 4);
   private static final String TOO_SHORT_NAME = "wk";
   private static final String MAX_LONG_NAME = generate("wksp-", 95);
   private static final String TOO_LONG_NAME = generate(MAX_LONG_NAME, 1);
@@ -41,34 +43,33 @@ public class WorkspaceDetailsOverviewTest {
       asList("Wk-sp", "Wk-sp1", "9wk-sp", "5wk-sp0", "Wk19sp", "Wksp-01");
 
   @Inject private Dashboard dashboard;
-  @Inject private NewWorkspace newWorkspace;
   @Inject private Workspaces workspaces;
   @Inject private WorkspaceOverview workspaceOverview;
   @Inject private SeleniumWebDriverHelper seleniumWebDriverHelper;
+  @Inject private CodereadyCreateWorkspaceHelper codereadyCreateWorkspaceHelper;
+  @Inject private DefaultTestUser defaultTestUser;
+  @Inject private TestWorkspaceServiceClient workspaceServiceClient;
 
-  @Test
-  public void shouldCreateWorkspaceAndOpenOverviewPage() {
-    // prepare
+  private String workspaceName;
+
+  @AfterClass
+  public void tearDown() throws Exception {
+    workspaceServiceClient.delete(workspaceName, defaultTestUser.getName());
+  }
+
+  @Test()
+  public void shouldCheckExportAsFile() {
+    dashboard.open();
+    workspaceName =
+        codereadyCreateWorkspaceHelper.createAndStartWorkspace(
+            Devfile.JAVA_MAVEN, "vertx-health-checks");
+
     dashboard.open();
     dashboard.waitDashboardToolbarTitle();
     dashboard.selectWorkspacesItemOnDashboard();
-    workspaces.waitToolbarTitleName();
-    workspaces.clickOnAddWorkspaceBtn();
-    newWorkspace.waitPageLoad();
-    newWorkspace.typeWorkspaceName(WORKSPACE_NAME);
-
-    selectDevfileAndCheckWorkspaceName(Devfile.JAVA_MAVEN);
-
-    selectDevfileAndCheckWorkspaceName(Devfile.JAVA_MAVEN);
-
-    // create workspace
-    newWorkspace.clickOnCreateButtonAndEditWorkspace();
-    workspaceOverview.checkNameWorkspace(WORKSPACE_NAME);
-  }
-
-  @Test(priority = 1)
-  public void shouldCheckExportAsFile() {
-    workspaceOverview.checkNameWorkspace(WORKSPACE_NAME);
+    dashboard.waitToolbarTitleName("Workspaces");
+    workspaces.selectWorkspaceItemName(workspaceName);
+    workspaceOverview.checkNameWorkspace(workspaceName);
 
     // check of closing by "Esc"
     openExportWorkspaceForm();
@@ -93,9 +94,9 @@ public class WorkspaceDetailsOverviewTest {
     workspaceOverview.waitExportWorkspaceFormClosed();
   }
 
-  @Test(priority = 2)
+  @Test(priority = 1)
   public void shouldCheckNameField() {
-    workspaceOverview.waitNameFieldValue(WORKSPACE_NAME);
+    workspaceOverview.waitNameFieldValue(workspaceName);
 
     // check of empty name
     workspaceOverview.enterNameWorkspace("");
@@ -112,12 +113,6 @@ public class WorkspaceDetailsOverviewTest {
 
     nameShouldBeValid(MAX_LONG_NAME);
     namesShouldBeValid();
-  }
-
-  private void selectDevfileAndCheckWorkspaceName(Devfile devfile) {
-    newWorkspace.selectDevfile(devfile);
-    newWorkspace.waitDevfileSelected(devfile);
-    newWorkspace.waitWorkspaceNameFieldValue(WORKSPACE_NAME);
   }
 
   private void nameShouldBeValid(String name) {

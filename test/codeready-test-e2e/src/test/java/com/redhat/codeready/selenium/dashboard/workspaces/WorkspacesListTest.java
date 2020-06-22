@@ -12,7 +12,6 @@
 package com.redhat.codeready.selenium.dashboard.workspaces;
 
 import static java.util.Arrays.asList;
-import static org.eclipse.che.commons.lang.NameGenerator.generate;
 import static org.eclipse.che.selenium.pageobject.dashboard.workspaces.Workspaces.Locators.WORKSPACE_ITEM_ADD_PROJECT_BUTTON;
 import static org.eclipse.che.selenium.pageobject.dashboard.workspaces.Workspaces.Locators.WORKSPACE_ITEM_CONFIGURE_BUTTON;
 import static org.eclipse.che.selenium.pageobject.dashboard.workspaces.Workspaces.Locators.WORKSPACE_ITEM_STOP_START_WORKSPACE_BUTTON;
@@ -20,12 +19,11 @@ import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.fail;
 
 import com.google.inject.Inject;
-import java.util.Collections;
+import com.redhat.codeready.selenium.pageobject.dashboard.CodereadyCreateWorkspaceHelper;
 import java.util.List;
 import org.eclipse.che.selenium.core.SeleniumWebDriver;
 import org.eclipse.che.selenium.core.client.TestWorkspaceServiceClient;
 import org.eclipse.che.selenium.core.user.DefaultTestUser;
-import org.eclipse.che.selenium.pageobject.dashboard.CreateWorkspaceHelper;
 import org.eclipse.che.selenium.pageobject.dashboard.Dashboard;
 import org.eclipse.che.selenium.pageobject.dashboard.NewWorkspace;
 import org.eclipse.che.selenium.pageobject.dashboard.NewWorkspace.Devfile;
@@ -48,9 +46,6 @@ import org.testng.annotations.Test;
 @Test
 public class WorkspacesListTest {
   private static final String EXPECTED_JAVA_PROJECT_NAME = "vertx-health-checks-example-redhat";
-  private static final String NEWEST_CREATED_WORKSPACE_NAME = "just-created-workspace";
-  private static final String WORKSPACE_NAME = generate("test-workspace", 4);
-  private static final String WORKSPACE_NAME2 = generate("test-workspace", 4);
   private static final int EXPECTED_SEARCHED_WORKSPACES_COUNT = 1;
 
   @Inject private Dashboard dashboard;
@@ -63,19 +58,22 @@ public class WorkspacesListTest {
   @Inject private SeleniumWebDriver seleniumWebDriver;
   @Inject private WorkspaceOverview workspaceOverview;
   @Inject private TestWorkspaceServiceClient workspaceServiceClient;
-  @Inject private CreateWorkspaceHelper createWorkspaceHelper;
+  @Inject private CodereadyCreateWorkspaceHelper codereadyCreateWorkspaceHelper;
+
+  private String workspaceName;
+  private String workspaceName1;
 
   @BeforeClass
   public void setUp() throws Exception {
     dashboard.open();
-
-    createWorkspaceHelper.createAndEditWorkspaceFromStack(
-        Devfile.JAVA_MAVEN, WORKSPACE_NAME, Collections.emptyList(), null);
-    workspaceOverview.checkNameWorkspace(WORKSPACE_NAME);
-
-    createWorkspaceHelper.createAndEditWorkspaceFromStack(
-        Devfile.JAVA_MAVEN, WORKSPACE_NAME2, Collections.emptyList(), null);
-    workspaceOverview.checkNameWorkspace(WORKSPACE_NAME2);
+    workspaceName =
+        codereadyCreateWorkspaceHelper.createAndStartWorkspace(
+            Devfile.JAVA_MAVEN, "vertx-health-checks");
+    dashboard.open();
+    workspaceName1 =
+        codereadyCreateWorkspaceHelper.createAndStartWorkspace(
+            Devfile.JAVA_MAVEN, "vertx-health-checks");
+    dashboard.open();
   }
 
   @BeforeMethod
@@ -86,9 +84,8 @@ public class WorkspacesListTest {
 
   @AfterClass
   public void tearDown() throws Exception {
-    workspaceServiceClient.delete(WORKSPACE_NAME, defaultTestUser.getName());
-    workspaceServiceClient.delete(WORKSPACE_NAME2, defaultTestUser.getName());
-    workspaceServiceClient.delete(NEWEST_CREATED_WORKSPACE_NAME, defaultTestUser.getName());
+    workspaceServiceClient.delete(workspaceName, defaultTestUser.getName());
+    workspaceServiceClient.delete(workspaceName1, defaultTestUser.getName());
   }
 
   @Test
@@ -96,17 +93,17 @@ public class WorkspacesListTest {
     workspaces.waitPageLoading();
     dashboard.waitWorkspacesCountInWorkspacesItem(testWorkspaceServiceClient.getWorkspacesCount());
 
-    workspaces.waitWorkspaceIsPresent(WORKSPACE_NAME);
-    Assert.assertEquals(workspaces.getWorkspaceProjectsValue(WORKSPACE_NAME), "1");
+    workspaces.waitWorkspaceIsPresent(workspaceName);
+    Assert.assertEquals(workspaces.getWorkspaceProjectsValue(workspaceName), "1");
 
-    workspaces.waitWorkspaceIsPresent(WORKSPACE_NAME2);
-    Assert.assertEquals(workspaces.getWorkspaceProjectsValue(WORKSPACE_NAME), "1");
+    workspaces.waitWorkspaceIsPresent(workspaceName1);
+    Assert.assertEquals(workspaces.getWorkspaceProjectsValue(workspaceName), "1");
   }
 
   @Test
   public void checkWorkspaceSelectingByCheckbox() {
-    String blankWorkspaceName = WORKSPACE_NAME;
-    String javaWorkspaceName = WORKSPACE_NAME2;
+    String blankWorkspaceName = workspaceName;
+    String javaWorkspaceName = workspaceName1;
 
     workspaces.waitPageLoading();
 
@@ -178,9 +175,9 @@ public class WorkspacesListTest {
 
   @Test
   public void checkSearchField() throws Exception {
-    int nameLength = WORKSPACE_NAME.length();
+    int nameLength = workspaceName.length();
     int existingWorkspacesCount = testWorkspaceServiceClient.getWorkspacesCount();
-    String sequenceForSearch = WORKSPACE_NAME.substring(nameLength - 5, nameLength);
+    String sequenceForSearch = workspaceName.substring(nameLength - 5, nameLength);
 
     workspaces.waitVisibleWorkspacesCount(existingWorkspacesCount);
     workspaces.typeToSearchInput(sequenceForSearch);
@@ -193,16 +190,16 @@ public class WorkspacesListTest {
     }
 
     List<Workspaces.WorkspaceListItem> items = workspaces.getVisibleWorkspaces();
-    assertEquals(items.get(0).getWorkspaceName(), WORKSPACE_NAME);
+    assertEquals(items.get(0).getWorkspaceName(), workspaceName);
 
     // check displaying list size
     workspaces.typeToSearchInput("");
     workspaces.waitVisibleWorkspacesCount(testWorkspaceServiceClient.getWorkspacesCount());
 
-    workspaces.waitWorkspaceIsPresent(WORKSPACE_NAME);
-    Assert.assertEquals(workspaces.getWorkspaceProjectsValue(WORKSPACE_NAME), "1");
-    workspaces.waitWorkspaceIsPresent(WORKSPACE_NAME2);
-    Assert.assertEquals(workspaces.getWorkspaceProjectsValue(WORKSPACE_NAME), "1");
+    workspaces.waitWorkspaceIsPresent(workspaceName);
+    Assert.assertEquals(workspaces.getWorkspaceProjectsValue(workspaceName), "1");
+    workspaces.waitWorkspaceIsPresent(workspaceName1);
+    Assert.assertEquals(workspaces.getWorkspaceProjectsValue(workspaceName), "1");
   }
 
   @Test
@@ -211,28 +208,28 @@ public class WorkspacesListTest {
 
     // go to workspace details by clicking on item in workspaces list
     workspaces.clickOnAddWorkspaceBtn();
-    newWorkspace.waitPageLoad();
+    newWorkspace.waitCustomWorkspacesTab();
 
     seleniumWebDriver.navigate().back();
 
     workspaces.waitPageLoading();
 
-    workspaces.clickOnWorkspaceListItem(defaultTestUser.getName(), WORKSPACE_NAME);
+    workspaces.clickOnWorkspaceListItem(defaultTestUser.getName(), workspaceName);
 
-    workspaceOverview.checkNameWorkspace(WORKSPACE_NAME);
+    workspaceOverview.checkNameWorkspace(workspaceName);
 
     seleniumWebDriver.navigate().back();
 
     // check "Add project" button
     workspaces.waitPageLoading();
-    workspaces.clickOnWorkspaceActionsButton(WORKSPACE_NAME2, WORKSPACE_ITEM_ADD_PROJECT_BUTTON);
+    workspaces.clickOnWorkspaceActionsButton(workspaceName1, WORKSPACE_ITEM_ADD_PROJECT_BUTTON);
     workspaceProjects.waitProjectIsPresent(EXPECTED_JAVA_PROJECT_NAME);
 
     seleniumWebDriver.navigate().back();
 
     // check "Workspace configuration" button
     workspaces.waitPageLoading();
-    workspaces.clickOnWorkspaceActionsButton(WORKSPACE_NAME2, WORKSPACE_ITEM_CONFIGURE_BUTTON);
+    workspaces.clickOnWorkspaceActionsButton(workspaceName1, WORKSPACE_ITEM_CONFIGURE_BUTTON);
     workspaceConfig.waitConfigForm();
 
     seleniumWebDriver.navigate().back();
@@ -240,23 +237,12 @@ public class WorkspacesListTest {
     // check stop/start button
     workspaces.waitPageLoading();
     workspaces.clickOnWorkspaceActionsButton(
-        WORKSPACE_NAME2, WORKSPACE_ITEM_STOP_START_WORKSPACE_BUTTON);
-    workspaces.waitWorkspaceStatus(WORKSPACE_NAME2, Status.RUNNING);
+        workspaceName1, WORKSPACE_ITEM_STOP_START_WORKSPACE_BUTTON);
+    workspaces.waitWorkspaceStatus(workspaceName1, Status.STOPPED);
     workspaces.clickOnWorkspaceActionsButton(
-        WORKSPACE_NAME2, WORKSPACE_ITEM_STOP_START_WORKSPACE_BUTTON);
-    workspaces.waitWorkspaceStatus(WORKSPACE_NAME2, Status.STOPPED);
+        workspaceName1, WORKSPACE_ITEM_STOP_START_WORKSPACE_BUTTON);
+    workspaces.waitWorkspaceStatus(workspaceName1, Status.RUNNING);
 
-    // check adding the workspace to list
-    workspaces.clickOnAddWorkspaceBtn();
-    newWorkspace.waitToolbar();
-    newWorkspace.typeWorkspaceName(NEWEST_CREATED_WORKSPACE_NAME);
-    newWorkspace.selectDevfile(Devfile.JAVA_MAVEN);
-    newWorkspace.clickOnCreateButtonAndEditWorkspace();
-    workspaceOverview.checkNameWorkspace(NEWEST_CREATED_WORKSPACE_NAME);
-
-    dashboard.selectWorkspacesItemOnDashboard();
-
-    workspaces.waitPageLoading();
     workspaces.waitVisibleWorkspacesCount(testWorkspaceServiceClient.getWorkspacesCount());
   }
 
@@ -264,10 +250,10 @@ public class WorkspacesListTest {
   public void deleteWorkspacesByCheckboxes() {
     workspaces.waitPageLoading();
 
-    workspaces.selectWorkspaceByCheckbox(NEWEST_CREATED_WORKSPACE_NAME);
+    workspaces.selectWorkspaceByCheckbox(workspaceName);
     workspaces.clickOnDeleteWorkspacesBtn();
     workspaces.clickOnDeleteButtonInDialogWindow();
 
-    workspaces.waitWorkspaceIsNotPresent(NEWEST_CREATED_WORKSPACE_NAME);
+    workspaces.waitWorkspaceIsNotPresent(workspaceName);
   }
 }
