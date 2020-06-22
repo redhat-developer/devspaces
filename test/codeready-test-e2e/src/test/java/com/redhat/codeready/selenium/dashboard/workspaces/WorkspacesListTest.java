@@ -46,7 +46,6 @@ import org.testng.annotations.Test;
 @Test
 public class WorkspacesListTest {
   private static final String EXPECTED_JAVA_PROJECT_NAME = "vertx-health-checks-example-redhat";
-  private static final String NEWEST_CREATED_WORKSPACE_NAME = "just-created-workspace";
   private static final int EXPECTED_SEARCHED_WORKSPACES_COUNT = 1;
 
   @Inject private Dashboard dashboard;
@@ -87,7 +86,6 @@ public class WorkspacesListTest {
   public void tearDown() throws Exception {
     workspaceServiceClient.delete(workspaceName, defaultTestUser.getName());
     workspaceServiceClient.delete(workspaceName1, defaultTestUser.getName());
-    workspaceServiceClient.delete(NEWEST_CREATED_WORKSPACE_NAME, defaultTestUser.getName());
   }
 
   @Test
@@ -252,10 +250,10 @@ public class WorkspacesListTest {
   public void deleteWorkspacesByCheckboxes() {
     workspaces.waitPageLoading();
 
-    workspaces.selectWorkspaceByCheckbox(NEWEST_CREATED_WORKSPACE_NAME);
+    workspaces.selectWorkspaceByCheckbox(workspaceName);
     workspaces.clickOnDeleteWorkspacesBtn();
     workspaces.clickOnDeleteButtonInDialogWindow();
 
-    workspaces.waitWorkspaceIsNotPresent(NEWEST_CREATED_WORKSPACE_NAME);
+    workspaces.waitWorkspaceIsNotPresent(workspaceName);
   }
 }
