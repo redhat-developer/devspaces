@@ -210,7 +210,7 @@ public class WorkspacesListTest {
 
     // go to workspace details by clicking on item in workspaces list
     workspaces.clickOnAddWorkspaceBtn();
-    newWorkspace.waitPageLoad();
+    newWorkspace.waitCustomWorkspacesTab();
 
     seleniumWebDriver.navigate().back();
 
@@ -240,22 +240,11 @@ public class WorkspacesListTest {
     workspaces.waitPageLoading();
     workspaces.clickOnWorkspaceActionsButton(
         workspaceName1, WORKSPACE_ITEM_STOP_START_WORKSPACE_BUTTON);
-    workspaces.waitWorkspaceStatus(workspaceName1, Status.RUNNING);
+    workspaces.waitWorkspaceStatus(workspaceName1, Status.STOPPED);
     workspaces.clickOnWorkspaceActionsButton(
         workspaceName1, WORKSPACE_ITEM_STOP_START_WORKSPACE_BUTTON);
-    workspaces.waitWorkspaceStatus(workspaceName1, Status.STOPPED);
+    workspaces.waitWorkspaceStatus(workspaceName1, Status.RUNNING);
 
-    // check adding the workspace to list
-    workspaces.clickOnAddWorkspaceBtn();
-    newWorkspace.waitToolbar();
-    newWorkspace.typeWorkspaceName(NEWEST_CREATED_WORKSPACE_NAME);
-    newWorkspace.selectDevfile(Devfile.JAVA_MAVEN);
-    newWorkspace.clickOnCreateButtonAndEditWorkspace();
-    workspaceOverview.checkNameWorkspace(NEWEST_CREATED_WORKSPACE_NAME);
-
-    dashboard.selectWorkspacesItemOnDashboard();
-
-    workspaces.waitPageLoading();
     workspaces.waitVisibleWorkspacesCount(testWorkspaceServiceClient.getWorkspacesCount());
   }
 
