@@ -110,6 +110,12 @@ def buildClangVscode(extensionFolder) {
     sh "cd ${extensionFolder} && ls -l && cd clang-tools-extra/clangd/clients/clangd-vscode && npm install -g vsce && npm install && npm run package"
 }
 
+def buildNodeDebug(extensionFolder) {
+    archiveSources(extensionFolder)
+    installNPM()
+    sh "cd ${extensionFolder} && npm install && yarn package"
+}
+
 timeout(120) {
     node("rhel7||rhel7-8gb||rhel7-16gb||rhel7-releng"){ stage "Build ${extensionPath}"
         cleanWs()
@@ -161,8 +167,10 @@ timeout(120) {
             buildVscodePython(branchToBuildPlugin, extensionFolder)
         } else if (extensionPath.contains("https://github.com/microsoft/vscode-java-debug")) {
             buildJavaExtension(branchToBuildPlugin, extensionFolder)
-        }  else if (extensionPath.contains("https://github.com/felixfbecker/vscode-php-debug")) {
-            buildPhpDebug(branchToBuildPlugin, extensionFolder)
+        } else if (extensionPath.contains("https://github.com/felixfbecker/vscode-php-debug")) {
+            buildPhpDebug(branchToBuildPlugin, extensionFolder) 
+        } else if (extensionPath.contains("https://github.com/microsoft/vscode-node-debug/")) {
+            buildNodeDebug(extensionFolder) 
         } else {
             buildDefault(extensionFolder)
         }
