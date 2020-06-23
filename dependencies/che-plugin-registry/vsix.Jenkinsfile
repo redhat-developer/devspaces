@@ -120,10 +120,11 @@ timeout(120) {
     node("rhel7||rhel7-8gb||rhel7-16gb||rhel7-releng"){ stage "Build ${extensionPath}"
         cleanWs()
         // remove trailing slash if exists
-        if ("${extensionPath}".endsWith('/') {
+        if ("${extensionPath}".endsWith('/')) {
             extensionPath = extensionPath.substring(0, extensionPath.length() - 1)
         }
         echo "extension path: ${extensionPath}"
+
         def extensionFolder = "${extensionPath}".substring("${extensionPath}".lastIndexOf('/') + 1)
         echo "extension folder: ${extensionFolder}"
 
