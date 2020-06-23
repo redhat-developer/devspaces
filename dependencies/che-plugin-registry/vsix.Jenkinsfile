@@ -174,7 +174,7 @@ timeout(120) {
             buildJavaExtension(branchToBuildPlugin, extensionFolder)
         } else if (extensionPath.contains("https://github.com/felixfbecker/vscode-php-debug")) {
             buildPhpDebug(branchToBuildPlugin, extensionFolder) 
-        } else if (extensionPath.contains("https://github.com/microsoft/vscode-node-debug/")) {
+        } else if (extensionPath.equals("https://github.com/microsoft/vscode-node-debug")) {
             buildNodeDebug(extensionFolder) 
         } else {
             buildDefault(extensionFolder)
