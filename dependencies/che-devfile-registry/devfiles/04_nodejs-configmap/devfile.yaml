@@ -12,6 +12,8 @@ components:
   - id: che-incubator/typescript/latest
     type: chePlugin
     memoryLimit: 512Mi
+  - type: chePlugin
+    id: ms-vscode/node-debug2/latest
   - mountSources: true
     memoryLimit: 1Gi
     type: dockerimage
