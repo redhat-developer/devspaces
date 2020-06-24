@@ -7,7 +7,7 @@ projects:
     name: vertx-health-checks-example-redhat
     source:
       type: git
-      location: "https://github.com/openshift-vertx-examples/vertx-health-checks-example-redhat"
+      location: "https://github.com/crw-samples/vertx-health-checks-example-redhat.git"
 components:
   -
     type: chePlugin
