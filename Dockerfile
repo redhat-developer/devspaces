@@ -26,7 +26,7 @@ RUN tar xzf /tmp/codeready-workspaces-assembly-main.tar.gz --transform="s#.*code
 # this should fail if the startup script is not found in correct path /home/jboss/codeready/tomcat/bin/catalina.sh
 RUN echo -n "Server startup script in: " && find /home/jboss/codeready -name catalina.sh | grep -z /home/jboss/codeready/tomcat/bin/catalina.sh
 
-RUN yum update -y gnutls && yum -y clean all && rm -rf /var/cache/yum && \
+RUN microdnf update -y gnutls && microdnf -y clean all && rm -rf /var/cache/yum && \
     echo "Installed Packages" && rpm -qa | sort -V && echo "End Of Installed Packages"
 
 RUN cp /etc/pki/java/cacerts /home/jboss/cacerts && chmod 644 /home/jboss/cacerts && \
