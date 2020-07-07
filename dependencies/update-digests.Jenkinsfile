@@ -56,6 +56,7 @@ timeout(120) {
                 // def currentSet = CURRENT_IMAGES as Set
                 def devfileRegistryImage = newSet.find { it.contains("devfileregistry") }
                 def pluginRegistryImage = newSet.find { it.contains("pluginregistry") } 
+                def operatorMetadataImage = newSet.find { it.contains("operator-metadata") } 
                 // echo "${pluginRegistryImage}"
                 // echo "${devfileRegistryImage}"
                 // newSet.each { echo "New: $it" }
@@ -134,6 +135,21 @@ timeout(120) {
                     propagate: true,
                     parameters: [[$class: 'BooleanParameterValue', name: 'FORCE_BUILD', value: true]]
                     )
+
+                    while (true) 
+                    {
+                        def rebuiltOperatorMetadataImage = sh (
+                        script: 'cd ${WORKSPACE}/crw/product && ./getLatestImageTags.sh -c -c "crw/crw-2-rhel8-operator-metadata" --quay | \
+                            sort | uniq | grep quay | tee ${WORKSPACE}/crw/dependencies/LATEST_IMAGES.new',
+                        returnStdout: true
+                        ).trim()
+                        echo "${rebuiltOperatorMetadataImage}"
+                        if (rebuiltOperatorMetadataImage!=operatorMetadataImage) {
+                            echo "Operator metadata has been rebuilt!"
+                            break
+                        }
+                        sleep(time:60,unit:"SECONDS")
+                    }
 
                     sh '''#!/bin/bash -xe
                     cd ${WORKSPACE}/crw/product && ./getLatestImageTags.sh ${getLatestImageTagsFlags} --quay | sort | uniq | grep quay > ${WORKSPACE}/crw/dependencies/LATEST_IMAGES.new
