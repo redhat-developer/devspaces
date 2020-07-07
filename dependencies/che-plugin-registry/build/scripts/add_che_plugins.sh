@@ -24,15 +24,17 @@ if [[ ! ${VERSION} ]]; then
   exit 1
 fi
 
-# check given che versions is already installed or not, to avaoid redundent commits
-if [ -d "v3/plugins/eclipse/che-machine-exec-plugin/${VERSION}" ]
+# check given che-machine-exec-plugin and che-theia versions is already installed or not, to avaoid redundent commits
+if [ -d "v3/plugins/eclipse/che-machine-exec-plugin/${VERSION}" ] && [ -d "v3/plugins/eclipse/che-theia/${VERSION}" ]
 then
-        echo " ${VERSION} che version is already installed. Nothing to do"
-        exit 1
-else
-        echo "${VERSION} che version is not installed. Process will Continue"
+  echo "${VERSION} che version is already installed."
+  read -p "Do you want to install same version again [y/n] : " answer
+  if [ "${answer}" == "n" ] || [ "${answer}" == "N" ] || [ "${answer}" == "no" ] || [ "${answer}" == "No" ]
+  then
+  exit 1
+  fi
 fi
-
+	
 # generate new meta.yaml files for the plugins, and update the latest.txt files
 createNewPlugins () {
   newVERSION=$1
