@@ -126,7 +126,7 @@ timeout(120) {
 
                 def buildDescription="Running..."
 
-                if (!DIFF_LATEST_IMAGES_METADATA.equals("") && DIFF_LATEST_IMAGES_WITH_REGISTRY.equals("") && ) { 
+                if (!DIFF_LATEST_IMAGES_METADATA.equals("") && DIFF_LATEST_IMAGES_WITH_REGISTRY.equals("")) { 
                     // no changes, but a newer metadata image exists
                     buildDescription="New metadata image detected: commit changes to LATEST_IMAGES"
                     currentBuild.description=buildDescription
