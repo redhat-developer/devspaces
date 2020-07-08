@@ -68,7 +68,7 @@ timeout(120) {
                 '''
                 def DIFF_LATEST_IMAGES_WITH_REGISTRY = sh (
                     // don't report a diff when new operator metadata or registries, or we'll never get out of this recursion loop
-                    script: 'diff -u0 ${WORKSPACE}/crw/dependencies/LATEST_IMAGES.{prev,new} -I operator-metadata || true',
+                    script: 'diff -u0 ${WORKSPACE}/crw/dependencies/LATEST_IMAGES.{prev,new} -I operator-metadata | grep -v "@@" | grep -v "dependencies/LATEST_IMAGES" || true',
                     returnStdout: true
                 ).trim()
                 def DIFF_LATEST_IMAGES_NO_REGISTRY = sh (
@@ -76,11 +76,67 @@ timeout(120) {
                     script: 'diff -u0 ${WORKSPACE}/crw/dependencies/LATEST_IMAGES.{prev,new} -I operator-metadata | grep -v "@@" | grep -v "dependencies/LATEST_IMAGES" | grep -v registry  || true',
                     returnStdout: true
                 ).trim()
+                def DIFF_LATEST_IMAGES_METADATA = sh (
+                    // check diff including operator metadata and registries, in case we forgot to update metadata
+                    script: 'diff -u0 ${WORKSPACE}/crw/dependencies/LATEST_IMAGES.{prev,new} | grep -v "@@" | grep -v "dependencies/LATEST_IMAGES" | grep operator-metadata  || true',
+                    returnStdout: true
+                ).trim()
+
+                // define what to do when we are ready to push changes
+                def COMMITCHANGES = '''#!/bin/bash -xe
+                    cd ${WORKSPACE}/crw/product && ./getLatestImageTags.sh ${getLatestImageTagsFlags} --quay | sort | uniq | grep quay > ${WORKSPACE}/crw/dependencies/LATEST_IMAGES.new
+
+                    echo "============ LATEST_IMAGES.new 3 ============>"
+                    cat ${WORKSPACE}/crw/dependencies/LATEST_IMAGES.new
+                    echo "<============ LATEST_IMAGES.new 3 ============"
+
+                    # bootstrapping: if keytab is lost, upload to 
+                    # https://codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/credentials/store/system/domain/_/
+                    # then set Use secret text above and set Bindings > Variable (path to the file) as ''' + CRW_KEYTAB + '''
+                    chmod 700 ''' + CRW_KEYTAB + ''' && chown ''' + USER + ''' ''' + CRW_KEYTAB + '''
+                    echo "pkgs.devel.redhat.com,10.19.208.80 ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAplqWKs26qsoaTxvWn3DFcdbiBxqRLhFngGiMYhbudnAj4li9/VwAJqLm1M6YfjOoJrj9dlmuXhNzkSzvyoQODaRgsjCG5FaRjuN8CSM/y+glgCYsWX1HFZSnAasLDuW0ifNLPR2RBkmWx61QKq+TxFDjASBbBywtupJcCsA5ktkjLILS+1eWndPJeSUJiOtzhoN8KIigkYveHSetnxauxv1abqwQTk5PmxRgRt20kZEFSRqZOJUlcl85sZYzNC/G7mneptJtHlcNrPgImuOdus5CW+7W49Z/1xqqWI/iRjwipgEMGusPMlSzdxDX4JzIx6R53pDpAwSAQVGDz4F9eQ==
+" >> ~/.ssh/known_hosts
+                    ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts
+
+                    cd ${WORKSPACE}/crw/
+                    git checkout --track origin/''' + SOURCE_BRANCH + ''' || true
+                    git config user.email "nickboldt+devstudio-release@gmail.com"
+                    git config user.name "Red Hat Devstudio Release Bot"
+                    git config --global push.default matching
+                    # SOLVED :: Fatal: Could not read Username for "https://github.com", No such device or address :: https://github.com/github/hub/issues/1644
+                    git remote -v
+                    git config --global hub.protocol https
+                    git remote set-url origin https://\$GITHUB_TOKEN:x-oauth-basic@github.com/redhat-developer/codeready-workspaces.git
+                    git remote -v
+
+                    # replace LATES_IMAGES with new sorted/uniqd values
+                    cat dependencies/LATEST_IMAGES.new | sort | uniq | grep quay > dependencies/LATEST_IMAGES
+                    rm -f dependencies/LATEST_IMAGES.new
+
+                    # generate list of NVRs, builds, and commit SHAs
+                    rm -f dependencies/LATEST_IMAGES_COMMITS
+                    for d in $(cat dependencies/LATEST_IMAGES); do ./product/getCommitSHAForTag.sh $d >> dependencies/LATEST_IMAGES_COMMITS; done
+
+                    # commit changes
+                    git add dependencies/LATEST_IMAGES dependencies/LATEST_IMAGES_COMMITS || true
+                    git commit -m "[update] Update dependencies/LATEST_IMAGES" dependencies/LATEST_IMAGES dependencies/LATEST_IMAGES_COMMITS
+                    git pull origin ''' + SOURCE_BRANCH + ''' || true
+                    git push origin ''' + SOURCE_BRANCH + '''
+                '''
 
                 def buildDescription="Running..."
 
-                // no changes
-                if (DIFF_LATEST_IMAGES_WITH_REGISTRY.equals("")) {
+                if (!DIFF_LATEST_IMAGES_METADATA.equals("") && DIFF_LATEST_IMAGES_WITH_REGISTRY.equals("") && ) { 
+                    // no changes, but a newer metadata image exists
+                    buildDescription="New metadata image detected: commit changes to LATEST_IMAGES"
+                    currentBuild.description=buildDescription
+                    echo currentBuild.description
+                    echo DIFF_LATEST_IMAGES_METADATA
+
+                    sh COMMITCHANGES
+                    currentBuild.result='UNSTABLE'
+                } else if (DIFF_LATEST_IMAGES_WITH_REGISTRY.equals("")) { 
+                    // no changes
                     buildDescription="No new images detected, including registries: nothing to do!"
                     currentBuild.description=buildDescription
                     echo currentBuild.description
@@ -149,46 +205,7 @@ timeout(120) {
                         sleep(time:60,unit:"SECONDS")
                     }
 
-                    sh '''#!/bin/bash -xe
-                    cd ${WORKSPACE}/crw/product && ./getLatestImageTags.sh ${getLatestImageTagsFlags} --quay | sort | uniq | grep quay > ${WORKSPACE}/crw/dependencies/LATEST_IMAGES.new
-
-                    echo "============ LATEST_IMAGES.new 3 ============>"
-                    cat ${WORKSPACE}/crw/dependencies/LATEST_IMAGES.new
-                    echo "<============ LATEST_IMAGES.new 3 ============"
-
-                    # bootstrapping: if keytab is lost, upload to 
-                    # https://codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/credentials/store/system/domain/_/
-                    # then set Use secret text above and set Bindings > Variable (path to the file) as ''' + CRW_KEYTAB + '''
-                    chmod 700 ''' + CRW_KEYTAB + ''' && chown ''' + USER + ''' ''' + CRW_KEYTAB + '''
-                    echo "pkgs.devel.redhat.com,10.19.208.80 ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAplqWKs26qsoaTxvWn3DFcdbiBxqRLhFngGiMYhbudnAj4li9/VwAJqLm1M6YfjOoJrj9dlmuXhNzkSzvyoQODaRgsjCG5FaRjuN8CSM/y+glgCYsWX1HFZSnAasLDuW0ifNLPR2RBkmWx61QKq+TxFDjASBbBywtupJcCsA5ktkjLILS+1eWndPJeSUJiOtzhoN8KIigkYveHSetnxauxv1abqwQTk5PmxRgRt20kZEFSRqZOJUlcl85sZYzNC/G7mneptJtHlcNrPgImuOdus5CW+7W49Z/1xqqWI/iRjwipgEMGusPMlSzdxDX4JzIx6R53pDpAwSAQVGDz4F9eQ==
-" >> ~/.ssh/known_hosts
-                    ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts
-
-                    cd ${WORKSPACE}/crw/
-                    git checkout --track origin/''' + SOURCE_BRANCH + ''' || true
-                    git config user.email "nickboldt+devstudio-release@gmail.com"
-                    git config user.name "Red Hat Devstudio Release Bot"
-                    git config --global push.default matching
-                    # SOLVED :: Fatal: Could not read Username for "https://github.com", No such device or address :: https://github.com/github/hub/issues/1644
-                    git remote -v
-                    git config --global hub.protocol https
-                    git remote set-url origin https://\$GITHUB_TOKEN:x-oauth-basic@github.com/redhat-developer/codeready-workspaces.git
-                    git remote -v
-
-                    # replace LATES_IMAGES with new sorted/uniqd values
-                    cat dependencies/LATEST_IMAGES.new | sort | uniq | grep quay > dependencies/LATEST_IMAGES
-                    rm -f dependencies/LATEST_IMAGES.new
-
-                    # generate list of NVRs, builds, and commit SHAs
-                    rm -f dependencies/LATEST_IMAGES_COMMITS
-                    for d in $(cat dependencies/LATEST_IMAGES); do ./product/getCommitSHAForTag.sh $d >> dependencies/LATEST_IMAGES_COMMITS; done
-
-                    # commit changes
-                    git add dependencies/LATEST_IMAGES dependencies/LATEST_IMAGES_COMMITS || true
-                    git commit -m "[update] Update dependencies/LATEST_IMAGES" dependencies/LATEST_IMAGES dependencies/LATEST_IMAGES_COMMITS
-                    git pull origin ''' + SOURCE_BRANCH + ''' || true
-                    git push origin ''' + SOURCE_BRANCH + '''
-                    '''
+                    sh COMMITCHANGES
                 }
                 archiveArtifacts fingerprint: false, artifacts:"crw/dependencies/LATEST_IMAGES*"
             }
