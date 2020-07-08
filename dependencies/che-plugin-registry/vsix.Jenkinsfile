@@ -197,7 +197,7 @@ timeout(120) {
             buildPhpDebug(branchToBuildPlugin, extensionFolder)
         } else if (extensionPath.equals("https://github.com/microsoft/vscode-node-debug")) {
             buildNodeDebug(extensionFolder)
-        } else if (extensionPath.equals("https://bitbucket.org/atlassianlabs/atlascode")) {}
+        } else if (extensionPath.equals("https://bitbucket.org/atlassianlabs/atlascode")) {
             buildAtlascode(extensionFolder)
         } else {
             buildDefault(extensionFolder)
