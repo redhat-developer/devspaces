@@ -116,6 +116,27 @@ def buildNodeDebug(extensionFolder) {
     sh "cd ${extensionFolder} && npm install && yarn package"
 }
 
+def buildAtlascode(extensionFolder) {
+    // libsecret is required for Atlascode
+    sh "sudo yum install libsecret libsecret-dev"
+
+    archiveSources(extensionFolder)
+    installNPM()
+
+    // go to extension directory
+    sh "cd ${extensionFolder}"
+
+    // get exactly Branch name
+    def version = sh script: "git symbolic-ref -q --short HEAD || git describe --tags --exact-match)", returnStdout: true
+
+    sh """\
+    npm install -g vsce && \
+    npm -no-git-tag-version --allow-same-version -f version ${version} && \
+    npm install && \
+    vsce package --baseContentUrl https://bitbucket.org/atlassianlabs/atlascode/src/main/
+    """
+}
+
 timeout(120) {
     node("rhel7||rhel7-8gb||rhel7-16gb||rhel7-releng"){ stage "Build ${extensionPath}"
         cleanWs()
@@ -173,9 +194,11 @@ timeout(120) {
         } else if (extensionPath.contains("https://github.com/microsoft/vscode-java-debug")) {
             buildJavaExtension(branchToBuildPlugin, extensionFolder)
         } else if (extensionPath.contains("https://github.com/felixfbecker/vscode-php-debug")) {
-            buildPhpDebug(branchToBuildPlugin, extensionFolder) 
+            buildPhpDebug(branchToBuildPlugin, extensionFolder)
         } else if (extensionPath.equals("https://github.com/microsoft/vscode-node-debug")) {
-            buildNodeDebug(extensionFolder) 
+            buildNodeDebug(extensionFolder)
+        } else if (extensionPath.equals("https://bitbucket.org/atlassianlabs/atlascode")) {
+            buildAtlascode(extensionFolder)
         } else {
             buildDefault(extensionFolder)
         }
