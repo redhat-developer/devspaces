@@ -1,7 +1,8 @@
 #!/usr/bin/env groovy
 
 // PARAMETERS for this pipeline:
-// CRW_VERSION = 2.1.0
+// CRW_VERSION = 2.2.0
+// CRW_VERSION_FLAG = --crw22
 
 def buildNode = "rhel7-releng" // slave label
 
@@ -53,7 +54,7 @@ kinit "crw-build/codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com@RE
 klist # verify working
 
 # generate source files
-cd crw/product/manifest/ && ./get-3rd-party-sources.sh --clean
+cd crw/product/manifest/ && ./get-3rd-party-sources.sh --clean ''' + CRW_VERSION_FLAG + '''
 
 # set up sshfs mount
 DESTHOST="crw-build/codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com@rcm-guest.app.eng.bos.redhat.com"
