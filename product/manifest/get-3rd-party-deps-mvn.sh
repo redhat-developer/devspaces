@@ -1,13 +1,13 @@
 #!/bin/bash
 
-# script to generate a manifest of all the maven dependencies used ot build upstream Che projects
+# script to generate a manifest of all the maven dependencies used to build upstream Che projects
 
-# use x.y (not x.y.z) version
-CRW_VERSION=2.1
+# use x.y (not x.y.z) version, eg., 2.2
+CRW_VERSION=$(curl -sSLo - https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/master/dependencies/VERSION)
 CRW_TAG_OR_BRANCH=master
 
-# use x.y.z version
-CHE_VERSION=7.9.3
+# use x.y.z version, eg., 7.14.3
+CHE_VERSION=$(curl -sSLo - https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/master/pom.xml | grep "<che.version>" | sed -r -e "s#.*<che.version>(.+)</che.version>.*#\1#")
 
 cd /tmp
 MANIFEST_FILE=/tmp/manifest-mvn.txt
