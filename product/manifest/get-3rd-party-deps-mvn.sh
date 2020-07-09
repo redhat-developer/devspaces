@@ -2,6 +2,13 @@
 
 # script to generate a manifest of all the maven dependencies used to build upstream Che projects
 
+# compute version from latest operator package.yaml, eg., 2.2.0
+# TODO when we switch to OCP 4.6 bundle format, extract this version from another place
+CSV_VERSION="$1"
+if [[ ! ${CSV_VERSION} ]]; then 
+  CSV_VERSION=$(curl -sSLo - https://raw.githubusercontent.com/redhat-developer/codeready-workspaces-operator/master/controller-manifests/codeready-workspaces.package.yaml | yq .channels[0].currentCSV -r | sed -r -e "s#crwoperator.v##")
+fi
+
 # use x.y (not x.y.z) version, eg., 2.2
 CRW_VERSION=$(curl -sSLo - https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/master/dependencies/VERSION)
 CRW_TAG_OR_BRANCH=master
@@ -10,7 +17,8 @@ CRW_TAG_OR_BRANCH=master
 CHE_VERSION=$(curl -sSLo - https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/master/pom.xml | grep "<che.version>" | sed -r -e "s#.*<che.version>(.+)</che.version>.*#\1#")
 
 cd /tmp
-MANIFEST_FILE=/tmp/manifest-mvn.txt
+mkdir -p ${WORKSPACE}/${CSV_VERSION}/mvn
+MANIFEST_FILE="${WORKSPACE}/${CSV_VERSION}/mvn/manifest-mvn.txt"
 
 rm -fr ${MANIFEST_FILE} ${MANIFEST_FILE/.txt/-raw-unsorted.txt}
 
