@@ -123,10 +123,8 @@ def buildAtlascode(branchToBuildPlugin, extensionFolder) {
     archiveSources(extensionFolder)
     installNPM()
 
-    // go to extension directory
-    sh "cd ${extensionFolder}"
-
     sh """\
+    cd ${extensionFolder} && \
     npm install -g vsce && \
     npm -no-git-tag-version --allow-same-version -f version ${branchToBuildPlugin} && \
     npm install && \
