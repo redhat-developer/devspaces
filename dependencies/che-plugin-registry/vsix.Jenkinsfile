@@ -127,7 +127,7 @@ def buildAtlascode(extensionFolder) {
     sh "cd ${extensionFolder}"
 
     // get exactly Branch name
-    def version = sh script: "git symbolic-ref -q --short HEAD || git describe --tags --exact-match)", returnStdout: true
+    def version = sh script: "git symbolic-ref -q --short HEAD || git describe --tags --exact-match", returnStdout: true
 
     sh """\
     npm install -g vsce && \
