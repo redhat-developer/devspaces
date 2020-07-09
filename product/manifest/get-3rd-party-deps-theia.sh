@@ -31,9 +31,8 @@ for d in $(cat ${MANIFEST_FILE} | egrep "https://|http://"); do
 	echo -n "."
 done
 echo ""
-cat ${MANIFEST_FILE}.2 | uniq | sort | egrep -v "${EXCLUDE_LINES}" > ${MANIFEST_FILE}
-cat ${MANIFEST_FILE} | uniq | sort > ${MANIFEST_FILE}.2
-cat ${MANIFEST_FILE}.2 | uniq | sort > ${MANIFEST_FILE} 
+cat ${MANIFEST_FILE}.2 | uniq | sort | egrep -v "${EXCLUDE_LINES}" | uniq | sort > ${MANIFEST_FILE}
+rm -f ${MANIFEST_FILE}.2
 
 # TODO get brew builds' logs too
 
