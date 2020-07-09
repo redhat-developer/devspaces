@@ -22,6 +22,7 @@ for key in "$@"; do
   case $key in
     '--clean') cleanup;;
     '--debug') DEBUG=1;;
+    '--crw'*) getLatestImageFlag="$1";;
     *) phases="${phases} $1 ";;
   esac
   shift 1
@@ -93,8 +94,8 @@ if [[ ${phases} == *"1"* ]]; then
 
     # check NVR for a matching tarball or tarballs
     if [[ ! -f ${WORKSPACE}/NVRs.txt ]]; then
-        ../getLatestImageTags.sh \
-            --crw21 --nvr | tee ${WORKSPACE}/NVRs.txt
+        mnf "Fetch latest image list ${getLatestImageFlag} ..."
+        ../getLatestImageTags.sh ${getLatestImageFlag} --nvr | tee ${WORKSPACE}/NVRs.txt
     fi
     cat ${WORKSPACE}/NVRs.txt | sort | tee -a ${MANIFEST_FILE}
     mnf ""
