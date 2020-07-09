@@ -3,6 +3,16 @@
 # script to generate a manifest of all the 3rd party deps not built in OSBS, but built in Jenkins or imported from upstream community.
 
 SCRIPT=$(readlink -f "$0"); SCRIPTPATH=$(dirname "$SCRIPT"); # echo $SCRIPTPATH
+phases=" 1 2 3 4 5 6 7 8 9 "
+
+# commandline args
+for key in "$@"; do
+  case $key in
+    '--crw'*) getLatestImageFlag="$1";;
+    *) phases="${phases} $1 ";;
+  esac
+  shift 1
+done
 
 cd /tmp
 
@@ -91,229 +101,237 @@ function logDockerDetails ()
 
 rm -f ${LOG_FILE} ${MANIFEST_FILE}
 
-log "1. Check out 3rd party language server dependencies builder repo (will collect variables later)" 
-cd /tmp
-if [[ ! -d codeready-workspaces-deprecated ]]; then 
-  git clone git@github.com:redhat-developer/codeready-workspaces-deprecated.git
-fi
-pushd codeready-workspaces-deprecated >/dev/null
-	git checkout ${CRW_BRANCH_TAG}
-popd >/dev/null
-log ""
-# NOTE: don't delete this checkout yet, we need it for later.
-
-log "2. Define list of upstream containers & RPMs pulled into them from https://pkgs.devel.redhat.com/cgit/?q=codeready-workspaces "
-for d in \
-codeready-workspaces \
-codeready-workspaces-operator codeready-workspaces-operator-metadata \
-\
-codeready-workspaces-jwtproxy codeready-workspaces-machineexec \
-codeready-workspaces-devfileregistry codeready-workspaces-pluginregistry \
-codeready-workspaces-pluginbroker-metadata codeready-workspaces-plugin-artifacts \
-codeready-workspaces-plugin-kubernetes codeready-workspaces-plugin-openshift \
-codeready-workspaces-plugin-java11 codeready-workspaces-plugin-java8 \
-codeready-workspaces-imagepuller \
-\
-codeready-workspaces-theia-dev \
-codeready-workspaces-theia codeready-workspaces-theia-endpoint \
-\
-codeready-workspaces-stacks-cpp codeready-workspaces-stacks-dotnet \
-codeready-workspaces-stacks-golang codeready-workspaces-stacks-php \
-; do
-	if [[ $d == "codeready-workspaces" ]]; then
-		containerName=${d##containers/}-server-rhel8-container
-	else
-		containerName=${d##containers/}-rhel8-container
+if [[ ${phases} == *"1"* ]]; then
+	log "1a. Check out 3rd party language server dependencies builder repo (will collect variables later)" 
+	cd /tmp
+	if [[ ! -d codeready-workspaces-deprecated ]]; then 
+	git clone git@github.com:redhat-developer/codeready-workspaces-deprecated.git
 	fi
-	# echo $containerName
-	log ""
-	log "== ${d} (crw-2.2-rhel-8) =="
-	logDockerDetails http://pkgs.devel.redhat.com/cgit/containers/${d}/plain/Dockerfile?h=crw-2.2-rhel-8 "containers/${containerName/}:${CSV_VERSION}/"
-done
-bth ""
-
-log "3. Other than the above, all artifacts used in CodeReady Workspaces are now built in RH Central CI Jenkins:"
-log "https://codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/CRW_CI/view/Builds/"
-log "https://codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/CRW_CI/view/Pipelines/"
-log ""
-log "See also latest build architecture diagram & development documentation:"
-log "https://docs.google.com/presentation/d/1R9tr67pDMk3UVUbvN7vBJbJCYGlUsO2ZPcXbdaoOvTs/edit#slide=id.g4ac34a3cdd_0_0"
-log "https://github.com/redhat-developer/codeready-workspaces-productization/tree/master/devdoc"
-
-##################################
-
-log ""
-log " == golang =="
-log ""
-log "4a-1. Install golang go deps: go-language-server@${GOLANG_LS_VERSION}"
-getBashVars golang
-for d in \
-	"GOLANG_IMAGE_VERSION" \
-	"GOLANG_LINT_VERSION" \
-	"GOLANG_LS_OLD_DEPS" \
-	"GOLANG_LS_VERSION" \
-	"NODEJS_IMAGE_VERSION" \
-	; do
-	log " * $d = ${!d}"
-done
-log ""
-cd /tmp
-export GOPATH=/tmp/go-deps-tmp/
-rm -fr /tmp/go-deps-tmp
-mkdir -p go-deps-tmp && cd go-deps-tmp
-
-if [[ ! -x /usr/bin/go ]]; then echo "Error: install golang to run this script: sudo yum -y install golang"; fi
-
-# run the same set of go get -v commands in the build.sh script:
-egrep "go get -v|go build -o|GOLANG_LINT_VERSION" /tmp/codeready-workspaces-deprecated/golang/build.sh > todos.txt
-while read p; do
-	# if you want more detailed output and logging, comment the nest 1 line and uncomment the following 4 lines
-	log "  ${p%%;*}"; ${p%%;*}
-	#log " == ${p%%;*} ==>"
-	#${p%%;*} 2>&1 | tee -a ${LOG_FILE}
-	#log "<== ${p%%;*} =="
-	#log ""
-done <todos.txt
-
-# now get the SHAs used in each github repo cloned locally
-mnf "codeready-workspaces-stacks-golang-container:${CSV_VERSION}/go-language-server:${GOLANG_LS_VERSION}"
-for d in $(find . -name ".git" | sort); do
-	g=${d%%/.git}
-	pushd ${g} >/dev/null
-	mnf "  codeready-workspaces-stacks-golang-container:${CSV_VERSION}/${g##./src/}:$(git rev-parse HEAD)"
+	pushd codeready-workspaces-deprecated >/dev/null
+		git checkout ${CRW_BRANCH_TAG}
 	popd >/dev/null
-done
-mnf ""
-rm -fr /tmp/go-deps-tmp /tmp/go-build*
+	log ""
+	# NOTE: don't delete this checkout yet, we need it for later.
 
-log ""
-log "4a-2. Install golang npm deps: go-language-server@${GOLANG_LS_VERSION}"
-log ""
-cd /tmp
-rm -fr /tmp/npm-deps-tmp
-mkdir -p npm-deps-tmp && cd npm-deps-tmp
-npm install --prefix /tmp/npm-deps-tmp/ go-language-server@${GOLANG_LS_VERSION} | tee -a ${LOG_FILE}
-log ""
-npm list >> ${LOG_FILE}
-mnf "codeready-workspaces-stacks-golang-container:${CSV_VERSION}/go-language-server:${GOLANG_LS_VERSION}"
-npmList "  codeready-workspaces-stacks-golang-container:${CSV_VERSION}/"
-mnf ""
-rm -fr /tmp/npm-deps-tmp
+	log "1b. Define list of upstream containers & RPMs pulled into them from https://pkgs.devel.redhat.com/cgit/?q=codeready-workspaces "
+	for d in \
+	codeready-workspaces \
+	codeready-workspaces-operator codeready-workspaces-operator-metadata \
+	\
+	codeready-workspaces-jwtproxy codeready-workspaces-machineexec \
+	codeready-workspaces-devfileregistry codeready-workspaces-pluginregistry \
+	codeready-workspaces-pluginbroker-metadata codeready-workspaces-plugin-artifacts \
+	codeready-workspaces-plugin-kubernetes codeready-workspaces-plugin-openshift \
+	codeready-workspaces-plugin-java11 codeready-workspaces-plugin-java8 \
+	codeready-workspaces-imagepuller \
+	\
+	codeready-workspaces-theia-dev \
+	codeready-workspaces-theia codeready-workspaces-theia-endpoint \
+	\
+	codeready-workspaces-stacks-cpp codeready-workspaces-stacks-dotnet \
+	codeready-workspaces-stacks-golang codeready-workspaces-stacks-php \
+	; do
+		if [[ $d == "codeready-workspaces" ]]; then
+			containerName=${d##containers/}-server-rhel8-container
+		else
+			containerName=${d##containers/}-rhel8-container
+		fi
+		# echo $containerName
+		log ""
+		log "== ${d} (crw-2.2-rhel-8) =="
+		logDockerDetails http://pkgs.devel.redhat.com/cgit/containers/${d}/plain/Dockerfile?h=crw-2.2-rhel-8 "containers/${containerName/}:${CSV_VERSION}/"
+	done
+	bth ""
+
+	log "1c. Other than the above, all artifacts used in CodeReady Workspaces are now built in RH Central CI Jenkins:"
+	log "https://codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/CRW_CI/view/Builds/"
+	log "https://codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/CRW_CI/view/Pipelines/"
+	log ""
+	log "See also latest build architecture diagram & development documentation:"
+	log "https://docs.google.com/presentation/d/1R9tr67pDMk3UVUbvN7vBJbJCYGlUsO2ZPcXbdaoOvTs/edit#slide=id.g4ac34a3cdd_0_0"
+	log "https://github.com/redhat-developer/codeready-workspaces-productization/tree/master/devdoc"
+fi
 
 ##################################
 
-cd /tmp
-log ""
-log " == kamel =="
-log ""
-log "4b. kamel is built from sources with no additional requirements"
-getBashVars kamel
-for d in \
-	"GOLANG_IMAGE_VERSION" \
-	"KAMEL_VERSION" \
-	; do
-	log " * $d = ${!d}"
-done
-log ""
+if [[ ${phases} == *"2"* ]]; then
+	log ""
+	log " == golang =="
+	log ""
+	log "2a. Install golang go deps: go-language-server@${GOLANG_LS_VERSION}"
+	getBashVars golang
+	for d in \
+		"GOLANG_IMAGE_VERSION" \
+		"GOLANG_LINT_VERSION" \
+		"GOLANG_LS_OLD_DEPS" \
+		"GOLANG_LS_VERSION" \
+		"NODEJS_IMAGE_VERSION" \
+		; do
+		log " * $d = ${!d}"
+	done
+	log ""
+	cd /tmp
+	export GOPATH=/tmp/go-deps-tmp/
+	rm -fr /tmp/go-deps-tmp
+	mkdir -p go-deps-tmp && cd go-deps-tmp
+
+	if [[ ! -x /usr/bin/go ]]; then echo "Error: install golang to run this script: sudo yum -y install golang"; fi
+
+	# run the same set of go get -v commands in the build.sh script:
+	egrep "go get -v|go build -o|GOLANG_LINT_VERSION" /tmp/codeready-workspaces-deprecated/golang/build.sh > todos.txt
+	while read p; do
+		# if you want more detailed output and logging, comment the nest 1 line and uncomment the following 4 lines
+		log "  ${p%%;*}"; ${p%%;*}
+		#log " == ${p%%;*} ==>"
+		#${p%%;*} 2>&1 | tee -a ${LOG_FILE}
+		#log "<== ${p%%;*} =="
+		#log ""
+	done <todos.txt
+
+	# now get the SHAs used in each github repo cloned locally
+	mnf "codeready-workspaces-stacks-golang-container:${CSV_VERSION}/go-language-server:${GOLANG_LS_VERSION}"
+	for d in $(find . -name ".git" | sort); do
+		g=${d%%/.git}
+		pushd ${g} >/dev/null
+		mnf "  codeready-workspaces-stacks-golang-container:${CSV_VERSION}/${g##./src/}:$(git rev-parse HEAD)"
+		popd >/dev/null
+	done
+	mnf ""
+	rm -fr /tmp/go-deps-tmp /tmp/go-build*
+
+	log ""
+	log "2b. Install golang npm deps: go-language-server@${GOLANG_LS_VERSION}"
+	log ""
+	cd /tmp
+	rm -fr /tmp/npm-deps-tmp
+	mkdir -p npm-deps-tmp && cd npm-deps-tmp
+	npm install --prefix /tmp/npm-deps-tmp/ go-language-server@${GOLANG_LS_VERSION} | tee -a ${LOG_FILE}
+	log ""
+	npm list >> ${LOG_FILE}
+	mnf "codeready-workspaces-stacks-golang-container:${CSV_VERSION}/go-language-server:${GOLANG_LS_VERSION}"
+	npmList "  codeready-workspaces-stacks-golang-container:${CSV_VERSION}/"
+	mnf ""
+	rm -fr /tmp/npm-deps-tmp
+
+	cd /tmp
+	log ""
+	log " == kamel =="
+	log ""
+	log "2c. kamel is built from go sources with no additional requirements"
+	getBashVars kamel
+	for d in \
+		"GOLANG_IMAGE_VERSION" \
+		"KAMEL_VERSION" \
+		; do
+		log " * $d = ${!d}"
+	done
+	log ""
+fi
 
 ##################################
 
-cd /tmp
-log ""
-log " == node10 (plugin-java8 container) =="
-log""
-log "4c. Install node10 deps: typescript@${TYPERSCRIPT_VERSION} typescript-language-server@${TYPESCRIPT_LS_VERSION}"
-getBashVars node10
-for d in \
-	"NODEJS_IMAGE_VERSION" \
-	"NODEMON_VERSION" \
-	"TYPERSCRIPT_VERSION" \
-	"TYPESCRIPT_LS_VERSION" \
-	; do
-	log " * $d = ${!d}"
-done
-log ""
-cd /tmp
-rm -fr /tmp/npm-deps-tmp
-mkdir -p npm-deps-tmp && cd npm-deps-tmp
-npm install --prefix /tmp/npm-deps-tmp/ typescript@${TYPERSCRIPT_VERSION} typescript-language-server@${TYPESCRIPT_LS_VERSION} | tee -a ${LOG_FILE}
-log ""
-npm list >> ${LOG_FILE}
-mnf "codeready-workspaces-plugin-java8-container:${CSV_VERSION}/typescript:${TYPERSCRIPT_VERSION}"
-mnf "codeready-workspaces-plugin-java8-container:${CSV_VERSION}/typescript-language-server:${TYPESCRIPT_LS_VERSION}"
-npmList "  codeready-workspaces-plugin-java8-container:${CSV_VERSION}/"
-mnf ""
-rm -fr /tmp/npm-deps-tmp
+if [[ ${phases} == *"3"* ]]; then
+	cd /tmp
+	log ""
+	log " == node10 (plugin-java8 container) =="
+	log""
+	log "4. Install node10 deps: typescript@${TYPERSCRIPT_VERSION} typescript-language-server@${TYPESCRIPT_LS_VERSION}"
+	getBashVars node10
+	for d in \
+		"NODEJS_IMAGE_VERSION" \
+		"NODEMON_VERSION" \
+		"TYPERSCRIPT_VERSION" \
+		"TYPESCRIPT_LS_VERSION" \
+		; do
+		log " * $d = ${!d}"
+	done
+	log ""
+	cd /tmp
+	rm -fr /tmp/npm-deps-tmp
+	mkdir -p npm-deps-tmp && cd npm-deps-tmp
+	npm install --prefix /tmp/npm-deps-tmp/ typescript@${TYPERSCRIPT_VERSION} typescript-language-server@${TYPESCRIPT_LS_VERSION} | tee -a ${LOG_FILE}
+	log ""
+	npm list >> ${LOG_FILE}
+	mnf "codeready-workspaces-plugin-java8-container:${CSV_VERSION}/typescript:${TYPERSCRIPT_VERSION}"
+	mnf "codeready-workspaces-plugin-java8-container:${CSV_VERSION}/typescript-language-server:${TYPESCRIPT_LS_VERSION}"
+	npmList "  codeready-workspaces-plugin-java8-container:${CSV_VERSION}/"
+	mnf ""
+	rm -fr /tmp/npm-deps-tmp
+fi
 
 ##################################
 
-cd /tmp
-log ""
-log " == php =="
-log""
-log "4d. Install php deps: "
-getBashVars php
-for d in \
-	"PHP_LS_VERSION" \
-	"PHP_LS_IMAGE" \
-	"PHP_XDEBUG_IMAGE" \
-	; do
-	log " * $d = ${!d}"
-done
-log ""
-log "$ php composer.phar require jetbrains/phpstorm-stubs:dev-master"
-log "$ php composer.phar require felixfbecker/language-server:${PHP_LS_VERSION}"
-cd /tmp
-rm -fr /tmp/php-deps-tmp
-mkdir -p php-deps-tmp && cd php-deps-tmp
+if [[ ${phases} == *"5"* ]]; then
+	cd /tmp
+	log ""
+	log " == php =="
+	log""
+	log "5. Install php deps: "
+	getBashVars php
+	for d in \
+		"PHP_LS_VERSION" \
+		"PHP_LS_IMAGE" \
+		"PHP_XDEBUG_IMAGE" \
+		; do
+		log " * $d = ${!d}"
+	done
+	log ""
+	log "$ php composer.phar require jetbrains/phpstorm-stubs:dev-master"
+	log "$ php composer.phar require felixfbecker/language-server:${PHP_LS_VERSION}"
+	cd /tmp
+	rm -fr /tmp/php-deps-tmp
+	mkdir -p php-deps-tmp && cd php-deps-tmp
 
-curl -sSLO https://getcomposer.org/installer 
-php /tmp/installer
+	curl -sSLO https://getcomposer.org/installer 
+	php /tmp/installer
 
-php composer.phar require -d /tmp/php-deps-tmp jetbrains/phpstorm-stubs:dev-master | tee -a ${LOG_FILE}
-log ""
-php composer.phar require -d /tmp/php-deps-tmp felixfbecker/language-server:${PHP_LS_VERSION} | tee -a ${LOG_FILE}
-# php composer.phar run-script --working-dir=vendor/felixfbecker/language-server parse-stubs # does not install new deps, so don't need to run this
-php composer.phar show -t >> ${LOG_FILE}
-log ""
-php composer.phar show >> ${LOG_FILE}
-mnf "codeready-workspaces-stacks-php-container:${CSV_VERSION}/jetbrains/phpstorm-stubs:dev-master"
-mnf "codeready-workspaces-stacks-php-container:${CSV_VERSION}/felixfbecker/language-server:${PHP_LS_VERSION}"
-phpList "  codeready-workspaces-stacks-php-container:${CSV_VERSION}/"
-mnf ""
-cd /tmp
-rm -fr /tmp/php-deps-tmp
+	php composer.phar require -d /tmp/php-deps-tmp jetbrains/phpstorm-stubs:dev-master | tee -a ${LOG_FILE}
+	log ""
+	php composer.phar require -d /tmp/php-deps-tmp felixfbecker/language-server:${PHP_LS_VERSION} | tee -a ${LOG_FILE}
+	# php composer.phar run-script --working-dir=vendor/felixfbecker/language-server parse-stubs # does not install new deps, so don't need to run this
+	php composer.phar show -t >> ${LOG_FILE}
+	log ""
+	php composer.phar show >> ${LOG_FILE}
+	mnf "codeready-workspaces-stacks-php-container:${CSV_VERSION}/jetbrains/phpstorm-stubs:dev-master"
+	mnf "codeready-workspaces-stacks-php-container:${CSV_VERSION}/felixfbecker/language-server:${PHP_LS_VERSION}"
+	phpList "  codeready-workspaces-stacks-php-container:${CSV_VERSION}/"
+	mnf ""
+	cd /tmp
+	rm -fr /tmp/php-deps-tmp
+fi
 
 ##################################
 
-cd /tmp
-log ""
-log " == python (plugin-java8 container) =="
-log ""
-log "4e. Install python deps: pip install python-language-server[all]==${PYTHON_LS_VERSION}"
-getBashVars python
-for d in \
-	"PYTHON_IMAGE_VERSION" \
-	"PYTHON_LS_VERSION" \
-	; do
-	log " * $d = ${!d}"
-done
-log ""
-cd /tmp
-rm -fr /tmp/python-deps-tmp
-mkdir -p python-deps-tmp && cd python-deps-tmp
+if [[ ${phases} == *"6"* ]]; then
+	cd /tmp
+	log ""
+	log " == python (plugin-java8 container) =="
+	log ""
+	log "6. Install python deps: pip install python-language-server[all]==${PYTHON_LS_VERSION}"
+	getBashVars python
+	for d in \
+		"PYTHON_IMAGE_VERSION" \
+		"PYTHON_LS_VERSION" \
+		; do
+		log " * $d = ${!d}"
+	done
+	log ""
+	cd /tmp
+	rm -fr /tmp/python-deps-tmp
+	mkdir -p python-deps-tmp && cd python-deps-tmp
 
-python3 -m virtualenv env
-source env/bin/activate
-which python
-pip install --upgrade pip
-pip install python-language-server[all]==${PYTHON_LS_VERSION} | tee -a ${LOG_FILE}
-log ""
-pip list >> ${LOG_FILE}
-mnf "codeready-workspaces-plugin-java8-container:${CSV_VERSION}/python-language-server[all]:${PYTHON_LS_VERSION}"
-pythonList "  codeready-workspaces-plugin-java8-container:${CSV_VERSION}/"
-deactivate
-rm -fr /tmp/python-deps-tmp
+	python3 -m virtualenv env
+	source env/bin/activate
+	which python
+	pip install --upgrade pip
+	pip install python-language-server[all]==${PYTHON_LS_VERSION} | tee -a ${LOG_FILE}
+	log ""
+	pip list >> ${LOG_FILE}
+	mnf "codeready-workspaces-plugin-java8-container:${CSV_VERSION}/python-language-server[all]:${PYTHON_LS_VERSION}"
+	pythonList "  codeready-workspaces-plugin-java8-container:${CSV_VERSION}/"
+	deactivate
+	rm -fr /tmp/python-deps-tmp
+fi
 
 # now we can delete the codeready-workspaces-deprecated checkout folder as we don't need its contents anymore
 rm -fr /tmp/codeready-workspaces-deprecated
@@ -326,26 +344,32 @@ rm -fr /tmp/codeready-workspaces-deprecated
 
 ##################################
 
-log""
-log "5. Collect RPM deps"
-cd /tmp
-${SCRIPTPATH}/${0/manifests/rpms} -v "${CSV_VERSION}"
+if [[ ${phases} == *"7"* ]]; then
+	log""
+	log "7. Collect RPM deps"
+	cd /tmp
+	${SCRIPTPATH}/${0/manifests/rpms} -v "${CSV_VERSION}" "${getLatestImageFlag}"
+fi
 
 ##################################
 
-log ""
-log "6. Collect MVN deps"
-log ""
-cd /tmp
-${SCRIPTPATH}/${0/manifests/mvn} "${CSV_VERSION}"
+if [[ ${phases} == *"8"* ]]; then
+	log ""
+	log "8. Collect MVN deps"
+	log ""
+	cd /tmp
+	${SCRIPTPATH}/${0/manifests/mvn} "${CSV_VERSION}"
+fi
 
 ##################################
 
-log ""
-log "7. Collect Theia deps"
-log ""
-cd /tmp
-${SCRIPTPATH}/${0/manifests/theia} "${CSV_VERSION}"
+if [[ ${phases} == *"9"* ]]; then
+	log ""
+	log "9. Collect Theia deps"
+	log ""
+	cd /tmp
+	${SCRIPTPATH}/${0/manifests/theia} "${CSV_VERSION}"
+fi
 
 ##################################
 
