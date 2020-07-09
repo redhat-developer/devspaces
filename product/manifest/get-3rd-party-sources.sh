@@ -94,9 +94,11 @@ if [[ ${phases} == *"1"* ]]; then
 
     # check NVR for a matching tarball or tarballs
     if [[ ! -f ${WORKSPACE}/NVRs.txt ]]; then
-        mnf "Fetch latest image list ${getLatestImageFlag} ..."
+        mnf "Latest image list ${getLatestImageFlag}"
         ../getLatestImageTags.sh ${getLatestImageFlag} --nvr | tee ${WORKSPACE}/NVRs.txt
+        mnf ""
     fi
+    mnf "Sorted image list"
     cat ${WORKSPACE}/NVRs.txt | sort | tee -a ${MANIFEST_FILE}
     mnf ""
 
