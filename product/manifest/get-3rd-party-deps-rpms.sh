@@ -5,6 +5,7 @@
 # candidateTag="crw-2.0-rhel-8-candidate" # 2.0, 2.1
 candidateTag="crw-2.2-rhel-8-container-candidate" # 2.2
 
+getLatestImageFlag="" # placeholder for a --crw22 flag to pass to getLatestImageTags.sh
 allNVRs=""
 MATCH=""
 quiet=0
@@ -25,6 +26,7 @@ $0 # to generate overall log for all latest NVRs
 while [[ "$#" -gt 0 ]]; do
   case $1 in
     '-h'|'--help') echo -e "$HELP"; exit 1;;
+    '--crw'*) getLatestImageFlag="$1"; shift 1;;
     '-v')    CSV_VERSION="$2";     shift 2;;
     '-g')          MATCH="$2";     shift 2;;
     '-q')          quiet=1;        shift 1;;
@@ -62,7 +64,8 @@ function loadNVRs() {
 	pushd /tmp >/dev/null
 	curl -sSLO https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/master/product/getLatestImageTags.sh
 	chmod +x getLatestImageTags.sh
-	/tmp/getLatestImageTags.sh --nvr | tee /tmp/getLatestImageTags.sh.nvrs.txt
+	mnf "Latest image list ${getLatestImageFlag}"
+	/tmp/getLatestImageTags.sh ${getLatestImageFlag} --nvr | tee /tmp/getLatestImageTags.sh.nvrs.txt
 	loadNVRs_return="$(cat /tmp/getLatestImageTags.sh.nvrs.txt)"
 	popd >/dev/null
 }
