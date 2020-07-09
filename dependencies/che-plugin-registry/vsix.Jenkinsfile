@@ -116,7 +116,7 @@ def buildNodeDebug(extensionFolder) {
     sh "cd ${extensionFolder} && npm install && yarn package"
 }
 
-def buildAtlascode(extensionFolder) {
+def buildAtlascode(branchToBuildPlugin, extensionFolder) {
     // libsecret is required for Atlascode
     sh "sudo yum install libsecret libsecret-dev"
 
@@ -126,12 +126,9 @@ def buildAtlascode(extensionFolder) {
     // go to extension directory
     sh "cd ${extensionFolder}"
 
-    // get exactly Branch name
-    def version = sh script: "git symbolic-ref -q --short HEAD || git describe --tags --exact-match", returnStdout: true
-
     sh """\
     npm install -g vsce && \
-    npm -no-git-tag-version --allow-same-version -f version ${version} && \
+    npm -no-git-tag-version --allow-same-version -f version ${branchToBuildPlugin} && \
     npm install && \
     vsce package --baseContentUrl https://bitbucket.org/atlassianlabs/atlascode/src/main/
     """
@@ -198,7 +195,7 @@ timeout(120) {
         } else if (extensionPath.equals("https://github.com/microsoft/vscode-node-debug")) {
             buildNodeDebug(extensionFolder)
         } else if (extensionPath.equals("https://bitbucket.org/atlassianlabs/atlascode")) {
-            buildAtlascode(extensionFolder)
+            buildAtlascode(branchToBuildPlugin, extensionFolder)
         } else {
             buildDefault(extensionFolder)
         }
