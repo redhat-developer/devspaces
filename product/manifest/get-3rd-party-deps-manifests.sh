@@ -110,7 +110,7 @@ if [[ ${phases} == *"1"* ]] || [[ ${phases} == *"2"* ]] || [[ ${phases} == *"3"*
 	git clone git@github.com:redhat-developer/codeready-workspaces-deprecated.git
 	fi
 	pushd codeready-workspaces-deprecated >/dev/null
-		git checkout ${CRW_BRANCH_TAG} || echo "Tag or branch ${CRW_BRANCH_TAG} does not exist! Create it before running this script."; exit 1
+		git checkout ${CRW_BRANCH_TAG} || { echo "Tag or branch ${CRW_BRANCH_TAG} does not exist! Create it before running this script."; exit 1; }
 	popd >/dev/null
 	log ""
 	# NOTE: don't delete this checkout yet, we need it for later.
