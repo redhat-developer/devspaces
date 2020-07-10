@@ -32,8 +32,8 @@ timeout(20) {
               userRemoteConfigs: [[url: "https://github.com/redhat-developer/codeready-workspaces.git"]]])
 
               sh '''#!/bin/bash -xe
-# install yq
-sudo yum install -y jq python3-six python3-pip
+# install yq, python, php, and golang
+sudo yum install -y jq python3-six python3-pip golang php-devel
 sudo /usr/bin/python3 -m pip install --upgrade pip yq
 
 # bootstrapping: if keytab is lost, upload to 
