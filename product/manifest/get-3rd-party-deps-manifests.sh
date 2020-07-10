@@ -316,7 +316,7 @@ if [[ ${phases} == *"5"* ]]; then
 	log " == python (plugin-java8 container) =="
 	log ""
 	log "5. Install python deps: pip install python-language-server[all]==${PYTHON_LS_VERSION}"
-	if [[ ! $(which python3) ]]; then echo "Error: install python3-six and python3-pip to run this script: sudo yum -y install python3-six python3-pip"; exit 1; fi
+	if [[ ! $(which python3) ]] || [[ ! $(pydoc modules | grep virtualenv) ]]; then echo "Error: install python3-six and python3-pip python-virtualenv to run this script: sudo yum -y install python3-six python3-pip python-virtualenv"; exit 1; fi
 	getBashVars python
 	for d in \
 		"PYTHON_IMAGE_VERSION" \
