@@ -39,6 +39,7 @@ done
 if [[ ! ${CSV_VERSION} ]]; then 
   CSV_VERSION=$(curl -sSLo - https://raw.githubusercontent.com/redhat-developer/codeready-workspaces-operator/master/controller-manifests/codeready-workspaces.package.yaml | yq .channels[0].currentCSV -r | sed -r -e "s#crwoperator.v##")
 fi
+CRW_VERSION=$(echo $CSV_VERSION | sed -r -e "s#([0-9]+\.[0-9]+)[^0-9]+.+#\1#") # trim the x.y part from the x.y.z
 
 cd /tmp
 mkdir -p ${WORKSPACE}/${CSV_VERSION}/rpms
@@ -135,7 +136,7 @@ fi
 ##################################
 
 # get uniq list of RPMs
-cat ${WORKSPACE}/${CSV_VERSION}/rpms/manifest-rpms-codeready-workspaces-* | sed -r -e "s#.+:2.1-[0-9]+/# #g" | sort | uniq > ${MANIFEST_UNIQ_FILE}
+cat ${WORKSPACE}/${CSV_VERSION}/rpms/manifest-rpms-codeready-workspaces-* | sed -r -e "s#.+:${CRW_VERSION}-[0-9]+/# #g" | sort | uniq > ${MANIFEST_UNIQ_FILE}
 
 ##################################
 
@@ -153,6 +154,6 @@ for NVR in ${allNVRs}; do
 done
 echo "" | tee -a ${LOG_FILE}
 
-cat ${WORKSPACE}/${CSV_VERSION}/rpms/manifest-rpms-codeready-workspaces-* | sed -r -e "s#.+:2.1-[0-9]+/# #g" | sort | uniq > ${MANIFEST_UNIQ_FILE}
+cat ${WORKSPACE}/${CSV_VERSION}/rpms/manifest-rpms-codeready-workspaces-* | sed -r -e "s#.+:${CRW_VERSION}-[0-9]+/# #g" | sort | uniq > ${MANIFEST_UNIQ_FILE}
 
 ##################################
