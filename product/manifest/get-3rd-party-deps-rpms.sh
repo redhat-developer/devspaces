@@ -4,7 +4,7 @@
 
 # candidateTag="crw-2.0-rhel-8-candidate" # 2.0, 2.1
 candidateTag="crw-2.2-rhel-8-container-candidate" # 2.2
-
+arches="x86_64" # TODO add s390x and ppc64le eventually
 getLatestImageFlag="" # placeholder for a --crw22 flag to pass to getLatestImageTags.sh
 allNVRs=""
 MATCH=""
@@ -27,6 +27,7 @@ while [[ "$#" -gt 0 ]]; do
   case $1 in
     '-h'|'--help') echo -e "$HELP"; exit 1;;
     '--crw'*) getLatestImageFlag="$1"; shift 1;;
+    '-a'|'--arches') arches="$2";  shift 2;; 
     '-v')    CSV_VERSION="$2";     shift 2;;
     '-g')          MATCH="$2";     shift 2;;
     '-q')          quiet=1;        shift 1;;
@@ -72,9 +73,10 @@ function loadNVRs() {
 }
 
 function loadNVRlog() {
-	NVR=$1
-	MANIFEST_FILE2=$2
-	URL=$(echo $NVR | sed -e "s#\(.\+\(-container\|-rhel8\)\)-\([0-9.]\+\)-\([0-9.]\+\)#http://download.eng.bos.redhat.com/brewroot/packages/\1/\3/\4/data/logs/x86_64-build.log#")
+	NVR="$1"
+	MANIFEST_FILE2="$2"
+	ARCH="$3"
+	URL=$(echo $NVR | sed -e "s#\(.\+\(-container\|-rhel8\)\)-\([0-9.]\+\)-\([0-9.]\+\)#http://download.eng.bos.redhat.com/brewroot/packages/\1/\3/\4/data/logs/${ARCH}-build.log#")
 	# log ""
 	log "   ${URL}"
 
@@ -121,7 +123,9 @@ log "Brew logs:"
 for NVR in ${allNVRs}; do
 	MANIFEST_FILE2="${WORKSPACE}/${CSV_VERSION}/rpms/manifest-rpms-${NVR}.txt"
 	rm -fr ${MANIFEST_FILE2}
-	loadNVRlog $NVR ${MANIFEST_FILE2}
+	for arch in ${arches}; do
+		loadNVRlog $NVR ${MANIFEST_FILE2} ${arch}
+	done
 done
 
 if [[ $quiet -eq 0 ]]; then
