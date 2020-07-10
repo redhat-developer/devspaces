@@ -32,8 +32,9 @@ timeout(20) {
               userRemoteConfigs: [[url: "https://github.com/redhat-developer/codeready-workspaces.git"]]])
 
               sh '''#!/bin/bash -xe
-# install yq, python, pip, golang, nodejs, npm
-sudo yum -y install jq python3-six python3-pip python-virtualenv golang nodejs npm epel-release
+# install yq, python w/ virtualenv, pip, golang, nodejs, npm
+sudo yum -y install jq python3-six python3-pip python-virtualenv-api python-virtualenv-clone python-virtualenvwrapper python36-virtualenv \
+  golang nodejs npm epel-release
 sudo /usr/bin/python3 -m pip install --upgrade pip yq
 
 # instal php 7.3 for RHEL 7 via EPEL and remi
