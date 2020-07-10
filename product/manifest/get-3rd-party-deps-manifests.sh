@@ -1,12 +1,11 @@
 #!/bin/bash
 
-# set -e
+set -e
 
 # script to generate a manifest of all the 3rd party deps not built in OSBS, but built in Jenkins or imported from upstream community.
 
 SCRIPT=$(readlink -f "$0"); SCRIPTPATH=$(dirname "$SCRIPT"); # echo $SCRIPTPATH
-phases=" 1 2 3 4 5 6 7 8 9 "
-
+phases=""
 # commandline args
 for key in "$@"; do
   case $key in
@@ -15,6 +14,7 @@ for key in "$@"; do
   esac
   shift 1
 done
+if [[ ! ${phases} ]]; then phases=" 1 2 3 4 5 6 7 8 "; fi
 
 cd /tmp
 
@@ -59,7 +59,7 @@ function getBashVars () {
 
 function npmList() {
 	prefix="$1"
-	for dep in $(npm list | sed -e "s#[├└─┬│ ]\+##g" -e "s#deduped##g" | sort | uniq | sed -e "s#@#:#g"); do
+	for dep in $(npm list | sed -e "s#[├└─┬│ ]\+##g" -e "s#deduped##g" | sort | uniq | sed -e "s#@#:#g" || true); do
 		echo "$prefix$dep" >> ${MANIFEST_FILE}
 	done
 }
@@ -80,7 +80,7 @@ function phpList() {
 
 function pythonList() {
 	prefix="$1"
-	for dep in $(pip list --format freeze | sed -e "s#==#:#g"); do
+	for dep in $(/usr/bin/python3 -m pip list --format freeze | sed -e "s#==#:#g"); do
 		echo "$prefix$dep" >> ${MANIFEST_FILE}
 	done
 }
@@ -103,18 +103,20 @@ function logDockerDetails ()
 
 rm -f ${LOG_FILE} ${MANIFEST_FILE}
 
-if [[ ${phases} == *"1"* ]]; then
+if [[ ${phases} == *"1"* ]] || [[ ${phases} == *"2"* ]] || [[ ${phases} == *"3"* ]] || [[ ${phases} == *"4"* ]] || [[ ${phases} == *"5"* ]] || [[ ${phases} == *"6"* ]]; then
 	log "1a. Check out 3rd party language server dependencies builder repo (will collect variables later)" 
 	cd /tmp
 	if [[ ! -d codeready-workspaces-deprecated ]]; then 
 	git clone git@github.com:redhat-developer/codeready-workspaces-deprecated.git
 	fi
 	pushd codeready-workspaces-deprecated >/dev/null
-		git checkout ${CRW_BRANCH_TAG} || true
+		git checkout ${CRW_BRANCH_TAG} || echo "Tag or branch ${CRW_BRANCH_TAG} does not exist! Create it before running this script."; exit 1
 	popd >/dev/null
 	log ""
 	# NOTE: don't delete this checkout yet, we need it for later.
+fi
 
+if [[ ${phases} == *"1"* ]]; then
 	log "1b. Define list of upstream containers & RPMs pulled into them from https://pkgs.devel.redhat.com/cgit/?q=codeready-workspaces "
 	for d in \
 	codeready-workspaces \
@@ -161,6 +163,7 @@ if [[ ${phases} == *"2"* ]]; then
 	log " == golang =="
 	log ""
 	log "2a. Install golang go deps: go-language-server@${GOLANG_LS_VERSION}"
+	if [[ ! -x /usr/bin/go ]]; then echo "Error: install golang to run this script: sudo yum -y install golang"; exit 1; fi
 	getBashVars golang
 	for d in \
 		"GOLANG_IMAGE_VERSION" \
@@ -177,18 +180,19 @@ if [[ ${phases} == *"2"* ]]; then
 	rm -fr /tmp/go-deps-tmp
 	mkdir -p go-deps-tmp && cd go-deps-tmp
 
-	if [[ ! -x /usr/bin/go ]]; then echo "Error: install golang to run this script: sudo yum -y install golang"; fi
-
 	# run the same set of go get -v commands in the build.sh script:
-	egrep "go get -v|go build -o|GOLANG_LINT_VERSION" /tmp/codeready-workspaces-deprecated/golang/build.sh > todos.txt
+	egrep "go get -v|go build -o" /tmp/codeready-workspaces-deprecated/golang/build.sh > todos.txt
 	while read p; do
-		# if you want more detailed output and logging, comment the nest 1 line and uncomment the following 4 lines
-		log "  ${p%%;*}"; ${p%%;*}
+		# if you want more detailed output and logging, comment the next 1 line and uncomment the following 4 lines
+		log "  ${p%%;*}"; ${p%%;*} || true
 		#log " == ${p%%;*} ==>"
 		#${p%%;*} 2>&1 | tee -a ${LOG_FILE}
 		#log "<== ${p%%;*} =="
 		#log ""
 	done <todos.txt
+	egrep "GOLANG_LINT_VERSION" /tmp/codeready-workspaces-deprecated/golang/build.sh > todos.txt
+	. todos.txt
+	rm -f todos.txt
 
 	# now get the SHAs used in each github repo cloned locally
 	mnf "codeready-workspaces-stacks-golang-container:${CSV_VERSION}/go-language-server:${GOLANG_LS_VERSION}"
@@ -203,13 +207,14 @@ if [[ ${phases} == *"2"* ]]; then
 
 	log ""
 	log "2b. Install golang npm deps: go-language-server@${GOLANG_LS_VERSION}"
+	if [[ ! $(which npm) ]]; then echo "Error: install nodejs and npm to run this script: sudo yum -y install nodejs npm"; exit 1; fi
 	log ""
 	cd /tmp
 	rm -fr /tmp/npm-deps-tmp
 	mkdir -p npm-deps-tmp && cd npm-deps-tmp
-	npm install --prefix /tmp/npm-deps-tmp/ go-language-server@${GOLANG_LS_VERSION} | tee -a ${LOG_FILE}
+	{ npm install --prefix /tmp/npm-deps-tmp/ go-language-server@${GOLANG_LS_VERSION} | tee -a ${LOG_FILE}; } || true
 	log ""
-	npm list >> ${LOG_FILE}
+	{ npm list >> ${LOG_FILE}; } || true
 	mnf "codeready-workspaces-stacks-golang-container:${CSV_VERSION}/go-language-server:${GOLANG_LS_VERSION}"
 	npmList "  codeready-workspaces-stacks-golang-container:${CSV_VERSION}/"
 	mnf ""
@@ -237,7 +242,8 @@ if [[ ${phases} == *"3"* ]]; then
 	log ""
 	log " == node10 (plugin-java8 container) =="
 	log""
-	log "4. Install node10 deps: typescript@${TYPERSCRIPT_VERSION} typescript-language-server@${TYPESCRIPT_LS_VERSION}"
+	log "3. Install node10 deps: typescript@${TYPERSCRIPT_VERSION} typescript-language-server@${TYPESCRIPT_LS_VERSION}"
+	if [[ ! $(which npm) ]]; then echo "Error: install nodejs and npm to run this script: sudo yum -y install nodejs npm"; exit 1; fi
 	getBashVars node10
 	for d in \
 		"NODEJS_IMAGE_VERSION" \
@@ -251,9 +257,9 @@ if [[ ${phases} == *"3"* ]]; then
 	cd /tmp
 	rm -fr /tmp/npm-deps-tmp
 	mkdir -p npm-deps-tmp && cd npm-deps-tmp
-	npm install --prefix /tmp/npm-deps-tmp/ typescript@${TYPERSCRIPT_VERSION} typescript-language-server@${TYPESCRIPT_LS_VERSION} | tee -a ${LOG_FILE}
+	{ npm install --prefix /tmp/npm-deps-tmp/ typescript@${TYPERSCRIPT_VERSION} typescript-language-server@${TYPESCRIPT_LS_VERSION} | tee -a ${LOG_FILE}; } || true
 	log ""
-	npm list >> ${LOG_FILE}
+	{ npm list >> ${LOG_FILE}; } || true
 	mnf "codeready-workspaces-plugin-java8-container:${CSV_VERSION}/typescript:${TYPERSCRIPT_VERSION}"
 	mnf "codeready-workspaces-plugin-java8-container:${CSV_VERSION}/typescript-language-server:${TYPESCRIPT_LS_VERSION}"
 	npmList "  codeready-workspaces-plugin-java8-container:${CSV_VERSION}/"
@@ -263,12 +269,13 @@ fi
 
 ##################################
 
-if [[ ${phases} == *"5"* ]]; then
+if [[ ${phases} == *"4"* ]]; then
 	cd /tmp
 	log ""
 	log " == php =="
 	log""
-	log "5. Install php deps: "
+	log "4. Install php deps: "
+	if [[ ! $(which php) ]]; then echo "Error: install php to run this script: sudo yum -y install php-devel"; exit 1; fi
 	getBashVars php
 	for d in \
 		"PHP_LS_VERSION" \
@@ -284,8 +291,7 @@ if [[ ${phases} == *"5"* ]]; then
 	rm -fr /tmp/php-deps-tmp
 	mkdir -p php-deps-tmp && cd php-deps-tmp
 
-	curl -sSLO https://getcomposer.org/installer 
-	php /tmp/installer
+	curl -sSL https://getcomposer.org/installer > /tmp/installer && php /tmp/installer || exit 1
 
 	php composer.phar require -d /tmp/php-deps-tmp jetbrains/phpstorm-stubs:dev-master | tee -a ${LOG_FILE}
 	log ""
@@ -304,12 +310,13 @@ fi
 
 ##################################
 
-if [[ ${phases} == *"6"* ]]; then
+if [[ ${phases} == *"5"* ]]; then
 	cd /tmp
 	log ""
 	log " == python (plugin-java8 container) =="
 	log ""
-	log "6. Install python deps: pip install python-language-server[all]==${PYTHON_LS_VERSION}"
+	log "5. Install python deps: pip install python-language-server[all]==${PYTHON_LS_VERSION}"
+	if [[ ! $(which python3) ]]; then echo "Error: install python3-six and python3-pip to run this script: sudo yum -y install python3-six python3-pip"; exit 1; fi
 	getBashVars python
 	for d in \
 		"PYTHON_IMAGE_VERSION" \
@@ -325,10 +332,10 @@ if [[ ${phases} == *"6"* ]]; then
 	python3 -m virtualenv env
 	source env/bin/activate
 	which python
-	pip install --upgrade pip
-	pip install python-language-server[all]==${PYTHON_LS_VERSION} | tee -a ${LOG_FILE}
+	/usr/bin/python3 -m pip install --upgrade pip
+	{ /usr/bin/python3 -m pip install python-language-server[all]==${PYTHON_LS_VERSION} | tee -a ${LOG_FILE}; } || true
 	log ""
-	pip list >> ${LOG_FILE}
+	{ /usr/bin/python3 -m pip list >> ${LOG_FILE}; } || true
 	mnf "codeready-workspaces-plugin-java8-container:${CSV_VERSION}/python-language-server[all]:${PYTHON_LS_VERSION}"
 	pythonList "  codeready-workspaces-plugin-java8-container:${CSV_VERSION}/"
 	deactivate
@@ -346,18 +353,18 @@ rm -fr /tmp/codeready-workspaces-deprecated
 
 ##################################
 
-if [[ ${phases} == *"7"* ]]; then
+if [[ ${phases} == *"6"* ]]; then
 	log""
-	log "7. Collect RPM deps"
+	log "6. Collect RPM deps"
 	cd /tmp
 	${SCRIPTPATH}/${0/manifests/rpms} -v "${CSV_VERSION}" "${getLatestImageFlag}"
 fi
 
 ##################################
 
-if [[ ${phases} == *"8"* ]]; then
+if [[ ${phases} == *"7"* ]]; then
 	log ""
-	log "8. Collect MVN deps"
+	log "7. Collect MVN deps"
 	log ""
 	cd /tmp
 	${SCRIPTPATH}/${0/manifests/mvn} "${CSV_VERSION}"
@@ -365,9 +372,9 @@ fi
 
 ##################################
 
-if [[ ${phases} == *"9"* ]]; then
+if [[ ${phases} == *"8"* ]]; then
 	log ""
-	log "9. Collect Theia deps"
+	log "8. Collect Theia deps"
 	log ""
 	cd /tmp
 	${SCRIPTPATH}/${0/manifests/theia} "${CSV_VERSION}"
@@ -377,9 +384,11 @@ fi
 
 # merge logs
 touch ${MANIFEST_FILE/.txt/-all.txt}
-for d in rpms mvn theia; do 
-	cat ${WORKSPACE}/${CSV_VERSION}/${d}/manifest-${d}.txt >> ${MANIFEST_FILE/.txt/-all.txt}
-done
+if [[ ${phases} == *"6"* ]] || [[ ${phases} == *"7"* ]] || [[ ${phases} == *"8"* ]]; then
+	for d in rpms mvn theia; do 
+		cat ${WORKSPACE}/${CSV_VERSION}/${d}/manifest-${d}.txt >> ${MANIFEST_FILE/.txt/-all.txt}
+	done
+fi
 cat ${MANIFEST_FILE} >> ${MANIFEST_FILE/.txt/-all.txt}
 
 ##################################

@@ -16,6 +16,10 @@ CRW_TAG_OR_BRANCH=master
 # use x.y.z version, eg., 7.14.3
 CHE_VERSION=$(curl -sSLo - https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/master/pom.xml | grep "<che.version>" | sed -r -e "s#.*<che.version>(.+)</che.version>.*#\1#")
 
+# use x.y.z version, eg., 7.14.3
+CHE_PARENT_VERSION=$(curl -sSLo - https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/master/pom.xml | \
+   grep -A1 "<groupId>org.eclipse.che.parent</groupId>" | tail -1 | sed -r -e "s#.*<version>(.+)</version>.*#\1#")
+
 cd /tmp
 mkdir -p ${WORKSPACE}/${CSV_VERSION}/mvn
 MANIFEST_FILE="${WORKSPACE}/${CSV_VERSION}/mvn/manifest-mvn.txt"
@@ -40,7 +44,7 @@ function clone_and_generate_dep_tree () {
 }
 echo "Generate a list of MVN dependencies from upstream Che & CRW product repos (~2 mins to run):"
 clone_and_generate_dep_tree https://github.com/eclipse/che-dev 20 &
-clone_and_generate_dep_tree https://github.com/eclipse/che-parent ${CHE_VERSION}
+clone_and_generate_dep_tree https://github.com/eclipse/che-parent ${CHE_PARENT_VERSION}
 clone_and_generate_dep_tree https://github.com/eclipse/che ${CHE_VERSION} & 
 clone_and_generate_dep_tree https://github.com/redhat-developer/codeready-workspaces-deprecated ${CRW_TAG_OR_BRANCH} & 
 clone_and_generate_dep_tree https://github.com/redhat-developer/codeready-workspaces-theia ${CRW_TAG_OR_BRANCH} & 

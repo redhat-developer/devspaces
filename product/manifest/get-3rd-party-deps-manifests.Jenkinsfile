@@ -32,8 +32,8 @@ timeout(20) {
               userRemoteConfigs: [[url: "https://github.com/redhat-developer/codeready-workspaces.git"]]])
 
               sh '''#!/bin/bash -xe
-# install yq, python, php, and golang
-sudo yum install -y jq python3-six python3-pip golang php-devel
+# install yq, python, pip, golang, nodejs, npm, php
+sudo yum install -y jq python3-six python3-pip golang nodejs npm php-devel 
 sudo /usr/bin/python3 -m pip install --upgrade pip yq
 
 # bootstrapping: if keytab is lost, upload to 
@@ -68,24 +68,28 @@ klist # verify working
 # generate source files
 cd ${WORKSPACE}/crw/product/manifest/ && ./get-3rd-party-deps-manifests.sh ''' + CRW_VERSION_FLAG + '''
 
-mv ${WORKSPACE}/''' + CSV_VERSION + ''' ${WORKSPACE}/crw/product/manifest/ && tree ${WORKSPACE}/crw/product/manifest/''' + CSV_VERSION + '''
+# copy over the dir contents
+rsync -azrlt ${WORKSPACE}/''' + CSV_VERSION + '''/* ${WORKSPACE}/crw/product/manifest/''' + CSV_VERSION + '''/
+# sync the directory and delete from target if deleted from source
+rsync -azrlt --delete ${WORKSPACE}/''' + CSV_VERSION + '''/ ${WORKSPACE}/crw/product/manifest/''' + CSV_VERSION + '''/
+tree ${WORKSPACE}/crw/product/manifest/''' + CSV_VERSION + '''
 
-  # commit manifest files
-  git checkout --track origin/master || true
-  export GITHUB_TOKEN=''' + GITHUB_TOKEN + ''' # echo "''' + GITHUB_TOKEN + '''"
-  git config user.email "nickboldt+devstudio-release@gmail.com"
-  git config user.name "Red Hat Devstudio Release Bot"
-  git config --global push.default matching
+# commit manifest files
+git checkout --track origin/master || true
+export GITHUB_TOKEN=''' + GITHUB_TOKEN + ''' # echo "''' + GITHUB_TOKEN + '''"
+git config user.email "nickboldt+devstudio-release@gmail.com"
+git config user.name "Red Hat Devstudio Release Bot"
+git config --global push.default matching
 
-  # SOLVED :: Fatal: Could not read Username for "https://github.com", No such device or address :: https://github.com/github/hub/issues/1644
-  git remote -v
-  git config --global hub.protocol https
-  git remote set-url origin https://\$GITHUB_TOKEN:x-oauth-basic@github.com/redhat-developer/codeready-workspaces.git
-  git remote -v
+# SOLVED :: Fatal: Could not read Username for "https://github.com", No such device or address :: https://github.com/github/hub/issues/1644
+git remote -v
+git config --global hub.protocol https
+git remote set-url origin https://\$GITHUB_TOKEN:x-oauth-basic@github.com/redhat-developer/codeready-workspaces.git
+git remote -v
 
-  git add ''' + CSV_VERSION + '''
-  git commit -s -m "[prodsec] Update product security manifests for ''' + CSV_VERSION + '''" ''' + CSV_VERSION + '''
-  git push origin master
+git add ''' + CSV_VERSION + '''
+git commit -s -m "[prodsec] Update product security manifests for ''' + CSV_VERSION + '''" ''' + CSV_VERSION + '''
+git push origin master
 
 '''
           }
