@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# set -e
+
 # script to generate a manifest of all the 3rd party deps not built in OSBS, but built in Jenkins or imported from upstream community.
 
 SCRIPT=$(readlink -f "$0"); SCRIPTPATH=$(dirname "$SCRIPT"); # echo $SCRIPTPATH
@@ -91,7 +93,7 @@ function logDockerDetails ()
 	theFileURL="$1"
 	theFile=/tmp/curl.tmp
 	curl -sSL $theFileURL > $theFile
-	prefix="$2"
+	prefix="$2" # echo prefix="$2"
 	log "$(cat $theFile | egrep -i "FROM|yum|rh-|INSTALL|COPY|ADD|curl|_VERSION" | egrep -v "opt/rh|yum clean all|yum-config-manager|^( *)#|useradd|entrypoint.sh|gopath")"
 	mnf "$(cat $theFile | egrep "^FROM" | sed -e "s#^FROM #${prefix}#g")"
 	rm -f $theFile
@@ -108,7 +110,7 @@ if [[ ${phases} == *"1"* ]]; then
 	git clone git@github.com:redhat-developer/codeready-workspaces-deprecated.git
 	fi
 	pushd codeready-workspaces-deprecated >/dev/null
-		git checkout ${CRW_BRANCH_TAG}
+		git checkout ${CRW_BRANCH_TAG} || true
 	popd >/dev/null
 	log ""
 	# NOTE: don't delete this checkout yet, we need it for later.
@@ -139,7 +141,7 @@ if [[ ${phases} == *"1"* ]]; then
 		# echo $containerName
 		log ""
 		log "== ${d} (crw-2.2-rhel-8) =="
-		logDockerDetails http://pkgs.devel.redhat.com/cgit/containers/${d}/plain/Dockerfile?h=crw-2.2-rhel-8 "containers/${containerName/}:${CSV_VERSION}/"
+		logDockerDetails http://pkgs.devel.redhat.com/cgit/containers/${d}/plain/Dockerfile?h=crw-2.2-rhel-8 "containers/${containerName}:${CSV_VERSION}/"
 	done
 	bth ""
 
