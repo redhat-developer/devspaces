@@ -17,8 +17,8 @@ EXCLUDE_LINES2="che:theia"
 
 cd /tmp
 mkdir -p ${WORKSPACE}/${CSV_VERSION}/theia
-MANIFEST_FILE="${WORKSPACE}/${CSV_VERSION}/theia/manifest_theia.txt"
-LOG_FILE="${WORKSPACE}/${CSV_VERSION}/theia/manifest_theia_log.txt"
+MANIFEST_FILE="${WORKSPACE}/${CSV_VERSION}/theia/manifest-theia.txt"
+LOG_FILE="${WORKSPACE}/${CSV_VERSION}/theia/manifest-theia_log.txt"
 
 function log () {
 	echo "$1" | tee -a ${LOG_FILE}
