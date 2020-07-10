@@ -107,25 +107,23 @@ cd ${WORKSPACE}/target
   git config user.name "CRW Build"
   git config --global push.default matching
 
-# To check che installed or not
+LATEST_CHE_VERSION=`(curl -sSLo - https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/master/pom.xml | grep -E "<che.version>" | sed -r -e "s#.+<che.version>(.+)</che.version>#\1#")`
+
+# To check che-machine-exec-plugin and che-theia installed or not
 if [ ! -d "v3/plugins/eclipse/che-machine-exec-plugin" ] && [ ! -d "v3/plugins/eclipse/che-theia" ]
 then
-        echo "Please run add_che_plugin.sh to install che plugins"
-        echo "Link is https://github.com/redhat-developer/codeready-workspaces/blob/master/dependencies/che-plugin-registry/build/scripts/add_che_plugins.sh"
-        exit 1
+	sh ${WORKSPACE}/dependencies/che-plugin-registry/build/scripts/add_che_plugins.sh ${LATEST_CHE_VERSION}
 fi
 
-# To check installed che version is latest or not
-LATEST_CHE_VERSION=`(curl -sSLo - https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/master/pom.xml | grep -E "<che.version>" | sed -r -e "s#.+<che.version>(.+)</che.version>#\1#")`
-INSTALLED_CHE_VERSION=`cat v3/plugins/eclipse/che-machine-exec-plugin/latest.txt`
+# To check installed che-machine-exec-plugin and che-theia version is latest or not
+INSTALLED_CHE_MACHINE_EXEC_PLUGIN_VERSION=`cat v3/plugins/eclipse/che-machine-exec-plugin/latest.txt`
+INSTALLED_CHE_THEIA_VERSION=`cat v3/plugins/eclipse/che-theia/latest.txt`
 
-if [ ${LATEST_CHE_VERSION} == ${INSTALLED_CHE_VERSION} ]
+if [ ${LATEST_CHE_VERSION} == ${INSTALLED_CHE_MACHINE_EXEC_PLUGIN_VERSION} ] && [ ${LATEST_CHE_VERSION} == ${INSTALLED_CHE_THEIA_VERSION} ]
 then
         echo "Che is installed with latest version : ${LATEST_CHE_VERSION}"
 else
-        echo "Che is not installed with latest version, Please run add_che_plugin.sh ${LATEST_CHE_VERSION}"
-        echo "Link is https://github.com/redhat-developer/codeready-workspaces/blob/master/dependencies/che-plugin-registry/build/scripts/add_che_plugins.sh"
-        exit 1
+	sh ${WORKSPACE}/dependencies/che-plugin-registry/build/scripts/add_che_plugins.sh ${LATEST_CHE_VERSION}
 fi
 
 cd ..
