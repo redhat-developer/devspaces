@@ -33,9 +33,9 @@ timeout(20) {
 
               sh '''#!/bin/bash -xe
 # install yq, python, pip, golang, nodejs, npm
-sudo yum -y install jq python3-six python3-pip golang nodejs npm php epel-release
+sudo yum -y install jq python3-six python3-pip golang nodejs npm epel-release
 sudo /usr/bin/python3 -m pip install --upgrade pip yq
-sudo yum-config-manager --enable remi-php72 && sudo yum -y update php
+sudo yum-config-manager --enable remi-php72 && sudo yum -y install php72
 
 echo "-----"
 jq --version; echo "-----"
