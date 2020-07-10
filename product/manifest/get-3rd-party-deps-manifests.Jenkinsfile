@@ -34,8 +34,7 @@ timeout(20) {
               sh '''#!/bin/bash -xe
 # install yq
 sudo yum install -y jq python3-six python3-pip
-sudo /usr/bin/python3 -m pip install --upgrade pip
-sudo /usr/bin/pip3.6 install --user yq
+sudo /usr/bin/python3 -m pip install --upgrade pip yq
 
 # bootstrapping: if keytab is lost, upload to 
 # https://codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/credentials/store/system/domain/_/
