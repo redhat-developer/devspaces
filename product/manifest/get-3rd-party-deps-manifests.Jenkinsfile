@@ -4,25 +4,38 @@
 // CSV_VERSION = 2.2.0
 // CRW_VERSION_FLAG = --crw22
 
-def buildNode = "rhel7-releng" // slave label
+def buildNode = "rhel7-releng" // node label
+
+def MVN_FLAGS="-Dmaven.repo.local=.repository/ -V -B -e"
+
+def buildMaven(){
+	def mvnHome = tool 'maven-3.5.4'
+	env.PATH="${env.PATH}:${mvnHome}/bin"
+}
 
 timeout(20) {
     node("${buildNode}"){
         // check out che-theia before we need it in build.sh so we can use it as a poll basis
         // then discard this folder as we need to check them out and massage them for crw
         stage "Collect 3rd party sources"
-        cleanWs()
-	      withCredentials([string(credentialsId:'devstudio-release.token', variable: 'GITHUB_TOKEN'), 
-          file(credentialsId: 'crw-build.keytab', variable: 'CRW_KEYTAB')]) {
-          checkout([$class: 'GitSCM', 
-            branches: [[name: "master"]], 
-            doGenerateSubmoduleConfigurations: false, 
-            poll: true,
-            extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: "crw"]], 
-            submoduleCfg: [], 
-            userRemoteConfigs: [[url: "https://github.com/redhat-developer/codeready-workspaces.git"]]])
+    	  wrap([$class: 'TimestamperBuildWrapper']) {
+          cleanWs()
+          buildMaven()
+          withCredentials([string(credentialsId:'devstudio-release.token', variable: 'GITHUB_TOKEN'), 
+            file(credentialsId: 'crw-build.keytab', variable: 'CRW_KEYTAB')]) {
+            checkout([$class: 'GitSCM', 
+              branches: [[name: "master"]], 
+              doGenerateSubmoduleConfigurations: false, 
+              poll: true,
+              extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: "crw"]], 
+              submoduleCfg: [], 
+              userRemoteConfigs: [[url: "https://github.com/redhat-developer/codeready-workspaces.git"]]])
 
-            sh '''#!/bin/bash -xe
+              sh '''#!/bin/bash -xe
+# install yq
+sudo yum install -y jq python3-six python3-pip
+sudo /usr/bin/python3 -m pip install --upgrade pip
+sudo /usr/bin/pip3.6 install --user yq
 
 # bootstrapping: if keytab is lost, upload to 
 # https://codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/credentials/store/system/domain/_/
@@ -77,5 +90,6 @@ mv ${WORKSPACE}/''' + CSV_VERSION + ''' ${WORKSPACE}/crw/product/manifest/ && tr
 
 '''
           }
+        }
     }
 }
