@@ -291,8 +291,8 @@ if [[ ${phases} == *"4"* ]]; then
 	rm -fr /tmp/php-deps-tmp
 	mkdir -p php-deps-tmp && cd php-deps-tmp
 
+	php --version # need something newer than 5.5.9 - https://github.com/composer/composer/issues/4792
 	curl -sSL https://getcomposer.org/installer > /tmp/installer && php /tmp/installer || exit 1
-
 	php composer.phar require -d /tmp/php-deps-tmp jetbrains/phpstorm-stubs:dev-master | tee -a ${LOG_FILE}
 	log ""
 	php composer.phar require -d /tmp/php-deps-tmp felixfbecker/language-server:${PHP_LS_VERSION} | tee -a ${LOG_FILE}

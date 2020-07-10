@@ -32,9 +32,18 @@ timeout(20) {
               userRemoteConfigs: [[url: "https://github.com/redhat-developer/codeready-workspaces.git"]]])
 
               sh '''#!/bin/bash -xe
-# install yq, python, pip, golang, nodejs, npm, php
-sudo yum install -y jq python3-six python3-pip golang nodejs npm php-devel 
+# install yq, python, pip, golang, nodejs, npm
+sudo yum -y install jq python3-six python3-pip golang nodejs npm php epel-release
 sudo /usr/bin/python3 -m pip install --upgrade pip yq
+sudo yum-config-manager --enable remi-php72 && sudo yum -y update php
+
+echo "-----"
+jq --version; echo "-----"
+python --version; echo "-----"
+go version; echo "-----"
+echo -n "node "; node --version; echo "-----"
+echo -n "npm "; npm --version; echo "-----"
+php --version; echo "-----"
 
 # bootstrapping: if keytab is lost, upload to 
 # https://codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/credentials/store/system/domain/_/
