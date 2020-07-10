@@ -112,7 +112,7 @@ LATEST_CHE_VERSION=`(curl -sSLo - https://raw.githubusercontent.com/redhat-devel
 # To check che-machine-exec-plugin and che-theia installed or not
 if [ ! -d "v3/plugins/eclipse/che-machine-exec-plugin" ] && [ ! -d "v3/plugins/eclipse/che-theia" ]
 then
-	sh ../dependencies/che-plugin-registry/build/scripts/add_che_plugins.sh ${LATEST_CHE_VERSION}
+	sh ${WORKSPACE}/dependencies/che-plugin-registry/build/scripts/add_che_plugins.sh ${LATEST_CHE_VERSION}
 fi
 
 # To check installed che-machine-exec-plugin and che-theia version is latest or not
@@ -123,7 +123,7 @@ if [ ${LATEST_CHE_VERSION} == ${INSTALLED_CHE_MACHINE_EXEC_PLUGIN_VERSION} ] && 
 then
         echo "Che is installed with latest version : ${LATEST_CHE_VERSION}"
 else
-	sh ../dependencies/che-plugin-registry/build/scripts/add_che_plugins.sh ${LATEST_CHE_VERSION}
+	sh ${WORKSPACE}/dependencies/che-plugin-registry/build/scripts/add_che_plugins.sh ${LATEST_CHE_VERSION}
 fi
 
 cd ..
