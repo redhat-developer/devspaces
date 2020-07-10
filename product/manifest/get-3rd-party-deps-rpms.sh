@@ -140,7 +140,7 @@ fi
 ##################################
 
 # get uniq list of RPMs
-cat ${WORKSPACE}/${CSV_VERSION}/rpms/manifest-rpms-codeready-workspaces-* | sed -r -e "s#.+:${CRW_VERSION}-[0-9]+/# #g" | sort | uniq > ${MANIFEST_UNIQ_FILE}
+cat ${WORKSPACE}/${CSV_VERSION}/rpms/manifest-rpms-codeready-workspaces-* | sed -r -e "s#.+:${CRW_VERSION}-[0-9.]+/# #g" | sort | uniq > ${MANIFEST_UNIQ_FILE}
 
 ##################################
 
@@ -157,7 +157,5 @@ for NVR in ${allNVRs}; do
 	fi
 done
 echo "" | tee -a ${LOG_FILE}
-
-cat ${WORKSPACE}/${CSV_VERSION}/rpms/manifest-rpms-codeready-workspaces-* | sed -r -e "s#.+:${CRW_VERSION}-[0-9]+/# #g" | sort | uniq > ${MANIFEST_UNIQ_FILE}
 
 ##################################
