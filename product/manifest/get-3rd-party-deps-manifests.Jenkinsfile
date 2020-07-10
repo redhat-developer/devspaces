@@ -36,16 +36,17 @@ timeout(20) {
 sudo yum -y install jq python3-six python3-pip python-virtualenv golang nodejs npm epel-release
 sudo /usr/bin/python3 -m pip install --upgrade pip yq
 
-# instal php 7.2 for RHEL 7 via EPEL and remi
+# instal php 7.3 for RHEL 7 via EPEL and remi
 sudo yum -y -q remove php; sudo rm -fr /usr/bin/php /usr/bin/php-cgi
 sudo yum -y -q install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm || true
 sudo yum -y -q install http://rpms.remirepo.net/enterprise/remi-release-7.rpm || true
 sudo yum -y -q install yum-utils
 sudo subscription-manager repos --enable=rhel-7-server-optional-rpms || true
-sudo yum-config-manager -y -q --enable remi-php72 || true
-sudo yum -y -q install php72 php72-php php72-php-cli
-sudo ln -s /usr/bin/php72 /usr/bin/php || true
-sudo ln -s /usr/bin/php72-cgi /usr/bin/php-cgi || true
+sudo yum-config-manager -y -q --disable remi-php54 || true
+sudo yum-config-manager -y -q --enable remi-php73 || true
+sudo yum -y -q install php73 php73-php php73-php-cli
+sudo ln -s /usr/bin/php73 /usr/bin/php || true
+sudo ln -s /usr/bin/php73-cgi /usr/bin/php-cgi || true
 
 echo "-----"
 jq --version; echo "-----"
