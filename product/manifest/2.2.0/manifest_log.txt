@@ -613,57 +613,24 @@ webmozart/path-util                   2.3.0              A robust cross-platform
  * PYTHON_LS_VERSION = 0.21.5
 
 Defaulting to user installation because normal site-packages is not writeable
-Collecting python-language-server[all]==0.21.5
-  Downloading python-language-server-0.21.5.tar.gz (52 kB)
-Collecting future>=0.14.0
-  Downloading future-0.18.2.tar.gz (829 kB)
-Collecting jedi>=0.12
-  Downloading jedi-0.17.1-py2.py3-none-any.whl (1.4 MB)
-Collecting python-jsonrpc-server>=0.1.0
-  Downloading python_jsonrpc_server-0.3.4-py3-none-any.whl (9.0 kB)
-Collecting pluggy
-  Downloading pluggy-0.13.1-py2.py3-none-any.whl (18 kB)
-Collecting autopep8
-  Downloading autopep8-1.5.3.tar.gz (116 kB)
-Collecting mccabe
-  Downloading mccabe-0.6.1-py2.py3-none-any.whl (8.6 kB)
-Collecting pycodestyle
-  Downloading pycodestyle-2.6.0-py2.py3-none-any.whl (41 kB)
-Collecting pydocstyle>=2.0.0
-  Downloading pydocstyle-5.0.2-py3-none-any.whl (35 kB)
-Collecting pyflakes>=1.6.0
-  Downloading pyflakes-2.2.0-py2.py3-none-any.whl (66 kB)
-Collecting rope>=0.10.5
-  Downloading rope-0.17.0.tar.gz (248 kB)
-Collecting yapf
-  Downloading yapf-0.30.0-py2.py3-none-any.whl (190 kB)
-Collecting parso<0.8.0,>=0.7.0
-  Downloading parso-0.7.0-py2.py3-none-any.whl (100 kB)
-Collecting ujson<=1.35; platform_system != "Windows"
-  Downloading ujson-1.35.tar.gz (192 kB)
+Requirement already satisfied: python-language-server[all]==0.21.5 in /home/hudson/.local/lib/python3.6/site-packages (0.21.5)
+Requirement already satisfied: future>=0.14.0 in /home/hudson/.local/lib/python3.6/site-packages (from python-language-server[all]==0.21.5) (0.18.2)
+Requirement already satisfied: jedi>=0.12 in /home/hudson/.local/lib/python3.6/site-packages (from python-language-server[all]==0.21.5) (0.17.1)
+Requirement already satisfied: python-jsonrpc-server>=0.1.0 in /home/hudson/.local/lib/python3.6/site-packages (from python-language-server[all]==0.21.5) (0.3.4)
+Requirement already satisfied: pluggy in /home/hudson/.local/lib/python3.6/site-packages (from python-language-server[all]==0.21.5) (0.13.1)
+Requirement already satisfied: autopep8 in /home/hudson/.local/lib/python3.6/site-packages (from python-language-server[all]==0.21.5) (1.5.3)
+Requirement already satisfied: mccabe in /home/hudson/.local/lib/python3.6/site-packages (from python-language-server[all]==0.21.5) (0.6.1)
+Requirement already satisfied: pycodestyle in /home/hudson/.local/lib/python3.6/site-packages (from python-language-server[all]==0.21.5) (2.6.0)
+Requirement already satisfied: pydocstyle>=2.0.0 in /home/hudson/.local/lib/python3.6/site-packages (from python-language-server[all]==0.21.5) (5.0.2)
+Requirement already satisfied: pyflakes>=1.6.0 in /home/hudson/.local/lib/python3.6/site-packages (from python-language-server[all]==0.21.5) (2.2.0)
+Requirement already satisfied: rope>=0.10.5 in /home/hudson/.local/lib/python3.6/site-packages (from python-language-server[all]==0.21.5) (0.17.0)
+Requirement already satisfied: yapf in /home/hudson/.local/lib/python3.6/site-packages (from python-language-server[all]==0.21.5) (0.30.0)
+Requirement already satisfied: parso<0.8.0,>=0.7.0 in /home/hudson/.local/lib/python3.6/site-packages (from jedi>=0.12->python-language-server[all]==0.21.5) (0.7.0)
+Requirement already satisfied: ujson<=1.35; platform_system != "Windows" in /home/hudson/.local/lib/python3.6/site-packages (from python-jsonrpc-server>=0.1.0->python-language-server[all]==0.21.5) (1.35)
 Requirement already satisfied: importlib-metadata>=0.12; python_version < "3.8" in /usr/local/lib/python3.6/site-packages (from pluggy->python-language-server[all]==0.21.5) (1.7.0)
-Collecting toml
-  Downloading toml-0.10.1-py2.py3-none-any.whl (19 kB)
-Collecting snowballstemmer
-  Downloading snowballstemmer-2.0.0-py2.py3-none-any.whl (97 kB)
+Requirement already satisfied: toml in /home/hudson/.local/lib/python3.6/site-packages (from autopep8->python-language-server[all]==0.21.5) (0.10.1)
+Requirement already satisfied: snowballstemmer in /home/hudson/.local/lib/python3.6/site-packages (from pydocstyle>=2.0.0->python-language-server[all]==0.21.5) (2.0.0)
 Requirement already satisfied: zipp>=0.5 in /usr/local/lib/python3.6/site-packages (from importlib-metadata>=0.12; python_version < "3.8"->pluggy->python-language-server[all]==0.21.5) (3.1.0)
-Using legacy setup.py install for python-language-server, since package 'wheel' is not installed.
-Using legacy setup.py install for future, since package 'wheel' is not installed.
-Using legacy setup.py install for autopep8, since package 'wheel' is not installed.
-Using legacy setup.py install for rope, since package 'wheel' is not installed.
-Using legacy setup.py install for ujson, since package 'wheel' is not installed.
-Installing collected packages: future, parso, jedi, ujson, python-jsonrpc-server, pluggy, pycodestyle, toml, autopep8, mccabe, snowballstemmer, pydocstyle, pyflakes, rope, yapf, python-language-server
-    Running setup.py install for future: started
-    Running setup.py install for future: finished with status 'done'
-    Running setup.py install for ujson: started
-    Running setup.py install for ujson: finished with status 'done'
-    Running setup.py install for autopep8: started
-    Running setup.py install for autopep8: finished with status 'done'
-    Running setup.py install for rope: started
-    Running setup.py install for rope: finished with status 'done'
-    Running setup.py install for python-language-server: started
-    Running setup.py install for python-language-server: finished with status 'done'
-Successfully installed autopep8-1.5.3 future-0.18.2 jedi-0.17.1 mccabe-0.6.1 parso-0.7.0 pluggy-0.13.1 pycodestyle-2.6.0 pydocstyle-5.0.2 pyflakes-2.2.0 python-jsonrpc-server-0.3.4 python-language-server-0.21.5 rope-0.17.0 snowballstemmer-2.0.0 toml-0.10.1 ujson-1.35 yapf-0.30.0
 
 Package                Version
 ---------------------- -------
