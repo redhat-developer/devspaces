@@ -106,6 +106,26 @@ cd ${WORKSPACE}/target
   git config user.email crw-build@REDHAT.COM
   git config user.name "CRW Build"
   git config --global push.default matching
+
+LATEST_CHE_VERSION=`(curl -sSLo - https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/master/pom.xml | grep -E "<che.version>" | sed -r -e "s#.+<che.version>(.+)</che.version>#\1#")`
+
+# To check che-machine-exec-plugin and che-theia installed or not
+if [ ! -d "v3/plugins/eclipse/che-machine-exec-plugin" ] && [ ! -d "v3/plugins/eclipse/che-theia" ]
+then
+	sh ${WORKSPACE}/dependencies/che-plugin-registry/build/scripts/add_che_plugins.sh ${LATEST_CHE_VERSION}
+fi
+
+# To check installed che-machine-exec-plugin and che-theia version is latest or not
+INSTALLED_CHE_MACHINE_EXEC_PLUGIN_VERSION=`cat v3/plugins/eclipse/che-machine-exec-plugin/latest.txt`
+INSTALLED_CHE_THEIA_VERSION=`cat v3/plugins/eclipse/che-theia/latest.txt`
+
+if [ ${LATEST_CHE_VERSION} == ${INSTALLED_CHE_MACHINE_EXEC_PLUGIN_VERSION} ] && [ ${LATEST_CHE_VERSION} == ${INSTALLED_CHE_THEIA_VERSION} ]
+then
+        echo "Che is installed with latest version : ${LATEST_CHE_VERSION}"
+else
+	sh ${WORKSPACE}/dependencies/che-plugin-registry/build/scripts/add_che_plugins.sh ${LATEST_CHE_VERSION}
+fi
+
 cd ..
 
 '''
