@@ -97,9 +97,7 @@ cd ${WORKSPACE}/sources
   LATEST_THEIA=$(cat v3/plugins/eclipse/che-theia/latest.txt)
   if [[ ! -d "v3/plugins/eclipse/che-machine-exec-plugin" ]] || [[ ! -d "v3/plugins/eclipse/che-theia" ]] || \
     [[ ${LATEST_CHE_VERSION} != ${LATEST_MACHINE_EXEC} ]] || [[ ${LATEST_CHE_VERSION} != ${LATEST_THEIA} ]]; then
-    pushd ${WORKSPACE}/dependencies/che-plugin-registry/ >/dev/null
     ./build/scripts/add_che_plugins.sh ${LATEST_CHE_VERSION}
-    popd >/dev/null
   fi
   popd >/dev/null
 
