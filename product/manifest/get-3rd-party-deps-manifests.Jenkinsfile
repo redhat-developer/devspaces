@@ -2,7 +2,7 @@
 
 // PARAMETERS for this pipeline:
 // CSV_VERSION = 2.2.0
-// CRW_VERSION_FLAG = --crw22
+// getLatestImageTagsFlags="--crw23" # placeholder for flag to pass to getLatestImageTags.sh
 
 def buildNode = "rhel7-releng" // node label
 
@@ -87,7 +87,7 @@ kinit "crw-build/codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com@RE
 klist # verify working
 
 # generate source files
-cd ${WORKSPACE}/crw/product/manifest/ && ./get-3rd-party-deps-manifests.sh ''' + CRW_VERSION_FLAG + '''
+cd ${WORKSPACE}/crw/product/manifest/ && ./get-3rd-party-deps-manifests.sh ''' + getLatestImageTagsFlags + '''
 
 # copy over the dir contents
 rsync -azrlt ${WORKSPACE}/''' + CSV_VERSION + '''/* ${WORKSPACE}/crw/product/manifest/''' + CSV_VERSION + '''/
