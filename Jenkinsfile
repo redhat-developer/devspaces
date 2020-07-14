@@ -30,8 +30,9 @@ def installGo(){
 def MVN_FLAGS="-Dmaven.repo.local=.repository/ -V -B -e"
 
 def buildMaven(){
-	def mvnHome = tool 'maven-3.5.4'
+	def mvnHome = tool 'maven-3.6.2'
 	env.PATH="${env.PATH}:${mvnHome}/bin"
+	sh "mvn -v"
 }
 
 def CRW_SHAs = ""
