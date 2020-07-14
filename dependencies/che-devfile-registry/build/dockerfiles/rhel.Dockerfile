@@ -12,7 +12,7 @@
 
 # Builder: check meta.yamls and create index.json
 # https://access.redhat.com/containers/?tab=tags#/registry.access.redhat.com/ubi8-minimal
-FROM registry.access.redhat.com/ubi8-minimal:8.2-301.1592810506 as builder
+FROM registry.access.redhat.com/ubi8-minimal:8.2-301.1593113563 as builder
 USER 0
 
 ################# 
