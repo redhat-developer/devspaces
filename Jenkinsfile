@@ -31,7 +31,7 @@ def MVN_FLAGS="-Dmaven.repo.local=.repository/ -V -B -e"
 
 def buildMaven(){
 	def mvnHome = tool 'maven-3.6.2'
-	env.PATH="${env.PATH}:${mvnHome}/bin"
+	env.PATH="/qa/tools/opt/x86_64/openjdk11_last/bin:${env.PATH}:${mvnHome}/bin"
 	sh "mvn -v"
 }
 
