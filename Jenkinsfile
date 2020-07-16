@@ -234,6 +234,11 @@ timeout(240) {
 		// unpack asset-*.tgz into folder where mvn can access it
 		// use that content when building assembly main and ws assembly?
 
+		// Check if che-machine-exec and che-theia plugins are current in upstream repo and if not, add them
+		if [[ ! -d "dependencies/che-plugin-registry/v3/plugins/eclipse/che-machine-exec-plugin/${VER_CHE}" ]] || [[ ! -d "dependencies/che-plugin-registry/v3/plugins/eclipse/che-theia/${VER_CHE}" ]]; then
+			./dependencies/che-plugin-registry/build/scripts/add_che_plugins.sh ${VER_CHE}
+		fi
+
 		sh "mvn clean install ${MVN_FLAGS} -f ${CRW_path}/pom.xml -Dparent.version=\"${VER_CHE}\" -Dche.version=\"${VER_CHE}\" -Dcrw.dashboard.version=\"${CRW_SHAs}\" ${MVN_EXTRA_FLAGS}"
 
 		// Add dashboard and workspace-loader to server assembly
