@@ -234,10 +234,25 @@ timeout(240) {
 		// unpack asset-*.tgz into folder where mvn can access it
 		// use that content when building assembly main and ws assembly?
 
+		git checkout --track origin/''' + branchToBuildCRW + ''' || true
+		export GITHUB_TOKEN=''' + GITHUB_TOKEN + ''' # echo "''' + GITHUB_TOKEN + '''"
+		git config user.email "nickboldt+devstudio-release@gmail.com"
+		git config user.name "Red Hat Devstudio Release Bot"
+		git config --global push.default matching
+
+		// SOLVED :: Fatal: Could not read Username for "https://github.com", No such device or address :: https://github.com/github/hub/issues/1644
+		git remote -v
+		git config --global hub.protocol https
+		git remote set-url origin https://\$GITHUB_TOKEN:x-oauth-basic@github.com/redhat-developer/''' + CRW_path + '''.git
+		git remote -v
+
 		// Check if che-machine-exec and che-theia plugins are current in upstream repo and if not, add them
-		if [[ ! -d "dependencies/che-plugin-registry/v3/plugins/eclipse/che-machine-exec-plugin/${VER_CHE}" ]] || [[ ! -d "dependencies/che-plugin-registry/v3/plugins/eclipse/che-theia/${VER_CHE}" ]]; then
-			./dependencies/che-plugin-registry/build/scripts/add_che_plugins.sh ${VER_CHE}
+		SOURCEDIR=${WORKSPACE}/sources/dependencies/che-plugin-registry
+		pushd ${SOURCEDIR} >/dev/null
+		if [[ ! -d "v3/plugins/eclipse/che-machine-exec-plugin/${VER_CHE}" ]] || [[ ! -d "v3/plugins/eclipse/che-theia/${VER_CHE}" ]]; then
+			./build/scripts/add_che_plugins.sh ${VER_CHE}
 		fi
+		popd >/dev/null
 
 		sh "mvn clean install ${MVN_FLAGS} -f ${CRW_path}/pom.xml -Dparent.version=\"${VER_CHE}\" -Dche.version=\"${VER_CHE}\" -Dcrw.dashboard.version=\"${CRW_SHAs}\" ${MVN_EXTRA_FLAGS}"
 
