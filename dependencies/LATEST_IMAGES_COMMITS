@@ -1,24 +1,5 @@
-[ERROR]
-No
-tags
-matching
-2.3
-found
-for
-quay.io/crw/crw-2-rhel8-operator-metadata
-or
-     NVR: codeready-workspaces-rhel8-operator-container-2.3-2
-   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1258482
-  Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-operator/commit?id=e9f430a3cb3ec968e5ab60fa3a15af5928a9d3aa
-
-quay.io/crw/crw-2-rhel8-operator-metadata-container.
-Is
-the
-container
-public
-and
-populated?
 quay.io/crw/crw-2-rhel8-operator:2.3-2
+quay.io/crw/crw-2-rhel8-operator-metadata:2.3-5
 quay.io/crw/devfileregistry-rhel8:2.3-13
      NVR: codeready-workspaces-devfileregistry-rhel8-container-2.3-13
    Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1258696
