@@ -18,7 +18,7 @@ components:
     memoryLimit: 1Gi
     type: dockerimage
     alias: nodejs
-    image: registry.redhat.io/codeready-workspaces/plugin-java8-rhel8:2.2
+    image: registry.redhat.io/codeready-workspaces/plugin-java8-rhel8:2.3
     endpoints:
       - name: "nodejs"
         port: 8080
