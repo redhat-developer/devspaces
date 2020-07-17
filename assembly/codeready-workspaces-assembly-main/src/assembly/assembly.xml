@@ -18,18 +18,6 @@
         <format>dir</format>
         <format>tar.gz</format>
     </formats>
-    <dependencySets>
-        <dependencySet>
-            <useProjectArtifact>false</useProjectArtifact>
-            <unpack>false</unpack>
-            <outputDirectory>tomcat/webapps</outputDirectory>
-            <outputFileNameMapping>dashboard.war</outputFileNameMapping>
-            <includes>
-                <include>com.redhat:codeready-workspaces-assembly-dashboard-war</include>
-            </includes>
-        </dependencySet>
-    </dependencySets>
-
     <fileSets>
         <fileSet>
             <directory>${project.build.directory}/dependency/eclipse-che-${che.version}</directory>

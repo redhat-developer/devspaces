@@ -10,9 +10,12 @@ icon: https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/ma
 repository: https://github.com/Azure/vscode-kubernetes-tools
 category: Other
 firstPublicationDate: "2019-10-16"
+deprecate:
+  automigrate: true
+  migrateTo: ms-kubernetes-tools/vscode-kubernetes-tools/latest
 spec:
   containers:
-    - image: "registry.redhat.io/codeready-workspaces/plugin-kubernetes-rhel8:2.1"
+    - image: "registry.redhat.io/codeready-workspaces/plugin-kubernetes-rhel8:2.2"
       name: "vscode-kubernetes-tools"
       memoryLimit: "1G"
   extensions:

@@ -1,6 +1,6 @@
 ---
-displayName: NodeJS ConfigMap
-description: Stack with NodeJS 10
-tags: ["NodeJS"]
+displayName: NodeJS ConfigMap Express
+description: NodeJS stack with NPM 6.13.4, NodeJS 10.19.0 and ConfigMap Web Application 
+tags: ["NodeJS", "NPM", "Express", "UBI8"]
 icon: /images/type-node.svg
-globalMemoryLimit: 2792Mi
+globalMemoryLimit: 3304Mi

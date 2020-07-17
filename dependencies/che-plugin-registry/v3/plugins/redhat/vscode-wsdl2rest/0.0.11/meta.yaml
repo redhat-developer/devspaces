@@ -10,6 +10,9 @@ icon: https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/ma
 repository: https://github.com/camel-tooling/vscode-wsdl2rest
 category: Other
 firstPublicationDate: "2020-01-13"
+deprecate:
+  automigrate: true
+  migrateTo: redhat/vscode-wsdl2rest/latest
 spec:
   containers:
     - image: "registry.redhat.io/codeready-workspaces/stacks-java-rhel8:2.1"

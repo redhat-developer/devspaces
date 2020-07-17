@@ -21,21 +21,13 @@
       <classes>
 
           <!-- upstream Eclipse Che tests adapted to CodeReady Workspaces -->
-          <class name="com.redhat.codeready.selenium.dashboard.CreateAndDeleteProjectsTest"/>
-          <class name="org.eclipse.che.selenium.dashboard.DeleteRunningWorkspaceTest"/>
-          <class name="org.eclipse.che.selenium.dashboard.DeleteStoppingWorkspaceTest"/>
-          <class name="org.eclipse.che.selenium.dashboard.ImportMavenProjectFromGitTest"/>
+          <class name="com.redhat.codeready.selenium.dashboard.DeleteRunningWorkspaceTest"/>
+          <class name="com.redhat.codeready.selenium.dashboard.DeleteStoppingWorkspaceTest"/>
           <class name="com.redhat.codeready.selenium.dashboard.workspaces.details.WorkspaceDetailsOverviewTest"/>
-          <class name="com.redhat.codeready.selenium.dashboard.workspaces.details.WorkspaceDetailsProjectsTest"/>
-          <class name="org.eclipse.che.selenium.dashboard.RenameWorkspaceTest"/>
-          <class name="com.redhat.codeready.selenium.dashboard.CreateWorkspaceTest"/>
-          <class name="org.eclipse.che.selenium.dashboard.workspaces.NewWorkspacePageTest"/>
-          <class name="org.eclipse.che.selenium.dashboard.organization.UserEmptyOrganizationTest"/>
           <class name="org.eclipse.che.selenium.swagger.SwaggerTest"/>
           <class name="com.redhat.codeready.selenium.workspaces.ProjectStateAfterRefreshTest"/>
           <class name="com.redhat.codeready.selenium.workspaces.ProjectStateAfterRenameWorkspaceTest"/>
-          <class name="org.eclipse.che.selenium.workspaces.ProjectStateAfterWorkspaceRestartTest"/>
-          <class name="org.eclipse.che.selenium.workspaces.CheckStoppingWsByTimeoutTest"/>
+          <class name="com.redhat.codeready.selenium.workspaces.CheckStoppingWsByTimeoutTest"/>
           <class name="com.redhat.codeready.selenium.dashboard.AccountTest"/>
 
           <!-- Next tests can unexpectedly affect on other tests and so should be executed at the end -->

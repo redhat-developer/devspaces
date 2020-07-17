@@ -11,6 +11,9 @@ icon: https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/ma
 repository: https://github.com/redhat-developer/vscode-java
 category: Language
 firstPublicationDate: "2020-02-20"
+deprecate:
+  automigrate: true
+  migrateTo: redhat/java8/latest
 spec:
   containers:
   - image: "registry.redhat.io/codeready-workspaces/stacks-java-rhel8:2.1"

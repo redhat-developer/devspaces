@@ -7,43 +7,44 @@
 #
 # SPDX-License-Identifier: EPL-2.0
 #
-
+set +x
 SCRIPT_DIR=$(cd "$(dirname "$0")" || exit; pwd)
-LOG_FILE="/tmp/image_digests.log"
+YAML_ROOT="$1"
+[[ -z "$2" ]] && ARCH=$(uname -m) || ARCH="$2"
+[[ $ARCH == "x86_64" ]] && ARCH="amd64"
+LOG_FILE="$(mktemp)" && trap "rm -f $LOG_FILE" EXIT
 
 function handle_error() {
-  the_image="$1"
-  # NOTE: need --tls-verify=false to bypass SSL/TLD Cert validation errors - https://github.com/nmasse-itix/OpenShift-Examples/blob/master/Using-Skopeo/README.md#ssltls-issues
-  echo "  Could not read image metadata through skopeo inspect --tls-verify=false; skip $the_image"
-  echo -n "  Reason: "
-  sed 's|^|    |g' $LOG_FILE
+  local yaml_file="$1"
+  local image_url="$2"
+  if [[ ! -z "$($SCRIPT_DIR/find_image.sh "${image_url%:*}" x86_64 2> /dev/null | jq -r '.Digest')" ]] ; then
+    if [[ "$ARCH" == "x86_64" ]] ; then
+      echo "[WARN] Image $image_url version not found: remove $yaml_file from registry."
+    else
+      echo "[WARN] Image $image_url not found for architecture $ARCH: remove $yaml_file from registry."
+    fi
+    mv "$yaml_file" "$yaml_file.removed"
+  else
+    echo "[ERROR] Could not read image metadata through skopeo inspect --tls-verify=false; skip $image_url"
+    echo "[ERROR] Remove $yaml_file from registry."
+    echo -n "  Reason: "
+    sed 's|^|    |g' $LOG_FILE
+    mv "$yaml_file" "$yaml_file.removed"
+    exit 1
+  fi
 }
 
-set -x
-readarray -d '' devfiles < <(find "$1" -name 'devfile.yaml' -print0)
-for image in $(yq -r '.components[]?.image' "${devfiles[@]}" | grep -v "null" | sort | uniq); do
-  digest="$(skopeo inspect --tls-verify=false "docker://${image}" 2>"$LOG_FILE" | jq -r '.Digest')"
-  if [[ ${digest} ]]; then
-    echo "    $digest # ${image}"
-  else 
-    # for other build methods or for falling back to other registries when not found, can apply transforms here
-    if [[ -x "${SCRIPT_DIR}/write_image_digests_alternate_urls.sh" ]]; then
-      # since extension file may not exist, disable this check
-      # shellcheck disable=SC1090
-      source "${SCRIPT_DIR}/write_image_digests_alternate_urls.sh"
+for image_url in $($SCRIPT_DIR/list_referenced_images.sh "$YAML_ROOT") ; do
+  digest=$($SCRIPT_DIR/find_image.sh "$image_url" $ARCH  2> $LOG_FILE | jq -r '.Digest')
+  for yaml_file in $($SCRIPT_DIR/list_yaml.sh "$YAML_ROOT") ; do
+    [[ -z "$($SCRIPT_DIR/list_referenced_images.sh "$yaml_file" | grep $image_url)" ]] && continue 
+    if [[ -z "$digest" ]] ; then
+      handle_error "$yaml_file" "$image_url"
+    else
+      # Rewrite image to use sha-256 digests
+      digest_image="${image_url%:*}@${digest}"
+      sed -i -E 's|"?'"${image_url}"'"?|"'"${digest_image}"'" # tag: '"${image_url}"'|g' "$yaml_file"
+       echo "[INFO] Update $yaml_file with $digest_image"
     fi
-  fi
-
-  # don't rewrite if we couldn't get a digest from either the basic image or the alternative image
-  if [[ ! ${digest} ]]; then
-    handle_error "$image"
-    continue
-  fi
-
-  digest_image="${image%:*}@${digest}"
-
-  # Rewrite images to use sha-256 digests
-  sed -i -E 's|"?'"${image}"'"?|"'"${digest_image}"'" # tag: '"${image}"'|g' "${devfiles[@]}"
+  done
 done
-rm $LOG_FILE
-set +x

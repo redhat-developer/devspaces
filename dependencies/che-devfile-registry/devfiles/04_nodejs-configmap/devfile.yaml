@@ -12,11 +12,16 @@ components:
   - id: che-incubator/typescript/latest
     type: chePlugin
     memoryLimit: 512Mi
+  - type: chePlugin
+    id: ms-vscode/node-debug2/latest
   - mountSources: true
     memoryLimit: 1Gi
     type: dockerimage
     alias: nodejs
-    image: registry.redhat.io/codeready-workspaces/stacks-node-rhel8:2.1
+    image: registry.redhat.io/codeready-workspaces/plugin-java8-rhel8:2.3
+    endpoints:
+      - name: "nodejs"
+        port: 8080
   - id: redhat/vscode-openshift-connector/latest
     type: chePlugin
     alias: openshift-connector
@@ -28,9 +33,43 @@ commands:
         type: exec
         command: npm install
         component: nodejs
-  - name: 2. Deploy application
+  - name: 2. Run application
+    actions:
+      - workdir: "${CHE_PROJECTS_ROOT}/nodejs-configmap"
+        type: exec
+        command: node --inspect=9229 .
+        component: nodejs
+  - name: 3. Log into deployment cluster
+    actions:
+      - workdir: "${CHE_PROJECTS_ROOT}/nodejs-configmap"
+        type: exec
+        command: |
+          echo
+          echo "Before you can deploy this application to an openshift cluster,"
+          echo "you must run 'oc login ...' in the nodejs terminal."
+          echo
+        component: nodejs
+  - name: 4. Deploy application
     actions:
       - workdir: "${CHE_PROJECTS_ROOT}/nodejs-configmap"
         type: exec
         command: npm run openshift
         component: nodejs
+  - name: Attach remote debugger
+    actions:
+      - type: vscode-launch
+        referenceContent: |
+          {
+            "version": "0.2.0",
+            "configurations": [
+              {
+                "type": "node",
+                "request": "attach",
+                "name": "Attach to Remote",
+                "address": "localhost",
+                "port": 9229,
+                "localRoot": "${workspaceFolder}",
+                "remoteRoot": "${workspaceFolder}"
+              }
+            ]
+          }

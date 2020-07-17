@@ -1,0 +1,25 @@
+apiVersion: v2
+publisher: che-incubator
+name: cpptools
+version: 0.1.0
+type: VS Code extension
+displayName: C/C++ tools
+title: C/C++ intelliSense, debugging and code browsing
+description: C/C++ intelliSense, debugging and code browsing
+icon: https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/master/dependencies/che-plugin-registry/resources/images/default.svg?sanitize=true
+repository: https://github.com/eclipse-cdt/cdt-vscode.git
+category: Language
+firstPublicationDate: '2019-08-06'
+spec:
+  containers:
+    - image: "registry.redhat.io/codeready-workspaces/stacks-cpp-rhel8:2.2"
+      name: cpp-plugins
+      memoryLimit: '512Mi'
+      args:
+        - sh
+        - -c
+        - ${PLUGIN_REMOTE_ENDPOINT_EXECUTABLE}
+  extensions:
+    - https://download.jboss.org/jbosstools/vscode/3rdparty/cdt-gdb-vscode/cdt-gdb-vscode-0.0.90-ba3a21.vsix
+    - https://download.jboss.org/jbosstools/vscode/3rdparty/cdt-vscode/cdt-vscode-0.0.7-75cf95.vsix
+    - https://download.jboss.org/jbosstools/vscode/3rdparty/vscode-clangd/vscode-clangd-0.0.19-89d19d.vsix

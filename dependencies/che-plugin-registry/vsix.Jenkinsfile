@@ -11,7 +11,7 @@ import groovy.transform.Field
 @Field String SOURCE_VERSION
 
 def installNPM(){
-    def nodeHome = tool 'nodejs-10.15.3'
+    def nodeHome = tool 'nodejs-10.19.0'
     env.PATH="${nodeHome}/bin:${env.PATH}"
     sh "node --version; npm --version"
 }
@@ -110,9 +110,36 @@ def buildClangVscode(extensionFolder) {
     sh "cd ${extensionFolder} && ls -l && cd clang-tools-extra/clangd/clients/clangd-vscode && npm install -g vsce && npm install && npm run package"
 }
 
+def buildNodeDebug(extensionFolder) {
+    archiveSources(extensionFolder)
+    installNPM()
+    sh "cd ${extensionFolder} && npm install && yarn package"
+}
+
+def buildAtlascode(branchToBuildPlugin, extensionFolder) {
+    // libsecret is required for Atlascode
+    sh "sudo yum install libsecret libsecret-dev"
+
+    archiveSources(extensionFolder)
+    installNPM()
+
+    sh """\
+    cd ${extensionFolder} && \
+    npm install -g vsce && \
+    npm -no-git-tag-version --allow-same-version -f version ${branchToBuildPlugin} && \
+    npm install && \
+    vsce package --baseContentUrl https://bitbucket.org/atlassianlabs/atlascode/src/main/
+    """
+}
+
 timeout(120) {
     node("rhel7||rhel7-8gb||rhel7-16gb||rhel7-releng"){ stage "Build ${extensionPath}"
         cleanWs()
+        // remove trailing slash if exists
+        if ("${extensionPath}".endsWith('/')) {
+            extensionPath = extensionPath.substring(0, extensionPath.length() - 1)
+        }
+        echo "extension path: ${extensionPath}"
 
         def extensionFolder = "${extensionPath}".substring("${extensionPath}".lastIndexOf('/') + 1)
         echo "extension folder: ${extensionFolder}"
@@ -161,8 +188,12 @@ timeout(120) {
             buildVscodePython(branchToBuildPlugin, extensionFolder)
         } else if (extensionPath.contains("https://github.com/microsoft/vscode-java-debug")) {
             buildJavaExtension(branchToBuildPlugin, extensionFolder)
-        }  else if (extensionPath.contains("https://github.com/felixfbecker/vscode-php-debug")) {
+        } else if (extensionPath.contains("https://github.com/felixfbecker/vscode-php-debug")) {
             buildPhpDebug(branchToBuildPlugin, extensionFolder)
+        } else if (extensionPath.equals("https://github.com/microsoft/vscode-node-debug")) {
+            buildNodeDebug(extensionFolder)
+        } else if (extensionPath.equals("https://bitbucket.org/atlassianlabs/atlascode")) {
+            buildAtlascode(branchToBuildPlugin, extensionFolder)
         } else {
             buildDefault(extensionFolder)
         }

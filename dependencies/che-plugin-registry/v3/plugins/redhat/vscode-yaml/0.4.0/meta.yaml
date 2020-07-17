@@ -10,9 +10,12 @@ icon: https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/ma
 repository: https://github.com/redhat-developer/vscode-yaml
 category: Language
 firstPublicationDate: "2019-04-19"
+deprecate:
+  automigrate: true
+  migrateTo: redhat/vscode-yaml/latest
 spec:
   containers:
-    - image: "registry.redhat.io/codeready-workspaces/stacks-node-rhel8:2.1"
+    - image: "registry.redhat.io/codeready-workspaces/plugin-java8-rhel8:2.2"
       name: vscode-yaml
       memoryLimit: "256Mi"
       args:

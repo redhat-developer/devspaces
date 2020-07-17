@@ -1,0 +1,686 @@
+1a. Check out 3rd party language server dependencies builder repo (will collect variables later)
+
+1b. Define list of upstream containers & RPMs pulled into them from https://pkgs.devel.redhat.com/cgit/?q=codeready-workspaces 
+
+== codeready-workspaces (crw-2.2-rhel-8) ==
+FROM ubi8/openjdk-8:1.3-2.1591609345
+COPY codeready-workspaces-assembly-main.tar.gz /tmp/codeready-workspaces-assembly-main.tar.gz
+RUN microdnf update -y gnutls && microdnf -y clean all && rm -rf /var/cache/yum && \
+    echo "Installed Packages" && rpm -qa | sort -V && echo "End Of Installed Packages"
+
+== codeready-workspaces-operator (crw-2.2-rhel-8) ==
+FROM devtools/go-toolset-rhel7:1.13.4-23  as builder
+ADD . /che-operator
+FROM ubi8-minimal:8.2-301.1592810506
+COPY --from=builder /tmp/che-operator/che-operator /usr/local/bin/che-operator
+COPY --from=builder /che-operator/templates/keycloak_provision /tmp/keycloak_provision
+COPY --from=builder /che-operator/templates/oauth_provision /tmp/oauth_provision
+RUN microdnf update -y libnghttp2 && microdnf clean all && rm -rf /var/cache/yum && echo "Installed Packages" && rpm -qa | sort -V && echo "End Of Installed Packages"
+
+== codeready-workspaces-operator-metadata (crw-2.2-rhel-8) ==
+FROM ubi8-minimal:8.2-301.1592810506 as builder
+RUN microdnf install -y findutils
+ADD controller-manifests /manifests
+ADD build /build
+FROM scratch
+COPY --from=builder /manifests /manifests
+
+== codeready-workspaces-jwtproxy (crw-2.2-rhel-8) ==
+FROM rhel8/go-toolset:1.13.4-22 as builder
+COPY . /go/src/github.com/eclipse/che-jwtproxy/
+RUN adduser appuser && \
+    CGO_ENABLED=0 GOOS=linux go build -a -ldflags '-w -s' -a -installsuffix cgo -o jwtproxy cmd/jwtproxy/main.go
+FROM ubi8-minimal:8.2-301.1592810506
+COPY --from=builder /etc/passwd /etc/passwd
+COPY --from=builder /go/src/github.com/eclipse/che-jwtproxy/jwtproxy /usr/local/bin
+
+== codeready-workspaces-machineexec (crw-2.2-rhel-8) ==
+FROM rhel8/go-toolset:1.13.4-22 as builder
+COPY . .
+RUN adduser unprivilegeduser && \
+    CGO_ENABLED=0 GOOS=linux go build -mod=vendor -a -ldflags '-w -s' -a -installsuffix cgo -o che-machine-exec . && \
+FROM scratch
+COPY --from=builder /rootfs /
+
+== codeready-workspaces-devfileregistry (crw-2.2-rhel-8) ==
+FROM ubi8-minimal:8.2-301.1592810506 as builder
+COPY root-local.tgz /tmp/root-local.tgz
+COPY ./build/dockerfiles/content_sets_rhel8.repo /etc/yum.repos.d/
+COPY ./build/dockerfiles/rhel.install.sh /tmp
+RUN /tmp/rhel.install.sh && rm -f /tmp/rhel.install.sh
+COPY ./build/scripts ./arbitrary-users-patch/base_images /build/
+COPY ./devfiles /build/devfiles
+COPY ./build/dockerfiles/rhel.cache_projects.sh resources.tgz /tmp/ 
+FROM rhel8/httpd-24:1-98 AS registry
+    echo "Installed Packages" && rpm -qa | sort -V && echo "End Of Installed Packages"
+COPY .htaccess README.md /var/www/html/
+COPY --from=builder /build/devfiles /var/www/html/devfiles
+COPY --from=builder /build/resources /var/www/html/resources
+COPY ./images /var/www/html/images
+
+== codeready-workspaces-pluginregistry (crw-2.2-rhel-8) ==
+FROM ubi8-minimal:8.2-301.1592810506 as builder
+COPY root-local.tgz /tmp/root-local.tgz
+COPY ./build/dockerfiles/content_sets_rhel8.repo /etc/yum.repos.d/
+COPY ./build/dockerfiles/rhel.install.sh /tmp
+RUN /tmp/rhel.install.sh && rm -f /tmp/rhel.install.sh
+COPY ./build/scripts/*.sh ./build/scripts/meta.yaml.schema /build/
+COPY ./v3 /build/v3
+COPY ./build/dockerfiles/rhel.cache_artifacts.sh resources.tgz /tmp/ 
+FROM rhel8/httpd-24:1-98 AS registry
+    echo "Installed Packages" && rpm -qa | sort -V && echo "End Of Installed Packages"
+COPY README.md .htaccess /var/www/html/
+COPY --from=builder /build/v3 /var/www/html/v3
+
+== codeready-workspaces-pluginbroker-metadata (crw-2.2-rhel-8) ==
+FROM devtools/go-toolset-rhel7:1.13.4-23 as builder
+COPY . /go/src/github.com/eclipse/che-plugin-broker/
+RUN adduser appuser && \
+    CGO_ENABLED=0 GOOS=linux go build -a -ldflags '-w -s' -installsuffix cgo -o metadata-broker main.go
+FROM ubi8-minimal:8.2-301.1592810506
+RUN microdnf update -y systemd && microdnf clean all && rm -rf /var/cache/yum && echo "Installed Packages" && rpm -qa | sort -V && echo "End Of Installed Packages"
+COPY --from=builder /etc/passwd /etc/passwd
+COPY --from=builder /go/src/github.com/eclipse/che-plugin-broker/brokers/metadata/cmd/metadata-broker /
+
+== codeready-workspaces-plugin-artifacts (crw-2.2-rhel-8) ==
+
+
+== codeready-workspaces-plugin-kubernetes (crw-2.2-rhel-8) ==
+FROM ubi8-minimal:8.2-301.1592810506
+    HELM_VERSION="v3.1.1" \
+    KUBECTL_VERSION="v1.18.3" \
+    KAMEL_VERSION="1.0.0" \
+ADD etc/storage.conf $HOME/.config/containers/storage.conf
+COPY etc/docker.sh /usr/local/bin/docker
+COPY . /tmp/assets
+RUN microdnf install -y which dnf && dnf install -y buildah nodejs npm && \
+    dnf clean all && rm -rf /var/cache/yum && \
+    echo "Installed Packages" && rpm -qa | sort -V && echo "End Of Installed Packages" && \
+
+== codeready-workspaces-plugin-openshift (crw-2.2-rhel-8) ==
+FROM ubi8-minimal:8.2-301.1592810506
+    ODO_VERSION="v1.2.1" \
+    KUBECTL_VERSION="v1.18.3" \
+COPY bin.tgz /tmp/
+RUN microdnf install -y bash tar gzip which openshift-clients-4.3.19 && \
+    microdnf update -y systemd && microdnf clean all && rm -rf /var/cache/yum && \
+    echo "Installed Packages" && rpm -qa | sort -V && echo "End Of Installed Packages" && \
+
+== codeready-workspaces-plugin-java11 (crw-2.2-rhel-8) ==
+FROM ubi8-minimal:8.2-301.1592810506
+    GRADLE_VERSION="6.1" \
+    MAVEN_VERSION="3.6.3" \
+COPY gradle.tgz maven.tgz /tmp/
+RUN microdnf install -y bash tar gzip which shadow-utils findutils wget curl openshift-clients-4.3.19 \
+    microdnf clean all && rm -rf /var/cache/yum && \
+    echo "Installed Packages" && rpm -qa | sort -V && echo "End Of Installed Packages" && \
+
+== codeready-workspaces-plugin-java8 (crw-2.2-rhel-8) ==
+FROM ubi8-minimal:8.2-301.1592810506
+    NODEJS_VERSION=10 \
+    MAVEN_VERSION="3.6.3" \
+COPY . /tmp/assets/
+RUN microdnf install -y bash tar gzip which shadow-utils findutils wget curl openshift-clients-4.3.19 \
+    microdnf clean all && rm -rf /var/cache/yum && \
+    echo "Installed Packages" && rpm -qa | sort -V && echo "End Of Installed Packages" && \
+
+== codeready-workspaces-imagepuller (crw-2.2-rhel-8) ==
+FROM rhel8/go-toolset:1.13.4-22 as builder
+COPY go.mod .
+COPY go.sum .
+COPY resources.tgz /tmp/resources.tgz
+COPY . .
+RUN adduser appuser && \
+FROM ubi8-minimal:8.2-301.1592810506
+COPY --from=builder /etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem /etc/pki/ca-trust/extracted/pem/
+COPY --from=builder /etc/pki/tls/certs/ca-bundle.crt                  /etc/pki/tls/certs/
+COPY --from=builder /etc/passwd /etc/passwd
+COPY --from=builder /kubernetes-image-puller/bin/kubernetes-image-puller /
+
+== codeready-workspaces-theia-dev (crw-2.2-rhel-8) ==
+FROM ubi8/nodejs-10:1-95
+RUN yum install -y curl make cmake gcc gcc-c++ python2 git openssh less bash tar gzip \
+    && yum -y clean all && rm -rf /var/cache/yum && \
+    echo "Installed Packages" && rpm -qa | sort -V && echo "End Of Installed Packages"
+COPY asset-yarn.tgz /tmp/
+COPY asset-eclipse-che-theia-generator.tgz ${HOME}/eclipse-che-theia-generator.tgz
+    yarn ${YARN_FLAGS} global add yo generator-code vsce @theia/generator-plugin@0.0.1-1562578105 file:${HOME}/eclipse-che-theia-generator && \
+RUN echo "Installed npm Packages" && npm ls -g | sort | uniq || true
+RUN echo "End Of Installed npm Packages"
+
+== codeready-workspaces-theia (crw-2.2-rhel-8) ==
+FROM registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-theia-dev-rhel8:2.2 as builder
+ARG THEIA_VERSION=master
+COPY asset-theia-source-code.tar.gz /tmp/asset-theia-source-code.tar.gz
+COPY asset-branding.tar.gz /tmp/asset-branding.tar.gz
+ADD src/patches ${HOME}/patches
+RUN if [ -d "${HOME}/patches/${THEIA_VERSION}" ]; then \
+    echo "Applying patches for Theia version ${THEIA_VERSION}"; \
+    for file in $(find "${HOME}/patches/${THEIA_VERSION}" -name '*.patch'); do \
+COPY asset-che-theia.tar.gz /tmp/asset-che-theia.tar.gz
+    echo "" > ${HOME}/theia-source-code/dev-packages/electron/scripts/post-install.js && \
+COPY asset-yarn.tar.gz asset-post-download-dependencies.tar.gz /tmp/
+COPY asset-yarn.lock ${HOME}/theia-source-code/yarn.lock
+COPY asset-node-headers.tar.gz ${HOME}/asset-node-headers.tar.gz
+COPY asset-untagged-theia_yeoman_plugin.theia /home/theia-dev/theia-source-code/production/plugins/theia_yeoman_plugin.theia
+FROM ubi8/nodejs-10:1-95 as build-result
+COPY --from=builder /home/theia-dev/theia-source-code/production /che-theia-build
+FROM ubi8/nodejs-10:1-95 as runtime
+    echo "Installed Packages" && rpm -qa | sort -V && echo "End Of Installed Packages"
+COPY --from=builder /tmp/branding ${HOME}/branding
+COPY --from=build-result /che-theia-build/plugins /default-theia-plugins
+COPY asset-sshpass-sources.tar.gz /tmp/
+RUN yum install -y sudo git bzip2 which bash curl openssh less && tar -xvf /tmp/asset-sshpass-sources.tar.gz -C /tmp/ && \
+    cd /tmp/sshpass-*/ && ./configure && make install && cd /tmp && rm -rf *sshpass-* && \
+    echo "Installed Packages" && rpm -qa | sort -V && echo "End Of Installed Packages"
+COPY asset-yarn-runtime-image.tar.gz /tmp/
+    adduser -r -u 1002 -G root -d ${HOME} -m -s /bin/sh theia \
+    && yarn global add ${YARN_FLAGS} yo @theia/generator-plugin@0.0.1-1562578105 generator-code typescript@3.5.3 \
+COPY --chown=theia:root --from=build-result /che-theia-build /home/theia
+
+== codeready-workspaces-theia-endpoint (crw-2.2-rhel-8) ==
+FROM registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-theia-rhel8:2.2 as builder
+COPY asset-theia-endpoint-runtime-pre-assembly-nodejs-static.tar.gz asset-theia-endpoint-runtime-binary-yarn.tar.gz asset-node-src.tar.gz /tmp/
+    export NODE_VERSION=$(node --version | sed -s 's/v//') && mkdir -p "/home/theia/.nexe/${NODE_VERSION}" && tar zxf /tmp/asset-node-src.tar.gz --strip-components=1 -C "/home/theia/.nexe/${NODE_VERSION}" && \
+RUN yum install -y git make cmake gcc gcc-c++ python2 automake autoconf which glibc-devel && \
+    yum -y clean all && rm -rf /var/cache/yum && ln -s /usr/bin/python2 /usr/bin/python
+RUN yarn global add ${YARN_FLAGS} nexe@3.3.2
+FROM ubi8-minimal:8.2-301.1592810506 as runtime
+RUN microdnf update -y gnutls nodejs npm kernel-headers systemd && microdnf clean all && rm -rf /var/cache/yum && \
+    echo "Installed Packages" && rpm -qa | sort -V && echo "End Of Installed Packages"
+COPY --from=builder /home/theia/plugin-remote-endpoint /plugin-remote-endpoint
+
+== codeready-workspaces-stacks-cpp (crw-2.2-rhel-8) ==
+FROM rhel8/llvm-toolset:9.0.1-28
+    yum install -y llvm-toolset clang clang-libs clang-tools-extra git-clang-format gdb wget bzip2 sudo make cmake gcc gcc-c++ \
+    yum update -y gnutls kernel-headers pango libnghttp2 systemd nodejs npm git git-core perl-Git git-core-doc && \
+    echo "Installed Packages" && rpm -qa | sort -V && echo "End Of Installed Packages"
+
+== codeready-workspaces-stacks-dotnet (crw-2.2-rhel-8) ==
+FROM ubi8/dotnet-31:3.1-11
+    DOTNET_RPM_VERSION=3.1 \
+RUN yum install -y --setopt=tsflags=nodocs wget curl openshift-clients-4.3.19 dotnet dotnet-host \
+    dotnet-hostfxr-${DOTNET_RPM_VERSION} dotnet-runtime-${DOTNET_RPM_VERSION} dotnet-sdk-${DOTNET_RPM_VERSION} && \
+    yum update -y systemd nodejs npm libicu aspnetcore-runtime dotnet-sdk dotnet-runtime && \
+    echo "Installed Packages" && rpm -qa | sort -V && echo "End Of Installed Packages"
+
+== codeready-workspaces-stacks-golang (crw-2.2-rhel-8) ==
+FROM rhel8/go-toolset:1.13.4-22
+COPY . /tmp/assets/
+    yum install -y java-1.8.0-openjdk-devel java-1.8.0-openjdk-headless java-1.8.0-openjdk \
+    sudo git wget curl nss_wrapper bzip2 nodejs nodejs-nodemon npm openshift-clients-4.3.19 && \
+    yum update -y gnutls kernel-headers pango libnghttp2 systemd go-toolset-rhel8 gnutls && \
+    echo "Installed Packages" && rpm -qa | sort -V && echo "End Of Installed Packages"
+
+== codeready-workspaces-stacks-php (crw-2.2-rhel-8) ==
+FROM ubi8/php-73:1-47
+COPY . /tmp/assets/
+RUN dnf install -y php-fpm php-opcache php-devel php-pear php-gd php-mysqli php-zlib php-curl ca-certificates && \
+    yum remove -y kernel-headers && \
+    yum install -y java-1.8.0-openjdk sudo openshift-clients-4.3.19 && \
+    yum update -y gnutls nodejs npm pango libnghttp2 php php-cli php-bcmath php-common php-fpm php-opcache php-devel php-pear php-gd php-mysqli php-zlib php-curl php-pecl-apcu php-pecl-zip libzip systemd libicu && \
+    echo "Installed Packages" && rpm -qa | sort -V && echo "End Of Installed Packages"
+
+1c. Other than the above, all artifacts used in CodeReady Workspaces are now built in RH Central CI Jenkins:
+https://codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/CRW_CI/view/Builds/
+https://codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/CRW_CI/view/Pipelines/
+
+See also latest build architecture diagram & development documentation:
+https://docs.google.com/presentation/d/1R9tr67pDMk3UVUbvN7vBJbJCYGlUsO2ZPcXbdaoOvTs/edit#slide=id.g4ac34a3cdd_0_0
+https://github.com/redhat-developer/codeready-workspaces-productization/tree/master/devdoc
+
+ == golang ==
+
+2a. Install golang go deps: go-language-server@
+ * GOLANG_IMAGE_VERSION = golang:1.11
+ * GOLANG_LINT_VERSION = v1.22.2
+ * GOLANG_LS_OLD_DEPS = console-stamp@0.2.9 strip-ansi@5.2.0 has-ansi@4.0.0 ansi-regex@4.1.0 chalk@2.4.2 escape-string-regexp@2.0.0 ansi-styles@4.1.0 supports-color@7.0.0
+ * GOLANG_LS_VERSION = 0.1.7
+ * NODEJS_IMAGE_VERSION = node:8.16-alpine
+
+  go get -v github.com/stamblerre/gocode
+  go get -v github.com/uudashr/gopkgs/cmd/gopkgs
+  go get -v github.com/ramya-rao-a/go-outline
+  go get -v github.com/acroca/go-symbols
+  go get -v golang.org/x/tools/cmd/guru
+  go get -v golang.org/x/tools/cmd/gorename
+  go get -v github.com/fatih/gomodifytags
+  go get -v github.com/haya14busa/goplay/cmd/goplay
+  go get -v github.com/josharian/impl
+  go get -v golang.org/x/tools/cmd/gotype
+  go get -v github.com/rogpeppe/godef
+  go get -v golang.org/x/tools/cmd/godoc
+  go get -v github.com/zmb3/gogetdoc
+  go get -v golang.org/x/tools/cmd/goimports
+  go get -v sourcegraph.com/sqs/goreturns
+  go get -v golang.org/x/lint/golint
+  go get -v github.com/cweill/gotests/...
+  go get -v honnef.co/go/tools/...
+  go get -v github.com/sourcegraph/go-langserver
+  go get -v github.com/go-delve/delve/cmd/dlv
+  go get -v github.com/davidrjenni/reftools/cmd/fillstruct
+  go get -v golang.org/x/tools/gopls
+  go build -o /go/bin/gocode-gomod github.com/stamblerre/gocode
+
+2b. Install golang npm deps: go-language-server@0.1.7
+
+
+> console-stamp@0.2.9 postinstall /tmp/npm-deps-tmp/node_modules/console-stamp
+> node ./msg.js
+
+Attention
+    Console-stamp version 3.0.0 Release Candidate is out. Install by using the tag '@next'. NB: Breaking changes.
+    For more details goto: https://www.npmjs.com/package/console-stamp/v/next
+
+/tmp/npm-deps-tmp
+└─┬ go-language-server@0.1.7 
+  ├── command-exists@1.2.9 
+  ├── commander@2.20.3 
+  ├─┬ console-stamp@0.2.9 
+  │ ├─┬ chalk@1.1.3 
+  │ │ ├── ansi-styles@2.2.1 
+  │ │ ├── escape-string-regexp@1.0.5 
+  │ │ ├─┬ has-ansi@2.0.0 
+  │ │ │ └── ansi-regex@2.1.1 
+  │ │ ├── strip-ansi@3.0.1 
+  │ │ └── supports-color@2.0.0 
+  │ ├─┬ dateformat@1.0.12 
+  │ │ ├── get-stdin@4.0.1 
+  │ │ └─┬ meow@3.7.0 
+  │ │   ├─┬ camelcase-keys@2.1.0 
+  │ │   │ └── camelcase@2.1.1 
+  │ │   ├── decamelize@1.2.0 
+  │ │   ├─┬ loud-rejection@1.6.0 
+  │ │   │ ├─┬ currently-unhandled@0.4.1 
+  │ │   │ │ └── array-find-index@1.0.2 
+  │ │   │ └── signal-exit@3.0.3 
+  │ │   ├── map-obj@1.0.1 
+  │ │   ├── minimist@1.2.5 
+  │ │   ├─┬ normalize-package-data@2.5.0 
+  │ │   │ ├── hosted-git-info@2.8.8 
+  │ │   │ ├─┬ resolve@1.17.0 
+  │ │   │ │ └── path-parse@1.0.6 
+  │ │   │ ├── semver@5.7.1 
+  │ │   │ └─┬ validate-npm-package-license@3.0.4 
+  │ │   │   ├─┬ spdx-correct@3.1.1 
+  │ │   │   │ └── spdx-license-ids@3.0.5 
+  │ │   │   └─┬ spdx-expression-parse@3.0.1 
+  │ │   │     └── spdx-exceptions@2.3.0 
+  │ │   ├─┬ read-pkg-up@1.0.1 
+  │ │   │ ├─┬ find-up@1.1.2 
+  │ │   │ │ ├── path-exists@2.1.0 
+  │ │   │ │ └─┬ pinkie-promise@2.0.1 
+  │ │   │ │   └── pinkie@2.0.4 
+  │ │   │ └─┬ read-pkg@1.1.0 
+  │ │   │   ├─┬ load-json-file@1.1.0 
+  │ │   │   │ ├─┬ parse-json@2.2.0 
+  │ │   │   │ │ └─┬ error-ex@1.3.2 
+  │ │   │   │ │   └── is-arrayish@0.2.1 
+  │ │   │   │ ├── pify@2.3.0 
+  │ │   │   │ └─┬ strip-bom@2.0.0 
+  │ │   │   │   └── is-utf8@0.2.1 
+  │ │   │   └── path-type@1.1.0 
+  │ │   ├─┬ redent@1.0.0 
+  │ │   │ ├─┬ indent-string@2.1.0 
+  │ │   │ │ └─┬ repeating@2.0.1 
+  │ │   │ │   └── is-finite@1.1.0 
+  │ │   │ └── strip-indent@1.0.1 
+  │ │   └── trim-newlines@1.0.0 
+  │ └── merge@1.2.1 
+  ├── diff@3.3.1 
+  ├─┬ fs-extra@4.0.3 
+  │ ├── graceful-fs@4.2.4 
+  │ ├── jsonfile@4.0.0 
+  │ └── universalify@0.1.2 
+  ├─┬ json-rpc2@1.0.2 
+  │ ├─┬ debug@2.6.9 
+  │ │ └── ms@2.0.0 
+  │ ├─┬ es5class@2.3.1 
+  │ │ └── better-curry@1.6.0 
+  │ ├── eventemitter3@1.2.0 
+  │ ├─┬ faye-websocket@0.11.3 
+  │ │ └─┬ websocket-driver@0.7.4 
+  │ │   ├── http-parser-js@0.5.2 
+  │ │   ├── safe-buffer@5.2.1 
+  │ │   └── websocket-extensions@0.1.4 
+  │ ├── jsonparse@1.3.1 
+  │ ├── lodash@3.10.1 
+  │ └── object-assign@4.1.1 
+  ├── pkginfo@0.4.1 
+  ├── vscode-debugprotocol@1.41.0 
+  ├─┬ vscode-extension-telemetry@0.0.10 
+  │ ├── applicationinsights@0.18.0 
+  │ └── winreg@1.2.3 
+  ├─┬ vscode-languageclient@2.6.3 
+  │ ├── vscode-jsonrpc@2.4.0 
+  │ └── vscode-languageserver-types@1.0.4 
+  ├─┬ vscode-languageserver@3.5.1 
+  │ └─┬ vscode-languageserver-protocol@3.5.1 
+  │   ├── vscode-jsonrpc@3.5.0 
+  │   └── vscode-languageserver-types@3.5.0 
+  └── vscode-uri@1.0.8 
+
+
+/tmp/npm-deps-tmp
+└─┬ go-language-server@0.1.7
+  ├── command-exists@1.2.9
+  ├── commander@2.20.3
+  ├─┬ console-stamp@0.2.9
+  │ ├─┬ chalk@1.1.3
+  │ │ ├── ansi-styles@2.2.1
+  │ │ ├── escape-string-regexp@1.0.5
+  │ │ ├─┬ has-ansi@2.0.0
+  │ │ │ └── ansi-regex@2.1.1
+  │ │ ├── strip-ansi@3.0.1
+  │ │ └── supports-color@2.0.0
+  │ ├─┬ dateformat@1.0.12
+  │ │ ├── get-stdin@4.0.1
+  │ │ └─┬ meow@3.7.0
+  │ │   ├─┬ camelcase-keys@2.1.0
+  │ │   │ └── camelcase@2.1.1
+  │ │   ├── decamelize@1.2.0
+  │ │   ├─┬ loud-rejection@1.6.0
+  │ │   │ ├─┬ currently-unhandled@0.4.1
+  │ │   │ │ └── array-find-index@1.0.2
+  │ │   │ └── signal-exit@3.0.3
+  │ │   ├── map-obj@1.0.1
+  │ │   ├── minimist@1.2.5
+  │ │   ├─┬ normalize-package-data@2.5.0
+  │ │   │ ├── hosted-git-info@2.8.8
+  │ │   │ ├─┬ resolve@1.17.0
+  │ │   │ │ └── path-parse@1.0.6
+  │ │   │ ├── semver@5.7.1
+  │ │   │ └─┬ validate-npm-package-license@3.0.4
+  │ │   │   ├─┬ spdx-correct@3.1.1
+  │ │   │   │ └── spdx-license-ids@3.0.5
+  │ │   │   └─┬ spdx-expression-parse@3.0.1
+  │ │   │     └── spdx-exceptions@2.3.0
+  │ │   ├─┬ read-pkg-up@1.0.1
+  │ │   │ ├─┬ find-up@1.1.2
+  │ │   │ │ ├── path-exists@2.1.0
+  │ │   │ │ └─┬ pinkie-promise@2.0.1
+  │ │   │ │   └── pinkie@2.0.4
+  │ │   │ └─┬ read-pkg@1.1.0
+  │ │   │   ├─┬ load-json-file@1.1.0
+  │ │   │   │ ├─┬ parse-json@2.2.0
+  │ │   │   │ │ └─┬ error-ex@1.3.2
+  │ │   │   │ │   └── is-arrayish@0.2.1
+  │ │   │   │ ├── pify@2.3.0
+  │ │   │   │ └─┬ strip-bom@2.0.0
+  │ │   │   │   └── is-utf8@0.2.1
+  │ │   │   └── path-type@1.1.0
+  │ │   ├─┬ redent@1.0.0
+  │ │   │ ├─┬ indent-string@2.1.0
+  │ │   │ │ └─┬ repeating@2.0.1
+  │ │   │ │   └── is-finite@1.1.0
+  │ │   │ └── strip-indent@1.0.1
+  │ │   └── trim-newlines@1.0.0
+  │ └── merge@1.2.1
+  ├── diff@3.3.1
+  ├─┬ fs-extra@4.0.3
+  │ ├── graceful-fs@4.2.4
+  │ ├── jsonfile@4.0.0
+  │ └── universalify@0.1.2
+  ├─┬ json-rpc2@1.0.2
+  │ ├─┬ debug@2.6.9
+  │ │ └── ms@2.0.0
+  │ ├─┬ es5class@2.3.1
+  │ │ └── better-curry@1.6.0
+  │ ├── eventemitter3@1.2.0
+  │ ├─┬ faye-websocket@0.11.3
+  │ │ └─┬ websocket-driver@0.7.4
+  │ │   ├── http-parser-js@0.5.2
+  │ │   ├── safe-buffer@5.2.1
+  │ │   └── websocket-extensions@0.1.4
+  │ ├── jsonparse@1.3.1
+  │ ├── lodash@3.10.1
+  │ └── object-assign@4.1.1
+  ├── pkginfo@0.4.1
+  ├── vscode-debugprotocol@1.41.0
+  ├─┬ vscode-extension-telemetry@0.0.10
+  │ ├── applicationinsights@0.18.0
+  │ └── winreg@1.2.3
+  ├─┬ vscode-languageclient@2.6.3
+  │ ├── vscode-jsonrpc@2.4.0
+  │ └── vscode-languageserver-types@1.0.4
+  ├─┬ vscode-languageserver@3.5.1
+  │ └─┬ vscode-languageserver-protocol@3.5.1
+  │   ├── vscode-jsonrpc@3.5.0
+  │   └── vscode-languageserver-types@3.5.0
+  └── vscode-uri@1.0.8
+
+
+ == kamel ==
+
+2c. kamel is built from go sources with no additional requirements
+ * GOLANG_IMAGE_VERSION = registry.access.redhat.com/ubi8/go-toolset
+ * KAMEL_VERSION = 1.0.0
+
+
+ == node10 (plugin-java8 container) ==
+
+3. Install node10 deps: typescript@ typescript-language-server@
+ * NODEJS_IMAGE_VERSION = node:10.15-alpine
+ * NODEMON_VERSION = 1.19.3
+ * TYPERSCRIPT_VERSION = 3.4.5
+ * TYPESCRIPT_LS_VERSION = 0.3.7
+
+/tmp/npm-deps-tmp
+├── typescript@3.4.5 
+└─┬ typescript-language-server@0.3.7 
+  ├── command-exists@1.2.6 
+  ├── commander@2.20.3 
+  ├─┬ fs-extra@7.0.1 
+  │ ├── graceful-fs@4.2.4 
+  │ ├── jsonfile@4.0.0 
+  │ └── universalify@0.1.2 
+  ├── p-debounce@1.0.0 
+  ├─┬ tempy@0.2.1 
+  │ ├── temp-dir@1.0.0 
+  │ └─┬ unique-string@1.0.0 
+  │   └── crypto-random-string@1.0.0 
+  ├─┬ vscode-languageserver@4.4.2 
+  │ └─┬ vscode-languageserver-protocol@3.15.3 
+  │   ├── vscode-jsonrpc@5.0.1 
+  │   └── vscode-languageserver-types@3.15.1 
+  └── vscode-uri@1.0.8 
+
+
+/tmp/npm-deps-tmp
+├── typescript@3.4.5
+└─┬ typescript-language-server@0.3.7
+  ├── command-exists@1.2.6
+  ├── commander@2.20.3
+  ├─┬ fs-extra@7.0.1
+  │ ├── graceful-fs@4.2.4
+  │ ├── jsonfile@4.0.0
+  │ └── universalify@0.1.2
+  ├── p-debounce@1.0.0
+  ├─┬ tempy@0.2.1
+  │ ├── temp-dir@1.0.0
+  │ └─┬ unique-string@1.0.0
+  │   └── crypto-random-string@1.0.0
+  ├─┬ vscode-languageserver@4.4.2
+  │ └─┬ vscode-languageserver-protocol@3.15.3
+  │   ├── vscode-jsonrpc@5.0.1
+  │   └── vscode-languageserver-types@3.15.1
+  └── vscode-uri@1.0.8
+
+
+ == php ==
+
+4. Install php deps: 
+ * PHP_LS_VERSION = 5.4.6
+ * PHP_LS_IMAGE = php-ls:tmp
+ * PHP_XDEBUG_IMAGE = php-xdebug:tmp
+
+$ php composer.phar require jetbrains/phpstorm-stubs:dev-master
+$ php composer.phar require felixfbecker/language-server:5.4.6
+
+felixfbecker/language-server v5.4.6 PHP Implementation of the Visual Studio Code Language Server Protocol
+|--composer/xdebug-handler ^1.0
+|  |--php ^5.3.2 || ^7.0 || ^8.0
+|  `--psr/log ^1.0
+|     `--php >=5.3.0
+|--felixfbecker/advanced-json-rpc ^3.0.0
+|  |--netresearch/jsonmapper ^1.0 || ^2.0
+|  |  |--ext-json *
+|  |  |--ext-pcre *
+|  |  |--ext-reflection *
+|  |  |--ext-spl *
+|  |  `--php >=5.6
+|  |--php >=7.0
+|  `--phpdocumentor/reflection-docblock ^4.0.0 || ^5.0.0
+|     |--php ^7.0
+|     |--phpdocumentor/reflection-common ^1.0.0 || ^2.0.0
+|     |  `--php ^7.2 || ^8.0
+|     |--phpdocumentor/type-resolver ~0.4 || ^1.0.0
+|     |  |--php ^7.2 || ^8.0
+|     |  `--phpdocumentor/reflection-common ^2.0
+|     |     `--php ^7.2 || ^8.0
+|     `--webmozart/assert ^1.0
+|        |--php ^5.3.3 || ^7.0 || ^8.0
+|        `--symfony/polyfill-ctype ^1.8
+|           `--php >=5.3.3
+|--felixfbecker/language-server-protocol ^1.0.1
+|  `--php ^7.0
+|--jetbrains/phpstorm-stubs dev-master
+|--microsoft/tolerant-php-parser 0.0.*
+|  `--php >=7.0
+|--netresearch/jsonmapper ^1.0
+|  |--ext-json *
+|  |--ext-pcre *
+|  |--ext-reflection *
+|  |--ext-spl *
+|  `--php >=5.6
+|--php ^7.0
+|--phpdocumentor/reflection-docblock ^4.0.0
+|  |--php ^7.0
+|  |--phpdocumentor/reflection-common ^1.0.0 || ^2.0.0
+|  |  `--php ^7.2 || ^8.0
+|  |--phpdocumentor/type-resolver ~0.4 || ^1.0.0
+|  |  |--php ^7.2 || ^8.0
+|  |  `--phpdocumentor/reflection-common ^2.0
+|  |     `--php ^7.2 || ^8.0
+|  `--webmozart/assert ^1.0
+|     |--php ^5.3.3 || ^7.0 || ^8.0
+|     `--symfony/polyfill-ctype ^1.8
+|        `--php >=5.3.3
+|--psr/log ^1.0
+|  `--php >=5.3.0
+|--sabre/event ^5.0
+|  `--php ^7.1
+|--sabre/uri ^2.0
+|  `--php ^7.1
+|--webmozart/glob ^4.1
+|  |--php ^5.3.3|^7.0
+|  `--webmozart/path-util ^2.2
+|     |--php >=5.3.3
+|     `--webmozart/assert ~1.0
+|        |--php ^5.3.3 || ^7.0 || ^8.0
+|        `--symfony/polyfill-ctype ^1.8
+|           `--php >=5.3.3
+`--webmozart/path-util ^2.3
+   |--php >=5.3.3
+   `--webmozart/assert ~1.0
+      |--php ^5.3.3 || ^7.0 || ^8.0
+      `--symfony/polyfill-ctype ^1.8
+         `--php >=5.3.3
+jetbrains/phpstorm-stubs dev-master PHP runtime & extensions header files for PhpStorm
+
+composer/xdebug-handler               1.4.2              Restarts a process without Xdebug.
+felixfbecker/advanced-json-rpc        v3.1.1             A more advanced JSONRPC implementation
+felixfbecker/language-server          v5.4.6             PHP Implementation of the Visual Studio Code Language Server Protocol
+felixfbecker/language-server-protocol v1.4.0             PHP classes for the Language Server Protocol
+jetbrains/phpstorm-stubs              dev-master 1b7fe33 PHP runtime & extensions header files for PhpStorm
+microsoft/tolerant-php-parser         v0.0.20            Tolerant PHP-to-AST parser designed for IDE usage scenarios
+netresearch/jsonmapper                v1.6.0             Map nested JSON structures onto PHP classes
+phpdocumentor/reflection-common       2.2.0              Common reflection classes used by phpdocumentor to reflect the code structure
+phpdocumentor/reflection-docblock     4.3.4              With this component, a library can provide support for annotations via DocBlocks or otherwise retrieve information that is embedded in a DocBlock.
+phpdocumentor/type-resolver           1.3.0              A PSR-5 based resolver of Class names, Types and Structural Element Names
+psr/log                               1.1.3              Common interface for logging libraries
+sabre/event                           5.1.0              sabre/event is a library for lightweight event-based programming
+sabre/uri                             2.2.0              Functions for making sense out of URIs.
+symfony/polyfill-ctype                v1.17.1            Symfony polyfill for ctype functions
+webmozart/assert                      1.9.1              Assertions to validate method input/output with nice error messages.
+webmozart/glob                        4.1.0              A PHP implementation of Ant's glob.
+webmozart/path-util                   2.3.0              A robust cross-platform utility for normalizing, comparing and modifying file paths.
+
+ == python (plugin-java8 container) ==
+
+5. Install python deps: pip install python-language-server[all]==
+ * PYTHON_IMAGE_VERSION = registry.access.redhat.com/ubi8/python-36:1
+ * PYTHON_LS_VERSION = 0.21.5
+
+Defaulting to user installation because normal site-packages is not writeable
+Requirement already satisfied: python-language-server[all]==0.21.5 in /home/hudson/.local/lib/python3.6/site-packages (0.21.5)
+Requirement already satisfied: future>=0.14.0 in /home/hudson/.local/lib/python3.6/site-packages (from python-language-server[all]==0.21.5) (0.18.2)
+Requirement already satisfied: jedi>=0.12 in /home/hudson/.local/lib/python3.6/site-packages (from python-language-server[all]==0.21.5) (0.17.1)
+Requirement already satisfied: python-jsonrpc-server>=0.1.0 in /home/hudson/.local/lib/python3.6/site-packages (from python-language-server[all]==0.21.5) (0.3.4)
+Requirement already satisfied: pluggy in /home/hudson/.local/lib/python3.6/site-packages (from python-language-server[all]==0.21.5) (0.13.1)
+Requirement already satisfied: autopep8 in /home/hudson/.local/lib/python3.6/site-packages (from python-language-server[all]==0.21.5) (1.5.3)
+Requirement already satisfied: mccabe in /home/hudson/.local/lib/python3.6/site-packages (from python-language-server[all]==0.21.5) (0.6.1)
+Requirement already satisfied: pycodestyle in /home/hudson/.local/lib/python3.6/site-packages (from python-language-server[all]==0.21.5) (2.6.0)
+Requirement already satisfied: pydocstyle>=2.0.0 in /home/hudson/.local/lib/python3.6/site-packages (from python-language-server[all]==0.21.5) (5.0.2)
+Requirement already satisfied: pyflakes>=1.6.0 in /home/hudson/.local/lib/python3.6/site-packages (from python-language-server[all]==0.21.5) (2.2.0)
+Requirement already satisfied: rope>=0.10.5 in /home/hudson/.local/lib/python3.6/site-packages (from python-language-server[all]==0.21.5) (0.17.0)
+Requirement already satisfied: yapf in /home/hudson/.local/lib/python3.6/site-packages (from python-language-server[all]==0.21.5) (0.30.0)
+Requirement already satisfied: parso<0.8.0,>=0.7.0 in /home/hudson/.local/lib/python3.6/site-packages (from jedi>=0.12->python-language-server[all]==0.21.5) (0.7.0)
+Requirement already satisfied: ujson<=1.35; platform_system != "Windows" in /home/hudson/.local/lib/python3.6/site-packages (from python-jsonrpc-server>=0.1.0->python-language-server[all]==0.21.5) (1.35)
+Requirement already satisfied: importlib-metadata>=0.12; python_version < "3.8" in /usr/local/lib/python3.6/site-packages (from pluggy->python-language-server[all]==0.21.5) (1.7.0)
+Requirement already satisfied: toml in /home/hudson/.local/lib/python3.6/site-packages (from autopep8->python-language-server[all]==0.21.5) (0.10.1)
+Requirement already satisfied: snowballstemmer in /home/hudson/.local/lib/python3.6/site-packages (from pydocstyle>=2.0.0->python-language-server[all]==0.21.5) (2.0.0)
+Requirement already satisfied: zipp>=0.5 in /usr/local/lib/python3.6/site-packages (from importlib-metadata>=0.12; python_version < "3.8"->pluggy->python-language-server[all]==0.21.5) (3.1.0)
+
+Package                Version
+---------------------- -------
+argcomplete            1.11.1
+autopep8               1.5.3
+chardet                3.0.4
+distro                 1.2.0
+future                 0.18.2
+idna                   2.7
+importlib-metadata     1.7.0
+jedi                   0.17.1
+Jinja2                 2.8.1
+MarkupSafe             0.23
+mccabe                 0.6.1
+parso                  0.7.0
+pip                    20.1.1
+pluggy                 0.13.1
+pycodestyle            2.6.0
+pydocstyle             5.0.2
+pyflakes               2.2.0
+pyroute2               0.4.13
+PySocks                1.6.8
+python-jsonrpc-server  0.3.4
+python-language-server 0.21.5
+PyYAML                 5.3.1
+requests               2.14.2
+rfc3986                1.3.0
+rope                   0.17.0
+rpm                    4.11.3
+setuptools             39.2.0
+six                    1.11.0
+snowballstemmer        2.0.0
+toml                   0.10.1
+ujson                  1.35
+urllib3                1.25.1
+virtualenv             15.1.0
+xmltodict              0.12.0
+yapf                   0.30.0
+yq                     2.10.1
+zipp                   3.1.0
+
+6. Collect RPM deps
+
+7. Collect MVN deps
+
+
+8. Collect Theia deps
+
+Short manifest is in file: /mnt/hudson_workspace/workspace/get-3rd-party-deps-manifests/2.2.0/manifest.txt
+Long log is in file: /mnt/hudson_workspace/workspace/get-3rd-party-deps-manifests/2.2.0/manifest_log.txt
+
+Overall manifest is in file: /mnt/hudson_workspace/workspace/get-3rd-party-deps-manifests/2.2.0/manifest-all.txt
+

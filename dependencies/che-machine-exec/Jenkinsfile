@@ -7,7 +7,7 @@
 def SOURCE_REPO = "eclipse/che-machine-exec" //source repo from which to find and sync commits to pkgs.devel repo
 def GIT_PATH = "containers/codeready-workspaces-machineexec" // dist-git repo to use as target
 
-def GIT_BRANCH = "crw-2.0-rhel-8" // target branch in dist-git repo, eg., crw-2.0-rhel-8
+def GIT_BRANCH = "crw-2.2-rhel-8" // target branch in dist-git repo, eg., crw-2.2-rhel-8
 def SCRATCH = "false"
 def PUSH_TO_QUAY = "true"
 def QUAY_PROJECT = "machineexec" // also used for the Brew dockerfile params
@@ -17,8 +17,9 @@ def OLD_SHA=""
 def buildNode = "rhel7-releng" // slave label
 timeout(120) {
 	node("${buildNode}"){ stage "Sync repos"
+    wrap([$class: 'TimestamperBuildWrapper']) {
 		cleanWs()
-	        withCredentials([string(credentialsId:'devstudio-release.token', variable: 'GITHUB_TOKEN'), 
+	  withCredentials([string(credentialsId:'devstudio-release.token', variable: 'GITHUB_TOKEN'), 
         file(credentialsId: 'crw-build.keytab', variable: 'CRW_KEYTAB')]) {
 		      checkout([$class: 'GitSCM',
 		        branches: [[name: "${SOURCE_BRANCH}"]],
@@ -65,10 +66,7 @@ klist # verify working
 
 hasChanged=0
 
-SOURCEDOCKERFILE=${WORKSPACE}/sources/Dockerfile
-if [[ -f ${WORKSPACE}/sources/rhel.Dockerfile ]]; then
-  SOURCEDOCKERFILE=${WORKSPACE}/sources/rhel.Dockerfile
-fi
+SOURCEDOCKERFILE=${WORKSPACE}/sources/build/dockerfiles/rhel.Dockerfile
 
 # REQUIRE: skopeo
 curl -L -s -S https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/master/product/updateBaseImages.sh -o /tmp/updateBaseImages.sh
@@ -106,7 +104,7 @@ cd ..
 		      sh BOOTSTRAP + '''
 
 # rsync files in github to dist-git
-SYNC_FILES="api  client  dockerfiles  exec-info  exec  filter  mocks  output  shell  vendor ws-conn  CONTRIBUTING.md  devfile.yaml  Gopkg.lock  Gopkg.toml  LICENSE  VERSION  README.md  main.go  compile.sh  Dockerfile"
+SYNC_FILES="activity api auth build cfg client cloud-shell common exec exec-info filter kubeconfig mocks output shell vendor ws-conn compile.sh CONTRIBUTING.md devfile.yaml go.mod go.sum LICENSE main.go VERSION README.md"
 for d in ${SYNC_FILES}; do
   if [[ -f ${WORKSPACE}/sources/${d} ]]; then
     rsync -zrlt ${WORKSPACE}/sources/${d} ${WORKSPACE}/target/${d}
@@ -151,22 +149,22 @@ cd ${WORKSPACE}/target
 if [[ \$(git diff --name-only) ]]; then # file changed
 	OLD_SHA=\$(git rev-parse HEAD) # echo ${OLD_SHA:0:8}
 	git add Dockerfile ${SYNC_FILES}
-  /tmp/updateBaseImages.sh -b ''' + GIT_BRANCH + ''' --nocommit
-  # note this might fail if we're syncing from a tag vs. a branch
+	# note this might fail if we're syncing from a tag vs. a branch
 	git commit -s -m "[sync] Update from ''' + SOURCE_REPO + ''' @ ${SOURCE_SHA:0:8}" Dockerfile ${SYNC_FILES}
-	git push origin ''' + GIT_BRANCH + '''
+	/tmp/updateBaseImages.sh -b ''' + GIT_BRANCH + ''' --nocommit
+	git push origin ''' + GIT_BRANCH + ''' || true
 	NEW_SHA=\$(git rev-parse HEAD) # echo ${NEW_SHA:0:8}
 	if [[ "${OLD_SHA}" != "${NEW_SHA}" ]]; then hasChanged=1; fi
 	echo "[sync] Updated pkgs.devel @ ${NEW_SHA:0:8} from ''' + SOURCE_REPO + ''' @ ${SOURCE_SHA:0:8}"
 else
-    # file not changed, but check if base image needs an update
-    # (this avoids having 2 commits for every change)
-    cd ${WORKSPACE}/target
-    OLD_SHA=\$(git rev-parse HEAD) # echo ${OLD_SHA:0:8}
-    /tmp/updateBaseImages.sh -b ''' + GIT_BRANCH + '''
-    NEW_SHA=\$(git rev-parse HEAD) # echo ${NEW_SHA:0:8}
-    if [[ "${OLD_SHA}" != "${NEW_SHA}" ]]; then hasChanged=1; fi
-    cd ..
+  # file not changed, but check if base image needs an update
+  # (this avoids having 2 commits for every change)
+  cd ${WORKSPACE}/target
+  OLD_SHA=\$(git rev-parse HEAD) # echo ${OLD_SHA:0:8}
+  /tmp/updateBaseImages.sh -b ''' + GIT_BRANCH + '''
+  NEW_SHA=\$(git rev-parse HEAD) # echo ${NEW_SHA:0:8}
+  if [[ "${OLD_SHA}" != "${NEW_SHA}" ]]; then hasChanged=1; fi
+  cd ..
 fi
 cd ..
 
@@ -200,5 +198,6 @@ fi
 	        if (NEW_SHA.equals(OLD_SHA) && !FORCE_BUILD.equals("true")) {
 	          currentBuild.result='UNSTABLE'
 	        }
+    }
 	}
 }

@@ -12,10 +12,12 @@ set -e
 
 REGISTRY="quay.io"
 ORGANIZATION="eclipse"
+CONTAINERNAME="che-devfile-registry"
 TAG="nightly"
-TARGET="registry"
+TARGET="registry" # or offline-registry
 USE_DIGESTS=false
 DOCKERFILE="./build/dockerfiles/Dockerfile"
+PODMAN="" # by default, use docker
 
 USAGE="
 Usage: ./build.sh [OPTIONS]
@@ -31,10 +33,14 @@ Options:
     --use-digests
         Build registry to use images pinned by digest instead of tag
     --offline
-        Build offline version of registry, with all sample projects
+        Build offline version of registry, with all artifacts included
         cached in the registry; disabled by default.
+    --builder
+        Create a dev image for building this registry. See also devfile.yaml.
+    --podman
+        Use podman instead of docker
     --rhel
-        Build registry using UBI images instead of default
+        Build using the rhel.Dockerfile (UBI images) instead of default
 "
 
 function print_usage() {
@@ -47,15 +53,19 @@ function parse_arguments() {
         case $key in
             -t|--tag)
             TAG="$2"
-            shift; shift;
+            shift 2
             ;;
             -r|--registry)
             REGISTRY="$2"
-            shift; shift;
+            shift 2
             ;;
             -o|--organization)
             ORGANIZATION="$2"
-            shift; shift;
+            shift 2
+            ;;
+            -c|--container)
+            CONTAINERNAME="$2"
+            shift 2
             ;;
             --use-digests)
             USE_DIGESTS=true
@@ -65,8 +75,16 @@ function parse_arguments() {
             TARGET="offline-registry"
             shift
             ;;
+            --builder)
+            TARGET="builder"
+            shift
+            ;;
             --rhel)
             DOCKERFILE="./build/dockerfiles/rhel.Dockerfile"
+            shift
+            ;;
+            '--podman')
+            PODMAN=$(which podman 2>/dev/null || true)
             shift
             ;;
             *)
@@ -78,24 +96,27 @@ function parse_arguments() {
 
 parse_arguments "$@"
 
-IMAGE="${REGISTRY}/${ORGANIZATION}/che-devfile-registry:${TAG}"
+# to build with podman if present, use --podman flag, else use docker
+DOCKER="docker"; if [[ ${PODMAN} ]]; then DOCKER="${PODMAN}"; fi
+
+IMAGE="${REGISTRY}/${ORGANIZATION}/${CONTAINERNAME}:${TAG}"
 VERSION=$(head -n 1 VERSION)
 case $VERSION in
   *SNAPSHOT)
     echo "Snapshot version (${VERSION}) specified in $(find . -name VERSION): building nightly plugin registry."
-    docker build \
+    ${DOCKER} build \
         -t "${IMAGE}" \
         -f ${DOCKERFILE} \
         --build-arg "USE_DIGESTS=${USE_DIGESTS}" \
-        --target ${TARGET} .
+        --target "${TARGET}" .
     ;;
   *)
     echo "Release version specified in $(find . -name VERSION): Building plugin registry for release ${VERSION}."
-    docker build \
+    ${DOCKER} build \
         -t "${IMAGE}" \
-        -f ${DOCKERFILE} \
-        --build-arg "USE_DIGESTS=${USE_DIGESTS}" \
+        -f "${DOCKERFILE}" \
         --build-arg "PATCHED_IMAGES_TAG=${VERSION}" \
-        --target ${TARGET} .
+        --build-arg "USE_DIGESTS=${USE_DIGESTS}" \
+        --target "${TARGET}" .
     ;;
 esac

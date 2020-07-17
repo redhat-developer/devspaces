@@ -10,9 +10,12 @@ icon: https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/ma
 repository: https://github.com/redhat-developer/vscode-java
 category: Language
 firstPublicationDate: "2020-02-05"
+deprecate:
+  automigrate: true
+  migrateTo: redhat/java11/latest
 spec:
   containers:
-    - image: "registry.redhat.io/codeready-workspaces/plugin-java11-rhel8:2.1"
+    - image: "registry.redhat.io/codeready-workspaces/plugin-java11-rhel8:2.2"
       name: vscode-java
       memoryLimit: "1500Mi"
       args:

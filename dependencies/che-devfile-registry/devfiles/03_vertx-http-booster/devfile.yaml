@@ -8,9 +8,10 @@ projects:
       type: git
       branch: master
 components:
-  - id: redhat/java8/latest
+  - id: redhat/java11/latest
     type: chePlugin
   - id: redhat/dependency-analytics/latest
+    # NOTE: instead of the old stack-analysis script, should be able to use the latest dependency-analysis plugin instead
     type: chePlugin
   - mountSources: true
     endpoints:
@@ -22,7 +23,8 @@ components:
       - name: m2
         containerPath: /home/jboss/.m2
     alias: maven
-    image: registry.redhat.io/codeready-workspaces/stacks-java-rhel8:2.1
+    # image: quay.io/crw/plugin-java11-rhel8:latest
+    image: registry.redhat.io/codeready-workspaces/plugin-java11-rhel8:2.3
     env:
       - value: >-
           -XX:MaxRAMPercentage=50.0 -XX:+UseParallelGC -XX:MinHeapFreeRatio=10

@@ -1,5 +1,13 @@
 #!/bin/bash -e
 #
+# Copyright (c) 2019-2020 Red Hat, Inc.
+# This program and the accompanying materials are made
+# available under the terms of the Eclipse Public License 2.0
+# which is available at https://www.eclipse.org/legal/epl-2.0/
+#
+# SPDX-License-Identifier: EPL-2.0
+#
+
 # script to query latest tags of the FROM repos, and update Dockerfiles using the latest base images
 # requires skopeo (for authenticated registry queries) and jq to do json queries
 # 
@@ -19,10 +27,13 @@ fi
 QUIET=0 	# less output - omit container tag URLs
 VERBOSE=0	# more output
 WORKDIR=`pwd`
-BRANCH=crw-2.0-rhel-8 # not master
+BRANCH=crw-2.2-rhel-8 # not master
 DOCKERFILE="Dockerfile" # or "rhel.Dockerfile"
 MAXDEPTH=2
-docommit=1 # by default DO commit the change and push it
+PR_BRANCH="pr-master-new-base-images-$(date +%s)"
+OPENBROWSERFLAG="" # if a PR is generated, open it in a browser
+docommit=1 # by default DO commit the change
+dopush=1 # by default DO push the change
 buildCommand="echo" # By default, no build will be triggered when a change occurs; use -c for a container-build (or -s for scratch).
 
 checkrecentupdates () {
@@ -43,9 +54,12 @@ checkrecentupdates () {
 
 usage () {
 	echo "Usage:   $0 -b [BRANCH] [-w WORKDIR] [-f DOCKERFILE] [-maxdepth MAXDEPTH]"
-	echo "Example: $0 -b crw-2.0-rhel-8 -w $(pwd) -f rhel.Dockerfile -maxdepth 2"
+	echo "Example: $0 -b crw-2.2-rhel-8 -w $(pwd) -f rhel.Dockerfile -maxdepth 2"
 	echo "Options: 
-	--no-commit, -n    do not push to BRANCH
+	--no-commit, -n    do not commit to BRANCH
+	--no-push, -p      do not push to BRANCH
+	-prb               set a PR_BRANCH; default: pr-master-new-base-images-(timestamp)
+	-o                 open browser if PR generated
 	-q, -v             quiet, verbose output
 	--help, -h         help
 	--check-recent-updates-only   
@@ -64,11 +78,14 @@ while [[ "$#" -gt 0 ]]; do
     '-maxdepth') MAXDEPTH="$2"; shift 1;;
     '-c') buildCommand="rhpkg container-build"; shift 0;; # NOTE: will trigger a new build for each commit, rather than for each change set (eg., Dockefiles with more than one FROM)
     '-s') buildCommand="rhpkg container-build --scratch"; shift 0;;
-    '-n'|'--nocommit') docommit=0; shift 0;;
+    '-n'|'--no-commit') docommit=0; dopush=0; shift 0;;
+    '-p'|'--no-push') dopush=0; shift 0;;
+    '-prb') PR_BRANCH="$2"; shift 1;;
+    '-o') OPENBROWSERFLAG="-o"; shift 0;;
     '-q') QUIET=1; shift 0;;
     '-v') QUIET=0; VERBOSE=1; shift 0;;
-	'--check-recent-updates-only') QUIET=0; VERBOSE=1; checkrecentupdates; shift 0; exit;;
-	'--help'|'-h') usage; exit;;
+    '--check-recent-updates-only') QUIET=0; VERBOSE=1; checkrecentupdates; shift 0; exit;;
+    '--help'|'-h') usage; exit;;
     *) OTHER="${OTHER} $1"; shift 0;; 
   esac
   shift 1
@@ -126,7 +143,7 @@ pushedIn=0
 for d in $(find ${WORKDIR} -maxdepth ${MAXDEPTH} -name ${DOCKERFILE} | sort); do
 	if [[ -f ${d} ]]; then
 		echo ""
-		echo "# Checking ${d%/${DOCKERFILE}} ..."
+		echo "# Checking ${d} ..."
 		# pull latest commits
 		if [[ -d ${d%%/${DOCKERFILE}} ]]; then pushd ${d%%/${DOCKERFILE}} >/dev/null; pushedIn=1; fi
 		if [[ "${d%/${DOCKERFILE}}" == *"-rhel8" ]]; then
@@ -166,6 +183,12 @@ for d in $(find ${WORKDIR} -maxdepth ${MAXDEPTH} -name ${DOCKERFILE} | sort); do
 					CURR_TAGrev=${URL##*-} # 15.1553789946 or 15
 					CURR_TAGrevbase=${CURR_TAGrev%%.*} # 15
 					CURR_TAGrevsuf=${CURR_TAGrev##*.} # 1553789946 or 15
+					# if any of the rev varibles contain a colon, then set them to 0 instead to avoid string to number mismatch
+					if [[ "${CURR_TAGrev}" == *":"* ]] || [[ "${CURR_TAGrevbase}" == *":"* ]] || [[ "${CURR_TAGrevsuf}" == *":"* ]]; then
+						CURR_TAGrev=0
+						CURR_TAGrevbase=0
+						CURR_TAGrevsuf=0
+					fi
 					if [[ $VERBOSE -eq 1 ]]; then echo "[DEBUG] 
 #CURR_TAGver=$CURR_TAGver; CURR_TAGrev=$CURR_TAGrev; CURR_TAGrevbase=$CURR_TAGrevbase; CURR_TAGrevsuf=$CURR_TAGrevsuf
 #LATE_TAGver=$LATE_TAGver; LATE_TAGrev=$LATE_TAGrev; LATE_TAGrevbase=$LATE_TAGrevbase; LATE_TAGrevsuf=$LATE_TAGrevsuf"; fi
@@ -182,9 +205,35 @@ for d in $(find ${WORKDIR} -maxdepth ${MAXDEPTH} -name ${DOCKERFILE} | sort); do
 
 							# commit change and push it
 							if [[ -d ${d%%/${DOCKERFILE}} ]]; then pushd ${d%%/${DOCKERFILE}} >/dev/null; pushedIn=1; fi
+							set -x
 							if [[ ${docommit} -eq 1 ]]; then 
-								git commit -s -m "[base] Update from ${URL} to ${FROMPREFIX}:${LATESTTAG}" ${DOCKERFILE} && git push origin ${BRANCHUSED}
+								git add ${DOCKERFILE} || true
+								git commit -s -m "[base] Update from ${URL} to ${FROMPREFIX}:${LATESTTAG}" ${DOCKERFILE}
+								git pull origin "${BRANCHUSED}"
+								if [[ ${dopush} -eq 1 ]]; then
+									PUSH_TRY="$(git push origin "${BRANCHUSED}" 2>&1 || git push origin "${PR_BRANCH}" || true)"
+
+									# shellcheck disable=SC2181
+									if [[ $? -gt 0 ]] || [[ $PUSH_TRY == *"protected branch hook declined"* ]]; then
+										# create pull request for master branch, as branch is restricted
+										git branch "${PR_BRANCH}" || true
+										git checkout "${PR_BRANCH}" || true
+										git pull origin "${PR_BRANCH}" || true
+										git push origin "${PR_BRANCH}"
+										lastCommitComment="$(git log -1 --pretty=%B)"
+										if [[ $(/usr/local/bin/hub version 2>/dev/null || true) ]] || [[ $(which hub 2>/dev/null || true) ]]; then
+											hub pull-request -f -m "${lastCommitComment}
+
+${lastCommitComment}" -b "${BRANCHUSED}" -h "${PR_BRANCH}" "${OPENBROWSERFLAG}"
+										else
+											echo "# Warning: hub is required to generate pull requests. See https://hub.github.com/ to install it."
+											echo -n "# To manually create a pull request, go here: "
+											git config --get remote.origin.url | sed -r -e "s#:#/#" -e "s#git@#https://#" -e "s#\.git#/tree/${PR_BRANCH}/#"
+										fi
+									fi
+								fi
 							fi
+							set +x
 							if [[ ${buildCommand} != "echo" ]] || [[ $VERBOSE -eq 1 ]]; then echo "# ${buildCommand}"; fi
 							${buildCommand} &
 							echo

@@ -7,7 +7,7 @@
 def SOURCE_REPO = "che-incubator/kubernetes-image-puller" //source repo from which to find and sync commits to pkgs.devel repo
 def GIT_PATH = "containers/codeready-workspaces-imagepuller" // dist-git repo to use as target
 
-def GIT_BRANCH = "crw-2.0-rhel-8" // target branch in dist-git repo, eg., crw-2.0-rhel-8
+def GIT_BRANCH = "crw-2.2-rhel-8" // target branch in dist-git repo, eg., crw-2.2-rhel-8
 def SCRATCH = "false"
 def PUSH_TO_QUAY = "true"
 def QUAY_PROJECT = "imagepuller" // also used for the Brew dockerfile params
@@ -17,9 +17,10 @@ def OLD_SHA=""
 def buildNode = "rhel7-releng" // slave label
 timeout(120) {
 	node("${buildNode}"){ stage "Sync repos"
-		cleanWs()
-    withCredentials([string(credentialsId:'devstudio-release.token', variable: 'GITHUB_TOKEN'), 
-    file(credentialsId: 'crw-build.keytab', variable: 'CRW_KEYTAB')]) {
+    wrap([$class: 'TimestamperBuildWrapper']) {
+		  cleanWs()
+      withCredentials([string(credentialsId:'devstudio-release.token', variable: 'GITHUB_TOKEN'), 
+      file(credentialsId: 'crw-build.keytab', variable: 'CRW_KEYTAB')]) {
       checkout([$class: 'GitSCM',
         branches: [[name: "${SOURCE_BRANCH}"]],
         doGenerateSubmoduleConfigurations: false,
@@ -65,10 +66,7 @@ klist # verify working
 
 hasChanged=0
 
-SOURCEDOCKERFILE=${WORKSPACE}/sources/docker/Dockerfile
-if [[ -f ${WORKSPACE}/sources/docker/rhel.Dockerfile ]]; then
-  SOURCEDOCKERFILE=${WORKSPACE}/sources/docker/rhel.Dockerfile
-fi
+SOURCEDOCKERFILE=${WORKSPACE}/sources/docker/rhel.Dockerfile
 
 # REQUIRE: skopeo
 curl -L -s -S https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/master/product/updateBaseImages.sh -o /tmp/updateBaseImages.sh
@@ -83,7 +81,7 @@ cd ${WORKSPACE}/sources
 
   # can't yet generate a PR against eclipse/che-* repos, and can't push directly
   # so check for a new base image but DO NOT commit/push/pull-request
-  /tmp/updateBaseImages.sh -b ''' + SOURCE_BRANCH + ''' -f ${SOURCEDOCKERFILE##*/} --nocommit
+	/tmp/updateBaseImages.sh -b ''' + SOURCE_BRANCH + ''' -f ${SOURCEDOCKERFILE##*/} --nocommit
 
   # TEST CHANGES
   # TODO move this out of bootstrap string so we don't add the same testchanges string 3 times
@@ -145,8 +143,11 @@ cp -f ${SOURCEDOCKERFILE} ${WORKSPACE}/target/Dockerfile
 
 # TODO should this be a branch instead of just master?
 CRW_VERSION=`wget -qO- https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/master/dependencies/VERSION`
-#apply patches
+# apply patches to transform Che upstream to pkgs.devel version
 sed -i ${WORKSPACE}/target/Dockerfile --regexp-extended \
+  `# Replace ubi8 with rhel8 version` \
+  -e "s#ubi8/go-toolset#rhel8/go-toolset#g" \
+  `# more replacements` \
   -e "s#FROM registry.redhat.io/#FROM #g" \
   -e "s#FROM registry.access.redhat.com/#FROM #g" \
   -e 's|ARG BOOTSTRAP=.*|ARG BOOTSTRAP=false|' \
@@ -176,11 +177,10 @@ cd ${WORKSPACE}/target
 if [[ \$(git diff --name-only) ]]; then # file changed
 	OLD_SHA=\$(git rev-parse HEAD) # echo ${OLD_SHA:0:8}
 	git add Dockerfile ${SYNC_FILES}
-  /tmp/updateBaseImages.sh -b ''' + GIT_BRANCH + ''' --nocommit
-  git diff --cached
-  # note this might fail if we're syncing from a tag vs. a branch
+	# note this might fail if we're syncing from a tag vs. a branch
 	git commit -s -m "[sync] Update from ''' + SOURCE_REPO + ''' @ ${SOURCE_SHA:0:8}" Dockerfile ${SYNC_FILES}
-	git push origin ''' + GIT_BRANCH + '''
+	/tmp/updateBaseImages.sh -b ''' + GIT_BRANCH + ''' --nocommit
+	git push origin ''' + GIT_BRANCH + ''' || true
 	NEW_SHA=\$(git rev-parse HEAD) # echo ${NEW_SHA:0:8}
 	if [[ "${OLD_SHA}" != "${NEW_SHA}" ]]; then hasChanged=1; fi
 	echo "[sync] Updated pkgs.devel @ ${NEW_SHA:0:8} from ''' + SOURCE_REPO + ''' @ ${SOURCE_SHA:0:8}"
@@ -205,9 +205,11 @@ sed ${WORKSPACE}/target/Dockerfile --regexp-extended \
   -e 's|^ *COPY resources.tgz|# &|' \
   -e 's|ARG BOOTSTRAP=.*|ARG BOOTSTRAP=true|' \
   `# replace org/container:tag with reg-proxy/rh-osbs/org-container:tag` \
-  -e "s#^FROM ([^/:]+)/([^/:]+):([^/:]+)#FROM registry-proxy.engineering.redhat.com/rh-osbs/\\1-\\2:\\3#" \
+  `# DISABLED -e "s#^FROM ([^/:]+)/([^/:]+):([^/:]+)#FROM registry-proxy.engineering.redhat.com/rh-osbs/\\1-\\2:\\3#"` \
+  -e "s#^FROM ([^/:]+)/([^/:]+):([^/:]+)#FROM registry.redhat.io/\\1/\\2:\\3#" \
   `# replace ubi8-minimal:tag with reg-proxy/rh-osbs/ubi-minimal:tag` \
-  -e "s#^FROM ([^/:]+):([^/:]+)#FROM registry-proxy.engineering.redhat.com/rh-osbs/\\1:\\2#" \
+  `# DISABLED -e "s#^FROM ([^/:]+):([^/:]+)#FROM registry-proxy.engineering.redhat.com/rh-osbs/\\1:\\2#"` \
+  -e "s#^FROM ([^/:]+):([^/:]+)#FROM registry.redhat.io/\\1:\\2#" \
   > ${WORKSPACE}/bootstrap.Dockerfile
 
 echo "======= BOOTSTRAP DOCKERFILE =======>"
@@ -288,5 +290,6 @@ fi
       if (NEW_SHA.equals(OLD_SHA) && !FORCE_BUILD.equals("true")) {
         currentBuild.result='UNSTABLE'
       }
+    }
 	}
 }

@@ -13,9 +13,9 @@ set -e
 REGISTRY="quay.io"
 ORGANIZATION="eclipse"
 TAG="nightly"
-LATEST_ONLY=false
+TARGET="registry" # or offline-registry
 USE_DIGESTS=false
-OFFLINE=false
+LATEST_ONLY=false
 DOCKERFILE="./build/dockerfiles/Dockerfile"
 
 USAGE="
@@ -34,10 +34,10 @@ Options:
     --use-digests
         Build registry to use images pinned by digest instead of tag
     --offline
-        Build offline version of registry, with all extension artifacts
+        Build offline version of registry, with all artifacts included
         cached in the registry; disabled by default.
     --rhel
-        Build using the rhel.Dockerfile instead of the default
+        Build using the rhel.Dockerfile (UBI images) instead of default
 "
 
 function print_usage() {
@@ -69,11 +69,11 @@ function parse_arguments() {
             shift
             ;;
             --offline)
-            OFFLINE=true
+            TARGET="offline-registry"
             shift
             ;;
             --rhel)
-            DOCKERFILE=./build/dockerfiles/rhel.Dockerfile
+            DOCKERFILE="./build/dockerfiles/rhel.Dockerfile"
             shift
             ;;
             *)
@@ -86,21 +86,25 @@ function parse_arguments() {
 parse_arguments "$@"
 
 IMAGE="${REGISTRY}/${ORGANIZATION}/che-plugin-registry:${TAG}"
-echo -n "Building image '$IMAGE' "
-if [ "$OFFLINE" = true ]; then
-    echo "in offline mode"
+VERSION=$(head -n 1 VERSION)
+case $VERSION in
+  *SNAPSHOT)
+    echo "Snapshot version (${VERSION}) specified in $(find . -name VERSION): building nightly plugin registry."
     docker build \
-        -t "$IMAGE" \
-        -f "$DOCKERFILE" \
+        -t "${IMAGE}" \
+        -f ${DOCKERFILE} \
         --build-arg LATEST_ONLY="${LATEST_ONLY}" \
-        --build-arg USE_DIGESTS="${USE_DIGESTS}" \
-        --target offline-registry .
-else
-    echo ""
+        --build-arg "USE_DIGESTS=${USE_DIGESTS}" \
+        --target "${TARGET}" .
+    ;;
+  *)
+    echo "Release version specified in $(find . -name VERSION): Building plugin registry for release ${VERSION}."
     docker build \
-        -t "$IMAGE" \
-        -f "$DOCKERFILE" \
+        -t "${IMAGE}" \
+        -f "${DOCKERFILE}" \
+        --build-arg "PATCHED_IMAGES_TAG=${VERSION}" \
         --build-arg LATEST_ONLY="${LATEST_ONLY}" \
-        --build-arg USE_DIGESTS="${USE_DIGESTS}" \
-        --target registry .
-fi
+        --build-arg "USE_DIGESTS=${USE_DIGESTS}" \
+        --target "${TARGET}" .
+    ;;
+esac

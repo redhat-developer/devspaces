@@ -1,0 +1,23 @@
+apiVersion: v2
+publisher: redhat
+name: vscode-yaml
+version: 0.8.0
+type: VS Code extension
+displayName: YAML
+title: YAML Language Support by Red Hat, with built-in Kubernetes and Kedge syntax support
+description: Provides comprehensive YAML Language support to Visual Studio Code, via the yaml-language-server, with built-in Kubernetes and Kedge syntax support.
+icon: https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/master/dependencies/che-plugin-registry/resources/images/default.svg?sanitize=true
+repository: https://github.com/redhat-developer/vscode-yaml
+category: Language
+firstPublicationDate: "2020-05-22"
+spec:
+  containers:
+    - image: "registry.redhat.io/codeready-workspaces/plugin-java8-rhel8:2.2"
+      name: vscode-yaml
+      memoryLimit: "256Mi"
+      args:
+        - sh
+        - -c
+        - ${PLUGIN_REMOTE_ENDPOINT_EXECUTABLE}
+  extensions:
+    - https://download.jboss.org/jbosstools/vscode/3rdparty/vscode-yaml/vscode-yaml-0.8.0.vsix

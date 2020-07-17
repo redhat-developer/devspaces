@@ -8,7 +8,7 @@ def SOURCE_REPO = "eclipse/che-plugin-broker" //source repo from which to find a
 def GIT_PATH1 = "containers/codeready-workspaces-pluginbroker-metadata" // dist-git repo to use as target
 def GIT_PATH2 = "containers/codeready-workspaces-pluginbroker-artifacts" // dist-git repo to use as target
 
-def GIT_BRANCH = "crw-2.0-rhel-8" // target branch in dist-git repo, eg., crw-2.0-rhel-8
+def GIT_BRANCH = "crw-2.2-rhel-8" // target branch in dist-git repo, eg., crw-2.2-rhel-8
 def SCRATCH = "false"
 def PUSH_TO_QUAY = "true"
 def QUAY_PROJECT1 = "pluginbroker-metadata" // also used for the Brew dockerfile params
@@ -21,8 +21,9 @@ def SRC_SHA1=""
 def buildNode = "rhel7-releng" // slave label
 timeout(120) {
 	node("${buildNode}"){ stage "Sync repos"
-		cleanWs()
-    withCredentials([string(credentialsId:'devstudio-release.token', variable: 'GITHUB_TOKEN'), 
+    wrap([$class: 'TimestamperBuildWrapper']) {
+		  cleanWs()
+      withCredentials([string(credentialsId:'devstudio-release.token', variable: 'GITHUB_TOKEN'), 
         file(credentialsId: 'crw-build.keytab', variable: 'CRW_KEYTAB')]) {
       checkout([$class: 'GitSCM', 
         branches: [[name: "${SOURCE_BRANCH}"]], 
@@ -218,18 +219,19 @@ fi
 		  '''
     }
 
-      def NEW_SHA1 = sh(script: '''#!/bin/bash -xe
-      cd ${WORKSPACE}/target1; git rev-parse HEAD
-      ''', returnStdout: true)
-      println "Got NEW_SHA1 in target1 folder: " + NEW_SHA1
+        def NEW_SHA1 = sh(script: '''#!/bin/bash -xe
+        cd ${WORKSPACE}/target1; git rev-parse HEAD
+        ''', returnStdout: true)
+        println "Got NEW_SHA1 in target1 folder: " + NEW_SHA1
 
-      def NEW_SHA2 = sh(script: '''#!/bin/bash -xe
-      cd ${WORKSPACE}/target2; git rev-parse HEAD
-      ''', returnStdout: true)
-      println "Got NEW_SHA2 in target2 folder: " + NEW_SHA2
+        def NEW_SHA2 = sh(script: '''#!/bin/bash -xe
+        cd ${WORKSPACE}/target2; git rev-parse HEAD
+        ''', returnStdout: true)
+        println "Got NEW_SHA2 in target2 folder: " + NEW_SHA2
 
-    if (NEW_SHA1.equals(OLD_SHA1) && NEW_SHA2.equals(OLD_SHA2) && !FORCE_BUILD.equals("true")) {
-      currentBuild.result='UNSTABLE'
+      if (NEW_SHA1.equals(OLD_SHA1) && NEW_SHA2.equals(OLD_SHA2) && !FORCE_BUILD.equals("true")) {
+        currentBuild.result='UNSTABLE'
+      }
     }
 	}
 }

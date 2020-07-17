@@ -43,16 +43,21 @@ createNewPlugins () {
   done
 }
 
-# change VERSION file
-echo "${VERSION}" > VERSION
-# add new plugins + update latest.txt files
-createNewPlugins "${VERSION}"
+# check if che-machine-exec-plugin and che-theia version is already installed to avoid redundent commits
+if [[ -d "v3/plugins/eclipse/che-machine-exec-plugin/${VERSION}" ]] && [[ -d "v3/plugins/eclipse/che-theia/${VERSION}" ]]; then
+  echo "[WARNING] che-theia and che-machine-exec plugins ${VERSION} already in registry - nothing to do."
+else
+  # change VERSION file
+  echo "${VERSION}" > VERSION
+  # add new plugins + update latest.txt files
+  createNewPlugins "${VERSION}"
 
-# commit change into branch
-if [[ ${NOCOMMIT} -eq 0 ]]; then
-  COMMIT_MSG="[release] Add che-theia and che-machine-exec plugins ${VERSION} in ${BRANCH}"
-  git add v3/plugins/eclipse/ || true
-  git commit -s -m "${COMMIT_MSG}" VERSION v3/plugins/eclipse/
-  git pull origin "${BRANCH}"
-  git push origin "${BRANCH}"
+  # commit change into branch
+  if [[ ${NOCOMMIT} -eq 0 ]]; then
+    COMMIT_MSG="[release] Add che-theia and che-machine-exec plugins ${VERSION} in ${BRANCH}"
+    git add v3/plugins/eclipse/ || true
+    git commit -s -m "${COMMIT_MSG}" VERSION v3/plugins/eclipse/
+    git pull origin "${BRANCH}"
+    git push origin "${BRANCH}"
+  fi
 fi

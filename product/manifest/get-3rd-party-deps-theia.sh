@@ -2,6 +2,13 @@
 
 # script to generate a manifest of all the 3rd party deps not built in OSBS, but built in Jenkins or imported from upstream community.
 
+# compute version from latest operator package.yaml, eg., 2.2.0
+# TODO when we switch to OCP 4.6 bundle format, extract this version from another place
+CSV_VERSION="$1"
+if [[ ! ${CSV_VERSION} ]]; then 
+  CSV_VERSION=$(curl -sSLo - https://raw.githubusercontent.com/redhat-developer/codeready-workspaces-operator/master/controller-manifests/codeready-workspaces.package.yaml | yq .channels[0].currentCSV -r | sed -r -e "s#crwoperator.v##")
+fi
+
 SCRIPT=$(readlink -f "$0"); SCRIPTPATH=$(dirname "$SCRIPT"); # echo $SCRIPTPATH
 
 EXCLUDE_FILES="e2e|kubernetes"
@@ -9,9 +16,9 @@ EXCLUDE_LINES="api.github.com|GITHUB_LIMIT|GITHUB_TOKEN|THEIA_GITHUB_REPO|.git$|
 EXCLUDE_LINES2="che:theia"
 
 cd /tmp
-
-MANIFEST_FILE=/tmp/manifest_theia.txt
-LOG_FILE=/tmp/manifest_theia_log.txt
+mkdir -p ${WORKSPACE}/${CSV_VERSION}/theia
+MANIFEST_FILE="${WORKSPACE}/${CSV_VERSION}/theia/manifest-theia.txt"
+LOG_FILE="${WORKSPACE}/${CSV_VERSION}/theia/manifest-theia_log.txt"
 
 function log () {
 	echo "$1" | tee -a ${LOG_FILE}
@@ -24,9 +31,8 @@ for d in $(cat ${MANIFEST_FILE} | egrep "https://|http://"); do
 	echo -n "."
 done
 echo ""
-cat ${MANIFEST_FILE}.2 | uniq | sort | egrep -v "${EXCLUDE_LINES}" > ${MANIFEST_FILE}
-cat ${MANIFEST_FILE} | uniq | sort > ${MANIFEST_FILE}.2
-cat ${MANIFEST_FILE}.2 | uniq | sort > ${MANIFEST_FILE} 
+cat ${MANIFEST_FILE}.2 | uniq | sort | egrep -v "${EXCLUDE_LINES}" | uniq | sort > ${MANIFEST_FILE}
+rm -f ${MANIFEST_FILE}.2
 
 # TODO get brew builds' logs too
 

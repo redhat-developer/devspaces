@@ -1,0 +1,14 @@
+== che-theia/dockerfiles/theia-dev/Dockerfile ==
+# which is available at https://www.eclipse.org/legal/epl-2.0/
+
+== che-theia/dockerfiles/theia-endpoint-runtime-binary/Dockerfile ==
+# which is available at https://www.eclipse.org/legal/epl-2.0/
+
+== che-theia/dockerfiles/theia/Dockerfile ==
+RUN che-theia init -c ${HOME}/theia-source-code/che-theia/che-theia-init-sources.yml --alias https://github.com/eclipse/che-theia=${HOME}/theia-source-code/che-theia
+RUN che-theia init -c ${HOME}/theia-source-code/che-theia/che-theia-init-sources.yml --alias https://github.com/eclipse/che-theia=${HOME}/theia-source-code/che-theia
+# which is available at https://www.eclipse.org/legal/epl-2.0/
+
+Short manifest is in file: /mnt/hudson_workspace/workspace/get-3rd-party-deps-manifests/2.2.0/theia/manifest-theia.txt
+Long log is in file: /mnt/hudson_workspace/workspace/get-3rd-party-deps-manifests/2.2.0/theia/manifest-theia_log.txt
+

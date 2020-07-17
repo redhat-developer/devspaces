@@ -14,17 +14,15 @@ set -e
 # shellcheck source=./build/scripts/util.sh
 source "$(dirname "$0")/util.sh"
 
-readarray -d '' metas < <(find "$1" -name 'meta.yaml' -print0)
+readarray -d '' metas_raw < <(find "$1" -name 'meta.yaml' -print0)
+IFS=$'\n' metas=($(sort <<<"${metas_raw[*]}"))
+unset IFS
 
 for meta in "${metas[@]}"; do
   plugin_id=$(evaluate_plugin_id "$meta")
   echo "Checking plugin '${plugin_id}'"
 
   if ! jsonschema "$(dirname "$0")/meta.yaml.schema" -F $'\t{error.message}\n' -i <(yq . "${meta}"); then
-    INVALID_JSON=true
+    exit 1
   fi
 done
-
-if [[ $INVALID_JSON ]]; then
-  exit 1
-fi

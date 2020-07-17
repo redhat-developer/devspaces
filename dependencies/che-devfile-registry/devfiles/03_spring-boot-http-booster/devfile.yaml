@@ -11,6 +11,7 @@ components:
   - id: redhat/java8/latest
     type: chePlugin
   - id: redhat/dependency-analytics/latest
+    # NOTE: instead of the old stack-analysis script, should be able to use the latest dependency-analysis plugin instead
     type: chePlugin
   - mountSources: true
     endpoints:
@@ -22,7 +23,8 @@ components:
       - name: m2
         containerPath: /home/jboss/.m2
     alias: maven
-    image: registry.redhat.io/codeready-workspaces/stacks-java-rhel8:2.1
+    # image: quay.io/crw/plugin-java8-rhel8:2.3
+    image: registry.redhat.io/codeready-workspaces/plugin-java8-rhel8:2.3
     env:
       - value: >-
           -XX:MaxRAMPercentage=50.0 -XX:+UseParallelGC -XX:MinHeapFreeRatio=10
@@ -52,7 +54,7 @@ commands:
                "name": "Debug (Attach) - Remote",
                "request": "attach",
                "hostName": "localhost",
-               "port": 8000
+               "port": 5005
              }]
            }
         type: vscode-launch
@@ -60,30 +62,21 @@ commands:
     actions:
       - workdir: '${CHE_PROJECTS_ROOT}/spring-boot-http-booster'
         type: exec
-        command: 'MAVEN_OPTS="-Xmx200m" && mvn -Duser.home=${HOME} spring-boot:run'
+        command: MAVEN_OPTS="-Xmx200m" && mvn -Duser.home=${HOME} spring-boot:run
         component: maven
   - name: debug
     actions:
       - workdir: '${CHE_PROJECTS_ROOT}/spring-boot-http-booster'
         type: exec
         command: >-
-          mvn  -Duser.home=${HOME} spring-boot:run -Drun.jvmArguments="-Xdebug
-          -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000"
+         mvn  -Duser.home=${HOME} spring-boot:run -Drun.jvmArguments="-Xdebug
+          -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005"
         component: maven
   - name: test
     actions:
       - workdir: '${CHE_PROJECTS_ROOT}/spring-boot-http-booster'
         type: exec
-        command: 'MAVEN_OPTS="-Xmx200m" && mvn -Duser.home=${HOME} verify'
-        component: maven
-  - name: dependency-analysis
-    actions:
-      - workdir: '${CHE_PROJECTS_ROOT}/spring-boot-http-booster'
-        type: exec
-        command: >-
-          ${HOME}/stack-analysis.sh -f
-          ${CHE_PROJECTS_ROOT}/spring-boot-http-booster/pom.xml -p
-          ${CHE_PROJECTS_ROOT}/spring-boot-http-booster
+        command: MAVEN_OPTS="-Xmx200m" && mvn -Duser.home=${HOME} verify
         component: maven
   - name: deploy to OpenShift
     actions:

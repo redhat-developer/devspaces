@@ -12,7 +12,7 @@ category: Language
 firstPublicationDate: "2020-02-12"
 spec:
   containers:
-    - image: "registry.redhat.io/codeready-workspaces/plugin-java11-rhel8:2.1"
+    - image: "registry.redhat.io/codeready-workspaces/plugin-java11-rhel8:2.2"
       name: vscode-quarkus
       memoryLimit: "3500Mi"
       args:

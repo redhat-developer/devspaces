@@ -10,6 +10,9 @@ icon: https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/ma
 repository: https://github.com/redhat-developer/vscode-xml
 category: Language
 firstPublicationDate: "2020-02-03"
+deprecate:
+  automigrate: true
+  migrateTo: redhat/vscode-xml/latest
 spec:
   containers:
     - image: "registry.redhat.io/codeready-workspaces/stacks-java-rhel8:2.1"

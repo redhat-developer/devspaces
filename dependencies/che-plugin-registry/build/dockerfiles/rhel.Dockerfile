@@ -12,7 +12,7 @@
 
 # Builder: check meta.yamls and create index.json
 # https://access.redhat.com/containers/?tab=tags#/registry.access.redhat.com/ubi8-minimal
-FROM registry.access.redhat.com/ubi8-minimal:8.1-409 as builder
+FROM registry.access.redhat.com/ubi8-minimal:8.2-301.1593113563 as builder
 USER 0
 
 ################# 
@@ -46,6 +46,10 @@ COPY ./build/dockerfiles/content_set*.repo /etc/yum.repos.d/
 COPY ./build/dockerfiles/rhel.install.sh /tmp
 RUN /tmp/rhel.install.sh && rm -f /tmp/rhel.install.sh
 
+################# 
+# PHASE TWO: configure registry image
+#################
+
 COPY ./build/scripts/*.sh ./build/scripts/meta.yaml.schema /build/
 COPY ./v3 /build/v3
 WORKDIR /build/
@@ -59,25 +63,29 @@ RUN ./generate_latest_metas.sh v3
 RUN ./check_plugins_location.sh v3
 RUN ./set_plugin_dates.sh v3
 RUN ./check_metas_schema.sh v3
+RUN ./swap_images.sh v3
 RUN if [[ ${USE_DIGESTS} == "true" ]]; then ./write_image_digests.sh v3; fi
 RUN ./index.sh v3 > /build/v3/plugins/index.json
 RUN ./list_referenced_images.sh v3 > /build/v3/external_images.txt
 RUN chmod -R g+rwX /build
 
 ################# 
-# PHASE TWO: configure registry image
+# PHASE THREE: configure registry image
 ################# 
 
 # Build registry, copying meta.yamls and index.json from builder
 # UPSTREAM: use RHEL7/RHSCL/httpd image so we're not required to authenticate with registry.redhat.io
 # https://access.redhat.com/containers/?tab=tags#/registry.access.redhat.com/rhscl/httpd-24-rhel7
-FROM registry.access.redhat.com/rhscl/httpd-24-rhel7:2.4-110 AS registry
+FROM registry.access.redhat.com/rhscl/httpd-24-rhel7:2.4-117.1593607199 AS registry
 
 # DOWNSTREAM: use RHEL8/httpd
 # https://access.redhat.com/containers/?tab=tags#/registry.access.redhat.com/rhel8/httpd-24
-# FROM registry.redhat.io/rhel8/httpd-24:1-89 AS registry
+# FROM registry.redhat.io/rhel8/httpd-24:1-98 AS registry
 USER 0
-RUN yum update -y systemd && yum clean all && rm -rf /var/cache/yum && \
+# latest httpd container doesn't include ssl cert, so generate one
+RUN chmod +x /usr/share/container-scripts/httpd/pre-init/40-ssl-certs.sh && \
+    /usr/share/container-scripts/httpd/pre-init/40-ssl-certs.sh
+RUN yum update -y gnutls systemd && yum clean all && rm -rf /var/cache/yum && \
     echo "Installed Packages" && rpm -qa | sort -V && echo "End Of Installed Packages"
 
 # BEGIN these steps might not be required
@@ -93,14 +101,15 @@ STOPSIGNAL SIGWINCH
 WORKDIR /var/www/html
 
 RUN mkdir -m 777 /var/www/html/v3
-COPY .htaccess README.md /var/www/html/
+COPY README.md .htaccess /var/www/html/
 COPY --from=builder /build/v3 /var/www/html/v3
 COPY ./build/dockerfiles/rhel.entrypoint.sh ./build/dockerfiles/entrypoint.sh /usr/local/bin/
 RUN chmod g+rwX /usr/local/bin/entrypoint.sh /usr/local/bin/rhel.entrypoint.sh
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 CMD ["/usr/local/bin/rhel.entrypoint.sh"]
 
-# Offline registry build
+# Offline build: cache .theia and .vsix files in registry itself and update metas
+# multiple temp stages does not work in Brew
 FROM builder AS offline-builder
 RUN ./cache_artifacts.sh v3 && \
     chmod -R g+rwX /build

@@ -12,37 +12,33 @@
 package com.redhat.codeready.selenium.ocpoauth;
 
 import static java.lang.String.format;
-import static org.eclipse.che.commons.lang.NameGenerator.generate;
 import static org.testng.AssertJUnit.assertEquals;
 import static org.testng.AssertJUnit.assertTrue;
 
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import com.redhat.codeready.selenium.pageobject.CodereadyOpenShiftLoginPage;
-import com.redhat.codeready.selenium.pageobject.dashboard.CodereadyNewWorkspace;
+import com.redhat.codeready.selenium.pageobject.dashboard.CodereadyCreateWorkspaceHelper;
 import com.redhat.codeready.selenium.pageobject.site.CodereadyLoginPage;
 import org.eclipse.che.selenium.core.SeleniumWebDriver;
 import org.eclipse.che.selenium.core.TestGroup;
 import org.eclipse.che.selenium.core.client.TestWorkspaceServiceClient;
 import org.eclipse.che.selenium.core.provider.TestDashboardUrlProvider;
 import org.eclipse.che.selenium.core.user.TestUser;
-import org.eclipse.che.selenium.pageobject.dashboard.CreateWorkspaceHelper;
 import org.eclipse.che.selenium.pageobject.dashboard.Dashboard;
 import org.eclipse.che.selenium.pageobject.dashboard.NewWorkspace.Devfile;
 import org.eclipse.che.selenium.pageobject.dashboard.workspaces.Workspaces;
 import org.eclipse.che.selenium.pageobject.ocp.AuthorizeOpenShiftAccessPage;
 import org.eclipse.che.selenium.pageobject.site.CheLoginPage;
 import org.eclipse.che.selenium.pageobject.site.FirstBrokerProfilePage;
-import org.eclipse.che.selenium.pageobject.theia.TheiaIde;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.Test;
 
 @Test(groups = {TestGroup.OPENSHIFT, TestGroup.MULTIUSER})
 public class LoginExistedUserWithOpenShiftOAuthTest {
 
-  private static final String WORKSPACE_NAME = generate("workspace", 4);
   private static final String LOGIN_TO_CHE_WITH_OPENSHIFT_OAUTH_MESSAGE_TEMPLATE =
-      "Authenticate as %s to link your account with openshift";
+      "Authenticate to link your account with openshift";
   private static final String USER_ALREADY_EXISTS_ERROR_MESSAGE_TEMPLATE =
       "User with username %s already exists. How do you want to continue?";
   private static final String IDENTITY_PROVIDER_NAME = "htpasswd";
@@ -65,15 +61,15 @@ public class LoginExistedUserWithOpenShiftOAuthTest {
   @Inject private Workspaces workspaces;
   @Inject private SeleniumWebDriver seleniumWebDriver;
   @Inject private TestDashboardUrlProvider testDashboardUrlProvider;
-  @Inject private CreateWorkspaceHelper createWorkspaceHelper;
-  @Inject private TheiaIde theiaIde;
+  @Inject private CodereadyCreateWorkspaceHelper codereadyCreateWorkspaceHelper;
   @Inject private TestWorkspaceServiceClient defaultUserWorkspaceServiceClient;
   @Inject private CheLoginPage cheLoginPage;
-  @Inject private CodereadyNewWorkspace codereadyNewWorkspace;
+
+  private String workspaceName;
 
   @AfterClass
   private void removeTestWorkspace() throws Exception {
-    defaultUserWorkspaceServiceClient.delete(WORKSPACE_NAME, openShiftUsername);
+    defaultUserWorkspaceServiceClient.delete(workspaceName, testUser.getName());
   }
 
   @Test
@@ -106,20 +102,15 @@ public class LoginExistedUserWithOpenShiftOAuthTest {
     firstBrokerProfilePage.addToExistingAccount();
 
     // login into Codeready again
-    String expectedInfo =
-        format(LOGIN_TO_CHE_WITH_OPENSHIFT_OAUTH_MESSAGE_TEMPLATE, testUser.getName());
-    assertTrue(codereadyLoginPage.getInfoAlert().contains(expectedInfo));
+    assertTrue(
+        codereadyLoginPage
+            .getInfoAlert()
+            .contains(LOGIN_TO_CHE_WITH_OPENSHIFT_OAUTH_MESSAGE_TEMPLATE));
     codereadyLoginPage.loginWithPredefinedUsername(testUser.getPassword());
 
-    dashboard.waitDashboardToolbarTitle();
-    codereadyNewWorkspace.openNewWorkspacePageFromGetStartedPage(
-        Devfile.JAVA_MAVEN, WORKSPACE_NAME);
-
-    // switch to the Codeready IDE and wait until workspace is ready to use
-    theiaIde.switchToIdeFrame();
-    theiaIde.waitTheiaIde();
-    theiaIde.waitLoaderInvisibility();
-    theiaIde.waitTheiaIdeTopPanel();
+    workspaceName =
+        codereadyCreateWorkspaceHelper.createAndStartWorkspace(
+            Devfile.JAVA_MAVEN, "vertx-health-checks");
 
     // delete the created workspace on Dashboard
     seleniumWebDriver.navigate().to(testDashboardUrlProvider.get());
@@ -128,7 +119,7 @@ public class LoginExistedUserWithOpenShiftOAuthTest {
     workspaces.selectAllWorkspacesByBulk();
     workspaces.clickOnDeleteWorkspacesBtn();
     workspaces.clickOnDeleteButtonInDialogWindow();
-    workspaces.waitWorkspaceIsNotPresent(WORKSPACE_NAME);
+    workspaces.waitWorkspaceIsNotPresent(workspaceName);
   }
 
   private static TestUser getTestUser() {

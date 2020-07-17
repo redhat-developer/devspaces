@@ -1,13 +1,13 @@
 ---
 apiVersion: 1.0.0
 metadata:
-  generateName: php-web-simple-
+  generateName: php-di-
 projects:
 -
-    name: php-web-simple
+    name: php-di
     source:
         type: git
-        location: "https://github.com/che-samples/web-php-simple"
+        location: "https://github.com/crw-samples/demo.git"
 components:
 -
   type: chePlugin
@@ -20,45 +20,37 @@ components:
 -
   type: dockerimage
   alias: php
-  image: registry.redhat.io/codeready-workspaces/stacks-php-rhel8:2.1
+  image: registry.redhat.io/codeready-workspaces/stacks-php-rhel8:2.3
   memoryLimit: 512Mi
   mountSources: true
   endpoints:
     - name: '8080-tcp'
-      port: 8080
+      port: 8000
   volumes:
     - name: composer
       containerPath: "/home/jboss/.composer"
 commands:
 -
-  name: Start Apache Web Server
+  name: Install dependencies (with composer)
   actions:
     - type: exec
       component: php
-      command: "httpd -k start\ntail -f /etc/httpd/logs/access_log &\ntail -f /etc/httpd/logs/error_log"
+      command: "composer install"
+      workdir: ${CHE_PROJECTS_ROOT}/php-di
 -
-  name: Stop Apache Web Server
+  name: Run web application
   actions:
     - type: exec
       component: php
-      command: "httpd -k stop"
+      command: "php -S 0.0.0.0:8000 -t web/"
+      workdir: ${CHE_PROJECTS_ROOT}/php-di
 -
-  name: Restart Apache Web Server
+  name: Run CLI application
   actions:
     - type: exec
       component: php
-      command: "httpd -k restart"
--
-  name: Configure Apache Web Server DocumentRoot
-  actions:
-    - type: exec
-      component: php
-      command: |
-        if grep -q '\"/projects\"$' /etc/httpd/conf/httpd.conf; then
-          sed -i 's|DocumentRoot.*|DocumentRoot \"/projects/php-web-simple\"|' /etc/httpd/conf/httpd.conf
-        else
-          echo "DocumentRoot already configured!"
-        fi
+      command: "php console.php"
+      workdir: ${CHE_PROJECTS_ROOT}/php-di
 -
   name: Debug current file
   actions:

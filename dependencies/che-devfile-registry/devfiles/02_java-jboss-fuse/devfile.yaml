@@ -7,7 +7,7 @@ projects:
     name: java-jboss-fuse
     source:
       type: git
-      location: "https://github.com/jboss-fuse/fuse-rest-http-booster/"
+      location: 'https://github.com/jboss-fuse/fuse-rest-http-booster/'
 components:
   -
     type: chePlugin
@@ -16,9 +16,14 @@ components:
     type: chePlugin
     id: redhat/vscode-apache-camel/latest
   -
+    # NOTE: instead of the old stack-analysis script, should be able to use the latest dependency-analysis plugin instead
+    type: chePlugin
+    id: redhat/dependency-analytics/latest
+  -
     type: dockerimage
     alias: maven
-    image: registry.redhat.io/codeready-workspaces/stacks-java-rhel8:2.1
+    # image: quay.io/crw/plugin-java8-rhel8:2.3
+    image: registry.redhat.io/codeready-workspaces/plugin-java8-rhel8:2.3
     env:
       - name: JAVA_OPTS
         value: "-XX:MaxRAMPercentage=50.0 -XX:+UseParallelGC -XX:MinHeapFreeRatio=10
@@ -60,14 +65,6 @@ commands:
         component: maven
         command: "mvn fabric8:deploy -Popenshift -DskipTests"
         workdir: "${CHE_PROJECTS_ROOT}/java-jboss-fuse"
-  -
-    name: dependency analysis
-    actions:
-        -
-          type: exec
-          component: maven
-          command: "${HOME}/stack-analysis.sh -f ${CHE_PROJECTS_ROOT}/java-jboss-fuse/pom.xml -p ${CHE_PROJECTS_ROOT}/java-jboss-fuse"
-          workdir: "${CHE_PROJECTS_ROOT}/java-jboss-fuse"
   -
     name: debug
     actions:

@@ -7,15 +7,20 @@ projects:
     name: vertx-health-checks-example-redhat
     source:
       type: git
-      location: "https://github.com/openshift-vertx-examples/vertx-health-checks-example-redhat"
+      location: "https://github.com/crw-samples/vertx-health-checks-example-redhat"
 components:
   -
     type: chePlugin
-    id: redhat/java8/latest
+    id: redhat/java11/latest
+  -
+    # NOTE: instead of the old stack-analysis script, should be able to use the latest dependency-analysis plugin instead
+    type: chePlugin
+    id: redhat/dependency-analytics/latest
   -
     type: dockerimage
     alias: maven
-    image: registry.redhat.io/codeready-workspaces/stacks-java-rhel8:2.1
+    # image: quay.io/crw/plugin-java11-rhel8:latest
+    image: registry.redhat.io/codeready-workspaces/plugin-java11-rhel8:2.3
     env:
       - name: JAVA_OPTS
         value: "-XX:MaxRAMPercentage=50.0 -XX:+UseParallelGC -XX:MinHeapFreeRatio=10 -XX:MaxHeapFreeRatio=20 -XX:GCTimeRatio=4 -XX:AdaptiveSizePolicyWeight=90 -Dsun.zip.disableMemoryMapping=true -Xms20m -Djava.security.egd=file:/dev/./urandom -Duser.home=/home/jboss"
@@ -67,13 +72,6 @@ commands:
         type: exec
         command: "mvn fabric8:deploy -Popenshift -DskipTests -Dvertx.disableDnsResolver=true"
         component: maven
-  -  
-    name: Dependency analysis
-    actions:
-      -
-        type: exec
-        component: maven
-        command: "${HOME}/stack-analysis.sh -f ${CHE_PROJECTS_ROOT}/vertx-health-checks-example-redhat/pom.xml -p ${CHE_PROJECTS_ROOT}/vertx-health-checks-example-redhat"
   -
     name: Attach remote debugger
     actions:

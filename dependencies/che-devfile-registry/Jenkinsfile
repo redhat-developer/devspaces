@@ -8,7 +8,7 @@
 
 def SOURCE_REPO = "redhat-developer/codeready-workspaces" //source repo from which to find and sync commits to pkgs.devel repo
 def GIT_PATH = "containers/codeready-workspaces-devfileregistry" // dist-git repo to use as target
-def GIT_BRANCH = "crw-2.0-rhel-8" // target branch in dist-git repo, eg., crw-2.0-rhel-8
+def GIT_BRANCH = "crw-2.2-rhel-8" // target branch in dist-git repo, eg., crw-2.2-rhel-8
 def SCRATCH = "false"
 def PUSH_TO_QUAY = "true"
 def QUAY_PROJECT = "devfileregistry" // also used for the Brew dockerfile params
@@ -19,8 +19,9 @@ def OLD_SHA=""
 def buildNode = "rhel7-releng" // slave label
 timeout(120) {
 	node("${buildNode}"){ stage "Sync repos"
-		cleanWs()
-    withCredentials([string(credentialsId:'devstudio-release.token', variable: 'GITHUB_TOKEN'), 
+    wrap([$class: 'TimestamperBuildWrapper']) {
+		  cleanWs()
+      withCredentials([string(credentialsId:'devstudio-release.token', variable: 'GITHUB_TOKEN'), 
         file(credentialsId: 'crw-build.keytab', variable: 'CRW_KEYTAB')]) {
       checkout([$class: 'GitSCM',
         branches: [[name: "${SOURCE_BRANCH}"]],
@@ -82,6 +83,13 @@ cd ${WORKSPACE}/sources
   git config user.email "nickboldt+devstudio-release@gmail.com"
   git config user.name "Red Hat Devstudio Release Bot"
   git config --global push.default matching
+
+  # SOLVED :: Fatal: Could not read Username for "https://github.com", No such device or address :: https://github.com/github/hub/issues/1644
+  git remote -v
+  git config --global hub.protocol https
+  git remote set-url origin https://\$GITHUB_TOKEN:x-oauth-basic@github.com/''' + SOURCE_REPO + '''.git
+  git remote -v
+
   OLD_SHA=$(git rev-parse HEAD) # echo ${OLD_SHA:0:8}
   pushd ${SOURCEDOCKERFILE%/*} >/dev/null
     /tmp/updateBaseImages.sh -b ''' + SOURCE_BRANCH + ''' -f ${SOURCEDOCKERFILE##*/} # just pass in rhel.Dockerfile
@@ -142,7 +150,8 @@ sed -i ${WORKSPACE}/target/Dockerfile --regexp-extended \
   -e 's|ARG BOOTSTRAP=.*|ARG BOOTSTRAP=false|' \
   `# Enable offline build - copy in built binaries` \
   -e 's|# (COPY root-local.tgz)|\\1|' \
-  -e 's|^ *COPY .*content_sets.*|# &|' \
+  `# only enable rhel8 here -- don't want centos or epel ` \
+  -e 's|^ *(COPY .*)/content_set.*repo (.+)|\\1/content_sets_rhel8.repo \\2|' \
   `# Comment out PATCHED_* args from build and disable update_devfile_patched_image_tags.sh` \
   -e 's|^ *ARG PATCHED.*|# &|' \
   -e '/^ *RUN TAG/,+3 s|.*|# &| ' \
@@ -185,22 +194,22 @@ cd ${WORKSPACE}/target
 if [[ \$(git diff --name-only) ]]; then # file changed
 	OLD_SHA=\$(git rev-parse HEAD) # echo ${OLD_SHA:0:8}
 	git add Dockerfile ${SYNC_FILES}
-  /tmp/updateBaseImages.sh -b ''' + GIT_BRANCH + ''' --nocommit 
-  	# note this might fail if we're syncing from a tag vs. a branch
+	# note this might fail if we're syncing from a tag vs. a branch
 	git commit -s -m "[sync] Update from ''' + SOURCE_REPO + ''' @ ${SOURCE_SHA:0:8}" Dockerfile ${SYNC_FILES}
-	git push origin ''' + GIT_BRANCH + '''
+	/tmp/updateBaseImages.sh -b ''' + GIT_BRANCH + ''' --nocommit
+	git push origin ''' + GIT_BRANCH + ''' || true
 	NEW_SHA=\$(git rev-parse HEAD) # echo ${NEW_SHA:0:8}
 	if [[ "${OLD_SHA}" != "${NEW_SHA}" ]]; then hasChanged=1; fi
 	echo "[sync] Updated pkgs.devel @ ${NEW_SHA:0:8} from ''' + SOURCE_REPO + ''' @ ${SOURCE_SHA:0:8}"
 else
-    # file not changed, but check if base image needs an update
-    # (this avoids having 2 commits for every change)
-    cd ${WORKSPACE}/target
-    OLD_SHA=\$(git rev-parse HEAD) # echo ${OLD_SHA:0:8}
-    /tmp/updateBaseImages.sh -b ''' + GIT_BRANCH + '''
-    NEW_SHA=\$(git rev-parse HEAD) # echo ${NEW_SHA:0:8}
-    if [[ "${OLD_SHA}" != "${NEW_SHA}" ]]; then hasChanged=1; fi
-    cd ..
+  # file not changed, but check if base image needs an update
+  # (this avoids having 2 commits for every change)
+  cd ${WORKSPACE}/target
+  OLD_SHA=\$(git rev-parse HEAD) # echo ${OLD_SHA:0:8}
+  /tmp/updateBaseImages.sh -b ''' + GIT_BRANCH + '''
+  NEW_SHA=\$(git rev-parse HEAD) # echo ${NEW_SHA:0:8}
+  if [[ "${OLD_SHA}" != "${NEW_SHA}" ]]; then hasChanged=1; fi
+  cd ..
 fi
 cd ..
 
@@ -320,5 +329,6 @@ fi
         if (NEW_SHA.equals(OLD_SHA) && !FORCE_BUILD.equals("true")) {
           currentBuild.result='UNSTABLE'
         }
+    }
 	}
 }

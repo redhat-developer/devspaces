@@ -11,14 +11,11 @@
  */
 package com.redhat.codeready.selenium.workspaces;
 
-import static org.eclipse.che.commons.lang.NameGenerator.generate;
-
 import com.google.inject.Inject;
-import java.util.Collections;
+import com.redhat.codeready.selenium.pageobject.dashboard.CodereadyCreateWorkspaceHelper;
 import org.eclipse.che.selenium.core.SeleniumWebDriver;
 import org.eclipse.che.selenium.core.client.TestWorkspaceServiceClient;
 import org.eclipse.che.selenium.core.user.DefaultTestUser;
-import org.eclipse.che.selenium.pageobject.dashboard.CreateWorkspaceHelper;
 import org.eclipse.che.selenium.pageobject.dashboard.Dashboard;
 import org.eclipse.che.selenium.pageobject.dashboard.NewWorkspace.Devfile;
 import org.eclipse.che.selenium.pageobject.theia.TheiaEditor;
@@ -31,8 +28,6 @@ import org.testng.annotations.Test;
 /** @author Andrey chizhikov */
 @Test
 public class ProjectStateAfterRefreshTest {
-  private static final String WORKSPACE_NAME =
-      generate(ProjectStateAfterRefreshTest.class.getSimpleName(), 5);
   private static final String PROJECT_NAME = "vertx-health-checks-example-redhat";
   private static final String PATH_TO_POM_FILE = PROJECT_NAME + "/" + "pom.xml";
   private static final String PATH_TO_README_FILE = PROJECT_NAME + "/" + "README.md";
@@ -40,28 +35,29 @@ public class ProjectStateAfterRefreshTest {
   @Inject private Dashboard dashboard;
   @Inject private TestWorkspaceServiceClient workspaceServiceClient;
   @Inject private DefaultTestUser defaultTestUser;
-  @Inject private CreateWorkspaceHelper createWorkspaceHelper;
+  @Inject private CodereadyCreateWorkspaceHelper codereadyCreateWorkspaceHelper;
   @Inject private TheiaIde theiaIde;
   @Inject private TheiaProjectTree theiaProjectTree;
   @Inject private SeleniumWebDriver seleniumWebDriver;
   @Inject private TheiaEditor theiaEditor;
 
+  private String workspaceName;
+
   @BeforeClass
   public void setUp() throws Exception {
     dashboard.open();
-    createWorkspaceHelper.createAndStartWorkspaceFromStack(
-        Devfile.JAVA_MAVEN, WORKSPACE_NAME, Collections.emptyList(), null);
+    workspaceName =
+        codereadyCreateWorkspaceHelper.createAndStartWorkspace(
+            Devfile.JAVA_MAVEN, "vertx-health-checks");
   }
 
   @AfterClass
   public void tearDown() throws Exception {
-    workspaceServiceClient.delete(WORKSPACE_NAME, defaultTestUser.getName());
+    workspaceServiceClient.delete(workspaceName, defaultTestUser.getName());
   }
 
   @Test
   public void checkRestoreStateOfProjectAfterRefreshTest() {
-    theiaIde.waitOpenedWorkspaceIsReadyToUse();
-
     theiaProjectTree.waitFilesTab();
     theiaProjectTree.clickOnFilesTab();
     theiaProjectTree.waitProjectAreaOpened();

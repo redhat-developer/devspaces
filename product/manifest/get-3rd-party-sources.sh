@@ -6,7 +6,8 @@ set -e
 
 # TODO: make this script ALSO fetch the tarballs from Jenkins so we can do historical sources
 
-CRW_BRANCH=crw-2.0-rhel-8
+getLatestImageTagsFlags="" # placeholder for a --crw22 flag to pass to getLatestImageTags.sh
+CRW_BRANCH="crw-2.2-rhel-8"
 PKGS_DEVEL_USER="crw-build"
 DEBUG=0
 phases=" 1 2 3 "
@@ -22,6 +23,7 @@ for key in "$@"; do
   case $key in
     '--clean') cleanup;;
     '--debug') DEBUG=1;;
+    '--crw'*) getLatestImageTagsFlags="$1";;
     *) phases="${phases} $1 ";;
   esac
   shift 1
@@ -93,9 +95,11 @@ if [[ ${phases} == *"1"* ]]; then
 
     # check NVR for a matching tarball or tarballs
     if [[ ! -f ${WORKSPACE}/NVRs.txt ]]; then
-        ../getLatestImageTags.sh \
-            --crw21 --nvr | tee ${WORKSPACE}/NVRs.txt
+        mnf "Latest image list ${getLatestImageTagsFlags}"
+        ../getLatestImageTags.sh ${getLatestImageTagsFlags} --nvr | tee ${WORKSPACE}/NVRs.txt
+        mnf ""
     fi
+    mnf "Sorted image list"
     cat ${WORKSPACE}/NVRs.txt | sort | tee -a ${MANIFEST_FILE}
     mnf ""
 

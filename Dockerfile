@@ -1,4 +1,4 @@
-# Copyright (c) 2018-2019-2020 Red Hat, Inc.
+# Copyright (c) 2018-2020 Red Hat, Inc.
 # This program and the accompanying materials are made
 # available under the terms of the Eclipse Public License 2.0
 # which is available at https://www.eclipse.org/legal/epl-2.0/
@@ -23,16 +23,21 @@ RUN mkdir -p /home/jboss/codeready
 # see https://github.com/redhat-developer/codeready-workspaces-productization/blob/master/devdoc/building/building-crw.adoc#make-changes-to-crw-and-re-deploy-to-minishift
 # then copy /home/${USER}/projects/codeready-workspaces/assembly/codeready-workspaces-assembly-main/target/codeready-workspaces-assembly-main.tar.gz into this folder
 COPY assembly/codeready-workspaces-assembly-main/target/codeready-workspaces-assembly-main.tar.gz /tmp/codeready-workspaces-assembly-main.tar.gz
-RUN tar xzf /tmp/codeready-workspaces-assembly-main.tar.gz --strip-components=1 -C /home/jboss/codeready && \
-    rm -f /tmp/codeready-workspaces-assembly-main.tar.gz && \
-    cp /etc/pki/java/cacerts /home/jboss/cacerts && chmod 644 /home/jboss/cacerts && \
-    mkdir -p /logs /data && \
+RUN tar xzf /tmp/codeready-workspaces-assembly-main.tar.gz --transform="s#.*codeready-workspaces-assembly-main/*##" -C /home/jboss/codeready && \
+    rm -f /tmp/codeready-workspaces-assembly-main.tar.gz
+# this should fail if the startup script is not found in correct path /home/jboss/codeready/tomcat/bin/catalina.sh
+RUN echo -n "Server startup script in: " && find /home/jboss/codeready -name catalina.sh | grep -z /home/jboss/codeready/tomcat/bin/catalina.sh
+
+RUN cp /etc/pki/java/cacerts /home/jboss/cacerts && chmod 644 /home/jboss/cacerts && \
     adduser jboss && \
+    mkdir -p /logs /data && \
     chgrp -R 0     /home/jboss /data /logs && \
     chmod -R g+rwX /home/jboss /data /logs && \
     chown -R jboss /home/jboss
+
 RUN microdnf remove -y tar gzip shadow-utils && \
-    microdnf clean all && rm -rf /var/cache/yum && echo "Installed Packages" && rpm -qa | sort -V && echo "End Of Installed Packages"
+    microdnf update -y gnutls && microdnf -y clean all && rm -rf /var/cache/yum && \
+    echo "Installed Packages" && rpm -qa | sort -V && echo "End Of Installed Packages"
 
 USER jboss
 ENTRYPOINT ["/entrypoint.sh"]
@@ -49,7 +54,7 @@ LABEL summary="$SUMMARY" \
       io.openshift.tags="$PRODNAME,$COMPNAME" \
       com.redhat.component="$PRODNAME-$COMPNAME-container" \
       name="$PRODNAME/$COMPNAME" \
-      version="2.2" \
+      version="2.3" \
       license="EPLv2" \
       maintainer="Nick Boldt <nboldt@redhat.com>" \
       io.openshift.expose-services="" \

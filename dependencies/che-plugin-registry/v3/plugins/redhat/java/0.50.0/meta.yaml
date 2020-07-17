@@ -3,7 +3,7 @@ publisher: redhat
 name: java
 version: 0.50.0
 type: VS Code extension
-displayName: Language Support for Java(TM)
+displayName: Language Support for Java 8
 title: Language Support for Java(TM) by Red Hat
 description: Java Linting, Intellisense, formatting, refactoring, Maven/Gradle support
   and more...
@@ -11,6 +11,9 @@ icon: https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/ma
 repository: https://github.com/redhat-developer/vscode-java
 category: Language
 firstPublicationDate: "2019-10-03"
+deprecate:
+  automigrate: true
+  migrateTo: redhat/java/latest
 spec:
   containers:
   - image: "registry.redhat.io/codeready-workspaces/stacks-java-rhel8:2.1"

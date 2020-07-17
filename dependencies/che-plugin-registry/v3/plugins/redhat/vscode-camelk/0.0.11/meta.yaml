@@ -12,7 +12,7 @@ category: Language
 firstPublicationDate: '2020-01-15'
 spec:
   containers:
-  - image: "registry.redhat.io/codeready-workspaces/plugin-kubernetes-rhel8:2.1"
+  - image: "registry.redhat.io/codeready-workspaces/plugin-kubernetes-rhel8:2.2"
     name: vscode-camelk
     memoryLimit: "1G"
   extensions:

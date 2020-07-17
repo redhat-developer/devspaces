@@ -14,10 +14,9 @@ package com.redhat.codeready.selenium.workspaces;
 import static org.eclipse.che.commons.lang.NameGenerator.generate;
 
 import com.google.inject.Inject;
-import java.util.Collections;
+import com.redhat.codeready.selenium.pageobject.dashboard.CodereadyCreateWorkspaceHelper;
 import org.eclipse.che.selenium.core.client.TestWorkspaceServiceClient;
 import org.eclipse.che.selenium.core.user.DefaultTestUser;
-import org.eclipse.che.selenium.pageobject.dashboard.CreateWorkspaceHelper;
 import org.eclipse.che.selenium.pageobject.dashboard.Dashboard;
 import org.eclipse.che.selenium.pageobject.dashboard.NewWorkspace.Devfile;
 import org.eclipse.che.selenium.pageobject.dashboard.workspaces.WorkspaceDetails;
@@ -33,8 +32,6 @@ import org.testng.annotations.Test;
 /** @author Aleksandr Shmaraev */
 @Test
 public class ProjectStateAfterRenameWorkspaceTest {
-  private static final String WORKSPACE_NAME =
-      generate(ProjectStateAfterRenameWorkspaceTest.class.getSimpleName(), 5);
   private static final String PROJECT_NAME = "vertx-health-checks-example-redhat";
   private static final String WORKSPACE_NEW_NAME = generate("rename_ws", 4);
   private static final String PATH_TO_POM_FILE = PROJECT_NAME + "/" + "pom.xml";
@@ -43,7 +40,7 @@ public class ProjectStateAfterRenameWorkspaceTest {
   @Inject private Dashboard dashboard;
   @Inject private TestWorkspaceServiceClient workspaceServiceClient;
   @Inject private DefaultTestUser defaultTestUser;
-  @Inject private CreateWorkspaceHelper createWorkspaceHelper;
+  @Inject private CodereadyCreateWorkspaceHelper codereadyCreateWorkspaceHelper;
   @Inject private TheiaIde theiaIde;
   @Inject private TheiaProjectTree theiaProjectTree;
   @Inject private TheiaEditor theiaEditor;
@@ -51,23 +48,24 @@ public class ProjectStateAfterRenameWorkspaceTest {
   @Inject private Workspaces workspaces;
   @Inject private WorkspaceOverview workspaceOverview;
 
+  private String workspaceName;
+
   @BeforeClass
   public void setUp() throws Exception {
     dashboard.open();
-    createWorkspaceHelper.createAndStartWorkspaceFromStack(
-        Devfile.JAVA_MAVEN, WORKSPACE_NAME, Collections.emptyList(), null);
+    workspaceName =
+        codereadyCreateWorkspaceHelper.createAndStartWorkspace(
+            Devfile.JAVA_MAVEN, "vertx-health-checks");
   }
 
   @AfterClass
   public void tearDown() throws Exception {
-    workspaceServiceClient.delete(WORKSPACE_NAME, defaultTestUser.getName());
+    workspaceServiceClient.delete(workspaceName, defaultTestUser.getName());
     workspaceServiceClient.delete(WORKSPACE_NEW_NAME, defaultTestUser.getName());
   }
 
   @Test
   public void checkProjectAfterRenameWs() {
-    theiaIde.waitOpenedWorkspaceIsReadyToUse();
-
     theiaProjectTree.waitFilesTab();
     theiaProjectTree.clickOnFilesTab();
     theiaProjectTree.waitProjectAreaOpened();
@@ -82,7 +80,7 @@ public class ProjectStateAfterRenameWorkspaceTest {
     dashboard.waitDashboardToolbarTitle();
     dashboard.selectWorkspacesItemOnDashboard();
     dashboard.waitToolbarTitleName("Workspaces");
-    workspaces.selectWorkspaceItemName(WORKSPACE_NAME);
+    workspaces.selectWorkspaceItemName(workspaceName);
     workspaceOverview.enterNameWorkspace(WORKSPACE_NEW_NAME);
     workspaceDetails.clickOnSaveChangesBtn();
     dashboard.waitNotificationMessage("Workspace updated");

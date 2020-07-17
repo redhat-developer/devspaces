@@ -12,7 +12,7 @@
 
 # Builder: check meta.yamls and create index.json
 # https://access.redhat.com/containers/?tab=tags#/registry.access.redhat.com/ubi8-minimal
-FROM registry.access.redhat.com/ubi8-minimal:8.1-409 as builder
+FROM registry.access.redhat.com/ubi8-minimal:8.2-301.1593113563 as builder
 USER 0
 
 ################# 
@@ -40,7 +40,6 @@ ENV USE_DIGESTS=${USE_DIGESTS}
 # NOTE: uncomment for local build. Must also set full registry path in FROM to registry.redhat.io or registry.access.redhat.com
 # enable rhel 7 or 8 content sets (from Brew) to resolve jq as rpm
 COPY ./build/dockerfiles/content_set*.repo /etc/yum.repos.d/
-
 COPY ./build/dockerfiles/rhel.install.sh /tmp
 RUN /tmp/rhel.install.sh && rm -f /tmp/rhel.install.sh
 
@@ -57,12 +56,13 @@ RUN TAG=${PATCHED_IMAGES_TAG} \
     ORGANIZATION=${PATCHED_IMAGES_ORG} \
     REGISTRY=${PATCHED_IMAGES_REG} \
     ./update_devfile_patched_image_tags.sh
-
 RUN ./check_mandatory_fields.sh devfiles
+RUN ./swap_images.sh devfiles
 RUN if [[ ${USE_DIGESTS} == "true" ]]; then ./write_image_digests.sh devfiles; fi
 RUN ./index.sh > /build/devfiles/index.json
 RUN ./list_referenced_images.sh devfiles > /build/devfiles/external_images.txt
 RUN chmod -R g+rwX /build/devfiles
+CMD tail -f /dev/null
 
 ################# 
 # PHASE TWO: configure registry image
@@ -71,13 +71,17 @@ RUN chmod -R g+rwX /build/devfiles
 # Build registry, copying meta.yamls and index.json from builder
 # UPSTREAM: use RHEL7/RHSCL/httpd image so we're not required to authenticate with registry.redhat.io
 # https://access.redhat.com/containers/?tab=tags#/registry.access.redhat.com/rhscl/httpd-24-rhel7
-FROM registry.access.redhat.com/rhscl/httpd-24-rhel7:2.4-110 AS registry
+FROM registry.access.redhat.com/rhscl/httpd-24-rhel7:2.4-117.1593607199 AS registry
 
 # DOWNSTREAM: use RHEL8/httpd
 # https://access.redhat.com/containers/?tab=tags#/registry.access.redhat.com/rhel8/httpd-24
-# FROM registry.redhat.io/rhel8/httpd-24:1-89 AS registry
+# FROM registry.redhat.io/rhel8/httpd-24:1-98 AS registry
 USER 0
-RUN yum update -y systemd && yum clean all && rm -rf /var/cache/yum && \
+
+# latest httpd container doesn't include ssl cert, so generate one
+RUN chmod +x /usr/share/container-scripts/httpd/pre-init/40-ssl-certs.sh && \
+    /usr/share/container-scripts/httpd/pre-init/40-ssl-certs.sh
+RUN yum update -y gnutls systemd && yum clean all && rm -rf /var/cache/yum && \
     echo "Installed Packages" && rpm -qa | sort -V && echo "End Of Installed Packages"
 
 # BEGIN these steps might not be required

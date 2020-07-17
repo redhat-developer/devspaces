@@ -1,7 +1,8 @@
 #!/usr/bin/env groovy
 
 // PARAMETERS for this pipeline:
-// CRW_VERSION = 2.1.0
+// CSV_VERSION = 2.2.0
+// getLatestImageTagsFlags="--crw23" # placeholder for flag to pass to getLatestImageTags.sh
 
 def buildNode = "rhel7-releng" // slave label
 
@@ -53,7 +54,7 @@ kinit "crw-build/codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com@RE
 klist # verify working
 
 # generate source files
-cd crw/product/manifest/ && ./get-3rd-party-sources.sh --clean
+cd ${WORKSPACE}/crw/product/manifest/ && ./get-3rd-party-sources.sh --clean ''' + getLatestImageTagsFlags + '''
 
 # set up sshfs mount
 DESTHOST="crw-build/codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com@rcm-guest.app.eng.bos.redhat.com"
@@ -66,12 +67,12 @@ for mnt in RCMG; do
 done
 
 # copy files to rcm-guest
-ssh "${DESTHOST}" "cd /mnt/rcm-guest/staging/crw && mkdir -p CRW-''' + CRW_VERSION + '''/sources/containers CRW-''' + CRW_VERSION + '''/sources/vscode && ls -la . "
-rsync -zrlt --rsh=ssh --protocol=28 ${WORKSPACE}/manifest-srcs.txt  ${WORKSPACE}/${mnt}-ssh/CRW-''' + CRW_VERSION + '''/sources/
-rsync -zrlt --rsh=ssh --protocol=28  --delete ${WORKSPACE}/sources/containers/* ${WORKSPACE}/${mnt}-ssh/CRW-''' + CRW_VERSION + '''/sources/containers/
-rsync -zrlt --rsh=ssh --protocol=28  --delete ${WORKSPACE}/sources/vscode/*     ${WORKSPACE}/${mnt}-ssh/CRW-''' + CRW_VERSION + '''/sources/vscode/
-ssh "${DESTHOST}" "cd /mnt/rcm-guest/staging/crw/CRW-''' + CRW_VERSION + '''/ && tree"
-ssh "${DESTHOST}" "/mnt/redhat/scripts/rel-eng/utility/bus-clients/stage-mw-release CRW-''' + CRW_VERSION + '''"
+ssh "${DESTHOST}" "cd /mnt/rcm-guest/staging/crw && mkdir -p CRW-''' + CSV_VERSION + '''/sources/containers CRW-''' + CSV_VERSION + '''/sources/vscode && ls -la . "
+rsync -zrlt --rsh=ssh --protocol=28 ${WORKSPACE}/manifest-srcs.txt  ${WORKSPACE}/${mnt}-ssh/CRW-''' + CSV_VERSION + '''/sources/
+rsync -zrlt --rsh=ssh --protocol=28  --delete ${WORKSPACE}/sources/containers/* ${WORKSPACE}/${mnt}-ssh/CRW-''' + CSV_VERSION + '''/sources/containers/
+rsync -zrlt --rsh=ssh --protocol=28  --delete ${WORKSPACE}/sources/vscode/*     ${WORKSPACE}/${mnt}-ssh/CRW-''' + CSV_VERSION + '''/sources/vscode/
+ssh "${DESTHOST}" "cd /mnt/rcm-guest/staging/crw/CRW-''' + CSV_VERSION + '''/ && tree"
+ssh "${DESTHOST}" "/mnt/redhat/scripts/rel-eng/utility/bus-clients/stage-mw-release CRW-''' + CSV_VERSION + '''"
 '''
           }
     }

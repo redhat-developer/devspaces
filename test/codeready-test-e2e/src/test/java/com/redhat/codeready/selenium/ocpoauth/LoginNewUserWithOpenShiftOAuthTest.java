@@ -11,30 +11,25 @@
  */
 package com.redhat.codeready.selenium.ocpoauth;
 
-import static org.eclipse.che.commons.lang.NameGenerator.generate;
-
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import com.redhat.codeready.selenium.pageobject.CodereadyOpenShiftLoginPage;
-import com.redhat.codeready.selenium.pageobject.dashboard.CodereadyNewWorkspace;
+import com.redhat.codeready.selenium.pageobject.dashboard.CodereadyCreateWorkspaceHelper;
 import org.eclipse.che.selenium.core.SeleniumWebDriver;
 import org.eclipse.che.selenium.core.TestGroup;
 import org.eclipse.che.selenium.core.client.TestWorkspaceServiceClient;
 import org.eclipse.che.selenium.core.provider.TestDashboardUrlProvider;
-import org.eclipse.che.selenium.pageobject.dashboard.CreateWorkspaceHelper;
 import org.eclipse.che.selenium.pageobject.dashboard.Dashboard;
 import org.eclipse.che.selenium.pageobject.dashboard.NewWorkspace.Devfile;
 import org.eclipse.che.selenium.pageobject.dashboard.workspaces.Workspaces;
 import org.eclipse.che.selenium.pageobject.ocp.AuthorizeOpenShiftAccessPage;
 import org.eclipse.che.selenium.pageobject.site.CheLoginPage;
-import org.eclipse.che.selenium.pageobject.theia.TheiaIde;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.Test;
 
 @Test(groups = {TestGroup.OPENSHIFT, TestGroup.MULTIUSER})
 public class LoginNewUserWithOpenShiftOAuthTest {
 
-  private static final String WORKSPACE_NAME = generate("workspace", 4);
   private static final String IDENTITY_PROVIDER_NAME = "htpasswd";
 
   @Inject(optional = true)
@@ -55,15 +50,15 @@ public class LoginNewUserWithOpenShiftOAuthTest {
   @Inject private Workspaces workspaces;
   @Inject private SeleniumWebDriver seleniumWebDriver;
   @Inject private TestDashboardUrlProvider testDashboardUrlProvider;
-  @Inject private CreateWorkspaceHelper createWorkspaceHelper;
-  @Inject private TheiaIde theiaIde;
+  @Inject private CodereadyCreateWorkspaceHelper codereadyCreateWorkspaceHelper;
   @Inject private TestWorkspaceServiceClient defaultUserWorkspaceServiceClient;
   @Inject private CheLoginPage cheLoginPage;
-  @Inject private CodereadyNewWorkspace codereadyNewWorkspace;
+
+  private String workspaceName;
 
   @AfterClass
   private void removeTestWorkspace() throws Exception {
-    defaultUserWorkspaceServiceClient.delete(WORKSPACE_NAME, openShiftUsername);
+    defaultUserWorkspaceServiceClient.delete(workspaceName, openShiftUsername);
   }
 
   @Test
@@ -89,15 +84,9 @@ public class LoginNewUserWithOpenShiftOAuthTest {
 
     codereadyOpenShiftLoginPage.submit(openShiftUsername, openShiftEmail);
 
-    dashboard.waitDashboardToolbarTitle();
-    codereadyNewWorkspace.openNewWorkspacePageFromGetStartedPage(
-        Devfile.JAVA_MAVEN, WORKSPACE_NAME);
-
-    // switch to the Codeready IDE and wait until workspace is ready to use
-    theiaIde.switchToIdeFrame();
-    theiaIde.waitTheiaIde();
-    theiaIde.waitLoaderInvisibility();
-    theiaIde.waitTheiaIdeTopPanel();
+    workspaceName =
+        codereadyCreateWorkspaceHelper.createAndStartWorkspace(
+            Devfile.JAVA_MAVEN, "vertx-health-checks");
 
     // delete the created workspace on Dashboard
     seleniumWebDriver.navigate().to(testDashboardUrlProvider.get());
@@ -106,6 +95,6 @@ public class LoginNewUserWithOpenShiftOAuthTest {
     workspaces.selectAllWorkspacesByBulk();
     workspaces.clickOnDeleteWorkspacesBtn();
     workspaces.clickOnDeleteButtonInDialogWindow();
-    workspaces.waitWorkspaceIsNotPresent(WORKSPACE_NAME);
+    workspaces.waitWorkspaceIsNotPresent(workspaceName);
   }
 }

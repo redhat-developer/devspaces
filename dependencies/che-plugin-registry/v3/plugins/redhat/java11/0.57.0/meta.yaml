@@ -10,23 +10,26 @@ icon: https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/ma
 repository: https://github.com/redhat-developer/vscode-java
 category: Language
 firstPublicationDate: "2020-02-20"
+deprecate:
+  automigrate: true
+  migrateTo: redhat/java11/latest
 spec:
   containers:
-    - image: "registry.redhat.io/codeready-workspaces/plugin-java11-rhel8:2.1"
-      name: vscode-java
-      memoryLimit: "1500Mi"
-      args:
-        - sh
-        - -c
-        - ${PLUGIN_REMOTE_ENDPOINT_EXECUTABLE}
-      volumes:
-      - mountPath: "/home/jboss/.m2"
-        name: m2
-      - mountPath: "/home/jboss/.gradle"
-        name: gradle
-      env:
-        - name: GRADLE_HOME
-          value: /opt/gradle/
+  - image: "registry.redhat.io/codeready-workspaces/plugin-java11-rhel8:2.2"
+    name: vscode-java
+    memoryLimit: "1500Mi"
+    args:
+      - sh
+      - -c
+      - ${PLUGIN_REMOTE_ENDPOINT_EXECUTABLE}
+    volumes:
+    - mountPath: "/home/jboss/.m2"
+      name: m2
+    - mountPath: "/home/jboss/.gradle"
+      name: gradle
+    env:
+      - name: GRADLE_HOME
+        value: /opt/gradle/
   extensions:
     - https://download.jboss.org/jbosstools/vscode/3rdparty/vscode-java-debug/vscode-java-debug-0.24.0.vsix
     - https://download.jboss.org/jbosstools/static/jdt.ls/stable/java-0.57.0-2029.vsix
