@@ -9,8 +9,8 @@
 #   Red Hat, Inc. - initial API and implementation
 #
 
-# https://access.redhat.com/containers/?tab=tags#/registry.access.redhat.com/ubi8/ubi-minimal
-FROM registry.access.redhat.com/ubi8/ubi-minimal
+# https://access.redhat.com/containers/?tab=tags#/registry.access.redhat.com/ubi8-minimal
+FROM registry.access.redhat.com/ubi8-minimal:8.2-301.1593113563
 RUN microdnf install java-11-openjdk-headless tar gzip shadow-utils
 ENV JAVA_HOME=/usr/lib/jvm/default-jvm/jre
 USER root
