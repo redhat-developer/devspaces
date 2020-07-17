@@ -243,13 +243,13 @@ timeout(240) {
 		git config user.name "Red Hat Devstudio Release Bot"
 		git config --global push.default matching
 
-		// SOLVED :: Fatal: Could not read Username for "https://github.com", No such device or address :: https://github.com/github/hub/issues/1644
+		# SOLVED :: Fatal: Could not read Username for "https://github.com", No such device or address :: https://github.com/github/hub/issues/1644
 		git remote -v
 		git config --global hub.protocol https
 		git remote set-url origin https://\$GITHUB_TOKEN:x-oauth-basic@github.com/redhat-developer/''' + CRW_path + '''.git
 		git remote -v
 
-		// Check if che-machine-exec and che-theia plugins are current in upstream repo and if not, add them
+		# Check if che-machine-exec and che-theia plugins are current in upstream repo and if not, add them
 		pushd ${WORKSPACE}/sources/dependencies/che-plugin-registry >/dev/null
 		if [[ ! -d "v3/plugins/eclipse/che-machine-exec-plugin/${VER_CHE}" ]] || [[ ! -d "v3/plugins/eclipse/che-theia/${VER_CHE}" ]]; then
 			./build/scripts/add_che_plugins.sh ${VER_CHE}
