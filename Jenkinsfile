@@ -234,6 +234,7 @@ timeout(240) {
 		// unpack asset-*.tgz into folder where mvn can access it
 		// use that content when building assembly main and ws assembly?
 
+		sh '''#!/bin/bash -xe
 		git checkout --track origin/''' + branchToBuildCRW + ''' || true
 		export GITHUB_TOKEN=''' + GITHUB_TOKEN + ''' # echo "''' + GITHUB_TOKEN + '''"
 		git config user.email "nickboldt+devstudio-release@gmail.com"
@@ -253,7 +254,8 @@ timeout(240) {
 			./build/scripts/add_che_plugins.sh ${VER_CHE}
 		fi
 		popd >/dev/null
-
+		'''
+		
 		sh "mvn clean install ${MVN_FLAGS} -f ${CRW_path}/pom.xml -Dparent.version=\"${VER_CHE}\" -Dche.version=\"${VER_CHE}\" -Dcrw.dashboard.version=\"${CRW_SHAs}\" ${MVN_EXTRA_FLAGS}"
 
 		// Add dashboard and workspace-loader to server assembly
