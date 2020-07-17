@@ -236,7 +236,7 @@ timeout(240) {
 		// use that content when building assembly main and ws assembly?
 
 		sh '''#!/bin/bash -xe
-		cd ${CRW_path}
+		cd ''' + CRW_path + '''
 		git checkout --track origin/''' + branchToBuildCRW + ''' || true
 		export GITHUB_TOKEN=''' + GITHUB_TOKEN + ''' # echo "''' + GITHUB_TOKEN + '''"
 		git config user.email "nickboldt+devstudio-release@gmail.com"
