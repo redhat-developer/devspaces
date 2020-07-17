@@ -29,7 +29,8 @@ RUN mkdir -p /home/jboss/codeready && \
     tar xzf /tmp/codeready-workspaces-assembly-main.tar.gz --transform="s#.*codeready-workspaces-assembly-main/*##" -C /home/jboss/codeready && \
     rm -f /tmp/codeready-workspaces-assembly-main.tar.gz
 # this should fail if the startup script is not found in correct path /home/jboss/codeready/tomcat/bin/catalina.sh
-RUN echo -n "Server startup script in: " && find /home/jboss/codeready -name catalina.sh | grep -z /home/jboss/codeready/tomcat/bin/catalina.sh && \
+RUN java -version && \
+    echo -n "Server startup script in: " && find /home/jboss/codeready -name catalina.sh | grep -z /home/jboss/codeready/tomcat/bin/catalina.sh && \
     # fix certs & dir permissions
     cp /etc/pki/java/cacerts /home/jboss/cacerts && chmod 644 /home/jboss/cacerts && \
     mkdir -p /logs /data && \
