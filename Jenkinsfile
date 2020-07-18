@@ -3,10 +3,10 @@
 // PARAMETERS for this pipeline:
 // node == slave label, eg., rhel7-devstudio-releng-16gb-ram||rhel7-16gb-ram||rhel7-devstudio-releng||rhel7 or rhel7-32gb||rhel7-16gb||rhel7-8gb
 // nodeBig == slave label, eg., rhel7-devstudio-releng-16gb-ram||rhel7-16gb-ram or rhel7-32gb||rhel7-16gb
-// branchToBuildDev = refs/tags/20
-// branchToBuildParent = refs/tags/7.9.3
-// branchToBuildChe = refs/tags/7.9.3 or */*/7.9.x or */master
-// branchToBuildCRW = */7.9.x or */master
+// branchToBuildDev = refs/tags/19
+// branchToBuildParent = refs/tags/7.15.0
+// branchToBuildChe = refs/tags/7.16.x
+// branchToBuildCRW = master
 // BUILDINFO = ${JOB_NAME}/${BUILD_NUMBER}
 // MVN_EXTRA_FLAGS = extra flags, such as to disable a module -pl '!org.eclipse.che.selenium:che-selenium-test'
 // SCRATCH = true (don't push to Quay) or false (do push to Quay)
@@ -237,7 +237,8 @@ timeout(240) {
 
 		sh '''#!/bin/bash -xe
 		cd ''' + CRW_path + '''
-		export GITHUB_TOKEN=''' + GITHUB_TOKEN + ''' # echo "''' + GITHUB_TOKEN + '''"
+  		git checkout --track origin/''' + branchToBuildCRW + ''' || true
+  		export GITHUB_TOKEN=''' + GITHUB_TOKEN + ''' # echo "''' + GITHUB_TOKEN + '''"
 		git config user.email "nickboldt+devstudio-release@gmail.com"
 		git config user.name "Red Hat Devstudio Release Bot"
 		git config --global push.default matching
