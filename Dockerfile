@@ -41,8 +41,6 @@ RUN java -version && \
 USER jboss
 ENTRYPOINT ["/entrypoint.sh"]
 
-# insert generated LABELs below this line
-
 ENV SUMMARY="Red Hat CodeReady Workspaces Server container" \
     DESCRIPTION="Red Hat CodeReady Workspaces server container" \
     PRODNAME="codeready-workspaces" \
@@ -60,3 +58,5 @@ LABEL summary="$SUMMARY" \
       maintainer="Nick Boldt <nboldt@redhat.com>" \
       io.openshift.expose-services="" \
       usage=""
+      
+# insert generated LABELs below this line
