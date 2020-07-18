@@ -249,7 +249,7 @@ timeout(240) {
 		git remote -v
 
 		# Check if che-machine-exec and che-theia plugins are current in upstream repo and if not, add them
-		pushd ''' + CRW_path + '''/dependencies/che-plugin-registry >/dev/null
+		pushd dependencies/che-plugin-registry >/dev/null
 		if [[ ! -d "v3/plugins/eclipse/che-machine-exec-plugin/${VER_CHE}" ]] || [[ ! -d "v3/plugins/eclipse/che-theia/${VER_CHE}" ]]; then
 			./build/scripts/add_che_plugins.sh ${VER_CHE}
 		fi
