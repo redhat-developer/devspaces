@@ -237,7 +237,6 @@ timeout(240) {
 
 		sh '''#!/bin/bash -xe
 		cd ''' + CRW_path + '''
-		git checkout --track origin/''' + branchToBuildCRW + ''' || true
 		export GITHUB_TOKEN=''' + GITHUB_TOKEN + ''' # echo "''' + GITHUB_TOKEN + '''"
 		git config user.email "nickboldt+devstudio-release@gmail.com"
 		git config user.name "Red Hat Devstudio Release Bot"
@@ -250,7 +249,7 @@ timeout(240) {
 		git remote -v
 
 		# Check if che-machine-exec and che-theia plugins are current in upstream repo and if not, add them
-		pushd ${WORKSPACE}/sources/dependencies/che-plugin-registry >/dev/null
+		pushd ''' + CRW_path + '''/dependencies/che-plugin-registry >/dev/null
 		if [[ ! -d "v3/plugins/eclipse/che-machine-exec-plugin/${VER_CHE}" ]] || [[ ! -d "v3/plugins/eclipse/che-theia/${VER_CHE}" ]]; then
 			./build/scripts/add_che_plugins.sh ${VER_CHE}
 		fi
