@@ -16,7 +16,7 @@ RUN microdnf install java-11-openjdk-headless tar gzip shadow-utils findutils &&
     microdnf update -y gnutls && \
     microdnf -y clean all && rm -rf /var/cache/yum && echo "Installed Packages" && rpm -qa | sort -V && echo "End Of Installed Packages" && \
     adduser jboss
-ENV JAVA_HOME=/usr/lib/jvm/default-jvm/jre
+ENV JAVA_HOME=/usr/lib/jvm/jre
 
 COPY entrypoint.sh /entrypoint.sh
 
@@ -32,7 +32,7 @@ RUN mkdir -p /home/jboss/codeready && \
 RUN java -version && \
     echo -n "Server startup script in: " && find /home/jboss/codeready -name catalina.sh | grep -z /home/jboss/codeready/tomcat/bin/catalina.sh && \
     # fix certs & dir permissions
-    cp /etc/pki/java/cacerts /home/jboss/cacerts && chmod 644 /home/jboss/cacerts && \
+    cp /etc/pki/ca-trust/extracted/java/cacerts /home/jboss/cacerts && chmod 644 /home/jboss/cacerts && \
     mkdir -p /logs /data && \
     chgrp -R 0     /home/jboss /data /logs && \
     chmod -R g+rwX /home/jboss /data /logs && \
