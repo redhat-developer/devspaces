@@ -58,6 +58,3 @@ LABEL summary="$SUMMARY" \
       maintainer="Nick Boldt <nboldt@redhat.com>" \
       io.openshift.expose-services="" \
       usage=""
-
-
-
