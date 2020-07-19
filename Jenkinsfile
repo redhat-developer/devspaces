@@ -251,11 +251,8 @@ timeout(240) {
 
 		# Check if che-machine-exec and che-theia plugins are current in upstream repo and if not, add them
 		# NOTE: we want the version of che in the pom, not the value of che computed for the dashboard (che.version override)
-		LATEST_CHE_VERSION=$(cat pom.xml | grep -E "<che.version>" | sed -r -e "s#.+<che.version>(.+)</che.version>#\\1#")
 		pushd dependencies/che-plugin-registry >/dev/null
-		if [[ ! -d "v3/plugins/eclipse/che-machine-exec-plugin/${LATEST_CHE_VERSION}/" ]] || [[ ! -d "v3/plugins/eclipse/che-theia/${LATEST_CHE_VERSION}/" ]]; then
-			./build/scripts/add_che_plugins.sh ${LATEST_CHE_VERSION}
-		fi
+			./build/scripts/add_che_plugins.sh $(cat ${WORKSPACE}/''' + CRW_path + '''/pom.xml | grep -E "<che.version>" | sed -r -e "s#.+<che.version>(.+)</che.version>#\\1#")
 		popd >/dev/null
 		'''
 		

@@ -44,9 +44,14 @@ createNewPlugins () {
 }
 
 # check if che-machine-exec-plugin and che-theia version is already installed to avoid redundent commits
-if [[ -d "v3/plugins/eclipse/che-machine-exec-plugin/${VERSION}" ]] && [[ -d "v3/plugins/eclipse/che-theia/${VERSION}" ]]; then
-  echo "[WARNING] che-theia and che-machine-exec plugins ${VERSION} already in registry - nothing to do."
-else
+if [[ ! -d "v3/plugins/eclipse/che-machine-exec-plugin" ]] || \
+   [[ ! -d "v3/plugins/eclipse/che-machine-exec-plugin/${VERSION}/" ]] || \
+   [[ ! -f "v3/plugins/eclipse/che-machine-exec-plugin/${VERSION}/meta.yaml" ]] || \
+  [[ $(cat "v3/plugins/eclipse/che-machine-exec-plugin/latest.txt") != "${VERSION}" ]] || \
+   [[ ! -d "v3/plugins/eclipse/che-theia" ]] || \
+   [[ ! -d "v3/plugins/eclipse/che-theia/${VERSION}/" ]] || \
+   [[ ! -f "v3/plugins/eclipse/che-theia/${VERSION}/meta.yaml" ]] || \
+  [[ $(cat "v3/plugins/eclipse/che-theia/latest.txt") != "${VERSION}" ]]; then
   # change VERSION file
   echo "${VERSION}" > VERSION
   # add new plugins + update latest.txt files
@@ -60,4 +65,6 @@ else
     git pull origin "${BRANCH}"
     git push origin "${BRANCH}"
   fi
+else
+    echo "[WARNING] che-theia and che-machine-exec plugins ${VERSION} already in registry - nothing to do."
 fi
