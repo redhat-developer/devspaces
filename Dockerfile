@@ -15,7 +15,7 @@ USER root
 RUN microdnf install java-11-openjdk-headless tar gzip shadow-utils findutils && \
     microdnf update -y gnutls && \
     microdnf -y clean all && rm -rf /var/cache/yum && echo "Installed Packages" && rpm -qa | sort -V && echo "End Of Installed Packages" && \
-    adduser -G root,jboss jboss && mkdir -p /home/jboss/codeready
+    adduser -G root jboss && mkdir -p /home/jboss/codeready
 ENV JAVA_HOME=/usr/lib/jvm/jre
 
 COPY entrypoint.sh /entrypoint.sh
