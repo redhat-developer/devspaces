@@ -12,7 +12,7 @@ category: Language
 firstPublicationDate: '2019-08-06'
 spec:
   containers:
-    - image: "registry.redhat.io/codeready-workspaces/stacks-cpp-rhel8:2.2"
+    - image: "registry.redhat.io/codeready-workspaces/stacks-cpp-rhel8:2.3"
       name: cpp-plugins
       memoryLimit: '512Mi'
       args:

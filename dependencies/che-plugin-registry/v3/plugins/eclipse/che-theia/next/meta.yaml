@@ -58,7 +58,7 @@ spec:
         discoverable: false
   containers:
    - name: theia-ide
-     image: "registry.redhat.io/codeready-workspaces/theia-rhel8:2.2"
+     image: "registry.redhat.io/codeready-workspaces/theia-rhel8:2.3"
      env:
          - name: THEIA_PLUGINS
            value: local-dir:///plugins
@@ -81,7 +81,7 @@ spec:
      memoryLimit: "512M"
   initContainers:
   - name: remote-runtime-injector
-    image: registry.redhat.io/codeready-workspaces/theia-endpoint-rhel8:2.2
+    image: registry.redhat.io/codeready-workspaces/theia-endpoint-rhel8:2.3
     volumes:
       - mountPath: "/remote-endpoint"
         name: remote-endpoint

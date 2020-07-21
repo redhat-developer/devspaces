@@ -12,7 +12,7 @@ category: Language
 firstPublicationDate: "2019-04-16"
 spec:
   containers:
-    - image: "registry.redhat.io/codeready-workspaces/stacks-php-rhel8:2.2"
+    - image: "registry.redhat.io/codeready-workspaces/stacks-php-rhel8:2.3"
       name: php-debugger
       args:
         - sh

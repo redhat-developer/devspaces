@@ -12,7 +12,7 @@ category: Language
 firstPublicationDate: "2020-05-26"
 spec:
   containers:
-    - image: "registry.redhat.io/codeready-workspaces/stacks-php-rhel8:2.2"
+    - image: "registry.redhat.io/codeready-workspaces/stacks-php-rhel8:2.3"
       name: php-intelephense
       memoryLimit: "1000Mi"
       args:

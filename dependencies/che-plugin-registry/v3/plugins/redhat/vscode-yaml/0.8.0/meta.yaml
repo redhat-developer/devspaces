@@ -12,7 +12,7 @@ category: Language
 firstPublicationDate: "2020-05-22"
 spec:
   containers:
-    - image: "registry.redhat.io/codeready-workspaces/plugin-java8-rhel8:2.2"
+    - image: "registry.redhat.io/codeready-workspaces/plugin-java8-rhel8:2.3"
       name: vscode-yaml
       memoryLimit: "256Mi"
       args:

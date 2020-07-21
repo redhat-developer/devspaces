@@ -12,7 +12,7 @@ category: Other
 firstPublicationDate: "2020-05-27"
 spec:
   containers:
-    - image: "registry.redhat.io/codeready-workspaces/plugin-java11-rhel8:2.2"
+    - image: "registry.redhat.io/codeready-workspaces/plugin-java11-rhel8:2.3"
       memoryLimit: "256Mi"
       args:
         - sh

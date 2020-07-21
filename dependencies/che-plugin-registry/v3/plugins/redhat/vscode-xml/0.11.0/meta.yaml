@@ -12,7 +12,7 @@ category: Language
 firstPublicationDate: "2020-05-27"
 spec:
   containers:
-    - image: "registry.redhat.io/codeready-workspaces/plugin-java11-rhel8:2.2"
+    - image: "registry.redhat.io/codeready-workspaces/plugin-java11-rhel8:2.3"
       name: vscode-xml
       memoryLimit: "768Mi"
       args:

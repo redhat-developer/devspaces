@@ -12,7 +12,7 @@ category: Language
 firstPublicationDate: '2019-09-19'
 spec:
   containers:
-    - image: "registry.redhat.io/codeready-workspaces/stacks-golang-rhel8:2.2"
+    - image: "registry.redhat.io/codeready-workspaces/stacks-golang-rhel8:2.3"
       name: vscode-go
       memoryLimit: '512Mi'
       args:

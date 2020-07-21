@@ -12,7 +12,7 @@ category: Debugger
 firstPublicationDate: "2020-01-05"
 spec:
   containers:
-  - image: "registry.redhat.io/codeready-workspaces/stacks-dotnet-rhel8:2.2"
+  - image: "registry.redhat.io/codeready-workspaces/stacks-dotnet-rhel8:2.3"
     name: theia-netcoredbg
     memoryLimit: "512Mi"
     args:

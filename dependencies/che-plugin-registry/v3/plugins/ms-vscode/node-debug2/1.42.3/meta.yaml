@@ -13,7 +13,7 @@ category: Debugger
 firstPublicationDate: '2020-06-23'
 spec:
   containers:
-  - image: "registry.redhat.io/codeready-workspaces/plugin-java8-rhel8:2.2"
+  - image: "registry.redhat.io/codeready-workspaces/plugin-java8-rhel8:2.3"
     name: vscode-node-debug
     memoryLimit: '512Mi'
     args:

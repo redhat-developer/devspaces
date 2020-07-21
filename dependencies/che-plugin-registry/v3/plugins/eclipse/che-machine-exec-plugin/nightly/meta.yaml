@@ -24,7 +24,7 @@ spec:
         cookiesAuthEnabled: true
   containers:
    - name: che-machine-exec
-     image: "registry.redhat.io/codeready-workspaces/machineexec-rhel8:2.2"
+     image: "registry.redhat.io/codeready-workspaces/machineexec-rhel8:2.3"
      ports:
        - exposedPort: 4444
      command: ['/go/bin/che-machine-exec', '--url', '127.0.0.1:4444']
