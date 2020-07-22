@@ -80,7 +80,7 @@ FROM registry.access.redhat.com/rhscl/httpd-24-rhel7:2.4-117.1593607199 AS regis
 
 # DOWNSTREAM: use RHEL8/httpd
 # https://access.redhat.com/containers/?tab=tags#/registry.access.redhat.com/rhel8/httpd-24
-# FROM registry.redhat.io/rhel8/httpd-24:1-98 AS registry
+# FROM registry.redhat.io/rhel8/httpd-24:1-104 AS registry
 USER 0
 # latest httpd container doesn't include ssl cert, so generate one
 RUN chmod +x /usr/share/container-scripts/httpd/pre-init/40-ssl-certs.sh && \
