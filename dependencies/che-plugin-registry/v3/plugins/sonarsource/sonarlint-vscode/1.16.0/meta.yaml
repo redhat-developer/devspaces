@@ -1,25 +1,22 @@
 apiVersion: v2
 publisher: sonarsource
 name: sonarlint-vscode
-version: 1.15.0
+version: 1.16.0
 type: VS Code extension
 displayName: vscode-sonarlint
 title: Sonarlint code intelligence
 description: VS Code extension that provides sonarlint features
 icon: https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/master/dependencies/che-plugin-registry/resources/images/default.svg?sanitize=true
-firstPublicationDate: "2020-06-02"
+firstPublicationDate: "2020-07-22"
 category: Linter
-repository: https://www.sonarlint.org/
-deprecate:
-  automigrate: true
-  migrateTo: sonarsource/sonarlint-vscode/latest
+repository: https://github.com/SonarSource/sonarlint-vscode
 spec:
   containers:
     - image: "registry.redhat.io/codeready-workspaces/plugin-java11-rhel8:2.3"
       name: vscode-sonarlint
       memoryLimit: "512Mi"
       volumes:
-        - mountPath: "/home/theia/.m2"
+        - mountPath: "/home/jboss/.m2"
           name: m2
   extensions:
-    - https://github.com/SonarSource/sonarlint-vscode/releases/download/1.15.0/sonarlint-vscode-1.15.0.vsix
+    - https://github.com/SonarSource/sonarlint-vscode/releases/download/1.16.0/sonarlint-vscode-1.16.0.vsix

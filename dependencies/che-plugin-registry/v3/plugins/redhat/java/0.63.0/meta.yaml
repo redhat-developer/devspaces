@@ -1,7 +1,7 @@
 apiVersion: v2
 publisher: redhat
-name: java8
-version: 0.62.0
+name: java
+version: 0.63.0
 type: VS Code extension
 displayName: Language Support for Java 8
 title: Language Support for Java(TM) by Red Hat
@@ -10,10 +10,7 @@ description: Java Linting, Intellisense, formatting, refactoring, Maven/Gradle s
 icon: https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/master/dependencies/che-plugin-registry/resources/images/default.svg?sanitize=true
 repository: https://github.com/redhat-developer/vscode-java
 category: Language
-firstPublicationDate: "2020-05-27"
-deprecate:
-  automigrate: true
-  migrateTo: redhat/java8/latest
+firstPublicationDate: "2020-07-26"
 spec:
   containers:
   - image: "registry.redhat.io/codeready-workspaces/plugin-java8-rhel8:2.3"
@@ -27,5 +24,5 @@ spec:
     - mountPath: "/home/theia/.m2"
       name: m2
   extensions:
-  - https://download.jboss.org/jbosstools/vscode/3rdparty/vscode-java-debug/vscode-java-debug-0.24.0.vsix
-  - https://download.jboss.org/jbosstools/static/jdt.ls/stable/java-0.62.0-2157.vsix
+    - https://download.jboss.org/jbosstools/vscode/3rdparty/vscode-java-debug/vscode-java-debug-0.26.0.vsix
+    - https://download.jboss.org/jbosstools/static/jdt.ls/stable/java-0.63.0-2222.vsix

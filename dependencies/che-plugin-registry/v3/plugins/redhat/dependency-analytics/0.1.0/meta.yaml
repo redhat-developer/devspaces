@@ -1,7 +1,7 @@
 apiVersion: v2
 publisher: redhat
 name: dependency-analytics
-version: 0.0.13a
+version: 0.1.0
 type: VS Code extension
 displayName: Dependency Analytics
 title: Insights about your application dependencies
@@ -9,13 +9,10 @@ description: Insights about your application dependencies, Security, License com
 icon: https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/master/dependencies/che-plugin-registry/resources/images/default.svg?sanitize=true
 repository: https://github.com/fabric8-analytics/fabric8-analytics-vscode-extension
 category: Other
-firstPublicationDate: '2020-05-27'
-deprecate:
-  automigrate: true
-  migrateTo: redhat/dependency-analytics/latest
+firstPublicationDate: '2020-07-22'
 spec:
   containers:
-    - image: "registry.redhat.io/codeready-workspaces/plugin-java8-rhel8:2.2"
+    - image: "registry.redhat.io/codeready-workspaces/plugin-java8-rhel8:2.3"
       name: dependency-analytics
       memoryLimit: "512Mi"
       args:
@@ -23,4 +20,4 @@ spec:
         - -c
         - ${PLUGIN_REMOTE_ENDPOINT_EXECUTABLE}
   extensions:
-    - https://github.com/fabric8-analytics/fabric8-analytics-vscode-extension/releases/download/0.0.13/redhat.fabric8-analytics-0.0.13.vsix
+    - https://github.com/fabric8-analytics/fabric8-analytics-vscode-extension/releases/download/0.1.0/fabric8-analytics-0.1.0.vsix
