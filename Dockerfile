@@ -12,15 +12,16 @@
 # https://access.redhat.com/containers/?tab=tags#/registry.access.redhat.com/ubi8-minimal
 FROM registry.access.redhat.com/ubi8-minimal:8.2-345
 USER root
+ENV CHE_HOME=/home/user/codeready
+ENV JAVA_HOME=/usr/lib/jvm/jre
 RUN microdnf install java-11-openjdk-headless tar gzip shadow-utils findutils && \
     microdnf update -y gnutls && \
     microdnf -y clean all && rm -rf /var/cache/yum && echo "Installed Packages" && rpm -qa | sort -V && echo "End Of Installed Packages" && \
     adduser -G root user && mkdir -p /home/user/codeready && \
-    # fix certs & dir permissions
-    cp /etc/pki/ca-trust/extracted/java/cacerts /home/user/cacerts && chmod 644 /home/user/cacerts
-ENV CHE_HOME=/home/user/codeready
-ENV JAVA_HOME=/usr/lib/jvm/jre
-ENV JAVA_TRUST_STORE=/etc/pki/ca-trust/extracted/java/cacerts
+    # fix certs & dir permissions - see file references in entrypoint.sh
+    for d in /home/jboss ${JAVA_HOME}/lib/security; do \
+      mkdir -p ${d}; cp /etc/pki/ca-trust/extracted/java/cacerts ${d}/cacerts && chmod 644 ${d}/cacerts; \
+    done
 
 COPY entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh"]
@@ -41,7 +42,7 @@ RUN mkdir /logs /data && \
     find /home/user -type d -exec chmod 777 {} \; && \
     java -version && echo -n "Server startup script in: " && \
     find /home/user/codeready -name catalina.sh | grep -z /home/user/codeready/tomcat/bin/catalina.sh
-    
+
 USER user
 
 ENV SUMMARY="Red Hat CodeReady Workspaces Server container" \
