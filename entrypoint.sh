@@ -291,7 +291,7 @@ init() {
 }
 
 add_cert_to_truststore() {
-  DEFAULT_JAVA_TRUST_STORE=${JAVA_TRUST_STORE:-${JAVA_HOME}/lib/security/cacerts}
+  DEFAULT_JAVA_TRUST_STORE=${JAVA_HOME}/lib/security/cacerts
   DEFAULT_JAVA_TRUST_STOREPASS="changeit"
 
   JAVA_TRUST_STORE=/home/user/cacerts
