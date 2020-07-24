@@ -10,7 +10,7 @@
 #
 
 # https://access.redhat.com/containers/?tab=tags#/registry.access.redhat.com/ubi8-minimal
-FROM registry.access.redhat.com/ubi8-minimal:8.2-339
+FROM registry.access.redhat.com/ubi8-minimal:8.2-345
 USER root
 RUN microdnf install java-11-openjdk-headless tar gzip shadow-utils findutils && \
     microdnf update -y gnutls && \
