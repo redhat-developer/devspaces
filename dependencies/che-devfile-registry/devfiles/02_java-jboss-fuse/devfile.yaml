@@ -42,7 +42,7 @@ components:
         containerPath: /home/jboss/.m2
 commands:
   -
-    name: build
+    name: 1. Build
     actions:
       -
         type: exec
@@ -50,7 +50,7 @@ commands:
         command: "MAVEN_OPTS='-Xmx200m' && mvn clean package"
         workdir: "${CHE_PROJECTS_ROOT}/java-jboss-fuse"
   -
-    name: run app
+    name: 2. Run
     actions:
       -
         type: exec
@@ -58,20 +58,31 @@ commands:
         command: "mvn spring-boot:run"
         workdir: "${CHE_PROJECTS_ROOT}/java-jboss-fuse"
   -
-    name: deploy to OpenShift
-    actions:
-      -
-        type: exec
-        component: maven
-        command: "mvn fabric8:deploy -Popenshift -DskipTests"
-        workdir: "${CHE_PROJECTS_ROOT}/java-jboss-fuse"
-  -
-    name: debug
+    name: 3. Run in debug mode
     actions:
       -
         type: exec
         component: maven
         command: "mvn spring-boot:run -Drun.jvmArguments=\"-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005\""
+        workdir: "${CHE_PROJECTS_ROOT}/java-jboss-fuse"
+  - 
+    name: 4. Log into deployment cluster
+    actions:
+      - workdir: "${CHE_PROJECTS_ROOT}/java-jboss-fuse"
+        type: exec
+        command: |
+          echo
+          echo "Before you can deploy this application to an openshift cluster,"
+          echo "you must run 'oc login ...' in the maven terminal."
+          echo
+        component: maven
+  -
+    name: 5. Deploy to OpenShift
+    actions:
+      -
+        type: exec
+        component: maven
+        command: "mvn fabric8:deploy -Popenshift -DskipTests"
         workdir: "${CHE_PROJECTS_ROOT}/java-jboss-fuse"
   -
     name: Debug remote java application

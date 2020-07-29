@@ -39,28 +39,28 @@ components:
     mountSources: true
 commands:
   - 
-    name: Build
+    name: 1. Build
     actions:
       - workdir: '${CHE_PROJECTS_ROOT}/validating-form-input/complete'
         type: exec
         command: gradle build
         component: gradle
   -
-    name: Debug application
-    actions:
-      - workdir: '${CHE_PROJECTS_ROOT}/validating-form-input/complete'
-        type: exec
-        command: gradle bootRun --debug-jvm
-        component: gradle
-  -
-    name: Run application
+    name: 2. Run application
     actions:
       - workdir: '${CHE_PROJECTS_ROOT}/validating-form-input/complete'
         type: exec
         command: gradle bootRun
         component: gradle
   -
-    name: Run tests
+    name: 3. Run in debug mode
+    actions:
+      - workdir: '${CHE_PROJECTS_ROOT}/validating-form-input/complete'
+        type: exec
+        command: gradle bootRun --debug-jvm
+        component: gradle
+  -
+    name: 4. Run tests
     actions:
       - workdir: '${CHE_PROJECTS_ROOT}/validating-form-input/complete'
         type: exec

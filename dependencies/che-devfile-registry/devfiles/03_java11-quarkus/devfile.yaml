@@ -40,7 +40,7 @@ components:
           path: /hello/greeting/che-user
 commands:
   -
-    name: Package the application
+    name: 1. Package the application
     actions:
       -
         type: exec
@@ -48,7 +48,7 @@ commands:
         command: "mvn package"
         workdir: ${CHE_PROJECTS_ROOT}/quarkus-quickstarts/getting-started
   -
-    name: Start Quarkus in devmode (hot deploy + debug)
+    name: 2. Start Quarkus in devmode (hot deploy + debug)
     actions:
       -
         type: exec

@@ -31,21 +31,21 @@ components:
       containerPath: "/home/jboss/.composer"
 commands:
 -
-  name: Install dependencies (with composer)
+  name: 1. Install dependencies (with composer)
   actions:
     - type: exec
       component: php
       command: "composer install"
       workdir: ${CHE_PROJECTS_ROOT}/php-di
 -
-  name: Run web application
+  name: 2. Run web application
   actions:
     - type: exec
       component: php
       command: "php -S 0.0.0.0:8000 -t web/"
       workdir: ${CHE_PROJECTS_ROOT}/php-di
 -
-  name: Run CLI application
+  name: 3. Run CLI application
   actions:
     - type: exec
       component: php

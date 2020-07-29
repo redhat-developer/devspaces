@@ -22,31 +22,31 @@ components:
         port: 3000
     mountSources: true
 commands:
-  - name: download dependencies
-    actions:
-      - type: exec
-        component: nodejs
-        command: npm install
-        workdir: ${CHE_PROJECTS_ROOT}/nodejs-web-app/app
-  - name: run the web app (and download dependencies)
+  - name: 1. Run the web app (and download dependencies)
     actions:
       - type: exec
         component: nodejs
         command: npm install; nodemon app.js
         workdir: ${CHE_PROJECTS_ROOT}/nodejs-web-app/app
-  - name: run the web app
+  - name: 2. Download dependencies
+    actions:
+      - type: exec
+        component: nodejs
+        command: npm install
+        workdir: ${CHE_PROJECTS_ROOT}/nodejs-web-app/app  
+  - name: 3. Run the web app
     actions:
       - type: exec
         component: nodejs
         command: nodemon app.js
         workdir: ${CHE_PROJECTS_ROOT}/nodejs-web-app/app
-  - name: run the web app (debugging enabled)
+  - name: 4. Run the web app (debugging enabled)
     actions:
       - type: exec
         component: nodejs
         command: nodemon --inspect app.js
         workdir: ${CHE_PROJECTS_ROOT}/nodejs-web-app/app
-  - name: stop the web app
+  - name: 5. Stop the web app
     actions:
       - type: exec
         component: nodejs
