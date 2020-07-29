@@ -75,7 +75,7 @@ commands:
           echo "you must run 'oc login ...' in the maven terminal."
           echo
         component: maven
-  - name: 6. deploy to OpenShift
+  - name: 6. Deploy to OpenShift
     actions:
       - workdir: '${CHE_PROJECTS_ROOT}/vertx-http-booster'
         type: exec
