@@ -126,8 +126,8 @@ for key in "$@"; do
     '-v') QUIET=0; VERBOSE=1; shift 0;;
     '-a'|'--arches') ARCHES=1; shift 0;;
     '-r') REGISTRY="$2"; shift 1;;
-    '--rhcc') REGISTRY="http://registry.redhat.io"; shift 1;;
-    '--stage') REGISTRY="http://registry.stage.redhat.io"; shift 1;;
+    '--rhcc') REGISTRY="http://registry.redhat.io"; shift 0;;
+    '--stage') REGISTRY="http://registry.stage.redhat.io"; shift 0;;
     '--pulp-old') REGISTRY="http://brew-pulp-docker01.web.prod.ext.phx2.redhat.com:8888"; EXCLUDES="candidate|guest|containers"; shift 0;;
     '-p'|'--osbs') REGISTRY="http://registry-proxy.engineering.redhat.com/rh-osbs"; EXCLUDES="candidate|guest|containers"; shift 0;;
     '-d'|'--docker') REGISTRY="http://docker.io"; shift 0;;
