@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Copyright (c) 2019-2020 Red Hat, Inc.
+# Copyright (c) 2012-2020 Red Hat, Inc.
 # This program and the accompanying materials are made
 # available under the terms of the Eclipse Public License 2.0
 # which is available at https://www.eclipse.org/legal/epl-2.0/
@@ -229,11 +229,11 @@ init() {
 
   if [ -z "$CHE_HOME" ]; then
     if [ -f "/assembly/tomcat/bin/catalina.sh" ]; then
-      echo "Found custom assembly in /assembly"
       export CHE_HOME="/assembly"
+      echo "Found custom assembly in ${CHE_HOME}"
     else
-      echo "Using embedded assembly."
-      export CHE_HOME=$(echo /home/jboss/codeready)
+      export CHE_HOME=$(echo /home/user/eclipse-che/)
+      echo "Using embedded assembly in ${CHE_HOME}."
     fi
   else
     export CHE_HOME=$(echo ${CHE_HOME})
@@ -260,8 +260,6 @@ init() {
   fi
 
   [ -z "$CHE_DATABASE" ] && export CHE_DATABASE=${CHE_DATA}/storage
-  [ -z "$CHE_TEMPLATE_STORAGE" ] && export CHE_TEMPLATE_STORAGE="${CHE_DATA}/templates"
-  mkdir -p "${CHE_TEMPLATE_STORAGE}"
 
   perform_database_migration
 
@@ -291,25 +289,47 @@ init() {
 }
 
 add_cert_to_truststore() {
-  if [ "${CHE_SELF__SIGNED__CERT}" != "" ]; then
-    DEFAULT_JAVA_TRUST_STORE=/etc/pki/ca-trust/extracted/java/cacerts
-    DEFAULT_JAVA_TRUST_STOREPASS="changeit"
+  DEFAULT_JAVA_TRUST_STORE=${JAVA_HOME}/lib/security/cacerts
+  DEFAULT_JAVA_TRUST_STOREPASS="changeit"
 
-    JAVA_TRUST_STORE=/home/jboss/cacerts
-    SELF_SIGNED_CERT=/home/jboss/openshift.crt
+  JAVA_TRUST_STORE=/home/user/cacerts
+  SELF_SIGNED_CERT=/home/user/self-signed.crt
 
-    echo "Found a custom cert. Adding it to java trust store based on $DEFAULT_JAVA_TRUST_STORE"
+  MESSAGE="Found a custom cert. Adding it to java trust store $JAVA_TRUST_STORE"
+  if [ ! -f "$JAVA_TRUST_STORE" ]; then
+    echo "$MESSAGE based on $DEFAULT_JAVA_TRUST_STORE"
     cp $DEFAULT_JAVA_TRUST_STORE $JAVA_TRUST_STORE
+  else
+    echo "$MESSAGE"
+  fi
 
-    echo "$CHE_SELF__SIGNED__CERT" > $SELF_SIGNED_CERT
+  echo "$1" > $SELF_SIGNED_CERT
 
-    echo yes | keytool -keystore $JAVA_TRUST_STORE -importcert -alias HOSTDOMAIN -file $SELF_SIGNED_CERT -storepass $DEFAULT_JAVA_TRUST_STOREPASS > /dev/null
+  # make sure that owner has permissions to write and other groups have permissions to read
+  chmod 644 $JAVA_TRUST_STORE
 
-    # DOES NOT WORK IN OPENSHIFT - maybe we need to add anyuid fix? 
-    # allow only read by all groups
-    # if [[ -w $JAVA_TRUST_STORE ]]; then chmod 444 $JAVA_TRUST_STORE; fi
-
+  echo yes | keytool -keystore $JAVA_TRUST_STORE -importcert -alias "$2" -file $SELF_SIGNED_CERT -storepass $DEFAULT_JAVA_TRUST_STOREPASS > /dev/null
+  # allow only read by all groups
+  chmod 444 $JAVA_TRUST_STORE
+  if [[ "$JAVA_OPTS" != *"-Djavax.net.ssl.trustStore"* && "$JAVA_OPTS" != *"-Djavax.net.ssl.trustStorePassword"* ]]; then
     export JAVA_OPTS="${JAVA_OPTS} -Djavax.net.ssl.trustStore=$JAVA_TRUST_STORE -Djavax.net.ssl.trustStorePassword=$DEFAULT_JAVA_TRUST_STOREPASS"
+  fi
+}
+
+add_che_cert_to_truststore() {
+  if [ "${CHE_SELF__SIGNED__CERT}" != "" ]; then
+    add_cert_to_truststore "${CHE_SELF__SIGNED__CERT}" "HOSTDOMAIN"
+  fi
+}
+
+add_public_cert_to_truststore() {
+  CUSTOM_PUBLIC_CERTIFICATES="/public-certs"
+  if [[ -d "$CUSTOM_PUBLIC_CERTIFICATES" && -n "$(find $CUSTOM_PUBLIC_CERTIFICATES -type f)" ]]; then
+    FILES="$CUSTOM_PUBLIC_CERTIFICATES/*"
+    for cert in $FILES
+    do
+      add_cert_to_truststore "$(<$cert)" "HOSTDOMAIN-$(basename $cert)"
+    done
   fi
 }
 
@@ -372,7 +392,8 @@ trap 'responsible_shutdown' SIGHUP SIGTERM SIGINT
 init
 init_global_variables
 set_environment_variables
-add_cert_to_truststore
+add_che_cert_to_truststore
+add_public_cert_to_truststore
 
 # run che
 start_che_server &
