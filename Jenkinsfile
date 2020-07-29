@@ -289,13 +289,15 @@ timeout(240) {
 
 		# fetch sources to be updated
 		DWNSTM_REPO="''' + DWNSTM_REPO + '''"
+		pushd ${WORKSPACE} >/dev/null
 		if [[ ! -d ${WORKSPACE}/targetdwn ]]; then git clone ssh://crw-build@pkgs.devel.redhat.com/${DWNSTM_REPO} targetdwn; fi
-		cd ${WORKSPACE}/targetdwn
+		popd >/dev/null
+		pushd ${WORKSPACE}/targetdwn >/dev/null
 		git checkout --track origin/''' + DWNSTM_BRANCH + ''' || true
 		git config user.email crw-build@REDHAT.COM
 		git config user.name "CRW Build"
 		git config --global push.default matching
-		cd ..
+		popd >/dev/null
 
 		# rsync files in upstream github to dist-git
 		for d in ''' + SYNC_FILES_UP2DWN + '''; do
