@@ -320,7 +320,7 @@ timeout(240) {
 		-e 's@ADD eclipse-che .+@\\
 # NOTE: if built in Brew, use get-sources-jenkins.sh to pull latest\\
 COPY assembly/codeready-workspaces-assembly-main/target/codeready-workspaces-assembly-main.tar.gz /tmp/codeready-workspaces-assembly-main.tar.gz\\
-RUN tar xzf /tmp/codeready-workspaces-assembly-main.tar.gz --transform="s#.*codeready-workspaces-assembly-main/*##" -C /home/user/codeready && rm -f /tmp/codeready-workspaces-assembly-main.tar.gz\\
+RUN tar xzf /tmp/codeready-workspaces-assembly-main.tar.gz --transform="s#.*codeready-workspaces-assembly-main/*##" -C /home/user/codeready \\&\\& rm -f /tmp/codeready-workspaces-assembly-main.tar.gz\\
 @g'
 
 		# TODO should this be a branch instead of just master?
