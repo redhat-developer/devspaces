@@ -55,7 +55,7 @@ commands:
         command: "dotnet run"
         workdir: ${CHE_PROJECTS_ROOT}/dotnet-web-simple
   - 
-    name: Launch .NET Web Application on Debug mode
+    name: Launch .net web application in debug mode
     actions:
       - type: vscode-launch
         referenceContent: |
