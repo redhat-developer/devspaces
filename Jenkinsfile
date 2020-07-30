@@ -468,7 +468,7 @@ fi
 timeout(120) {
 	node("${node}"){ stage "Run get-sources-rhpkg-container-build"
 		def QUAY_REPO_PATHs=(env.ghprbPullId && env.ghprbPullId?.trim()?"":("${SCRATCH}"=="true"?"":"server-rhel8"))
-		if (fileExists(WORKSPACE + '/trigger-downstream-true')) {
+		if (fileExists(WORKSPACE + '/trigger-downstream-true') || PUSH_TO_QUAY.equals("true")) {
 			echo "[INFO] Trigger get-sources-rhpkg-container-build " + (env.ghprbPullId && env.ghprbPullId?.trim()?"for PR-${ghprbPullId} ":"") + \
 			"with SCRATCH = ${SCRATCH}, QUAY_REPO_PATHs = ${QUAY_REPO_PATHs}, JOB_BRANCH = ${branchToBuildCRW}"
 
@@ -506,7 +506,8 @@ timeout(120) {
 			]
 			)
 		} else {
-			echo "No changes upstream, nothing to commit"
+			echo "No changes upstream, Brew build not triggered"
+			currentBuild.result='UNSTABLE'
 		}
 	}
 }
