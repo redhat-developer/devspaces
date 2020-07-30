@@ -468,16 +468,9 @@ fi
 timeout(120) {
 	node("${node}"){ stage "Run get-sources-rhpkg-container-build"
 		def QUAY_REPO_PATHs=(env.ghprbPullId && env.ghprbPullId?.trim()?"":("${SCRATCH}"=="true"?"":"server-rhel8"))
-
-		def matcher = ( "${JOB_NAME}" =~ /.*_(stable-branch|master).*/ )
-		def JOB_BRANCH = (matcher.matches() ? matcher[0][1] : "master")
-
-		def matcher2 = ( "${JOB_NAME}" =~ /.*(_PR).*/ )
-		def PR_SUFFIX = (matcher2.matches() ? matcher2[0][1] : "")
-
 		if (fileExists(WORKSPACE + '/trigger-downstream-true')) {
 			echo "[INFO] Trigger get-sources-rhpkg-container-build " + (env.ghprbPullId && env.ghprbPullId?.trim()?"for PR-${ghprbPullId} ":"") + \
-			"with SCRATCH = ${SCRATCH}, QUAY_REPO_PATHs = ${QUAY_REPO_PATHs}, JOB_BRANCH = ${JOB_BRANCH}${PR_SUFFIX}"
+			"with SCRATCH = ${SCRATCH}, QUAY_REPO_PATHs = ${QUAY_REPO_PATHs}, JOB_BRANCH = ${branchToBuildCRW}"
 
 			// trigger OSBS build
 			build(
@@ -508,7 +501,7 @@ timeout(120) {
 				[
 				$class: 'StringParameterValue',
 				name: 'JOB_BRANCH',
-				value: "${JOB_BRANCH}${PR_SUFFIX}",
+				value: "${branchToBuildCRW}",
 				]
 			]
 			)
