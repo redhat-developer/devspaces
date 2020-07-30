@@ -354,16 +354,16 @@ echo -e "$METADATA" >> ${WORKSPACE}/targetdwn/Dockerfile
 # push changes in github to dist-git
 cd ${WORKSPACE}/targetdwn
 if [[ \$(git diff --name-only) ]]; then # file changed
-	OLD_SHA_DWN=\$(git rev-parse HEAD) # echo ${OLD_SHA_DWN:0:8}
-	git add Dockerfile ''' + SYNC_FILES_UP2DWN + ''' . -A -f
+  OLD_SHA_DWN=\$(git rev-parse HEAD) # echo ${OLD_SHA_DWN:0:8}
+  git add Dockerfile ''' + SYNC_FILES_UP2DWN + ''' . -A -f
   /tmp/updateBaseImages.sh -b ''' + DWNSTM_BRANCH + ''' --nocommit || true
   # note this might fail if we sync from a tag vs. a branch
-  git commit -s -m "[sync] Update from ''' + CHE_path + ''' @ ${SHA_CHE:0:8} + ''' + CRW_path + ''' @ ${SHA_CRW:0:8}" \
+  git commit -s -m "[sync] Update from ''' + CHE_path + ''' @ ''' + SHA_CHE + ''' + ''' + CRW_path + ''' @ ''' + SHA_CRW + '''" \
     Dockerfile ''' + SYNC_FILES_UP2DWN + ''' . || true
   git push origin ''' + DWNSTM_BRANCH + ''' || true
   NEW_SHA_DWN=\$(git rev-parse HEAD) # echo ${NEW_SHA_DWN:0:8}
   if [[ "${OLD_SHA_DWN}" != "${NEW_SHA_DWN}" ]]; then hasChanged=1; fi
-  echo "[sync] Updated pkgs.devel @ ${NEW_SHA_DWN:0:8} from ''' + CHE_path + ''' @ ${SHA_CHE:0:8} + ''' + CRW_path + ''' @ ${SHA_CRW:0:8}"
+  echo "[sync] Updated pkgs.devel @ ${NEW_SHA_DWN:0:8} from ''' + CHE_path + ''' @ ''' + SHA_CHE + ''' + ''' + CRW_path + ''' @ ''' + SHA_CRW + '''"
 else
     # file not changed, but check if base image needs an update
     # (this avoids having 2 commits for every change)
@@ -378,14 +378,14 @@ cd ${WORKSPACE}/''' + CRW_path + '''
 if [[ \$(git diff --name-only) ]]; then # file changed
     OLD_SHA_MID=\$(git rev-parse HEAD) # echo ${OLD_SHA_MID:0:8}
     git add Dockerfile ''' + SYNC_FILES_UP2DWN + ''' . -A -f
-    /tmp/updateBaseImages.sh -b ''' + branchToBuildCRW + ''' --nocommit
+    /tmp/updateBaseImages.sh -b ''' + branchToBuildCRW + ''' --nocommit || true
     # note this might fail if we sync from a tag vs. a branch
-    git commit -s -m "[sync] Update from ''' + CHE_path + ''' @ ${SHA_CHE:0:8}" \
+    git commit -s -m "[sync] Update from ''' + CHE_path + ''' @ ''' + SHA_CHE + '''" \
 	  Dockerfile ''' + SYNC_FILES_UP2DWN + ''' . || true
     git push origin ''' + branchToBuildCRW + ''' || true
     NEW_SHA_MID=\$(git rev-parse HEAD) # echo ${NEW_SHA_MID:0:8}
     if [[ "${OLD_SHA_MID}" != "${NEW_SHA_MID}" ]]; then hasChanged=1; fi
-    echo "[sync] Updated GH @ ${NEW_SHA_MID:0:8} from ''' + CHE_path + ''' @ ${SHA_CHE:0:8}"
+    echo "[sync] Updated GH @ ${NEW_SHA_MID:0:8} from ''' + CHE_path + ''' @ ''' + SHA_CHE + '''"
 else
     # file not changed, but check if base image needs an update
     # (this avoids having 2 commits for every change)
