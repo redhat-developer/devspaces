@@ -288,6 +288,7 @@ fi
 # update tarballs - step 4 - commit changes if diff different
 if [[ ${TAR_DIFF} ]] || [[ ${TAR_DIFF2} ]]; then
   hasChanged=1
+  git pull origin ''' + GIT_BRANCH + ''' || true
   rhpkg new-sources root-local.tgz resources.tgz
   git commit -s -m "[tgz] Update root-local.tgz and resources.tgz" sources
   git push origin ''' + GIT_BRANCH + '''
