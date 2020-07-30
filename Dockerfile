@@ -29,7 +29,7 @@ ENTRYPOINT ["/entrypoint.sh"]
 
 # NOTE: if built in Brew, use get-sources-jenkins.sh to pull latest
 COPY assembly/codeready-workspaces-assembly-main/target/codeready-workspaces-assembly-main.tar.gz /tmp/codeready-workspaces-assembly-main.tar.gz
-RUN tar xzf /tmp/codeready-workspaces-assembly-main.tar.gz --transform="s#.*codeready-workspaces-assembly-main/*##" -C /home/user/codeready ADD eclipse-che /home/user/eclipse-cheADD eclipse-che /home/user/eclipse-che rm -f /tmp/codeready-workspaces-assembly-main.tar.gz
+RUN tar xzf /tmp/codeready-workspaces-assembly-main.tar.gz --transform="s#.*codeready-workspaces-assembly-main/*##" -C /home/user/codeready && rm -f /tmp/codeready-workspaces-assembly-main.tar.gz
 
 # this should fail if the startup script is not found in correct path /home/user/codeready/tomcat/bin/catalina.sh
 RUN mkdir /logs /data && \
