@@ -1,8 +1,8 @@
 #!/usr/bin/env groovy
 
 // PARAMETERS for this pipeline:
-// node == slave label, eg., rhel7-devstudio-releng-16gb-ram||rhel7-16gb-ram||rhel7-devstudio-releng||rhel7 or rhel7-32gb||rhel7-16gb||rhel7-8gb
-// nodeBig == slave label, eg., rhel7-devstudio-releng-16gb-ram||rhel7-16gb-ram or rhel7-32gb||rhel7-16gb
+// node == node label, eg., rhel7-devstudio-releng-16gb-ram||rhel7-16gb-ram||rhel7-devstudio-releng||rhel7 or rhel7-32gb||rhel7-16gb||rhel7-8gb
+// nodeBig == node label, eg., rhel7-devstudio-releng-16gb-ram||rhel7-16gb-ram or rhel7-32gb||rhel7-16gb
 // branchToBuildDev = refs/tags/19
 // branchToBuildParent = refs/tags/7.15.0
 // branchToBuildChe = refs/tags/7.16.x
@@ -116,7 +116,7 @@ timeout(240) {
 					[$class: 'DisableRemotePoll']
 				],
 				submoduleCfg: [], 
-				userRemoteConfigs: [[refspec: "+refs/pull/${env.ghprbPullId}/head:refs/remotes/origin/PR-${env.ghprbPullId}", url: "https://github.com/redhat-developer/${CRW_path}.git"]]])
+				userRemoteConfigs: [[refspec: "+refs/pull/${env.ghprbPullId}/head:refs/remotes/origin/PR-${env.ghprbPullId}", url: "https://github.com/redhat-developer/codeready-workspaces.git"]]])
 		} else {
 			checkout([$class: 'GitSCM', 
 				branches: [[name: "${branchToBuildCRW}"]], 
@@ -127,7 +127,7 @@ timeout(240) {
 					[$class: 'PathRestriction', excludedRegions: 'dependencies/**'],
 				],
 				submoduleCfg: [], 
-				userRemoteConfigs: [[url: "https://github.com/redhat-developer/${CRW_path}.git"]]])
+				userRemoteConfigs: [[url: "https://github.com/redhat-developer/codeready-workspaces.git"]]])
 		}
 		VER_CRW = sh(returnStdout:true,script:"egrep \"<version>\" ${CRW_path}/pom.xml|head -2|tail -1|sed -e \"s#.*<version>\\(.\\+\\)</version>#\\1#\"").trim()
 		SHA_CRW = sh(returnStdout:true,script:"cd ${CRW_path}/ && git rev-parse --short=4 HEAD").trim()
@@ -312,9 +312,9 @@ timeout(240) {
 		sed -r -i ${WORKSPACE}/''' + CRW_path + '''/Dockerfile \
 		`# transform che rhel.Dockerfile to CRW Dockerfile` \
 		-e 's@ADD eclipse-che .+@\
-# NOTE: if built in Brew, use get-sources-jenkins.sh to pull latest\
-COPY assembly/codeready-workspaces-assembly-main/target/codeready-workspaces-assembly-main.tar.gz /tmp/codeready-workspaces-assembly-main.tar.gz\
-RUN tar xzf /tmp/codeready-workspaces-assembly-main.tar.gz --transform="s#.*codeready-workspaces-assembly-main/*##" -C /home/user/codeready && rm -f /tmp/codeready-workspaces-assembly-main.tar.gz\
+# NOTE: if built in Brew, use get-sources-jenkins.sh to pull latest\n\
+COPY assembly/codeready-workspaces-assembly-main/target/codeready-workspaces-assembly-main.tar.gz /tmp/codeready-workspaces-assembly-main.tar.gz\n\
+RUN tar xzf /tmp/codeready-workspaces-assembly-main.tar.gz --transform="s#.*codeready-workspaces-assembly-main/*##" -C /home/user/codeready && rm -f /tmp/codeready-workspaces-assembly-main.tar.gz\n\
 @g'
 
 		# TODO should this be a branch instead of just master?
@@ -366,6 +366,30 @@ else
     NEW_SHA_DWN=\$(git rev-parse HEAD) # echo ${NEW_SHA_DWN:0:8}
     if [[ "${OLD_SHA_DWN}" != "${NEW_SHA_DWN}" ]]; then hasChanged=1; fi
 fi
+
+# push changes to github
+cd ${WORKSPACE}/''' + CRW_path + '''
+if [[ \$(git diff --name-only) ]]; then # file changed
+    OLD_SHA_MID=\$(git rev-parse HEAD) # echo ${OLD_SHA_MID:0:8}
+    git add Dockerfile
+    /tmp/updateBaseImages.sh -b ''' + branchToBuildCRW + ''' --nocommit
+    # note this might fail if we sync from a tag vs. a branch
+    git commit -s -m "[sync] Update from ''' + CHE_path + ''' @ ${SHA_CHE:0:8}" Dockerfile || true
+    git push origin ''' + branchToBuildCRW + ''' || true
+    NEW_SHA_MID=\$(git rev-parse HEAD) # echo ${NEW_SHA_MID:0:8}
+    if [[ "${OLD_SHA_MID}" != "${NEW_SHA_MID}" ]]; then hasChanged=1; fi
+    echo "[sync] Updated GH @ ${NEW_SHA_MID:0:8} from ''' + CHE_path + ''' @ ${SHA_CHE:0:8}"
+else
+    # file not changed, but check if base image needs an update
+    # (this avoids having 2 commits for every change)
+    cd ${WORKSPACE}/''' + CRW_path + '''
+    OLD_SHA_MID=\$(git rev-parse HEAD) # echo ${OLD_SHA_MID:0:8}
+    /tmp/updateBaseImages.sh -b ''' + branchToBuildCRW + '''
+    NEW_SHA_MID=\$(git rev-parse HEAD) # echo ${NEW_SHA_MID:0:8}
+    if [[ "${OLD_SHA_MID}" != "${NEW_SHA_MID}" ]]; then hasChanged=1; fi
+    cd ..
+fi
+cd ..
 
 if [[ ''' + FORCE_BUILD + ''' == "true" ]]; then hasChanged=1; fi
 if [[ ${hasChanged} -eq 1 ]]; then
