@@ -311,10 +311,10 @@ timeout(240) {
 		# transform Che version to CRW version (in both locations)
 		sed -r -i ${WORKSPACE}/''' + CRW_path + '''/Dockerfile \
 		`# transform che rhel.Dockerfile to CRW Dockerfile` \
-		-e 's@ADD eclipse-che .+@\
-# NOTE: if built in Brew, use get-sources-jenkins.sh to pull latest\n\
-COPY assembly/codeready-workspaces-assembly-main/target/codeready-workspaces-assembly-main.tar.gz /tmp/codeready-workspaces-assembly-main.tar.gz\n\
-RUN tar xzf /tmp/codeready-workspaces-assembly-main.tar.gz --transform="s#.*codeready-workspaces-assembly-main/*##" -C /home/user/codeready && rm -f /tmp/codeready-workspaces-assembly-main.tar.gz\n\
+		-e 's@ADD eclipse-che .+@\\r
+# NOTE: if built in Brew, use get-sources-jenkins.sh to pull latest\\r
+COPY assembly/codeready-workspaces-assembly-main/target/codeready-workspaces-assembly-main.tar.gz /tmp/codeready-workspaces-assembly-main.tar.gz\\r
+RUN tar xzf /tmp/codeready-workspaces-assembly-main.tar.gz --transform="s#.*codeready-workspaces-assembly-main/*##" -C /home/user/codeready && rm -f /tmp/codeready-workspaces-assembly-main.tar.gz\\r
 @g'
 
 		# TODO should this be a branch instead of just master?
