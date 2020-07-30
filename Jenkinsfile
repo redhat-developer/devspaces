@@ -306,27 +306,21 @@ timeout(240) {
 		fi
 		done
 
-		# update Dockerfile from upstream - depends on merge of https://github.com/eclipse/che/pull/17494 (and backport to 7.16.x branch)
-		if [[ -f ${WORKSPACE}/''' + CHE_path + '''/dockerfiles/che/rhel.Dockerfile ]]; then
-		  cp ${WORKSPACE}/''' + CHE_path + '''/dockerfiles/che/rhel.Dockerfile ${WORKSPACE}/''' + CRW_path + '''/dockerfiles/che/rhel.Dockerfile
-		else 
-		  echo "[WARNING] TODO CRW-1093 Please merge https://github.com/eclipse/che/pull/17494 into 7.16.x and master branches first!" 
-		fi
-
+		# copy rhel.Dockerfile from upstream to CRW repo
+		cp ${WORKSPACE}/''' + CHE_path + '''/dockerfiles/che/rhel.Dockerfile ${WORKSPACE}/''' + CRW_path + '''/Dockerfile
 		# transform Che version to CRW version (in both locations)
-		sed -r -i ${WORKSPACE}/''' + CRW_path + '''/dockerfiles/che/rhel.Dockerfile \
-		`# transform che rhel.Dockerfile to CRW version` \
+		sed -r -i ${WORKSPACE}/''' + CRW_path + '''/Dockerfile \
+		`# transform che rhel.Dockerfile to CRW Dockerfile` \
 		-e 's@ADD eclipse-che .+@\
 # NOTE: if built in Brew, use get-sources-jenkins.sh to pull latest\
 COPY assembly/codeready-workspaces-assembly-main/target/codeready-workspaces-assembly-main.tar.gz /tmp/codeready-workspaces-assembly-main.tar.gz\
 RUN tar xzf /tmp/codeready-workspaces-assembly-main.tar.gz --transform="s#.*codeready-workspaces-assembly-main/*##" -C /home/user/codeready && rm -f /tmp/codeready-workspaces-assembly-main.tar.gz\
 @g'
-		cp ${WORKSPACE}/''' + CRW_path + '''/dockerfiles/che/rhel.Dockerfile ${WORKSPACE}/''' + CRW_path + '''/Dockerfile
 
 		# TODO should this be a branch instead of just master?
 		CRW_VERSION=`wget -qO- https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/master/dependencies/VERSION`
 		# apply patches to downstream version
-		cp ${WORKSPACE}/''' + CRW_path + '''/dockerfiles/che/rhel.Dockerfile ${WORKSPACE}/targetdwn/Dockerfile
+		cp ${WORKSPACE}/''' + CRW_path + '''/Dockerfile ${WORKSPACE}/targetdwn/Dockerfile
 		sed -i ${WORKSPACE}/targetdwn/Dockerfile \
 		-e "s#FROM registry.redhat.io/#FROM #g" \
 		-e "s#FROM registry.access.redhat.com/#FROM #g" \
