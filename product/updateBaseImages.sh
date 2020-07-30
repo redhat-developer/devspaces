@@ -151,8 +151,9 @@ for d in $(find ${WORKDIR} -maxdepth ${MAXDEPTH} -name ${DOCKERFILE} | sort); do
 		else
 			BRANCHUSED=${BRANCH}
 		fi
-		git branch --set-upstream-to=origin/${BRANCHUSED} ${BRANCHUSED} -q
-		git checkout ${BRANCHUSED} -q && git pull -q
+		git branch --set-upstream-to=origin/${BRANCHUSED} ${BRANCHUSED} -q || true
+		git checkout ${BRANCHUSED} -q || true 
+		git pull -q || true
 		if [[ ${pushedIn} -eq 1 ]]; then popd >/dev/null; pushedIn=0; fi
 
 		QUERY=""
