@@ -398,26 +398,13 @@ cd ..
 
 if [[ ''' + FORCE_BUILD + ''' == "true" ]]; then hasChanged=1; fi
 if [[ ${hasChanged} -eq 1 ]]; then
-    QUAY_REPO_PATH=""; if [[ ''' + PUSH_TO_QUAY + ''' == "true" ]]; then QUAY_REPO_PATH="server-rhel8"; fi
-    curl \
-"https://codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/get-sources-rhpkg-container-build/buildWithParameters?\
-token=CI_BUILD&\
-cause=${QUAY_REPO_PATH}+respin+by+${BUILD_TAG}&\
-GIT_BRANCH=''' + DWNSTM_BRANCH + '''&\
-GIT_PATHs=containers/codeready-workspaces&\
-QUAY_REPO_PATHs=${QUAY_REPO_PATH}&\
-JOB_BRANCH=master&\
-FORCE_BUILD=true&\
-SCRATCH=''' + SCRATCH + '''"
-    curl \
-"https://codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/crwctl_master/buildWithParameters?\
-token=CI_BUILD&cause=build+crwctl+for+operator+sync+from+${BUILD_TAG}&versionSuffix=CI"
+	touch ${WORKSPACE}/trigger-downstream-true
 fi
 if [[ ${hasChanged} -eq 0 ]]; then
   echo "No changes upstream, nothing to commit"
 fi
 		'''
-		
+
 		sh "mvn clean install ${MVN_FLAGS} -f ${CRW_path}/pom.xml -Dparent.version=\"${VER_CHE}\" -Dche.version=\"${VER_CHE}\" -Dcrw.dashboard.version=\"${CRW_SHAs}\" ${MVN_EXTRA_FLAGS}"
 
 		// Add dashboard and workspace-loader to server assembly
@@ -488,41 +475,45 @@ timeout(120) {
 		def matcher2 = ( "${JOB_NAME}" =~ /.*(_PR).*/ )
 		def PR_SUFFIX = (matcher2.matches() ? matcher2[0][1] : "")
 
-		echo "[INFO] Trigger get-sources-rhpkg-container-build " + (env.ghprbPullId && env.ghprbPullId?.trim()?"for PR-${ghprbPullId} ":"") + \
-		"with SCRATCH = ${SCRATCH}, QUAY_REPO_PATHs = ${QUAY_REPO_PATHs}, JOB_BRANCH = ${JOB_BRANCH}${PR_SUFFIX}"
+		if (fileExists(WORKSPACE + '/trigger-downstream-true')) {
+			echo "[INFO] Trigger get-sources-rhpkg-container-build " + (env.ghprbPullId && env.ghprbPullId?.trim()?"for PR-${ghprbPullId} ":"") + \
+			"with SCRATCH = ${SCRATCH}, QUAY_REPO_PATHs = ${QUAY_REPO_PATHs}, JOB_BRANCH = ${JOB_BRANCH}${PR_SUFFIX}"
 
-		// trigger OSBS build
-		build(
-		  job: 'get-sources-rhpkg-container-build',
-		  wait: false,
-		  propagate: false,
-		  parameters: [
-			[
-			  $class: 'StringParameterValue',
-			  name: 'GIT_PATHs',
-			  value: "containers/codeready-workspaces",
-			],
-			[
-			  $class: 'StringParameterValue',
-			  name: 'GIT_BRANCH',
-			  value: "crw-2.2-rhel-8",
-			],
-			[
-			  $class: 'StringParameterValue',
-			  name: 'QUAY_REPO_PATHs',
-			  value: "${QUAY_REPO_PATHs}",
-			],
-			[
-			  $class: 'StringParameterValue',
-			  name: 'SCRATCH',
-			  value: "${SCRATCH}",
-			],
-			[
-			  $class: 'StringParameterValue',
-			  name: 'JOB_BRANCH',
-			  value: "${JOB_BRANCH}${PR_SUFFIX}",
+			// trigger OSBS build
+			build(
+			job: 'get-sources-rhpkg-container-build',
+			wait: false,
+			propagate: false,
+			parameters: [
+				[
+				$class: 'StringParameterValue',
+				name: 'GIT_PATHs',
+				value: "containers/codeready-workspaces",
+				],
+				[
+				$class: 'StringParameterValue',
+				name: 'GIT_BRANCH',
+				value: "crw-2.2-rhel-8",
+				],
+				[
+				$class: 'StringParameterValue',
+				name: 'QUAY_REPO_PATHs',
+				value: "${QUAY_REPO_PATHs}",
+				],
+				[
+				$class: 'StringParameterValue',
+				name: 'SCRATCH',
+				value: "${SCRATCH}",
+				],
+				[
+				$class: 'StringParameterValue',
+				name: 'JOB_BRANCH',
+				value: "${JOB_BRANCH}${PR_SUFFIX}",
+				]
 			]
-		  ]
-		)
+			)
+		} else {
+			echo "No changes upstream, nothing to commit"
+		}
 	}
 }
