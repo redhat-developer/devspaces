@@ -34,28 +34,28 @@ components:
         containerPath: "/home/jboss/.nuget"
 commands:
   -
-    name: update dependencies
+    name: 1. Update dependencies
     actions:
       - type: exec
         component: dotnet
         command: "dotnet restore"
         workdir: ${CHE_PROJECTS_ROOT}/dotnet-web-simple
   -
-    name: run
-    actions:
-      - type: exec
-        component: dotnet
-        command: "dotnet run"
-        workdir: ${CHE_PROJECTS_ROOT}/dotnet-web-simple
-  -
-    name: build
+    name: 2. Build
     actions:
       - type: exec
         component: dotnet
         command: "dotnet build"
         workdir: ${CHE_PROJECTS_ROOT}/dotnet-web-simple
+  -
+    name: 3. Run
+    actions:
+      - type: exec
+        component: dotnet
+        command: "dotnet run"
+        workdir: ${CHE_PROJECTS_ROOT}/dotnet-web-simple
   - 
-    name: Launch .NET Web Application on Debug mode
+    name: Launch .net web application in debug mode
     actions:
       - type: vscode-launch
         referenceContent: |

@@ -23,7 +23,7 @@ components:
     mountSources: true
 commands:
   -
-    name: run
+    name: 1. Run
     actions:
       -
         type: exec

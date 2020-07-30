@@ -37,18 +37,18 @@ components:
   mountSources: true
 commands:
 -
-  name: Run the application
-  actions:
-  - type: exec
-    component: go-cli
-    command: ./golang-health-check
-    workdir: ${CHE_PROJECTS_ROOT}/golang-health-check
--
-  name: Build the application
+  name: 1. Build the application
   actions:
   - type: exec
     component: go-cli
     command: go build
+    workdir: ${CHE_PROJECTS_ROOT}/golang-health-check
+-
+  name: 2. Run the application
+  actions:
+  - type: exec
+    component: go-cli
+    command: ./golang-health-check
     workdir: ${CHE_PROJECTS_ROOT}/golang-health-check
 -
   name: Debug configuration

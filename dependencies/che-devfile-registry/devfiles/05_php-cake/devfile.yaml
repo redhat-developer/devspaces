@@ -31,32 +31,14 @@ components:
       containerPath: "/home/jboss/.composer"
 commands:
 -
-  name: Install dependencies
+  name: 1. Install dependencies
   actions:
     - type: exec
       component: php
       command: "composer install --no-interaction"
       workdir: "${CHE_PROJECTS_ROOT}/cakephp-ex"
 -
-  name: Start Apache Web Server
-  actions:
-    - type: exec
-      component: php
-      command: "httpd -k start\ntail -f /etc/httpd/logs/access_log &\ntail -f /etc/httpd/logs/error_log"
--
-  name: Stop Apache Web Server
-  actions:
-    - type: exec
-      component: php
-      command: "httpd -k stop"
--
-  name: Restart Apache Web Server
-  actions:
-    - type: exec
-      component: php
-      command: "httpd -k restart"
--
-  name: Configure Apache Web Server DocumentRoot
+  name: 2. Configure Apache Web Server DocumentRoot
   actions:
     - type: exec
       component: php
@@ -66,6 +48,24 @@ commands:
         else
           echo "DocumentRoot already configured!"
         fi
+-
+  name: 3. Start Apache Web Server
+  actions:
+    - type: exec
+      component: php
+      command: "httpd -k start\ntail -f /etc/httpd/logs/access_log &\ntail -f /etc/httpd/logs/error_log"
+-
+  name: 4. Restart Apache Web Server
+  actions:
+    - type: exec
+      component: php
+      command: "httpd -k restart"
+-
+  name: 5. Stop Apache Web Server
+  actions:
+    - type: exec
+      component: php
+      command: "httpd -k stop"
 -
   name: Debug current file
   actions:

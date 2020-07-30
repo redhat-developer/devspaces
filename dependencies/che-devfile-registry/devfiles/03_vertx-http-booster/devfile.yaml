@@ -35,13 +35,53 @@ components:
       - value: $(JAVA_OPTS)
         name: MAVEN_OPTS
 commands:
-  - name: build
+  - name: 1. Build
     actions:
       - workdir: '${CHE_PROJECTS_ROOT}/vertx-http-booster'
         type: exec
         command: >-
           MAVEN_OPTS="-Xmx200m" && mvn -Duser.home=${HOME} -DskipTestsclean
           install
+        component: maven
+  - name: 2. Run
+    actions:
+      - workdir: '${CHE_PROJECTS_ROOT}/vertx-http-booster'
+        type: exec
+        command: >-
+          MAVEN_OPTS="-Xmx200m" && mvn -Duser.home=${HOME}
+          -Dvertx.disableDnsResolver=true vertx:run
+        component: maven
+  - name: 3. Run in debug mode
+    actions:
+      - workdir: '${CHE_PROJECTS_ROOT}/vertx-http-booster'
+        type: exec
+        command: >-
+          MAVEN_OPTS="-Xmx200m" && mvn -Duser.home=${HOME} -DskipTests
+          vertx:debug
+        component: maven
+  - name: 4. Run tests
+    actions:
+      - workdir: '${CHE_PROJECTS_ROOT}/vertx-http-booster'
+        type: exec
+        command: 'MAVEN_OPTS="-Xmx200m" && mvn -Duser.home=${HOME} -DskipTests verify '
+        component: maven
+  - name: 5. Log into deployment cluster
+    actions:
+      - workdir: "${CHE_PROJECTS_ROOT}/vertx-http-booster"
+        type: exec
+        command: |
+          echo
+          echo "Before you can deploy this application to an openshift cluster,"
+          echo "you must run 'oc login ...' in the maven terminal."
+          echo
+        component: maven
+  - name: 6. Deploy to OpenShift
+    actions:
+      - workdir: '${CHE_PROJECTS_ROOT}/vertx-http-booster'
+        type: exec
+        command: >-
+          MAVEN_OPTS="-Xmx200m" &&  mvn fabric8:deploy -Popenshift -DskipTests
+          -Dvertx.disableDnsResolver=true
         component: maven
   - name: Debug remote java application
     actions:
@@ -58,33 +98,3 @@ commands:
             }]
           }
         type: vscode-launch
-  - name: run
-    actions:
-      - workdir: '${CHE_PROJECTS_ROOT}/vertx-http-booster'
-        type: exec
-        command: >-
-          MAVEN_OPTS="-Xmx200m" && mvn -Duser.home=${HOME}
-          -Dvertx.disableDnsResolver=true vertx:run
-        component: maven
-  - name: debug
-    actions:
-      - workdir: '${CHE_PROJECTS_ROOT}/vertx-http-booster'
-        type: exec
-        command: >-
-          MAVEN_OPTS="-Xmx200m" && mvn -Duser.home=${HOME} -DskipTests
-          vertx:debug
-        component: maven
-  - name: test
-    actions:
-      - workdir: '${CHE_PROJECTS_ROOT}/vertx-http-booster'
-        type: exec
-        command: 'MAVEN_OPTS="-Xmx200m" && mvn -Duser.home=${HOME} -DskipTests verify '
-        component: maven
-  - name: deploy to OpenShift
-    actions:
-      - workdir: '${CHE_PROJECTS_ROOT}/vertx-http-booster'
-        type: exec
-        command: >-
-          MAVEN_OPTS="-Xmx200m" &&  mvn fabric8:deploy -Popenshift -DskipTests
-          -Dvertx.disableDnsResolver=true
-        component: maven

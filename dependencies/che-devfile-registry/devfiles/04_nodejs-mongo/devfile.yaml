@@ -50,7 +50,7 @@ components:
           discoverable: "true"
           public: "false"
 commands:
-  - name: run the application
+  - name: 1. Run the application
     actions:
       - type: exec
         component: nodejs

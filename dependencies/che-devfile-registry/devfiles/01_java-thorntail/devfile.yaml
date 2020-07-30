@@ -36,7 +36,7 @@ components:
         containerPath: /home/jboss/.m2
 commands:
   -
-    name: build
+    name: 1. Build
     actions:
       -
         type: exec
@@ -44,7 +44,7 @@ commands:
         command: "MAVEN_OPTS='-Xmx200m' && mvn clean install -DskipTests"
         workdir: ${CHE_PROJECTS_ROOT}/rest-http-redhat
   -
-    name: run
+    name: 2. Run
     actions:
       -
         type: exec
@@ -52,15 +52,26 @@ commands:
         command: "MAVEN_OPTS='-Xmx200m' && mvn clean install -DskipTests && java -jar target/*.jar -Djava.net.preferIPv4Stack=true"
         workdir: ${CHE_PROJECTS_ROOT}/rest-http-redhat
   -
-    name: debug
+    name: 3. Run in debug mode
     actions:
       -
         type: exec
         component: maven
         command: "MAVEN_OPTS='-Xmx200m' && mvn clean install -DskipTests && java -agentlib:jdwp=transport=dt_socket,address=5005,server=y,suspend=n -jar target/*.jar -Djava.net.preferIPv4Stack=true"
         workdir: ${CHE_PROJECTS_ROOT}/rest-http-redhat
+  - 
+    name: 4. Log into deployment cluster
+    actions:
+      - workdir: "${CHE_PROJECTS_ROOT}/rest-http-redhat"
+        type: exec
+        command: |
+          echo
+          echo "Before you can deploy this application to an openshift cluster,"
+          echo "you must run 'oc login ...' in the maven terminal."
+          echo
+        component: maven
   -
-    name: deploy to OpenShift
+    name: 5. Deploy to OpenShift
     actions:
       -
         type: exec

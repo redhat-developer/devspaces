@@ -24,14 +24,14 @@ components:
   mountSources: true
 commands:
   -
-    name: Build current algorithm
+    name: 1. Build current algorithm
     actions:
       - type: exec
         component: cpp-dev
         command: rm -f "${fileDirname}"/bin.out && g++ -g "${file}" -o bin.out && echo "Build complete"
         workdir: '${fileDirname}'
   -
-    name: Run current algorithm
+    name: 2. Run current algorithm
     actions:
       - type: exec
         component: cpp-dev
