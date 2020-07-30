@@ -26,13 +26,11 @@ RUN microdnf install java-11-openjdk-headless tar gzip shadow-utils findutils &&
 COPY entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh"]
 
+
 # NOTE: if built in Brew, use get-sources-jenkins.sh to pull latest
-# OR, if you intend to build the Che Server tarball locally, 
-# see https://github.com/redhat-developer/codeready-workspaces-productization/blob/master/devdoc/building/building-crw.adoc#make-changes-to-crw-and-re-deploy-to-minishift
-# then copy /home/${USER}/projects/codeready-workspaces/assembly/codeready-workspaces-assembly-main/target/codeready-workspaces-assembly-main.tar.gz into this folder
 COPY assembly/codeready-workspaces-assembly-main/target/codeready-workspaces-assembly-main.tar.gz /tmp/codeready-workspaces-assembly-main.tar.gz
-RUN tar xzf /tmp/codeready-workspaces-assembly-main.tar.gz --transform="s#.*codeready-workspaces-assembly-main/*##" -C /home/user/codeready && \
-    rm -f /tmp/codeready-workspaces-assembly-main.tar.gz
+RUN tar xzf /tmp/codeready-workspaces-assembly-main.tar.gz --transform="s#.*codeready-workspaces-assembly-main/*##" -C /home/user/codeready ADD eclipse-che /home/user/eclipse-cheADD eclipse-che /home/user/eclipse-che rm -f /tmp/codeready-workspaces-assembly-main.tar.gz
+
 # this should fail if the startup script is not found in correct path /home/user/codeready/tomcat/bin/catalina.sh
 RUN mkdir /logs /data && \
     chmod 0777 /logs /data && \
@@ -45,20 +43,5 @@ RUN mkdir /logs /data && \
 
 USER user
 
-ENV SUMMARY="Red Hat CodeReady Workspaces Server container" \
-    DESCRIPTION="Red Hat CodeReady Workspaces server container" \
-    PRODNAME="codeready-workspaces" \
-    COMPNAME="server-rhel8"
 
-LABEL summary="$SUMMARY" \
-      description="$DESCRIPTION" \
-      io.k8s.description="$DESCRIPTION" \
-      io.k8s.display-name="$DESCRIPTION" \
-      io.openshift.tags="$PRODNAME,$COMPNAME" \
-      com.redhat.component="$PRODNAME-$COMPNAME-container" \
-      name="$PRODNAME/$COMPNAME" \
-      version="2.3" \
-      license="EPLv2" \
-      maintainer="Nick Boldt <nboldt@redhat.com>" \
-      io.openshift.expose-services="" \
-      usage=""
+# append Brew metadata here
