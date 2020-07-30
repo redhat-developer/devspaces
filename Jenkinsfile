@@ -305,6 +305,12 @@ timeout(240) {
 			rsync -zrlt ${WORKSPACE}/''' + CHE_path + '''/dockerfiles/che/${d} ${WORKSPACE}/targetdwn/${d}
 		fi
 		done
+		# rsync files in upstream github to midstream GH
+		for d in ''' + SYNC_FILES_UP2DWN + '''; do
+		if [[ -f ${WORKSPACE}/''' + CHE_path + '''/dockerfiles/che/${d} ]]; then
+			rsync -zrlt ${WORKSPACE}/''' + CHE_path + '''/dockerfiles/che/${d} ${WORKSPACE}/''' + CRW_path + '''/${d}
+		fi
+		done
 
 		# copy rhel.Dockerfile from upstream to CRW repo
 		cp ${WORKSPACE}/''' + CHE_path + '''/dockerfiles/che/rhel.Dockerfile ${WORKSPACE}/''' + CRW_path + '''/Dockerfile
@@ -371,10 +377,11 @@ fi
 cd ${WORKSPACE}/''' + CRW_path + '''
 if [[ \$(git diff --name-only) ]]; then # file changed
     OLD_SHA_MID=\$(git rev-parse HEAD) # echo ${OLD_SHA_MID:0:8}
-    git add Dockerfile
+    git add Dockerfile ''' + SYNC_FILES_UP2DWN + ''' . -A -f
     /tmp/updateBaseImages.sh -b ''' + branchToBuildCRW + ''' --nocommit
     # note this might fail if we sync from a tag vs. a branch
-    git commit -s -m "[sync] Update from ''' + CHE_path + ''' @ ${SHA_CHE:0:8}" Dockerfile || true
+    git commit -s -m "[sync] Update from ''' + CHE_path + ''' @ ${SHA_CHE:0:8}" \
+	  Dockerfile ''' + SYNC_FILES_UP2DWN + ''' . || true
     git push origin ''' + branchToBuildCRW + ''' || true
     NEW_SHA_MID=\$(git rev-parse HEAD) # echo ${NEW_SHA_MID:0:8}
     if [[ "${OLD_SHA_MID}" != "${NEW_SHA_MID}" ]]; then hasChanged=1; fi
@@ -382,12 +389,10 @@ if [[ \$(git diff --name-only) ]]; then # file changed
 else
     # file not changed, but check if base image needs an update
     # (this avoids having 2 commits for every change)
-    cd ${WORKSPACE}/''' + CRW_path + '''
     OLD_SHA_MID=\$(git rev-parse HEAD) # echo ${OLD_SHA_MID:0:8}
-    /tmp/updateBaseImages.sh -b ''' + branchToBuildCRW + '''
+    /tmp/updateBaseImages.sh -b ''' + branchToBuildCRW + ''' || true
     NEW_SHA_MID=\$(git rev-parse HEAD) # echo ${NEW_SHA_MID:0:8}
     if [[ "${OLD_SHA_MID}" != "${NEW_SHA_MID}" ]]; then hasChanged=1; fi
-    cd ..
 fi
 cd ..
 
