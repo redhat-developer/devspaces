@@ -6,6 +6,8 @@ def SOURCE_BRANCH = "master"
 // getLatestImageTagsFlags="--crw23" # placeholder for flag to pass to getLatestImageTags.sh
 // mailSubject  - subject to put on the email, eg., CRW 2.3.0.RC-mm-yy ready for QE
 // errataURL - URL for the errata, eg., https://errata.devel.redhat.com/errata/container/56923
+// unresolvedCriticalsBlockersURL - URL for unresolved blockers/criticals, eg., Unresolved criticals/blockers:
+//   https://issues.redhat.com/browse/CRW-883?jql=fixversion%20%3D%202.3.0.GA%20AND%20project%20%3D%20CRW%20AND%20priority%20%3E%20Major%20AND%20resolution%20is%20null
 // additionalNotes - footer for the email
 // doSendEmail - boolean: if checked, send mail; if not, draft email but do not send
 // doOSBS - boolean: if checked, include OSBS images in email
@@ -59,8 +61,10 @@ timeout(120) {
             {
                 doSendEmail="false"
                 errorOccurred = errorOccurred + 'Error: need to set an actual email subject. Failure!\n'
+                currentBuild.description="Invalid email subject!"
                 currentBuild.result = 'FAILURE'
             } else {
+                currentBuild.description=mailSubject
                 sh (
                     script: 'curl -sSLO https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/master/product/getLatestImageTags.sh && chmod +x getLatestImageTags.sh',
                     returnStdout: true).trim().split( '\n' )
@@ -128,6 +132,10 @@ Stage Images:
 mailBody = mailBody + '''
 Brew NVRs (for use in ''' + errataURL + '''):
 ''' + NEW_NVR_L
+
+mailBody = mailBody + '''
+Unresolved blockers + criticals:
+''' + unresolvedCriticalsBlockersURL
 
 if (!additionalNotes.equals("")) {
 mailBody = mailBody + '''
