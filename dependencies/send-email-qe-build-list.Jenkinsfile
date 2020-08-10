@@ -68,6 +68,9 @@ timeout(120) {
                 sh (
                     script: 'curl -sSLO https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/master/product/getLatestImageTags.sh && chmod +x getLatestImageTags.sh',
                     returnStdout: true).trim().split( '\n' )
+                sh (
+                    script: 'curl -sSLO https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/master/product/getTagForImage.sh && chmod +x getTagForImage.sh',
+                    returnStdout: true).trim().split( '\n' )
                 def NEW_QUAY = ""
                 def NEW_OSBS = ""
                 def NEW_STG = ""
@@ -99,12 +102,28 @@ timeout(120) {
                         script: './getLatestImageTags.sh ${getLatestImageTagsFlags} --nvr | tee ${WORKSPACE}/LATEST_IMAGES.nvr',
                         returnStdout: true).trim().split( '\n' )
                 }
+
+                // diff quay tag list vs. nvr tag list
+                NEW_QUAY_TAGS = sh(script: '''#!/bin/bash -xe
+      ${WORKSPACE}/getTagForImage.sh $(cat ${WORKSPACE}/LATEST_IMAGES.quay) > ${WORKSPACE}/LATEST_IMAGES.quay.tagsonly
+      ${WORKSPACE}/getTagForImage.sh $(cat ${WORKSPACE}/LATEST_IMAGES.nvr)  > ${WORKSPACE}/LATEST_IMAGES.nvr.tagsonly
+      ''', returnStdout: true)
+                def DIFF_LATEST_IMAGES_QUAY_V_NVR = sh (
+                    script: 'diff -u0 ${WORKSPACE}/LATEST_IMAGES.{quay,nvr}.tagsonly | grep -v "@@" | grep -v "LATEST_IMAGES" || true',
+                    returnStdout: true
+                ).trim()
                 archiveArtifacts fingerprint: false, artifacts:"LATEST_IMAGES*"
+                if (!DIFF_LATEST_IMAGES_QUAY_V_NVR.equals("")) {
+                    // error! quay and nvr versions do not match
+                    errorOccurred = errorOccurred + 'Error: NVR versions and Quay image versions are not equal. Failure!\n'
+                    currentBuild.description="NVR/Quay version mismatch!"
+                    currentBuild.result = 'FAILURE'
+                }
 
                 def NEW_QUAY_L=""; NEW_QUAY.each { line -> if (line?.trim()) { NEW_QUAY_L=NEW_QUAY_L+"- ${line}\n" } }
                 def NEW_OSBS_L=""; NEW_OSBS.each { line -> if (line?.trim()) { NEW_OSBS_L=NEW_OSBS_L+"= ${line}\n" } }
-                def NEW_STG_L="";  NEW_STG.each  { line -> if (line?.trim()) { NEW_STG_L=NEW_STG_L + "= ${line}\n" } }
-                def NEW_NVR_L="";  NEW_NVR.each  { line -> if (line?.trim()) { NEW_NVR_L=NEW_NVR_L + "* ${line}\n" } } 
+                def NEW_STG_L="";  NEW_STG.each  { line -> if (line?.trim()) { NEW_STG_L=NEW_STG_L + "* ${line}\n" } }
+                def NEW_NVR_L="";  NEW_NVR.each  { line -> if (line?.trim()) { NEW_NVR_L=NEW_NVR_L + "  ${line}\n" } } 
 
                 def mailBody = mailSubject + '''
 
