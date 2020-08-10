@@ -143,7 +143,9 @@ timeout(120) {
 
                     // trigger a push of latest images in Brew to Quay
                     build job: 'push-latest-containers-to-quay', 
-                        parameters: [[$class: 'StringParameterValue', name: 'getLatestImageTagsFlags', value: getLatestImageTagsFlags]]
+                        parameters: [[$class: 'StringParameterValue', name: 'getLatestImageTagsFlags', value: getLatestImageTagsFlags]],
+                        propagate: false,
+                        wait: false
                 }
 
                 def NEW_QUAY_L=""; NEW_QUAY.each { line -> if (line?.trim()) { NEW_QUAY_L=NEW_QUAY_L+"- ${line}\n" } }
