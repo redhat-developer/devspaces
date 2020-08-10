@@ -145,7 +145,13 @@ timeout(120) {
                     build job: 'push-latest-containers-to-quay', 
                         parameters: [[$class: 'StringParameterValue', name: 'getLatestImageTagsFlags', value: getLatestImageTagsFlags]],
                         propagate: false,
-                        wait: false
+                        wait: true
+
+                    // trigger an update of metadata and registries
+                    build job: 'update-digests-in-registries-and-metadata',
+                        parameters: [[$class: 'StringParameterValue', name: 'getLatestImageTagsFlags', value: getLatestImageTagsFlags]],
+                        propagate: false,
+                        wait: true
                 }
 
                 def NEW_QUAY_L=""; NEW_QUAY.each { line -> if (line?.trim()) { NEW_QUAY_L=NEW_QUAY_L+"- ${line}\n" } }
