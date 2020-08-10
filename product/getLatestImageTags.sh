@@ -83,12 +83,13 @@ EXCLUDES="\^"
 QUIET=1 	# less output - omit container tag URLs
 VERBOSE=0	# more output
 ARCHES=0	# show architectures
-NUMTAGS=1 # by default show only the latest tag for each container; or show n latest ones
+NUMTAGS=1 	# by default show only the latest tag for each container; or show n latest ones
+TAGONLY=0 	# by default show the whole image or NVR; if true, show ONLY tags
 SHOWHISTORY=0 # compute the base images defined in the Dockerfile's FROM statement(s): NOTE: requires that the image be pulled first 
-SHOWNVR=0; # show NVR format instead of repo/container:tag format
-SHOWLOG=0; # show URL of the console log
-PUSHTOQUAY=0; # utility method to pull then push to quay
-PUSHTOQUAYTAGS=""; # utility method to pull then push to quay (extra tags to push)
+SHOWNVR=0 	# show NVR format instead of repo/container:tag format
+SHOWLOG=0 	# show URL of the console log
+PUSHTOQUAY=0 # utility method to pull then push to quay
+PUSHTOQUAYTAGS="" # utility method to pull then push to quay (extra tags to push)
 usage () {
 	echo "
 Usage: 
@@ -136,13 +137,22 @@ for key in "$@"; do
            --pushtoquay=*) PUSHTOQUAY=1; PUSHTOQUAYTAGS="$(echo "${key#*=}")"; shift 0;;
     '-n') NUMTAGS="$2"; shift 1;;
     '--dockerfile') SHOWHISTORY=1; shift 0;;
-	'--tag') BASETAG="$1"; shift 1;; 
+    '--tag') BASETAG="$1"; shift 1;; 
     '--nvr') if [[ ! $CONTAINERS ]]; then CONTAINERS="${CRW22_CONTAINERS_OSBS}"; fi; SHOWNVR=1; shift 0;;
+    '--tagonly') TAGONLY=1; shift 0;;
     '--log') SHOWLOG=1; shift 0;;
     '-h') usage;;
   esac
   shift 1
 done
+
+getTag () {
+for d in $*; do
+  tag=${d##*:}
+  tag=${tag##*-container-}
+  echo $tag
+done
+}
 
 if [[ ${REGISTRY} != "" ]]; then 
 	REGISTRYSTRING="--registry ${REGISTRY}"
@@ -187,16 +197,17 @@ if [[ ${SHOWNVR} -eq 1 ]]; then
 			echo "brew list-tagged ${candidateTag} | grep \"${containername/\//-}-container\" | sort -V | tail -${NUMTAGS} | sed -e \"s#[\ \t]\+${candidateTag}.\+##\""
 		fi
 		if [[ ${SHOWLOG} -eq 1 ]]; then
-			brew list-tagged ${candidateTag} | grep "${containername/\//-}-container" | sort -V | tail -${NUMTAGS} | sed -e "s#[\ \t]\+${candidateTag}.\+##" | \
-				sed -e "s#\(.\+\)-container-\([0-9.]\+\)-\([0-9]\+\)#\0 - http://download.eng.bos.redhat.com/brewroot/packages/\1-container/\2/\3/data/logs/x86_64.log#"
+			brew list-tagged ${candidateTag} | grep "${containername/\//-}-container" | sort -V | tail -${NUMTAGS} | sed -E -e "s#[\ \t]+${candidateTag}.+##" | \
+				sed -E -e "s#(.+)-container-([0-9.]+)-([0-9]+)#\0 - http://download.eng.bos.redhat.com/brewroot/packages/\1-container/\2/\3/data/logs/x86_64.log#"
+		elif [[ ${TAGONLY} -eq 1 ]]; then
+			brew list-tagged ${candidateTag} | grep "${containername/\//-}-container" | sort -V | tail -${NUMTAGS} | sed -E -e "s#[\ \t]+${candidateTag}.+##" -e "s@.+-container-@@g"
 		else
-			brew list-tagged ${candidateTag} | grep "${containername/\//-}-container" | sort -V | tail -${NUMTAGS} | sed -e "s#[\ \t]\+${candidateTag}.\+##"
+			brew list-tagged ${candidateTag} | grep "${containername/\//-}-container" | sort -V | tail -${NUMTAGS} | sed -E -e "s#[\ \t]+${candidateTag}.+##"
 		fi
 	done
 	exit
 fi
 
-echo ""
 for URLfrag in $CONTAINERS; do
 	URLfragtag=${URLfrag##*:}
 	if [[ ${URLfragtag} == ${URLfrag} ]]; then # tag appended on url
@@ -228,6 +239,8 @@ for URLfrag in $CONTAINERS; do
 		if [[ "$REGISTRY" = *"registry.access.redhat.com"* ]]; then
 			if [[ $QUIET -eq 1 ]]; then
 				echo "${URLfrag%%:*}:${LATESTTAG}"
+			elif [[ ${TAGONLY} -eq 1 ]]; then
+				echo "${LATESTTAG}"
 			else
 				echo "* ${URLfrag%%:*}:${LATESTTAG} :: https://access.redhat.com/containers/#/registry.access.redhat.com/${URLfrag}/images/${LATESTTAG}"
 			fi
@@ -247,14 +260,20 @@ for URLfrag in $CONTAINERS; do
 				ufrag=${URLfrag%%:*}; ufrag=${ufrag/\//-}
 				if [[ ${SHOWLOG} -eq 1 ]]; then
 					echo "${ufrag}-container-${LATESTTAG} - http://download.eng.bos.redhat.com/brewroot/packages/${ufrag}-container-${LATESTTAG//-//}/data/logs/x86_64.log"
+				elif [[ ${TAGONLY} -eq 1 ]]; then
+					echo "${LATESTTAG}"
 				else
 					echo "${ufrag}-container-${LATESTTAG}"
 				fi
+			elif [[ ${TAGONLY} -eq 1 ]]; then
+				echo "${LATESTTAG}"
 			elif [[ $QUIET -eq 1 ]]; then
 				echo "${REGISTRYPRE}${URLfrag%%:*}:${LATESTTAG}"
 			else
 				echo "${URLfrag%%:*}:${LATESTTAG} :: ${REGISTRY}/${URLfrag%%:*}:${LATESTTAG}"
 			fi
+		elif [[ ${TAGONLY} -eq 1 ]]; then
+			echo "${LATESTTAG}"
 		else
 			echo "${URLfrag}:${LATESTTAG}"
 		fi
@@ -295,4 +314,3 @@ for URLfrag in $CONTAINERS; do
 	done
 	if [[ $NUMTAGS -gt 1 ]] || [[ ${SHOWHISTORY} -eq 1 ]]; then echo ""; fi
 done
-echo ""
