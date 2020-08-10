@@ -104,7 +104,7 @@ timeout(120) {
                 }
 
                 // diff quay tag list vs. nvr tag list
-                NEW_QUAY_TAGS = sh(script: '''#!/bin/bash -xe
+                sh(script: '''#!/bin/bash -xe
       ${WORKSPACE}/getTagForImage.sh $(cat ${WORKSPACE}/LATEST_IMAGES.quay) > ${WORKSPACE}/LATEST_IMAGES.quay.tagsonly
       ${WORKSPACE}/getTagForImage.sh $(cat ${WORKSPACE}/LATEST_IMAGES.nvr)  > ${WORKSPACE}/LATEST_IMAGES.nvr.tagsonly
       ''', returnStdout: true)
@@ -112,12 +112,38 @@ timeout(120) {
                     script: 'diff -u0 ${WORKSPACE}/LATEST_IMAGES.{quay,nvr}.tagsonly | grep -v "@@" | grep -v "LATEST_IMAGES" || true',
                     returnStdout: true
                 ).trim()
+
+                if (doOSBS.equals("true")) {
+                    // diff quay tag list vs. OSBS tag list
+                    sh(script: '''#!/bin/bash -xe
+        ${WORKSPACE}/getTagForImage.sh $(cat ${WORKSPACE}/LATEST_IMAGES.osbs)  > ${WORKSPACE}/LATEST_IMAGES.osbs.tagsonly
+        ''', returnStdout: true)
+                    def DIFF_LATEST_IMAGES_QUAY_V_OSBS = sh (
+                        script: 'diff -u0 ${WORKSPACE}/LATEST_IMAGES.{quay,osbs}.tagsonly | grep -v "@@" | grep -v "LATEST_IMAGES" || true',
+                        returnStdout: true
+                    ).trim()
+                }
+                if (doStage.equals("true")) {
+                    // diff quay tag list vs. stage tag list
+                    sh(script: '''#!/bin/bash -xe
+        ${WORKSPACE}/getTagForImage.sh $(cat ${WORKSPACE}/LATEST_IMAGES.stage)  > ${WORKSPACE}/LATEST_IMAGES.stage.tagsonly
+        ''', returnStdout: true)
+                    def DIFF_LATEST_IMAGES_QUAY_V_STG = sh (
+                        script: 'diff -u0 ${WORKSPACE}/LATEST_IMAGES.{quay,stage}.tagsonly | grep -v "@@" | grep -v "LATEST_IMAGES" || true',
+                        returnStdout: true
+                    ).trim()
+                }
+
                 archiveArtifacts fingerprint: false, artifacts:"LATEST_IMAGES*"
-                if (!DIFF_LATEST_IMAGES_QUAY_V_NVR.equals("")) {
+                if (!DIFF_LATEST_IMAGES_QUAY_V_NVR.equals("") || !DIFF_LATEST_IMAGES_QUAY_V_OSBS.equals("") || !DIFF_LATEST_IMAGES_QUAY_V_STG.equals("")) {
                     // error! quay and nvr versions do not match
-                    errorOccurred = errorOccurred + 'Error: NVR versions and Quay image versions are not equal. Failure!\n'
-                    currentBuild.description="NVR/Quay version mismatch!"
+                    errorOccurred = errorOccurred + 'Error: Quay & Brew image versions not aligned. Failure!\n'
+                    currentBuild.description="Quay/Brew version mismatch!"
                     currentBuild.result = 'FAILURE'
+
+                    // trigger a push of latest images in Brew to Quay
+                    build job: 'push-latest-containers-to-quay', 
+                        parameters: [[$class: 'StringParameterValue', name: 'getLatestImageTagsFlags', value: getLatestImageTagsFlags]]
                 }
 
                 def NEW_QUAY_L=""; NEW_QUAY.each { line -> if (line?.trim()) { NEW_QUAY_L=NEW_QUAY_L+"- ${line}\n" } }
