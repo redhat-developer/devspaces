@@ -41,7 +41,7 @@ while [[ "$#" -gt 0 ]]; do
 done
 
 updateVersion() {
-    echo "${CRW_VERSION}" > VERSION
+    echo "${CRW_VERSION}" > ${WORKDIR}/dependencies/VERSION
 }
 
 updateDevfileRegistry() {
