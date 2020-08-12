@@ -113,12 +113,15 @@ timeout(120) {
                     returnStdout: true
                 ).trim()
 
+                def DIFF_LATEST_IMAGES_QUAY_V_OSBS = ""
+                def DIFF_LATEST_IMAGES_QUAY_V_STG = ""
+
                 if (doOSBS.equals("true")) {
                     // diff quay tag list vs. OSBS tag list
                     sh(script: '''#!/bin/bash -xe
         ${WORKSPACE}/getTagForImage.sh $(cat ${WORKSPACE}/LATEST_IMAGES.osbs)  > ${WORKSPACE}/LATEST_IMAGES.osbs.tagsonly
         ''', returnStdout: true)
-                    def DIFF_LATEST_IMAGES_QUAY_V_OSBS = sh (
+                    DIFF_LATEST_IMAGES_QUAY_V_OSBS = sh (
                         script: 'diff -u0 ${WORKSPACE}/LATEST_IMAGES.{quay,osbs}.tagsonly | grep -v "@@" | grep -v "LATEST_IMAGES" || true',
                         returnStdout: true
                     ).trim()
@@ -128,7 +131,7 @@ timeout(120) {
                     sh(script: '''#!/bin/bash -xe
         ${WORKSPACE}/getTagForImage.sh $(cat ${WORKSPACE}/LATEST_IMAGES.stage)  > ${WORKSPACE}/LATEST_IMAGES.stage.tagsonly
         ''', returnStdout: true)
-                    def DIFF_LATEST_IMAGES_QUAY_V_STG = sh (
+                    DIFF_LATEST_IMAGES_QUAY_V_STG = sh (
                         script: 'diff -u0 ${WORKSPACE}/LATEST_IMAGES.{quay,stage}.tagsonly | grep -v "@@" | grep -v "LATEST_IMAGES" || true',
                         returnStdout: true
                     ).trim()
