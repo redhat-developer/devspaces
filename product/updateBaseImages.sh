@@ -27,10 +27,10 @@ fi
 QUIET=0 	# less output - omit container tag URLs
 VERBOSE=0	# more output
 WORKDIR=`pwd`
-BRANCH=crw-2.2-rhel-8 # not master
+BRANCH=crw-2.4-rhel-8 # or another branch, depends on the repo
 DOCKERFILE="Dockerfile" # or "rhel.Dockerfile"
 MAXDEPTH=2
-PR_BRANCH="pr-master-new-base-images-$(date +%s)"
+PR_BRANCH="pr-new-base-images-$(date +%s)"
 OPENBROWSERFLAG="" # if a PR is generated, open it in a browser
 docommit=1 # by default DO commit the change
 dopush=1 # by default DO push the change
@@ -54,11 +54,12 @@ checkrecentupdates () {
 
 usage () {
 	echo "Usage:   $0 -b [BRANCH] [-w WORKDIR] [-f DOCKERFILE] [-maxdepth MAXDEPTH]"
-	echo "Example: $0 -b crw-2.2-rhel-8 -w $(pwd) -f rhel.Dockerfile -maxdepth 2"
+	echo "Downstream Example: $0 -b crw-2.4-rhel-8 -w $(pwd) -f rhel.Dockerfile -maxdepth 2"
+	echo "Upstream   Example: $0 -b master -w dockerfiles/ -f \*from.dockerfile -maxdepth 5 -o -prb pr-new-theia-base-images"
 	echo "Options: 
 	--no-commit, -n    do not commit to BRANCH
 	--no-push, -p      do not push to BRANCH
-	-prb               set a PR_BRANCH; default: pr-master-new-base-images-(timestamp)
+	-prb               set a PR_BRANCH; default: pr-new-base-images-(timestamp)
 	-o                 open browser if PR generated
 	-q, -v             quiet, verbose output
 	--help, -h         help
@@ -216,7 +217,7 @@ for d in $(find ${WORKDIR} -maxdepth ${MAXDEPTH} -name ${DOCKERFILE} | sort); do
 
 									# shellcheck disable=SC2181
 									if [[ $? -gt 0 ]] || [[ $PUSH_TRY == *"protected branch hook declined"* ]]; then
-										# create pull request for master branch, as branch is restricted
+										# create pull request if target branch is restricted access
 										git branch "${PR_BRANCH}" || true
 										git checkout "${PR_BRANCH}" || true
 										git pull origin "${PR_BRANCH}" || true
