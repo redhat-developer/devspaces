@@ -76,7 +76,7 @@ updatePluginRegistry() {
 
 commitChanges() {
     if [[ ${docommit} -eq 1 ]]; then 
-        git commit -a -s -m "chore(tags) update VERSION and registry references :${CRW_VERSION}" 
+        git commit -a -s -m "chore(tags) update VERSION and registry references to :${CRW_VERSION}" 
         git pull origin "${BRANCH}"
         if [[ ${dopush} -eq 1 ]]; then
             PUSH_TRY="$(git push origin "${BRANCH}" 2>&1 || git push origin "${PR_BRANCH}" || true)"
