@@ -224,7 +224,7 @@ for d in $(find ${WORKDIR} -maxdepth ${MAXDEPTH} -name ${DOCKERFILE} | sort); do
 										lastCommitComment="$(git log -1 --pretty=%B)"
 										if [[ $(/usr/local/bin/hub version 2>/dev/null || true) ]] || [[ $(which hub 2>/dev/null || true) ]]; then
 											# collect additional commits in the same PR if it already exists 
-											{ hub pull-request -f -m "${lastCommitComment}
+											{ hub pull-request -f -m "chore(base images) Update base image(s) to latest tag(s)
 
 ${lastCommitComment}" -b "${BRANCHUSED}" -h "${PR_BRANCH}" "${OPENBROWSERFLAG}"; } || { git merge master; git push origin "${PR_BRANCH}"; }
 										else
