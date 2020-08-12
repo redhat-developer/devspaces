@@ -30,8 +30,8 @@ if [[ ! -x /usr/bin/jq ]]; then
 	exit 1
 fi
 
-candidateTag="crw-2.2-rhel-8-container-candidate"
-BASETAG=2.3 # tag to search for in quay
+candidateTag="crw-2.4-rhel-8-container-candidate"
+BASETAG=2.4 # tag to search for in quay
 
 CRW22_CONTAINERS_RHCC="\
 codeready-workspaces/crw-2-rhel8-operator-metadata \
@@ -119,8 +119,9 @@ CONTAINERS=""
 #   case $1 in
 for key in "$@"; do
   case $key in
-    '--crw23') CONTAINERS="${CRW22_CONTAINERS_RHCC}";         candidateTag="crw-2.2-rhel-8-container-candidate"; BASETAG=2.3; shift 0;; 
-    '--crw22') CONTAINERS="${CRW22_CONTAINERS_RHCC}";         candidateTag="crw-2.2-rhel-8-container-candidate"; BASETAG=2.2; shift 0;;
+    '--crw24') CONTAINERS="${CRW22_CONTAINERS_RHCC}"; candidateTag="crw-2.4-rhel-8-container-candidate"; BASETAG=2.4; shift 0;; 
+    '--crw23') CONTAINERS="${CRW22_CONTAINERS_RHCC}"; candidateTag="crw-2.2-rhel-8-container-candidate"; BASETAG=2.3; shift 0;; 
+    '--crw22') CONTAINERS="${CRW22_CONTAINERS_RHCC}"; candidateTag="crw-2.2-rhel-8-container-candidate"; BASETAG=2.2; shift 0;;
     '-c') CONTAINERS="${CONTAINERS} $2"; shift 1;;
     '-x') EXCLUDES="$2"; shift 1;;
     '-q') QUIET=1; shift 0;;
