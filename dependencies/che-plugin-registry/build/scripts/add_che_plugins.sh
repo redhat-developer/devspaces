@@ -3,11 +3,12 @@
 # Used to create new che-theia and machine-exec plugins and commit changes more easily.
 
 NOCOMMIT=0
-BRANCH="master"
+BRANCH="crw-2.4-rhel-8"
 
 while [[ "$#" -gt 0 ]]; do
   case $1 in
     '-n'|'--no-commit') NOCOMMIT=1; shift 0;;
+    '-b') BRANCH="$2"; shift 1;;
     *) VERSION="$1"; shift 0;;
   esac
   shift 1
@@ -16,7 +17,7 @@ done
 usage ()
 {
   echo "Usage:   $0 [VERSION TO ADD] [--no-commit]"
-  echo "Example: $0 7.9.3"; echo
+  echo "Example: $0 7.17.0 -b crw-2.4-rhel-8"; echo
 }
 
 if [[ ! ${VERSION} ]]; then
