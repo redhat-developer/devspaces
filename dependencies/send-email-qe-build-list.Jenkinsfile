@@ -1,9 +1,7 @@
 #!/usr/bin/env groovy
 
-def SOURCE_BRANCH = "master"
-
 // PARAMETERS for this pipeline:
-// getLatestImageTagsFlags="--crw23" # placeholder for flag to pass to getLatestImageTags.sh
+// getLatestImageTagsFlags="--crw24" # placeholder for flag to pass to getLatestImageTags.sh
 // mailSubject  - subject to put on the email, eg., CRW 2.3.0.RC-mm-yy ready for QE
 // errataURL - URL for the errata, eg., https://errata.devel.redhat.com/errata/container/56923
 // unresolvedCriticalsBlockersURL - URL for unresolved blockers/criticals, eg., Unresolved criticals/blockers:

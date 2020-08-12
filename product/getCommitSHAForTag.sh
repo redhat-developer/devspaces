@@ -28,7 +28,7 @@ exit
 }
 
 # candidateTag="crw-2.0-rhel-8-candidate" # 2.0, 2.1
-candidateTag="crw-2.2-rhel-8-container-candidate" # 2.2
+candidateTag="crw-2.4-rhel-8-container-candidate" # 2.2
 
 if [[ $# -lt 1 ]]; then usage; fi
 
