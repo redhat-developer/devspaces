@@ -1,7 +1,7 @@
 #!/usr/bin/env groovy
 
 // PARAMETERS for this pipeline:
-// SOURCE_BRANCH = "crw-2.4-rhel-8"
+// MIDSTM_BRANCH = "crw-2.4-rhel-8"
 // getLatestImageTagsFlags="--crw24" # placeholder for flag to pass to getLatestImageTags.sh
 
 def errorOccurred = false
@@ -14,7 +14,7 @@ timeout(120) {
             withCredentials([string(credentialsId:'devstudio-release.token', variable: 'GITHUB_TOKEN'), 
                 file(credentialsId: 'crw-build.keytab', variable: 'CRW_KEYTAB')]) {
                 checkout([$class: 'GitSCM', 
-                        branches: [[name: "${SOURCE_BRANCH}"]], 
+                        branches: [[name: "${MIDSTM_BRANCH}"]], 
                         doGenerateSubmoduleConfigurations: false, 
                         poll: true,
                         extensions: [
@@ -99,7 +99,7 @@ timeout(120) {
                     ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts
 
                     cd ${WORKSPACE}/crw/
-                    git checkout --track origin/''' + SOURCE_BRANCH + ''' || true
+                    git checkout --track origin/''' + MIDSTM_BRANCH + ''' || true
                     git config user.email "nickboldt+devstudio-release@gmail.com"
                     git config user.name "Red Hat Devstudio Release Bot"
                     git config --global push.default matching
@@ -120,8 +120,8 @@ timeout(120) {
                     # commit changes
                     git add dependencies/LATEST_IMAGES dependencies/LATEST_IMAGES_COMMITS || true
                     git commit -m "[update] Update dependencies/LATEST_IMAGES" dependencies/LATEST_IMAGES dependencies/LATEST_IMAGES_COMMITS
-                    git pull origin ''' + SOURCE_BRANCH + ''' || true
-                    git push origin ''' + SOURCE_BRANCH + '''
+                    git pull origin ''' + MIDSTM_BRANCH + ''' || true
+                    git push origin ''' + MIDSTM_BRANCH + '''
                 '''
 
                 def buildDescription="Running..."
