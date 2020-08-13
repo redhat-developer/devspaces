@@ -7,7 +7,7 @@
 def SOURCE_REPO = "che-incubator/kubernetes-image-puller" //source repo from which to find and sync commits to pkgs.devel repo
 def GIT_PATH = "containers/codeready-workspaces-imagepuller" // dist-git repo to use as target
 
-def GIT_BRANCH = "crw-2.2-rhel-8" // target branch in dist-git repo, eg., crw-2.2-rhel-8
+def GIT_BRANCH = "crw-2.4-rhel-8" // target branch in dist-git repo, eg., crw-2.4-rhel-8
 def SCRATCH = "false"
 def PUSH_TO_QUAY = "true"
 def QUAY_PROJECT = "imagepuller" // also used for the Brew dockerfile params
@@ -69,7 +69,7 @@ hasChanged=0
 SOURCEDOCKERFILE=${WORKSPACE}/sources/docker/rhel.Dockerfile
 
 # REQUIRE: skopeo
-curl -L -s -S https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/master/product/updateBaseImages.sh -o /tmp/updateBaseImages.sh
+curl -L -s -S https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/''' + GIT_BRANCH + '''/product/updateBaseImages.sh -o /tmp/updateBaseImages.sh
 chmod +x /tmp/updateBaseImages.sh
 cd ${WORKSPACE}/sources
   git checkout --track origin/''' + SOURCE_BRANCH + ''' || true
@@ -141,8 +141,7 @@ done
 
 cp -f ${SOURCEDOCKERFILE} ${WORKSPACE}/target/Dockerfile
 
-# TODO should this be a branch instead of just master?
-CRW_VERSION=`wget -qO- https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/master/dependencies/VERSION`
+CRW_VERSION=`wget -qO- https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/''' + GIT_BRANCH + '''/dependencies/VERSION`
 # apply patches to transform Che upstream to pkgs.devel version
 sed -i ${WORKSPACE}/target/Dockerfile --regexp-extended \
   `# Replace ubi8 with rhel8 version` \
@@ -271,7 +270,7 @@ cause=${QUAY_REPO_PATH}+respin+by+${BUILD_TAG}&\
 GIT_BRANCH=''' + GIT_BRANCH + '''&\
 GIT_PATHs=containers/codeready-workspaces-${QRP}&\
 QUAY_REPO_PATHs=${QUAY_REPO_PATH}&\
-JOB_BRANCH=master&\
+JOB_BRANCH=${CRW_VERSION}&\
 FORCE_BUILD=true&\
 SCRATCH=''' + SCRATCH + '''"
   done

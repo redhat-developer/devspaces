@@ -6,13 +6,13 @@
 // branchToBuildDev = refs/tags/19
 // branchToBuildParent = refs/tags/7.15.0
 // branchToBuildChe = refs/tags/7.16.x
-// branchToBuildCRW = master
+// branchToBuildCRW = crw-2.4-rhel-8
 // BUILDINFO = ${JOB_NAME}/${BUILD_NUMBER}
 // MVN_EXTRA_FLAGS = extra flags, such as to disable a module -pl '!org.eclipse.che.selenium:che-selenium-test'
 // SCRATCH = true (don't push to Quay) or false (do push to Quay)
 
 def DWNSTM_REPO = "containers/codeready-workspaces" // dist-git repo to use as target for everything
-def DWNSTM_BRANCH = "crw-2.2-rhel-8" // target branch in dist-git repo, eg., crw-2.2-rhel-8
+def DWNSTM_BRANCH = "crw-2.4-rhel-8" // target branch in dist-git repo, eg., crw-2.4-rhel-8
 
 def installNPM(){
 	def yarnVersion="1.21.0"
@@ -266,7 +266,7 @@ timeout(240) {
 		klist # verify working
 
 		# REQUIRE: skopeo
-		curl -L -s -S https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/master/product/updateBaseImages.sh -o /tmp/updateBaseImages.sh
+		curl -L -s -S https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/''' + branchToBuildCRW + '''/product/updateBaseImages.sh -o /tmp/updateBaseImages.sh
 		chmod +x /tmp/updateBaseImages.sh
 
   		git checkout --track origin/''' + branchToBuildCRW + ''' || true
@@ -284,7 +284,7 @@ timeout(240) {
 		# Check if che-machine-exec and che-theia plugins are current in upstream repo and if not, add them
 		# NOTE: we want the version of che in the pom, not the value of che computed for the dashboard (che.version override)
 		pushd dependencies/che-plugin-registry >/dev/null
-			./build/scripts/add_che_plugins.sh $(cat ${WORKSPACE}/''' + CRW_path + '''/pom.xml | grep -E "<che.version>" | sed -r -e "s#.+<che.version>(.+)</che.version>#\\1#")
+			./build/scripts/add_che_plugins.sh -b ''' + branchToBuildCRW + ''' $(cat ${WORKSPACE}/''' + CRW_path + '''/pom.xml | grep -E "<che.version>" | sed -r -e "s#.+<che.version>(.+)</che.version>#\\1#")
 		popd >/dev/null
 
 		# fetch sources to be updated
@@ -323,8 +323,7 @@ COPY assembly/codeready-workspaces-assembly-main/target/codeready-workspaces-ass
 RUN tar xzf /tmp/codeready-workspaces-assembly-main.tar.gz --transform="s#.*codeready-workspaces-assembly-main/*##" -C /home/user/codeready \\&\\& rm -f /tmp/codeready-workspaces-assembly-main.tar.gz\\
 @g'
 
-		# TODO should this be a branch instead of just master?
-		CRW_VERSION=`wget -qO- https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/master/dependencies/VERSION`
+		CRW_VERSION=`wget -qO- https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/''' + branchToBuildCRW + '''/dependencies/VERSION`
 		# apply patches to downstream version
 		cp ${WORKSPACE}/''' + CRW_path + '''/Dockerfile ${WORKSPACE}/targetdwn/Dockerfile
 		sed -i ${WORKSPACE}/targetdwn/Dockerfile \
@@ -486,7 +485,7 @@ timeout(120) {
 				[
 				$class: 'StringParameterValue',
 				name: 'GIT_BRANCH',
-				value: "crw-2.2-rhel-8",
+				value: "crw-2.4-rhel-8",
 				],
 				[
 				$class: 'StringParameterValue',

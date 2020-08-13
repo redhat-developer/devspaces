@@ -2,13 +2,13 @@
 
 // PARAMETERS for this pipeline:
 // def FORCE_BUILD = "false"
-// def SOURCE_BRANCH = "crw-2.1" // ref/tags/v0.24.0, or crw-2.1, or master :: branch of source repo from which to find and sync commits to pkgs.devel repo
+// def SOURCE_BRANCH = "v3.2.x" // branch of source repo from which to find and sync commits to pkgs.devel repo
 
 def SOURCE_REPO = "eclipse/che-plugin-broker" //source repo from which to find and sync commits to pkgs.devel repo 
 def GIT_PATH1 = "containers/codeready-workspaces-pluginbroker-metadata" // dist-git repo to use as target
 def GIT_PATH2 = "containers/codeready-workspaces-pluginbroker-artifacts" // dist-git repo to use as target
 
-def GIT_BRANCH = "crw-2.2-rhel-8" // target branch in dist-git repo, eg., crw-2.2-rhel-8
+def GIT_BRANCH = "crw-2.4-rhel-8" // target branch in dist-git repo, eg., crw-2.4-rhel-8
 def SCRATCH = "false"
 def PUSH_TO_QUAY = "true"
 def QUAY_PROJECT1 = "pluginbroker-metadata" // also used for the Brew dockerfile params
@@ -71,7 +71,7 @@ klist # verify working
 hasChanged=0
 
 # REQUIRE: skopeo
-curl -L -s -S https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/master/product/updateBaseImages.sh -o /tmp/updateBaseImages.sh
+curl -L -s -S https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/''' + GIT_BRANCH + '''/product/updateBaseImages.sh -o /tmp/updateBaseImages.sh
 chmod +x /tmp/updateBaseImages.sh 
 cd ${WORKSPACE}/sources
   git checkout --track origin/''' + SOURCE_BRANCH + ''' || true
@@ -144,8 +144,7 @@ for targetN in target1 target2; do
       QUAY_PROJECT="''' + QUAY_PROJECT2 + '''"
     fi
 
-    # TODO should this be a branch instead of just master?
-    CRW_VERSION=`wget -qO- https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/master/dependencies/VERSION`
+    CRW_VERSION=`wget -qO- https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/''' + GIT_BRANCH + '''/dependencies/VERSION`
     #apply patches
     if [[ ${SOURCEDOCKERFILE} != "" ]] && [[ ${TARGETDOCKERFILE} != "" ]]; then
       sed ${SOURCEDOCKERFILE} \
@@ -207,7 +206,7 @@ cause=${QUAY_REPO_PATH}+respin+by+${BUILD_TAG}&\
 GIT_BRANCH=''' + GIT_BRANCH + '''&\
 GIT_PATHs=containers/codeready-workspaces-${QRP}&\
 QUAY_REPO_PATHs=${QUAY_REPO_PATH}&\
-JOB_BRANCH=master&\
+JOB_BRANCH=${CRW_VERSION}&\
 FORCE_BUILD=true&\
 SCRATCH=''' + SCRATCH + '''"
   done

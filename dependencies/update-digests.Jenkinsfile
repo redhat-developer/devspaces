@@ -1,8 +1,8 @@
 #!/usr/bin/env groovy
 
 // PARAMETERS for this pipeline:
-// SOURCE_BRANCH = "master"
-// getLatestImageTagsFlags="--crw23" # placeholder for flag to pass to getLatestImageTags.sh
+// SOURCE_BRANCH = "crw-2.4-rhel-8"
+// getLatestImageTagsFlags="--crw24" # placeholder for flag to pass to getLatestImageTags.sh
 
 def errorOccurred = false
 timeout(120) {
