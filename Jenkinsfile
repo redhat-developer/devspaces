@@ -6,13 +6,13 @@
 // branchToBuildDev = refs/tags/19
 // branchToBuildParent = refs/tags/7.15.0
 // branchToBuildChe = refs/tags/7.16.x
-// branchToBuildCRW = crw-2.4-rhel-8
+// MIDSTM_BRANCH = "crw-2.4-rhel-8" (previously branchToBuildCRW)
 // BUILDINFO = ${JOB_NAME}/${BUILD_NUMBER}
 // MVN_EXTRA_FLAGS = extra flags, such as to disable a module -pl '!org.eclipse.che.selenium:che-selenium-test'
 // SCRATCH = true (don't push to Quay) or false (do push to Quay)
 
 def DWNSTM_REPO = "containers/codeready-workspaces" // dist-git repo to use as target for everything
-def DWNSTM_BRANCH = "crw-2.4-rhel-8" // target branch in dist-git repo, eg., crw-2.4-rhel-8
+def DWNSTM_BRANCH = MIDSTM_BRANCH // target branch in dist-git repo, eg., crw-2.4-rhel-8
 
 def installNPM(){
 	def yarnVersion="1.21.0"
@@ -119,7 +119,7 @@ timeout(240) {
 				userRemoteConfigs: [[refspec: "+refs/pull/${env.ghprbPullId}/head:refs/remotes/origin/PR-${env.ghprbPullId}", url: "https://github.com/redhat-developer/codeready-workspaces.git"]]])
 		} else {
 			checkout([$class: 'GitSCM', 
-				branches: [[name: "${branchToBuildCRW}"]], 
+				branches: [[name: "${MIDSTM_BRANCH}"]], 
 				doGenerateSubmoduleConfigurations: false, 
 				poll: true,
 				extensions: [
@@ -266,10 +266,10 @@ timeout(240) {
 		klist # verify working
 
 		# REQUIRE: skopeo
-		curl -L -s -S https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/''' + branchToBuildCRW + '''/product/updateBaseImages.sh -o /tmp/updateBaseImages.sh
+		curl -L -s -S https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/''' + MIDSTM_BRANCH + '''/product/updateBaseImages.sh -o /tmp/updateBaseImages.sh
 		chmod +x /tmp/updateBaseImages.sh
 
-  		git checkout --track origin/''' + branchToBuildCRW + ''' || true
+  		git checkout --track origin/''' + MIDSTM_BRANCH + ''' || true
   		export GITHUB_TOKEN=''' + GITHUB_TOKEN + ''' # echo "''' + GITHUB_TOKEN + '''"
 		git config user.email "nickboldt+devstudio-release@gmail.com"
 		git config user.name "Red Hat Devstudio Release Bot"
@@ -284,7 +284,7 @@ timeout(240) {
 		# Check if che-machine-exec and che-theia plugins are current in upstream repo and if not, add them
 		# NOTE: we want the version of che in the pom, not the value of che computed for the dashboard (che.version override)
 		pushd dependencies/che-plugin-registry >/dev/null
-			./build/scripts/add_che_plugins.sh -b ''' + branchToBuildCRW + ''' $(cat ${WORKSPACE}/''' + CRW_path + '''/pom.xml | grep -E "<che.version>" | sed -r -e "s#.+<che.version>(.+)</che.version>#\\1#")
+			./build/scripts/add_che_plugins.sh -b ''' + MIDSTM_BRANCH + ''' $(cat ${WORKSPACE}/''' + CRW_path + '''/pom.xml | grep -E "<che.version>" | sed -r -e "s#.+<che.version>(.+)</che.version>#\\1#")
 		popd >/dev/null
 
 		# fetch sources to be updated
@@ -323,7 +323,7 @@ COPY assembly/codeready-workspaces-assembly-main/target/codeready-workspaces-ass
 RUN tar xzf /tmp/codeready-workspaces-assembly-main.tar.gz --transform="s#.*codeready-workspaces-assembly-main/*##" -C /home/user/codeready \\&\\& rm -f /tmp/codeready-workspaces-assembly-main.tar.gz\\
 @g'
 
-		CRW_VERSION=`wget -qO- https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/''' + branchToBuildCRW + '''/dependencies/VERSION`
+		CRW_VERSION=`wget -qO- https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/''' + MIDSTM_BRANCH + '''/dependencies/VERSION`
 		# apply patches to downstream version
 		cp ${WORKSPACE}/''' + CRW_path + '''/Dockerfile ${WORKSPACE}/targetdwn/Dockerfile
 		sed -i ${WORKSPACE}/targetdwn/Dockerfile \
@@ -377,11 +377,11 @@ cd ${WORKSPACE}/''' + CRW_path + '''
 if [[ \$(git diff --name-only) ]]; then # file changed
     OLD_SHA_MID=\$(git rev-parse HEAD) # echo ${OLD_SHA_MID:0:8}
     git add Dockerfile ''' + SYNC_FILES_UP2DWN + ''' . -A -f
-    /tmp/updateBaseImages.sh -b ''' + branchToBuildCRW + ''' --nocommit || true
+    /tmp/updateBaseImages.sh -b ''' + MIDSTM_BRANCH + ''' --nocommit || true
     # note this might fail if we sync from a tag vs. a branch
     git commit -s -m "[sync] Update from ''' + CHE_path + ''' @ ''' + SHA_CHE + '''" \
 	  Dockerfile ''' + SYNC_FILES_UP2DWN + ''' . || true
-    git push origin ''' + branchToBuildCRW + ''' || true
+    git push origin ''' + MIDSTM_BRANCH + ''' || true
     NEW_SHA_MID=\$(git rev-parse HEAD) # echo ${NEW_SHA_MID:0:8}
     if [[ "${OLD_SHA_MID}" != "${NEW_SHA_MID}" ]]; then hasChanged=1; fi
     echo "[sync] Updated GH @ ${NEW_SHA_MID:0:8} from ''' + CHE_path + ''' @ ''' + SHA_CHE + '''"
@@ -389,7 +389,7 @@ else
     # file not changed, but check if base image needs an update
     # (this avoids having 2 commits for every change)
     OLD_SHA_MID=\$(git rev-parse HEAD) # echo ${OLD_SHA_MID:0:8}
-    /tmp/updateBaseImages.sh -b ''' + branchToBuildCRW + ''' || true
+    /tmp/updateBaseImages.sh -b ''' + MIDSTM_BRANCH + ''' || true
     NEW_SHA_MID=\$(git rev-parse HEAD) # echo ${NEW_SHA_MID:0:8}
     if [[ "${OLD_SHA_MID}" != "${NEW_SHA_MID}" ]]; then hasChanged=1; fi
 fi
@@ -469,7 +469,12 @@ timeout(120) {
 		def QUAY_REPO_PATHs=(env.ghprbPullId && env.ghprbPullId?.trim()?"":("${SCRATCH}"=="true"?"":"server-rhel8"))
 		if (fileExists(WORKSPACE + '/trigger-downstream-true') || PUSH_TO_QUAY.equals("true")) {
 			echo "[INFO] Trigger get-sources-rhpkg-container-build " + (env.ghprbPullId && env.ghprbPullId?.trim()?"for PR-${ghprbPullId} ":"") + \
-			"with SCRATCH = ${SCRATCH}, QUAY_REPO_PATHs = ${QUAY_REPO_PATHs}, JOB_BRANCH = ${branchToBuildCRW}"
+			"with SCRATCH = ${SCRATCH}, QUAY_REPO_PATHs = ${QUAY_REPO_PATHs}, JOB_BRANCH = ${MIDSTM_BRANCH}"
+
+			def CRW_VERSION = sh(script: '''#!/bin/bash -xe
+			wget -qO- https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/''' + MIDSTM_BRANCH + '''/dependencies/VERSION
+				''', returnStdout: true).trim()
+			println "Got CRW_VERSION = '" + CRW_VERSION.trim() + "'"
 
 			// trigger OSBS build
 			build(
@@ -485,7 +490,7 @@ timeout(120) {
 				[
 				$class: 'StringParameterValue',
 				name: 'GIT_BRANCH',
-				value: "crw-2.4-rhel-8",
+				value: "${DWNSTM_BRANCH}",
 				],
 				[
 				$class: 'StringParameterValue',
@@ -500,7 +505,7 @@ timeout(120) {
 				[
 				$class: 'StringParameterValue',
 				name: 'JOB_BRANCH',
-				value: "${branchToBuildCRW}",
+				value: "${CRW_VERSION}",
 				]
 			]
 			)
