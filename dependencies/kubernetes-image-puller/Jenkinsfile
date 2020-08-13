@@ -66,7 +66,7 @@ klist # verify working
 
 hasChanged=0
 
-SOURCEDOCKERFILE=${WORKSPACE}/sources/docker/rhel.Dockerfile
+SOURCEDOCKERFILE=${WORKSPACE}/sources/build/Dockerfile
 
 # REQUIRE: skopeo
 curl -L -s -S https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/''' + GIT_BRANCH + '''/product/updateBaseImages.sh -o /tmp/updateBaseImages.sh
