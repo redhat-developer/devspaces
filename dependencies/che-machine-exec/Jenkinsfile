@@ -2,12 +2,12 @@
 
 // PARAMETERS for this pipeline:
 // def FORCE_BUILD = "false"
-// def SOURCE_BRANCH = "7.18.x" // branch of GH and pkgs.devel repos to sync commits
+// def SOURCE_BRANCH = "7.18.x" // upstream source repo branch from which to find and sync commits to pkgs.devel repo
 
-def SOURCE_REPO = "eclipse/che-machine-exec" //source repo from which to find and sync commits to pkgs.devel repo
-def GIT_PATH = "containers/codeready-workspaces-machineexec" // dist-git repo to use as target
+def SOURCE_REPO = "eclipse/che-machine-exec" // upstream source repo from which to find and sync commits to pkgs.devel repo
+def DWNSTM_REPO = "containers/codeready-workspaces-machineexec" // dist-git repo to use as target
 
-def GIT_BRANCH = "crw-2.4-rhel-8" // target branch in dist-git repo, eg., crw-2.4-rhel-8
+def DWNSTM_BRANCH = "crw-2.4-rhel-8" // target branch in dist-git repo, eg., crw-2.4-rhel-8
 def SCRATCH = "false"
 def PUSH_TO_QUAY = "true"
 def QUAY_PROJECT = "machineexec" // also used for the Brew dockerfile params
@@ -69,7 +69,7 @@ hasChanged=0
 SOURCEDOCKERFILE=${WORKSPACE}/sources/build/dockerfiles/rhel.Dockerfile
 
 # REQUIRE: skopeo
-curl -L -s -S https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/''' + GIT_BRANCH + '''/product/updateBaseImages.sh -o /tmp/updateBaseImages.sh
+curl -L -s -S https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/''' + DWNSTM_BRANCH + '''/product/updateBaseImages.sh -o /tmp/updateBaseImages.sh
 chmod +x /tmp/updateBaseImages.sh
 cd ${WORKSPACE}/sources
   git checkout --track origin/''' + SOURCE_BRANCH + ''' || true
@@ -85,9 +85,9 @@ cd ${WORKSPACE}/sources
 cd ..
 
 # fetch sources to be updated
-if [[ ! -d ${WORKSPACE}/target ]]; then git clone ssh://crw-build@pkgs.devel.redhat.com/''' + GIT_PATH + ''' target; fi
+if [[ ! -d ${WORKSPACE}/target ]]; then git clone ssh://crw-build@pkgs.devel.redhat.com/''' + DWNSTM_REPO + ''' target; fi
 cd ${WORKSPACE}/target
-git checkout --track origin/''' + GIT_BRANCH + ''' || true
+git checkout --track origin/''' + DWNSTM_BRANCH + ''' || true
 git config user.email crw-build@REDHAT.COM
 git config user.name "CRW Build"
 git config --global push.default matching
@@ -118,7 +118,7 @@ done
 
 cp -f ${SOURCEDOCKERFILE} ${WORKSPACE}/target/Dockerfile
 
-CRW_VERSION=`wget -qO- https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/''' + GIT_BRANCH + '''/dependencies/VERSION`
+CRW_VERSION=`wget -qO- https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/''' + DWNSTM_BRANCH + '''/dependencies/VERSION`
 #apply patches
 sed -i ${WORKSPACE}/target/Dockerfile \
   -e "s#FROM registry.redhat.io/#FROM #g" \
@@ -150,8 +150,8 @@ if [[ \$(git diff --name-only) ]]; then # file changed
 	git add Dockerfile ${SYNC_FILES}
 	# note this might fail if we're syncing from a tag vs. a branch
 	git commit -s -m "[sync] Update from ''' + SOURCE_REPO + ''' @ ${SOURCE_SHA:0:8}" Dockerfile ${SYNC_FILES}
-	/tmp/updateBaseImages.sh -b ''' + GIT_BRANCH + ''' --nocommit
-	git push origin ''' + GIT_BRANCH + ''' || true
+	/tmp/updateBaseImages.sh -b ''' + DWNSTM_BRANCH + ''' --nocommit
+	git push origin ''' + DWNSTM_BRANCH + ''' || true
 	NEW_SHA=\$(git rev-parse HEAD) # echo ${NEW_SHA:0:8}
 	if [[ "${OLD_SHA}" != "${NEW_SHA}" ]]; then hasChanged=1; fi
 	echo "[sync] Updated pkgs.devel @ ${NEW_SHA:0:8} from ''' + SOURCE_REPO + ''' @ ${SOURCE_SHA:0:8}"
@@ -160,7 +160,7 @@ else
   # (this avoids having 2 commits for every change)
   cd ${WORKSPACE}/target
   OLD_SHA=\$(git rev-parse HEAD) # echo ${OLD_SHA:0:8}
-  /tmp/updateBaseImages.sh -b ''' + GIT_BRANCH + '''
+  /tmp/updateBaseImages.sh -b ''' + DWNSTM_BRANCH + '''
   NEW_SHA=\$(git rev-parse HEAD) # echo ${NEW_SHA:0:8}
   if [[ "${OLD_SHA}" != "${NEW_SHA}" ]]; then hasChanged=1; fi
   cd ..
@@ -175,7 +175,7 @@ if [[ ${hasChanged} -eq 1 ]]; then
 "https://codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/get-sources-rhpkg-container-build/buildWithParameters?\
 token=CI_BUILD&\
 cause=${QUAY_REPO_PATH}+respin+by+${BUILD_TAG}&\
-GIT_BRANCH=''' + GIT_BRANCH + '''&\
+GIT_BRANCH=''' + DWNSTM_BRANCH + '''&\
 GIT_PATHs=containers/codeready-workspaces-${QRP}&\
 QUAY_REPO_PATHs=${QUAY_REPO_PATH}&\
 JOB_BRANCH=${CRW_VERSION}&\
