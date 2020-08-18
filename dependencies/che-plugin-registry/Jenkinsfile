@@ -2,13 +2,13 @@
 
 // PARAMETERS for this pipeline:
 // def FORCE_BUILD = "false"
-// def SOURCE_BRANCH = "crw-2.4-rhel-8" // branch of GH and pkgs.devel repos to sync commits
+// def MIDSTM_BRANCH = "crw-2.4-rhel-8" // branch of GH and pkgs.devel repos to sync commits
 
 // TODO source from eclipse/che-plugin-registry too
 
-def SOURCE_REPO = "redhat-developer/codeready-workspaces" //source repo from which to find and sync commits to pkgs.devel repo
-def GIT_PATH = "containers/codeready-workspaces-pluginregistry" // dist-git repo to use as target
-def GIT_BRANCH = "crw-2.4-rhel-8" // target branch in dist-git repo, eg., crw-2.4-rhel-8
+def MIDSTM_REPO = "redhat-developer/codeready-workspaces" //source repo from which to find and sync commits to pkgs.devel repo
+def DWNSTM_REPO = "containers/codeready-workspaces-pluginregistry" // dist-git repo to use as target
+def DWNSTM_BRANCH = MIDSTM_BRANCH // target branch in dist-git repo, eg., crw-2.4-rhel-8
 def SCRATCH = "false"
 def PUSH_TO_QUAY = "true"
 def QUAY_PROJECT = "pluginregistry" // also used for the Brew dockerfile params
@@ -24,17 +24,17 @@ timeout(120) {
       withCredentials([string(credentialsId:'devstudio-release.token', variable: 'GITHUB_TOKEN'), 
         file(credentialsId: 'crw-build.keytab', variable: 'CRW_KEYTAB')]) {
       checkout([$class: 'GitSCM',
-        branches: [[name: "${SOURCE_BRANCH}"]],
+        branches: [[name: "${MIDSTM_BRANCH}"]],
         doGenerateSubmoduleConfigurations: false,
         credentialsId: 'devstudio-release',
         poll: true,
         extensions: [
-          [$class: 'RelativeTargetDirectory', relativeTargetDir: "sources"],
+          [$class: 'RelativeTargetDirectory', relativeTargetDir: "targetmid"],
           [$class: 'PathRestriction', excludedRegions: '', includedRegions: 'dependencies/che-plugin-registry/.*'],
           [$class: 'DisableRemotePoll']
         ],
         submoduleCfg: [],
-        userRemoteConfigs: [[url: "https://github.com/${SOURCE_REPO}.git"]]])
+        userRemoteConfigs: [[url: "https://github.com/${MIDSTM_REPO}.git"]]])
 
   	 	def BOOTSTRAP = '''#!/bin/bash -xe
 
@@ -68,17 +68,17 @@ klist # verify working
 
 hasChanged=0
 
-SOURCEDIR=${WORKSPACE}/sources/dependencies/che-plugin-registry
+SOURCEDIR=${WORKSPACE}/targetmid/dependencies/che-plugin-registry
 SOURCEDOCKERFILE=${SOURCEDIR}/Dockerfile
 if [[ -f ${SOURCEDIR}/build/dockerfiles/rhel.Dockerfile ]]; then
   SOURCEDOCKERFILE=${SOURCEDIR}/build/dockerfiles/rhel.Dockerfile
 fi
 
 # REQUIRE: skopeo
-curl -L -s -S https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/''' + SOURCE_BRANCH + '''/product/updateBaseImages.sh -o /tmp/updateBaseImages.sh
+curl -L -s -S https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/''' + MIDSTM_BRANCH + '''/product/updateBaseImages.sh -o /tmp/updateBaseImages.sh
 chmod +x /tmp/updateBaseImages.sh
-cd ${WORKSPACE}/sources
-  git checkout --track origin/''' + SOURCE_BRANCH + ''' || true
+cd ${WORKSPACE}/targetmid
+  git checkout --track origin/''' + MIDSTM_BRANCH + ''' || true
   export GITHUB_TOKEN=''' + GITHUB_TOKEN + ''' # echo "''' + GITHUB_TOKEN + '''"
   git config user.email "nickboldt+devstudio-release@gmail.com"
   git config user.name "Red Hat Devstudio Release Bot"
@@ -87,17 +87,17 @@ cd ${WORKSPACE}/sources
   # SOLVED :: Fatal: Could not read Username for "https://github.com", No such device or address :: https://github.com/github/hub/issues/1644
   git remote -v
   git config --global hub.protocol https
-  git remote set-url origin https://\$GITHUB_TOKEN:x-oauth-basic@github.com/''' + SOURCE_REPO + '''.git
+  git remote set-url origin https://\$GITHUB_TOKEN:x-oauth-basic@github.com/''' + MIDSTM_REPO + '''.git
   git remote -v
 
   # Check if che-machine-exec and che-theia plugins are current in upstream repo and if not, add them
   pushd ${SOURCEDIR} >/dev/null
-  ./build/scripts/add_che_plugins.sh -b ''' + branchToBuildCRW + ''' $(cat ${WORKSPACE}/sources/pom.xml | grep -E "<che.version>" | sed -r -e "s#.+<che.version>(.+)</che.version>#\\1#")
+  ./build/scripts/add_che_plugins.sh -b ''' + branchToBuildCRW + ''' $(cat ${WORKSPACE}/targetmid/pom.xml | grep -E "<che.version>" | sed -r -e "s#.+<che.version>(.+)</che.version>#\\1#")
   popd >/dev/null
 
   OLD_SHA=$(git rev-parse HEAD) # echo ${OLD_SHA:0:8}
   pushd ${SOURCEDOCKERFILE%/*} >/dev/null
-    /tmp/updateBaseImages.sh -b ''' + SOURCE_BRANCH + ''' -f ${SOURCEDOCKERFILE##*/} # just pass in rhel.Dockerfile
+    /tmp/updateBaseImages.sh -b ''' + MIDSTM_BRANCH + ''' -f ${SOURCEDOCKERFILE##*/} # just pass in rhel.Dockerfile
   popd >/dev/null
   NEW_SHA=$(git rev-parse HEAD) # echo ${NEW_SHA:0:8}
   if [[ "${OLD_SHA}" != "${NEW_SHA}" ]]; then hasChanged=1; fi
@@ -105,9 +105,9 @@ cd ${WORKSPACE}/sources
 cd ..
 
 # fetch sources to be updated
-if [[ ! -d ${WORKSPACE}/target ]]; then git clone ssh://crw-build@pkgs.devel.redhat.com/''' + GIT_PATH + ''' target; fi
-cd ${WORKSPACE}/target
-  git checkout --track origin/''' + GIT_BRANCH + ''' || true
+if [[ ! -d ${WORKSPACE}/targetdwn ]]; then git clone ssh://crw-build@pkgs.devel.redhat.com/''' + DWNSTM_REPO + ''' target; fi
+cd ${WORKSPACE}/targetdwn
+  git checkout --track origin/''' + DWNSTM_BRANCH + ''' || true
   git config user.email crw-build@REDHAT.COM
   git config user.name "CRW Build"
   git config --global push.default matching
@@ -115,9 +115,9 @@ cd ${WORKSPACE}/target
       sh BOOTSTRAP
 
       OLD_SHA = sh(script: '''#!/bin/bash -xe
-      cd ${WORKSPACE}/target; git rev-parse HEAD
+      cd ${WORKSPACE}/targetdwn; git rev-parse HEAD
       ''', returnStdout: true)
-      println "Got OLD_SHA in target folder: " + OLD_SHA
+      println "Got OLD_SHA in targetdwn folder: " + OLD_SHA
 
   	 	sh BOOTSTRAP + '''
 
@@ -125,22 +125,22 @@ cd ${WORKSPACE}/target
 SYNC_FILES="build openshift v3 .gitignore .htaccess LICENSE README.md VERSION"
 for d in ${SYNC_FILES}; do
   if [[ -f ${SOURCEDIR}/${d} ]]; then
-    rsync -azrlt ${SOURCEDIR}/${d} ${WORKSPACE}/target/${d}
+    rsync -azrlt ${SOURCEDIR}/${d} ${WORKSPACE}/targetdwn/${d}
   elif [[ -d ${SOURCEDIR}/${d} ]]; then
     # copy over the dir's contents
-    rsync -azrlt ${SOURCEDIR}/${d}/* ${WORKSPACE}/target/${d}/
+    rsync -azrlt ${SOURCEDIR}/${d}/* ${WORKSPACE}/targetdwn/${d}/
     # sync the directory and delete from target if deleted from source
-    rsync -azrlt --delete ${SOURCEDIR}/${d}/ ${WORKSPACE}/target/${d}/
+    rsync -azrlt --delete ${SOURCEDIR}/${d}/ ${WORKSPACE}/targetdwn/${d}/
   else
-    echo "[WARN] Could not find ${SOURCEDIR}/${d} to sync to ${WORKSPACE}/target/${d}"
+    echo "[WARN] Could not find ${SOURCEDIR}/${d} to sync to ${WORKSPACE}/targetdwn/${d}"
   fi
 done
 
-cp -f ${SOURCEDOCKERFILE} ${WORKSPACE}/target/Dockerfile
+cp -f ${SOURCEDOCKERFILE} ${WORKSPACE}/targetdwn/Dockerfile
 
-CRW_VERSION=`wget -qO- https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/''' + SOURCE_BRANCH + '''/dependencies/VERSION`
+CRW_VERSION=`wget -qO- https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/''' + MIDSTM_BRANCH + '''/dependencies/VERSION`
 # apply patches to transform CRW upstream to pkgs.devel version
-sed -i ${WORKSPACE}/target/Dockerfile --regexp-extended \
+sed -i ${WORKSPACE}/targetdwn/Dockerfile --regexp-extended \
   `# Replace image used for registry with rhel8/httpd-24` \
   -e 's|^ *FROM registry.access.redhat.com/.* AS registry|# &|' \
   -e 's|# *(FROM.*rhel8/httpd.*)|\\1|' \
@@ -184,30 +184,30 @@ LABEL summary="$SUMMARY" \\\r
       io.openshift.expose-services="" \\\r
       usage="" \r'
 
-echo -e "$METADATA" >> ${WORKSPACE}/target/Dockerfile
+echo -e "$METADATA" >> ${WORKSPACE}/targetdwn/Dockerfile
 
 echo "======= DOWNSTREAM DOCKERFILE =======>"
-cat ${WORKSPACE}/target/Dockerfile
+cat ${WORKSPACE}/targetdwn/Dockerfile
 echo "<======= DOWNSTREAM DOCKERFILE ======="
 
 # push changes in github to dist-git
-cd ${WORKSPACE}/target
+cd ${WORKSPACE}/targetdwn
 if [[ \$(git diff --name-only) ]]; then # file changed
 	OLD_SHA=\$(git rev-parse HEAD) # echo ${OLD_SHA:0:8}
 	git add Dockerfile ${SYNC_FILES}
 	# note this might fail if we're syncing from a tag vs. a branch
-	git commit -s -m "[sync] Update from ''' + SOURCE_REPO + ''' @ ${SOURCE_SHA:0:8}" Dockerfile ${SYNC_FILES}
-	/tmp/updateBaseImages.sh -b ''' + GIT_BRANCH + ''' --nocommit
-	git push origin ''' + GIT_BRANCH + ''' || true
+	git commit -s -m "[sync] Update from ''' + MIDSTM_REPO + ''' @ ${SOURCE_SHA:0:8}" Dockerfile ${SYNC_FILES}
+	/tmp/updateBaseImages.sh -b ''' + DWNSTM_BRANCH + ''' --nocommit
+	git push origin ''' + DWNSTM_BRANCH + ''' || true
 	NEW_SHA=\$(git rev-parse HEAD) # echo ${NEW_SHA:0:8}
 	if [[ "${OLD_SHA}" != "${NEW_SHA}" ]]; then hasChanged=1; fi
-	echo "[sync] Updated pkgs.devel @ ${NEW_SHA:0:8} from ''' + SOURCE_REPO + ''' @ ${SOURCE_SHA:0:8}"
+	echo "[sync] Updated pkgs.devel @ ${NEW_SHA:0:8} from ''' + MIDSTM_REPO + ''' @ ${SOURCE_SHA:0:8}"
 else
   # file not changed, but check if base image needs an update
   # (this avoids having 2 commits for every change)
-  cd ${WORKSPACE}/target
+  cd ${WORKSPACE}/targetdwn
   OLD_SHA=\$(git rev-parse HEAD) # echo ${OLD_SHA:0:8}
-  /tmp/updateBaseImages.sh -b ''' + GIT_BRANCH + '''
+  /tmp/updateBaseImages.sh -b ''' + DWNSTM_BRANCH + '''
   NEW_SHA=\$(git rev-parse HEAD) # echo ${NEW_SHA:0:8}
   if [[ "${OLD_SHA}" != "${NEW_SHA}" ]]; then hasChanged=1; fi
   cd ..
@@ -215,10 +215,10 @@ fi
 cd ..
 
 # update tarballs - step 1 - build the container
-cd ${WORKSPACE}/target
+cd ${WORKSPACE}/targetdwn
 
 # transform Brew friendly Dockerfile so we can use it in Jenkins where base images need full registry path
-sed ${WORKSPACE}/target/Dockerfile --regexp-extended \
+sed ${WORKSPACE}/targetdwn/Dockerfile --regexp-extended \
   -e 's|COPY (.*) resources.tgz (.*)|COPY \\1 \\2|' \
   -e 's|ARG BOOTSTRAP=.*|ARG BOOTSTRAP=true|' \
   `# enable LATEST_ONLY for bootstrap build only` \
@@ -244,18 +244,18 @@ docker build -t ${CONTAINERNAME} . --no-cache -f ${WORKSPACE}/bootstrap.Dockerfi
 echo "<======= END BOOTSTRAP BUILD ======="
 
 # update tarballs - step 2 - check old sources' tarballs
-cd ${WORKSPACE}/target
+cd ${WORKSPACE}/targetdwn
 # TODO is there a better way to determine if we need to push sources? 
 rhpkg sources
 
-# update tarballs - step 3 - create tarballs in target folder
+# update tarballs - step 3 - create tarballs in targetdwn folder
 mkdir -p /tmp/root-local/ && docker run --rm -v \
   /tmp/root-local/:/tmp/root-local/ ${CONTAINERNAME} /bin/bash \
   -c "cd /root/.local/ && cp -r bin/ lib/ /tmp/root-local/"
 
 # check diff
 BEFORE_DIR=/tmp/root-local-before
-rm -fr ${BEFORE_DIR}; mkdir ${BEFORE_DIR} && tar xzf ${WORKSPACE}/target/root-local.tgz -C ${BEFORE_DIR}
+rm -fr ${BEFORE_DIR}; mkdir ${BEFORE_DIR} && tar xzf ${WORKSPACE}/targetdwn/root-local.tgz -C ${BEFORE_DIR}
 TAR_DIFF=$(sudo diff --suppress-common-lines -u -r ${BEFORE_DIR} /tmp/root-local -x "*.pyc" -x "installed-files.txt") || true
 if [[ ${TAR_DIFF} ]]; then
   echo "DIFF START *****"
@@ -270,12 +270,12 @@ docker run --rm -v /tmp/''' + QUAY_PROJECT + '''-resources/:/tmp/''' + QUAY_PROJ
   "cd /build && cp -r v3/* /tmp/''' + QUAY_PROJECT + '''-resources/"
 
 # check diff
-if [[ -f ${WORKSPACE}/target/resources.tgz ]]; then
+if [[ -f ${WORKSPACE}/targetdwn/resources.tgz ]]; then
   BEFORE_DIR=/tmp/''' + QUAY_PROJECT + '''-resources-before
-  rm -fr ${BEFORE_DIR}; mkdir ${BEFORE_DIR} && tar xzf ${WORKSPACE}/target/resources.tgz -C ${BEFORE_DIR}
+  rm -fr ${BEFORE_DIR}; mkdir ${BEFORE_DIR} && tar xzf ${WORKSPACE}/targetdwn/resources.tgz -C ${BEFORE_DIR}
   TAR_DIFF2=$(sudo diff --suppress-common-lines -u -r ${BEFORE_DIR} /tmp/''' + QUAY_PROJECT + '''-resources -x "resources/*" -x "*.vsix" -x "*.theia") || true
 else
-  TAR_DIFF2="No such file ${WORKSPACE}/target/resources.tgz -- creating a new one for the first time"
+  TAR_DIFF2="No such file ${WORKSPACE}/targetdwn/resources.tgz -- creating a new one for the first time"
 fi
 if [[ ${TAR_DIFF2} ]]; then
   echo "DIFF START *****"
@@ -291,10 +291,10 @@ fi
 # update tarballs - step 4 - commit changes if diff different
 if [[ ${TAR_DIFF} ]] || [[ ${TAR_DIFF2} ]]; then
   hasChanged=1
-  git pull origin ''' + GIT_BRANCH + ''' || true
+  git pull origin ''' + DWNSTM_BRANCH + ''' || true
   rhpkg new-sources root-local.tgz resources.tgz
   git commit -s -m "[tgz] Update root-local.tgz and resources.tgz" sources
-  git push origin ''' + GIT_BRANCH + '''
+  git push origin ''' + DWNSTM_BRANCH + '''
 else
   echo "No changes since previous tarball was created."
 fi
@@ -311,7 +311,7 @@ if [[ ${hasChanged} -eq 1 ]]; then
 "https://codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/get-sources-rhpkg-container-build/buildWithParameters?\
 token=CI_BUILD&\
 cause=${QUAY_REPO_PATH}+respin+by+${BUILD_TAG}&\
-GIT_BRANCH=''' + GIT_BRANCH + '''&\
+GIT_BRANCH=''' + DWNSTM_BRANCH + '''&\
 GIT_PATHs=containers/codeready-workspaces-${QRP}&\
 QUAY_REBUILD_PATH=${QUAY_REPO_PATH}&\
 JOB_BRANCH=${CRW_VERSION}&\
@@ -326,9 +326,9 @@ fi
 		  '''
     }
         def NEW_SHA = sh(script: '''#!/bin/bash -xe
-        cd ${WORKSPACE}/target; git rev-parse HEAD
+        cd ${WORKSPACE}/targetdwn; git rev-parse HEAD
         ''', returnStdout: true)
-        println "Got NEW_SHA in target folder: " + NEW_SHA
+        println "Got NEW_SHA in targetdwn folder: " + NEW_SHA
 
         if (NEW_SHA.equals(OLD_SHA) && !FORCE_BUILD.equals("true")) {
           currentBuild.result='UNSTABLE'
