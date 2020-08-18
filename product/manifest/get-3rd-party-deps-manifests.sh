@@ -1,6 +1,7 @@
 #!/bin/bash
 
 set -e
+MIDSTM_BRANCH="master"
 
 # script to generate a manifest of all the 3rd party deps not built in OSBS, but built in Jenkins or imported from upstream community.
 
@@ -18,11 +19,12 @@ if [[ ! ${phases} ]]; then phases=" 1 2 3 4 5 6 7 8 "; fi
 
 cd /tmp
 
-# compute version from latest operator paackage.yaml, eg., 2.2.0
+# compute version from latest operator package.yaml, eg., 2.3.0
 # TODO when we switch to OCP 4.6 bundle format, extract this version from another place
 CSV_VERSION="$1"
 if [[ ! ${CSV_VERSION} ]]; then 
-  CSV_VERSION=$(curl -sSLo - https://raw.githubusercontent.com/redhat-developer/codeready-workspaces-operator/master/controller-manifests/codeready-workspaces.package.yaml | yq .channels[0].currentCSV -r | sed -r -e "s#crwoperator.v##")
+MIDSTM_BRANCH="master"
+  CSV_VERSION=$(curl -sSLo - https://raw.githubusercontent.com/redhat-developer/codeready-workspaces-operator/${MIDSTM_BRANCH}/controller-manifests/codeready-workspaces.package.yaml | yq .channels[0].currentCSV -r | sed -r -e "s#crwoperator.v##")
 fi
 
 CRW_BRANCH_TAG=${CSV_VERSION}.GA 

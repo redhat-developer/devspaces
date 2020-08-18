@@ -1,7 +1,7 @@
 #!/usr/bin/env groovy
 
 // PARAMETERS for this pipeline:
-// CSV_VERSION = 2.2.0
+// CSV_VERSION = 2.3.0
 // getLatestImageTagsFlags="--crw23" # placeholder for flag to pass to getLatestImageTags.sh
 
 def buildNode = "rhel7-releng" // slave label
