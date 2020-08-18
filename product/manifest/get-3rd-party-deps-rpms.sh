@@ -3,7 +3,8 @@
 # script to generate a manifest of all the rpms installed into the containers
 
 # candidateTag="crw-2.0-rhel-8-candidate" # 2.0, 2.1
-candidateTag="crw-2.2-rhel-8-container-candidate" # 2.2
+MIDSTM_BRANCH="master"
+candidateTag="crw-2.2-rhel-8-container-candidate" # 2.3
 arches="x86_64" # TODO add s390x and ppc64le eventually
 getLatestImageTagsFlags="" # placeholder for a --crw23 flag to pass to getLatestImageTags.sh
 allNVRs=""
@@ -35,10 +36,10 @@ while [[ "$#" -gt 0 ]]; do
   esac
 done
 
-# compute version from latest operator package.yaml, eg., 2.2.0
+# compute version from latest operator package.yaml, eg., 2.3.0
 # TODO when we switch to OCP 4.6 bundle format, extract this version from another place
 if [[ ! ${CSV_VERSION} ]]; then 
-  CSV_VERSION=$(curl -sSLo - https://raw.githubusercontent.com/redhat-developer/codeready-workspaces-operator/master/controller-manifests/codeready-workspaces.package.yaml | yq .channels[0].currentCSV -r | sed -r -e "s#crwoperator.v##")
+  CSV_VERSION=$(curl -sSLo - https://raw.githubusercontent.com/redhat-developer/codeready-workspaces-operator/${MIDSTM_BRANCH}/controller-manifests/codeready-workspaces.package.yaml | yq .channels[0].currentCSV -r | sed -r -e "s#crwoperator.v##")
 fi
 CRW_VERSION=$(echo $CSV_VERSION | sed -r -e "s#([0-9]+\.[0-9]+)[^0-9]+.+#\1#") # trim the x.y part from the x.y.z
 
@@ -64,7 +65,7 @@ function bth () {
 
 function loadNVRs() {
 	pushd /tmp >/dev/null
-	curl -sSLO https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/master/product/getLatestImageTags.sh
+	curl -sSLO https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/${MIDSTM_BRANCH}/product/getLatestImageTags.sh
 	chmod +x getLatestImageTags.sh
 	mnf "Latest image list ${getLatestImageTagsFlags}"
 	/tmp/getLatestImageTags.sh ${getLatestImageTagsFlags} --nvr | tee /tmp/getLatestImageTags.sh.nvrs.txt

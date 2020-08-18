@@ -2,11 +2,13 @@
 
 # script to generate a manifest of all the 3rd party deps not built in OSBS, but built in Jenkins or imported from upstream community.
 
-# compute version from latest operator package.yaml, eg., 2.2.0
+MIDSTM_BRANCH="master"
+
+# compute version from latest operator package.yaml, eg., 3.0
 # TODO when we switch to OCP 4.6 bundle format, extract this version from another place
 CSV_VERSION="$1"
 if [[ ! ${CSV_VERSION} ]]; then 
-  CSV_VERSION=$(curl -sSLo - https://raw.githubusercontent.com/redhat-developer/codeready-workspaces-operator/master/controller-manifests/codeready-workspaces.package.yaml | yq .channels[0].currentCSV -r | sed -r -e "s#crwoperator.v##")
+  CSV_VERSION=$(curl -sSLo - https://raw.githubusercontent.com/redhat-developer/codeready-workspaces-operator/${MIDSTM_BRANCH}/controller-manifests/codeready-workspaces.package.yaml | yq .channels[0].currentCSV -r | sed -r -e "s#crwoperator.v##")
 fi
 
 SCRIPT=$(readlink -f "$0"); SCRIPTPATH=$(dirname "$SCRIPT"); # echo $SCRIPTPATH

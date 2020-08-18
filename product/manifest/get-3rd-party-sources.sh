@@ -6,7 +6,7 @@ set -e
 
 # TODO: make this script ALSO fetch the tarballs from Jenkins so we can do historical sources
 
-getLatestImageTagsFlags="" # placeholder for a --crw22 flag to pass to getLatestImageTags.sh
+getLatestImageTagsFlags="" # placeholder for a --crw23 flag to pass to getLatestImageTags.sh
 CRW_BRANCH="crw-2.2-rhel-8"
 PKGS_DEVEL_USER="crw-build"
 DEBUG=0
