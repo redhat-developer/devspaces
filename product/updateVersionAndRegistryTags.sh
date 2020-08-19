@@ -60,30 +60,33 @@ updateDevfileRegistry() {
     SCRIPT_DIR="${WORKDIR}/dependencies/che-devfile-registry/build/scripts"
     YAML_ROOT="${WORKDIR}/dependencies/che-devfile-registry/devfiles"
 
-    readarray -d '' devfiles < <("$SCRIPT_DIR"/list_yaml.sh "$YAML_ROOT" | tr '\n' '\0')
     # replace CRW devfiles with image references to current version tag
-    sed -E -i "s|(.*image: *?.*registry.redhat.io/codeready-workspaces/.*:).+|\1${CRW_VERSION}|g" ${devfiles[@]}
+    for devfile in "$SCRIPT_DIR"/list_yaml.sh "$YAML_ROOT"; do
+       sed -E -e "s|(.*image: *?.*registry.redhat.io/codeready-workspaces/.*:).+|\1${CRW_VERSION}|g" \
+           -i "${devfile}"
+    done
 }
 
 updatePluginRegistry() {
     SCRIPT_DIR="${WORKDIR}/dependencies/che-plugin-registry/build/scripts"
     YAML_ROOT="${WORKDIR}/dependencies/che-plugin-registry/v3/plugins"
 
-    readarray -d '' plugins < <("$SCRIPT_DIR"/list_yaml.sh "$YAML_ROOT" | tr '\n' '\0')
     declare -a latestPlugins
-    for plugin in ${plugins[@]}
-    do
+    for plugin in "$SCRIPT_DIR"/list_yaml.sh "$YAML_ROOT"; do
         #select only latest plugins
         var1=${plugin%/*}
         var2=${var1%/*}
         latestVersion=$(cat "$var2/latest.txt")
         latestPlugin="$var2/$latestVersion/meta.yaml" 
         if [ "$plugin" == "$latestPlugin" ];then
-            latestPlugins+=($plugin)
+            latestPlugins+=("$plugin")
         fi
     done        
     # replace latest CRW plugins with current version tag
-    sed -E -i "s|(.*image: *?.*registry.redhat.io/codeready-workspaces/.*:).+|\1${CRW_VERSION}\"|g" ${latestPlugins[@]}
+    for latestPlugin in "${latestPlugins[@]}"; do
+        sed -E -e "s|(.*image: *?.*registry.redhat.io/codeready-workspaces/.*:).+|\1${CRW_VERSION}\"|g" \
+            -i "${latestPlugin}"
+    done
 }
 
 commitChanges() {
