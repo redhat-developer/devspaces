@@ -8,7 +8,7 @@ def buildNode = "rhel7-releng" // node label
 
 def MVN_FLAGS="-Dmaven.repo.local=.repository/ -V -B -e"
 
-def buildMaven(){
+def installMaven(){
 	def mvnHome = tool 'maven-3.5.4'
 	env.PATH="${env.PATH}:${mvnHome}/bin"
 }
@@ -20,7 +20,7 @@ timeout(20) {
         stage "Collect 3rd party sources"
     	  wrap([$class: 'TimestamperBuildWrapper']) {
           cleanWs()
-          buildMaven()
+          installMaven()
           withCredentials([string(credentialsId:'devstudio-release.token', variable: 'GITHUB_TOKEN'), 
             file(credentialsId: 'crw-build.keytab', variable: 'CRW_KEYTAB')]) {
             checkout([$class: 'GitSCM', 

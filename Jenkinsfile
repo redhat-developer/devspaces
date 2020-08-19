@@ -32,7 +32,7 @@ def installGo(){
 
 def MVN_FLAGS="-Dmaven.repo.local=.repository/ -V -B -e"
 
-def buildMaven(){
+def installMaven(){
 	def mvnHome = tool 'maven-3.6.2'
 	env.PATH="/qa/tools/opt/x86_64/openjdk11_last/bin:${env.PATH}:${mvnHome}/bin"
 	sh "mvn -v"
@@ -70,7 +70,7 @@ timeout(240) {
 		    withCredentials([string(credentialsId:'devstudio-release.token', variable: 'GITHUB_TOKEN'), 
 		    	file(credentialsId: 'crw-build.keytab', variable: 'CRW_KEYTAB')]) {
 		cleanWs()
-		buildMaven()
+		installMaven()
 		installNPM()
 		installGo()
 
