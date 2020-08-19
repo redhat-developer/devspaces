@@ -34,12 +34,28 @@ timeout(120) {
                 submoduleCfg: [],
                 userRemoteConfigs: [[url: "https://github.com/${MIDSTM_REPO}.git"]]])
 
+            currentBuild.description="Update ${MIDSTM_BRANCH} to ${CSV_VERSION}..."
+
             sh '''
 
-cd targetmid/
-./product/updateVersionAndRegistryTags.sh -b ''' + MIDSTM_BRANCH + ''' -v ''' + CSV_VERSION + ''' -w $(pwd)
+        cd targetmid/
 
+  		git checkout --track origin/''' + MIDSTM_BRANCH + ''' || true
+  		export GITHUB_TOKEN=''' + GITHUB_TOKEN + ''' # echo "''' + GITHUB_TOKEN + '''"
+		git config user.email "nickboldt+devstudio-release@gmail.com"
+		git config user.name "Red Hat Devstudio Release Bot"
+		git config --global push.default matching
+
+		# SOLVED :: Fatal: Could not read Username for "https://github.com", No such device or address :: https://github.com/github/hub/issues/1644
+		git remote -v
+		git config --global hub.protocol https
+		git remote set-url origin https://\$GITHUB_TOKEN:x-oauth-basic@github.com/redhat-developer/''' + CRW_path + '''.git
+		git remote -v
+
+        ./product/updateVersionAndRegistryTags.sh -b ''' + MIDSTM_BRANCH + ''' -v ''' + CSV_VERSION + ''' -w $(pwd)
 '''
+            currentBuild.description="Updated ${MIDSTM_BRANCH} to ${CSV_VERSION}"
+
             }
         }
 	}
