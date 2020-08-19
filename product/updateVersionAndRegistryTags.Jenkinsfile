@@ -45,12 +45,9 @@ timeout(120) {
 		git config user.email "nickboldt+devstudio-release@gmail.com"
 		git config user.name "Red Hat Devstudio Release Bot"
 		git config --global push.default matching
-
-		# SOLVED :: Fatal: Could not read Username for "https://github.com", No such device or address :: https://github.com/github/hub/issues/1644
-		git remote -v
+		# fix for Could not read Username
 		git config --global hub.protocol https
-		git remote set-url origin https://\$GITHUB_TOKEN:x-oauth-basic@github.com/redhat-developer/''' + CRW_path + '''.git
-		git remote -v
+		git remote set-url origin https://\$GITHUB_TOKEN:x-oauth-basic@github.com/''' + MIDSTM_REPO + '''.git
 
         ./product/updateVersionAndRegistryTags.sh -b ''' + MIDSTM_BRANCH + ''' -v ''' + CSV_VERSION + ''' -w $(pwd)
 '''
