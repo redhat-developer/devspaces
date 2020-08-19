@@ -53,8 +53,11 @@ updateVersion() {
 
 # update poms to latest CSV version (x.y.z.GA)
 updatePomVersion () {
+    pushd ${WORKDIR} >/dev/null || exit
     echo "Running 'mvn versions:set' with version = ${CSV_VERSION}.GA"
     mvn versions:set -DgenerateBackupPoms=false -DnewVersion=${CSV_VERSION}.GA -q
+    git diff -q || true
+    popd >/dev/null || exit
 }
 
 updateDevfileRegistry() {
@@ -66,7 +69,7 @@ updateDevfileRegistry() {
        sed -E -e "s|(.*image: *?.*registry.redhat.io/codeready-workspaces/.*:).+|\1${CRW_VERSION}|g" \
            -i "${devfile}"
     done
-    git diff ${YAML_ROOT} | true
+    git diff -q ${YAML_ROOT} || true
 }
 
 updatePluginRegistry() {
@@ -89,7 +92,7 @@ updatePluginRegistry() {
         sed -E -e "s|(.*image: *?.*registry.redhat.io/codeready-workspaces/.*:).+|\1${CRW_VERSION}\"|g" \
             -i "${latestPlugin}"
     done
-    git diff ${YAML_ROOT} | true
+    git diff -q ${YAML_ROOT} || true
 }
 
 commitChanges() {
