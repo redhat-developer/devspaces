@@ -61,7 +61,7 @@ updateDevfileRegistry() {
     YAML_ROOT="${WORKDIR}/dependencies/che-devfile-registry/devfiles"
 
     # replace CRW devfiles with image references to current version tag
-    for devfile in "$SCRIPT_DIR"/list_yaml.sh "$YAML_ROOT"; do
+    for devfile in $("$SCRIPT_DIR"/list_yaml.sh "$YAML_ROOT"); do
        sed -E -e "s|(.*image: *?.*registry.redhat.io/codeready-workspaces/.*:).+|\1${CRW_VERSION}|g" \
            -i "${devfile}"
     done
