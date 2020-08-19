@@ -26,8 +26,11 @@ def archiveSources(sourceDir) {
         sh "rm -rf ${sourceDir}/.git"
         sh "tar -czvf ${sourceDir}-${SOURCE_VERSION}-sources.tar.gz ${sourceDir}"
     } else {
+        // will this ever be called? 
         currentBuild.result = 'ABORTED'
-        error("No sources version set: ${SOURCE_VERSION}")
+        buildDesc="No sources version set: ${SOURCE_VERSION} !"
+        currentBuild.description=buildDesc
+        error(buildDesc)
     }
 }
 
@@ -143,10 +146,10 @@ timeout(120) {
                 branchToBuildPlugin.contains("CHANGE_ME") || branchToBuildPlugin.contains("x.y.z") ||
                 extensionPath.contains("CHANGE_ME") || extensionPath.contains("https://github.com/owner/project")
             ) {
+            currentBuild.result = 'ABORTED'
             buildDesc="Invalid parameters, please set publishDestinationDir, branchToBuildPlugin, and extensionPath to real values."
             currentBuild.description=buildDesc
             error(buildDesc)
-            currentBuild.result='ABORTED'
         } else {
 
             // remove trailing slash if exists
