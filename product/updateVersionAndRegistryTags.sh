@@ -53,6 +53,7 @@ updateVersion() {
 
 # update poms to latest CSV version (x.y.z.GA)
 updatePomVersion () {
+    echo "Running 'mvn versions:set' with version = ${CSV_VERSION}.GA"
     mvn versions:set -DgenerateBackupPoms=false -DnewVersion=${CSV_VERSION}.GA -q
 }
 
