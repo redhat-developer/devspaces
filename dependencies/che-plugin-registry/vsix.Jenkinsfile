@@ -156,6 +156,8 @@ timeout(120) {
 
         echo "branch: ${checkoutRef}"
 
+        currentBuild.description="Building ${publishDestinationDir} / ${branchToBuildPlugin} from ${extensionPath} ..."
+
         if (checkoutRef.contains("master")) {
             checkout([$class: 'GitSCM',
                       branches: [[name: "${checkoutRef}"]],
@@ -218,6 +220,8 @@ timeout(120) {
         }
 
         archiveArtifacts artifacts: '*.vsix, *-sources.tar.gz', fingerprint: true
+
+        currentBuild.description="Waiting for input to push: ${publishDestinationDir} / ${branchToBuildPlugin} ..."
 
         input (message: "proceed with publish?")
 
