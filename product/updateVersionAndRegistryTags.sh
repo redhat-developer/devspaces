@@ -72,14 +72,14 @@ updatePluginRegistry() {
     YAML_ROOT="${WORKDIR}/dependencies/che-plugin-registry/v3/plugins"
 
     declare -a latestPlugins
-    for plugin in "$SCRIPT_DIR"/list_yaml.sh "$YAML_ROOT"; do
+    for plugin in $("$SCRIPT_DIR"/list_yaml.sh "$YAML_ROOT"); do
         #select only latest plugins
         var1=${plugin%/*}
         var2=${var1%/*}
         latestVersion=$(cat "$var2/latest.txt")
         latestPlugin="$var2/$latestVersion/meta.yaml" 
-        if [ "$plugin" == "$latestPlugin" ];then
-            latestPlugins+=("$plugin")
+        if [[ "$plugin" == "$latestPlugin" ]]; then
+            latestPlugins+=($plugin)
         fi
     done        
     # replace latest CRW plugins with current version tag
