@@ -66,6 +66,7 @@ updateDevfileRegistry() {
        sed -E -e "s|(.*image: *?.*registry.redhat.io/codeready-workspaces/.*:).+|\1${CRW_VERSION}|g" \
            -i "${devfile}"
     done
+    git diff ${YAML_ROOT} | true
 }
 
 updatePluginRegistry() {
@@ -88,7 +89,7 @@ updatePluginRegistry() {
         sed -E -e "s|(.*image: *?.*registry.redhat.io/codeready-workspaces/.*:).+|\1${CRW_VERSION}\"|g" \
             -i "${latestPlugin}"
     done
-    git diff | true
+    git diff ${YAML_ROOT} | true
 }
 
 commitChanges() {
