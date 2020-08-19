@@ -133,7 +133,7 @@ def buildAtlascode(branchToBuildPlugin, extensionFolder) {
 }
 
 timeout(120) {
-    node("rhel7||rhel7-8gb||rhel7-16gb||rhel7-releng"){ stage "Build ${extensionPath}"
+    node("rhel7||rhel7-8gb||rhel7-16gb||rhel7-releng"){ stage "Build ${publishDestinationDir} / ${branchToBuildPlugin} from ${extensionPath}"
         cleanWs()
         // remove trailing slash if exists
         if ("${extensionPath}".endsWith('/')) {
@@ -229,5 +229,7 @@ timeout(120) {
 
             sh "rsync -arz --protocol=28 /tmp/./${publishDestinationDir} ${publishDestinationAddress}"
         }
+
+        currentBuild.description="${publishDestinationDir} / ${branchToBuildPlugin} from ${extensionPath}"
     }
 }
