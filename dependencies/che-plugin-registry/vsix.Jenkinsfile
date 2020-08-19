@@ -135,105 +135,117 @@ def buildAtlascode(branchToBuildPlugin, extensionFolder) {
 timeout(120) {
     node("rhel7||rhel7-8gb||rhel7-16gb||rhel7-releng"){ stage "Build ${publishDestinationDir} / ${branchToBuildPlugin} from ${extensionPath}"
         cleanWs()
-        // remove trailing slash if exists
-        if ("${extensionPath}".endsWith('/')) {
-            extensionPath = extensionPath.substring(0, extensionPath.length() - 1)
-        }
-        echo "extension path: ${extensionPath}"
+        def buildDesc=""
 
-        def extensionFolder = "${extensionPath}".substring("${extensionPath}".lastIndexOf('/') + 1)
-        echo "extension folder: ${extensionFolder}"
-
-        //branch is assumed to be a tag, and we must check if it is reachable
-        def checkoutRef
-        if (ifTagExists(extensionPath, branchToBuildPlugin)) {
-            checkoutRef = "refs/tags/" + branchToBuildPlugin
-        } else if (ifTagExists(extensionPath, "v" + branchToBuildPlugin)) {
-            checkoutRef = "refs/tags/v" + branchToBuildPlugin
+        // check for dummy values and quit immediately if found
+        if (
+                publishDestinationDir.contains("CHANGE_ME") || publishDestinationDir.contains("your-extension-name") || 
+                branchToBuildPlugin.contains("CHANGE_ME") || branchToBuildPlugin.contains("x.y.z") ||
+                extensionPath.contains("CHANGE_ME") || extensionPath.contains("https://github.com/owner/project")
+            ) {
+            buildDesc="Invalid parameters, please set publishDestinationDir, branchToBuildPlugin, and extensionPath to real values."
+            currentBuild.description=buildDesc
+            error(buildDesc)
+            currentBuild.result='ABORTED'
         } else {
-            checkoutRef = branchToBuildPlugin
+
+            // remove trailing slash if exists
+            if ("${extensionPath}".endsWith('/')) {
+                extensionPath = extensionPath.substring(0, extensionPath.length() - 1)
+            }
+            echo "extension path: ${extensionPath}"
+            def extensionFolder = "${extensionPath}".substring("${extensionPath}".lastIndexOf('/') + 1)
+            echo "extension folder: ${extensionFolder}"
+
+            //branch is assumed to be a tag, and we must check if it is reachable
+            def checkoutRef
+            if (ifTagExists(extensionPath, branchToBuildPlugin)) {
+                checkoutRef = "refs/tags/" + branchToBuildPlugin
+            } else if (ifTagExists(extensionPath, "v" + branchToBuildPlugin)) {
+                checkoutRef = "refs/tags/v" + branchToBuildPlugin
+            } else {
+                checkoutRef = branchToBuildPlugin
+            }
+            echo "branch: ${checkoutRef}"
+
+            currentBuild.description="Building ${publishDestinationDir} / ${branchToBuildPlugin} from ${extensionPath} ..."
+            if (checkoutRef.contains("master")) {
+                checkout([$class: 'GitSCM',
+                        branches: [[name: "${checkoutRef}"]],
+                        doGenerateSubmoduleConfigurations: false,
+                        poll: true,
+                        extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: "${extensionFolder}"],
+                                    [$class: 'CloneOption', depth: 1, noTags: false, reference: '', shallow: true]],
+                        submoduleCfg: [],
+                        userRemoteConfigs: [[url: "${extensionPath}"]]])
+            } else {
+                checkout([$class: 'GitSCM',
+                        branches: [[name: "${checkoutRef}"]],
+                        doGenerateSubmoduleConfigurations: false,
+                        poll: true,
+                        extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: "${extensionFolder}"]],
+                        submoduleCfg: [],
+                        userRemoteConfigs: [[url: "${extensionPath}"]]])
+            }
+
+            SOURCE_VERSION = "${checkoutRef}".equals("${branchToBuildPlugin}") ? getShaVersion(extensionFolder) : "${branchToBuildPlugin}"
+            echo "source version: ${SOURCE_VERSION}"
+
+            if (extensionPath.contains("github.com/che-incubator/")) {
+                buildCheIncubator(branchToBuildPlugin, extensionFolder)
+            } else if (extensionPath.contains("https://github.com/eclipse-cdt/cdt-vscode") || extensionPath.contains("https://github.com/eclipse-cdt/cdt-gdb-vscode")) {
+                buildEclipseCdt(extensionFolder)
+            } else if (extensionPath.contains("https://github.com/llvm/llvm-project")) {
+                buildClangVscode(extensionFolder)
+            } else if (extensionPath.contains("https://github.com/microsoft/vscode-python")) {
+                buildVscodePython(branchToBuildPlugin, extensionFolder)
+            } else if (extensionPath.contains("https://github.com/microsoft/vscode-java-debug")) {
+                buildJavaExtension(branchToBuildPlugin, extensionFolder)
+            } else if (extensionPath.contains("https://github.com/felixfbecker/vscode-php-debug")) {
+                buildPhpDebug(branchToBuildPlugin, extensionFolder)
+            } else if (extensionPath.equals("https://github.com/microsoft/vscode-node-debug")) {
+                buildNodeDebug(extensionFolder)
+            } else if (extensionPath.equals("https://bitbucket.org/atlassianlabs/atlascode")) {
+                buildAtlascode(branchToBuildPlugin, extensionFolder)
+            } else {
+                buildDefault(extensionFolder)
+            }
+
+            buildStatusCode = sh script:'''#!/bin/bash -xe
+            find ./ -name '*.vsix*' -exec mv {}  .  \\;
+            if [[ "''' + checkoutRef + '''" != *"refs/tags/"* ]]; then
+                for file in *.vsix; do 
+                    mv "${file}" "${file%.vsix}-''' + SOURCE_VERSION + '''.vsix";
+                done
+            fi
+            ''', returnStatus: true
+
+            // check that sources were archived
+            def sourceExists = sh script: '''#!/bin/bash -xe
+            find . -name "*-sources.tar.gz" | egrep "./"
+            ''', returnStatus: true
+
+            if (sourceExists > 0) {
+                currentBuild.result = 'ABORTED'
+                buildDesc="Missing sources.tar.gz for ${publishDestinationDir} / ${branchToBuildPlugin} !"
+                currentBuild.description=buildDesc
+                error(buildDesc)
+            }
+
+            archiveArtifacts artifacts: '*.vsix, *-sources.tar.gz', fingerprint: true
+
+            currentBuild.description="Waiting for input to push: ${publishDestinationDir} / ${branchToBuildPlugin} ..."
+            input (message: "proceed with publish?")
+
+            if (publishDestinationAddress && publishDestinationDir ) {
+                echo "beginning publishing process"
+                sh "mkdir --parents /tmp/${publishDestinationDir} && find ./ -name '*.vsix' -exec mv {}  /tmp/${publishDestinationDir}  \\;"
+                sh "find ./ -name '*-sources.tar.gz' -exec mv {}  /tmp/${publishDestinationDir}  \\;"
+                sh "ls -l /tmp/${publishDestinationDir}"
+
+                sh "rsync -arz --protocol=28 /tmp/./${publishDestinationDir} ${publishDestinationAddress}"
+            }
+            currentBuild.description="${publishDestinationDir} / ${branchToBuildPlugin} from ${extensionPath}"
         }
-
-        echo "branch: ${checkoutRef}"
-
-        currentBuild.description="Building ${publishDestinationDir} / ${branchToBuildPlugin} from ${extensionPath} ..."
-
-        if (checkoutRef.contains("master")) {
-            checkout([$class: 'GitSCM',
-                      branches: [[name: "${checkoutRef}"]],
-                      doGenerateSubmoduleConfigurations: false,
-                      poll: true,
-                      extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: "${extensionFolder}"],
-                                   [$class: 'CloneOption', depth: 1, noTags: false, reference: '', shallow: true]],
-                      submoduleCfg: [],
-                      userRemoteConfigs: [[url: "${extensionPath}"]]])
-        } else {
-            checkout([$class: 'GitSCM',
-                      branches: [[name: "${checkoutRef}"]],
-                      doGenerateSubmoduleConfigurations: false,
-                      poll: true,
-                      extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: "${extensionFolder}"]],
-                      submoduleCfg: [],
-                      userRemoteConfigs: [[url: "${extensionPath}"]]])
-        }
-
-        SOURCE_VERSION = "${checkoutRef}".equals("${branchToBuildPlugin}") ? getShaVersion(extensionFolder) : "${branchToBuildPlugin}"
-        echo "source version: ${SOURCE_VERSION}"
-
-        if (extensionPath.contains("github.com/che-incubator/")) {
-            buildCheIncubator(branchToBuildPlugin, extensionFolder)
-        } else if (extensionPath.contains("https://github.com/eclipse-cdt/cdt-vscode") || extensionPath.contains("https://github.com/eclipse-cdt/cdt-gdb-vscode")) {
-            buildEclipseCdt(extensionFolder)
-        } else if (extensionPath.contains("https://github.com/llvm/llvm-project")) {
-            buildClangVscode(extensionFolder)
-        } else if (extensionPath.contains("https://github.com/microsoft/vscode-python")) {
-            buildVscodePython(branchToBuildPlugin, extensionFolder)
-        } else if (extensionPath.contains("https://github.com/microsoft/vscode-java-debug")) {
-            buildJavaExtension(branchToBuildPlugin, extensionFolder)
-        } else if (extensionPath.contains("https://github.com/felixfbecker/vscode-php-debug")) {
-            buildPhpDebug(branchToBuildPlugin, extensionFolder)
-        } else if (extensionPath.equals("https://github.com/microsoft/vscode-node-debug")) {
-            buildNodeDebug(extensionFolder)
-        } else if (extensionPath.equals("https://bitbucket.org/atlassianlabs/atlascode")) {
-            buildAtlascode(branchToBuildPlugin, extensionFolder)
-        } else {
-            buildDefault(extensionFolder)
-        }
-
-        buildStatusCode = sh script:'''#!/bin/bash -xe
-        find ./ -name '*.vsix*' -exec mv {}  .  \\;
-        if [[ "''' + checkoutRef + '''" != *"refs/tags/"* ]]; then
-            for file in *.vsix; do 
-                mv "${file}" "${file%.vsix}-''' + SOURCE_VERSION + '''.vsix";
-            done
-        fi
-        ''', returnStatus: true
-
-        // check that sources were archived
-        def sourceExists = sh script: '''#!/bin/bash -xe
-        find . -name "*-sources.tar.gz" | egrep "./"
-        ''', returnStatus: true
-
-        if (sourceExists > 0) {
-            currentBuild.result = 'ABORTED'
-            error('Missing sources.tar.gz')
-        }
-
-        archiveArtifacts artifacts: '*.vsix, *-sources.tar.gz', fingerprint: true
-
-        currentBuild.description="Waiting for input to push: ${publishDestinationDir} / ${branchToBuildPlugin} ..."
-
-        input (message: "proceed with publish?")
-
-        if (publishDestinationAddress && publishDestinationDir ) {
-            echo "beginning publishing process"
-            sh "mkdir --parents /tmp/${publishDestinationDir} && find ./ -name '*.vsix' -exec mv {}  /tmp/${publishDestinationDir}  \\;"
-            sh "find ./ -name '*-sources.tar.gz' -exec mv {}  /tmp/${publishDestinationDir}  \\;"
-            sh "ls -l /tmp/${publishDestinationDir}"
-
-            sh "rsync -arz --protocol=28 /tmp/./${publishDestinationDir} ${publishDestinationAddress}"
-        }
-
-        currentBuild.description="${publishDestinationDir} / ${branchToBuildPlugin} from ${extensionPath}"
     }
 }
