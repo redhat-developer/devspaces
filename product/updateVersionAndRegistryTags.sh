@@ -10,10 +10,11 @@ PR_BRANCH="pr-update-version-and-registry-tags-$(date +%s)"
 OPENBROWSERFLAG="" # if a PR is generated, open it in a browser
 docommit=1 # by default DO commit the change
 dopush=1 # by default DO push the change
+WORKDIR="$(pwd)"
 
 usage () {
-	echo "Usage:   $0 -b [BRANCH] -t [CRW TAG VERSION] [-w WORKDIR]"
-	echo "Example: $0 -b crw-2.4-rhel-8 -t 2.4 -w $(pwd)"
+	echo "Usage:   $0 -b [BRANCH] -v [CRW CSV VERSION] -t [CRW TAG VERSION] [-w WORKDIR]"
+	echo "Example: $0 -b crw-2.4-rhel-8 -v 2.4.0 -t 2.4 -w $(pwd)"
 	echo "Options: 
 	--no-commit, -n    do not commit to BRANCH
 	--no-push, -p      do not push to BRANCH
@@ -29,7 +30,8 @@ while [[ "$#" -gt 0 ]]; do
   case $1 in
     '-w') WORKDIR="$2"; shift 1;;
     '-b') BRANCH="$2"; shift 1;;
-    '-t') CRW_VERSION="$2"; shift 1;;
+    '-v') CSV_VERSION="$2"; shift 1;; # 2.4.0
+    '-t') CRW_VERSION="$2"; shift 1;; # 2.4
     '-n'|'--no-commit') docommit=0; dopush=0; shift 0;;
     '-p'|'--no-push') dopush=0; shift 0;;
     '-prb') PR_BRANCH="$2"; shift 1;;
@@ -40,8 +42,18 @@ while [[ "$#" -gt 0 ]]; do
   shift 1
 done
 
+if [[ ! ${CRW_VERSION} ]]; then
+  CRW_VERSION=${CSV_VERSION%.*} # given 2.4.0, want 2.4
+fi
+
+# update VERSION file to product version (x.y)
 updateVersion() {
     echo "${CRW_VERSION}" > ${WORKDIR}/dependencies/VERSION
+}
+
+# update poms to latest CSV version (x.y.z.GA)
+updatePomVersion () {
+    mvn versions:set -DgenerateBackupPoms=false -DnewVersion=${CSV_VERSION}.GA -q
 }
 
 updateDevfileRegistry() {
@@ -108,6 +120,7 @@ if [[ -z ${CRW_VERSION} ]]; then
     exit 1
 fi
 
+updatePomVersion
 updateVersion
 updatePluginRegistry
 updateDevfileRegistry
