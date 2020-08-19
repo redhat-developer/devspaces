@@ -5,7 +5,7 @@
 // mailSubject  - subject to put on the email, eg., CRW 2.3.0.RC-mm-yy ready for QE
 // errataURL - URL for the errata, eg., https://errata.devel.redhat.com/errata/container/56923
 // unresolvedCriticalsBlockersURL - URL for unresolved blockers/criticals, eg., Unresolved criticals/blockers:
-//   https://issues.redhat.com/browse/CRW-883?jql=fixversion%20%3D%202.3.0.GA%20AND%20project%20%3D%20CRW%20AND%20priority%20%3E%20Major%20AND%20resolution%20is%20null
+//   https://issues.redhat.com/browse/CRW-883?jql=fixversion%20%3D%202.4.0.GA%20AND%20project%20%3D%20CRW%20AND%20priority%20%3E%20Major%20AND%20resolution%20is%20null
 // additionalNotes - footer for the email
 // doSendEmail - boolean: if checked, send mail; if not, draft email but do not send
 // doOSBS - boolean: if checked, include OSBS images in email

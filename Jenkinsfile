@@ -5,7 +5,7 @@
 // nodeBig == node label, eg., rhel7-devstudio-releng-16gb-ram||rhel7-16gb-ram or rhel7-32gb||rhel7-16gb
 // branchToBuildDev = refs/tags/19
 // branchToBuildParent = refs/tags/7.15.0
-// branchToBuildChe = refs/tags/7.16.x
+// branchToBuildChe = refs/tags/7.17.x
 // MIDSTM_BRANCH = "crw-2.4-rhel-8" (previously branchToBuildCRW)
 // BUILDINFO = ${JOB_NAME}/${BUILD_NUMBER}
 // MVN_EXTRA_FLAGS = extra flags, such as to disable a module -pl '!org.eclipse.che.selenium:che-selenium-test'
@@ -231,7 +231,7 @@ timeout(240) {
 		echo "CRW_SHAs (overall) = ${CRW_SHAs}"
 
 		// TODO does crw.dashboard.version still work here? Or should we do this higher up? 
-		// NOTE: VER_CHE could be 7.12.2-SNAPSHOT if we're using a .x branch instead of a tag. So this overrides what's in the crw root pom.xml
+		// NOTE: VER_CHE could be 7.17.2-SNAPSHOT if we're using a .x branch instead of a tag. So this overrides what's in the crw root pom.xml
 
 		// unpack asset-*.tgz into folder where mvn can access it
 		// use that content when building assembly main and ws assembly?

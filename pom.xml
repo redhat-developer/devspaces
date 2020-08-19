@@ -21,7 +21,7 @@
     </parent>
     <groupId>com.redhat</groupId>
     <artifactId>codeready</artifactId>
-    <version>2.3.0.GA</version>
+    <version>2.4.0.GA</version>
     <packaging>pom</packaging>
     <name>CRW :: Parent</name>
     <url>https://developers.redhat.com/products/codeready-workspaces/overview/</url>
@@ -42,9 +42,9 @@
             IMPORTANT! when bumping this version, remember to add machine exec and theia plugins to the registry with 
             cd dependencies/che-plugin-registry; ./build/scripts/add_che_plugins.sh
         -->
-        <che.version>7.16.2</che.version>
+        <che.version>7.17.1</che.version>
         <crw.dashboard.version>${crw.version} (Eclipse Che ${che.version})</crw.dashboard.version>
-        <crw.docs.version>2.3</crw.docs.version>
+        <crw.docs.version>2.4</crw.docs.version>
         <crw.version>${project.version}</crw.version>
         <license_years>2019-2020</license_years>
         <maven.compiler.source>1.8</maven.compiler.source>
