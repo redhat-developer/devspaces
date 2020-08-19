@@ -88,6 +88,7 @@ updatePluginRegistry() {
         sed -E -e "s|(.*image: *?.*registry.redhat.io/codeready-workspaces/.*:).+|\1${CRW_VERSION}\"|g" \
             -i "${latestPlugin}"
     done
+    git diff | true
 }
 
 commitChanges() {
