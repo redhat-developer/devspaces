@@ -126,7 +126,7 @@ timeout(120) {
 
                 def buildDescription="Running..."
 
-                def CRW_VERSION = sh (script: 'cat ${WORKSPACE}/crw/dependencies/VERSION', returnStdout: true).trim().split()
+                def CRW_VERSION = sh (script: 'cat ${WORKSPACE}/crw/dependencies/VERSION', returnStdout: true).trim()
 
                 if (!DIFF_LATEST_IMAGES_METADATA.equals("") && DIFF_LATEST_IMAGES_WITH_REGISTRY.equals("")) { 
                     // no changes, but a newer metadata image exists
