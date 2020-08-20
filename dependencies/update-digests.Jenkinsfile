@@ -126,6 +126,8 @@ timeout(120) {
 
                 def buildDescription="Running..."
 
+                def CRW_VERSION = sh (script: 'cat ${WORKSPACE}/crw/dependencies/VERSION', returnStdout: true).trim().split()
+
                 if (!DIFF_LATEST_IMAGES_METADATA.equals("") && DIFF_LATEST_IMAGES_WITH_REGISTRY.equals("")) { 
                     // no changes, but a newer metadata image exists
                     buildDescription="New metadata image detected: commit changes to LATEST_IMAGES"
@@ -150,9 +152,17 @@ timeout(120) {
                         echo DIFF_LATEST_IMAGES_WITH_REGISTRY
                         
                         parallel firstBranch: {
-                            build job: 'crw-devfileregistry_sync-github-to-pkgs.devel-pipeline', parameters: [[$class: 'BooleanParameterValue', name: 'FORCE_BUILD', value: true]]
+                            build(
+                                job: 'crw-devfileregistry_' + CRW_VERSION, 
+                                wait: true, propagate: true,
+                                parameters: [[$class: 'BooleanParameterValue', name: 'FORCE_BUILD', value: true]]
+                            )
                         }, secondBranch: {
-                            build job: 'crw-pluginregistry_sync-github-to-pkgs.devel-pipeline', parameters: [[$class: 'BooleanParameterValue', name: 'FORCE_BUILD', value: true]]
+                            build(
+                                job: 'crw-pluginregistry_' + CRW_VERSION, 
+                                wait: true, propagate: true,
+                                parameters: [[$class: 'BooleanParameterValue', name: 'FORCE_BUILD', value: true]]
+                            )
                         }
                         //jobs.add(devRegJob)
                         //jobs.add(pluRegJob)
@@ -184,11 +194,11 @@ timeout(120) {
                         echo currentBuild.description
                         echo DIFF_LATEST_IMAGES_WITH_REGISTRY
                     }
+
                     build(
-                    job: 'crw-operator-metadata_sync-github-to-pkgs.devel-pipeline',
-                    wait: true,
-                    propagate: true,
-                    parameters: [[$class: 'BooleanParameterValue', name: 'FORCE_BUILD', value: true]]
+                        job: 'crw-operator-metadata_' + CRW_VERSION,
+                        wait: true, propagate: true,
+                        parameters: [[$class: 'BooleanParameterValue', name: 'FORCE_BUILD', value: true]]
                     )
 
                     while (true) 
