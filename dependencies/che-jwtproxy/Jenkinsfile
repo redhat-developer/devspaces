@@ -92,7 +92,7 @@ else
 fi
 
 # fetch sources to be updated
-if [[ ! -d ${WORKSPACE}/target ]]; then git clone ssh://crw-build@pkgs.devel.redhat.com/''' + DWNSTM_REPO + ''' target; fi
+if [[ ! -d ${WORKSPACE}/target ]]; then git clone ssh://crw-build@pkgs.devel.redhat.com/''' + DWNSTM_REPO + ''' targetdwn; fi
 cd ${WORKSPACE}/target
 git checkout --track origin/''' + DWNSTM_BRANCH + ''' || true
 git config user.email crw-build@REDHAT.COM
