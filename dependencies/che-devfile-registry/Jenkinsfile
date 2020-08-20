@@ -126,7 +126,7 @@ for d in ${SYNC_FILES}; do
   elif [[ -d ${SOURCEDIR}/${d} ]]; then
     # copy over the dir's contents
     rsync -azrlt ${SOURCEDIR}/${d}/* ${WORKSPACE}/targetdwn/${d}/
-    # sync the directory and delete from target if deleted from source
+    # sync the directory and delete from targetdwn if deleted from source
     rsync -azrlt --delete ${SOURCEDIR}/${d}/ ${WORKSPACE}/targetdwn/${d}/
   else
     echo "[WARN] Could not find ${SOURCEDIR}/${d} to sync to ${WORKSPACE}/targetdwn/${d}"
