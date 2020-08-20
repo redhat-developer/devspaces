@@ -155,7 +155,7 @@ timeout(240) {
 			submoduleCfg: [], 
 			userRemoteConfigs: [[url: "https://github.com/eclipse/${CHE_DB_path}.git"]]])
 
-		VER_CHE_DB = sh(returnStdout:true,script:"egrep \"<version>\" ${CHE_DB_path}/pom.xml|head -2|tail -1|sed -e \"s#.*<version>\\(.\\+\\)</version>#\\1#\"").trim()
+		VER_CHE_DB = sh(returnStdout:true,script:"cat ${CHE_DB_path}/package.json | jq -r .version").trim()
 		SHA_CHE_DB = sh(returnStdout:true,script:"cd ${CHE_DB_path}/ && git rev-parse --short=4 HEAD").trim()
 
 		// set correct version of CRW Dashboard
@@ -206,6 +206,7 @@ timeout(240) {
 			userRemoteConfigs: [[url: "https://github.com/eclipse/${CHE_WL_path}.git"]]])
 
 		VER_CHE_WL = sh(returnStdout:true,script:"egrep \"<version>\" ${CHE_WL_path}/pom.xml|head -2|tail -1|sed -e \"s#.*<version>\\(.\\+\\)</version>#\\1#\"").trim()
+		// future way to get version: sh(returnStdout:true,script:"cat ${CHE_WL_path}/package.json | jq -r .version").trim()
 		SHA_CHE_WL = sh(returnStdout:true,script:"cd ${CHE_WL_path}/ && git rev-parse --short=4 HEAD").trim()
 		
 		sh '''#!/bin/bash -xe
