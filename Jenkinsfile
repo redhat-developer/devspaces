@@ -30,6 +30,13 @@ def installGo(){
 	sh "go version"
 }
 
+def installYq(){
+		sh '''#!/bin/bash -xe
+sudo yum -y install jq python3-six python3-pip
+sudo /usr/bin/python3 -m pip install --upgrade pip yq; jq --version; yq --version
+'''
+}
+
 def MVN_FLAGS="-Dmaven.repo.local=.repository/ -V -B -e"
 
 def installMaven(){
@@ -73,6 +80,7 @@ timeout(240) {
 		installMaven()
 		installNPM()
 		installGo()
+		installYq()
 
 		echo "===== Build che-dev =====>"
 		checkout([$class: 'GitSCM', 
