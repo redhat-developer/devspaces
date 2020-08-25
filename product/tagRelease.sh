@@ -39,19 +39,21 @@ cd /tmp/tmp-checkouts
 
 for d in \
 codeready-workspaces-operator  codeready-workspaces-operator-metadata \
-codeready-workspaces codeready-workspaces-imagepuller \
-codeready-workspaces-jwtproxy codeready-workspaces-machineexec \
-codeready-workspaces-devfileregistry codeready-workspaces-pluginregistry \
-codeready-workspaces-pluginbroker-metadata codeready-workspaces-pluginbroker-artifacts \
+codeready-workspaces           codeready-workspaces-imagepuller \
+codeready-workspaces-jwtproxy  codeready-workspaces-machineexec \
 \
-codeready-workspaces-theia codeready-workspaces-theia-endpoint \
-codeready-workspaces-theia-dev \
+codeready-workspaces-devfileregistry  codeready-workspaces-pluginbroker-metadata \
+codeready-workspaces-pluginregistry   codeready-workspaces-pluginbroker-artifacts \
 \
-codeready-workspaces-plugin-java11 codeready-workspaces-plugin-java8 \
-codeready-workspaces-plugin-java11-openj9 codeready-workspaces-plugin-java8-openj9 \
-codeready-workspaces-plugin-kubernetes codeready-workspaces-plugin-openshift \
-codeready-workspaces-stacks-cpp codeready-workspaces-stacks-dotnet \
-codeready-workspaces-stacks-golang codeready-workspaces-stacks-php  \
+codeready-workspaces-theia codeready-workspaces-theia-endpoint codeready-workspaces-theia-dev \
+\
+codeready-workspaces-plugin-java8        codeready-workspaces-plugin-java11 \
+codeready-workspaces-plugin-java8-openj9 codeready-workspaces-plugin-java11-openj9 \
+\
+codeready-workspaces-plugin-kubernetes   codeready-workspaces-plugin-openshift \
+\
+codeready-workspaces-stacks-cpp          codeready-workspaces-stacks-dotnet \
+codeready-workspaces-stacks-golang       codeready-workspaces-stacks-php  \
 ; do
 	echo; echo "== $d =="
 	if [[ ! -d ${d} ]]; then git clone -b ${pkgs_devel_branch} ssh://nboldt@pkgs.devel.redhat.com/containers/${d} containers_${d}; fi
