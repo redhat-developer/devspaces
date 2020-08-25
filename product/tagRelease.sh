@@ -47,7 +47,8 @@ codeready-workspaces-pluginbroker-metadata codeready-workspaces-pluginbroker-art
 codeready-workspaces-theia codeready-workspaces-theia-endpoint \
 codeready-workspaces-theia-dev \
 \
-codeready-workspaces-plugin-java11 codeready-workspaces-plugin-java8 \
+codeready-workspaces-plugin-java8        codeready-workspaces-plugin-java11 \
+codeready-workspaces-plugin-java8-openj9 codeready-workspaces-plugin-java11-openj9 \
 codeready-workspaces-plugin-kubernetes codeready-workspaces-plugin-openshift \
 codeready-workspaces-stacks-cpp codeready-workspaces-stacks-dotnet \
 codeready-workspaces-stacks-golang codeready-workspaces-stacks-php  \
