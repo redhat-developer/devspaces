@@ -9,7 +9,10 @@
 #
 
 # script to query latest tags for a given list of imags in RHCC
-# requires brew for OSBS queries, skopeo (for authenticated registry queries) and jq to do json queries
+# REQUIRES: 
+#    * brew for OSBS queries, 
+#    * skopeo >=1.1 (for authenticated registry queries, and to use --override-arch for s390x images)
+#    * jq to do json queries
 # 
 # https://registry.redhat.io is v2 and requires authentication to query, so login in first like this:
 # docker login registry.redhat.io -u=USERNAME -p=PASSWORD
