@@ -139,20 +139,21 @@ PUSHTOQUAYTAGS="" # utility method to pull then push to quay (extra tags to push
 usage () {
 	echo "
 Usage: 
-  $0 --crw22, --crw23                                        | use default list of CRW images in RHCC Prod
-  $0 --crw23 --stage                                         | use default list of CRW images in RHCC Stage
-  $0 --crw23 --quay --arches                                 | use default list of CRW images in quay.io/crw; show arches
+  $0 --crw24                                                 | use default list of CRW images in RHCC Prod
+  $0 --crw24 --stage                                         | use default list of CRW images in RHCC Stage
+  $0 --crw24 --quay --arches                                 | use default list of CRW images in quay.io/crw; show arches
 
   $0 -c 'crw/theia-rhel8 crw/theia-endpoint-rhel8' --quay    | check a specific image in quay
   $0 -c 'rhoar-nodejs/nodejs-10 jboss-eap-7/eap72-openshift' | use specific list of RHCC images
   $0 -c ubi7 -c ubi8:8.0 --osbs -n 5                         | check OSBS registry; show 8.0* tags; show 5 tags per container
   $0 -c ubi7 -c ubi8:8.0 --stage -n 5                        | check RHCC stage registry; show 8.0* tags; show 5 tags per container
   $0 -c pivotaldata/centos --docker --dockerfile             | check docker registry; show Dockerfile contents (requires dfimage)
-  $0 -c codeready-workspaces-plugin-java11-rhel8 --osbs --pushtoquay='2.3 latest' 		| pull an image from osbs, push 3 tags to quay
+  $0 -c codeready-workspaces-plugin-java11-openj9-rhel8 --quay             | check a non-amd64 image
+  $0 -c codeready-workspaces-theia-rhel8 --osbs --pushtoquay='2.4 latest'  | pull an image from osbs, push 3 tags to quay
 
-  $0 --crw23 --nvr --log                                     | check images in brew; output NVRs can be copied to Errata; show links to Brew logs
-  $0 --crw23 --osbs                                          | check images in OSBS ( registry-proxy.engineering.redhat.com/rh-osbs )
-  $0 --crw23 --osbs --pushtoquay='2.3 latest'                | pull images from OSBS, then push matching tag to quay, including extra tags if set
+  $0 --crw24 --nvr --log                                     | check images in brew; output NVRs can be copied to Errata; show links to Brew logs
+  $0 --crw24 --osbs                                          | check images in OSBS ( registry-proxy.engineering.redhat.com/rh-osbs )
+  $0 --crw24 --osbs --pushtoquay='2.4 latest'                | pull images from OSBS, then push matching tag to quay, including extra tags if set
 
 "
 	exit
@@ -265,13 +266,18 @@ for URLfrag in $CONTAINERS; do
 		URLfragtag="^- ${URLfragtag}"
 	fi
 
-	QUERY="$(echo $URL | sed -e "s#.\+\(registry.redhat.io\|registry.access.redhat.com\)/#skopeo inspect docker://${REGISTRYPRE}#g")"
+	ARCH_OVERRIDE="" # optional override so that an image without amd64 won't return a failure when searching on amd64 arch machines
+	if [[ ${URLfrag} == *"-openj9"* ]]; then
+		ARCH_OVERRIDE="--override-arch s390x"
+	fi
+
+	QUERY="$(echo $URL | sed -e "s#.\+\(registry.redhat.io\|registry.access.redhat.com\)/#skopeo inspect ${ARCH_OVERRIDE} docker://${REGISTRYPRE}#g")"
 	if [[ $VERBOSE -eq 1 ]]; then 
 		echo ""; echo "# $QUERY | jq .RepoTags | egrep -v \"\[|\]|latest\" | grep -F "${BASETAG}" | sed -e 's#.*\"\(.\+\)\",*#- \1#' | sort -V|tail -5"
 	fi
 	LATESTTAGs=$(${QUERY} 2>/dev/null | jq .RepoTags | egrep -v "\[|\]|latest" | grep -F "${BASETAG}" | sed -e 's#.*\"\(.\+\)\",*#- \1#' | sort -V | grep "${URLfragtag}"|egrep -v "\"|latest"|egrep -v "${EXCLUDES}"|sed -e "s#^-##" -e "s#[\n\r\ ]\+##g"|tail -${NUMTAGS})
 	if [[ ! ${LATESTTAGs} ]]; then # try again with -container suffix
-		QUERY="$(echo ${URL}-container | sed -e "s#.\+\(registry.redhat.io\|registry.access.redhat.com\)/#skopeo inspect docker://${REGISTRYPRE}#g")"
+		QUERY="$(echo ${URL}-container | sed -e "s#.\+\(registry.redhat.io\|registry.access.redhat.com\)/#skopeo inspect ${ARCH_OVERRIDE} docker://${REGISTRYPRE}#g")"
 		if [[ $VERBOSE -eq 1 ]]; then 
 			echo ""; echo "# $QUERY | jq .RepoTags | egrep -v \"\[|\]|latest\" | grep -F "${BASETAG}" | sed -e 's#.*\"\(.\+\)\",*#- \1#' | sort -V|tail -5" 
 		fi
