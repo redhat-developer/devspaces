@@ -298,7 +298,9 @@ fi
 # clean up diff dirs
 sudo rm -fr /tmp/root-local /tmp/root-local-before /tmp/''' + QUAY_PROJECT + '''-resources /tmp/''' + QUAY_PROJECT + '''-resources-before
 
-# NOTE: this image needs to build in Brew, then rebuild for Quay, so use QUAY_REBUILD_PATH instead of QUAY_REPO_PATHs variable
+# NOTE: this image needs to build in Brew (CRW <=2.3), then rebuild for Quay, so use QUAY_REBUILD_PATH instead of QUAY_REPO_PATHs variable
+# For CRW 2.4, don't rebuild (just copy to Quay) and use an ImageContentSourcePolicy file to resolve images
+# https://gitlab.cee.redhat.com/codeready-workspaces/knowledge-base/-/blob/master/installStagingCRW.md#create-imagecontentsourcepolicy
 if [[ ''' + FORCE_BUILD + ''' == "true" ]]; then hasChanged=1; fi
 if [[ ${hasChanged} -eq 1 ]]; then
   for QRP in ''' + QUAY_PROJECT + '''; do
@@ -309,7 +311,7 @@ token=CI_BUILD&\
 cause=${QUAY_REPO_PATH}+respin+by+${BUILD_TAG}&\
 GIT_BRANCH=''' + DWNSTM_BRANCH + '''&\
 GIT_PATHs=containers/codeready-workspaces-${QRP}&\
-QUAY_REBUILD_PATH=${QUAY_REPO_PATH}&\
+QUAY_RERO_PATHs=${QUAY_REPO_PATH}&\
 JOB_BRANCH=${CRW_VERSION}&\
 FORCE_BUILD=true&\
 SCRATCH=''' + SCRATCH + '''"
