@@ -124,7 +124,7 @@ codeready-workspaces/stacks-dotnet-rhel8 \
 "
 
 # regex pattern of container versions/names to exclude, eg., Beta1 (because version sort thinks 1.0.0.Beta1 > 1.0-12)
-EXCLUDES="\^" 
+EXCLUDES="latest" 
 
 QUIET=1 	# less output - omit container tag URLs
 VERBOSE=0	# more output
@@ -177,8 +177,8 @@ for key in "$@"; do
     '-r') REGISTRY="$2"; shift 1;;
     '--rhcc') REGISTRY="http://registry.redhat.io"; shift 0;;
     '--stage') REGISTRY="http://registry.stage.redhat.io"; shift 0;;
-    '--pulp-old') REGISTRY="http://brew-pulp-docker01.web.prod.ext.phx2.redhat.com:8888"; EXCLUDES="candidate|guest|containers"; shift 0;;
-    '-p'|'--osbs') REGISTRY="http://registry-proxy.engineering.redhat.com/rh-osbs"; EXCLUDES="candidate|guest|containers"; shift 0;;
+    '--pulp-old') REGISTRY="http://brew-pulp-docker01.web.prod.ext.phx2.redhat.com:8888"; EXCLUDES="latest|candidate|guest|containers"; shift 0;;
+    '-p'|'--osbs') REGISTRY="http://registry-proxy.engineering.redhat.com/rh-osbs"; EXCLUDES="latest|candidate|guest|containers"; shift 0;;
     '-d'|'--docker') REGISTRY="http://docker.io"; shift 0;;
            '--quay') REGISTRY="http://quay.io"; shift 0;;
            '--pushtoquay') PUSHTOQUAY=1; PUSHTOQUAYTAGS=""; shift 0;;
@@ -271,17 +271,18 @@ for URLfrag in $CONTAINERS; do
 		ARCH_OVERRIDE="--override-arch s390x"
 	fi
 
+	# shellcheck disable=SC2001
 	QUERY="$(echo $URL | sed -e "s#.\+\(registry.redhat.io\|registry.access.redhat.com\)/#skopeo inspect ${ARCH_OVERRIDE} docker://${REGISTRYPRE}#g")"
 	if [[ $VERBOSE -eq 1 ]]; then 
-		echo ""; echo "# $QUERY | jq .RepoTags | egrep -v \"\[|\]|latest\" | grep -F "${BASETAG}" | sed -e 's#.*\"\(.\+\)\",*#- \1#' | sort -V|tail -5"
+		      echo ""; echo "# $QUERY | jq -r .RepoTags[] | egrep -v '${EXCLUDES}' | grep -F '${BASETAG}' | sort -V | tail -5"
 	fi
-	LATESTTAGs=$(${QUERY} 2>/dev/null | jq .RepoTags | egrep -v "\[|\]|latest" | grep -F "${BASETAG}" | sed -e 's#.*\"\(.\+\)\",*#- \1#' | sort -V | grep "${URLfragtag}"|egrep -v "\"|latest"|egrep -v "${EXCLUDES}"|sed -e "s#^-##" -e "s#[\n\r\ ]\+##g"|tail -${NUMTAGS})
+	LATESTTAGs=$(${QUERY} 2>/dev/null | jq -r .RepoTags[] | egrep -v "${EXCLUDES}" | grep -F "${BASETAG}" | sort -V | tail -${NUMTAGS})
 	if [[ ! ${LATESTTAGs} ]]; then # try again with -container suffix
 		QUERY="$(echo ${URL}-container | sed -e "s#.\+\(registry.redhat.io\|registry.access.redhat.com\)/#skopeo inspect ${ARCH_OVERRIDE} docker://${REGISTRYPRE}#g")"
 		if [[ $VERBOSE -eq 1 ]]; then 
-			echo ""; echo "# $QUERY | jq .RepoTags | egrep -v \"\[|\]|latest\" | grep -F "${BASETAG}" | sed -e 's#.*\"\(.\+\)\",*#- \1#' | sort -V|tail -5" 
+			      echo ""; echo "# $QUERY | jq -r .RepoTags[] | egrep -v '${EXCLUDES}' | grep -F '${BASETAG}' sort -V | tail -5" 
 		fi
-		LATESTTAGs=$(${QUERY} 2>/dev/null | jq .RepoTags | egrep -v "\[|\]|latest" | grep -F "${BASETAG}" | sed -e 's#.*\"\(.\+\)\",*#- \1#' | sort -V | grep "${URLfragtag}"|egrep -v "\"|latest"|egrep -v "${EXCLUDES}"|sed -e "s#^-##" -e "s#[\n\r\ ]\+##g"|tail -${NUMTAGS})
+		LATESTTAGs=$(${QUERY} 2>/dev/null | jq -r .RepoTags[] | egrep -v "${EXCLUDES}" | grep -F "${BASETAG}" sort -V | tail -${NUMTAGS})
 	fi
 
 	if [[ ! ${LATESTTAGs} ]]; then
