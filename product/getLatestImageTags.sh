@@ -280,9 +280,9 @@ for URLfrag in $CONTAINERS; do
 	if [[ ! ${LATESTTAGs} ]]; then # try again with -container suffix
 		QUERY="$(echo ${URL}-container | sed -e "s#.\+\(registry.redhat.io\|registry.access.redhat.com\)/#skopeo inspect ${ARCH_OVERRIDE} docker://${REGISTRYPRE}#g")"
 		if [[ $VERBOSE -eq 1 ]]; then 
-			      echo ""; echo "# $QUERY | jq -r .RepoTags[] | egrep -v '${EXCLUDES}' | grep -F '${BASETAG}' sort -V | tail -5" 
+			      echo ""; echo "# $QUERY | jq -r .RepoTags[] | egrep -v '${EXCLUDES}' | grep -F '${BASETAG}' | sort -V | tail -5" 
 		fi
-		LATESTTAGs=$(${QUERY} 2>/dev/null | jq -r .RepoTags[] | egrep -v "${EXCLUDES}" | grep -F "${BASETAG}" sort -V | tail -${NUMTAGS})
+		LATESTTAGs=$(${QUERY} 2>/dev/null | jq -r .RepoTags[] | egrep -v "${EXCLUDES}" | grep -F "${BASETAG}" | sort -V | tail -${NUMTAGS})
 	fi
 
 	if [[ ! ${LATESTTAGs} ]]; then

@@ -299,7 +299,7 @@ fi
 sudo rm -fr /tmp/root-local /tmp/root-local-before /tmp/''' + QUAY_PROJECT + '''-resources /tmp/''' + QUAY_PROJECT + '''-resources-before
 
 # NOTE: this image needs to build in Brew (CRW <=2.3), then rebuild for Quay, so use QUAY_REBUILD_PATH instead of QUAY_REPO_PATHs variable
-# For CRW 2.4, don't rebuild (just copy to Quay) and use an ImageContentSourcePolicy file to resolve images
+# For CRW 2.4, do not rebuild (just copy to Quay) and use an ImageContentSourcePolicy file to resolve images
 # https://gitlab.cee.redhat.com/codeready-workspaces/knowledge-base/-/blob/master/installStagingCRW.md#create-imagecontentsourcepolicy
 if [[ ''' + FORCE_BUILD + ''' == "true" ]]; then hasChanged=1; fi
 if [[ ${hasChanged} -eq 1 ]]; then
