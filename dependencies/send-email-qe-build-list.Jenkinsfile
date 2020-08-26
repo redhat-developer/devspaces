@@ -72,8 +72,6 @@ timeout(120) {
                 currentBuild.result = 'FAILURE'
             } else {
 
-                getLatestImageTagsFlags = "--${MIDSTM_BRANCH}"
-
                 currentBuild.description=mailSubject
                 sh (
                     script: 'curl -sSLO https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/'+MIDSTM_BRANCH+'/product/getLatestImageTags.sh && chmod +x getLatestImageTags.sh',
