@@ -1,7 +1,7 @@
 #!/usr/bin/env groovy
 
 // PARAMETERS for this pipeline:
-// MIDSTM_BRANCH="crw-2.4-rhel-8"
+// MIDSTM_BRANCH="crw-2.y-rhel-8"
 
 def buildNode = "rhel7-releng" // node label
 
@@ -30,10 +30,11 @@ timeout(20) {
             submoduleCfg: [], 
             userRemoteConfigs: [[url: "https://github.com/redhat-developer/codeready-workspaces.git"]]])
 
-            CSV_VERSION = getCrwVersion(MIDSTM_BRANCH)
-            println "CSV_VERSION = '" + CSV_VERSION + "'"
-
             sh '''#!/bin/bash -xe
+
+# install yq, python w/ virtualenv, pip
+sudo yum -y install jq python3-six python3-pip python-virtualenv-api python-virtualenv-clone python-virtualenvwrapper python36-virtualenv epel-release
+sudo /usr/bin/python3 -m pip install --upgrade pip yq
 
 # bootstrapping: if keytab is lost, upload to 
 # https://codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/credentials/store/system/domain/_/
@@ -76,6 +77,9 @@ for mnt in RCMG; do
   if [[ $(file ${WORKSPACE}/${mnt}-ssh 2>&1) == *"Transport endpoint is not connected"* ]]; then fusermount -uz ${WORKSPACE}/${mnt}-ssh; fi
   if [[ ! -d ${WORKSPACE}/${mnt}-ssh/crw ]]; then  sshfs ${!mnt} ${WORKSPACE}/${mnt}-ssh; fi
 done
+
+CSV_VERSION="''' + getCSVVersion(MIDSTM_BRANCH) + '''"
+echo CSV_VERSION = ${CSV_VERSION}
 
 # copy files to rcm-guest
 ssh "${DESTHOST}" "cd /mnt/rcm-guest/staging/crw && mkdir -p CRW-''' + CSV_VERSION + '''/sources/containers CRW-''' + CSV_VERSION + '''/sources/vscode && ls -la . "
