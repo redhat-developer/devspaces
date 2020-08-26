@@ -1,7 +1,7 @@
 #!/usr/bin/env groovy
 
 // PARAMETERS for this pipeline:
-// getLatestImageTagsFlags="--crw24" # placeholder for flag to pass to getLatestImageTags.sh
+// MIDSTM_BRANCH="crw-2.4-rhel-8"
 // mailSubject  - subject to put on the email, eg., CRW 2.3.0.RC-mm-yy ready for QE
 // errataURL - URL for the errata, eg., https://errata.devel.redhat.com/errata/container/56923
 // unresolvedCriticalsBlockersURL - URL for unresolved blockers/criticals, eg., Unresolved criticals/blockers:
@@ -13,6 +13,15 @@
 // recipientOverride - if set, send mail to recipient(s) listed rather than default mailing lists
 
 import hudson.FilePath;
+
+@Field String CRW_VERSION_F = ""
+def String getCrwVersion(String MIDSTM_BRANCH) {
+  if (CRW_VERSION_F.equals("")) {
+    CRW_VERSION_F = sh(script: '''#!/bin/bash -xe
+    curl -sSLo- https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/''' + MIDSTM_BRANCH + '''/dependencies/VERSION''', returnStdout: true).trim()
+  }
+  return CRW_VERSION_F
+}
 
 def sendMail(mailSubject,mailBody) { // NEW_OSBS
     // # TOrecipients - comma and space separated list of recipient email addresses
@@ -55,19 +64,22 @@ timeout(120) {
         try { 
             stage "Fetch latest image tags and send email"
             cleanWs()
-            if (mailSubject.equals("CRW 2.3.0.tt-mm-yy ready for QE") || mailSubject.equals(""))
+            if (mailSubject.contains("CRW 2.y.0.tt-mm-yy ready for QE") || mailSubject.equals(""))
             {
                 doSendEmail="false"
                 errorOccurred = errorOccurred + 'Error: need to set an actual email subject. Failure!\n'
                 currentBuild.description="Invalid email subject!"
                 currentBuild.result = 'FAILURE'
             } else {
+
+                getLatestImageTagsFlags = "--${MIDSTM_BRANCH}"
+
                 currentBuild.description=mailSubject
                 sh (
-                    script: 'curl -sSLO https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/master/product/getLatestImageTags.sh && chmod +x getLatestImageTags.sh',
+                    script: 'curl -sSLO https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/'+MIDSTM_BRANCH+'/product/getLatestImageTags.sh && chmod +x getLatestImageTags.sh',
                     returnStdout: true).trim().split( '\n' )
                 sh (
-                    script: 'curl -sSLO https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/master/product/getTagForImage.sh && chmod +x getTagForImage.sh',
+                    script: 'curl -sSLO https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/'+MIDSTM_BRANCH+'/product/getTagForImage.sh && chmod +x getTagForImage.sh',
                     returnStdout: true).trim().split( '\n' )
                 def NEW_QUAY = ""
                 def NEW_OSBS = ""
@@ -160,11 +172,14 @@ timeout(120) {
                 def NEW_STG_L="";  NEW_STG.each  { line -> if (line?.trim()) { NEW_STG_L=NEW_STG_L + "* ${line}\n" } }
                 def NEW_NVR_L="";  NEW_NVR.each  { line -> if (line?.trim()) { NEW_NVR_L=NEW_NVR_L + "  ${line}\n" } } 
 
+                CRW_VERSION = getCrwVersion(MIDSTM_BRANCH)
+                println "CRW_VERSION = '" + CRW_VERSION + "'"
+
                 def mailBody = mailSubject + '''
 
 Latest crwctl builds:
 
-https://codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/crwctl_master/lastSuccessfulBuild/artifact/codeready-workspaces-chectl/dist/channels/
+https://codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/crwctl_''' + CRW_VERSION + '''/lastSuccessfulBuild/artifact/codeready-workspaces-chectl/dist/channels/
  - or -
 https://github.com/redhat-developer/codeready-workspaces-chectl/releases
 
