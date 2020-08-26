@@ -1,10 +1,18 @@
 #!/usr/bin/env groovy
 
 // PARAMETERS for this pipeline:
-// CSV_VERSION = 2.3.0
-// getLatestImageTagsFlags="--crw23" # placeholder for flag to pass to getLatestImageTags.sh
+// MIDSTM_BRANCH="crw-2.y-rhel-8"
 
 def buildNode = "rhel7-releng" // node label
+
+@Field String CSV_VERSION_F = ""
+def String getCSVVersion(String MIDSTM_BRANCH) {
+  if (CSV_VERSION_F.equals("")) {
+    CSV_VERSION_F = sh(script: '''#!/bin/bash -xe
+    curl -sSLo- https://raw.githubusercontent.com/redhat-developer/codeready-workspaces-operator/''' + MIDSTM_BRANCH + '''/manifests/codeready-workspaces.csv.yaml | yq -r .spec.version''', returnStdout: true).trim()
+  }
+  return CSV_VERSION_F
+}
 
 def MVN_FLAGS="-Dmaven.repo.local=.repository/ -V -B -e"
 
@@ -24,7 +32,7 @@ timeout(20) {
           withCredentials([string(credentialsId:'devstudio-release.token', variable: 'GITHUB_TOKEN'), 
             file(credentialsId: 'crw-build.keytab', variable: 'CRW_KEYTAB')]) {
             checkout([$class: 'GitSCM', 
-              branches: [[name: "master"]], 
+              branches: [[name: "${MIDSTM_BRANCH}" ]], 
               doGenerateSubmoduleConfigurations: false, 
               poll: true,
               extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: "crw"]], 
@@ -86,17 +94,20 @@ export KRB5CCNAME=/var/tmp/crw-build_ccache
 kinit "crw-build/codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com@REDHAT.COM" -kt ''' + CRW_KEYTAB + '''
 klist # verify working
 
+CSV_VERSION="''' + getCSVVersion(MIDSTM_BRANCH) + '''"
+echo CSV_VERSION = ${CSV_VERSION}
+
 # generate source files
-cd ${WORKSPACE}/crw/product/manifest/ && ./get-3rd-party-deps-manifests.sh ''' + getLatestImageTagsFlags + '''
+cd ${WORKSPACE}/crw/product/manifest/ && ./get-3rd-party-deps-manifests.sh -v ${CSV_VERSION} -b ''' + MIDSTM_BRANCH + '''
 
 # copy over the dir contents
-rsync -azrlt ${WORKSPACE}/''' + CSV_VERSION + '''/* ${WORKSPACE}/crw/product/manifest/''' + CSV_VERSION + '''/
+rsync -azrlt ${WORKSPACE}/${CSV_VERSION}/* ${WORKSPACE}/crw/product/manifest/${CSV_VERSION}/
 # sync the directory and delete from target if deleted from source
-rsync -azrlt --delete ${WORKSPACE}/''' + CSV_VERSION + '''/ ${WORKSPACE}/crw/product/manifest/''' + CSV_VERSION + '''/
-tree ${WORKSPACE}/crw/product/manifest/''' + CSV_VERSION + '''
+rsync -azrlt --delete ${WORKSPACE}/${CSV_VERSION}/ ${WORKSPACE}/crw/product/manifest/${CSV_VERSION}/
+tree ${WORKSPACE}/crw/product/manifest/${CSV_VERSION}
 
 # commit manifest files
-git checkout --track origin/master || true
+git checkout --track origin/''' + MIDSTM_BRANCH + ''' || true
 export GITHUB_TOKEN=''' + GITHUB_TOKEN + ''' # echo "''' + GITHUB_TOKEN + '''"
 git config user.email "nickboldt+devstudio-release@gmail.com"
 git config user.name "Red Hat Devstudio Release Bot"
@@ -108,9 +119,9 @@ git config --global hub.protocol https
 git remote set-url origin https://\$GITHUB_TOKEN:x-oauth-basic@github.com/redhat-developer/codeready-workspaces.git
 git remote -v
 
-git add ''' + CSV_VERSION + '''
-git commit -s -m "[prodsec] Update product security manifests for ''' + CSV_VERSION + '''" ''' + CSV_VERSION + '''
-git push origin master
+git add ${CSV_VERSION}
+git commit -s -m "[prodsec] Update product security manifests for ${CSV_VERSION}" ${CSV_VERSION}
+git push origin ''' + MIDSTM_BRANCH + '''
 
 '''
           }

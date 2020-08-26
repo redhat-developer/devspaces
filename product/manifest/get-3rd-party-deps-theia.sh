@@ -2,22 +2,32 @@
 
 # script to generate a manifest of all the 3rd party deps not built in OSBS, but built in Jenkins or imported from upstream community.
 
-MIDSTM_BRANCH="master"
+MIDSTM_BRANCH=""
+usage () 
+{
+    echo "Usage: $0 -b crw-2.y-rhel-8 -v 2.y.0"
+    exit
+}
+# commandline args
+while [[ "$#" -gt 0 ]]; do
+  case $1 in
+    '-b') MIDSTM_BRANCH="$2"; shift 1;;
+    '-v') CSV_VERSION="$2"; shift 1;;
+  esac
+  shift 1
+done
 
-# compute version from latest operator package.yaml, eg., 3.0
-# TODO when we switch to OCP 4.6 bundle format, extract this version from another place
-CSV_VERSION="$1"
+if [[ ! ${MIDSTM_BRANCH} ]]; then usage; fi
 if [[ ! ${CSV_VERSION} ]]; then 
-  CSV_VERSION=$(curl -sSLo - https://raw.githubusercontent.com/redhat-developer/codeready-workspaces-operator/${MIDSTM_BRANCH}/controller-manifests/codeready-workspaces.package.yaml | yq .channels[0].currentCSV -r | sed -r -e "s#crwoperator.v##")
+  CSV_VERSION=$(curl -sSLo - https://raw.githubusercontent.com/redhat-developer/codeready-workspaces-operator/${MIDSTM_BRANCH}/manifests/codeready-workspaces.csv.yaml | yq -r .spec.version)
 fi
-
-SCRIPT=$(readlink -f "$0"); SCRIPTPATH=$(dirname "$SCRIPT"); # echo $SCRIPTPATH
+CRW_VERSION=$(curl -sSLo - https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/${MIDSTM_BRANCH}/dependencies/VERSION)
 
 EXCLUDE_FILES="e2e|kubernetes"
 EXCLUDE_LINES="api.github.com|GITHUB_LIMIT|GITHUB_TOKEN|THEIA_GITHUB_REPO|.git$|.asc|/debian$|/debian/$|APKINDEX.tar.gz|get-pip|=http"
 EXCLUDE_LINES2="che:theia"
 
-cd /tmp
+cd /tmp || exit
 mkdir -p ${WORKSPACE}/${CSV_VERSION}/theia
 MANIFEST_FILE="${WORKSPACE}/${CSV_VERSION}/theia/manifest-theia.txt"
 LOG_FILE="${WORKSPACE}/${CSV_VERSION}/theia/manifest-theia_log.txt"
@@ -27,7 +37,7 @@ function log () {
 }
 
 rm -f ${MANIFEST_FILE} ${MANIFEST_FILE}.2 ${MANIFEST_FILE}.3 ${LOG_FILE}
-curl -sSL -o ${MANIFEST_FILE} https://codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/CRW_CI/view/Pipelines/job/crw-theia_master/lastSuccessfulBuild/consoleText
+curl -sSL -o ${MANIFEST_FILE} https://codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/CRW_CI/view/Pipelines/job/crw-theia-sources_${CRW_VERSION}/lastSuccessfulBuild/consoleText
 for d in $(cat ${MANIFEST_FILE} | egrep "https://|http://"); do 
 	echo $d | egrep "https://|http://" >> ${MANIFEST_FILE}.2
 	echo -n "."
@@ -41,7 +51,7 @@ rm -f ${MANIFEST_FILE}.2
 if [[ ! -d che-theia ]]; then 
 	git clone git@github.com:eclipse/che-theia.git
 else
-	cd che-theia; git pull origin master; cd ..
+	cd che-theia || exit; git pull origin ${MIDSTM_BRANCH}; cd ..
 fi
 
 Dockerfiles="$(find che-theia -name Dockerfile | egrep -v "${EXCLUDE_FILES}")"

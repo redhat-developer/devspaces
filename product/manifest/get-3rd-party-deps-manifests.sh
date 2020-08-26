@@ -1,30 +1,35 @@
 #!/bin/bash
 
 set -e
-MIDSTM_BRANCH="master"
+MIDSTM_BRANCH=""
 
 # script to generate a manifest of all the 3rd party deps not built in OSBS, but built in Jenkins or imported from upstream community.
+
+usage () 
+{
+    echo "Usage: $0 -b crw-2.y-rhel-8 -v 2.y.0"
+    exit
+}
 
 SCRIPT=$(readlink -f "$0"); SCRIPTPATH=$(dirname "$SCRIPT"); # echo $SCRIPTPATH
 phases=""
 # commandline args
-for key in "$@"; do
-  case $key in
-    '--crw'*) getLatestImageFlag="$1";;
+while [[ "$#" -gt 0 ]]; do
+  case $1 in
+    '-b') MIDSTM_BRANCH="$2"; shift 1;;
+    '-v') CSV_VERSION="$2"; shift 1;;
     *) phases="${phases} $1 ";;
   esac
   shift 1
 done
+
+cd /tmp || exit
+
+if [[ ! ${MIDSTM_BRANCH} ]]; then usage; fi
 if [[ ! ${phases} ]]; then phases=" 1 2 3 4 5 6 7 8 "; fi
 
-cd /tmp
-
-# compute version from latest operator package.yaml, eg., 2.3.0
-# TODO when we switch to OCP 4.6 bundle format, extract this version from another place
-CSV_VERSION="$1"
 if [[ ! ${CSV_VERSION} ]]; then 
-MIDSTM_BRANCH="master"
-  CSV_VERSION=$(curl -sSLo - https://raw.githubusercontent.com/redhat-developer/codeready-workspaces-operator/${MIDSTM_BRANCH}/controller-manifests/codeready-workspaces.package.yaml | yq .channels[0].currentCSV -r | sed -r -e "s#crwoperator.v##")
+  CSV_VERSION=$(curl -sSLo - https://raw.githubusercontent.com/redhat-developer/codeready-workspaces-operator/${MIDSTM_BRANCH}/manifests/codeready-workspaces.csv.yaml | yq -r .spec.version)
 fi
 
 CRW_BRANCH_TAG=${CSV_VERSION}.GA 
@@ -53,8 +58,9 @@ function getBashVars () {
 	# parse the specific file and export the correct variables
 	pushd /tmp/codeready-workspaces-deprecated >/dev/null || exit 1
 		for p in ${dir}/build.sh; do 
-			egrep "export " $p | egrep -v "SCRIPT_DIR" | sed -r -e "s@#.+@@g" > ${p}.tmp
-			. ${p}.tmp && rm -f ${p}.tmp
+			egrep "export " $p | egrep -v "SCRIPT_DIR" | sed -r -e "s@#.+@@g" > "${p}.tmp"
+			# shellcheck disable=SC1090
+			. "${p}.tmp" && rm -f ${p}.tmp
 		done
 	popd >/dev/null || exit 1
 }
@@ -144,8 +150,8 @@ if [[ ${phases} == *"1"* ]]; then
 		fi
 		# echo $containerName
 		log ""
-		log "== ${d} (crw-2.2-rhel-8) =="
-		logDockerDetails http://pkgs.devel.redhat.com/cgit/containers/${d}/plain/Dockerfile?h=crw-2.2-rhel-8 "containers/${containerName}:${CSV_VERSION}/"
+		log "== ${d} (${MIDSTM_BRANCH}) =="
+		logDockerDetails http://pkgs.devel.redhat.com/cgit/containers/${d}/plain/Dockerfile?h=${MIDSTM_BRANCH} "containers/${containerName}:${CSV_VERSION}/"
 	done
 	bth ""
 
@@ -359,7 +365,7 @@ if [[ ${phases} == *"6"* ]]; then
 	log""
 	log "6. Collect RPM deps"
 	cd /tmp
-	${SCRIPTPATH}/${0/manifests/rpms} -v "${CSV_VERSION}" "${getLatestImageFlag}"
+	${SCRIPTPATH}/${0/manifests/rpms} -v "${CSV_VERSION}" -b "${MIDSTM_BRANCH}"
 fi
 
 ##################################
@@ -369,7 +375,7 @@ if [[ ${phases} == *"7"* ]]; then
 	log "7. Collect MVN deps"
 	log ""
 	cd /tmp
-	${SCRIPTPATH}/${0/manifests/mvn} "${CSV_VERSION}"
+	${SCRIPTPATH}/${0/manifests/mvn} -v "${CSV_VERSION}" -b "${MIDSTM_BRANCH}"
 fi
 
 ##################################
@@ -379,7 +385,7 @@ if [[ ${phases} == *"8"* ]]; then
 	log "8. Collect Theia deps"
 	log ""
 	cd /tmp
-	${SCRIPTPATH}/${0/manifests/theia} "${CSV_VERSION}"
+	${SCRIPTPATH}/${0/manifests/theia} -v "${CSV_VERSION}" -b "${MIDSTM_BRANCH}"
 fi
 
 ##################################

@@ -2,11 +2,8 @@
 
 # script to generate a manifest of all the rpms installed into the containers
 
-# candidateTag="crw-2.0-rhel-8-candidate" # 2.0, 2.1
-MIDSTM_BRANCH="master"
-candidateTag="crw-2.2-rhel-8-container-candidate" # 2.3
+MIDSTM_BRANCH=""
 arches="x86_64" # TODO add s390x and ppc64le eventually
-getLatestImageTagsFlags="" # placeholder for a --crw23 flag to pass to getLatestImageTags.sh
 allNVRs=""
 MATCH=""
 quiet=0
@@ -14,6 +11,8 @@ HELP="
 
 How to use this script:
 NVR1 NVR2 ...   | list of NVRs to query. If omitted, generate list from ${candidateTag}
+-b              | branch of redhat-developer/codeready-workspaces-operator, eg., crw-2.y-rhel-8
+-v              | CSV version, eg., 2.y.0; if not set, will be computed from codeready-workspaces.csv.yaml using branch
 -h,     --help  | show this help menu
 -g \"regex\"      | if provided, grep resulting rpm logs for matching regex
 
@@ -27,28 +26,29 @@ $0 # to generate overall log for all latest NVRs
 while [[ "$#" -gt 0 ]]; do
   case $1 in
     '-h'|'--help') echo -e "$HELP"; exit 1;;
-    '--crw'*) getLatestImageTagsFlags="$1"; shift 1;;
-    '-a'|'--arches') arches="$2";  shift 2;; 
+    '-b')  MIDSTM_BRANCH="$2";     shift 2;;
     '-v')    CSV_VERSION="$2";     shift 2;;
+    '-a'|'--arches') arches="$2";  shift 2;; 
     '-g')          MATCH="$2";     shift 2;;
     '-q')          quiet=1;        shift 1;;
     *)  allNVRs="${allNVRs} $1"; shift 1;;
   esac
 done
+if [[ ! ${MIDSTM_BRANCH} ]]; then usage; fi
 
-# compute version from latest operator package.yaml, eg., 2.3.0
-# TODO when we switch to OCP 4.6 bundle format, extract this version from another place
+candidateTag="${MIDSTM_BRANCH}-container-candidate"
+
 if [[ ! ${CSV_VERSION} ]]; then 
-  CSV_VERSION=$(curl -sSLo - https://raw.githubusercontent.com/redhat-developer/codeready-workspaces-operator/${MIDSTM_BRANCH}/controller-manifests/codeready-workspaces.package.yaml | yq .channels[0].currentCSV -r | sed -r -e "s#crwoperator.v##")
+  CSV_VERSION=$(curl -sSLo - https://raw.githubusercontent.com/redhat-developer/codeready-workspaces-operator/${MIDSTM_BRANCH}/manifests/codeready-workspaces.csv.yaml | yq -r .spec.version)
 fi
 CRW_VERSION=$(echo $CSV_VERSION | sed -r -e "s#([0-9]+\.[0-9]+)[^0-9]+.+#\1#") # trim the x.y part from the x.y.z
 
-cd /tmp
-mkdir -p ${WORKSPACE}/${CSV_VERSION}/rpms
+cd /tmp || exit
+mkdir -p "${WORKSPACE}/${CSV_VERSION}/rpms"
 MANIFEST_FILE="${WORKSPACE}/${CSV_VERSION}/rpms/manifest-rpms.txt"
 MANIFEST_UNIQ_FILE="${WORKSPACE}/${CSV_VERSION}/rpms/manifest-rpms_uniq.txt"
 LOG_FILE="${WORKSPACE}/${CSV_VERSION}/rpms/manifest-rpms_log.txt"
-rm -fr ${MANIFEST_FILE} ${LOG_FILE}
+rm -fr "${MANIFEST_FILE}" "${LOG_FILE}"
 
 function log () {
 	if [[ $quiet -eq 0 ]]; then 
@@ -64,19 +64,20 @@ function bth () {
 }
 
 function loadNVRs() {
-	pushd /tmp >/dev/null
+	pushd /tmp >/dev/null || exit
 	curl -sSLO https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/${MIDSTM_BRANCH}/product/getLatestImageTags.sh
 	chmod +x getLatestImageTags.sh
-	mnf "Latest image list ${getLatestImageTagsFlags}"
-	/tmp/getLatestImageTags.sh ${getLatestImageTagsFlags} --nvr | tee /tmp/getLatestImageTags.sh.nvrs.txt
+	mnf "Latest image list for ${MIDSTM_BRANCH}"
+	/tmp/getLatestImageTags.sh --${MIDSTM_BRANCH} --nvr | tee /tmp/getLatestImageTags.sh.nvrs.txt
 	loadNVRs_return="$(cat /tmp/getLatestImageTags.sh.nvrs.txt)"
-	popd >/dev/null
+	popd >/dev/null || exit
 }
 
 function loadNVRlog() {
 	NVR="$1"
 	MANIFEST_FILE2="$2"
 	ARCH="$3"
+	# shellcheck disable=SC2001
 	URL=$(echo $NVR | sed -e "s#\(.\+\(-container\|-rhel8\)\)-\([0-9.]\+\)-\([0-9.]\+\)#http://download.eng.bos.redhat.com/brewroot/packages/\1/\3/\4/data/logs/${ARCH}-build.log#")
 	# log ""
 	log "   ${URL}"
@@ -99,7 +100,9 @@ function loadNVRlog() {
 			# rh-maven35-maven-lib.noarch                               1:3.5.0-4.3.el7                @rhel-server-rhscl-7-rpms          
 			# NVR = codeready-workspaces-stacks-python-container-2.0-8 (NVR notation)
 			# want  codeready-workspaces-stacks-python-container:2.0-8 (prod:version notation)
+			# shellcheck disable=SC2001,SC2086
 			echo "${NVR/-container-/-container:}/$(echo $line | sed -e "s#\(.\+\)[\ \t]\+\(.\+\)[\ \t]\+\@.\+#\1-\2#g")" >> ${MANIFEST_FILE}
+			# shellcheck disable=SC2001,SC2086
 			echo "${NVR/-container-/-container:}/$(echo $line | sed -e "s#\(.\+\)[\ \t]\+\(.\+\)[\ \t]\+\@.\+#\1-\2#g")" >> ${MANIFEST_FILE2}
 		fi
 	done < "$input"
