@@ -13,7 +13,7 @@ phases=" 1 2 3 "
 
 usage () 
 {
-    echo "Usage: $0 -b crw-2.4-rhel-8 [--clean] [--debug]"
+    echo "Usage: $0 -b crw-2.y-rhel-8 [--clean] [--debug]"
     exit
 }
 
@@ -24,15 +24,16 @@ cleanup () {
 }
 
 # commandline args
-for key in "$@"; do
-  case $key in
-    '-b') MIDSTM_BRANCH="$2";;
+while [[ "$#" -gt 0 ]]; do
+  case $1 in
+    '-b') MIDSTM_BRANCH="$2"; shift 1;;
     '--clean') cleanup;;
     '--debug') DEBUG=1;;
     *) phases="${phases} $1 ";;
   esac
   shift 1
 done
+
 if [[ ! ${MIDSTM_BRANCH} ]]; then usage; fi
 if [[ ! ${phases} ]]; then phases=" 1 2 3 "; fi
 if [[ ! ${WORKSPACE} ]]; then WORKSPACE=/tmp; fi
@@ -64,6 +65,7 @@ maketarball ()
     rhpkg sources
 
     # unpack 3rd party dep tarballs
+    # shellcheck disable=SC2044
     for t in $(find . -name "*.tar.gz" -o -name "*.tgz"); do
         subfolder=${t//.\/codeready-workspaces-/}
         subfolder=${subfolder//stacks-language-servers-dependencies-/}
@@ -184,7 +186,7 @@ if [[ ${phases} == *"3"* ]]; then
                 version=${version%-${versionSHA}}
                 if [[ ${DEBUG} -eq 1 ]]; then 
                     echo
-                    if [[ ${version} != ${versionSHA} ]]; then
+                    if [[ "${version}" != "${versionSHA}" ]]; then
                         echo "Check dl.jb.o sources ${d} for ${version} or ${versionSHA}"
                     else
                         echo "Check dl.jb.o sources ${d} for ${version}"
@@ -209,7 +211,7 @@ if [[ ${phases} == *"3"* ]]; then
                                 curl -sSLO ${d}${z}
                             else
                                 if [[ ${DEBUG} -eq 1 ]]; then 
-                                    if [[ ${version} != ${versionSHA} ]]; then
+                                    if [[ "${version}" != "${versionSHA}" ]]; then
                                         echo "              Skip ${z} - no match for ${version} or ${versionSHA}"
                                     else
                                         echo "              Skip ${z} - no match for ${version}"
