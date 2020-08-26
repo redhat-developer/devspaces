@@ -103,7 +103,7 @@ commitChanges() {
             PUSH_TRY="$(git push origin "${BRANCH}" 2>&1 || git push origin "${PR_BRANCH}" || true)"
             # shellcheck disable=SC2181
             if [[ $? -gt 0 ]] || [[ $PUSH_TRY == *"protected branch hook declined"* ]]; then
-                # create pull request for master branch, as branch is restricted
+                # if cannot push directly, create pull request for ${BRANCH}
                 git branch "${PR_BRANCH}" || true
                 git checkout "${PR_BRANCH}" || true
                 git pull origin "${PR_BRANCH}" || true
@@ -113,7 +113,7 @@ commitChanges() {
                     # collect additional commits in the same PR if it already exists 
                     { hub pull-request -f -m "${lastCommitComment}
 
-${lastCommitComment}" -b "${BRANCH}" -h "${PR_BRANCH}" "${OPENBROWSERFLAG}"; } || { git merge master; git push origin "${PR_BRANCH}"; }
+${lastCommitComment}" -b "${BRANCH}" -h "${PR_BRANCH}" "${OPENBROWSERFLAG}"; } || { git merge ${BRANCH}; git push origin "${PR_BRANCH}"; }
                 else
                     echo "# Warning: hub is required to generate pull requests. See https://hub.github.com/ to install it."
                     echo -n "# To manually create a pull request, go here: "
