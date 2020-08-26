@@ -169,7 +169,7 @@ CONTAINERS=""
 #   case $1 in
 for key in "$@"; do
   case $key in
-    '--crw24') CONTAINERS="${CRW24_CONTAINERS_RHCC}"; candidateTag="crw-2.4-rhel-8-container-candidate"; BASETAG=2.4; shift 0;; 
+    '--crw24'|'--crw-2.4-rhel-8') CONTAINERS="${CRW24_CONTAINERS_RHCC}"; candidateTag="crw-2.4-rhel-8-container-candidate"; BASETAG=2.4; shift 0;; 
     '--crw23') CONTAINERS="${CRW22_CONTAINERS_RHCC}"; candidateTag="crw-2.2-rhel-8-container-candidate"; BASETAG=2.3; shift 0;; 
     '--crw22') CONTAINERS="${CRW22_CONTAINERS_RHCC}"; candidateTag="crw-2.2-rhel-8-container-candidate"; BASETAG=2.2; shift 0;;
     '-c') CONTAINERS="${CONTAINERS} $2"; shift 1;;
@@ -189,6 +189,7 @@ for key in "$@"; do
     '-n') NUMTAGS="$2"; shift 1;;
     '--dockerfile') SHOWHISTORY=1; shift 0;;
     '--tag') BASETAG="$1"; shift 1;; 
+    '--candidatetag') candidateTag="$1"; shift 1;; 
     '--nvr') if [[ ! $CONTAINERS ]]; then CONTAINERS="${CRW24_CONTAINERS_OSBS}"; fi; SHOWNVR=1; shift 0;;
     '--tagonly') TAGONLY=1; shift 0;;
     '--log') SHOWLOG=1; shift 0;;
