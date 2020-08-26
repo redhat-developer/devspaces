@@ -167,13 +167,13 @@ timeout(120) {
                         echo currentBuild.description
                         echo DIFF_LATEST_IMAGES_WITH_REGISTRY
                         
-                        parallel crw-devfileregistry: {
+                        parallel devfileregistry: {
                             build(
                                 job: 'crw-devfileregistry_' + CRW_VERSION, 
                                 wait: true, propagate: true,
                                 parameters: [[$class: 'BooleanParameterValue', name: 'FORCE_BUILD', value: true]]
                             )
-                        }, crw-pluginregistry: {
+                        }, pluginregistry: {
                             build(
                                 job: 'crw-pluginregistry_' + CRW_VERSION, 
                                 wait: true, propagate: true,
