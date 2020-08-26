@@ -23,7 +23,6 @@ components:
       - name: m2
         containerPath: /home/jboss/.m2
     alias: maven
-    # image: quay.io/crw/plugin-java8-rhel8:2.3
     image: registry.redhat.io/codeready-workspaces/plugin-java8-rhel8:2.4
     env:
       - value: >-

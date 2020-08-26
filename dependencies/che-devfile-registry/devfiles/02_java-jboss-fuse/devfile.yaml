@@ -1,4 +1,4 @@
----
+ ---
 apiVersion: 1.0.0
 metadata:
   generateName: java-jboss-fuse-
@@ -22,7 +22,6 @@ components:
   -
     type: dockerimage
     alias: maven
-    # image: quay.io/crw/plugin-java8-rhel8:2.3
     image: registry.redhat.io/codeready-workspaces/plugin-java8-rhel8:2.4
     env:
       - name: JAVA_OPTS
