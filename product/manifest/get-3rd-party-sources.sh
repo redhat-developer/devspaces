@@ -6,11 +6,16 @@ set -e
 
 # TODO: make this script ALSO fetch the tarballs from Jenkins so we can do historical sources
 
-getLatestImageTagsFlags="" # placeholder for a --crw23 flag to pass to getLatestImageTags.sh
-CRW_BRANCH="crw-2.2-rhel-8"
+MIDSTM_BRANCH=""
 PKGS_DEVEL_USER="crw-build"
 DEBUG=0
 phases=" 1 2 3 "
+
+usage () 
+{
+    echo "Usage: $0 -b crw-2.4-rhel-8 [--clean] [--debug]"
+    exit
+}
 
 # a more extensive clean than the usual
 cleanup () {
@@ -21,13 +26,14 @@ cleanup () {
 # commandline args
 for key in "$@"; do
   case $key in
+    '-b') MIDSTM_BRANCH="$2";;
     '--clean') cleanup;;
     '--debug') DEBUG=1;;
-    '--crw'*) getLatestImageTagsFlags="$1";;
     *) phases="${phases} $1 ";;
   esac
   shift 1
 done
+if [[ ! ${MIDSTM_BRANCH} ]]; then usage; fi
 if [[ ! ${phases} ]]; then phases=" 1 2 3 "; fi
 if [[ ! ${WORKSPACE} ]]; then WORKSPACE=/tmp; fi
 
@@ -51,8 +57,8 @@ maketarball ()
 
     # update to latest
     # git clean -f
-    # git checkout ${CRW_BRANCH} -q
-    git pull origin ${CRW_BRANCH} -q
+    # git checkout ${MIDSTM_BRANCH} -q
+    git pull origin ${MIDSTM_BRANCH} -q
 
     # pull tarballs
     rhpkg sources
@@ -95,8 +101,8 @@ if [[ ${phases} == *"1"* ]]; then
 
     # check NVR for a matching tarball or tarballs
     if [[ ! -f ${WORKSPACE}/NVRs.txt ]]; then
-        mnf "Latest image list ${getLatestImageTagsFlags}"
-        ../getLatestImageTags.sh ${getLatestImageTagsFlags} --nvr | tee ${WORKSPACE}/NVRs.txt
+        mnf "Latest image list --${MIDSTM_BRANCH}"
+        ../getLatestImageTags.sh --${MIDSTM_BRANCH} --nvr | tee ${WORKSPACE}/NVRs.txt
         mnf ""
     fi
     mnf "Sorted image list"
@@ -108,9 +114,9 @@ if [[ ${phases} == *"1"* ]]; then
         for d in $(cat ${WORKSPACE}/NVRs.txt | sort); do
             NVR=${d}
             SOURCES_DIR=${d%-container-*}; SOURCES_DIR=${SOURCES_DIR/-rhel8}; SOURCES_DIR=${SOURCES_DIR/-server}; # echo $SOURCES_DIR
-            echo "git clone ${SOURCES_DIR} from ${CRW_BRANCH} ..."
+            echo "git clone ${SOURCES_DIR} from ${MIDSTM_BRANCH} ..."
             git clone -q ssh://${PKGS_DEVEL_USER}@pkgs.devel.redhat.com/containers/${SOURCES_DIR} ${SOURCES_DIR} || true
-            cd ${SOURCES_DIR} && git checkout ${CRW_BRANCH} -q && cd ..
+            cd ${SOURCES_DIR} && git checkout ${MIDSTM_BRANCH} -q && cd ..
             if [[ -d ${SOURCES_DIR} ]]; then
                 maketarball ${SOURCES_DIR} ${NVR}
             else

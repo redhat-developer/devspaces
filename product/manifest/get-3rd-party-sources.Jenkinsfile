@@ -1,10 +1,18 @@
 #!/usr/bin/env groovy
 
 // PARAMETERS for this pipeline:
-// CSV_VERSION = 2.3.0
-// getLatestImageTagsFlags="--crw23" # placeholder for flag to pass to getLatestImageTags.sh
+// MIDSTM_BRANCH="crw-2.4-rhel-8"
 
-def buildNode = "rhel7-releng" // slave label
+def buildNode = "rhel7-releng" // node label
+
+@Field String CSV_VERSION_F = ""
+def String getCSVVersion(String MIDSTM_BRANCH) {
+  if (CSV_VERSION_F.equals("")) {
+    CSV_VERSION_F = sh(script: '''#!/bin/bash -xe
+    curl -sSLo- https://raw.githubusercontent.com/redhat-developer/codeready-workspaces-operator/''' + MIDSTM_BRANCH + '''/manifests/codeready-workspaces.csv.yaml | yq -r .spec.version''', returnStdout: true).trim()
+  }
+  return CSV_VERSION_F
+}
 
 timeout(20) {
     node("${buildNode}"){
@@ -15,12 +23,15 @@ timeout(20) {
 	      withCredentials([string(credentialsId:'devstudio-release.token', variable: 'GITHUB_TOKEN'), 
           file(credentialsId: 'crw-build.keytab', variable: 'CRW_KEYTAB')]) {
           checkout([$class: 'GitSCM', 
-            branches: [[name: "master"]], 
+            branches: [[name: "${MIDSTM_BRANCH}" ]], 
             doGenerateSubmoduleConfigurations: false, 
             poll: true,
             extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: "crw"]], 
             submoduleCfg: [], 
             userRemoteConfigs: [[url: "https://github.com/redhat-developer/codeready-workspaces.git"]]])
+
+            CSV_VERSION = getCrwVersion(MIDSTM_BRANCH)
+            println "CSV_VERSION = '" + CSV_VERSION + "'"
 
             sh '''#!/bin/bash -xe
 
@@ -54,7 +65,7 @@ kinit "crw-build/codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com@RE
 klist # verify working
 
 # generate source files
-cd ${WORKSPACE}/crw/product/manifest/ && ./get-3rd-party-sources.sh --clean ''' + getLatestImageTagsFlags + '''
+cd ${WORKSPACE}/crw/product/manifest/ && ./get-3rd-party-sources.sh --clean -b ''' + MIDSTM_BRANCH + '''
 
 # set up sshfs mount
 DESTHOST="crw-build/codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com@rcm-guest.app.eng.bos.redhat.com"
