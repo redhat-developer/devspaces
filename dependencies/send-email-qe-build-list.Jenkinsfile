@@ -87,14 +87,14 @@ timeout(120) {
                 def NEW_NVR = ""
                 parallel quay_check: {
                     NEW_QUAY = sh (
-                        script: './getLatestImageTags.sh ${getLatestImageTagsFlags} --quay | tee ${WORKSPACE}/LATEST_IMAGES.quay',
+                        script: "./getLatestImageTags.sh --${MIDSTM_BRANCH} --quay | tee ${WORKSPACE}/LATEST_IMAGES.quay",
                         returnStdout: true).trim().split( '\n' )
                         errorOccurred = checkFailure(NEW_QUAY, "Quay", errorOccurred)
                 }, 
                 osbs_check: {
                     if (doOSBS.equals("true")) {
                         NEW_OSBS = sh (
-                        script: './getLatestImageTags.sh ${getLatestImageTagsFlags} --osbs | tee ${WORKSPACE}/LATEST_IMAGES.osbs',
+                        script: "./getLatestImageTags.sh --${MIDSTM_BRANCH} --osbs | tee ${WORKSPACE}/LATEST_IMAGES.osbs",
                         returnStdout: true).trim().split( '\n' )
                         errorOccurred = checkFailure(NEW_OSBS, "OSBS", errorOccurred)
                     }
@@ -102,14 +102,14 @@ timeout(120) {
                 stg_check: {
                     if (doStage.equals("true")) {
                         NEW_STG = sh (
-                        script: './getLatestImageTags.sh ${getLatestImageTagsFlags} --stage | tee ${WORKSPACE}/LATEST_IMAGES.stage',
+                        script: "./getLatestImageTags.sh --${MIDSTM_BRANCH} --stage | tee ${WORKSPACE}/LATEST_IMAGES.stage",
                         returnStdout: true).trim().split( '\n' )
                         errorOccurred = checkFailure(NEW_STG, "Stage", errorOccurred)
                     }
                 }, 
                 nvr_check: {
                     NEW_NVR = sh (
-                        script: './getLatestImageTags.sh ${getLatestImageTagsFlags} --nvr | tee ${WORKSPACE}/LATEST_IMAGES.nvr',
+                        script: "./getLatestImageTags.sh --${MIDSTM_BRANCH} --nvr | tee ${WORKSPACE}/LATEST_IMAGES.nvr",
                         returnStdout: true).trim().split( '\n' )
                 }
 
@@ -155,14 +155,14 @@ timeout(120) {
                     currentBuild.result = 'FAILURE'
 
                     // trigger a push of latest images in Brew to Quay
-                    build job: 'push-latest-containers-to-quay', 
-                        parameters: [[$class: 'StringParameterValue', name: 'getLatestImageTagsFlags', value: getLatestImageTagsFlags]],
+                    build job: "push-latest-containers-to-quay_${MIDSTM_BRANCH}", 
+                        parameters: [[$class: 'StringParameterValue', name: 'MIDSTM_BRANCH', value: "${MIDSTM_BRANCH}"]],
                         propagate: false,
                         wait: true
 
                     // trigger an update of metadata and registries
-                    build job: 'update-digests-in-registries-and-metadata',
-                        parameters: [[$class: 'StringParameterValue', name: 'getLatestImageTagsFlags', value: getLatestImageTagsFlags]],
+                    build job: "update-digests-in-registries-and-metadata_${MIDSTM_BRANCH}",
+                        parameters: [[$class: 'StringParameterValue', name: 'MIDSTM_BRANCH', value: "${MIDSTM_BRANCH}"]],
                         propagate: false,
                         wait: true
                 }
