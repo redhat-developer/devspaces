@@ -3,6 +3,22 @@
 // PARAMETERS for this pipeline:
 // MIDSTM_BRANCH = "crw-2.4-rhel-8"
 
+def installSkopeo(String skopeo_version)
+{
+sh '''#!/bin/bash -xe
+pushd /tmp >/dev/null
+  rm -f /tmp/skopeo*.rpm /tmp/containers-common*.rpm
+  skopeo_URL=https://rpmfind.net/linux/centos/8-stream/AppStream/x86_64/os/Packages
+  curl -sSLO ${skopeo_URL}/containers-common-''' + skopeo_version + '''.rpm
+  curl -sSLO ${skopeo_URL}/skopeo-''' + skopeo_version + '''.rpm
+  sudo yum remove -y skopeo containers-common || true
+  sudo yum install -y /tmp/skopeo*.rpm /tmp/containers-common*.rpm || true
+  rm -f /tmp/skopeo*.rpm /tmp/containers-common*.rpm
+popd >/dev/null
+skopeo --version
+'''
+}
+
 def errorOccurred = false
 timeout(120) {
     node("rhel7-releng"){ 
@@ -23,20 +39,7 @@ timeout(120) {
                         submoduleCfg: [], 
                         userRemoteConfigs: [[url: "https://github.com/redhat-developer/codeready-workspaces.git"]]])
 
-                # install skopeo 1.1
-                sh '''#!/bin/bash -xe
-pushd /tmp >/dev/null
-  rm -f /tmp/skopeo*.rpm /tmp/containers-common*.rpm
-  skopeo_version=1.1.0-1.module_el8.3.0+432+2e9cbcd8.x86_64.rpm
-  skopeo_URL=https://rpmfind.net/linux/centos/8-stream/AppStream/x86_64/os/Packages
-  curl -sSLO ${skopeo_URL}/containers-common-${skopeo_version}
-  curl -sSLO ${skopeo_URL}/skopeo-${skopeo_version}
-  sudo yum remove -y skopeo containers-common || true
-  sudo yum install -y /tmp/skopeo*.rpm /tmp/containers-common*.rpm || true
-  rm -f /tmp/skopeo*.rpm /tmp/containers-common*.rpm
-popd >/dev/null
-skopeo --version && jq --version
-'''
+                installSkopeo("1.1.0-1.module_el8.3.0+432+2e9cbcd8.x86_64")
 
                 def NEW_IMAGES = sh (
                     script: 'cd ${WORKSPACE}/crw/product && ./getLatestImageTags.sh --${MIDSTM_BRANCH} --quay | sort | uniq | grep quay | \

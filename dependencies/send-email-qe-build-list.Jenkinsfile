@@ -23,6 +23,22 @@ def String getCrwVersion(String MIDSTM_BRANCH) {
   return CRW_VERSION_F
 }
 
+def installSkopeo(String skopeo_version)
+{
+sh '''#!/bin/bash -xe
+pushd /tmp >/dev/null
+  rm -f /tmp/skopeo*.rpm /tmp/containers-common*.rpm
+  skopeo_URL=https://rpmfind.net/linux/centos/8-stream/AppStream/x86_64/os/Packages
+  curl -sSLO ${skopeo_URL}/containers-common-''' + skopeo_version + '''.rpm
+  curl -sSLO ${skopeo_URL}/skopeo-''' + skopeo_version + '''.rpm
+  sudo yum remove -y skopeo containers-common || true
+  sudo yum install -y /tmp/skopeo*.rpm /tmp/containers-common*.rpm || true
+  rm -f /tmp/skopeo*.rpm /tmp/containers-common*.rpm
+popd >/dev/null
+skopeo --version
+'''
+}
+
 def sendMail(mailSubject,mailBody) { // NEW_OSBS
     // # TOrecipients - comma and space separated list of recipient email addresses
     // # CCrecipients - comma and space separated list of recipient email addresses
@@ -64,6 +80,7 @@ timeout(120) {
         try { 
             stage "Fetch latest image tags and send email"
             cleanWs()
+            installSkopeo("1.1.0-1.module_el8.3.0+432+2e9cbcd8.x86_64")
             if (mailSubject.contains("CRW 2.y.0.tt-mm-yy ready for QE") || mailSubject.equals(""))
             {
                 doSendEmail="false"
@@ -71,7 +88,6 @@ timeout(120) {
                 currentBuild.description="Invalid email subject!"
                 currentBuild.result = 'FAILURE'
             } else {
-
                 currentBuild.description=mailSubject
                 sh (
                     script: 'curl -sSLO https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/'+MIDSTM_BRANCH+'/product/getLatestImageTags.sh && chmod +x getLatestImageTags.sh',
