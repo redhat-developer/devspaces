@@ -12,8 +12,8 @@
 // doStage - boolean: if checked, include RHCC stage images in email
 // recipientOverride - if set, send mail to recipient(s) listed rather than default mailing lists
 
-import hudson.FilePath;
-
+import hudson.FilePath
+import groovy.transform.Field
 @Field String CRW_VERSION_F = ""
 def String getCrwVersion(String MIDSTM_BRANCH) {
   if (CRW_VERSION_F.equals("")) {
