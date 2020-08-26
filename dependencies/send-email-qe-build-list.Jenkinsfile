@@ -150,7 +150,14 @@ timeout(120) {
                 archiveArtifacts fingerprint: false, artifacts:"LATEST_IMAGES*"
                 if (!DIFF_LATEST_IMAGES_QUAY_V_NVR.equals("") || !DIFF_LATEST_IMAGES_QUAY_V_OSBS.equals("") || !DIFF_LATEST_IMAGES_QUAY_V_STG.equals("")) {
                     // error! quay and nvr versions do not match
-                    errorOccurred = errorOccurred + 'Error: Quay & Brew image versions not aligned. Failure!\n'
+                    errorOccurred = errorOccurred + 'Error: Quay & Brew image versions not aligned:\n' + 
+                    "=================== QUAY v NVR ===================\n" + 
+                    DIFF_LATEST_IMAGES_QUAY_V_NVR + '\n' + 
+                    "=================== QUAY v OSBS ===================\n" + 
+                    DIFF_LATEST_IMAGES_QUAY_V_OSBS + '\n' + 
+                    "=================== QUAY v STG ===================\n" + 
+                    DIFF_LATEST_IMAGES_QUAY_V_STG + '\n' + 
+                    ' Failure!\n'
                     currentBuild.description="Quay/Brew version mismatch!"
                     currentBuild.result = 'FAILURE'
 
