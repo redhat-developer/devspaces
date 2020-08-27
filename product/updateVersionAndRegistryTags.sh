@@ -89,9 +89,9 @@ updatePluginRegistry() {
     done        
     # replace latest CRW plugins with current version tag
     for latestPlugin in "${latestPlugins[@]}"; do
-        sed -e "s|(.*image: \"registry.redhat.io/codeready-workspaces/.*:).+\"|\1${CRW_VERSION}\"|g" \
+        sed -E -e "s|(.*image: \"registry.redhat.io/codeready-workspaces/.*:).+\"|\1${CRW_VERSION}\"|g" \
             -e "s|(.*image: registry.redhat.io/codeready-workspaces/.*:).+|\1${CRW_VERSION}|g" \
-            -E -i "${latestPlugin}"
+            -i "${latestPlugin}"
     done
     git diff -q ${YAML_ROOT} || true
 }
