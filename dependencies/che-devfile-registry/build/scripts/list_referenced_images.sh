@@ -7,10 +7,23 @@
 #
 # SPDX-License-Identifier: EPL-2.0
 #
-# List all images referenced in meta.yaml files
+# List all images referenced in devfile.yaml files
 #
 
 set -e
 
-readarray -d '' devfiles < <(find "$1" -name 'devfile.yaml' -print0)
-yq -r '..|.image?' "${devfiles[@]}" | grep -v "null" | sort | uniq
+CONTAINERS=""
+
+while IFS= read -r -d '' file; do
+  CONTAINERS="${CONTAINERS} $(yq -r '..|.image?' "${file}" | grep -v "null" | sort | uniq)"
+done < <(find "$1" -name 'devfile.yaml' -print0)
+
+CONTAINERS_UNIQ=()
+# shellcheck disable=SC2199
+for c in $CONTAINERS; do if [[ ! "${CONTAINERS_UNIQ[@]}" =~ ${c} ]]; then CONTAINERS_UNIQ+=("$c"); fi; done
+# shellcheck disable=SC2207
+IFS=$'\n' CONTAINERS=($(sort <<<"${CONTAINERS_UNIQ[*]}")); unset IFS
+
+for c in "${CONTAINERS[@]}"; do
+  echo "$c"
+done
