@@ -86,6 +86,10 @@ updatePluginRegistry() {
         if [[ "$plugin" == "$latestPlugin" ]]; then
             latestPlugins+=($plugin)
         fi
+        # also update next and nightly templates
+        for nn in "$var2/next/meta.yaml" "$var2/nightly/meta.yaml"; do
+            if [[ -f $nn ]]; then latestPlugins+=($nn); fi
+        done
     done        
     # replace latest CRW plugins with current version tag
     for latestPlugin in "${latestPlugins[@]}"; do
