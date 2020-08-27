@@ -81,7 +81,7 @@ spec:
      memoryLimit: "512M"
   initContainers:
   - name: remote-runtime-injector
-    image: registry.redhat.io/codeready-workspaces/theia-endpoint-rhel8:2.4"
+    image: "registry.redhat.io/codeready-workspaces/theia-endpoint-rhel8:2.4"
     volumes:
       - mountPath: "/remote-endpoint"
         name: remote-endpoint
