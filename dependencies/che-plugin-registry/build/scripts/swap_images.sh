@@ -11,8 +11,10 @@ YAML_ROOT="$1"
 
 devfiles=$($SCRIPT_DIR/list_yaml.sh "$YAML_ROOT")
 
-[[ "$(uname -m)" == "x86_64" ]] && exit 0
-
-sed -E -i 's|eap-xp1-openjdk11-openshift-rhel8:.*|eap-xp1-openj9-11-openshift-rhel8:1.0|g' $devfiles
-sed -E -i 's|plugin-java8-rhel8|plugin-java8-openj9-rhel8|g' $devfiles
-sed -E -i 's|plugin-java11-rhel8|plugin-java11-openj9-rhel8|g' $devfiles
+# Note: optional -f flag will force this transformation even on an incompatible architecture,
+# so we can call this script from crw-operator/build/scripts/insert-related-images-to-csv.sh
+if [[ "$(uname -m)" != "x86_64" ]] || [[ "$2" == "-f" ]]; then 
+    sed -E -i 's|eap-xp1-openjdk11-openshift-rhel8:.*|eap-xp1-openj9-11-openshift-rhel8:1.0|g' $devfiles
+    sed -E -i 's|plugin-java8-rhel8|plugin-java8-openj9-rhel8|g' $devfiles
+    sed -E -i 's|plugin-java11-rhel8|plugin-java11-openj9-rhel8|g' $devfiles
+fi
