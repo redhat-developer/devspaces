@@ -17,12 +17,18 @@ LOG_FILE="$(mktemp)" && trap "rm -f $LOG_FILE" EXIT
 function handle_error() {
   local yaml_file="$1"
   local image_url="$2"
+  local tag="$(echo "$image_url" | cut -d ':' -f 2)"
   if [[ ! -z "$($SCRIPT_DIR/find_image.sh "${image_url%:*}" x86_64 2> /dev/null | jq -r '.Digest')" ]] ; then
     if [[ "$ARCH" == "x86_64" ]] ; then
       echo "[WARN] Image $image_url version not found: remove $yaml_file from registry."
     else
       echo "[WARN] Image $image_url not found for architecture $ARCH: remove $yaml_file from registry."
     fi
+    mv "$yaml_file" "$yaml_file.removed"
+  elif [[ ! -z $(echo $image_url | grep 'openj9') ]] && (( $(echo "$tag" | awk '{ print ($1 < 2.4)}') )) ; then
+    # special case for older plugins: https://issues.redhat.com/browse/CRW-1193
+    # openj9 containers don't exist on x and versions below 2.4 will never exist.  do not raise error
+    echo "[WARN] Image $image_url version not found: remove $yaml_file from registry."
     mv "$yaml_file" "$yaml_file.removed"
   else
     echo "[ERROR] Could not read image metadata through skopeo inspect --tls-verify=false; skip $image_url"
