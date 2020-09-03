@@ -12,7 +12,7 @@ projects:
 components:
 -
   type: chePlugin
-  id: ms-vscode/go/latest
+  id: golang/go/latest
   alias: go-plugin
   memoryLimit: 512Mi
   preferences:
