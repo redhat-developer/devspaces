@@ -1,0 +1,26 @@
+apiVersion: v2
+publisher: golang
+name: go
+version: 0.11.4
+type: VS Code extension
+displayName: Go
+title: Rich Go language support
+description: This extension adds rich language support for the Go language
+icon: https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/master/dependencies/che-plugin-registry/resources/images/default.svg?sanitize=true
+repository: https://github.com/golang/vscode-go
+category: Language
+firstPublicationDate: '2019-09-19'
+spec:
+  containers:
+    - image: "registry.redhat.io/codeready-workspaces/stacks-golang-rhel8:2.3"
+      name: vscode-go
+      memoryLimit: '512Mi'
+      args:
+        - sh
+        - -c
+        - ${PLUGIN_REMOTE_ENDPOINT_EXECUTABLE}
+      env:
+      - name: GOPATH
+        value: /projects/.che/gopath:$(CHE_PROJECTS_ROOT)
+  extensions:
+    - https://download.jboss.org/jbosstools/vscode/3rdparty/vscode-go/Go-0.11.4.vsix
