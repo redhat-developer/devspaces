@@ -160,7 +160,7 @@ sed -i ${WORKSPACE}/targetdwn/Dockerfile --regexp-extended \
   -e 's|^[^#]*--from=offline-builder.*|# &|' \
   -e '/COPY --from=builder/a COPY --from=builder /build/resources /var/www/html/resources' \
   `# Enable cache_projects.sh` \
-  -e '\\|write_image_digests.sh|i # Cache projects in CRW \\
+  -e '\\|swap_images.sh|i # Cache projects in CRW \\
 COPY ./build/dockerfiles/rhel.cache_projects.sh resources.tgz /tmp/ \\
 RUN /tmp/rhel.cache_projects.sh /build/ && rm -rf /tmp/rhel.cache_projects.sh /tmp/resources.tgz \\
 '
