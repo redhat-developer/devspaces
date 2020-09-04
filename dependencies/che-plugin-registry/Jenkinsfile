@@ -162,7 +162,7 @@ sed -i ${WORKSPACE}/targetdwn/Dockerfile --regexp-extended \
   -e '/^ *FROM builder AS offline-builder/,+3 s|.*|# &|' \
   -e 's|^[^#]*--from=offline-builder.*|# &|' \
   `# Enable cache_artifacts.sh` \
-  -e '\\|write_image_digests.sh|i # Cache projects in CRW \\
+  -e '\\|swap_images.sh|i # Cache projects in CRW \\
 COPY ./build/dockerfiles/rhel.cache_artifacts.sh resources.tgz /tmp/ \\
 RUN /tmp/rhel.cache_artifacts.sh /build/v3/ && rm -rf /tmp/rhel.cache_artifacts.sh /tmp/resources.tgz \\
 '
