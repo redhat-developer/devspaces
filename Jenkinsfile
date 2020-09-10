@@ -332,7 +332,7 @@ COPY assembly/codeready-workspaces-assembly-main/target/codeready-workspaces-ass
 RUN tar xzf /tmp/codeready-workspaces-assembly-main.tar.gz --transform="s#.*codeready-workspaces-assembly-main/*##" -C /home/user/codeready \\&\\& rm -f /tmp/codeready-workspaces-assembly-main.tar.gz\\
 @g' \
 		-e 's@chmod g\\+w /home/user/cacerts@chmod 777 /home/user/cacerts@g'
-		# CRW-1189 applying the fix directly in entrypoint.sh
+		# CRW-1189 applying the fix in midstream entrypoint.sh
 		sed -i ${WORKSPACE}/''' + CRW_path + '''/entrypoint.sh \
 		-e '/chmod 644 \\$JAVA_TRUST_STORE || true/d' \
 		-e 's/chmod 444 \\$JAVA_TRUST_STORE/chmod 444 \\$JAVA_TRUST_STORE || true/g'
@@ -344,6 +344,11 @@ RUN tar xzf /tmp/codeready-workspaces-assembly-main.tar.gz --transform="s#.*code
 		-e "s#FROM registry.access.redhat.com/#FROM #g" \
 		-e "s#COPY assembly/codeready-workspaces-assembly-main/target/#COPY #g" \
 		-e "s/# *RUN yum /RUN yum /g"
+
+		# CRW-1189 applying fix to downstream entrypoint.sh
+		sed -i ${WORKSPACE}/targetdwn/entrypoint.sh \
+		-e '/chmod 644 \\$JAVA_TRUST_STORE || true/d' \
+		-e 's/chmod 444 \\$JAVA_TRUST_STORE/chmod 444 \\$JAVA_TRUST_STORE || true/g'
 
 METADATA='ENV SUMMARY="Red Hat CodeReady Workspaces server container" \\\r
     DESCRIPTION="Red Hat CodeReady Workspaces server container" \\\r
