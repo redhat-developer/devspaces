@@ -10,7 +10,7 @@
 #
 
 # https://access.redhat.com/containers/?tab=tags#/registry.access.redhat.com/ubi8-minimal
-FROM registry.access.redhat.com/ubi8-minimal:8.2-345
+FROM registry.access.redhat.com/ubi8-minimal:8.2-349
 USER root
 ENV CHE_HOME=/home/user/codeready
 ENV JAVA_HOME=/usr/lib/jvm/jre
@@ -37,7 +37,7 @@ RUN mkdir /logs /data && \
     chmod -R g+rwX /home/user && \
     find /home/user -type d -exec chmod 777 {} \; && \
     # set group write permission so that entrypoint.sh can update permissions once file is updated w/ new cert
-    chmod 777 /home/user/cacerts && \
+    chmod g+w /home/user/cacerts && \
     java -version && echo -n "Server startup script in: " && \
     find /home/user/codeready -name catalina.sh | grep -z /home/user/codeready/tomcat/bin/catalina.sh
 
