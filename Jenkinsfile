@@ -330,8 +330,8 @@ timeout(240) {
 # NOTE: if built in Brew, use get-sources-jenkins.sh to pull latest\\
 COPY assembly/codeready-workspaces-assembly-main/target/codeready-workspaces-assembly-main.tar.gz /tmp/codeready-workspaces-assembly-main.tar.gz\\
 RUN tar xzf /tmp/codeready-workspaces-assembly-main.tar.gz --transform="s#.*codeready-workspaces-assembly-main/*##" -C /home/user/codeready \\&\\& rm -f /tmp/codeready-workspaces-assembly-main.tar.gz\\
-@g'
-		-e 's@chmod g+w /home/user/cacerts@chmod 777 /home/user/cacerts@g'
+@g' \
+		-e 's@chmod g\\+w /home/user/cacerts@chmod 777 /home/user/cacerts@g'
 		# CRW-1189 applying the fix directly in entrypoint.sh
 		sed -i ${WORKSPACE}/''' + CRW_path + '''/entrypoint.sh \
 		-e '/chmod 644 \\$JAVA_TRUST_STORE || true/d' \
