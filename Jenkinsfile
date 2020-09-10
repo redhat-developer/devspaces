@@ -334,7 +334,7 @@ RUN tar xzf /tmp/codeready-workspaces-assembly-main.tar.gz --transform="s#.*code
 		-e 's@chmod g+w /home/user/cacerts@chmod 777 /home/user/cacerts@g'
 		# CRW-1189 applying the fix directly in entrypoint.sh
 		sed -i ${WORKSPACE}/''' + CRW_path + '''/entrypoint.sh \
-		-e '/chmod 644 \\$JAVA_TRUST_STORE || true/d'
+		-e '/chmod 644 \\$JAVA_TRUST_STORE || true/d' \
 		-e 's/chmod 444 \\$JAVA_TRUST_STORE/chmod 444 \\$JAVA_TRUST_STORE || true/g'
 		CRW_VERSION=`wget -qO- https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/''' + MIDSTM_BRANCH + '''/dependencies/VERSION`
 		# apply patches to downstream version
