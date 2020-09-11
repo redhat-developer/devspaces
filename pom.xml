@@ -42,7 +42,7 @@
             IMPORTANT! when bumping this version, remember to add machine exec and theia plugins to the registry with 
             cd dependencies/che-plugin-registry; ./build/scripts/add_che_plugins.sh
         -->
-        <che.version>7.18.1</che.version>
+        <che.version>7.18.2</che.version>
         <crw.dashboard.version>${crw.version} (Eclipse Che ${che.version})</crw.dashboard.version>
         <crw.docs.version>2.4</crw.docs.version>
         <crw.version>${project.version}</crw.version>
