@@ -65,6 +65,7 @@ def SHA_CHE_WL = "SHA_CHE_WL"
 
 def CHE_path = "che"
 def VER_CHE = "VER_CHE"
+def VER_CHE_PREV = "VER_CHE_PREV"
 def SHA_CHE = "SHA_CHE"
 
 def CRW_path = "codeready-workspaces"
@@ -150,7 +151,16 @@ timeout(240) {
 			submoduleCfg: [], 
 			userRemoteConfigs: [[url: "https://github.com/eclipse/${CHE_path}.git"]]])
 
-		VER_CHE = sh(returnStdout:true,script:"egrep \"<version>\" ${CHE_path}/pom.xml|head -2|tail -1|sed -e \"s#.*<version>\\(.\\+\\)</version>#\\1#\"").trim()
+		VER_CHE = sh(returnStdout:true,script:'''#!/bin/bash -xe
+egrep "<version>" ''' + CHE_path + '''/pom.xml|head -2|tail -1|sed -r -e "s#.*<version>(.+)</version>#\\1#"
+''').trim()
+		VER_CHE_PREV = sh(returnStdout:true,script:'''#!/bin/bash -xe
+VERSION=$(egrep "<version>" ''' + CHE_path + '''/pom.xml|head -2|tail -1| sed -r -e "s#.*<version>(.+)-SNAPSHOT</version>#\\1#")
+[[ $VERSION =~ ^([0-9]+)\.([0-9]+)\.([0-9]+) ]] && BASE="${BASH_REMATCH[1]}.${BASH_REMATCH[2]}"; PREV="${BASH_REMATCH[3]}"; (( PREV=PREV-1 )) # for VERSION=7.7.3, get BASE=7.7, PREV=2
+PREVVERSION="${BASE}.${PREV}"
+echo ${PREVVERSION}
+''').trim()
+
 		SHA_CHE = sh(returnStdout:true,script:"cd ${CHE_path}/ && git rev-parse --short=4 HEAD").trim()
 		echo "<==== Get Che version ====="
 
@@ -290,10 +300,12 @@ timeout(240) {
 		git remote set-url origin https://\$GITHUB_TOKEN:x-oauth-basic@github.com/redhat-developer/''' + CRW_path + '''.git
 		git remote -v
 
+		# CRW-1213 update the che.version in the pom, so we have the latest from the upstream branch
+		sed -i pom.xml -r -e "s#<che.version>.+</che.version>#<che.version>''' + VER_CHE_PREV + '''</che.version>#g"
+
 		# Check if che-machine-exec and che-theia plugins are current in upstream repo and if not, add them
-		# NOTE: we want the version of che in the pom, not the value of che computed for the dashboard (che.version override)
 		pushd dependencies/che-plugin-registry >/dev/null
-			./build/scripts/add_che_plugins.sh -b ''' + MIDSTM_BRANCH + ''' $(cat ${WORKSPACE}/''' + CRW_path + '''/pom.xml | grep -E "<che.version>" | sed -r -e "s#.+<che.version>(.+)</che.version>#\\1#")
+			./build/scripts/add_che_plugins.sh -b ''' + MIDSTM_BRANCH + ''' ''' + VER_CHE_PREV
 		popd >/dev/null
 
 		# fetch sources to be updated
