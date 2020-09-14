@@ -305,7 +305,7 @@ echo ${PREVVERSION}
 
 		# Check if che-machine-exec and che-theia plugins are current in upstream repo and if not, add them
 		pushd dependencies/che-plugin-registry >/dev/null
-			./build/scripts/add_che_plugins.sh -b ''' + MIDSTM_BRANCH + ''' ''' + VER_CHE_PREV
+			./build/scripts/add_che_plugins.sh -b ''' + MIDSTM_BRANCH + ''' ''' + VER_CHE_PREV + '''
 		popd >/dev/null
 
 		# fetch sources to be updated
