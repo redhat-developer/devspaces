@@ -156,7 +156,7 @@ egrep "<version>" ''' + CHE_path + '''/pom.xml|head -2|tail -1|sed -r -e "s#.*<v
 ''').trim()
 		VER_CHE_PREV = sh(returnStdout:true,script:'''#!/bin/bash -xe
 VERSION=$(egrep "<version>" ''' + CHE_path + '''/pom.xml|head -2|tail -1| sed -r -e "s#.*<version>(.+)-SNAPSHOT</version>#\\1#")
-[[ $VERSION =~ ^([0-9]+)\.([0-9]+)\.([0-9]+) ]] && BASE="${BASH_REMATCH[1]}.${BASH_REMATCH[2]}"; PREV="${BASH_REMATCH[3]}"; (( PREV=PREV-1 )) # for VERSION=7.7.3, get BASE=7.7, PREV=2
+[[ $VERSION =~ ^([0-9]+)\\.([0-9]+)\\.([0-9]+) ]] && BASE="${BASH_REMATCH[1]}.${BASH_REMATCH[2]}"; PREV="${BASH_REMATCH[3]}"; (( PREV=PREV-1 )) # for VERSION=7.18.3, get BASE=7.18, PREV=2
 PREVVERSION="${BASE}.${PREV}"
 echo ${PREVVERSION}
 ''').trim()
