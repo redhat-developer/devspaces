@@ -8,9 +8,10 @@ def installSkopeo(String skopeo_version)
 sh '''#!/bin/bash -xe
 pushd /tmp >/dev/null
   rm -f /tmp/skopeo*.rpm /tmp/containers-common*.rpm
-  skopeo_URL=https://rpmfind.net/linux/centos/8-stream/AppStream/x86_64/os/Packages
-  curl -sSLO ${skopeo_URL}/containers-common-''' + skopeo_version + '''.rpm
-  curl -sSLO ${skopeo_URL}/skopeo-''' + skopeo_version + '''.rpm
+  # skopeo_URL=https://rpmfind.net/linux/centos/8-stream/AppStream/x86_64/os/Packages
+  skopeo_URL=https://rpmfind.net/linux/fedora/linux/updates/32/Everything/x86_64/Packages
+  curl -sSLO ${skopeo_URL}/c/containers-common-''' + skopeo_version + '''.rpm
+  curl -sSLO ${skopeo_URL}/s/skopeo-''' + skopeo_version + '''.rpm
   sudo yum remove -y skopeo containers-common || true
   sudo yum install -y /tmp/skopeo*.rpm /tmp/containers-common*.rpm || true
   rm -f /tmp/skopeo*.rpm /tmp/containers-common*.rpm
@@ -25,6 +26,7 @@ timeout(120) {
         try { 
             stage "Check registries"
             cleanWs()
+            installSkopeo("1.1.1-1.fc32.x86_64")
             withCredentials([string(credentialsId:'devstudio-release.token', variable: 'GITHUB_TOKEN'), 
                 file(credentialsId: 'crw-build.keytab', variable: 'CRW_KEYTAB')]) {
                 checkout([$class: 'GitSCM', 
@@ -39,7 +41,6 @@ timeout(120) {
                         submoduleCfg: [], 
                         userRemoteConfigs: [[url: "https://github.com/redhat-developer/codeready-workspaces.git"]]])
 
-                installSkopeo("1.1.0-1.module_el8.3.0+432+2e9cbcd8.x86_64")
 
                 def NEW_IMAGES = sh (
                     script: 'cd ${WORKSPACE}/crw/product && ./getLatestImageTags.sh --${MIDSTM_BRANCH} --quay | sort | uniq | grep quay | \
