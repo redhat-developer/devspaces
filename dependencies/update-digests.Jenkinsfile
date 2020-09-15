@@ -13,7 +13,7 @@ pushd /tmp >/dev/null
   curl -sSLO ${skopeo_URL}/c/containers-common-''' + skopeo_version + '''.rpm
   curl -sSLO ${skopeo_URL}/s/skopeo-''' + skopeo_version + '''.rpm
   sudo yum remove -y skopeo containers-common || true
-  sudo yum install -y /tmp/skopeo*.rpm /tmp/containers-common*.rpm || true
+  sudo yum install -y libzstd zstd /tmp/skopeo*.rpm /tmp/containers-common*.rpm || true
   rm -f /tmp/skopeo*.rpm /tmp/containers-common*.rpm
 popd >/dev/null
 skopeo --version
