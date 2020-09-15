@@ -5,7 +5,7 @@
 
 def installSkopeo(String skopeo_version)
 {
-def rpm_version="4.15.1-2.fc32.1.x86_64"
+def rpm_version="4.15.1-3.fc32.1.x86_64"
 sh '''#!/bin/bash -xe
 pushd /tmp >/dev/null
   rm -f /tmp/skopeo*.rpm /tmp/containers-common*.rpm
