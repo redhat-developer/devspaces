@@ -13,9 +13,17 @@ pushd /tmp >/dev/null
   skopeo_URL=https://rpmfind.net/linux/fedora/linux/updates/32/Everything/x86_64/Packages
   curl -sSLO ${skopeo_URL}/c/containers-common-''' + skopeo_version + '''.rpm
   curl -sSLO ${skopeo_URL}/s/skopeo-''' + skopeo_version + '''.rpm
+
+  curl -sSLO ${skopeo_URL}/r/rpm-python-''' + rpm_version + '''.rpm
+  curl -sSLO ${skopeo_URL}/r/python36-rpm-''' + rpm_version + '''.rpm
+  curl -sSLO ${skopeo_URL}/r/rpm-build-''' + rpm_version + '''.rpm
+  curl -sSLO ${skopeo_URL}/r/rpm-build-libs-''' + rpm_version + '''.rpm
+  curl -sSLO ${skopeo_URL}/r/rpm-libs-''' + rpm_version + '''.rpm
   curl -sSLO ${skopeo_URL}/r/rpm-''' + rpm_version + '''.rpm
   sudo yum remove -y skopeo containers-common || true
-  sudo yum install -y /tmp/rpm*.rpm libzstd zstd || true
+  sudo yum install -y libzstd zstd || true
+  sudo yum update -y rpm || true
+  sudo yum install -y /tmp/rpm*.rpm /tmp/python36-rpm-*.rpm || true
   sudo yum install -y /tmp/skopeo*.rpm /tmp/containers-common*.rpm || true
   rm -f /tmp/skopeo*.rpm /tmp/containers-common*.rpm
 popd >/dev/null
