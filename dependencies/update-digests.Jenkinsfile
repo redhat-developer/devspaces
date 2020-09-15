@@ -5,6 +5,7 @@
 
 def installSkopeo(String skopeo_version)
 {
+def rpm_version="4.15.1-2.fc32.1.x86_64"
 sh '''#!/bin/bash -xe
 pushd /tmp >/dev/null
   rm -f /tmp/skopeo*.rpm /tmp/containers-common*.rpm
@@ -12,8 +13,10 @@ pushd /tmp >/dev/null
   skopeo_URL=https://rpmfind.net/linux/fedora/linux/updates/32/Everything/x86_64/Packages
   curl -sSLO ${skopeo_URL}/c/containers-common-''' + skopeo_version + '''.rpm
   curl -sSLO ${skopeo_URL}/s/skopeo-''' + skopeo_version + '''.rpm
+  curl -sSLO ${skopeo_URL}/r/rpm-''' + rpm_version + '''.rpm
   sudo yum remove -y skopeo containers-common || true
-  sudo yum install -y libzstd zstd /tmp/skopeo*.rpm /tmp/containers-common*.rpm || true
+  sudo yum install -y /tmp/rpm*.rpm libzstd zstd || true
+  sudo yum install -y /tmp/skopeo*.rpm /tmp/containers-common*.rpm || true
   rm -f /tmp/skopeo*.rpm /tmp/containers-common*.rpm
 popd >/dev/null
 skopeo --version
