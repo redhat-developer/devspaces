@@ -24,7 +24,7 @@ if [[ ! -x /usr/local/bin/skopeo ]]; then
     sudo curl -sSLO https://codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/crw-deprecated_''' + CRW_VERSION + '''/lastSuccessfulBuild/artifact/codeready-workspaces-deprecated/skopeo/target/skopeo-$(uname -m).tar.gz
 fi
 if [[ -f /tmp/skopeo-$(uname -m).tar.gz ]]; then 
-    sudo tar xz --overwrite -C /usr/local/bin/ /tmp/skopeo-$(uname -m).tar.gz
+    sudo tar xzf /tmp/skopeo-$(uname -m).tar.gz --overwrite -C /usr/local/bin/
     sudo chmod 755 /usr/local/bin/skopeo
     sudo rm -f /tmp/skopeo-$(uname -m).tar.gz
 fi
