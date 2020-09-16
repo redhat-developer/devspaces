@@ -11,6 +11,8 @@
 // MVN_EXTRA_FLAGS = extra flags, such as to disable a module -pl '!org.eclipse.che.selenium:che-selenium-test'
 // SCRATCH = true (don't push to Quay) or false (do push to Quay)
 
+import groovy.transform.Field
+
 def DWNSTM_REPO = "containers/codeready-workspaces" // dist-git repo to use as target for everything
 def DWNSTM_BRANCH = MIDSTM_BRANCH // target branch in dist-git repo, eg., crw-2.4-rhel-8
 
@@ -34,6 +36,35 @@ def installYq(){
 		sh '''#!/bin/bash -xe
 sudo yum -y install jq python3-six python3-pip
 sudo /usr/bin/python3 -m pip install --upgrade pip yq; jq --version; yq --version
+'''
+}
+
+@Field String CRW_VERSION_F = ""
+def String getCrwVersion(String MIDSTM_BRANCH) {
+  if (CRW_VERSION_F.equals("")) {
+    CRW_VERSION_F = sh(script: '''#!/bin/bash -xe
+    curl -sSLo- https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/''' + MIDSTM_BRANCH + '''/dependencies/VERSION''', returnStdout: true).trim()
+  }
+  return CRW_VERSION_F
+}
+
+def installSkopeo(String CRW_VERSION)
+{
+sh '''#!/bin/bash -xe
+pushd /tmp >/dev/null
+# remove any older versions
+sudo yum remove -y skopeo || true
+# install from @kcrane build
+if [[ ! -x /usr/local/bin/skopeo ]]; then
+    sudo curl -sSLO "https://codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/crw-deprecated_''' + CRW_VERSION + '''/lastSuccessfulBuild/artifact/codeready-workspaces-deprecated/skopeo/target/skopeo-$(uname -m).tar.gz"
+fi
+if [[ -f /tmp/skopeo-$(uname -m).tar.gz ]]; then 
+    sudo tar xzf /tmp/skopeo-$(uname -m).tar.gz --overwrite -C /usr/local/bin/
+    sudo chmod 755 /usr/local/bin/skopeo
+    sudo rm -f /tmp/skopeo-$(uname -m).tar.gz
+fi
+popd >/dev/null
+skopeo --version
 '''
 }
 
@@ -82,6 +113,9 @@ timeout(240) {
 		installNPM()
 		installGo()
 		installYq()
+		CRW_VERSION = getCrwVersion(DWNSTM_BRANCH)
+		println "CRW_VERSION = '" + CRW_VERSION + "'"
+		installSkopeo(CRW_VERSION)
 
 		echo "===== Build che-dev =====>"
 		checkout([$class: 'GitSCM', 
@@ -348,7 +382,7 @@ RUN tar xzf /tmp/codeready-workspaces-assembly-main.tar.gz --transform="s#.*code
 		sed -i ${WORKSPACE}/''' + CRW_path + '''/entrypoint.sh \
 		-e '/chmod 644 \\$JAVA_TRUST_STORE || true/d' \
 		-e 's/chmod 444 \\$JAVA_TRUST_STORE/chmod 444 \\$JAVA_TRUST_STORE || true/g'
-		CRW_VERSION=`wget -qO- https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/''' + MIDSTM_BRANCH + '''/dependencies/VERSION`
+		CRW_VERSION="''' + CRW_VERSION_F + '''"
 		# apply patches to downstream version
 		cp ${WORKSPACE}/''' + CRW_path + '''/Dockerfile ${WORKSPACE}/targetdwn/Dockerfile
 		sed -i ${WORKSPACE}/targetdwn/Dockerfile \
@@ -501,11 +535,6 @@ timeout(120) {
 			echo "[INFO] Trigger get-sources-rhpkg-container-build " + (env.ghprbPullId && env.ghprbPullId?.trim()?"for PR-${ghprbPullId} ":"") + \
 			"with SCRATCH = ${SCRATCH}, QUAY_REPO_PATHs = ${QUAY_REPO_PATHs}, JOB_BRANCH = ${MIDSTM_BRANCH}"
 
-			def CRW_VERSION = sh(script: '''#!/bin/bash -xe
-			wget -qO- https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/''' + MIDSTM_BRANCH + '''/dependencies/VERSION
-				''', returnStdout: true).trim()
-			println "Got CRW_VERSION = '" + CRW_VERSION.trim() + "'"
-
 			// trigger OSBS build
 			build(
 			job: 'get-sources-rhpkg-container-build',
@@ -535,7 +564,7 @@ timeout(120) {
 				[
 				$class: 'StringParameterValue',
 				name: 'JOB_BRANCH',
-				value: "${CRW_VERSION}",
+				value: "${CRW_VERSION_F}",
 				]
 			]
 			)
