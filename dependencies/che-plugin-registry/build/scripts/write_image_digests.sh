@@ -24,20 +24,19 @@ function handle_error() {
     else
       echo "[WARN] Image $image_url not found for architecture $ARCH: remove $yaml_file from registry."
     fi
-    mv "$yaml_file" "$yaml_file.removed"
   elif [[ ! -z $(echo $image_url | grep 'openj9') ]] && (( $(echo "$tag" | awk '{ print ($1 < 2.4)}') )) ; then
     # special case for older plugins: https://issues.redhat.com/browse/CRW-1193
     # openj9 containers don't exist on x and versions below 2.4 will never exist.  do not raise error
     echo "[WARN] Image $image_url version not found: remove $yaml_file from registry."
-    mv "$yaml_file" "$yaml_file.removed"
   else
     echo "[ERROR] Could not read image metadata through skopeo inspect --tls-verify=false; skip $image_url"
-    echo "[ERROR] Remove $yaml_file from registry."
     echo -n "  Reason: "
     sed 's|^|    |g' $LOG_FILE
-    mv "$yaml_file" "$yaml_file.removed"
     exit 1
   fi
+  for f in $(ls `dirname $yaml_file`/*.yaml) ; do
+    mv "$f" "$f.removed"
+  done
 }
 
 for image_url in $($SCRIPT_DIR/list_referenced_images.sh "$YAML_ROOT") ; do
