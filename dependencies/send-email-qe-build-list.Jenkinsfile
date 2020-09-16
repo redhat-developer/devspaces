@@ -23,18 +23,14 @@ def String getCrwVersion(String MIDSTM_BRANCH) {
   return CRW_VERSION_F
 }
 
-def installSkopeo(String skopeo_version)
+def installSkopeo(String CRW_VERSION)
 {
 sh '''#!/bin/bash -xe
 pushd /tmp >/dev/null
-  rm -f /tmp/skopeo*.rpm /tmp/containers-common*.rpm
-  # skopeo_URL=https://rpmfind.net/linux/centos/8-stream/AppStream/x86_64/os/Packages
-  skopeo_URL=https://rpmfind.net/linux/fedora/linux/updates/32/Everything/x86_64/Packages
-  curl -sSLO ${skopeo_URL}/c/containers-common-''' + skopeo_version + '''.rpm
-  curl -sSLO ${skopeo_URL}/s/skopeo-''' + skopeo_version + '''.rpm
-  sudo yum remove -y skopeo containers-common || true
-  sudo yum install -y /tmp/skopeo*.rpm /tmp/containers-common*.rpm || true
-  rm -f /tmp/skopeo*.rpm /tmp/containers-common*.rpm
+# remove any older versions
+sudo yum remove -y skopeo || true
+# install from @kcrane's build
+sudo curl -sSLo - https://codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/crw-deprecated_''' + CRW_VERSION + '''/lastSuccessfulBuild/artifact/codeready-workspaces-deprecated/skopeo/target/skopeo-$(uname -m).tar.gz | tar xvz -C /usr/local/bin/ && sudo chmod 755 /usr/local/bin/skopeo
 popd >/dev/null
 skopeo --version
 '''
@@ -81,7 +77,9 @@ timeout(120) {
         try { 
             stage "Fetch latest image tags and send email"
             cleanWs()
-            installSkopeo("1.1.1-1.fc32.x86_64")
+            CRW_VERSION = getCrwVersion(MIDSTM_BRANCH)
+            println "CRW_VERSION = '" + CRW_VERSION + "'"
+            installSkopeo(CRW_VERSION)
             if (mailSubject.contains("CRW 2.y.0.tt-mm-yy ready for QE") || mailSubject.equals(""))
             {
                 doSendEmail="false"
@@ -193,9 +191,6 @@ timeout(120) {
                 def NEW_OSBS_L=""; NEW_OSBS.each { line -> if (line?.trim()) { NEW_OSBS_L=NEW_OSBS_L+"= ${line}\n" } }
                 def NEW_STG_L="";  NEW_STG.each  { line -> if (line?.trim()) { NEW_STG_L=NEW_STG_L + "* ${line}\n" } }
                 def NEW_NVR_L="";  NEW_NVR.each  { line -> if (line?.trim()) { NEW_NVR_L=NEW_NVR_L + "  ${line}\n" } } 
-
-                CRW_VERSION = getCrwVersion(MIDSTM_BRANCH)
-                println "CRW_VERSION = '" + CRW_VERSION + "'"
 
                 def mailBody = mailSubject + '''
 

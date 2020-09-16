@@ -3,29 +3,24 @@
 // PARAMETERS for this pipeline:
 // MIDSTM_BRANCH = "crw-2.4-rhel-8"
 
-def installSkopeo(String skopeo_version)
+import groovy.transform.Field
+@Field String CRW_VERSION_F = ""
+def String getCrwVersion(String MIDSTM_BRANCH) {
+  if (CRW_VERSION_F.equals("")) {
+    CRW_VERSION_F = sh(script: '''#!/bin/bash -xe
+    curl -sSLo- https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/''' + MIDSTM_BRANCH + '''/dependencies/VERSION''', returnStdout: true).trim()
+  }
+  return CRW_VERSION_F
+}
+
+def installSkopeo(String CRW_VERSION)
 {
-def rpm_version="4.15.1-3.fc32.1.x86_64"
 sh '''#!/bin/bash -xe
 pushd /tmp >/dev/null
-  rm -f /tmp/skopeo*.rpm /tmp/containers-common*.rpm
-  # skopeo_URL=https://rpmfind.net/linux/centos/8-stream/AppStream/x86_64/os/Packages
-  skopeo_URL=https://rpmfind.net/linux/fedora/linux/updates/32/Everything/x86_64/Packages
-  curl -sSLO ${skopeo_URL}/c/containers-common-''' + skopeo_version + '''.rpm
-  curl -sSLO ${skopeo_URL}/s/skopeo-''' + skopeo_version + '''.rpm
-
-  curl -sSLO ${skopeo_URL}/r/rpm-python-''' + rpm_version + '''.rpm
-  curl -sSLO ${skopeo_URL}/r/python36-rpm-''' + rpm_version + '''.rpm
-  curl -sSLO ${skopeo_URL}/r/rpm-build-''' + rpm_version + '''.rpm
-  curl -sSLO ${skopeo_URL}/r/rpm-build-libs-''' + rpm_version + '''.rpm
-  curl -sSLO ${skopeo_URL}/r/rpm-libs-''' + rpm_version + '''.rpm
-  curl -sSLO ${skopeo_URL}/r/rpm-''' + rpm_version + '''.rpm
-  sudo yum remove -y skopeo containers-common || true
-  sudo yum install -y libzstd zstd || true
-  sudo yum update -y rpm || true
-  sudo yum install -y /tmp/rpm*.rpm /tmp/python36-rpm-*.rpm || true
-  sudo yum install -y /tmp/skopeo*.rpm /tmp/containers-common*.rpm || true
-  rm -f /tmp/skopeo*.rpm /tmp/containers-common*.rpm
+# remove any older versions
+sudo yum remove -y skopeo || true
+# install from @kcrane's build
+sudo curl -sSLo - https://codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/crw-deprecated_''' + CRW_VERSION + '''/lastSuccessfulBuild/artifact/codeready-workspaces-deprecated/skopeo/target/skopeo-$(uname -m).tar.gz | tar xvz -C /usr/local/bin/ && sudo chmod 755 /usr/local/bin/skopeo
 popd >/dev/null
 skopeo --version
 '''
@@ -37,7 +32,9 @@ timeout(120) {
         try { 
             stage "Check registries"
             cleanWs()
-            installSkopeo("1.1.1-1.fc32.x86_64")
+            CRW_VERSION = getCrwVersion(MIDSTM_BRANCH)
+            println "CRW_VERSION = '" + CRW_VERSION + "'"
+            installSkopeo(CRW_VERSION)
             withCredentials([string(credentialsId:'devstudio-release.token', variable: 'GITHUB_TOKEN'), 
                 file(credentialsId: 'crw-build.keytab', variable: 'CRW_KEYTAB')]) {
                 checkout([$class: 'GitSCM', 
@@ -153,8 +150,6 @@ timeout(120) {
                 '''
 
                 def buildDescription="Running..."
-
-                def CRW_VERSION = sh (script: 'cat ${WORKSPACE}/crw/dependencies/VERSION', returnStdout: true).trim()
 
                 if (!DIFF_LATEST_IMAGES_METADATA.equals("") && DIFF_LATEST_IMAGES_WITH_REGISTRY.equals("")) { 
                     // no changes, but a newer metadata image exists
