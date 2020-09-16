@@ -9,20 +9,25 @@
 #
 
 # script to query latest tags of the FROM repos, and update Dockerfiles using the latest base images
-# requires skopeo (for authenticated registry queries) and jq to do json queries
+# REQUIRES: 
+#    * skopeo >=0.40 (for authenticated registry queries)
+#    * jq to do json queries
 # 
 # https://registry.redhat.io is v2 and requires authentication to query, so login in first like this:
 # docker login registry.redhat.io -u=USERNAME -p=PASSWORD
 
-if [[ ! -x /usr/bin/skopeo ]]; then 
-	echo "This script requires skopeo. Please install it."
-	exit 1
-fi
-
-if [[ ! -x /usr/bin/jq ]]; then 
-	echo "This script requires jq. Please install it."
-	exit 1
-fi
+command -v jq >/dev/null 2>&1 || { echo "jq is not installed. Aborting."; exit 1; }
+command -v skopeo >/dev/null 2>&1 || { echo "skopeo is not installed. Aborting."; exit 1; }
+checkVersion() {
+  if [[  "$1" = "`echo -e "$1\n$2" | sort -V | head -n1`" ]]; then
+    # echo "[INFO] $3 version $2 >= $1, can proceed."
+	true
+  else 
+    echo "[ERROR] Must install $3 version >= $1"
+    exit 1
+  fi
+}
+checkVersion 0.40 "$(skopeo --version | sed -e "s/skopeo version //")" skopeo
 
 QUIET=0 	# less output - omit container tag URLs
 VERBOSE=0	# more output

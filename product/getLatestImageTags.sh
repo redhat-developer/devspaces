@@ -13,6 +13,7 @@
 #    * brew for OSBS queries, 
 #    * skopeo >=1.1 (for authenticated registry queries, and to use --override-arch for s390x images)
 #    * jq to do json queries
+#    * yq to do yaml queries (install the python3 wrapper for jq using pip)
 # 
 # https://registry.redhat.io is v2 and requires authentication to query, so login in first like this:
 # docker login registry.redhat.io -u=USERNAME -p=PASSWORD
@@ -23,15 +24,19 @@ if [[ ! -x /usr/bin/brew ]]; then
 	echo " * http://download.devel.redhat.com/rel-eng/RCMTOOLS/latest-RCMTOOLS-2-RHEL-7/compose/Workstation/x86_64/os/"
 fi
 
-if [[ ! -x /usr/bin/skopeo ]]; then 
-	echo "This script requires skopeo. Please install it."
-	exit 1
-fi
-
-if [[ ! -x /usr/bin/jq ]]; then 
-	echo "This script requires jq. Please install it."
-	exit 1
-fi
+command -v skopeo >/dev/null 2>&1 || { echo "skopeo is not installed. Aborting."; exit 1; }
+command -v jq >/dev/null 2>&1 || { echo "jq is not installed. Aborting."; exit 1; }
+command -v yq >/dev/null 2>&1 || { echo "yq is not installed. Aborting."; exit 1; }
+checkVersion() {
+  if [[  "$1" = "`echo -e "$1\n$2" | sort -V | head -n1`" ]]; then
+    # echo "[INFO] $3 version $2 >= $1, can proceed."
+	true
+  else 
+    echo "[ERROR] Must install $3 version >= $1"
+    exit 1
+  fi
+}
+checkVersion 1.1 "$(skopeo --version | sed -e "s/skopeo version //")" skopeo
 
 candidateTag="crw-2.4-rhel-8-container-candidate"
 BASETAG=2.4 # tag to search for in quay
@@ -308,7 +313,7 @@ for URLfrag in $CONTAINERS; do
 				arch_string=""
 				raw_inspect=$(skopeo inspect --raw docker://${REGISTRYPRE}${URLfrag%%:*}:${LATESTTAG})
 				if [[ $(echo "${raw_inspect}" | grep "architecture") ]]; then 
-					arches=$(echo $raw_inspect | yq .manifests[].platform.architecture -r)
+					arches=$(echo $raw_inspect | yq -r .manifests[].platform.architecture)
 				else
 					arches="unknown (amd64 only?)"
 				fi
