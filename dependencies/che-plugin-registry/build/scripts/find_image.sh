@@ -20,6 +20,7 @@ for url in "${image_urls[@]}" ; do
   manifest="$(skopeo --override-arch $ARCH inspect --tls-verify=false "docker://${url}" 2>> "$LOG_FILE")"
   if [[ ! -z "$manifest" ]] ; then
     echo "$manifest"
+    cat $LOG_FILE >&2
     exit 0
   fi
 done
