@@ -15,12 +15,20 @@ def String getCSVVersion(String MIDSTM_BRANCH) {
   return CSV_VERSION_F
 }
 
+def installYq(){
+		sh '''#!/bin/bash -xe
+sudo yum -y install jq python3-six python3-pip
+sudo /usr/bin/python3 -m pip install --upgrade pip yq; jq --version; yq --version
+'''
+}
+
 timeout(20) {
     node("${buildNode}"){
         // check out che-theia before we need it in build.sh so we can use it as a poll basis
         // then discard this folder as we need to check them out and massage them for crw
         stage "Collect 3rd party sources"
         cleanWs()
+        installYq()
 	      withCredentials([string(credentialsId:'devstudio-release.token', variable: 'GITHUB_TOKEN'), 
           file(credentialsId: 'crw-build.keytab', variable: 'CRW_KEYTAB')]) {
           checkout([$class: 'GitSCM', 
