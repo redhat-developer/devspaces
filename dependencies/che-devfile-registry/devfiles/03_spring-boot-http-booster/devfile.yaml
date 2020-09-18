@@ -1,6 +1,6 @@
 apiVersion: 1.0.0
 metadata:
-  name: spring-boot-http-booster
+  generateName: spring-boot-http-booster-
 projects:
   - name: spring-boot-http-booster
     source:
