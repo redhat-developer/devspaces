@@ -35,7 +35,7 @@
     "converting": "https://access.redhat.com/documentation/en-us/red_hat_codeready_workspaces/2.0/html-single/end-user_guide/index#converting-a-codeready-workspaces-1.2-workspace-to-a-codeready-workspaces-2.0-devfile",
     "certificate": "@@crw.docs.baseurl@@/html-single/end-user_guide/index#importing-certificates-to-browsers_crw",
     "general": "@@crw.docs.baseurl@@/",
-    "storageTypes": "https://www.eclipse.org/che/docs/che-7/configuring-storage-types/",
-    "webSocketTroubleshooting": "https://www.eclipse.org/che/docs/che-7/troubleshooting-network-problems/#troubleshooting-websocket-secure-connections_troubleshooting-network-problems"
+    "storageTypes": "@@crw.docs.baseurl@@/html-single/installation_guide/index#configuring-storage-types_crw",
+    "webSocketTroubleshooting": "@@crw.docs.baseurl@@/html-single/end-user_guide/index#troubleshooting-network-problems_crw"
   }
 }
