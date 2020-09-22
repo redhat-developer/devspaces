@@ -149,7 +149,7 @@ cd codeready-workspaces-deprecated/operator-installer
 
 # git checkout 6.19.x # for CRW 1.x
 # git checkout master # for CRW 2.0 - 2.3
-git checkout crw-2.4-rhel-8 # for 2.4
+git checkout crw-2.5-rhel-8 # for 2.4
 # TODO: update this script to work w/ latest 2.x
 
 # delete existing crw deployment if it exists

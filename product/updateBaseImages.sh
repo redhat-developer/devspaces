@@ -32,7 +32,7 @@ checkVersion 0.40 "$(skopeo --version | sed -e "s/skopeo version //")" skopeo
 QUIET=0 	# less output - omit container tag URLs
 VERBOSE=0	# more output
 WORKDIR=`pwd`
-BRANCH=crw-2.4-rhel-8 # or another branch, depends on the repo
+BRANCH=crw-2.5-rhel-8 # or another branch, depends on the repo
 DOCKERFILE="Dockerfile" # or "rhel.Dockerfile"
 MAXDEPTH=2
 PR_BRANCH="pr-new-base-images-$(date +%s)"
@@ -59,7 +59,7 @@ checkrecentupdates () {
 
 usage () {
 	echo "Usage:   $0 -b [BRANCH] [-w WORKDIR] [-f DOCKERFILE] [-maxdepth MAXDEPTH]"
-	echo "Downstream Example: $0 -b crw-2.4-rhel-8 -w $(pwd) -f rhel.Dockerfile -maxdepth 2"
+	echo "Downstream Example: $0 -b crw-2.5-rhel-8 -w $(pwd) -f rhel.Dockerfile -maxdepth 2"
 	echo "Upstream   Example: $0 -b master -w dockerfiles/ -f \*from.dockerfile -maxdepth 5 -o -prb pr-new-theia-base-images"
 	echo "Options: 
 	--no-commit, -n    do not commit to BRANCH

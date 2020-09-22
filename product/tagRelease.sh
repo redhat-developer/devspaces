@@ -13,12 +13,12 @@
 set -ex
 
 # defaults
-crw_repos_branch=crw-2.4-rhel-8
-pkgs_devel_branch=crw-2.4-rhel-8
+crw_repos_branch=crw-2.5-rhel-8
+pkgs_devel_branch=crw-2.5-rhel-8
 
 if [[ $# -lt 4 ]]; then
 	echo "Usage: $0 -t CRW_TAG -o CHE_OPERATOR_BRANCH [-gh CRW_GH_BRANCH] [-pd PKGS_DEVEL_BRANCH]"
-	echo "Example: $0 -t 2.4.0.GA -o 7.17.x -gh crw-2.4-rhel-8 -pd crw-2.4-rhel-8"
+	echo "Example: $0 -t 2.4.0.GA -o 7.17.x -gh crw-2.5-rhel-8 -pd crw-2.5-rhel-8"
 	exit 1
 fi
 

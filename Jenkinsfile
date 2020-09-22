@@ -6,7 +6,7 @@
 // branchToBuildDev = refs/tags/19
 // branchToBuildParent = refs/tags/7.15.0
 // branchToBuildChe = refs/tags/7.17.x
-// MIDSTM_BRANCH = "crw-2.4-rhel-8" (previously branchToBuildCRW)
+// MIDSTM_BRANCH = "crw-2.5-rhel-8" (previously branchToBuildCRW)
 // BUILDINFO = ${JOB_NAME}/${BUILD_NUMBER}
 // MVN_EXTRA_FLAGS = extra flags, such as to disable a module -pl '!org.eclipse.che.selenium:che-selenium-test'
 // SCRATCH = true (don't push to Quay) or false (do push to Quay)
@@ -14,7 +14,7 @@
 import groovy.transform.Field
 
 def DWNSTM_REPO = "containers/codeready-workspaces" // dist-git repo to use as target for everything
-def DWNSTM_BRANCH = MIDSTM_BRANCH // target branch in dist-git repo, eg., crw-2.4-rhel-8
+def DWNSTM_BRANCH = MIDSTM_BRANCH // target branch in dist-git repo, eg., crw-2.5-rhel-8
 
 def installNPM(){
 	def yarnVersion="1.21.0"

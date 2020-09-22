@@ -1,7 +1,7 @@
 #!/usr/bin/env groovy
 
 // PARAMETERS for this pipeline:
-// def MIDSTM_BRANCH = "crw-2.4-rhel-8" // upstream source repo branch from which to find and sync commits to pkgs.devel repo
+// def MIDSTM_BRANCH = "crw-2.5-rhel-8" // upstream source repo branch from which to find and sync commits to pkgs.devel repo
 // def CSV_VERSION = "2.4.0" // version of CRW to use to update sources
 
 def MIDSTM_REPO = "redhat-developer/codeready-workspaces"

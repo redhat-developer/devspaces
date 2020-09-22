@@ -175,7 +175,7 @@ CONTAINERS=""
 for key in "$@"; do
   case $key in
     '--crw-2.5-rhel-8') CONTAINERS="${CRW24_CONTAINERS_RHCC}"; candidateTag="crw-2.5-rhel-8-container-candidate"; BASETAG=2.5; shift 0;; 
-    '--crw24'|'--crw-2.4-rhel-8') CONTAINERS="${CRW24_CONTAINERS_RHCC}"; candidateTag="crw-2.4-rhel-8-container-candidate"; BASETAG=2.4; shift 0;; 
+    '--crw24'|'--crw-2.5-rhel-8') CONTAINERS="${CRW24_CONTAINERS_RHCC}"; candidateTag="crw-2.5-rhel-8-container-candidate"; BASETAG=2.4; shift 0;; 
     '--crw23') CONTAINERS="${CRW22_CONTAINERS_RHCC}"; candidateTag="crw-2.2-rhel-8-container-candidate"; BASETAG=2.3; shift 0;; 
     '--crw22') CONTAINERS="${CRW22_CONTAINERS_RHCC}"; candidateTag="crw-2.2-rhel-8-container-candidate"; BASETAG=2.2; shift 0;;
     '-c') CONTAINERS="${CONTAINERS} $2"; shift 1;;

@@ -1,7 +1,7 @@
 #!/usr/bin/env groovy
 
 // PARAMETERS for this pipeline:
-// MIDSTM_BRANCH="crw-2.4-rhel-8"
+// MIDSTM_BRANCH="crw-2.5-rhel-8"
 // mailSubject  - subject to put on the email, eg., CRW 2.3.0.RC-mm-yy ready for QE
 // errataURL - URL for the errata, eg., https://errata.devel.redhat.com/errata/container/56923
 // unresolvedCriticalsBlockersURL - URL for unresolved blockers/criticals, eg., Unresolved criticals/blockers:

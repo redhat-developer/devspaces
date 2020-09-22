@@ -2,7 +2,7 @@
 
 // PARAMETERS for this pipeline:
 // def FORCE_BUILD = "false"
-// def MIDSTM_BRANCH = "crw-2.4-rhel-8" // branch of GH and pkgs.devel repos to sync commits
+// def MIDSTM_BRANCH = "crw-2.5-rhel-8" // branch of GH and pkgs.devel repos to sync commits
 
 // TODO source from eclipse/che-plugin-registry too
 
@@ -10,7 +10,7 @@ import groovy.transform.Field
 
 def MIDSTM_REPO = "redhat-developer/codeready-workspaces" //source repo from which to find and sync commits to pkgs.devel repo
 def DWNSTM_REPO = "containers/codeready-workspaces-pluginregistry" // dist-git repo to use as target
-def DWNSTM_BRANCH = MIDSTM_BRANCH // target branch in dist-git repo, eg., crw-2.4-rhel-8
+def DWNSTM_BRANCH = MIDSTM_BRANCH // target branch in dist-git repo, eg., crw-2.5-rhel-8
 def SCRATCH = "false"
 def PUSH_TO_QUAY = "true"
 def QUAY_PROJECT = "pluginregistry" // also used for the Brew dockerfile params
