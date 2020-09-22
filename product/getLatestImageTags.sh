@@ -38,8 +38,8 @@ checkVersion() {
 }
 checkVersion 1.1 "$(skopeo --version | sed -e "s/skopeo version //")" skopeo
 
-candidateTag="crw-2.4-rhel-8-container-candidate"
-BASETAG=2.4 # tag to search for in quay
+candidateTag="crw-2.5-rhel-8-container-candidate"
+BASETAG=2.5 # tag to search for in quay
 
 CRW24_CONTAINERS_RHCC="\
 codeready-workspaces/crw-2-rhel8-operator-metadata \
@@ -157,11 +157,11 @@ Usage:
   $0 -c ubi7 -c ubi8:8.0 --stage -n 5                        | check RHCC stage registry; show 8.0* tags; show 5 tags per container
   $0 -c pivotaldata/centos --docker --dockerfile             | check docker registry; show Dockerfile contents (requires dfimage)
   $0 -c codeready-workspaces-plugin-java11-openj9-rhel8 --quay             | check a non-amd64 image
-  $0 -c codeready-workspaces-theia-rhel8 --osbs --pushtoquay='2.4 latest'  | pull an image from osbs, push 3 tags to quay
+  $0 -c codeready-workspaces-theia-rhel8 --osbs --pushtoquay='2.5 latest'  | pull an image from osbs, push 3 tags to quay
 
   $0 --crw24 --nvr --log                                     | check images in brew; output NVRs can be copied to Errata; show links to Brew logs
   $0 --crw24 --osbs                                          | check images in OSBS ( registry-proxy.engineering.redhat.com/rh-osbs )
-  $0 --crw24 --osbs --pushtoquay='2.4 latest'                | pull images from OSBS, then push matching tag to quay, including extra tags if set
+  $0 --crw24 --osbs --pushtoquay='2.5 latest'                | pull images from OSBS, then push matching tag to quay, including extra tags if set
 
 "
 	exit
@@ -174,6 +174,7 @@ CONTAINERS=""
 #   case $1 in
 for key in "$@"; do
   case $key in
+    '--crw-2.5-rhel-8') CONTAINERS="${CRW24_CONTAINERS_RHCC}"; candidateTag="crw-2.5-rhel-8-container-candidate"; BASETAG=2.5; shift 0;; 
     '--crw24'|'--crw-2.4-rhel-8') CONTAINERS="${CRW24_CONTAINERS_RHCC}"; candidateTag="crw-2.4-rhel-8-container-candidate"; BASETAG=2.4; shift 0;; 
     '--crw23') CONTAINERS="${CRW22_CONTAINERS_RHCC}"; candidateTag="crw-2.2-rhel-8-container-candidate"; BASETAG=2.3; shift 0;; 
     '--crw22') CONTAINERS="${CRW22_CONTAINERS_RHCC}"; candidateTag="crw-2.2-rhel-8-container-candidate"; BASETAG=2.2; shift 0;;
