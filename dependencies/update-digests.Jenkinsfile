@@ -33,12 +33,20 @@ skopeo --version
 '''
 }
 
+def installYq(){
+	sh '''#!/bin/bash -xe
+sudo yum -y install jq python3-six python3-pip
+sudo /usr/bin/python3 -m pip install --upgrade pip yq; jq --version; yq --version
+'''
+}
+
 def errorOccurred = false
 timeout(120) {
     node("rhel7-releng"){ 
         try { 
             stage "Check registries"
             cleanWs()
+            installYq()
             CRW_VERSION = getCrwVersion(MIDSTM_BRANCH)
             println "CRW_VERSION = '" + CRW_VERSION + "'"
             installSkopeo(CRW_VERSION)
