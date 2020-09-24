@@ -1,9 +1,9 @@
 quay.io/crw/crw-2-rhel8-operator:2.4-5
-quay.io/crw/crw-2-rhel8-operator-metadata:2.4-61
-quay.io/crw/devfileregistry-rhel8:2.4-62
-     NVR: codeready-workspaces-devfileregistry-rhel8-container-2.4-62
-   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1329783
-  Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-devfileregistry/commit?id=53a2640749217821f9896dd8a48321a2ee3e64ad
+quay.io/crw/crw-2-rhel8-operator-metadata:2.4-64
+quay.io/crw/devfileregistry-rhel8:2.4-64
+     NVR: codeready-workspaces-devfileregistry-rhel8-container-2.4-64
+   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1330104
+  Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-devfileregistry/commit?id=327585bb568f3fc21afbdf061883fa2a728bd776
 
 quay.io/crw/imagepuller-rhel8:2.4-6
      NVR: codeready-workspaces-imagepuller-rhel8-container-2.4-6
@@ -60,9 +60,9 @@ quay.io/crw/plugin-openshift-rhel8:2.4-3
    Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1324428
   Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-plugin-openshift/commit?id=ebdfb1089c3a7f1f106cad06997eca70b7a5f54d
 
-quay.io/crw/pluginregistry-rhel8:2.4-59
-     NVR: codeready-workspaces-pluginregistry-rhel8-container-2.4-59
-   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1329785
+quay.io/crw/pluginregistry-rhel8:2.4-61
+     NVR: codeready-workspaces-pluginregistry-rhel8-container-2.4-61
+   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1330106
   Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-pluginregistry/commit?id=307116b7d82962ff56cf7770a8e1dde5aac2bfe9
 
 quay.io/crw/server-rhel8:2.4-14
