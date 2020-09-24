@@ -144,11 +144,12 @@ SHOWNVR=0 	# show NVR format instead of repo/container:tag format
 SHOWLOG=0 	# show URL of the console log
 PUSHTOQUAY=0 # utility method to pull then push to quay
 PUSHTOQUAYTAGS="" # utility method to pull then push to quay (extra tags to push)
+SORTED=0 # if 0, use the order of containers in the CRW*_CONTAINERS_* strings above; if 1, sort alphabetically
 usage () {
 	echo "
 Usage: 
   $0 --crw24                                                 | use default list of CRW images in RHCC Prod
-  $0 --crw24 --stage                                         | use default list of CRW images in RHCC Stage
+  $0 --crw24 --stage --sort                                  | use default list of CRW images in RHCC Stage, sorted alphabetically
   $0 --crw24 --quay --arches                                 | use default list of CRW images in quay.io/crw; show arches
 
   $0 -c 'crw/theia-rhel8 crw/theia-endpoint-rhel8' --quay    | check a specific image in quay
@@ -199,6 +200,7 @@ for key in "$@"; do
     '--nvr') if [[ ! $CONTAINERS ]]; then CONTAINERS="${CRW24_CONTAINERS_OSBS}"; fi; SHOWNVR=1; shift 0;;
     '--tagonly') TAGONLY=1; shift 0;;
     '--log') SHOWLOG=1; shift 0;;
+    '--sort') SORTED=1; shift 0;;
     '-h') usage;;
   esac
   shift 1
@@ -242,6 +244,9 @@ if [[ $SHOWHISTORY -eq 1 ]]; then
 fi
 
 if [[ ${CONTAINERS} == "" ]]; then usage; fi
+
+# sort the container list
+if [[ $SORTED -eq 1 ]]; then CONTAINERS=$(tr ' ' '\n' <<< "${CONTAINERS}" | sort | uniq); fi
 
 # special case!
 if [[ ${SHOWNVR} -eq 1 ]]; then 
