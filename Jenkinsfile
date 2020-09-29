@@ -1,17 +1,21 @@
 #!/usr/bin/env groovy
 
 // PARAMETERS for this pipeline:
-// node == node label, eg., rhel7-devstudio-releng-16gb-ram||rhel7-16gb-ram||rhel7-devstudio-releng||rhel7 or rhel7-32gb||rhel7-16gb||rhel7-8gb
-// nodeBig == node label, eg., rhel7-devstudio-releng-16gb-ram||rhel7-16gb-ram or rhel7-32gb||rhel7-16gb
-// branchToBuildDev = refs/tags/19
-// branchToBuildParent = refs/tags/7.15.0
-// branchToBuildChe = refs/tags/7.17.x
-// MIDSTM_BRANCH = "crw-2.5-rhel-8" (previously branchToBuildCRW)
 // BUILDINFO = ${JOB_NAME}/${BUILD_NUMBER}
-// MVN_EXTRA_FLAGS = extra flags, such as to disable a module -pl '!org.eclipse.che.selenium:che-selenium-test'
 // SCRATCH = true (don't push to Quay) or false (do push to Quay)
+// FORCE_BUILD = "false"
 
 import groovy.transform.Field
+
+@Field String branchToBuildDev = "refs/tags/19"
+@Field String branchToBuildParent = "refs/tags/7.15.0"
+@Field String branchToBuildChe = "refs/tags/7.19.x"
+@Field String MIDSTM_BRANCH = "crw-2.5-rhel-8" // target branch in GH repo, eg., crw-2.5-rhel-8
+
+@Field String node = "rhel7-32gb||rhel7-16gb||rhel7-8gb" // node label, eg., rhel7-devstudio-releng-16gb-ram||rhel7-16gb-ram||rhel7-devstudio-releng||rhel7 or rhel7-32gb||rhel7-16gb||rhel7-8gb
+@Field String nodeBig = "rhel7-32gb||rhel7-16gb" // node label, eg., rhel7-devstudio-releng-16gb-ram||rhel7-16gb-ram or rhel7-32gb||rhel7-16gb
+@Field String PUSH_TO_QUAY = "true"
+@Field String MVN_EXTRA_FLAGS = "" // additional flags for maven (currently not used), eg., to disable a module -pl '!org.eclipse.che.selenium:che-selenium-test'
 
 def DWNSTM_REPO = "containers/codeready-workspaces" // dist-git repo to use as target for everything
 def DWNSTM_BRANCH = MIDSTM_BRANCH // target branch in dist-git repo, eg., crw-2.5-rhel-8
