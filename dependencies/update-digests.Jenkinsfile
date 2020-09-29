@@ -1,9 +1,11 @@
 #!/usr/bin/env groovy
 
-// PARAMETERS for this pipeline:
-// MIDSTM_BRANCH = "crw-2.5-rhel-8"
-
 import groovy.transform.Field
+
+// PARAMETERS for this pipeline: (none)
+
+@Field String MIDSTM_BRANCH = "crw-2.5-rhel-8"
+
 @Field String CRW_VERSION_F = ""
 def String getCrwVersion(String MIDSTM_BRANCH) {
   if (CRW_VERSION_F.equals("")) {
