@@ -1,11 +1,12 @@
 #!/usr/bin/env groovy
 
+import groovy.transform.Field
+
 // PARAMETERS for this pipeline:
 // MIDSTM_BRANCH="crw-2.y-rhel-8"
 
 def buildNode = "rhel7-releng" // node label
 
-import groovy.transform.Field
 @Field String CSV_VERSION_F = ""
 def String getCSVVersion(String MIDSTM_BRANCH) {
   if (CSV_VERSION_F.equals("")) {
