@@ -1,11 +1,11 @@
 #!/usr/bin/env groovy
 
+import groovy.transform.Field
+
 // PARAMETERS for this pipeline:
 // BUILDINFO = ${JOB_NAME}/${BUILD_NUMBER}
 // SCRATCH = true (don't push to Quay) or false (do push to Quay)
 // FORCE_BUILD = "false"
-
-import groovy.transform.Field
 
 @Field String branchToBuildDev = "refs/tags/19"
 @Field String branchToBuildParent = "refs/tags/7.15.0"
