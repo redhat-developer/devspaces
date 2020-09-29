@@ -1,12 +1,13 @@
 #!/usr/bin/env groovy
 
+import groovy.transform.Field
+
 // PARAMETERS for this pipeline:
 // def FORCE_BUILD = "false"
-// def MIDSTM_BRANCH = "crw-2.5-rhel-8" // branch of GH and pkgs.devel repos to sync commits
 
 // TODO source from eclipse/che-plugin-registry too
 
-import groovy.transform.Field
+@Field String MIDSTM_BRANCH = "crw-2.5-rhel-8" // branch of GH and pkgs.devel repos to sync commits
 
 def MIDSTM_REPO = "redhat-developer/codeready-workspaces" //source repo from which to find and sync commits to pkgs.devel repo
 def DWNSTM_REPO = "containers/codeready-workspaces-pluginregistry" // dist-git repo to use as target
