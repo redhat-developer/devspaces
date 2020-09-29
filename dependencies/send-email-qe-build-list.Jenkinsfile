@@ -1,7 +1,9 @@
 #!/usr/bin/env groovy
 
+import hudson.FilePath
+import groovy.transform.Field
+
 // PARAMETERS for this pipeline:
-// MIDSTM_BRANCH="crw-2.5-rhel-8"
 // mailSubject  - subject to put on the email, eg., CRW 2.3.0.RC-mm-yy ready for QE
 // errataURL - URL for the errata, eg., https://errata.devel.redhat.com/errata/container/56923
 // unresolvedCriticalsBlockersURL - URL for unresolved blockers/criticals, eg., Unresolved criticals/blockers:
@@ -12,8 +14,8 @@
 // doStage - boolean: if checked, include RHCC stage images in email
 // recipientOverride - if set, send mail to recipient(s) listed rather than default mailing lists
 
-import hudson.FilePath
-import groovy.transform.Field
+@Field String MIDSTM_BRANCH="crw-2.5-rhel-8"
+
 @Field String CRW_VERSION_F = ""
 def String getCrwVersion(String MIDSTM_BRANCH) {
   if (CRW_VERSION_F.equals("")) {
