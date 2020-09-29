@@ -2,14 +2,14 @@
 
 // PARAMETERS for this pipeline:
 // def FORCE_BUILD = "false"
-// def SOURCE_BRANCH = "7.18.x" or "master" // upstream source repo branch from which to find and sync commits to pkgs.devel repo
 
 import groovy.transform.Field
 
 def SOURCE_REPO = "che-incubator/kubernetes-image-puller" // upstream source repo from which to find and sync commits to pkgs.devel repo
 def DWNSTM_REPO = "containers/codeready-workspaces-imagepuller" // dist-git repo to use as target
 
-def DWNSTM_BRANCH = "crw-2.5-rhel-8" // target branch in dist-git repo, eg., crw-2.5-rhel-8
+@Field String SOURCE_BRANCH = "7.19.x" or "master" // upstream source repo branch from which to find and sync commits to pkgs.devel repo
+@Field String DWNSTM_BRANCH = "crw-2.5-rhel-8" // target branch in dist-git repo, eg., crw-2.5-rhel-8
 def SCRATCH = "false"
 def PUSH_TO_QUAY = "true"
 def QUAY_PROJECT = "imagepuller" // also used for the Brew dockerfile params
