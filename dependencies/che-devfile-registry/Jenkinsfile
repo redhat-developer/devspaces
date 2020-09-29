@@ -1,11 +1,11 @@
 #!/usr/bin/env groovy
 
+import groovy.transform.Field
+
 // PARAMETERS for this pipeline:
 // def FORCE_BUILD = "false"
 
 // TODO source from eclipse/che-devfile-registry too
-
-import groovy.transform.Field
 
 @Field String MIDSTM_BRANCH = "crw-2.5-rhel-8" // branch of GH and pkgs.devel repos to sync commits
 
