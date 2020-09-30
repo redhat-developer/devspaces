@@ -88,8 +88,8 @@ for d in codeready-workspaces-operator; do
 	# CRW-833 inject latest CSV files w/ latest digests
 	rsync -aPr ../containers_codeready-workspaces-operator-metadata/controller-manifests/* ./controller-manifests/
 	git add ./controller-manifests/
-	git commit -s -m "[release] copy generated controller-manifests content back to codeready-workspaces-operator before tagging" ./controller-manifests/
-	git push origin ${crw_repos_branch}
+	git commit -s -m "[release] copy generated controller-manifests content back to codeready-workspaces-operator before tagging" ./controller-manifests/ || true
+	git push origin ${crw_repos_branch} || true
 
 	git tag ${CRW_TAG}; git push origin ${CRW_TAG}
 	cd ..
