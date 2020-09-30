@@ -45,7 +45,7 @@ skopeo --version
 '''
 }
 
-def buildNode = "rhel7-releng" // slave label
+def buildNode = "rhel7-releng" // node label
 timeout(120) {
 	node("${buildNode}"){ stage "Sync repos"
     wrap([$class: 'TimestamperBuildWrapper']) {
