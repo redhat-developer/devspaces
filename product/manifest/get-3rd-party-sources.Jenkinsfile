@@ -74,7 +74,7 @@ timeout(20) {
             extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: "crw"]], 
             submoduleCfg: [], 
             userRemoteConfigs: [[url: "https://github.com/redhat-developer/codeready-workspaces.git"]]])
-
+            currentBuild.description="Collecting sources for " + CSV_VERSION + " ..."
             sh '''#!/bin/bash -xe
 
 # install yq, python w/ virtualenv, pip
@@ -131,6 +131,7 @@ rsync -zrlt --rsh=ssh --protocol=28  --delete ${WORKSPACE}/sources/vscode/*     
 ssh "${DESTHOST}" "cd /mnt/rcm-guest/staging/crw/CRW-''' + CSV_VERSION + '''/ && tree"
 ssh "${DESTHOST}" "/mnt/redhat/scripts/rel-eng/utility/bus-clients/stage-mw-release CRW-''' + CSV_VERSION + '''"
 '''
+            currentBuild.description=CSV_VERSION
           }
     }
 }
