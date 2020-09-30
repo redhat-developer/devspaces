@@ -17,8 +17,8 @@ crw_repos_branch=crw-2.5-rhel-8
 pkgs_devel_branch=crw-2.5-rhel-8
 
 if [[ $# -lt 4 ]]; then
-	echo "Usage: $0 -t CRW_TAG -o CHE_OPERATOR_BRANCH [-gh CRW_GH_BRANCH] [-pd PKGS_DEVEL_BRANCH]"
-	echo "Example: $0 -t 2.4.0.GA -o 7.17.x -gh crw-2.5-rhel-8 -pd crw-2.5-rhel-8"
+	echo "Usage: $0 -t CRW_TAG [-gh CRW_GH_BRANCH] [-pd PKGS_DEVEL_BRANCH]"
+	echo "Example: $0 -t 2.5.0.GA -gh crw-2.5-rhel-8 -pd crw-2.5-rhel-8"
 	exit 1
 fi
 
@@ -26,7 +26,6 @@ fi
 for key in "$@"; do
   case $key in
     '-t') CRW_TAG="$2"; shift 0;;
-    '-o') che_operator_branch="$2"; shift 0;;
     '-gh') crw_repos_branch="$2"; shift 0;;
     '-pd') pkgs_devel_branch="$2"; shift 0;;
   esac
@@ -59,14 +58,6 @@ codeready-workspaces-stacks-golang       codeready-workspaces-stacks-php  \
 	if [[ ! -d ${d} ]]; then git clone -b ${pkgs_devel_branch} ssh://nboldt@pkgs.devel.redhat.com/containers/${d} containers_${d}; fi
 	cd containers_${d} && git checkout ${pkgs_devel_branch} -q && git pull -q
 	git tag -a ${CRW_TAG} -m "${CRW_TAG}"; git push origin ${CRW_TAG}
-	cd ..
-done
-
-for d in che-operator; do
-	echo; echo "== $d =="
-	if [[ ! -d ${d} ]]; then git clone --depth 1 -b ${che_operator_branch} git@github.com:eclipse/${d}.git projects_${d}; fi
-	cd projects_${d} && git checkout ${che_operator_branch} -q && git pull -q
-	git tag ${CRW_TAG};	git push origin ${CRW_TAG}
 	cd ..
 done
 
