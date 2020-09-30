@@ -1,11 +1,13 @@
 #!/usr/bin/env groovy
 
-// PARAMETERS for this pipeline:
-// MIDSTM_BRANCH="crw-2.y-rhel-8"
+import groovy.transform.Field
+
+// PARAMETERS for this pipeline: (none)
 
 def buildNode = "rhel7-releng" // node label
 
-import groovy.transform.Field
+@Field String  MIDSTM_BRANCH="crw-2.4-rhel-8"
+
 @Field String CSV_VERSION_F = ""
 def String getCSVVersion(String MIDSTM_BRANCH) {
   if (CSV_VERSION_F.equals("")) {
@@ -29,6 +31,7 @@ timeout(20) {
         stage "Collect 3rd party sources"
         cleanWs()
         installYq()
+        CSV_VERSION_F = getCSVVersion(MIDSTM_BRANCH)
 	      withCredentials([string(credentialsId:'devstudio-release.token', variable: 'GITHUB_TOKEN'), 
           file(credentialsId: 'crw-build.keytab', variable: 'CRW_KEYTAB')]) {
           checkout([$class: 'GitSCM', 
@@ -87,16 +90,13 @@ for mnt in RCMG; do
   if [[ ! -d ${WORKSPACE}/${mnt}-ssh/crw ]]; then  sshfs ${!mnt} ${WORKSPACE}/${mnt}-ssh; fi
 done
 
-CSV_VERSION="''' + getCSVVersion(MIDSTM_BRANCH) + '''"
-echo CSV_VERSION = ${CSV_VERSION}
-
 # copy files to rcm-guest
-ssh "${DESTHOST}" "cd /mnt/rcm-guest/staging/crw && mkdir -p CRW-''' + CSV_VERSION + '''/sources/containers CRW-''' + CSV_VERSION + '''/sources/vscode && ls -la . "
-rsync -zrlt --rsh=ssh --protocol=28 ${WORKSPACE}/manifest-srcs.txt  ${WORKSPACE}/${mnt}-ssh/CRW-''' + CSV_VERSION + '''/sources/
-rsync -zrlt --rsh=ssh --protocol=28  --delete ${WORKSPACE}/sources/containers/* ${WORKSPACE}/${mnt}-ssh/CRW-''' + CSV_VERSION + '''/sources/containers/
-rsync -zrlt --rsh=ssh --protocol=28  --delete ${WORKSPACE}/sources/vscode/*     ${WORKSPACE}/${mnt}-ssh/CRW-''' + CSV_VERSION + '''/sources/vscode/
-ssh "${DESTHOST}" "cd /mnt/rcm-guest/staging/crw/CRW-''' + CSV_VERSION + '''/ && tree"
-ssh "${DESTHOST}" "/mnt/redhat/scripts/rel-eng/utility/bus-clients/stage-mw-release CRW-''' + CSV_VERSION + '''"
+ssh "${DESTHOST}" "cd /mnt/rcm-guest/staging/crw && mkdir -p CRW-''' + CSV_VERSION_F + '''/sources/containers CRW-''' + CSV_VERSION_F + '''/sources/vscode && ls -la . "
+rsync -zrlt --rsh=ssh --protocol=28 ${WORKSPACE}/manifest-srcs.txt  ${WORKSPACE}/${mnt}-ssh/CRW-''' + CSV_VERSION_F + '''/sources/
+rsync -zrlt --rsh=ssh --protocol=28  --delete ${WORKSPACE}/sources/containers/* ${WORKSPACE}/${mnt}-ssh/CRW-''' + CSV_VERSION_F + '''/sources/containers/
+rsync -zrlt --rsh=ssh --protocol=28  --delete ${WORKSPACE}/sources/vscode/*     ${WORKSPACE}/${mnt}-ssh/CRW-''' + CSV_VERSION_F + '''/sources/vscode/
+ssh "${DESTHOST}" "cd /mnt/rcm-guest/staging/crw/CRW-''' + CSV_VERSION_F + '''/ && tree"
+ssh "${DESTHOST}" "/mnt/redhat/scripts/rel-eng/utility/bus-clients/stage-mw-release CRW-''' + CSV_VERSION_F + '''"
 '''
           }
     }
