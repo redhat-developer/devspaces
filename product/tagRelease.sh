@@ -67,9 +67,8 @@ codeready-workspaces-stacks-golang       codeready-workspaces-stacks-php  \
 	git checkout ${pkgs_devel_branch} -q
 	git pull -q
 
-	if [[ $(git tag -a ${CRW_TAG} -m "${CRW_TAG}" 2>&1) != *"already exists"* ]]; then
-		git push origin ${CRW_TAG}
-	fi
+	git tag -a ${CRW_TAG} -m "${CRW_TAG}" || true
+	git push origin ${CRW_TAG} || true
 	cd ..
 done
 
@@ -93,9 +92,8 @@ for d in codeready-workspaces-operator; do
 	git commit -s -m "[release] copy generated controller-manifests content back to codeready-workspaces-operator before tagging" ./controller-manifests/ || true
 	git push origin ${crw_repos_branch} || true
 
-	if [[ $(git tag ${CRW_TAG} 2>&1) != *"already exists"* ]]; then
-		git push origin ${CRW_TAG}
-	fi
+	git tag ${CRW_TAG} || true
+	git push origin ${CRW_TAG} || true
 	cd ..
 done
 
@@ -114,9 +112,8 @@ for d in codeready-workspaces codeready-workspaces-deprecated codeready-workspac
 	git checkout --track origin/${crw_repos_branch} -q || true
 	git pull -q
 
-	if [[ $(git tag ${CRW_TAG} 2>&1) != *"already exists"* ]]; then
-		git push origin ${CRW_TAG}
-	fi
+	git tag ${CRW_TAG} || true
+	git push origin ${CRW_TAG} || true
 	cd ..
 done
 
