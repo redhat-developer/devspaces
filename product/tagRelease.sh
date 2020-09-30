@@ -67,7 +67,8 @@ codeready-workspaces-stacks-golang       codeready-workspaces-stacks-php  \
 	git checkout ${pkgs_devel_branch} -q
 	git pull -q
 
-	git tag -a ${CRW_TAG} -m "${CRW_TAG}"; git push origin ${CRW_TAG}
+	git tag -a ${CRW_TAG} -m "${CRW_TAG}" || true
+	git push origin ${CRW_TAG} || true
 	cd ..
 done
 
@@ -80,7 +81,7 @@ for d in codeready-workspaces-operator; do
 	git config user.name "Red Hat Devstudio Release Bot"
 	git config --global push.default matching
 	git config --global hub.protocol https
-	git remote set-url origin https://\$GITHUB_TOKEN:x-oauth-basic@github.com/redhat-developer/${d}.git
+	git remote set-url origin https://${GITHUB_TOKEN}:x-oauth-basic@github.com/redhat-developer/${d}.git
 
 	git checkout --track origin/${crw_repos_branch} -q || true
 	git pull -q
@@ -91,7 +92,8 @@ for d in codeready-workspaces-operator; do
 	git commit -s -m "[release] copy generated controller-manifests content back to codeready-workspaces-operator before tagging" ./controller-manifests/ || true
 	git push origin ${crw_repos_branch} || true
 
-	git tag ${CRW_TAG}; git push origin ${CRW_TAG}
+	git tag ${CRW_TAG} || true
+	git push origin ${CRW_TAG} || true
 	cd ..
 done
 
@@ -105,12 +107,13 @@ for d in codeready-workspaces codeready-workspaces-deprecated codeready-workspac
 	git config user.name "Red Hat Devstudio Release Bot"
 	git config --global push.default matching
 	git config --global hub.protocol https
-	git remote set-url origin https://\$GITHUB_TOKEN:x-oauth-basic@github.com/redhat-developer/${d}.git
+	git remote set-url origin https://${GITHUB_TOKEN}:x-oauth-basic@github.com/redhat-developer/${d}.git
 
 	git checkout --track origin/${crw_repos_branch} -q || true
 	git pull -q
 
-	git tag ${CRW_TAG}; git push origin ${CRW_TAG}
+	git tag ${CRW_TAG} || true
+	git push origin ${CRW_TAG} || true
 	cd ..
 done
 
