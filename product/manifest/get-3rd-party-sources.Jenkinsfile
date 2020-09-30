@@ -6,7 +6,7 @@ import groovy.transform.Field
 
 def buildNode = "rhel7-releng" // node label
 
-@Field String  MIDSTM_BRANCH="crw-2.4-rhel-8"
+@Field String MIDSTM_BRANCH="crw-2.4-rhel-8"
 
 @Field String CSV_VERSION = ""
 def String getCSVVersion(String MIDSTM_BRANCH) {
@@ -60,7 +60,7 @@ timeout(20) {
         stage "Collect 3rd party sources"
         cleanWs()
         installYq()
-        CRW_VERSION = getCrwVersion(DWNSTM_BRANCH)
+        CRW_VERSION = getCrwVersion(MIDSTM_BRANCH)
         println "CRW_VERSION = '" + CRW_VERSION + "'"
         installSkopeo(CRW_VERSION)
         CSV_VERSION = getCSVVersion(MIDSTM_BRANCH)
