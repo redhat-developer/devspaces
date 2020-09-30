@@ -12,7 +12,6 @@ import groovy.transform.Field
 @Field String branchToBuildChe = "refs/tags/7.19.x"
 @Field String MIDSTM_BRANCH = "crw-2.5-rhel-8" // target branch in GH repo, eg., crw-2.5-rhel-8
 
-def node = 'rhel7-32gb||rhel7-16gb||rhel7-8gb'.trim() // node label
 @Field String PUSH_TO_QUAY = "true"
 @Field String MVN_EXTRA_FLAGS = "" // additional flags for maven (currently not used), eg., to disable a module -pl '!org.eclipse.che.selenium:che-selenium-test'
 
@@ -107,7 +106,7 @@ def VER_CRW = "VER_CRW"
 def SHA_CRW = "SHA_CRW"
 
 timeout(240) {
-	node("${node}"){ stage "Build ${DEV_path}, ${PAR_path}, ${CHE_DB_path}, ${CHE_WL_path}, and ${CRW_path}"
+	node("rhel7-32gb||rhel7-16gb||rhel7-8gb"){ stage "Build ${DEV_path}, ${PAR_path}, ${CHE_DB_path}, ${CHE_WL_path}, and ${CRW_path}"
 		wrap([$class: 'TimestamperBuildWrapper']) {
 		    withCredentials([string(credentialsId:'devstudio-release.token', variable: 'GITHUB_TOKEN'), 
 		    	file(credentialsId: 'crw-build.keytab', variable: 'CRW_KEYTAB')]) {
@@ -532,7 +531,7 @@ fi
 }
 
 timeout(120) {
-	node("${node}"){ stage "Run get-sources-rhpkg-container-build"
+	node("rhel7-releng"){ stage "Run get-sources-rhpkg-container-build"
 		def QUAY_REPO_PATHs=(env.ghprbPullId && env.ghprbPullId?.trim()?"":("${SCRATCH}"=="true"?"":"server-rhel8"))
 		if (fileExists(WORKSPACE + '/trigger-downstream-true') || PUSH_TO_QUAY.equals("true")) {
 			echo "[INFO] Trigger get-sources-rhpkg-container-build " + (env.ghprbPullId && env.ghprbPullId?.trim()?"for PR-${ghprbPullId} ":"") + \
