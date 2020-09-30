@@ -12,7 +12,7 @@ import groovy.transform.Field
 @Field String branchToBuildChe = "refs/tags/7.19.x"
 @Field String MIDSTM_BRANCH = "crw-2.5-rhel-8" // target branch in GH repo, eg., crw-2.5-rhel-8
 
-def node = "rhel7-32gb||rhel7-16gb||rhel7-8gb" // node label, eg., rhel7-devstudio-releng-16gb-ram||rhel7-16gb-ram||rhel7-devstudio-releng||rhel7 or rhel7-32gb||rhel7-16gb||rhel7-8gb
+def node = "rhel7-32gb\|\|rhel7-16gb\|\|rhel7-8gb" // node label, eg., rhel7-devstudio-releng-16gb-ram||rhel7-16gb-ram||rhel7-devstudio-releng||rhel7 or rhel7-32gb||rhel7-16gb||rhel7-8gb
 @Field String PUSH_TO_QUAY = "true"
 @Field String MVN_EXTRA_FLAGS = "" // additional flags for maven (currently not used), eg., to disable a module -pl '!org.eclipse.che.selenium:che-selenium-test'
 
