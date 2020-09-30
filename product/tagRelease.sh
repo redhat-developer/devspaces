@@ -82,7 +82,7 @@ for d in codeready-workspaces-operator; do
 	git config user.name "Red Hat Devstudio Release Bot"
 	git config --global push.default matching
 	git config --global hub.protocol https
-	git remote set-url origin https://\$GITHUB_TOKEN:x-oauth-basic@github.com/redhat-developer/${d}.git
+	git remote set-url origin https://${GITHUB_TOKEN}:x-oauth-basic@github.com/redhat-developer/${d}.git
 
 	git checkout --track origin/${crw_repos_branch} -q || true
 	git pull -q
@@ -109,7 +109,7 @@ for d in codeready-workspaces codeready-workspaces-deprecated codeready-workspac
 	git config user.name "Red Hat Devstudio Release Bot"
 	git config --global push.default matching
 	git config --global hub.protocol https
-	git remote set-url origin https://\$GITHUB_TOKEN:x-oauth-basic@github.com/redhat-developer/${d}.git
+	git remote set-url origin https://${GITHUB_TOKEN}:x-oauth-basic@github.com/redhat-developer/${d}.git
 
 	git checkout --track origin/${crw_repos_branch} -q || true
 	git pull -q
