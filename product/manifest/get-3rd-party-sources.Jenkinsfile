@@ -2,24 +2,54 @@
 
 import groovy.transform.Field
 
-// PARAMETERS for this pipeline:
-// MIDSTM_BRANCH="crw-2.y-rhel-8"
+// PARAMETERS for this pipeline: (none)
 
 def buildNode = "rhel7-releng" // node label
 
-@Field String CSV_VERSION_F = ""
+@Field String MIDSTM_BRANCH="crw-2.5-rhel-8"
+
+@Field String CSV_VERSION = ""
 def String getCSVVersion(String MIDSTM_BRANCH) {
-  if (CSV_VERSION_F.equals("")) {
-    CSV_VERSION_F = sh(script: '''#!/bin/bash -xe
+  if (CSV_VERSION.equals("")) {
+    CSV_VERSION = sh(script: '''#!/bin/bash -xe
     curl -sSLo- https://raw.githubusercontent.com/redhat-developer/codeready-workspaces-operator/''' + MIDSTM_BRANCH + '''/manifests/codeready-workspaces.csv.yaml | yq -r .spec.version''', returnStdout: true).trim()
   }
-  return CSV_VERSION_F
+  return CSV_VERSION
+}
+
+@Field String CRW_VERSION = ""
+def String getCrwVersion(String MIDSTM_BRANCH) {
+  if (CRW_VERSION.equals("")) {
+    CRW_VERSION = sh(script: '''#!/bin/bash -xe
+    curl -sSLo- https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/''' + MIDSTM_BRANCH + '''/dependencies/VERSION''', returnStdout: true).trim()
+  }
+  return CRW_VERSION
 }
 
 def installYq(){
 		sh '''#!/bin/bash -xe
 sudo yum -y install jq python3-six python3-pip
 sudo /usr/bin/python3 -m pip install --upgrade pip yq; jq --version; yq --version
+'''
+}
+
+def installSkopeo(String CRW_VERSION)
+{
+sh '''#!/bin/bash -xe
+pushd /tmp >/dev/null
+# remove any older versions
+sudo yum remove -y skopeo || true
+# install from @kcrane build
+if [[ ! -x /usr/local/bin/skopeo ]]; then
+    sudo curl -sSLO "https://codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/crw-deprecated_''' + CRW_VERSION + '''/lastSuccessfulBuild/artifact/codeready-workspaces-deprecated/skopeo/target/skopeo-$(uname -m).tar.gz"
+fi
+if [[ -f /tmp/skopeo-$(uname -m).tar.gz ]]; then 
+    sudo tar xzf /tmp/skopeo-$(uname -m).tar.gz --overwrite -C /usr/local/bin/
+    sudo chmod 755 /usr/local/bin/skopeo
+    sudo rm -f /tmp/skopeo-$(uname -m).tar.gz
+fi
+popd >/dev/null
+skopeo --version
 '''
 }
 
@@ -30,7 +60,12 @@ timeout(20) {
         stage "Collect 3rd party sources"
         cleanWs()
         installYq()
-	      withCredentials([string(credentialsId:'devstudio-release.token', variable: 'GITHUB_TOKEN'), 
+        CRW_VERSION = getCrwVersion(MIDSTM_BRANCH)
+        println "CRW_VERSION = '" + CRW_VERSION + "'"
+        installSkopeo(CRW_VERSION)
+        CSV_VERSION = getCSVVersion(MIDSTM_BRANCH)
+        println "CSV_VERSION = '" + CSV_VERSION + "'"
+        withCredentials([string(credentialsId:'devstudio-release.token', variable: 'GITHUB_TOKEN'), 
           file(credentialsId: 'crw-build.keytab', variable: 'CRW_KEYTAB')]) {
           checkout([$class: 'GitSCM', 
             branches: [[name: "${MIDSTM_BRANCH}" ]], 
@@ -39,7 +74,7 @@ timeout(20) {
             extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: "crw"]], 
             submoduleCfg: [], 
             userRemoteConfigs: [[url: "https://github.com/redhat-developer/codeready-workspaces.git"]]])
-
+            currentBuild.description="Collecting sources for " + CSV_VERSION + " ..."
             sh '''#!/bin/bash -xe
 
 # install yq, python w/ virtualenv, pip
@@ -88,9 +123,6 @@ for mnt in RCMG; do
   if [[ ! -d ${WORKSPACE}/${mnt}-ssh/crw ]]; then  sshfs ${!mnt} ${WORKSPACE}/${mnt}-ssh; fi
 done
 
-CSV_VERSION="''' + getCSVVersion(MIDSTM_BRANCH) + '''"
-echo CSV_VERSION = ${CSV_VERSION}
-
 # copy files to rcm-guest
 ssh "${DESTHOST}" "cd /mnt/rcm-guest/staging/crw && mkdir -p CRW-''' + CSV_VERSION + '''/sources/containers CRW-''' + CSV_VERSION + '''/sources/vscode && ls -la . "
 rsync -zrlt --rsh=ssh --protocol=28 ${WORKSPACE}/manifest-srcs.txt  ${WORKSPACE}/${mnt}-ssh/CRW-''' + CSV_VERSION + '''/sources/
@@ -99,6 +131,7 @@ rsync -zrlt --rsh=ssh --protocol=28  --delete ${WORKSPACE}/sources/vscode/*     
 ssh "${DESTHOST}" "cd /mnt/rcm-guest/staging/crw/CRW-''' + CSV_VERSION + '''/ && tree"
 ssh "${DESTHOST}" "/mnt/redhat/scripts/rel-eng/utility/bus-clients/stage-mw-release CRW-''' + CSV_VERSION + '''"
 '''
+            currentBuild.description=CSV_VERSION
           }
     }
 }
