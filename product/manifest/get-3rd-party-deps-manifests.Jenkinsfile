@@ -1,11 +1,14 @@
 #!/usr/bin/env groovy
 
+import groovy.transform.Field
+
 // PARAMETERS for this pipeline:
 // MIDSTM_BRANCH="crw-2.y-rhel-8"
+// TAG_RELEASE = true/false. If true, tag the repos; if false, proceed w/o tagging
 
 def buildNode = "rhel7-releng" // node label
+def DWNSTM_BRANCH = MIDSTM_BRANCH // target branch in dist-git repo, eg., crw-2.5-rhel-8
 
-import groovy.transform.Field
 @Field String CSV_VERSION_F = ""
 def String getCSVVersion(String MIDSTM_BRANCH) {
   if (CSV_VERSION_F.equals("")) {
@@ -105,6 +108,11 @@ klist # verify working
 
 CSV_VERSION="''' + getCSVVersion(MIDSTM_BRANCH) + '''"
 echo CSV_VERSION = ${CSV_VERSION}
+
+# tag sources if TAG_RELEASE = true
+if [[ "''' + TAG_RELEASE + '''" == "true" ]]; then
+  cd ${WORKSPACE}/crw/product/ && ./tagRelease.sh -t ${CSV_VERSION} -gh ''' + MIDSTM_BRANCH + ''' -pd ''' + DWNSTM_BRANCH + '''
+fi
 
 # generate source files
 cd ${WORKSPACE}/crw/product/manifest/ && ./get-3rd-party-deps-manifests.sh -v ${CSV_VERSION} -b ''' + MIDSTM_BRANCH + '''
