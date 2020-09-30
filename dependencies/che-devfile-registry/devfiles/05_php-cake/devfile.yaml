@@ -38,7 +38,19 @@ commands:
       command: "composer install --no-interaction"
       workdir: "${CHE_PROJECTS_ROOT}/cakephp-ex"
 -
-  name: 2. Configure Apache Web Server DocumentRoot
+  name: 2. Index workspace (Intelephense)
+  actions:
+    - type: exec
+      component: php
+      command: |
+        msg="# Execute 'Intelephense: Index workspace' form Command palette (F1) to fix diagnostics #"
+        edge=$(echo "$msg" | sed 's/./#/g')
+        echo "$edge"
+        echo "$msg"
+        echo "$edge"
+      workdir: "${CHE_PROJECTS_ROOT}/cakephp-ex"
+-
+  name: 3. Configure Apache Web Server DocumentRoot
   actions:
     - type: exec
       component: php
@@ -49,19 +61,19 @@ commands:
           echo "DocumentRoot already configured!"
         fi
 -
-  name: 3. Start Apache Web Server
+  name: 4. Start Apache Web Server
   actions:
     - type: exec
       component: php
       command: "httpd -k start\ntail -f /etc/httpd/logs/access_log &\ntail -f /etc/httpd/logs/error_log"
 -
-  name: 4. Restart Apache Web Server
+  name: 5. Restart Apache Web Server
   actions:
     - type: exec
       component: php
       command: "httpd -k restart"
 -
-  name: 5. Stop Apache Web Server
+  name: 6. Stop Apache Web Server
   actions:
     - type: exec
       component: php
