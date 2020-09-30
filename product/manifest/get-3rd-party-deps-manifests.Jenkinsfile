@@ -111,7 +111,9 @@ echo CSV_VERSION = ${CSV_VERSION}
 
 # tag sources if TAG_RELEASE = true
 if [[ "''' + TAG_RELEASE + '''" == "true" ]]; then
-  cd ${WORKSPACE}/crw/product/ && ./tagRelease.sh -t ${CSV_VERSION} -gh ''' + MIDSTM_BRANCH + ''' -pd ''' + DWNSTM_BRANCH + '''
+  cd ${WORKSPACE}/crw/product/ && ./tagRelease.sh -t ${CSV_VERSION} \
+    -gh ''' + MIDSTM_BRANCH + ''' -ghtoken ''' + GITHUB_TOKEN + ''' \
+    -pd ''' + DWNSTM_BRANCH + ''' -pduser crw-build
 fi
 
 # generate source files
