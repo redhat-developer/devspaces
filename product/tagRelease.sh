@@ -15,10 +15,11 @@ set -ex
 # defaults
 crw_repos_branch=crw-2.4-rhel-8
 pkgs_devel_branch=crw-2.4-rhel-8
+pduser=crw-build
 
 if [[ $# -lt 4 ]]; then
-	echo "Usage: $0 -t CRW_TAG -o CHE_OPERATOR_BRANCH [-gh CRW_GH_BRANCH] [-pd PKGS_DEVEL_BRANCH]"
-	echo "Example: $0 -t 2.4.0.GA -o 7.17.x -gh crw-2.4-rhel-8 -pd crw-2.4-rhel-8"
+	echo "Usage: $0 -t CRW_TAG -gh CRW_GH_BRANCH -ghtoken GITHUB_TOKEN -pd PKGS_DEVEL_BRANCH -pduser kerberos_user"
+	echo "Example: $0 -t 2.4.0.GA -gh crw-2.4-rhel-8 -ghtoken \$GITHUB_TOKEN -pd crw-2.4-rhel-8 -pduser crw-build"
 	exit 1
 fi
 
@@ -26,9 +27,10 @@ fi
 for key in "$@"; do
   case $key in
     '-t') CRW_TAG="$2"; shift 0;;
-    '-o') che_operator_branch="$2"; shift 0;;
     '-gh') crw_repos_branch="$2"; shift 0;;
+    '-ghtoken') GITHUB_TOKEN="$2"; shift 0;;
     '-pd') pkgs_devel_branch="$2"; shift 0;;
+    '-pduser') pduser="$2"; shift 0;;
   esac
   shift 1
 done
@@ -56,30 +58,39 @@ codeready-workspaces-stacks-cpp          codeready-workspaces-stacks-dotnet \
 codeready-workspaces-stacks-golang       codeready-workspaces-stacks-php  \
 ; do
 	echo; echo "== $d =="
-	if [[ ! -d ${d} ]]; then git clone -b ${pkgs_devel_branch} ssh://nboldt@pkgs.devel.redhat.com/containers/${d} containers_${d}; fi
-	cd containers_${d} && git checkout ${pkgs_devel_branch} -q && git pull -q
-	git tag -a ${CRW_TAG} -m "${CRW_TAG}"; git push origin ${CRW_TAG}
-	cd ..
-done
+	if [[ ! -d ${d} ]]; then git clone -b ${pkgs_devel_branch} ssh://${pduser}@pkgs.devel.redhat.com/containers/${d} containers_${d}; fi
+	cd containers_${d}
+	git config user.email crw-build@REDHAT.COM
+	git config user.name "CRW Build"
+	git config --global push.default matching
 
-for d in che-operator; do
-	echo; echo "== $d =="
-	if [[ ! -d ${d} ]]; then git clone --depth 1 -b ${che_operator_branch} git@github.com:eclipse/${d}.git projects_${d}; fi
-	cd projects_${d} && git checkout ${che_operator_branch} -q && git pull -q
-	git tag ${CRW_TAG};	git push origin ${CRW_TAG}
+	git checkout ${pkgs_devel_branch} -q
+	git pull -q
+
+	git tag -a ${CRW_TAG} -m "${CRW_TAG}"; git push origin ${CRW_TAG}
 	cd ..
 done
 
 for d in codeready-workspaces-operator; do
 	echo; echo "== $d =="
 	if [[ ! -d ${d} ]]; then git clone --depth 1 -b ${crw_repos_branch} git@github.com:redhat-developer/${d}.git projects_${d}; fi 
-	cd projects_${d} && git checkout ${crw_repos_branch} -q && git pull -q
+	cd projects_${d}
+	export GITHUB_TOKEN="${GITHUB_TOKEN}"
+	git config user.email "nickboldt+devstudio-release@gmail.com"
+	git config user.name "Red Hat Devstudio Release Bot"
+	git config --global push.default matching
+	git config --global hub.protocol https
+	git remote set-url origin https://\$GITHUB_TOKEN:x-oauth-basic@github.com/redhat-developer/${d}.git
+
+	git checkout --track origin/${crw_repos_branch} -q || true
+	git pull -q
 
 	# CRW-833 inject latest CSV files w/ latest digests
 	rsync -aPr ../containers_codeready-workspaces-operator-metadata/controller-manifests/* ./controller-manifests/
 	git add ./controller-manifests/
 	git commit -s -m "[release] copy generated controller-manifests content back to codeready-workspaces-operator before tagging" ./controller-manifests/
 	git push origin ${crw_repos_branch}
+
 	git tag ${CRW_TAG}; git push origin ${CRW_TAG}
 	cd ..
 done
@@ -88,7 +99,17 @@ for d in codeready-workspaces codeready-workspaces-deprecated codeready-workspac
 		 codeready-workspaces-theia codeready-workspaces-productization; do
 	echo; echo "== $d =="
 	if [[ ! -d ${d} ]]; then git clone --depth 1 -b ${crw_repos_branch} git@github.com:redhat-developer/${d}.git projects_${d}; fi 
-	cd projects_${d} && git checkout ${crw_repos_branch} -q && git pull -q
+	cd projects_${d}
+	export GITHUB_TOKEN="${GITHUB_TOKEN}"
+	git config user.email "nickboldt+devstudio-release@gmail.com"
+	git config user.name "Red Hat Devstudio Release Bot"
+	git config --global push.default matching
+	git config --global hub.protocol https
+	git remote set-url origin https://\$GITHUB_TOKEN:x-oauth-basic@github.com/redhat-developer/${d}.git
+
+	git checkout --track origin/${crw_repos_branch} -q || true
+	git pull -q
+
 	git tag ${CRW_TAG}; git push origin ${CRW_TAG}
 	cd ..
 done
