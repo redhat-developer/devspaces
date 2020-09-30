@@ -29,7 +29,7 @@ def installMaven(){
 	env.PATH="${env.PATH}:${mvnHome}/bin"
 }
 
-timeout(20) {
+timeout(120) {
     node("${buildNode}"){
         // check out che-theia before we need it in build.sh so we can use it as a poll basis
         // then discard this folder as we need to check them out and massage them for crw
