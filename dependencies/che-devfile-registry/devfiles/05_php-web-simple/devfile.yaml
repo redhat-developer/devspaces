@@ -38,14 +38,26 @@ commands:
       command: "composer install"
       workdir: ${CHE_PROJECTS_ROOT}/php-di
 -
-  name: 2. Run web application
+  name: 2. Index workspace (Intelephense)
+  actions:
+    - type: exec
+      component: php
+      command: |
+        msg="# Execute 'Intelephense: Index workspace' from Command palette (F1) to fix diagnostics #"
+        edge=$(echo "$msg" | sed 's/./#/g')
+        echo "$edge"
+        echo "$msg"
+        echo "$edge"
+      workdir: "${CHE_PROJECTS_ROOT}/php-di"
+-
+  name: 3. Run web application
   actions:
     - type: exec
       component: php
       command: "php -S 0.0.0.0:8000 -t web/"
       workdir: ${CHE_PROJECTS_ROOT}/php-di
 -
-  name: 3. Run CLI application
+  name: 4. Run CLI application
   actions:
     - type: exec
       component: php
