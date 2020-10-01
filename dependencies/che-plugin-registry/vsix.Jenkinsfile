@@ -122,7 +122,7 @@ def buildNodeDebug(extensionFolder) {
 
 def buildAtlascode(branchToBuildPlugin, extensionFolder) {
     // libsecret is required for Atlascode
-    sh "sudo yum install libsecret libsecret-dev"
+    sh "sudo yum -y install libsecret libsecret-dev"
 
     archiveSources(extensionFolder)
     installNPM()
