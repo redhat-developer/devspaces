@@ -18,10 +18,39 @@ def String getCSVVersion(String MIDSTM_BRANCH) {
   return CSV_VERSION_F
 }
 
+@Field String CRW_VERSION = ""
+def String getCrwVersion(String MIDSTM_BRANCH) {
+  if (CRW_VERSION.equals("")) {
+    CRW_VERSION = sh(script: '''#!/bin/bash -xe
+    curl -sSLo- https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/''' + MIDSTM_BRANCH + '''/dependencies/VERSION''', returnStdout: true).trim()
+  }
+  return CRW_VERSION
+}
+
 def installYq(){
 		sh '''#!/bin/bash -xe
 sudo yum -y install jq python3-six python3-pip
 sudo /usr/bin/python3 -m pip install --upgrade pip yq; jq --version; yq --version
+'''
+}
+
+def installSkopeo(String CRW_VERSION)
+{
+sh '''#!/bin/bash -xe
+pushd /tmp >/dev/null
+# remove any older versions
+sudo yum remove -y skopeo || true
+# install from @kcrane build
+if [[ ! -x /usr/local/bin/skopeo ]]; then
+    sudo curl -sSLO "https://codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/crw-deprecated_''' + CRW_VERSION + '''/lastSuccessfulBuild/artifact/codeready-workspaces-deprecated/skopeo/target/skopeo-$(uname -m).tar.gz"
+fi
+if [[ -f /tmp/skopeo-$(uname -m).tar.gz ]]; then 
+    sudo tar xzf /tmp/skopeo-$(uname -m).tar.gz --overwrite -C /usr/local/bin/
+    sudo chmod 755 /usr/local/bin/skopeo
+    sudo rm -f /tmp/skopeo-$(uname -m).tar.gz
+fi
+popd >/dev/null
+skopeo --version
 '''
 }
 
@@ -41,6 +70,9 @@ timeout(120) {
           cleanWs()
           installYq()
           installMaven()
+          CRW_VERSION = getCrwVersion(MIDSTM_BRANCH)
+          println "CRW_VERSION = '" + CRW_VERSION + "'"
+          installSkopeo(CRW_VERSION)
           withCredentials([string(credentialsId:'devstudio-release.token', variable: 'GITHUB_TOKEN'), 
             file(credentialsId: 'crw-build.keytab', variable: 'CRW_KEYTAB')]) {
             checkout([$class: 'GitSCM', 
