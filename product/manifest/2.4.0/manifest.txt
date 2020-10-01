@@ -75,7 +75,7 @@ codeready-workspaces-stacks-golang-container:2.4.0/go-language-server:0.1.7
   codeready-workspaces-stacks-golang-container:2.4.0/github.com/rogpeppe/godef:8318a6814d22e99151760ac2fc890f55088a3192
   codeready-workspaces-stacks-golang-container:2.4.0/github.com/rogpeppe/go-internal:85830ee3a9539e66e3192d047aad86eeb1f88a08
   codeready-workspaces-stacks-golang-container:2.4.0/github.com/sergi/go-diff:58c5cb1602ee9676b5d3590d782bedde80706fcc
-  codeready-workspaces-stacks-golang-container:2.4.0/github.com/shirou/gopsutil:8ece829fb796e40e104f5844acab9e5de6f46907
+  codeready-workspaces-stacks-golang-container:2.4.0/github.com/shirou/gopsutil:5084874a4c559ab9141f1645e3d3e7e89ce11fcf
   codeready-workspaces-stacks-golang-container:2.4.0/github.com/skratchdot/open-golang:eef8423979666925a58eb77f9db583e54320d5a4
   codeready-workspaces-stacks-golang-container:2.4.0/github.com/slimsag/godocmd:a1005ad29fe3e4831773a8184ee7ebb3a41d1347
   codeready-workspaces-stacks-golang-container:2.4.0/github.com/sourcegraph/ctxvfs:2b65f1b1ea81f660ad7bc9931991f39617eb783e
@@ -96,9 +96,9 @@ codeready-workspaces-stacks-golang-container:2.4.0/go-language-server:0.1.7
   codeready-workspaces-stacks-golang-container:2.4.0/golang.org/x/sync:30421366ff761c80b137fb5084b32278ed41fab0
   codeready-workspaces-stacks-golang-container:2.4.0/golang.org/x/sys:fdedc70b468f679c263a3ccaefc1faeed3239939
   codeready-workspaces-stacks-golang-container:2.4.0/golang.org/x/text:a8b4671254579a87fadf9f7fa577dc7368e9d009
-  codeready-workspaces-stacks-golang-container:2.4.0/golang.org/x/tools:e57f6d466a487e9c19a486ad98e20048ea425bc8
+  codeready-workspaces-stacks-golang-container:2.4.0/golang.org/x/tools:43ebab892c4c46d41bd3e90d9480a908d782478e
   codeready-workspaces-stacks-golang-container:2.4.0/golang.org/x/xerrors:5ec99f83aff198f5fbd629d6c8d8eb38a04218ca
-  codeready-workspaces-stacks-golang-container:2.4.0/google.golang.org/genproto:01fc692af84b3cfa93e0595384cb659ce94be4e8
+  codeready-workspaces-stacks-golang-container:2.4.0/google.golang.org/genproto:efaab9d3c4f7999299fea65e1ae72eb7e5e57260
   codeready-workspaces-stacks-golang-container:2.4.0/google.golang.org/grpc:2e2833c718b5e30c5b815ea1f4737f0808842646
   codeready-workspaces-stacks-golang-container:2.4.0/google.golang.org/protobuf:db5c900f0ce544131509b33f6d68ec651e3ca91c
   codeready-workspaces-stacks-golang-container:2.4.0/gopkg.in/inconshreveable/log15.v2:b30bc20e4fd12cec79a9aae62e91cfcf458bd253
@@ -106,7 +106,7 @@ codeready-workspaces-stacks-golang-container:2.4.0/go-language-server:0.1.7
   codeready-workspaces-stacks-golang-container:2.4.0/go.uber.org/atomic:12f27ba2637fa0e13772a4f05fa46a5d18d53182
   codeready-workspaces-stacks-golang-container:2.4.0/honnef.co/go/tools:2b63335d5ff1534e205dd0743e1b16c79c175c7e
   codeready-workspaces-stacks-golang-container:2.4.0/mvdan.cc/gofumpt:5bfeb2e70dd63f342c452468cca2ee21e180f91c
-  codeready-workspaces-stacks-golang-container:2.4.0/mvdan.cc/xurls:68e3b64081241fccbafd350812a50ea08713b6c4
+  codeready-workspaces-stacks-golang-container:2.4.0/mvdan.cc/xurls:fc3cc2cb724e76f82cffffd15d56ec1e0f82cd04
   codeready-workspaces-stacks-golang-container:2.4.0/sourcegraph.com/sqs/goreturns:538ac601451833c7c4449f8431d65d53c1c60e41
 
 codeready-workspaces-stacks-golang-container:2.4.0/go-language-server:0.1.7
@@ -309,6 +309,7 @@ codeready-workspaces-stacks-php-container:2.4.0/felixfbecker/language-server:5.4
 
 codeready-workspaces-plugin-java8-container:2.4.0/python-language-server[all]:0.21.5
   codeready-workspaces-plugin-java8-container:2.4.0/argcomplete:1.12.1
+  codeready-workspaces-plugin-java8-container:2.4.0/attrs:20.2.0
   codeready-workspaces-plugin-java8-container:2.4.0/autopep8:1.5.4
   codeready-workspaces-plugin-java8-container:2.4.0/chardet:3.0.4
   codeready-workspaces-plugin-java8-container:2.4.0/distro:1.2.0
@@ -317,6 +318,7 @@ codeready-workspaces-plugin-java8-container:2.4.0/python-language-server[all]:0.
   codeready-workspaces-plugin-java8-container:2.4.0/importlib-metadata:2.0.0
   codeready-workspaces-plugin-java8-container:2.4.0/jedi:0.17.2
   codeready-workspaces-plugin-java8-container:2.4.0/Jinja2:2.8.1
+  codeready-workspaces-plugin-java8-container:2.4.0/jsonschema:3.2.0
   codeready-workspaces-plugin-java8-container:2.4.0/MarkupSafe:0.23
   codeready-workspaces-plugin-java8-container:2.4.0/mccabe:0.6.1
   codeready-workspaces-plugin-java8-container:2.4.0/parso:0.7.1
@@ -326,6 +328,7 @@ codeready-workspaces-plugin-java8-container:2.4.0/python-language-server[all]:0.
   codeready-workspaces-plugin-java8-container:2.4.0/pydocstyle:5.1.1
   codeready-workspaces-plugin-java8-container:2.4.0/pyflakes:2.2.0
   codeready-workspaces-plugin-java8-container:2.4.0/pyroute2:0.4.13
+  codeready-workspaces-plugin-java8-container:2.4.0/pyrsistent:0.17.3
   codeready-workspaces-plugin-java8-container:2.4.0/PySocks:1.6.8
   codeready-workspaces-plugin-java8-container:2.4.0/python-jsonrpc-server:0.4.0
   codeready-workspaces-plugin-java8-container:2.4.0/python-language-server:0.21.5
