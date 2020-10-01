@@ -19,7 +19,7 @@ pduser=crw-build
 
 if [[ $# -lt 4 ]]; then
 	echo "Usage: $0 -t CRW_TAG -gh CRW_GH_BRANCH -ghtoken GITHUB_TOKEN -pd PKGS_DEVEL_BRANCH -pduser kerberos_user"
-	echo "Example: $0 -t 2.5.0.GA -gh crw-2.5-rhel-8 -ghtoken \$GITHUB_TOKEN -pd crw-2.5-rhel-8 -pduser crw-build"
+	echo "Example: $0 -t 2.5.0 -gh crw-2.5-rhel-8 -ghtoken \$GITHUB_TOKEN -pd crw-2.5-rhel-8 -pduser crw-build"
 	exit 1
 fi
 

@@ -32,7 +32,7 @@ if [[ ! ${CSV_VERSION} ]]; then
   CSV_VERSION=$(curl -sSLo - https://raw.githubusercontent.com/redhat-developer/codeready-workspaces-operator/${MIDSTM_BRANCH}/manifests/codeready-workspaces.csv.yaml | yq -r .spec.version)
 fi
 
-CRW_BRANCH_TAG=${CSV_VERSION}.GA 
+CRW_BRANCH_TAG=${CSV_VERSION}
 
 if [[ ! ${WORKSPACE} ]]; then WORKSPACE=/tmp; fi
 mkdir -p "${WORKSPACE}/${CSV_VERSION}"
