@@ -77,6 +77,7 @@ def buildPhpDebug(branchToBuildPlugin, extensionFolder) {
 
 def buildVscodePython(branchToBuildPlugin, extensionFolder) {
     installNPM()
+    sh "sudo yum -y install cmake"
     sh "sudo /usr/bin/python3 -m pip install --upgrade pip"
     buildNumber = branchToBuildPlugin.substring(branchToBuildPlugin.lastIndexOf('.') + 1)
     echo "${buildNumber}"
