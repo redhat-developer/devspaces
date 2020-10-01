@@ -1,0 +1,42 @@
+Compute list of latest crw-2.4-rhel-8-container-candidate NVRs ... 
+
+NVRs to query for installed rpms:
+   [ERROR]
+   Must
+   install
+   skopeo
+   version
+   >=
+   1.1
+
+Brew logs:
+   [ERROR]
+   Must
+   install
+   skopeo
+   version
+   >=
+   1.1
+
+NVR build IDs:
+   [ERROR] [] - https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=
+   Must [] - https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=
+   install [] - https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=
+   skopeo [] - https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=
+   version [] - https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=
+   >= [] - https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=
+   1.1 [] - https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=
+
+Overall RPM manifest is in file: /mnt/hudson_workspace/workspace/get-3rd-party-deps-manifests/2.4.0/rpms/manifest-rpms.txt
+Unique RPM manifest is in file: /mnt/hudson_workspace/workspace/get-3rd-party-deps-manifests/2.4.0/rpms/manifest-rpms_uniq.txt
+Long RPM log is in file: /mnt/hudson_workspace/workspace/get-3rd-party-deps-manifests/2.4.0/rpms/manifest-rpms_log.txt
+
+Individual RPM manifests:
+* /mnt/hudson_workspace/workspace/get-3rd-party-deps-manifests/2.4.0/rpms/manifest-rpms-[ERROR].txt
+* /mnt/hudson_workspace/workspace/get-3rd-party-deps-manifests/2.4.0/rpms/manifest-rpms-Must.txt
+* /mnt/hudson_workspace/workspace/get-3rd-party-deps-manifests/2.4.0/rpms/manifest-rpms-install.txt
+* /mnt/hudson_workspace/workspace/get-3rd-party-deps-manifests/2.4.0/rpms/manifest-rpms-skopeo.txt
+* /mnt/hudson_workspace/workspace/get-3rd-party-deps-manifests/2.4.0/rpms/manifest-rpms-version.txt
+* /mnt/hudson_workspace/workspace/get-3rd-party-deps-manifests/2.4.0/rpms/manifest-rpms->=.txt
+* /mnt/hudson_workspace/workspace/get-3rd-party-deps-manifests/2.4.0/rpms/manifest-rpms-1.1.txt
+
