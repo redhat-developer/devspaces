@@ -43,7 +43,7 @@ commands:
     - type: exec
       component: php
       command: |
-        msg="# Execute 'Intelephense: Index workspace' form Command palette (F1) to fix diagnostics #"
+        msg="# Execute 'Intelephense: Index workspace' from Command palette (F1) to fix diagnostics #"
         edge=$(echo "$msg" | sed 's/./#/g')
         echo "$edge"
         echo "$msg"
