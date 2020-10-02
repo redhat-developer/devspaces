@@ -30,8 +30,10 @@ import static org.eclipse.che.selenium.core.constant.TestTimeoutsConstants.WIDGE
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import org.eclipse.che.selenium.core.SeleniumWebDriver;
+import org.eclipse.che.selenium.core.provider.TestDashboardUrlProvider;
 import org.eclipse.che.selenium.core.webdriver.SeleniumWebDriverHelper;
 import org.eclipse.che.selenium.pageobject.ocp.OpenShiftLoginPage;
+import org.eclipse.che.selenium.pageobject.site.CheLoginPage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebElement;
@@ -92,10 +94,13 @@ public class CodereadyOpenShiftLoginPage extends OpenShiftLoginPage {
 
   @Inject
   public CodereadyOpenShiftLoginPage(
-      SeleniumWebDriver seleniumWebDriver, SeleniumWebDriverHelper seleniumWebDriverHelper) {
-    super(seleniumWebDriver, seleniumWebDriverHelper);
-    this.seleniumWebDriverHelper = seleniumWebDriverHelper;
+      SeleniumWebDriver seleniumWebDriver,
+      SeleniumWebDriverHelper seleniumWebDriverHelper,
+      CheLoginPage cheLoginPage,
+      TestDashboardUrlProvider testDashboardUrlProvider) {
 
+    super(seleniumWebDriver, seleniumWebDriverHelper, cheLoginPage, testDashboardUrlProvider);
+    this.seleniumWebDriverHelper = seleniumWebDriverHelper;
     PageFactory.initElements(seleniumWebDriver, this);
   }
 
