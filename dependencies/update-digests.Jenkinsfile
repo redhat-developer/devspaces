@@ -68,7 +68,7 @@ timeout(120) {
 
 
                 def NEW_IMAGES = sh (
-                    script: 'cd ${WORKSPACE}/crw/product && ./getLatestImageTags.sh --${MIDSTM_BRANCH} --quay | sort | uniq | grep quay | \
+                    script: 'cd ${WORKSPACE}/crw/product && ./getLatestImageTags.sh -b ${MIDSTM_BRANCH} --quay | sort | uniq | grep quay | \
                         tee ${WORKSPACE}/crw/dependencies/LATEST_IMAGES.new',
                     returnStdout: true
                 ).trim().split()
@@ -126,7 +126,7 @@ timeout(120) {
 
                 // define what to do when we are ready to push changes
                 def COMMITCHANGES = '''#!/bin/bash -xe
-                    cd ${WORKSPACE}/crw/product && ./getLatestImageTags.sh --${MIDSTM_BRANCH} --quay | sort | uniq | grep quay > ${WORKSPACE}/crw/dependencies/LATEST_IMAGES.new
+                    cd ${WORKSPACE}/crw/product && ./getLatestImageTags.sh -b ${MIDSTM_BRANCH} --quay | sort | uniq | grep quay > ${WORKSPACE}/crw/dependencies/LATEST_IMAGES.new
 
                     echo "============ LATEST_IMAGES.new 3 ============>"
                     cat ${WORKSPACE}/crw/dependencies/LATEST_IMAGES.new
