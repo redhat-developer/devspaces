@@ -28,7 +28,7 @@ command -v skopeo >/dev/null 2>&1 || { echo "skopeo is not installed. Aborting."
 command -v jq >/dev/null 2>&1 || { echo "jq is not installed. Aborting."; exit 1; }
 command -v yq >/dev/null 2>&1 || { echo "yq is not installed. Aborting."; exit 1; }
 checkVersion() {
-  if [[  "$1" = "`echo -e "$1\n$2" | sort -V | head -n1`" ]]; then
+  if [[  "$1" = "$(echo -e "$1\n$2" | sort -V | head -n1)" ]]; then
     # echo "[INFO] $3 version $2 >= $1, can proceed."
 	true
   else 
@@ -38,8 +38,8 @@ checkVersion() {
 }
 checkVersion 1.1 "$(skopeo --version | sed -e "s/skopeo version //")" skopeo
 
-candidateTag="crw-2.5-rhel-8-container-candidate"
-BASETAG=2.5 # tag to search for in quay
+# should this be computed from some source?
+DWNSTM_BRANCH="crw-2.5-rhel-8"
 
 CRW24_CONTAINERS_RHCC="\
 codeready-workspaces/crw-2-rhel8-operator-metadata \
@@ -148,9 +148,9 @@ SORTED=0 # if 0, use the order of containers in the CRW*_CONTAINERS_* strings ab
 usage () {
 	echo "
 Usage: 
-  $0 --crw24                                                 | use default list of CRW images in RHCC Prod
-  $0 --crw24 --stage --sort                                  | use default list of CRW images in RHCC Stage, sorted alphabetically
-  $0 --crw24 --quay --arches                                 | use default list of CRW images in quay.io/crw; show arches
+  $0 -b crw-2.5-rhel-8                                       | use default list of CRW images in RHCC Prod
+  $0 -b crw-2.5-rhel-8 --stage --sort                        | use default list of CRW images in RHCC Stage, sorted alphabetically
+  $0 -b crw-2.5-rhel-8 --quay --arches                       | use default list of CRW images in quay.io/crw; show arches
 
   $0 -c 'crw/theia-rhel8 crw/theia-endpoint-rhel8' --quay    | check a specific image in quay
   $0 -c 'rhoar-nodejs/nodejs-10 jboss-eap-7/eap72-openshift' | use specific list of RHCC images
@@ -160,12 +160,11 @@ Usage:
   $0 -c codeready-workspaces-plugin-java11-openj9-rhel8 --quay             | check a non-amd64 image
   $0 -c codeready-workspaces-theia-rhel8 --osbs --pushtoquay='2.5 latest'  | pull an image from osbs, push 3 tags to quay
 
-  $0 --crw24 --nvr --log                                     | check images in brew; output NVRs can be copied to Errata; show links to Brew logs
-  $0 --crw24 --osbs                                          | check images in OSBS ( registry-proxy.engineering.redhat.com/rh-osbs )
-  $0 --crw24 --osbs --pushtoquay='2.5 latest'                | pull images from OSBS, then push matching tag to quay, including extra tags if set
+  $0 -b crw-2.5-rhel-8 --nvr --log                           | check images in brew; output NVRs can be copied to Errata; show links to Brew logs
+  $0 -b crw-2.5-rhel-8 --osbs                                | check images in OSBS ( registry-proxy.engineering.redhat.com/rh-osbs )
+  $0 -b crw-2.5-rhel-8 --osbs --pushtoquay='2.5 latest'      | pull images from OSBS, then push matching tag to quay, including extra tags if set
 
 "
-	exit
 }
 if [[ $# -lt 1 ]]; then usage; fi
 
@@ -175,44 +174,54 @@ CONTAINERS=""
 #   case $1 in
 for key in "$@"; do
   case $key in
-    '--crw-2.5-rhel-8') CONTAINERS="${CRW24_CONTAINERS_RHCC}"; candidateTag="crw-2.5-rhel-8-container-candidate"; BASETAG=2.5; shift 0;; 
-    '--crw24'|'--crw-2.5-rhel-8') CONTAINERS="${CRW24_CONTAINERS_RHCC}"; candidateTag="crw-2.5-rhel-8-container-candidate"; BASETAG=2.4; shift 0;; 
-    '--crw23') CONTAINERS="${CRW22_CONTAINERS_RHCC}"; candidateTag="crw-2.2-rhel-8-container-candidate"; BASETAG=2.3; shift 0;; 
-    '--crw22') CONTAINERS="${CRW22_CONTAINERS_RHCC}"; candidateTag="crw-2.2-rhel-8-container-candidate"; BASETAG=2.2; shift 0;;
+    '-b') DWNSTM_BRANCH="$2"; shift 1;; 
+    '--crw24'|'--crw-2.4-rhel-8') CONTAINERS="${CRW24_CONTAINERS_RHCC}"; candidateTag="crw-2.4-rhel-8-container-candidate"; BASETAG=2.4;; 
+    '--crw23') CONTAINERS="${CRW22_CONTAINERS_RHCC}"; candidateTag="crw-2.2-rhel-8-container-candidate"; BASETAG=2.3;; 
+    '--crw22') CONTAINERS="${CRW22_CONTAINERS_RHCC}"; candidateTag="crw-2.2-rhel-8-container-candidate"; BASETAG=2.2;;
     '-c') CONTAINERS="${CONTAINERS} $2"; shift 1;;
     '-x') EXCLUDES="$2"; shift 1;;
-    '-q') QUIET=1; shift 0;;
-    '-v') QUIET=0; VERBOSE=1; shift 0;;
-    '-a'|'--arches') ARCHES=1; shift 0;;
+    '-q') QUIET=1;;
+    '-v') QUIET=0; VERBOSE=1;;
+    '-a'|'--arches') ARCHES=1;;
     '-r') REGISTRY="$2"; shift 1;;
-    '--rhcc') REGISTRY="http://registry.redhat.io"; shift 0;;
-    '--stage') REGISTRY="http://registry.stage.redhat.io"; shift 0;;
-    '--pulp-old') REGISTRY="http://brew-pulp-docker01.web.prod.ext.phx2.redhat.com:8888"; EXCLUDES="latest|candidate|guest|containers"; shift 0;;
-    '-p'|'--osbs') REGISTRY="http://registry-proxy.engineering.redhat.com/rh-osbs"; EXCLUDES="latest|candidate|guest|containers"; shift 0;;
-    '-d'|'--docker') REGISTRY="http://docker.io"; shift 0;;
-           '--quay') REGISTRY="http://quay.io"; shift 0;;
-           '--pushtoquay') PUSHTOQUAY=1; PUSHTOQUAYTAGS=""; shift 0;;
-           --pushtoquay=*) PUSHTOQUAY=1; PUSHTOQUAYTAGS="$(echo "${key#*=}")"; shift 0;;
+    '--rhcc') REGISTRY="http://registry.redhat.io";;
+    '--stage') REGISTRY="http://registry.stage.redhat.io";;
+    '--pulp-old') REGISTRY="http://brew-pulp-docker01.web.prod.ext.phx2.redhat.com:8888"; EXCLUDES="latest|candidate|guest|containers";;
+    '-p'|'--osbs') REGISTRY="http://registry-proxy.engineering.redhat.com/rh-osbs"; EXCLUDES="latest|candidate|guest|containers";;
+    '-d'|'--docker') REGISTRY="http://docker.io";;
+           '--quay') REGISTRY="http://quay.io";;
+           '--pushtoquay') PUSHTOQUAY=1; PUSHTOQUAYTAGS="";;
+           --pushtoquay=*) PUSHTOQUAY=1; PUSHTOQUAYTAGS="$(echo "${key#*=}")";;
     '-n') NUMTAGS="$2"; shift 1;;
-    '--dockerfile') SHOWHISTORY=1; shift 0;;
+    '--dockerfile') SHOWHISTORY=1;;
     '--tag') BASETAG="$1"; shift 1;; 
     '--candidatetag') candidateTag="$1"; shift 1;; 
-    '--nvr') if [[ ! $CONTAINERS ]]; then CONTAINERS="${CRW24_CONTAINERS_OSBS}"; fi; SHOWNVR=1; shift 0;;
-    '--tagonly') TAGONLY=1; shift 0;;
-    '--log') SHOWLOG=1; shift 0;;
-    '--sort') SORTED=1; shift 0;;
-    '-h') usage;;
+    '--nvr') if [[ ! $CONTAINERS ]]; then CONTAINERS="${CRW24_CONTAINERS_OSBS}"; fi; SHOWNVR=1;;
+    '--tagonly') TAGONLY=1;;
+    '--log') SHOWLOG=1;;
+    '--sort') SORTED=1;;
+    '-h') usage; exit 1;;
   esac
   shift 1
 done
 
-getTag () {
-for d in $*; do
-  tag=${d##*:}
-  tag=${tag##*-container-}
-  echo $tag
-done
-}
+# echo "DWNSTM_BRANCH = $DWNSTM_BRANCH"
+# tag to search for in quay
+if [[ -z ${BASETAG} ]] && [[ ${DWNSTM_BRANCH} ]]; then
+	BASETAG=${DWNSTM_BRANCH#*-}
+	BASETAG=${BASETAG%%-*}
+else
+	usage; exit 1
+fi
+if [[ -z ${candidateTag} ]] && [[ ${DWNSTM_BRANCH} ]]; then
+	candidateTag="${DWNSTM_BRANCH}-container-candidate"
+else
+	usage; exit 1
+fi
+
+# echo "BASETAG = $BASETAG"
+# echo "candidateTag = $candidateTag
+# echo "containers = $CONTAINERS"
 
 if [[ ${REGISTRY} != "" ]]; then 
 	REGISTRYSTRING="--registry ${REGISTRY}"
