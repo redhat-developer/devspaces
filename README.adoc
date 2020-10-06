@@ -1,6 +1,6 @@
 # What's inside?
 
-NOTE: the so-called master branch is deprecated and is no longer kept up to date. 
+NOTE: the so-called master branch is deprecated and is no longer kept up to date.
 
 For the latest release, see the crw-2.y-rhel-8 branch with the largest y value.
 
@@ -61,16 +61,28 @@ Stacks may reference non-existing images like `docker-registry.default.svc:5000/
 
 Once published, they will be in locations like these:
 
-* registry.redhat.io/codeready-workspaces/server-rhel8:1.2
-* registry.redhat.io/codeready-workspaces/server-operator-rhel8:1.2
-* registry.redhat.io/codeready-workspaces/stacks-cpp-rhel8:1.2
-* registry.redhat.io/codeready-workspaces/stacks-dotnet-rhel8:1.2
-* registry.redhat.io/codeready-workspaces/stacks-golang-rhel8:1.2
-* registry.redhat.io/codeready-workspaces/stacks-java-rhel8:1.2
-* registry.redhat.io/codeready-workspaces/stacks-node-rhel8:1.2
-* registry.redhat.io/codeready-workspaces/stacks-php-rhel8:1.2
-* registry.redhat.io/codeready-workspaces/stacks-python-rhel8:1.2
-* registry.redhat.io/codeready-workspaces/stacks-node:1.2
+* registry.redhat.io/codeready-workspaces-devfileregistry-rhel8
+* registry.redhat.io/codeready-workspaces-imagepuller-rhel8
+* registry.redhat.io/codeready-workspaces-jwtproxy-rhel8
+* registry.redhat.io/codeready-workspaces-machineexec-rhel8
+* registry.redhat.io/codeready-workspaces-operator
+* registry.redhat.io/codeready-workspaces-operator-metadata
+* registry.redhat.io/codeready-workspaces-plugin-java11-openj9-rhel8
+* registry.redhat.io/codeready-workspaces-plugin-java11-rhel8
+* registry.redhat.io/codeready-workspaces-plugin-java8-openj9-rhel8
+* registry.redhat.io/codeready-workspaces-plugin-java8-rhel8
+* registry.redhat.io/codeready-workspaces-plugin-kubernetes-rhel8
+* registry.redhat.io/codeready-workspaces-plugin-openshift-rhel8
+* registry.redhat.io/codeready-workspaces-pluginbroker-artifacts-rhel8
+* registry.redhat.io/codeready-workspaces-pluginbroker-metadata-rhel8
+* registry.redhat.io/codeready-workspaces-pluginregistry-rhel8
+* registry.redhat.io/codeready-workspaces-server-rhel8
+* registry.redhat.io/codeready-workspaces-stacks-cpp-rhel8
+* registry.redhat.io/codeready-workspaces-stacks-dotnet-rhel8
+* registry.redhat.io/codeready-workspaces-stacks-golang-rhel8
+* registry.redhat.io/codeready-workspaces-stacks-php-rhel8
+* registry.redhat.io/codeready-workspaces-theia-endpoint-rhel8
+* registry.redhat.io/codeready-workspaces-theia-rhel8
 ====
 
 ### How to Build Container Using Jenkins and OSBS/Brew (REQUIRES VPN)
