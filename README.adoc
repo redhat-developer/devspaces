@@ -1,5 +1,11 @@
 # What's inside?
 
+NOTE: the so-called master branch is deprecated and is no longer kept up to date. 
+
+For the latest release, see the crw-2.y-rhel-8 branch with the largest y value.
+
+-----
+
 This repository hosts CodeReady Workspaces assembly that mainly inherits Eclipse Che artifacts and repackages some of them:
 
 Differences as compared to upstream:
@@ -16,7 +22,7 @@ NOTE: Dockerfiles in this repo are NOT the ones used to build RHCC container ima
 
 ### Pre-reqs
 
-JDK 1.8+
+JDK 11
 Maven 3.5+
 
 ### Build Assembly
