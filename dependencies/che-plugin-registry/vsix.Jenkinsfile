@@ -77,7 +77,10 @@ def buildPhpDebug(branchToBuildPlugin, extensionFolder) {
 
 def buildVscodePython(branchToBuildPlugin, extensionFolder) {
     installNPM()
-    sh "sudo yum -y install cmake"
+    // do we need any of these rpms too? llvm-toolset clang clang-libs clang-tools-extra git-clang-format
+    sh "sudo yum -y install python36 python3-six python3-pip platform-python-pip \
+        curl wget bzip2 sudo \
+        gdb make cmake gcc gcc-c++"
     sh "sudo /usr/bin/python3 -m pip install --upgrade pip"
     buildNumber = branchToBuildPlugin.substring(branchToBuildPlugin.lastIndexOf('.') + 1)
     echo "${buildNumber}"
@@ -123,10 +126,8 @@ def buildNodeDebug(extensionFolder) {
 def buildAtlascode(branchToBuildPlugin, extensionFolder) {
     // libsecret is required for Atlascode
     sh "sudo yum -y install libsecret libsecret-dev"
-
     archiveSources(extensionFolder)
     installNPM()
-
     sh """\
     cd ${extensionFolder} && \
     npm install -g vsce && \
