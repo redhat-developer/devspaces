@@ -119,7 +119,6 @@ public class WorkspacesListTest {
     workspaces.waitWorkspaceCheckboxDisabled(javaWorkspaceName);
     workspaces.waitWorkspaceCheckboxDisabled(blankWorkspaceName);
     workspaces.waitBulkCheckboxDisabled();
-    workspaces.waitDeleteWorkspaceBtnDisappearance();
 
     // select all by bulk
     workspaces.selectAllWorkspacesByBulk();
@@ -140,12 +139,6 @@ public class WorkspacesListTest {
     workspaces.waitWorkspaceCheckboxDisabled(javaWorkspaceName);
     workspaces.waitWorkspaceCheckboxDisabled(blankWorkspaceName);
     workspaces.waitBulkCheckboxDisabled();
-
-    // for avoid of failing in the multi-thread mode when unexpected workspaces can appear in the
-    // workspaces list
-    workspaces.clickOnUnexpectedWorkspacesCheckboxes(asList(blankWorkspaceName, javaWorkspaceName));
-
-    workspaces.waitDeleteWorkspaceBtnDisappearance();
 
     // select one checkbox
     workspaces.selectWorkspaceByCheckbox(blankWorkspaceName);
@@ -170,7 +163,6 @@ public class WorkspacesListTest {
     workspaces.waitWorkspaceCheckboxDisabled(javaWorkspaceName);
     workspaces.waitWorkspaceCheckboxDisabled(blankWorkspaceName);
     workspaces.waitBulkCheckboxDisabled();
-    workspaces.waitDeleteWorkspaceBtnDisappearance();
   }
 
   @Test
