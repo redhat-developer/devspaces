@@ -117,14 +117,14 @@ timeout(120) {
                 def NEW_NVR = ""
                 parallel quay_check: {
                     NEW_QUAY = sh (
-                        script: "./getLatestImageTags.sh --${MIDSTM_BRANCH} --quay | tee ${WORKSPACE}/LATEST_IMAGES.quay",
+                        script: "./getLatestImageTags.sh -b ${MIDSTM_BRANCH} --quay | tee ${WORKSPACE}/LATEST_IMAGES.quay",
                         returnStdout: true).trim().split( '\n' )
                         errorOccurred = checkFailure(NEW_QUAY, "Quay", errorOccurred)
                 }, 
                 osbs_check: {
                     if (doOSBS.equals("true")) {
                         NEW_OSBS = sh (
-                        script: "./getLatestImageTags.sh --${MIDSTM_BRANCH} --osbs | tee ${WORKSPACE}/LATEST_IMAGES.osbs",
+                        script: "./getLatestImageTags.sh -b ${MIDSTM_BRANCH} --osbs | tee ${WORKSPACE}/LATEST_IMAGES.osbs",
                         returnStdout: true).trim().split( '\n' )
                         errorOccurred = checkFailure(NEW_OSBS, "OSBS", errorOccurred)
                     }
@@ -132,14 +132,14 @@ timeout(120) {
                 stg_check: {
                     if (doStage.equals("true")) {
                         NEW_STG = sh (
-                        script: "./getLatestImageTags.sh --${MIDSTM_BRANCH} --stage | tee ${WORKSPACE}/LATEST_IMAGES.stage",
+                        script: "./getLatestImageTags.sh -b ${MIDSTM_BRANCH} --stage | tee ${WORKSPACE}/LATEST_IMAGES.stage",
                         returnStdout: true).trim().split( '\n' )
                         errorOccurred = checkFailure(NEW_STG, "Stage", errorOccurred)
                     }
                 }, 
                 nvr_check: {
                     NEW_NVR = sh (
-                        script: "./getLatestImageTags.sh --${MIDSTM_BRANCH} --nvr | tee ${WORKSPACE}/LATEST_IMAGES.nvr",
+                        script: "./getLatestImageTags.sh -b ${MIDSTM_BRANCH} --nvr | tee ${WORKSPACE}/LATEST_IMAGES.nvr",
                         returnStdout: true).trim().split( '\n' )
                 }
 
