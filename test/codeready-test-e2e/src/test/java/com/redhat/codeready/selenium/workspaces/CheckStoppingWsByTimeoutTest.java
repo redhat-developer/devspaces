@@ -19,11 +19,11 @@ import static org.testng.Assert.assertEquals;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import com.redhat.codeready.selenium.pageobject.dashboard.CodereadyCreateWorkspaceHelper;
+import com.redhat.codeready.selenium.pageobject.dashboard.CodereadyDashboard;
 import org.eclipse.che.api.core.model.workspace.Workspace;
 import org.eclipse.che.selenium.core.client.TestWorkspaceServiceClient;
 import org.eclipse.che.selenium.core.user.DefaultTestUser;
 import org.eclipse.che.selenium.core.webdriver.SeleniumWebDriverHelper;
-import org.eclipse.che.selenium.pageobject.dashboard.Dashboard;
 import org.eclipse.che.selenium.pageobject.dashboard.NewWorkspace.Devfile;
 import org.eclipse.che.selenium.pageobject.theia.TheiaIde;
 import org.openqa.selenium.By;
@@ -33,7 +33,7 @@ import org.testng.annotations.Test;
 
 public class CheckStoppingWsByTimeoutTest {
 
-  @Inject private Dashboard dashboard;
+  @Inject private CodereadyDashboard dashboard;
   @Inject private TestWorkspaceServiceClient workspaceServiceClient;
   @Inject private DefaultTestUser defaultTestUser;
   @Inject private CodereadyCreateWorkspaceHelper codereadyCreateWorkspaceHelper;

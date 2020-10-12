@@ -17,11 +17,11 @@ import static org.testng.Assert.assertTrue;
 import com.google.inject.Inject;
 import com.redhat.codeready.selenium.pageobject.account.CodereadyKeycloakHeaderButtons;
 import com.redhat.codeready.selenium.pageobject.account.CodereadyKeycloakHeaderButtons.Button;
+import com.redhat.codeready.selenium.pageobject.dashboard.CodereadyDashboard;
 import org.eclipse.che.selenium.core.SeleniumWebDriver;
 import org.eclipse.che.selenium.core.TestGroup;
 import org.eclipse.che.selenium.core.user.TestUser;
 import org.eclipse.che.selenium.core.webdriver.SeleniumWebDriverHelper;
-import org.eclipse.che.selenium.pageobject.dashboard.Dashboard;
 import org.eclipse.che.selenium.pageobject.dashboard.account.Account;
 import org.eclipse.che.selenium.pageobject.dashboard.account.DashboardAccount;
 import org.eclipse.che.selenium.pageobject.dashboard.account.KeycloakAccountPage;
@@ -35,7 +35,7 @@ public class AccountTest {
   private Account changedTestUserAccount;
   private String parentWindow;
 
-  @Inject private Dashboard dashboard;
+  @Inject private CodereadyDashboard dashboard;
   @Inject private DashboardAccount dashboardAccount;
   @Inject private TestUser testUser;
   @Inject private KeycloakAccountPage keycloakAccount;

@@ -16,9 +16,9 @@ import static org.eclipse.che.selenium.pageobject.dashboard.workspaces.Workspace
 
 import com.google.inject.Inject;
 import com.redhat.codeready.selenium.pageobject.dashboard.CodereadyCreateWorkspaceHelper;
+import com.redhat.codeready.selenium.pageobject.dashboard.CodereadyDashboard;
 import org.eclipse.che.selenium.core.client.TestWorkspaceServiceClient;
 import org.eclipse.che.selenium.core.user.DefaultTestUser;
-import org.eclipse.che.selenium.pageobject.dashboard.Dashboard;
 import org.eclipse.che.selenium.pageobject.dashboard.NewWorkspace.Devfile;
 import org.eclipse.che.selenium.pageobject.dashboard.workspaces.WorkspaceDetails;
 import org.eclipse.che.selenium.pageobject.dashboard.workspaces.WorkspaceOverview;
@@ -30,7 +30,7 @@ import org.testng.annotations.Test;
 /** @author Andrey Chizhikov */
 public class DeleteRunningWorkspaceTest {
 
-  @Inject private Dashboard dashboard;
+  @Inject private CodereadyDashboard dashboard;
   @Inject private WorkspaceDetails workspaceDetails;
   @Inject private TestWorkspaceServiceClient workspaceServiceClient;
   @Inject private Workspaces workspaces;

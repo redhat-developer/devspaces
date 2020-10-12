@@ -20,11 +20,11 @@ import static org.testng.Assert.fail;
 
 import com.google.inject.Inject;
 import com.redhat.codeready.selenium.pageobject.dashboard.CodereadyCreateWorkspaceHelper;
+import com.redhat.codeready.selenium.pageobject.dashboard.CodereadyDashboard;
 import java.util.List;
 import org.eclipse.che.selenium.core.SeleniumWebDriver;
 import org.eclipse.che.selenium.core.client.TestWorkspaceServiceClient;
 import org.eclipse.che.selenium.core.user.DefaultTestUser;
-import org.eclipse.che.selenium.pageobject.dashboard.Dashboard;
 import org.eclipse.che.selenium.pageobject.dashboard.NewWorkspace;
 import org.eclipse.che.selenium.pageobject.dashboard.NewWorkspace.Devfile;
 import org.eclipse.che.selenium.pageobject.dashboard.workspaces.WorkspaceConfig;
@@ -48,7 +48,7 @@ public class WorkspacesListTest {
   private static final String EXPECTED_JAVA_PROJECT_NAME = "vertx-health-checks-example-redhat";
   private static final int EXPECTED_SEARCHED_WORKSPACES_COUNT = 1;
 
-  @Inject private Dashboard dashboard;
+  @Inject private CodereadyDashboard dashboard;
   @Inject private WorkspaceProjects workspaceProjects;
   @Inject private WorkspaceConfig workspaceConfig;
   @Inject private DefaultTestUser defaultTestUser;

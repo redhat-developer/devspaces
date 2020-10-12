@@ -17,11 +17,11 @@ import static org.openqa.selenium.Keys.ESCAPE;
 
 import com.google.inject.Inject;
 import com.redhat.codeready.selenium.pageobject.dashboard.CodereadyCreateWorkspaceHelper;
+import com.redhat.codeready.selenium.pageobject.dashboard.CodereadyDashboard;
 import java.util.List;
 import org.eclipse.che.selenium.core.client.TestWorkspaceServiceClient;
 import org.eclipse.che.selenium.core.user.DefaultTestUser;
 import org.eclipse.che.selenium.core.webdriver.SeleniumWebDriverHelper;
-import org.eclipse.che.selenium.pageobject.dashboard.Dashboard;
 import org.eclipse.che.selenium.pageobject.dashboard.NewWorkspace.Devfile;
 import org.eclipse.che.selenium.pageobject.dashboard.workspaces.WorkspaceOverview;
 import org.eclipse.che.selenium.pageobject.dashboard.workspaces.Workspaces;
@@ -42,7 +42,7 @@ public class WorkspaceDetailsOverviewTest {
   private static final List<String> VALID_NAMES =
       asList("Wk-sp", "Wk-sp1", "9wk-sp", "5wk-sp0", "Wk19sp", "Wksp-01");
 
-  @Inject private Dashboard dashboard;
+  @Inject private CodereadyDashboard dashboard;
   @Inject private Workspaces workspaces;
   @Inject private WorkspaceOverview workspaceOverview;
   @Inject private SeleniumWebDriverHelper seleniumWebDriverHelper;
