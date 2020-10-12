@@ -13,10 +13,10 @@ package com.redhat.codeready.selenium.workspaces;
 
 import com.google.inject.Inject;
 import com.redhat.codeready.selenium.pageobject.dashboard.CodereadyCreateWorkspaceHelper;
+import com.redhat.codeready.selenium.pageobject.dashboard.CodereadyDashboard;
 import org.eclipse.che.selenium.core.SeleniumWebDriver;
 import org.eclipse.che.selenium.core.client.TestWorkspaceServiceClient;
 import org.eclipse.che.selenium.core.user.DefaultTestUser;
-import org.eclipse.che.selenium.pageobject.dashboard.Dashboard;
 import org.eclipse.che.selenium.pageobject.dashboard.NewWorkspace.Devfile;
 import org.eclipse.che.selenium.pageobject.theia.TheiaEditor;
 import org.eclipse.che.selenium.pageobject.theia.TheiaIde;
@@ -32,7 +32,7 @@ public class ProjectStateAfterRefreshTest {
   private static final String PATH_TO_POM_FILE = PROJECT_NAME + "/" + "pom.xml";
   private static final String PATH_TO_README_FILE = PROJECT_NAME + "/" + "README.md";
 
-  @Inject private Dashboard dashboard;
+  @Inject private CodereadyDashboard dashboard;
   @Inject private TestWorkspaceServiceClient workspaceServiceClient;
   @Inject private DefaultTestUser defaultTestUser;
   @Inject private CodereadyCreateWorkspaceHelper codereadyCreateWorkspaceHelper;

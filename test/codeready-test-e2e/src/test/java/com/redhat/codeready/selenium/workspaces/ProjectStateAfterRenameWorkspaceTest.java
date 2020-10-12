@@ -15,9 +15,9 @@ import static org.eclipse.che.commons.lang.NameGenerator.generate;
 
 import com.google.inject.Inject;
 import com.redhat.codeready.selenium.pageobject.dashboard.CodereadyCreateWorkspaceHelper;
+import com.redhat.codeready.selenium.pageobject.dashboard.CodereadyDashboard;
 import org.eclipse.che.selenium.core.client.TestWorkspaceServiceClient;
 import org.eclipse.che.selenium.core.user.DefaultTestUser;
-import org.eclipse.che.selenium.pageobject.dashboard.Dashboard;
 import org.eclipse.che.selenium.pageobject.dashboard.NewWorkspace.Devfile;
 import org.eclipse.che.selenium.pageobject.dashboard.workspaces.WorkspaceDetails;
 import org.eclipse.che.selenium.pageobject.dashboard.workspaces.WorkspaceOverview;
@@ -37,7 +37,7 @@ public class ProjectStateAfterRenameWorkspaceTest {
   private static final String PATH_TO_POM_FILE = PROJECT_NAME + "/" + "pom.xml";
   private static final String PATH_TO_README_FILE = PROJECT_NAME + "/" + "README.md";
 
-  @Inject private Dashboard dashboard;
+  @Inject private CodereadyDashboard dashboard;
   @Inject private TestWorkspaceServiceClient workspaceServiceClient;
   @Inject private DefaultTestUser defaultTestUser;
   @Inject private CodereadyCreateWorkspaceHelper codereadyCreateWorkspaceHelper;
