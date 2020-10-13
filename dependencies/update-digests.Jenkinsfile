@@ -209,7 +209,7 @@ timeout(120) {
                         //parallel jobs
                         while (true) {
                             def REBUILT_IMAGES = sh (
-                            script: 'cd ${WORKSPACE}/crw/product && ./getLatestImageTags.sh -c "crw/devfileregistry-rhel8 crw/pluginregistry-rhel8" --quay | sort | uniq | grep quay',
+                            script: 'cd ${WORKSPACE}/crw/product && ./getLatestImageTags.sh -b ${MIDSTM_BRANCH} -c "crw/devfileregistry-rhel8 crw/pluginregistry-rhel8" --quay | sort | uniq | grep quay',
                             returnStdout: true
                             ).trim().split()
                             def rebuiltImagesSet = REBUILT_IMAGES as Set
@@ -244,7 +244,7 @@ timeout(120) {
                     while (true) 
                     {
                         def rebuiltOperatorMetadataImage = sh (
-                        script: 'cd ${WORKSPACE}/crw/product && ./getLatestImageTags.sh -c "crw/crw-2-rhel8-operator-metadata" --quay | sort | uniq | grep quay',
+                        script: 'cd ${WORKSPACE}/crw/product && ./getLatestImageTags.sh -b ${MIDSTM_BRANCH} -c "crw/crw-2-rhel8-operator-metadata" --quay | sort | uniq | grep quay',
                         returnStdout: true
                         ).trim()
                         echo "${rebuiltOperatorMetadataImage}"
