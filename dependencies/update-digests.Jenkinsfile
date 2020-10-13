@@ -68,8 +68,9 @@ timeout(120) {
 
 
                 def NEW_IMAGES = sh (
-                    script: 'cd ${WORKSPACE}/crw/product && ./getLatestImageTags.sh -b ${MIDSTM_BRANCH} --quay | sort | uniq | grep quay | \
-                        tee ${WORKSPACE}/crw/dependencies/LATEST_IMAGES.new',
+                    script: '''#!/bin/bash -xe
+                    cd ${WORKSPACE}/crw/product && ./getLatestImageTags.sh -b ''' + MIDSTM_BRANCH + ''' --quay --sort | uniq | grep quay | \
+                        tee ${WORKSPACE}/crw/dependencies/LATEST_IMAGES.new''',
                     returnStdout: true
                 ).trim().split()
 
@@ -126,7 +127,7 @@ timeout(120) {
 
                 // define what to do when we are ready to push changes
                 def COMMITCHANGES = '''#!/bin/bash -xe
-                    cd ${WORKSPACE}/crw/product && ./getLatestImageTags.sh -b ${MIDSTM_BRANCH} --quay | sort | uniq | grep quay > ${WORKSPACE}/crw/dependencies/LATEST_IMAGES.new
+                    cd ${WORKSPACE}/crw/product && ./getLatestImageTags.sh -b ''' + MIDSTM_BRANCH + ''' --quay --sort | uniq | grep quay > ${WORKSPACE}/crw/dependencies/LATEST_IMAGES.new
 
                     echo "============ LATEST_IMAGES.new 3 ============>"
                     cat ${WORKSPACE}/crw/dependencies/LATEST_IMAGES.new
@@ -209,7 +210,7 @@ timeout(120) {
                         //parallel jobs
                         while (true) {
                             def REBUILT_IMAGES = sh (
-                            script: 'cd ${WORKSPACE}/crw/product && ./getLatestImageTags.sh -b ${MIDSTM_BRANCH} -c "crw/devfileregistry-rhel8 crw/pluginregistry-rhel8" --quay | sort | uniq | grep quay',
+                            script: 'cd ${WORKSPACE}/crw/product && ./getLatestImageTags.sh -c "crw/devfileregistry-rhel8 crw/pluginregistry-rhel8" --quay | sort | uniq | grep quay',
                             returnStdout: true
                             ).trim().split()
                             def rebuiltImagesSet = REBUILT_IMAGES as Set
@@ -244,7 +245,7 @@ timeout(120) {
                     while (true) 
                     {
                         def rebuiltOperatorMetadataImage = sh (
-                        script: 'cd ${WORKSPACE}/crw/product && ./getLatestImageTags.sh -b ${MIDSTM_BRANCH} -c "crw/crw-2-rhel8-operator-metadata" --quay | sort | uniq | grep quay',
+                        script: 'cd ${WORKSPACE}/crw/product && ./getLatestImageTags.sh -c "crw/crw-2-rhel8-operator-metadata" --quay | sort | uniq | grep quay',
                         returnStdout: true
                         ).trim()
                         echo "${rebuiltOperatorMetadataImage}"
