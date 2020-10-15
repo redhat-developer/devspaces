@@ -8,6 +8,7 @@ echo "$image" | sed -r \
         -e "s|registry.redhat.io/rhscl/|registry.access.redhat.com/rhscl/|g" \
         `# for operator, replace internal container name with quay name` \
         -e "s|crw-2-rhel8-operator|operator-rhel8|g"
-echo "$image" | sed -r \
-        -e "s|registry.redhat.io/([^/]+)/|registry-proxy.engineering.redhat.com/rh-osbs/\1-|g" \
-        -e "s|registry.access.redhat.com/([^/]+)/|registry-proxy.engineering.redhat.com/rh-osbs/\1-|g"
+## Ensure NOT search for unreleased versions of  images in OSBS registry 
+#echo "$image" | sed -r \
+#        -e "s|registry.redhat.io/([^/]+)/|registry-proxy.engineering.redhat.com/rh-osbs/\1-|g" \
+#        -e "s|registry.access.redhat.com/([^/]+)/|registry-proxy.engineering.redhat.com/rh-osbs/\1-|g"
