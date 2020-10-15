@@ -6,7 +6,7 @@ import groovy.transform.Field
 // def FORCE_BUILD = "false"
 
 def SOURCE_REPO = "eclipse/che-plugin-broker" // upstream source repo from which to find and sync commits to pkgs.devel repo
-@Field String SOURCE_BRANCH = "v3.3.x" // upstream source repo branch from which to find and sync commits to pkgs.devel repo
+@Field String SOURCE_BRANCH = "v3.4.x" // upstream source repo branch from which to find and sync commits to pkgs.devel repo
 def DWNSTM_REPO1 = "containers/codeready-workspaces-pluginbroker-metadata" // dist-git repo to use as target
 def DWNSTM_REPO2 = "containers/codeready-workspaces-pluginbroker-artifacts" // dist-git repo to use as target
 def DWNSTM_BRANCH = "crw-2.5-rhel-8" // target branch in dist-git repo, eg., crw-2.5-rhel-8
