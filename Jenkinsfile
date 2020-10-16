@@ -190,11 +190,11 @@ timeout(240) {
 		VER_CHE = sh(returnStdout:true,script:'''#!/bin/bash -xe
 egrep "<version>" ''' + CHE_path + '''/pom.xml|head -2|tail -1|sed -r -e "s#.*<version>(.+)</version>#\\1#"
 ''').trim()
+		// for VERSION=7.18.3, get BASE=7.18, PREV=2 so VER_CHE_PREV=7.18.2
 		VER_CHE_PREV = sh(returnStdout:true,script:'''#!/bin/bash -xe
 VERSION=$(egrep "<version>" ''' + CHE_path + '''/pom.xml|head -2|tail -1| sed -r -e "s#.*<version>(.+)-SNAPSHOT</version>#\\1#")
-[[ $VERSION =~ ^([0-9]+)\\.([0-9]+)\\.([0-9]+) ]] && BASE="${BASH_REMATCH[1]}.${BASH_REMATCH[2]}"; PREV="${BASH_REMATCH[3]}"; let PREV=PREV-1; # for VERSION=7.18.3, get BASE=7.18, PREV=2
-PREVVERSION="${BASE}.${PREV}"
-echo ${PREVVERSION}
+[[ $VERSION =~ ^([0-9]+)\\.([0-9]+)\\.([0-9]+) ]] && BASE="${BASH_REMATCH[1]}.${BASH_REMATCH[2]}"; PREV="${BASH_REMATCH[3]}"; let PREV=PREV-1 || PREV=0;
+PREVVERSION="${BASE}.${PREV}"; echo ${PREVVERSION}
 ''').trim()
 
 		SHA_CHE = sh(returnStdout:true,script:"cd ${CHE_path}/ && git rev-parse --short=4 HEAD").trim()
