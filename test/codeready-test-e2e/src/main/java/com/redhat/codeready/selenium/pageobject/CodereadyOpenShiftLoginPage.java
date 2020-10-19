@@ -31,7 +31,6 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.google.inject.name.Named;
 import org.eclipse.che.selenium.core.SeleniumWebDriver;
-import org.eclipse.che.selenium.core.provider.TestDashboardUrlProvider;
 import org.eclipse.che.selenium.core.webdriver.SeleniumWebDriverHelper;
 import org.eclipse.che.selenium.pageobject.ocp.OpenShiftLoginPage;
 import org.eclipse.che.selenium.pageobject.site.CheLoginPage;
@@ -112,10 +111,9 @@ public class CodereadyOpenShiftLoginPage extends OpenShiftLoginPage {
   public CodereadyOpenShiftLoginPage(
       SeleniumWebDriver seleniumWebDriver,
       SeleniumWebDriverHelper seleniumWebDriverHelper,
-      CheLoginPage cheLoginPage,
-      TestDashboardUrlProvider testDashboardUrlProvider) {
+      CheLoginPage cheLoginPage) {
 
-    super(seleniumWebDriver, seleniumWebDriverHelper, cheLoginPage, testDashboardUrlProvider);
+    super(seleniumWebDriver, seleniumWebDriverHelper, cheLoginPage);
     this.seleniumWebDriverHelper = seleniumWebDriverHelper;
     this.cheLoginPage = cheLoginPage;
     PageFactory.initElements(seleniumWebDriver, this);
