@@ -1,0 +1,119 @@
+mport groovy.transform.Field
+
+// PARAMETERS for this pipeline:
+// def CHE_VER = "7.20.x"
+
+def SOURCE_REPO = "che-incubator/che-editor-intellij-community" // upstream source repo from which to find commits
+def DWNSTM_REPO = "redhat-developer/codeready-workspaces-images" // repo to use as target
+
+// NOTE: must create branches manually
+String SOURCE_BRANCH = "master" // upstream source repo branch
+String DWNSTM_BRANCH = "crw-2.5-rhel-8" // target branch, eg., crw-2.5-rhel-8
+
+def OLD_SHA=""
+def SRC_SHA=""
+
+
+def buildNode = "s390x-rhel7-beaker" // "rhel7-releng|rhel7-32gb||rhel7-16gb||rhel7-8gb" // node label
+timeout(120) {
+    node("${buildNode}"){ stage "Sync repos"
+    wrap([$class: 'TimestamperBuildWrapper']) {
+      sh('curl -sSLO https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/crw-2.5-rhel-8/product/util.groovy')
+      def util = load "${WORKSPACE}/util.groovy"
+      cleanWs()
+      CRW_VERSION = util.getCrwVersion(DWNSTM_BRANCH)
+      println "CRW_VERSION = '" + CRW_VERSION + "'"
+      util.installSkopeo(CRW_VERSION)
+      sh('pip install -I --user yq')
+      yq_bin = sh(script: 'python -m site --user-base', returnStdout:true).trim() + '/bin/yq'
+
+        withCredentials([string(credentialsId:'devstudio-release.token', variable: 'GITHUB_TOKEN'),
+          file(credentialsId: 'crw-build.keytab', variable: 'CRW_KEYTAB')]) {
+        util.bootstrap(CRW_KEYTAB)
+
+        util.cloneRepo("https://github.com/${SOURCE_REPO}.git", "${WORKSPACE}/source", SOURCE_BRANCH)
+        sh('''#!/bin/bash
+          VER=$(curl -sSLo- https://raw.githubusercontent.com/eclipse/che-plugin-registry/''' + CHE_VER + '''/v3/plugins/che-incubator/intellij-community/latest.txt)
+          SHA=$(curl -sSLo- https://raw.githubusercontent.com/eclipse/che-plugin-registry/''' + CHE_VER + '''/v3/plugins/che-incubator/intellij-community/${VER}/meta.yaml | ''' + yq_bin + ''' -r '.spec.containers[].image' | sed -r -e "s#.+:.+-##g")
+          cd ${WORKSPACE}/source
+          git checkout ${SHA}
+        ''')
+        SRC_SHA = util.getLastCommitSHA("${WORKSPACE}/source")
+        println "Got SRC_SHA in source folder: " + SRC_SHA
+
+        util.cloneRepo("https://github.com/${DWNSTM_REPO}.git", "${WORKSPACE}/target", DWNSTM_BRANCH)
+        OLD_SHA = util.getLastCommitSHA("${WORKSPACE}/target")
+        println "Got OLD_SHA in target folder: " + OLD_SHA
+
+        writeFile file: "rsync-brew-exclude", text: '''
+sources
+get-sources-jenkins.sh
+cvp.yml
+tests/
+content_sets.yml
+content_sets.repo
+container.yaml
+.gitignore'''
+        sh('''rsync -avhz --checksum --delete --exclude-from ${WORKSPACE}/rsync-brew-exclude --exclude .git/ --exclude .github/ ${WORKSPACE}/source/ ${WORKSPACE}/target/codeready-workspaces-plugin-intellij/''')
+
+        sh('''#!/bin/bash
+          cd ${WORKSPACE}/target
+          sed -i -e 's|^FROM .*|# https://access.redhat.com/containers/?tab=tags#/registry.access.redhat.com/ubi8-minimal \\
+FROM ubi8-minimal:8.2-349 \\
+\\
+ENV SUMMARY="Red Hat CodeReady Workspaces - IntelliJ Plugin" \\\\ \\
+    DESCRIPTION="Red Hat CodeReady Workspaces - IntelliJ Plugin" \\\\ \\
+    PRODNAME="codeready-workspaces" \\\\ \\
+    COMPNAME="plugin-intellij-rhel8" \
+\\
+ENV \\\\ \\
+    FLUXBOX_VERSION="1.3.7-11" \\\\ \\
+    IMLIB2_VERSION="1.4.9-8" \\\\ \\
+    PYXDG_VERSION="0.25-16" \\\\ \\
+    ALECZAPKA_FONTS_VERSION="1.3-25" \\\\ \\
+    HOME=/home/user \\
+\\
+COPY . /tmp/assets/ \\
+\\
+# NOTE: uncomment for local build. Must also set full registry path in FROM to registry.redhat.io or registry.access.redhat.com \\
+# enable rhel 8 content sets (from Brew) to resolve buildah \\
+# COPY content_set*.repo /etc/yum.repos.d/ \\
+|g' \\
+\\
+-e 's|^RUN yum install .*|RUN microdnf install -y yum \\
+RUN yum install -y tigervnc-server wget java-11-openjdk-devel which tar \\
+RUN cd /tmp/assets \\&\\& yum localinstall -y *.rpm # fluxbox supervisor novnc|g' \\
+\\
+-e 's|wget -qO- https://download.jetbrains.com/idea/|cat /tmp/assets|g' \\
+\\
+-e '$a \\
+\\
+LABEL summary="$SUMMARY" \\\\ \\
+      description="$DESCRIPTION" \\\\ \\
+      io.k8s.description="$DESCRIPTION" \\\\ \\
+      io.k8s.display-name="$DESCRIPTION" \\\\ \\
+      io.openshift.tags="$PRODNAME,$COMPNAME" \\\\ \\
+      com.redhat.component="$PRODNAME-$COMPNAME-container" \\\\ \\
+      name="$PRODNAME/$COMPNAME" \\\\ \\
+      version="2.5" \\\\ \\
+      license="EPLv2" \\\\ \\
+      maintainer="Nick Boldt <nboldt@redhat.com>" \\\\ \\
+      io.openshift.expose-services="" \\\\ \\
+      usage=""' \\
+${WORKSPACE}/target/codeready-workspaces-plugin-intellij/Dockerfile
+        ''')
+
+        sh('''#!/bin/bash
+          export KRB5CCNAME=/var/tmp/crw-build_ccache
+          cd ${WORKSPACE}/target
+          git add .
+          git commit -m "sync from ''' + SOURCE_REPO + ''' @ ''' + SRC_SHA[0..7] + '''" || true
+          COMMIT_SHA="$(git log origin/crw-2.5-rhel-8..crw-2.5-rhel-8 --pretty=format:%H)"
+          if [ ! -z "$COMMIT_SHA" ] ; then
+            git push origin ''' + DWNSTM_BRANCH + ''' || true
+          fi
+        ''')
+      } // withCredentials
+    } // wrap
+  } // node
+} //timeout
