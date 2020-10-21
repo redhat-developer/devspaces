@@ -16,7 +16,7 @@ def OLD_SHA=""
 def SRC_SHA=""
 
 
-def buildNode = "rhel7-releng|rhel7-32gb||rhel7-16gb||rhel7-8gb" // node label
+def buildNode = "rhel7-32gb||rhel7-16gb||rhel7-8gb" // node label
 timeout(120) {
     node("${buildNode}"){ stage "Sync repos"
     wrap([$class: 'TimestamperBuildWrapper']) {
