@@ -108,7 +108,7 @@ ${WORKSPACE}/target/codeready-workspaces-plugin-intellij/Dockerfile
         sh('''#!/bin/bash
           export KRB5CCNAME=/var/tmp/crw-build_ccache
           cd ${WORKSPACE}/target
-          git add .
+          git add --all .
           git commit -m "sync from ''' + SOURCE_REPO + ''' @ ''' + SRC_SHA[0..7] + '''" || true
           COMMIT_SHA="$(git log origin/crw-2.5-rhel-8..crw-2.5-rhel-8 --pretty=format:%H)"
           if [ ! -z "$COMMIT_SHA" ] ; then
