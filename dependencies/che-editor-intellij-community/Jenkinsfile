@@ -38,7 +38,7 @@ timeout(120) {
           VER=$(curl -sSLo- https://raw.githubusercontent.com/eclipse/che-plugin-registry/''' + CHE_VER + '''/v3/plugins/che-incubator/intellij-community/latest.txt)
           SHA=$(curl -sSLo- https://raw.githubusercontent.com/eclipse/che-plugin-registry/''' + CHE_VER + '''/v3/plugins/che-incubator/intellij-community/${VER}/meta.yaml | ''' + yq_bin + ''' -r '.spec.containers[].image' | sed -r -e "s#.+:.+-##g")
           cd ${WORKSPACE}/source
-          git checkout ${SHA}
+          # git checkout ${SHA}
         ''')
         SRC_SHA = util.getLastCommitSHA("${WORKSPACE}/source")
         println "Got SRC_SHA in source folder: " + SRC_SHA
