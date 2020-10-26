@@ -27,8 +27,8 @@ for (int i=0; i < build_nodes.size(); i++) {
   tasks[build_nodes[i]] = { ->
 
     timeout(120) {
-        node("rhel7-32gb||rhel7-16gb||rhel7-8gb"){ 
-            stage("Sync repos") {
+        node(nodeLabel){ 
+            stage("Sync repos + build artifacts") {
                 wrap([$class: 'TimestamperBuildWrapper']) {
                     sh('curl -sSLO https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/crw-2.5-rhel-8/product/util.groovy')
                     def util = load "${WORKSPACE}/util.groovy"
@@ -124,7 +124,7 @@ node(nodeLabel) {
   stage ("Build containers on ${nodeLabel}") {
     echo "currentBuild.result = " + currentBuild.result
     if (!currentBuild.result.equals("ABORTED") && !currentBuild.result.equals("FAILED")) {
-      CRW_VERSION = getCrwVersion(MIDSTM_BRANCH)
+      CRW_VERSION = util.getCrwVersion(MIDSTM_BRANCH)
       println "CRW_VERSION = '" + CRW_VERSION + "'"
       build(
             job: 'get-sources-rhpkg-container-build',
