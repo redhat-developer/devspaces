@@ -1,7 +1,7 @@
 apiVersion: v2
 publisher: redhat
 name: java11
-version: 0.63.0
+version: 0.69.0
 type: VS Code extension
 displayName: Maven, Gradle, and Java 11 Language Support
 title: Java 11, Maven, and Gradle Tools by Red Hat
@@ -9,7 +9,7 @@ description: Support for Maven, Gradle. Java Linting, Intellisense, formatting, 
 icon: https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/master/dependencies/che-plugin-registry/resources/images/default.svg?sanitize=true
 repository: https://github.com/redhat-developer/vscode-java
 category: Language
-firstPublicationDate: "2020-07-26"
+firstPublicationDate: "2020-10-27"
 spec:
   containers:
     - image: "registry.redhat.io/codeready-workspaces/plugin-java11-rhel8:2.5"
@@ -29,5 +29,4 @@ spec:
           value: /opt/gradle/
   extensions:
     - https://download.jboss.org/jbosstools/vscode/3rdparty/vscode-java-debug/vscode-java-debug-0.26.0.vsix
-    - https://download.jboss.org/jbosstools/static/jdt.ls/stable/java-0.63.0-2222.vsix
-    
+    - https://download.jboss.org/jbosstools/static/jdt.ls/stable/java-0.69.0-2547.vsix

@@ -13,6 +13,8 @@ components:
   -
     type: chePlugin
     id: redhat/java11/latest
+    preferences:
+      java.server.launchMode: Standard
   -
     type: dockerimage
     alias: gradle

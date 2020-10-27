@@ -12,6 +12,8 @@ components:
   -
     type: chePlugin
     id: redhat/java11/latest
+    preferences:
+      java.server.launchMode: Standard
   -
     # NOTE: instead of the old stack-analysis script, should be able to use the latest dependency-analysis plugin instead
     type: chePlugin
