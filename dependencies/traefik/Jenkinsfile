@@ -1,0 +1,225 @@
+#!/usr/bin/env groovy
+
+import groovy.transform.Field
+
+// PARAMETERS for this pipeline:
+
+def SOURCE_REPO = "traefik/traefik" // upstream source repo from which to find commits
+def DWNSTM_REPO = "containers/codeready-workspaces-traefik" // repo to use as target
+def SYNC_REPO="traefik"
+
+
+// NOTE: must create branches manually
+String SOURCE_BRANCH = "master" // upstream source repo branch
+String SOURCE_TAG = "v2.3.2"
+String DWNSTM_BRANCH = "crw-2.5-rhel-8" // target branch, eg., crw-2.5-rhel-8
+
+def OLD_SHA=""
+def SRC_SHA=""
+
+// Nodes to run artifact build on ex. ['rhel7-releng', 's390x-rhel7-beaker', 'ppc64le-rhel7-beaker']
+def List build_nodes = ['rhel7-releng'] // , 's390x-rhel7-beaker', 'ppc64le-rhel7-beaker']
+def Map tasks = [failFast: false]
+
+
+def buildNode = "rhel7-32gb||rhel7-16gb||rhel7-8gb" // node label
+timeout(120) {
+    node("${buildNode}"){ stage "Sync repos"
+    wrap([$class: 'TimestamperBuildWrapper']) {
+      sh('curl -sSLO https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/'+ DWNSTM_BRANCH + '/product/util.groovy')
+      def util = load "${WORKSPACE}/util.groovy"
+      cleanWs()
+      CRW_VERSION = util.getCrwVersion(DWNSTM_BRANCH)
+      println "CRW_VERSION = '" + CRW_VERSION + "'"
+      util.installSkopeo(CRW_VERSION)
+      QUAY_REPO_PATH=util.getCRWShortName(SYNC_REPO) + "-rhel8"
+
+        withCredentials([string(credentialsId:'devstudio-release.token', variable: 'GITHUB_TOKEN'),
+          file(credentialsId: 'crw-build.keytab', variable: 'CRW_KEYTAB')]) {
+        util.bootstrap(CRW_KEYTAB)
+
+        println "########################################################################################################"
+        println "##  Clone and update github.com/${SOURCE_REPO}.git"
+        println "########################################################################################################"
+        util.cloneRepo("https://github.com/${SOURCE_REPO}.git", "${WORKSPACE}/source", SOURCE_BRANCH)
+        sh('''#!/bin/bash
+          cd ${WORKSPACE}/source
+          git checkout ''' + SOURCE_TAG + '''
+        ''')
+        SRC_SHA = util.getLastCommitSHA("${WORKSPACE}/source")
+        println "Got SRC_SHA in source folder: " + SRC_SHA
+
+        println "########################################################################################################"
+        println "##  Sync ${SYNC_REPO} to pkgs.devel"
+        println "########################################################################################################"
+        util.cloneRepo("ssh://crw-build@pkgs.devel.redhat.com/${DWNSTM_REPO}", "${WORKSPACE}/target", DWNSTM_BRANCH)
+        OLD_SHA = util.getLastCommitSHA("${WORKSPACE}/target")
+        println "Got OLD_SHA in target folder: " + OLD_SHA
+
+        writeFile file: "rsync-upstream-exclude", text: '''
+        .semaphoreci
+        .travis
+        .travis.yaml
+        .gitattributes
+        traefik.sample.toml
+        traefik.sample.yml
+        '''
+        // ignore files that are ONLY in downstream (not midstream or upstream)
+        writeFile file: "rsync-brew-exclude", text: '''
+        sources
+        get-sources-jenkins.sh
+        cvp.yml
+        tests/
+        content_sets.yml
+        content_sets.repo
+        container.yaml
+        .gitignore
+        rhel.Dockerfile
+        '''
+        sh('''
+          rsync -avhz --checksum --delete --exclude-from ${WORKSPACE}/rsync-upstream-exclude \
+            --exclude-from ${WORKSPACE}/rsync-brew-exclude --exclude .git/ --exclude .github/ \
+            ${WORKSPACE}/source/ ${WORKSPACE}/target/ | grep -E -v '/$'
+        ''')
+
+        sh('''#!/bin/bash
+          cd ${WORKSPACE}/target
+          sed -e 's|^FROM node:12.*|FROM registry.redhat.io/rhel8/nodejs-12 as webui \\
+USER root|g' \\
+          -e 's|^RUN npm install|RUN npm install --unsafe-perm=true|g' \\
+          -e 's|^FROM golang.*|FROM registry.redhat.io/ubi8 as gobuild|g' \\
+          -e 's|apk --update upgrade|true|g' \\
+          -e 's|apk --no-cache --no-progress add git [^\\]*|dnf install -y git |g' \\
+          -e 's|update-ca-certificates|update-ca-trust|g' \\
+          -e 's|curl -fsSL -o /usr/local/bin/go-bindata .*|ARCH=$(uname -m) \\&\\& if [ "$ARCH" == "x86_64" ] ; then ARCH=amd64; fi \\\\ \\
+    \\&\\& curl -fsSL -O https://golang.org/dl/go1.15.3.linux-$ARCH.tar.gz \\\\ \\
+    \\&\\& tar xzf go1.15.3.linux-$ARCH.tar.gz -C /usr/local \\\\ \\
+    \\&\\& ln -s /usr/local/go/bin/go /usr/local/bin/go \\\\ \\
+    \\&\\& ln -s /usr/local/go/bin/gofmt /usr/local/bin/gofmt \\\\ \\
+    \\&\\& export GOPATH=/usr/local \\&\\& go get -u github.com/containous/go-bindata/... \\\\|g' exp.Dockerfile > rhel.Dockerfile
+          sed -i '/^## IMAGE/,$d' rhel.Dockerfile
+        ''')
+
+
+        sh('''#!/bin/bash
+          export KRB5CCNAME=/var/tmp/crw-build_ccache
+          cd ${WORKSPACE}/target
+          git add --all -f .
+          git commit -m "sync from ''' + SOURCE_REPO + ''' @ ''' + SRC_SHA[0..7] + '''" || true
+          COMMIT_SHA="$(git log origin/''' + DWNSTM_BRANCH + '''..''' + DWNSTM_BRANCH + ''' --pretty=format:%H)"
+          if [ ! -z "$COMMIT_SHA" ] ; then
+            git push origin ''' + DWNSTM_BRANCH + ''' || true
+          fi
+        ''')
+      } // withCredentials
+    } // wrap
+  } // node
+} //timeout
+
+for (int i=0; i < build_nodes.size(); i++) {
+  def String nodeLabel = "${build_nodes[i]}"
+  tasks[build_nodes[i]] = { ->
+    timeout(120) {
+      node(nodeLabel){
+        stage("build artifacts") {
+          wrap([$class: 'TimestamperBuildWrapper']) {
+            sh('curl -sSLO https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/'+ DWNSTM_BRANCH + '/product/util.groovy')
+            def util = load "${WORKSPACE}/util.groovy"
+            cleanWs()
+            CRW_VERSION = util.getCrwVersion(DWNSTM_BRANCH)
+            println "CRW_VERSION = '" + CRW_VERSION + "'"
+            withCredentials([string(credentialsId:'devstudio-release.token', variable: 'GITHUB_TOKEN'),
+                file(credentialsId: 'crw-build.keytab', variable: 'CRW_KEYTAB')]) {
+              util.bootstrap(CRW_KEYTAB)
+              util.cloneRepo("ssh://crw-build@pkgs.devel.redhat.com/containers/codeready-workspaces-${SYNC_REPO}", "${WORKSPACE}/${SYNC_REPO}", DWNSTM_BRANCH)
+
+              sh('''#!/bin/bash -xe
+                export TMP_IMG="traefik.tmp"
+                cd "${WORKSPACE}/''' + SYNC_REPO + '''"
+                docker build -t $TMP_IMG -f rhel.Dockerfile .
+                mkdir -p brew-assets
+                docker run --rm -v $PWD/brew-assets:/brew-assets $TMP_IMG sh -c "
+                  cp /go/src/github.com/traefik/traefik/dist/traefik /brew-assets
+                "
+                tar czf ${WORKSPACE}/traefik-$(uname -m).tar.gz -C $PWD/brew-assets .
+                docker rmi -f $TMP_IMG
+              ''')
+              archiveArtifacts fingerprint: true, onlyIfSuccessful: true, allowEmptyArchive: false, artifacts: "traefik-*.tar.gz, logs/*"
+            } // withCredentials
+          } // wrap
+        } // stage
+      } // node
+    } // timeout
+  } // tasks
+} // for
+
+stage("Builds") {
+  println "########################################################################################################"
+  println "##  Build ${SYNC_REPO} assets"
+  println "########################################################################################################"
+  parallel(tasks)
+}
+
+// kick off get-sources-rhpkg-container-build job
+def String nodeLabel = "${build_nodes[0]}"
+node(nodeLabel) {
+  stage ("Build containers on ${nodeLabel}") {
+    println "########################################################################################################"
+    println "##  Build ${SYNC_REPO} containers"
+    println "########################################################################################################"
+    sh('curl -sSLO https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/'+ DWNSTM_BRANCH + '/product/util.groovy')
+    def util = load "${WORKSPACE}/util.groovy"
+    echo "currentBuild.result = " + currentBuild.result
+    if (!currentBuild.result.equals("ABORTED") && !currentBuild.result.equals("FAILED")) {
+      CRW_VERSION = util.getCrwVersion(MIDSTM_BRANCH)
+      println "CRW_VERSION = '" + CRW_VERSION + "'"
+      build(
+            job: 'get-sources-rhpkg-container-build',
+            wait: false,
+            propagate: false,
+            parameters: [
+              [
+                $class: 'StringParameterValue',
+                name: 'token',
+                value: "CI_BUILD"
+              ],
+              [
+                $class: 'StringParameterValue',
+                name: 'cause',
+                value: "configbump+respin+by+${BUILD_TAG}"
+              ],
+              [
+                $class: 'StringParameterValue',
+                name: 'GIT_BRANCH',
+                value: "${DWNSTM_BRANCH}"
+              ],
+              [
+                $class: 'StringParameterValue',
+                name: 'GIT_PATHs',
+                value: "containers/codeready-workspaces-${SYNC_REPO}"
+              ],
+              [
+                $class: 'StringParameterValue',
+                name: 'QUAY_REPO_PATHs',
+                value: "${QUAY_REPO_PATH}"
+              ],
+              [
+                $class: 'StringParameterValue',
+                name: 'JOB_BRANCH',
+                value: "${CRW_VERSION}"
+              ],
+              [
+                $class: 'StringParameterValue',
+                name: 'FORCE_BUILD',
+                value: "true"
+              ],
+              [
+                $class: 'StringParameterValue',
+                name: 'SCRATCH',
+                value: "false"
+              ]
+            ]
+          )
+    } // if
+  } // stage
+} //node
