@@ -112,7 +112,11 @@ echo -e "$METADATA" >> ${WORKSPACE}/targetdwn/''' + SYNC_REPO + '''/Dockerfile
                         // build project in Jenkins so we can collect asset-* files later via get-sources-jenkins.sh, then trigger a build brew with those files
                         if (NEW_SHA != OLD_SHA || FORCE_BUILD == "true") {
                             sh('''#!/bin/bash -xe
-                                cd ${WORKSPACE}/targetdwn/''' + SYNC_REPO + ''' && chmod +x ./build/dockerfiles/*.sh && ./build/dockerfiles/rhel.Dockerfile.extract.assets.sh
+                                cd ${WORKSPACE}/targetdwn/''' + SYNC_REPO + ''' && chmod +x ./build/dockerfiles/*.sh
+                                # TODO: remove this sed hack when https://github.com/che-incubator/configbump/pull/13 merged
+                                # remove tree since it won't run on P&Z beaker nodes
+                                sed -i -r -e 's@tree@#tree@g' ./build/dockerfiles/rhel.Dockerfile.extract.assets.sh
+                                ./build/dockerfiles/rhel.Dockerfile.extract.assets.sh
                             ''')
                             archiveArtifacts fingerprint: true, onlyIfSuccessful: true, allowEmptyArchive: false, artifacts: "asset-configbump-*.tar.gz, logs/*"
                         } else {
