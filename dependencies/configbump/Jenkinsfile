@@ -4,8 +4,8 @@ import groovy.transform.Field
 // PARAMETERS for this pipeline:
 //   FORCE_BUILD
 
-@Field String SOURCE_BRANCH = "multiarch-z-p" // "v0.1.4"
-def String SOURCE_REPO = "nickboldt/configbump" // che-incubator/configbump" // source repo from which to find commits
+@Field String SOURCE_BRANCH = "master"
+def String SOURCE_REPO = "che-incubator/configbump" // source repo from which to find commits
 def SYNC_REPO="configbump"
 
 
