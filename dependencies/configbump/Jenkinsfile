@@ -66,7 +66,7 @@ for (int i=0; i < build_nodes.size(); i++) {
                         container.yaml
                         .gitignore
                         '''
-                        sh('''rsync -avhz --checksum --delete --exclude-from ${WORKSPACE}/rsync-brew-exclude --exclude .git/ --exclude .github/ \
+                        sh('''rsync -avhz --checksum --exclude-from ${WORKSPACE}/rsync-brew-exclude --exclude .git/ --exclude .github/ \
                             ${WORKSPACE}/sources/''' + SYNC_REPO + '''/ ${WORKSPACE}/targetdwn/''' + SYNC_REPO)
 
                         // copy build/dockerfiles/brew.Dockerfile to Dockerfile
