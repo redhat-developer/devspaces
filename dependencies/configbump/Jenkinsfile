@@ -4,7 +4,7 @@ import groovy.transform.Field
 // PARAMETERS for this pipeline:
 //   FORCE_BUILD
 
-@Field String SOURCE_BRANCH = "master"
+@Field String SOURCE_BRANCH = "master" // or a tag like "v0.1.4"
 def String SOURCE_REPO = "che-incubator/configbump" // source repo from which to find commits
 def SYNC_REPO="configbump"
 
@@ -19,6 +19,7 @@ def List build_nodes = ['rhel7-releng'] //, 's390x-rhel7-beaker', 'ppc64le-rhel7
 def Map tasks = [failFast: false]
 
 @Field String QUAY_REPO_PATH = ""
+
 def OLD_SHA=""
 def NEW_SHA=""
 def SOURCE_SHA=""
@@ -49,16 +50,64 @@ for (int i=0; i < build_nodes.size(); i++) {
                         SOURCE_SHA = util.getLastCommitSHA("${WORKSPACE}/sources/${SYNC_REPO}")
                         println "Got SOURCE_SHA in sources folder: " + SOURCE_SHA
 
-                        
                         println "########################################################################################################"
                         println "##  Sync ${SYNC_REPO} to pkgs.devel"
                         println "########################################################################################################"
                         util.cloneRepo("ssh://crw-build@pkgs.devel.redhat.com/containers/codeready-workspaces-${SYNC_REPO}", "${WORKSPACE}/targetdwn/${SYNC_REPO}", DWNSTM_BRANCH)
 
-                        sh('''rsync -avhz --checksum --delete --exclude .git/ ${WORKSPACE}/sources/''' + SYNC_REPO + '''/ ${WORKSPACE}/targetdwn/''' + SYNC_REPO)
+                        // ignore files that are ONLY in downstream (not midstream or upstream)
+                        writeFile file: "rsync-brew-exclude", text: '''
+                        sources
+                        get-sources-jenkins.sh
+                        cvp.yml
+                        tests/
+                        content_sets.yml
+                        content_sets.repo
+                        container.yaml
+                        .gitignore
+                        '''
+                        sh('''rsync -avhz --checksum --delete --exclude-from ${WORKSPACE}/rsync-brew-exclude --exclude .git/ --exclude .github/ \
+                            ${WORKSPACE}/sources/''' + SYNC_REPO + '''/ ${WORKSPACE}/targetdwn/''' + SYNC_REPO)
+
+                        // copy build/dockerfiles/brew.Dockerfile to Dockerfile
+                        sh('''rsync -avhz --checksum ${WORKSPACE}/sources/''' + SYNC_REPO + '''/build/dockerfiles/brew.Dockerfile ${WORKSPACE}/targetdwn/''' + SYNC_REPO + '''/Dockerfile''')
+
+                        // append brew metadata to brew.Dockerfile after copying to downstream
+                        sh('''#!/bin/bash -xe
+METADATA='ENV SUMMARY="Red Hat CodeReady Workspaces ''' + SYNC_REPO + ''' container" \\\r
+    DESCRIPTION="Red Hat CodeReady Workspaces ''' + SYNC_REPO + ''' container" \\\r
+    PRODNAME="codeready-workspaces" \\\r
+    COMPNAME="''' + SYNC_REPO + '''-rhel8" \r
+LABEL summary="$SUMMARY" \\\r
+    description="$DESCRIPTION" \\\r
+    io.k8s.description="$DESCRIPTION" \\\r
+    io.k8s.display-name=\"$DESCRIPTION" \\\r
+    io.openshift.tags="$PRODNAME,$COMPNAME" \\\r
+    com.redhat.component="$PRODNAME-$COMPNAME-container" \\\r
+    name="$PRODNAME/$COMPNAME" \\\r
+    version="''' + CRW_VERSION + '''" \\\r
+    license="EPLv2" \\\r
+    maintainer="Nick Boldt <nboldt@redhat.com>" \\\r
+    io.openshift.expose-services="" \\\r
+    usage="" \r'
+echo -e "$METADATA" >> ${WORKSPACE}/targetdwn/''' + SYNC_REPO + '''/Dockerfile
+                            ''')
 
                         OLD_SHA = util.getLastCommitSHA("${WORKSPACE}/targetdwn/${SYNC_REPO}")
                         println "Got OLD_SHA in targetdwn/${SYNC_REPO} folder: " + OLD_SHA
+
+                        // push to dist-git
+                        sh('''#!/bin/bash -xe
+                        cd ${WORKSPACE}/targetdwn/''' + SYNC_REPO + '''
+                        if [[ \$(git diff --name-only) ]]; then # file changed
+                            export KRB5CCNAME=/var/tmp/crw-build_ccache
+                            git add . -A -f
+                            git commit -s -m "[sync] Update from ''' + SOURCE_REPO + ''' @ ''' + SOURCE_SHA[0..7] + '''"
+                            git push origin ''' + DWNSTM_BRANCH + ''' || true
+                        fi''')
+
+                        NEW_SHA = util.getLastCommitSHA("${WORKSPACE}/targetdwn/${SYNC_REPO}")
+                        println "Got NEW_SHA in targetdwn/${SYNC_REPO} folder: " + NEW_SHA
 
                         // build project in Jenkins so we can collect asset-* files later via get-sources-jenkins.sh, then trigger a build brew with those files
                         if (NEW_SHA != OLD_SHA || FORCE_BUILD == "true") {
@@ -69,41 +118,6 @@ for (int i=0; i < build_nodes.size(); i++) {
                         } else {
                             println "No changes upstream, nothing to commit"
                         }
-
-                        // TODO append brew metadata to brew.Dockerfile in downstream
-
-                        // push to dist-git
-                        sh('''#!/bin/bash -xe
-                        cd ${WORKSPACE}/targetdwn/''' + SYNC_REPO + '''
-                        if [[ \$(git diff --name-only) ]]; then # file changed
-                            export KRB5CCNAME=/var/tmp/crw-build_ccache
-                            git add .
-                            git commit -s -m "[sync] Update from ''' + SOURCE_REPO + ''' @ ''' + SOURCE_SHA[0..7] + '''"
-                            git push origin ''' + DWNSTM_BRANCH + ''' || true
-                        fi''')
-
-                        // run get-sources-jenkins to ensure we have the latest sources (in case we clobbered a previous run) and update source repo
-                        // sh('''#!/bin/bash -xe
-                        // export KRB5CCNAME=/var/tmp/crw-build_ccache
-                        // cd ${WORKSPACE}/targetdwn/''' + SYNC_REPO + '''
-                        // ./get-sources-jenkins.sh -n ''' + CRW_VERSION + '''
-                        // COMMIT_SHA="$(git log origin/crw-2.5-rhel-8..crw-2.5-rhel-8 --pretty=format:%H)"
-                        // COMMIT_MSG="$(git log origin/crw-2.5-rhel-8..crw-2.5-rhel-8 --pretty=format:%B)"
-                        // if [ ! -z "$COMMIT_SHA" ] ; then
-                        //     for f in $(git diff-tree --no-commit-id --name-only -r "$COMMIT_SHA") ; do
-                        //     cp $f ${WORKSPACE}/sources/''' + SYNC_REPO + '''
-                        //     done
-                        //     git push origin ''' + DWNSTM_BRANCH + ''' || true
-
-                        //     # update source repo with updates from running get-sources-jenkins
-                        //     cd ${WORKSPACE}/sources/''' + SYNC_REPO + '''
-                        //     git commit -am "$COMMIT_MSG" || true
-                        //     git push origin ''' + SOURCE_BRANCH + ''' || true
-                        // fi
-                        // ''')
-
-                        NEW_SHA = util.getLastCommitSHA("${WORKSPACE}/targetdwn/${SYNC_REPO}")
-                        println "Got NEW_SHA in targetdwn/${SYNC_REPO} folder: " + NEW_SHA
 
                     } // withCredentials
                 } // wrap
@@ -122,6 +136,8 @@ stage("Builds") {
 def String nodeLabel = "${build_nodes[0]}"
 node(nodeLabel) {
   stage ("Build containers on ${nodeLabel}") {
+    sh('curl -sSLO https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/crw-2.5-rhel-8/product/util.groovy')
+    def util = load "${WORKSPACE}/util.groovy"
     echo "currentBuild.result = " + currentBuild.result
     if (!currentBuild.result.equals("ABORTED") && !currentBuild.result.equals("FAILED")) {
       CRW_VERSION = util.getCrwVersion(MIDSTM_BRANCH)
@@ -169,7 +185,7 @@ node(nodeLabel) {
               [
                 $class: 'StringParameterValue',
                 name: 'SCRATCH',
-                value: "${SCRATCH}"
+                value: "false"
               ]
             ]
           )
