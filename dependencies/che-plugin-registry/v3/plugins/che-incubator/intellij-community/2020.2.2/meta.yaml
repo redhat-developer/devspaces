@@ -1,0 +1,31 @@
+apiVersion: v2
+publisher: che-incubator
+name: intellij-community
+version: 2020.2.2
+type: Che Editor
+displayName:  IntelliJ IDEA Community Edition
+title:  IntelliJ IDEA Community Edition (in browser using noVNC) as editor for Red Hat CodeReady Workspaces
+description:  IntelliJ IDEA Community Edition running on the Web with noVNC
+icon: https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/master/dependencies/che-plugin-registry/resources/images/default.svg?sanitize=true
+category: Editor
+repository: https://github.com/che-incubator/che-editor-intellij-community
+firstPublicationDate: "2020-10-27"
+spec:
+  endpoints:
+   -  name: "intellij"
+      public: true
+      targetPort: 8080
+      attributes:
+        protocol: http
+        type: ide
+        path: /vnc.html?resize=remote&autoconnect=true&reconnect=true
+  containers:
+   - name: intellij-novnc
+     image: "registry.redhat.io/codeready-workspaces/plugin-intellij-rhel8:2.5"
+     mountSources: true
+     volumes:
+         - mountPath: "/JetBrains/IdeaIC"
+           name: idea-configuration
+     ports:
+         - exposedPort: 8080
+     memoryLimit: "2048M"
