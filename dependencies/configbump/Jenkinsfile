@@ -2,7 +2,7 @@
 import groovy.transform.Field
 
 // PARAMETERS for this pipeline:
-//   FORCE_BUILD
+// none
 
 @Field String SOURCE_BRANCH = "master" // or a tag like "v0.1.4"
 def String SOURCE_REPO = "che-incubator/configbump" // source repo from which to find commits
@@ -110,16 +110,11 @@ echo -e "$METADATA" >> ${WORKSPACE}/targetdwn/''' + SYNC_REPO + '''/Dockerfile
                         println "Got NEW_SHA in targetdwn/${SYNC_REPO} folder: " + NEW_SHA
 
                         // build project in Jenkins so we can collect asset-* files later via get-sources-jenkins.sh, then trigger a build brew with those files
-                        if (NEW_SHA != OLD_SHA || FORCE_BUILD == "true") {
-                            sh('''#!/bin/bash -xe
-                                cd ${WORKSPACE}/targetdwn/''' + SYNC_REPO + ''' && chmod +x ./build/dockerfiles/*.sh
-                                ./build/dockerfiles/rhel.Dockerfile.extract.assets.sh
-                            ''')
-                            archiveArtifacts fingerprint: true, onlyIfSuccessful: true, allowEmptyArchive: false, artifacts: "asset-configbump-*.tar.gz, logs/*"
-                        } else {
-                            println "No changes upstream, nothing to commit"
-                        }
-
+                        sh('''#!/bin/bash -xe
+                            cd ${WORKSPACE}/targetdwn/''' + SYNC_REPO + ''' && chmod +x ./build/dockerfiles/*.sh
+                            ./build/dockerfiles/rhel.Dockerfile.extract.assets.sh
+                        ''')
+                        archiveArtifacts fingerprint: true, onlyIfSuccessful: true, allowEmptyArchive: false, artifacts: "asset-configbump-*.tar.gz, logs/*"
                     } // withCredentials
                 } // wrap
             } // stage
