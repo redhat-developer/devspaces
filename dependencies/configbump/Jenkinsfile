@@ -27,7 +27,7 @@ def SOURCE_SHA=""
 @Field String nodeLabel = "${build_nodes[0]}"
 timeout(20) {
     node(nodeLabel){ 
-        stage("Sync repos + build artifacts") {
+        stage("Sync repo") {
             wrap([$class: 'TimestamperBuildWrapper']) {
                 sh('curl -sSLO https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/crw-2.5-rhel-8/product/util.groovy')
                 def util = load "${WORKSPACE}/util.groovy"
@@ -159,7 +159,7 @@ stage("Builds") {
 // kick off get-sources-rhpkg-container-build job
 nodeLabel = "${build_nodes[0]}"
 node(nodeLabel) {
-  stage ("Build containers on ${nodeLabel}") {
+  stage ("Trigger Brew build") {
     sh('curl -sSLO https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/crw-2.5-rhel-8/product/util.groovy')
     def util = load "${WORKSPACE}/util.groovy"
     echo "currentBuild.result = " + currentBuild.result
