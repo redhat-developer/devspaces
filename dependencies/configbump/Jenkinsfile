@@ -106,8 +106,6 @@ echo -e "$METADATA" >> ${WORKSPACE}/targetdwn/''' + SYNC_REPO + '''/Dockerfile
 
                     NEW_SHA = util.getLastCommitSHA("${WORKSPACE}/targetdwn/${SYNC_REPO}")
                     println "Got NEW_SHA in targetdwn/${SYNC_REPO} folder: " + NEW_SHA
-                  }
-
                 } // withCredentials
             } // wrap
         } // stage
