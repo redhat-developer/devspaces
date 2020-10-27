@@ -15,7 +15,7 @@ def DWNSTM_BRANCH = MIDSTM_BRANCH
 
 // Nodes to run artifact build on ex. ['rhel7-releng', 's390x-rhel7-beaker', 'ppc64le-rhel7-beaker']
 // TODO enable Z and P
-def List build_nodes = ['rhel7-releng'] //, 's390x-rhel7-beaker', 'ppc64le-rhel7-beaker']
+def List build_nodes = ['rhel7-releng', 's390x-rhel7-beaker', 'ppc64le-rhel7-beaker']
 def Map tasks = [failFast: false]
 
 @Field String QUAY_REPO_PATH = ""
