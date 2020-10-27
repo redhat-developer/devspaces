@@ -15,7 +15,7 @@ def DWNSTM_BRANCH = MIDSTM_BRANCH
 
 // Nodes to run artifact build on ex. ['rhel7-releng', 's390x-rhel7-beaker', 'ppc64le-rhel7-beaker']
 // TODO enable Z and P
-def List build_nodes = ['rhel7-releng', 's390x-rhel7-beaker', 'ppc64le-rhel7-beaker']
+@Field List build_nodes = ['rhel7-releng', 's390x-rhel7-beaker', 'ppc64le-rhel7-beaker']
 def Map tasks = [failFast: false]
 
 @Field String QUAY_REPO_PATH = ""
@@ -117,7 +117,7 @@ for (int i=0; i < build_nodes.size(); i++) {
   tasks[build_nodes[i]] = { ->
     timeout(120) {
         node(nodeLabel){ 
-            stage("Build artifacts: " + build_nodes[i]) {
+            stage("Build artifacts") {
                 wrap([$class: 'TimestamperBuildWrapper']) {
                     sh('curl -sSLO https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/crw-2.5-rhel-8/product/util.groovy')
                     def util = load "${WORKSPACE}/util.groovy"
@@ -129,12 +129,11 @@ for (int i=0; i < build_nodes.size(); i++) {
                         // build project in Jenkins so we can collect asset-* files later via get-sources-jenkins.sh, then trigger a build brew with those files
                         if (NEW_SHA != OLD_SHA || FORCE_BUILD == "true") {
                             util.cloneRepo("ssh://crw-build@pkgs.devel.redhat.com/containers/codeready-workspaces-${SYNC_REPO}", "${WORKSPACE}/targetdwn/${SYNC_REPO}", DWNSTM_BRANCH)
-
                             sh('''#!/bin/bash -xe
                                 cd ${WORKSPACE}/targetdwn/''' + SYNC_REPO + ''' && chmod +x ./build/dockerfiles/*.sh
                                 ./build/dockerfiles/rhel.Dockerfile.extract.assets.sh
                             ''')
-                            archiveArtifacts fingerprint: true, onlyIfSuccessful: true, allowEmptyArchive: false, artifacts: "asset-configbump-*.tar.gz, logs/*"
+                            archiveArtifacts fingerprint: true, onlyIfSuccessful: true, allowEmptyArchive: false, artifacts: "asset-configbump-*.tar.gz"
                             currentBuild.description="New artifacts built"
                         } else {
                             println "No changes upstream, nothing to build in Jenkins!"
