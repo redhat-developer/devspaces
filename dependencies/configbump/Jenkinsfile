@@ -64,7 +64,7 @@ timeout(20) {
                     container.yaml
                     .gitignore
                     '''
-                    sh('''rsync -avhz --checksum --exclude-from ${WORKSPACE}/rsync-brew-exclude --exclude .git/ --exclude .github/ \
+                    sh('''rsync -avhz --checksum --exclude-from ${WORKSPACE}/rsync-brew-exclude --exclude .git/ --exclude .github/ --exclude .gitignore \
                         ${WORKSPACE}/sources/''' + SYNC_REPO + '''/ ${WORKSPACE}/targetdwn/''' + SYNC_REPO)
 
                     // copy build/dockerfiles/brew.Dockerfile to Dockerfile
