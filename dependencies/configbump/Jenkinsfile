@@ -1,35 +1,33 @@
 #!/usr/bin/env groovy
+
 import groovy.transform.Field
 
 // PARAMETERS for this pipeline:
 //   FORCE_BUILD
 
-@Field String SOURCE_BRANCH = "master" // or a tag like "v0.1.4"
-def String SOURCE_REPO = "che-incubator/configbump" // source repo from which to find commits
+def SOURCE_REPO = "che-incubator/configbump" // upstream source repo from which to find commits
+def DWNSTM_REPO = "containers/codeready-workspaces-configbump" // repo to use as target
 def SYNC_REPO="configbump"
 
+String SOURCE_BRANCH = "master" // or a tag like "v0.1.4"
+String DWNSTM_BRANCH = "crw-2.5-rhel-8" // target branch, eg., crw-2.5-rhel-8
 
-def DWNSTM_REPO = "redhat-developer/codeready-workspaces"
-def MIDSTM_BRANCH = "crw-2.5-rhel-8" // target branch in dist-git repo, eg., crw-2.5-rhel-8
-def DWNSTM_BRANCH = MIDSTM_BRANCH
+def OLD_SHA=""
+def SRC_SHA=""
+def NEW_SHA=""
 
 // Nodes to run artifact build on ex. ['rhel7-releng', 's390x-rhel7-beaker', 'ppc64le-rhel7-beaker']
-// TODO enable Z and P
-@Field List build_nodes = ['rhel7-releng', 's390x-rhel7-beaker', 'ppc64le-rhel7-beaker']
+def List build_nodes = ['rhel7-releng', 's390x-rhel7-beaker', 'ppc64le-rhel7-beaker']
 def Map tasks = [failFast: false]
 
 @Field String QUAY_REPO_PATH = ""
 
-def OLD_SHA=""
-def NEW_SHA=""
-def SOURCE_SHA=""
-
-@Field String nodeLabel = "${build_nodes[0]}"
+def buildNode = "rhel7-32gb||rhel7-16gb||rhel7-8gb" // node label
 timeout(20) {
-    node(nodeLabel){ 
-        stage("Sync repo") {
+    node("${buildNode}"){ 
+        stage("Sync repos") {
             wrap([$class: 'TimestamperBuildWrapper']) {
-                sh('curl -sSLO https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/crw-2.5-rhel-8/product/util.groovy')
+                sh('curl -sSLO https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/'+ DWNSTM_BRANCH + '/product/util.groovy')
                 def util = load "${WORKSPACE}/util.groovy"
                 cleanWs()
                 CRW_VERSION = util.getCrwVersion(DWNSTM_BRANCH)
@@ -40,18 +38,24 @@ timeout(20) {
                 withCredentials([string(credentialsId:'devstudio-release.token', variable: 'GITHUB_TOKEN'),
                     file(credentialsId: 'crw-build.keytab', variable: 'CRW_KEYTAB')]) {
                     util.bootstrap(CRW_KEYTAB)
+
                     println "########################################################################################################"
                     println "##  Clone and update github.com/${SOURCE_REPO}.git"
                     println "########################################################################################################"
                     util.cloneRepo("https://github.com/${SOURCE_REPO}.git", "${WORKSPACE}/sources/${SYNC_REPO}", SOURCE_BRANCH)
-                    // util.updateBaseImages("${WORKSPACE}/sources/${SYNC_REPO}", SOURCE_BRANCH)
-                    SOURCE_SHA = util.getLastCommitSHA("${WORKSPACE}/sources/${SYNC_REPO}")
-                    println "Got SOURCE_SHA in sources folder: " + SOURCE_SHA
+		    //sh('''#!/bin/bash
+          	    //  cd ${WORKSPACE}/source
+          	    //  git checkout ''' + SOURCE_TAG + '''
+		    //''')
+                    SRC_SHA = util.getLastCommitSHA("${WORKSPACE}/sources/${SYNC_REPO}")
+                    println "Got SRC_SHA in sources folder: " + SRC_SHA
 
                     println "########################################################################################################"
                     println "##  Sync ${SYNC_REPO} to pkgs.devel"
                     println "########################################################################################################"
-                    util.cloneRepo("ssh://crw-build@pkgs.devel.redhat.com/containers/codeready-workspaces-${SYNC_REPO}", "${WORKSPACE}/targetdwn/${SYNC_REPO}", DWNSTM_BRANCH)
+                    util.cloneRepo("ssh://crw-build@pkgs.devel.redhat.com/${DWNSTM_REPO}", "${WORKSPACE}/targetdwn/${SYNC_REPO}", DWNSTM_BRANCH)
+                    OLD_SHA = util.getLastCommitSHA("${WORKSPACE}/targetdwn/${SYNC_REPO}")
+                    println "Got OLD_SHA in targetdwn/${SYNC_REPO} folder: " + OLD_SHA
 
                     // ignore files that are ONLY in downstream (not midstream or upstream)
                     writeFile file: "rsync-brew-exclude", text: '''
@@ -64,8 +68,10 @@ timeout(20) {
                     container.yaml
                     .gitignore
                     '''
-                    sh('''rsync -avhz --checksum --exclude-from ${WORKSPACE}/rsync-brew-exclude --exclude .git/ --exclude .github/ --exclude .gitignore \
-                        ${WORKSPACE}/sources/''' + SYNC_REPO + '''/ ${WORKSPACE}/targetdwn/''' + SYNC_REPO)
+                    sh('''
+		      rsync -avhz --checksum --exclude-from ${WORKSPACE}/rsync-brew-exclude --exclude .git/ --exclude .github/ --exclude .gitignore \
+                        ${WORKSPACE}/sources/''' + SYNC_REPO + '''/ ${WORKSPACE}/targetdwn/''' + SYNC_REPO
+		    )
 
                     // copy build/dockerfiles/brew.Dockerfile to Dockerfile
                     sh('''rsync -avhz --checksum ${WORKSPACE}/sources/''' + SYNC_REPO + '''/build/dockerfiles/brew.Dockerfile ${WORKSPACE}/targetdwn/''' + SYNC_REPO + '''/Dockerfile''')
@@ -91,8 +97,6 @@ usage="" \r'
 echo -e "$METADATA" >> ${WORKSPACE}/targetdwn/''' + SYNC_REPO + '''/Dockerfile
                         ''')
 
-                    OLD_SHA = util.getLastCommitSHA("${WORKSPACE}/targetdwn/${SYNC_REPO}")
-                    println "Got OLD_SHA in targetdwn/${SYNC_REPO} folder: " + OLD_SHA
 
                     // push to dist-git
                     sh('''#!/bin/bash -xe
@@ -100,7 +104,7 @@ echo -e "$METADATA" >> ${WORKSPACE}/targetdwn/''' + SYNC_REPO + '''/Dockerfile
                     if [[ \$(git diff --name-only) ]]; then # file changed
                         export KRB5CCNAME=/var/tmp/crw-build_ccache
                         git add . -A -f
-                        git commit -s -m "[sync] Update from ''' + SOURCE_REPO + ''' @ ''' + SOURCE_SHA[0..7] + '''"
+                        git commit -s -m "[sync] Update from ''' + SOURCE_REPO + ''' @ ''' + SRC_SHA[0..7] + '''"
                         git push origin ''' + DWNSTM_BRANCH + ''' || true
                     fi''')
 
@@ -114,7 +118,7 @@ echo -e "$METADATA" >> ${WORKSPACE}/targetdwn/''' + SYNC_REPO + '''/Dockerfile
 
 def ARCH = ""
 for (int i=0; i < build_nodes.size(); i++) {
-  nodeLabel = "${build_nodes[i]}"
+  def String nodeLabel = "${build_nodes[i]}"
   tasks[build_nodes[i]] = { ->
     timeout(120) {
         node(nodeLabel){ 
@@ -129,7 +133,7 @@ for (int i=0; i < build_nodes.size(); i++) {
                         // build project in Jenkins so we can collect asset-* files later via get-sources-jenkins.sh, then trigger a build brew with those files
                         if (NEW_SHA != OLD_SHA || FORCE_BUILD == "true") {
                             ARCH = sh(script: '''uname -m''', returnStdout: true).trim()
-                            util.cloneRepo("ssh://crw-build@pkgs.devel.redhat.com/containers/codeready-workspaces-${SYNC_REPO}", "${WORKSPACE}/targetdwn/${ARCH}", DWNSTM_BRANCH)
+                            util.cloneRepo("ssh://crw-build@pkgs.devel.redhat.com/${DWNSTM_REPO}", "${WORKSPACE}/targetdwn/${ARCH}", DWNSTM_BRANCH)
                             sh('''#!/bin/bash -xe
                                 cd ${WORKSPACE}/targetdwn/''' + ARCH + ''' && chmod +x ./build/dockerfiles/*.sh
                                 ./build/dockerfiles/rhel.Dockerfile.extract.assets.sh
@@ -155,15 +159,18 @@ stage("Builds") {
 }
 
 // kick off get-sources-rhpkg-container-build job
-nodeLabel = "${build_nodes[0]}"
+def String nodeLabel = "${build_nodes[0]}"
 node(nodeLabel) {
-  stage ("Trigger Brew build") {
-    sh('curl -sSLO https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/crw-2.5-rhel-8/product/util.groovy')
+  stage ("Build containers on ${nodeLabel}") {
+    println "########################################################################################################"
+    println "##  Build ${SYNC_REPO} containers"
+    println "########################################################################################################"
+    sh('curl -sSLO https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/'+ DWNSTM_BRANCH + '/product/util.groovy')
     def util = load "${WORKSPACE}/util.groovy"
     echo "currentBuild.result = " + currentBuild.result
     if (!currentBuild.result.equals("ABORTED") && !currentBuild.result.equals("FAILED")) {
       if (NEW_SHA != OLD_SHA || FORCE_BUILD == "true") {
-        CRW_VERSION = util.getCrwVersion(MIDSTM_BRANCH)
+        CRW_VERSION = util.getCrwVersion(DWNSTM_BRANCH)
         println "CRW_VERSION = '" + CRW_VERSION + "'"
         build(
               job: 'get-sources-rhpkg-container-build',
@@ -178,7 +185,7 @@ node(nodeLabel) {
                 [
                   $class: 'StringParameterValue',
                   name: 'cause',
-                  value: "configbump+respin+by+${BUILD_TAG}"
+                  value: "${SYNC_REPO}+respin+by+${BUILD_TAG}"
                 ],
                 [
                   $class: 'StringParameterValue',
@@ -188,7 +195,7 @@ node(nodeLabel) {
                 [
                   $class: 'StringParameterValue',
                   name: 'GIT_PATHs',
-                  value: "containers/codeready-workspaces-configbump"
+                  value: "${DWNSTM_REPO}"
                 ],
                 [
                   $class: 'StringParameterValue',
