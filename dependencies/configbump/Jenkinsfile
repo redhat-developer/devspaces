@@ -99,19 +99,18 @@ maintainer="Nick Boldt <nboldt@redhat.com>" \\\r
 io.openshift.expose-services="" \\\r
 usage="" \r'
 echo -e "$METADATA" >> ${WORKSPACE}/targetdwn/''' + SYNC_REPO + '''/Dockerfile
-                        ''')
-
+                    ''')
 
                     // push to dist-git
                     sh('''#!/bin/bash -xe
-                    export KRB5CCNAME=/var/tmp/crw-build_ccache
-                    cd ${WORKSPACE}/targetdwn/''' + SYNC_REPO + '''
-                    if [[ \$(git diff --name-only) ]]; then # file changed
-                        git add . -A -f
-                        git commit -s -m "[sync] Update from ''' + SOURCE_REPO + ''' @ ''' + SRC_SHA[0..7] + '''"
-                        git push origin ''' + DWNSTM_BRANCH + ''' || true
-                    fi''')
-
+                       export KRB5CCNAME=/var/tmp/crw-build_ccache
+                       cd ${WORKSPACE}/targetdwn/''' + SYNC_REPO + '''
+                       if [[ \$(git diff --name-only) ]]; then # file changed
+                         git add . -A -f
+                         git commit -s -m "[sync] Update from ''' + SOURCE_REPO + ''' @ ''' + SRC_SHA[0..7] + '''"
+                         git push origin ''' + DWNSTM_BRANCH + ''' || true
+                       fi
+		    ''')
                     NEW_SHA = util.getLastCommitSHA("${WORKSPACE}/targetdwn/${SYNC_REPO}")
                     println "Got NEW_SHA in targetdwn/${SYNC_REPO} folder: " + NEW_SHA
                 } // withCredentials
