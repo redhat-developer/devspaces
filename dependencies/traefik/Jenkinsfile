@@ -90,7 +90,7 @@ RUN yum install -y python2|g' \\
           -e 's|^RUN npm install|RUN npm install --unsafe-perm=true|g' \\
           -e 's|^FROM golang.*|FROM registry.redhat.io/ubi8 as gobuild|g' \\
           -e 's|apk --update upgrade|true|g' \\
-          -e 's|apk --no-cache --no-progress add git [^\\]*|dnf install -y git |g' \\
+          -e 's|apk --no-cache --no-progress add git [^\\]*|dnf install -y git gcc |g' \\
           -e 's|update-ca-certificates|update-ca-trust|g' \\
           -e 's|curl -fsSL -o /usr/local/bin/go-bindata .*|ARCH=$(uname -m) \\&\\& if [ "$ARCH" == "x86_64" ] ; then ARCH=amd64; fi \\\\ \\
     \\&\\& curl -fsSL -O https://golang.org/dl/go1.15.3.linux-$ARCH.tar.gz \\\\ \\
