@@ -111,17 +111,17 @@ FROM ubi8-minimal:8.2-349 \\
 ENV SUMMARY="Red Hat CodeReady Workspaces - Traefik" \\\\ \\
     DESCRIPTION="Red Hat CodeReady Workspaces - Traefik" \\\\ \\
     PRODNAME="codeready-workspaces" \\\\ \\
-    COMPNAME="traefik-rhel8" \
+    COMPNAME="traefik-rhel8" \\
 \\
 COPY traefik-*.tar.gz /tmp/assets/ \\
 |g' \\
 \\
--e 's|^COPY dist/traefik.*|RUN microdnf -y install tar gzip \\&\\& \\
-    tar xzf /tmp/assets/traefik-$(uname -m).tar.gz -C / \\&\\& \\
-    rm -fr /tmp/assets/ \\&\\& \\
-    chmod 755 /traefik \\&\\& \\
-    microdnf -y remove tar gzip \\&\\& \\
-    echo "Installed Packages" \\&\\& rpm -qa | sort -V \\&\\& echo "End Of Installed Packages" \\
+-e 's|^COPY dist/traefik.*|RUN microdnf -y install tar gzip \\&\\& \\\\ \\
+    tar xzf /tmp/assets/traefik-$(uname -m).tar.gz -C / \\&\\& \\\\ \\
+    rm -fr /tmp/assets/ \\&\\& \\\\ \\
+    chmod 755 /traefik \\&\\& \\\\ \\
+    microdnf -y remove tar gzip \\&\\& \\\\ \\
+    echo "Installed Packages" \\&\\& rpm -qa \\| sort -V \\&\\& echo "End Of Installed Packages" \\
 |g' \\
 \\
 -e '$a \\
@@ -140,7 +140,6 @@ LABEL summary="$SUMMARY" \\\\ \\
       usage=""' \\
 Dockerfile
         ''')
-
 
         sh('''#!/bin/bash
           export KRB5CCNAME=/var/tmp/crw-build_ccache
