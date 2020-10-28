@@ -85,7 +85,8 @@ timeout(120) {
         sh('''#!/bin/bash
           cd ${WORKSPACE}/target
           sed -e 's|^FROM node:12.*|FROM registry.redhat.io/rhel8/nodejs-12 as webui \\
-USER root|g' \\
+USER root \\
+RUN yum install -y python2|g' \\
           -e 's|^RUN npm install|RUN npm install --unsafe-perm=true|g' \\
           -e 's|^FROM golang.*|FROM registry.redhat.io/ubi8 as gobuild|g' \\
           -e 's|apk --update upgrade|true|g' \\
