@@ -116,7 +116,6 @@ echo -e "$METADATA" >> ${WORKSPACE}/targetdwn/''' + SYNC_REPO + '''/Dockerfile
     } // node
 } // timeout
 
-def ARCH = ""
 for (int i=0; i < build_nodes.size(); i++) {
   def String nodeLabel = "${build_nodes[i]}"
   tasks[build_nodes[i]] = { ->
@@ -132,10 +131,9 @@ for (int i=0; i < build_nodes.size(); i++) {
 
                         // build project in Jenkins so we can collect asset-* files later via get-sources-jenkins.sh, then trigger a build brew with those files
                         if (NEW_SHA != OLD_SHA || FORCE_BUILD == "true") {
-                            ARCH = sh(script: '''uname -m''', returnStdout: true).trim()
-                            util.cloneRepo("ssh://crw-build@pkgs.devel.redhat.com/${DWNSTM_REPO}", "${WORKSPACE}/targetdwn/${ARCH}", DWNSTM_BRANCH)
+                            util.cloneRepo("ssh://crw-build@pkgs.devel.redhat.com/${DWNSTM_REPO}", "${WORKSPACE}/${SYNC_REPO}", DWNSTM_BRANCH)
                             sh('''#!/bin/bash -xe
-                                cd ${WORKSPACE}/targetdwn/''' + ARCH + ''' && chmod +x ./build/dockerfiles/*.sh
+                                cd ${WORKSPACE}/''' + SYNC_REPO + ''' && chmod +x ./build/dockerfiles/*.sh
                                 ./build/dockerfiles/rhel.Dockerfile.extract.assets.sh
                             ''')
                             archiveArtifacts fingerprint: true, onlyIfSuccessful: true, allowEmptyArchive: false, artifacts: "asset-configbump-*.tar.gz"
