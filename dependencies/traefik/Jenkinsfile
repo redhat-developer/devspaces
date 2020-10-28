@@ -171,7 +171,7 @@ node(nodeLabel) {
     def util = load "${WORKSPACE}/util.groovy"
     echo "currentBuild.result = " + currentBuild.result
     if (!currentBuild.result.equals("ABORTED") && !currentBuild.result.equals("FAILED")) {
-      CRW_VERSION = util.getCrwVersion(MIDSTM_BRANCH)
+      CRW_VERSION = util.getCrwVersion(DWNSTM_BRANCH)
       println "CRW_VERSION = '" + CRW_VERSION + "'"
       build(
             job: 'get-sources-rhpkg-container-build',
