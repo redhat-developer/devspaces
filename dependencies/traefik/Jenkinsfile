@@ -36,7 +36,7 @@ timeout(120) {
       util.installSkopeo(CRW_VERSION)
       QUAY_REPO_PATH=util.getCRWShortName(SYNC_REPO) + "-rhel8"
 
-        withCredentials([string(credentialsId:'devstudio-release.token', variable: 'GITHUB_TOKEN'),
+      withCredentials([string(credentialsId:'devstudio-release.token', variable: 'GITHUB_TOKEN'),
           file(credentialsId: 'crw-build.keytab', variable: 'CRW_KEYTAB')]) {
         util.bootstrap(CRW_KEYTAB)
 
@@ -101,6 +101,44 @@ RUN yum install -y python2|g' \\
     \\&\\& ln -s /usr/local/go/bin/gofmt /usr/local/bin/gofmt \\\\ \\
     \\&\\& export GOPATH=/usr/local \\&\\& go get -u github.com/containous/go-bindata/... \\\\|g' exp.Dockerfile > rhel.Dockerfile
           sed -i '/^## IMAGE/,$d' rhel.Dockerfile
+        ''')
+
+        sh('''#!/bin/bash
+          cd ${WORKSPACE}/target
+          sed -i -e 's|^FROM .*|# https://access.redhat.com/containers/?tab=tags#/registry.access.redhat.com/ubi8-minimal \\
+FROM ubi8-minimal:8.2-349 \\
+\\
+ENV SUMMARY="Red Hat CodeReady Workspaces - Traefik" \\\\ \\
+    DESCRIPTION="Red Hat CodeReady Workspaces - Traefik" \\\\ \\
+    PRODNAME="codeready-workspaces" \\\\ \\
+    COMPNAME="traefik-rhel8" \
+\\
+COPY traefik-*.tar.gz /tmp/assets/ \\
+|g' \\
+\\
+-e 's|^COPY dist/traefik.*|RUN microdnf -y install tar gzip \\&\\& \\
+    tar xzf /tmp/assets/traefik-$(uname -m).tar.gz -C / \\&\\& \\
+    rm -fr /tmp/assets/ \\&\\& \\
+    chmod 755 /traefik \\&\\& \\
+    microdnf -y remove tar gzip \\&\\& \\
+    echo "Installed Packages" \\&\\& rpm -qa | sort -V \\&\\& echo "End Of Installed Packages" \\
+|g' \\
+\\
+-e '$a \\
+\\
+LABEL summary="$SUMMARY" \\\\ \\
+      description="$DESCRIPTION" \\\\ \\
+      io.k8s.description="$DESCRIPTION" \\\\ \\
+      io.k8s.display-name="$DESCRIPTION" \\\\ \\
+      io.openshift.tags="$PRODNAME,$COMPNAME" \\\\ \\
+      com.redhat.component="$PRODNAME-$COMPNAME-container" \\\\ \\
+      name="$PRODNAME/$COMPNAME" \\\\ \\
+      version="2.5" \\\\ \\
+      license="EPLv2" \\\\ \\
+      maintainer="Nick Boldt <nboldt@redhat.com>" \\\\ \\
+      io.openshift.expose-services="" \\\\ \\
+      usage=""' \\
+Dockerfile
         ''')
 
 
