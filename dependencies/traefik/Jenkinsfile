@@ -18,14 +18,16 @@ def OLD_SHA=""
 def SRC_SHA=""
 
 // Nodes to run artifact build on ex. ['rhel7-releng', 's390x-rhel7-beaker', 'ppc64le-rhel7-beaker']
-def List build_nodes = ['rhel7-releng' , 's390x-rhel7-beaker', 'ppc64le-rhel7-beaker']
+def List build_nodes = ['rhel7-releng', 's390x-rhel7-beaker', 'ppc64le-rhel7-beaker']
 def Map tasks = [failFast: false]
 
+@Field String QUAY_REPO_PATH = ""
 
 def buildNode = "rhel7-32gb||rhel7-16gb||rhel7-8gb" // node label
 timeout(120) {
-    node("${buildNode}"){ stage "Sync repos"
-    wrap([$class: 'TimestamperBuildWrapper']) {
+    node("${buildNode}"){ 
+     stage("Sync repos") {
+      wrap([$class: 'TimestamperBuildWrapper']) {
       sh('curl -sSLO https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/'+ DWNSTM_BRANCH + '/product/util.groovy')
       def util = load "${WORKSPACE}/util.groovy"
       cleanWs()
@@ -114,6 +116,7 @@ RUN yum install -y python2|g' \\
         ''')
       } // withCredentials
     } // wrap
+   } // stage
   } // node
 } //timeout
 
@@ -122,7 +125,7 @@ for (int i=0; i < build_nodes.size(); i++) {
   tasks[build_nodes[i]] = { ->
     timeout(120) {
       node(nodeLabel){
-        stage("build artifacts") {
+        stage("Build artifacts") {
           wrap([$class: 'TimestamperBuildWrapper']) {
             sh('curl -sSLO https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/'+ DWNSTM_BRANCH + '/product/util.groovy')
             def util = load "${WORKSPACE}/util.groovy"
@@ -132,7 +135,7 @@ for (int i=0; i < build_nodes.size(); i++) {
             withCredentials([string(credentialsId:'devstudio-release.token', variable: 'GITHUB_TOKEN'),
                 file(credentialsId: 'crw-build.keytab', variable: 'CRW_KEYTAB')]) {
               util.bootstrap(CRW_KEYTAB)
-              util.cloneRepo("ssh://crw-build@pkgs.devel.redhat.com/containers/codeready-workspaces-${SYNC_REPO}", "${WORKSPACE}/${SYNC_REPO}", DWNSTM_BRANCH)
+              util.cloneRepo("ssh://crw-build@pkgs.devel.redhat.com/${DWNSTM_REPO}", "${WORKSPACE}/${SYNC_REPO}", DWNSTM_BRANCH)
 
               sh('''#!/bin/bash -xe
                 export TMP_IMG="traefik.tmp"
@@ -187,7 +190,7 @@ node(nodeLabel) {
               [
                 $class: 'StringParameterValue',
                 name: 'cause',
-                value: "configbump+respin+by+${BUILD_TAG}"
+                value: "${SYNC_REPO}+respin+by+${BUILD_TAG}"
               ],
               [
                 $class: 'StringParameterValue',
@@ -197,7 +200,7 @@ node(nodeLabel) {
               [
                 $class: 'StringParameterValue',
                 name: 'GIT_PATHs',
-                value: "containers/codeready-workspaces-${SYNC_REPO}"
+                value: "${DWNSTM_REPO}"
               ],
               [
                 $class: 'StringParameterValue',
