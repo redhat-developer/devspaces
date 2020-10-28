@@ -23,7 +23,7 @@ def Map tasks = [failFast: false]
 @Field String QUAY_REPO_PATH = ""
 
 def buildNode = "rhel7-32gb||rhel7-16gb||rhel7-8gb" // node label
-timeout(20) {
+timeout(30) {
     node("${buildNode}"){ 
         stage("Sync repos") {
             wrap([$class: 'TimestamperBuildWrapper']) {
@@ -57,6 +57,10 @@ timeout(20) {
                     OLD_SHA = util.getLastCommitSHA("${WORKSPACE}/targetdwn/${SYNC_REPO}")
                     println "Got OLD_SHA in targetdwn/${SYNC_REPO} folder: " + OLD_SHA
 
+                    writeFile file: "rsync-upstream-exclude", text: '''
+                    .github
+                    .gitattributes
+                    '''
                     // ignore files that are ONLY in downstream (not midstream or upstream)
                     writeFile file: "rsync-brew-exclude", text: '''
                     sources
@@ -69,7 +73,7 @@ timeout(20) {
                     .gitignore
                     '''
                     sh('''
-		      rsync -avhz --checksum --exclude-from ${WORKSPACE}/rsync-brew-exclude --exclude .git/ --exclude .github/ --exclude .gitignore \
+                      rsync -avhz --checksum --exclude-from ${WORKSPACE}/rsync-upstream-exclude --exclude-from ${WORKSPACE}/rsync-brew-exclude --exclude .git/ --exclude .github/ --exclude .gitignore \
                         ${WORKSPACE}/sources/''' + SYNC_REPO + '''/ ${WORKSPACE}/targetdwn/''' + SYNC_REPO
 		    )
 
@@ -100,9 +104,9 @@ echo -e "$METADATA" >> ${WORKSPACE}/targetdwn/''' + SYNC_REPO + '''/Dockerfile
 
                     // push to dist-git
                     sh('''#!/bin/bash -xe
+                    export KRB5CCNAME=/var/tmp/crw-build_ccache
                     cd ${WORKSPACE}/targetdwn/''' + SYNC_REPO + '''
                     if [[ \$(git diff --name-only) ]]; then # file changed
-                        export KRB5CCNAME=/var/tmp/crw-build_ccache
                         git add . -A -f
                         git commit -s -m "[sync] Update from ''' + SOURCE_REPO + ''' @ ''' + SRC_SHA[0..7] + '''"
                         git push origin ''' + DWNSTM_BRANCH + ''' || true
@@ -123,20 +127,20 @@ for (int i=0; i < build_nodes.size(); i++) {
         node(nodeLabel){ 
             stage("Build artifacts") {
                 wrap([$class: 'TimestamperBuildWrapper']) {
-                    sh('curl -sSLO https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/crw-2.5-rhel-8/product/util.groovy')
+                    sh('curl -sSLO https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/'+ DWNSTM_BRANCH + '/product/util.groovy')
                     def util = load "${WORKSPACE}/util.groovy"
                     withCredentials([string(credentialsId:'devstudio-release.token', variable: 'GITHUB_TOKEN'),
                         file(credentialsId: 'crw-build.keytab', variable: 'CRW_KEYTAB')]) {
                         util.bootstrap(CRW_KEYTAB)
-
                         // build project in Jenkins so we can collect asset-* files later via get-sources-jenkins.sh, then trigger a build brew with those files
                         if (NEW_SHA != OLD_SHA || FORCE_BUILD == "true") {
                             util.cloneRepo("ssh://crw-build@pkgs.devel.redhat.com/${DWNSTM_REPO}", "${WORKSPACE}/${SYNC_REPO}", DWNSTM_BRANCH)
                             sh('''#!/bin/bash -xe
-                                cd ${WORKSPACE}/''' + SYNC_REPO + ''' && chmod +x ./build/dockerfiles/*.sh
+                                cd ${WORKSPACE}/''' + SYNC_REPO + '''
+				chmod +x ./build/dockerfiles/*.sh
                                 ./build/dockerfiles/rhel.Dockerfile.extract.assets.sh
                             ''')
-                            archiveArtifacts fingerprint: true, onlyIfSuccessful: true, allowEmptyArchive: false, artifacts: "asset-configbump-*.tar.gz"
+                            archiveArtifacts fingerprint: true, onlyIfSuccessful: true, allowEmptyArchive: false, artifacts: "asset-*.tar.gz, logs/*"
                             currentBuild.description="New artifacts built"
                         } else {
                             println "No changes upstream, nothing to build in Jenkins!"
@@ -151,9 +155,11 @@ for (int i=0; i < build_nodes.size(); i++) {
   } // tasks
 } // for
 
-
 stage("Builds") {
-    parallel(tasks)
+  println "########################################################################################################"
+  println "##  Build ${SYNC_REPO} assets"
+  println "########################################################################################################"
+  parallel(tasks)
 }
 
 // kick off get-sources-rhpkg-container-build job
