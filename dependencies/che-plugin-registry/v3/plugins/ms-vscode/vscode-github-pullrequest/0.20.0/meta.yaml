@@ -1,0 +1,15 @@
+publisher: ms-vscode
+apiVersion: v2
+name: vscode-github-pullrequest
+version: 0.20.0
+type: VS Code extension
+displayName: GitHub Pull Requests and issues
+title: Pull Request Provider for GitHub.
+description: This extension allows you to review and manage GitHub pull requests and issues.
+icon: https://raw.githubusercontent.com/microsoft/vscode-pull-request-github/0.20.0/resources/icons/github_logo.png
+repository: https://github.com/microsoft/vscode-pull-request-github
+category: Other
+firstPublicationDate: '2020-10-8'
+spec:
+  extensions:
+  - https://github.com/microsoft/vscode-pull-request-github/releases/download/0.20.0/vscode-pull-request-github-0.20.0.vsix
