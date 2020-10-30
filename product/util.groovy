@@ -1,5 +1,14 @@
 import groovy.transform.Field
 
+@Field String CSV_VERSION_F = ""
+def String getCSVVersion(String MIDSTM_BRANCH) {
+  if (CSV_VERSION_F.equals("")) {
+    CSV_VERSION_F = sh(script: '''#!/bin/bash -xe
+    curl -sSLo- https://raw.githubusercontent.com/redhat-developer/codeready-workspaces-operator/''' + MIDSTM_BRANCH + '''/manifests/codeready-workspaces.csv.yaml | yq -r .spec.version''', returnStdout: true).trim()
+  }
+  return CSV_VERSION_F
+}
+
 @Field String CRW_VERSION_F = ""
 def String getCrwVersion(String MIDSTM_BRANCH) {
   if (CRW_VERSION_F.equals("")) {
@@ -7,6 +16,13 @@ def String getCrwVersion(String MIDSTM_BRANCH) {
     curl -sSLo- https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/''' + MIDSTM_BRANCH + '''/dependencies/VERSION''', returnStdout: true).trim()
   }
   return CRW_VERSION_F
+}
+
+def installYq(){
+		sh '''#!/bin/bash -xe
+sudo yum -y install jq python3-six python3-pip
+sudo /usr/bin/python3 -m pip install --upgrade pip yq; jq --version; yq --version
+'''
 }
 
 def installSkopeo(String CRW_VERSION)
