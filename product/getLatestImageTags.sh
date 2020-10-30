@@ -363,7 +363,10 @@ for URLfrag in $CONTAINERS; do
 		fi
 
 		if [[ ${PUSHTOQUAY} -eq 1 ]] && [[ ${REGISTRY} != *"quay.io"* ]]; then
-		    QUAYDEST="${REGISTRYPRE}${URLfrag}"; QUAYDEST="quay.io/crw/${QUAYDEST##*codeready-workspaces-}"
+			QUAYDEST="${REGISTRYPRE}${URLfrag}"; QUAYDEST=${QUAYDEST##*codeready-workspaces-} # plugin-java8 or operator
+			# special case for the operator and metadata images, which don't follow the same pattern in osbs as quay
+			if [[ ${QUAYDEST} == "operator" ]] || [[ ${QUAYDEST} == "operator-metadata" ]]; then QUAYDEST="crw-2-rhel8-${QUAYDEST}"; fi
+			QUAYDEST="quay.io/crw/${QUAYDEST}"
 			if [[ $VERBOSE -eq 1 ]]; then echo "Copy ${REGISTRYPRE}${URLfrag}:${LATESTTAG} to ${QUAYDEST}:${LATESTTAG}"; fi
 			CMD="skopeo copy --all docker://${REGISTRYPRE}${URLfrag}:${LATESTTAG} docker://${QUAYDEST}:${LATESTTAG}"; echo $CMD; $CMD
 			for qtag in ${PUSHTOQUAYTAGS}; do
