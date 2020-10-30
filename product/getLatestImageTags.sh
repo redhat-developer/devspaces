@@ -174,7 +174,7 @@ Usage:
 
 "
 }
-if [[ $# -lt 1 ]]; then usage; fi
+if [[ $# -lt 1 ]]; then usage; exit 1; fi
 
 REGISTRY="https://registry.redhat.io" # or http://brew-pulp-docker01.web.prod.ext.phx2.redhat.com:8888 or https://registry-1.docker.io or https://registry.access.redhat.com
 CONTAINERS=""
