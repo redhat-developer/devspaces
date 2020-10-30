@@ -3,7 +3,8 @@
 import groovy.transform.Field
 
 // PARAMETERS for this pipeline:
-//   CONTAINERS - list of containers to push
+//   CONTAINERS - list of containers to push, without the crw/ or codeready-workspaces- prefix and without -rhel8 suffix
+//   TAGS       - tags to push in addition to the latest one (2.5-4) and the base one (2.5), eg., also update latest tag
 
 String MIDSTM_BRANCH = "crw-2.5-rhel-8" // target branch, eg., crw-2.5-rhel-8
 
@@ -54,7 +55,7 @@ echo " ########################################### "
 for c in ''' + CONTAINERS.trim() + '''; do
     d=codeready-workspaces-${c}-rhel8
     if [[ $c == "operator" ]]; then d=codeready-workspaces-${c}; fi # special case for operator; all other images follow the pattern
-    ./getLatestImageTags.sh -c ${d} --osbs --pushtoquay="''' + CRW_VERSION + ''' latest" &
+    ./getLatestImageTags.sh -c ${d} --osbs --pushtoquay="''' + CRW_VERSION + ''' ''' + TAGS + '''" &
 done
 wait
                         ''')
