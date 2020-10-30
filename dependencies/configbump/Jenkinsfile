@@ -57,21 +57,17 @@ timeout(30) {
                     OLD_SHA = util.getLastCommitSHA("${WORKSPACE}/targetdwn/${SYNC_REPO}")
                     println "Got OLD_SHA in targetdwn/${SYNC_REPO} folder: " + OLD_SHA
 
-                    writeFile file: "rsync-upstream-exclude", text: '''
-                    .github
-                    .gitattributes
-                    '''
+                    writeFile file: "rsync-upstream-exclude", text: '''.github
+.gitattributes'''
                     // ignore files that are ONLY in downstream (not midstream or upstream)
-                    writeFile file: "rsync-brew-exclude", text: '''
-                    sources
-                    get-sources-jenkins.sh
-                    cvp.yml
-                    tests/
-                    content_sets.yml
-                    content_sets.repo
-                    container.yaml
-                    .gitignore
-                    '''
+                    writeFile file: "rsync-brew-exclude", text: '''sources
+get-sources-jenkins.sh
+cvp.yml
+tests/
+content_sets.yml
+content_sets.repo
+container.yaml
+.gitignore'''
                     sh('''
                       rsync -avhz --checksum --exclude-from ${WORKSPACE}/rsync-upstream-exclude --exclude-from ${WORKSPACE}/rsync-brew-exclude --exclude .git/ --exclude .github/ --exclude .gitignore \
                         ${WORKSPACE}/sources/''' + SYNC_REPO + '''/ ${WORKSPACE}/targetdwn/''' + SYNC_REPO
