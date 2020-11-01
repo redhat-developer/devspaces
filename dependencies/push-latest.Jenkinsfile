@@ -42,6 +42,8 @@ timeout(30) {
                             script: 'curl -sSLO https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/'+MIDSTM_BRANCH+'/product/getLatestImageTags.sh && chmod +x getLatestImageTags.sh',
                             returnStdout: true).trim().split( '\n' )
 
+                        currentBuild.description="Copying: " + CONTAINERS.trim().replaceAll(" ",", ")
+
                         sh('''#!/bin/bash -xe
 QUAY_REGISTRY="quay.io/crw/"
 QUAY_USER="crw+crwci"
@@ -50,7 +52,7 @@ echo "[INFO]: Log into quay.io..."
 echo "${QUAY_TOKEN}" | docker login -u="${QUAY_USER}" --password-stdin ${QUAY_REGISTRY}
 
 echo " ########################################### "
-echo " Push latest images in osbs to quay: ''' + CONTAINERS.trim() + '''"
+echo " Copy latest images in osbs to quay: ''' + CONTAINERS.trim() + '''"
 echo " ########################################### "
 for c in ''' + CONTAINERS.trim() + '''; do
     d=codeready-workspaces-${c}-rhel8
@@ -92,6 +94,7 @@ ${WORKSPACE}/getTagForImage.sh $(cat ${WORKSPACE}/LATEST_IMAGES.nvr)  > ${WORKSP
                         ).trim()
 
                         archiveArtifacts fingerprint: false, artifacts:"LATEST_IMAGES*"
+                        currentBuild.description="Copied: " + CONTAINERS.trim().replaceAll(" ",", ")
                         if (!DIFF_LATEST_IMAGES_QUAY_V_NVR.equals("")) {
                             // error! quay and nvr versions do not match
                             errorOccurred = errorOccurred + 'Error: Quay & Brew image versions not aligned:\n' + 
@@ -102,7 +105,7 @@ ${WORKSPACE}/getTagForImage.sh $(cat ${WORKSPACE}/LATEST_IMAGES.nvr)  > ${WORKSP
                             currentBuild.result = 'FAILURE'
                         }
 
-                        def NEW_QUAY_L=""; NEW_QUAY.each { line -> if (line?.trim()) { NEW_QUAY_L=NEW_QUAY_L+"- ${line}\n" } }
+                        def NEW_QUAY_L=""; NEW_QUAY.each { line -> if (line?.trim()) { NEW_QUAY_L=NEW_QUAY_L+"  ${line}\n" } }
                         def NEW_NVR_L="";  NEW_NVR.each  { line -> if (line?.trim()) { NEW_NVR_L=NEW_NVR_L + "  ${line}\n" } } 
                         echo '''
 Quay Images:
