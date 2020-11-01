@@ -139,42 +139,80 @@ node("${buildNode}"){
     def util = load "${WORKSPACE}/util.groovy"
     echo "currentBuild.result = " + currentBuild.result
     if (!currentBuild.result.equals("ABORTED") && !currentBuild.result.equals("FAILED")) {
-      // check if ${WORKSPACE}/LATEST_IMAGES.quay is different from stored LATEST_IMAGES
-      def DIFF_LATEST_IMAGES_QUAY_V_STORED = sh (
-        script: 'diff -u0 ${WORKSPACE}/LATEST_IMAGES{,.quay} | grep -v "@@" | grep -v "LATEST_IMAGES" || true',
-        returnStdout: true
-      ).trim()
-      // if LATEST_IMAGES files are different, run downstream job, if not, echo warning / set status yellow
-      if (!DIFF_LATEST_IMAGES_QUAY_V_STORED.equals("")) {
-        println "Scheduling update-digests-in-registries-and-metadata for this update:"
-        println DIFF_LATEST_IMAGES_QUAY_V_STORED
-        CRW_VERSION = util.getCrwVersion(MIDSTM_BRANCH)
-        println "CRW_VERSION = '" + CRW_VERSION + "'"
-        build(
-              job: 'update-digests-in-registries-and-metadata_' + CRW_VERSION,
-              wait: false,
-              propagate: false,
-              parameters: [
-                [
-                  $class: 'StringParameterValue',
-                  name: 'token',
-                  value: "CI_BUILD"
-                ],
-                [
-                  $class: 'StringParameterValue',
-                  name: 'cause',
-                  value: "push-latest-containers-to-quay+for+" + CONTAINERS.trim().replaceAll(" ","+") + "+by+${BUILD_TAG}"
+        // check if ${WORKSPACE}/LATEST_IMAGES.quay is different from stored LATEST_IMAGES
+        def DIFF_LATEST_IMAGES_QUAY_V_STORED = sh (
+            script: 'diff -u0 ${WORKSPACE}/LATEST_IMAGES{,.quay} | grep -v "@@" | grep -v "LATEST_IMAGES" || true',
+            returnStdout: true
+        ).trim()
+        // if LATEST_IMAGES files are different, run downstream job, if not, echo warning / set status yellow
+        if (!DIFF_LATEST_IMAGES_QUAY_V_STORED.equals("")) {
+            println "Scheduling update-digests-in-registries-and-metadata for this update:"
+            println DIFF_LATEST_IMAGES_QUAY_V_STORED
+            CRW_VERSION = util.getCrwVersion(MIDSTM_BRANCH)
+            println "CRW_VERSION = '" + CRW_VERSION + "'"
+            build(
+                job: 'update-digests-in-registries-and-metadata_' + CRW_VERSION,
+                wait: false,
+                propagate: false,
+                parameters: [
+                    [
+                    $class: 'StringParameterValue',
+                    name: 'token',
+                    value: "CI_BUILD"
+                    ],
+                    [
+                    $class: 'StringParameterValue',
+                    name: 'cause',
+                    value: "push-latest-containers-to-quay+for+" + CONTAINERS.trim().replaceAll(" ","+") + "+by+${BUILD_TAG}"
+                    ]
                 ]
-              ]
-        )
-        currentBuild.description=currentBuild.description+"; update-digests-in-registries-and-metadata triggered"
-      } else {
-        println "No changes to LATEST_IMAGES, no need to trigger update-digests-in-registries-and-metadata_" + CRW_VERSION
-        currentBuild.result = 'UNSTABLE'
-        currentBuild.description=currentBuild.description+"; update-digests-in-registries-and-metadata NOT triggered"
-      }
+            )
+            currentBuild.description=currentBuild.description+"; update-digests-in-registries-and-metadata triggered"
+        } else {
+            println "No changes to LATEST_IMAGES; no need to trigger update-digests-in-registries-and-metadata_" + CRW_VERSION
+            currentBuild.result = 'UNSTABLE'
+            currentBuild.description=currentBuild.description+"; update-digests-in-registries-and-metadata NOT triggered"
+        } // if 2
     } // if
   } // stage
 } //node
 
-// TODO: https://issues.redhat.com/browse/CRW-1011 also if theia, trigger theia CDN job 
+// https://issues.redhat.com/browse/CRW-1011 trigger crw-theia-akamai job 
+node("${buildNode}"){ 
+  stage ("Enable Akamai CDN support for CRW Theia image") {
+    sh('curl -sSLO https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/'+ MIDSTM_BRANCH + '/product/util.groovy')
+    def util = load "${WORKSPACE}/util.groovy"
+    echo "currentBuild.result = " + currentBuild.result
+    if (!currentBuild.result.equals("ABORTED") && !currentBuild.result.equals("FAILED")) {
+        // if CONTAINERS contains theia
+        if (CONTAINERS.trim().equals("theia") || CONTAINERS.trim().matches(" theia ")) {
+            println "Scheduling crw-theia-akamai for this update:"
+            println DIFF_LATEST_IMAGES_QUAY_V_STORED
+            CRW_VERSION = util.getCrwVersion(MIDSTM_BRANCH)
+            println "CRW_VERSION = '" + CRW_VERSION + "'"
+            build(
+                job: 'crw-theia-akamai',
+                wait: false,
+                propagate: false,
+                parameters: [
+                    [
+                    $class: 'StringParameterValue',
+                    name: 'token',
+                    value: "CI_BUILD"
+                    ],
+                    [
+                    $class: 'StringParameterValue',
+                    name: 'cause',
+                    value: "crw-theia-akamai+for+" + CONTAINERS.trim().replaceAll(" ","+") + "+by+${BUILD_TAG}"
+                    ]
+                ]
+            )
+            currentBuild.description=currentBuild.description+"; crw-theia-akamai triggered"
+        } else {
+            println "No theia image update; no need to trigger crw-theia-akamai"
+            currentBuild.result = 'UNSTABLE'
+            currentBuild.description=currentBuild.description+"; crw-theia-akamai NOT triggered"
+        } // if 2
+    } // if
+  } // stage
+} //node
