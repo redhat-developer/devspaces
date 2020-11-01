@@ -44,7 +44,9 @@ timeout(30) {
 
                         currentBuild.description="Copying: " + CONTAINERS.trim().replaceAll(" ",", ")
 
-                        sh('''#!/bin/bash -xe
+                        def NEW_NVR = ""
+                        parallel copy_to_quay: {
+                            sh('''#!/bin/bash -xe
 QUAY_REGISTRY="quay.io/crw/"
 QUAY_USER="crw+crwci"
 
@@ -63,15 +65,7 @@ for c in ''' + CONTAINERS.trim() + '''; do
     ./getLatestImageTags.sh -c ${d} --osbs --pushtoquay="''' + CRW_VERSION + ''' ''' + TAGS + '''" &
 done
 wait
-                        ''')
-
-                        def NEW_QUAY = ""
-                        def NEW_NVR = ""
-                        parallel quay_check: {
-                            NEW_QUAY = sh (
-                                script: "./getLatestImageTags.sh -b ${MIDSTM_BRANCH} --quay | tee ${WORKSPACE}/LATEST_IMAGES.quay",
-                                returnStdout: true).trim().split( '\n' )
-                                errorOccurred = checkFailure(NEW_QUAY, "Quay", errorOccurred)
+                            ''')
                         }, 
                         nvr_check: {
                             NEW_NVR = sh (
@@ -79,14 +73,20 @@ wait
                                 returnStdout: true).trim().split( '\n' )
                         }
 
+                        def NEW_QUAY = ""
+                        NEW_QUAY = sh (
+                            script: "./getLatestImageTags.sh -b ${MIDSTM_BRANCH} --quay | tee ${WORKSPACE}/LATEST_IMAGES.quay",
+                            returnStdout: true).trim().split( '\n' )
+                            errorOccurred = checkFailure(NEW_QUAY, "Quay", errorOccurred)
+
                         sh (
                             script: 'curl -sSLO https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/'+MIDSTM_BRANCH+'/product/getTagForImage.sh && chmod +x getTagForImage.sh',
                             returnStdout: true).trim().split( '\n' )
 
                         // diff quay tag list vs. nvr tag list
                         sh(script: '''#!/bin/bash -xe
-${WORKSPACE}/getTagForImage.sh $(cat ${WORKSPACE}/LATEST_IMAGES.quay) > ${WORKSPACE}/LATEST_IMAGES.quay.tagsonly
-${WORKSPACE}/getTagForImage.sh $(cat ${WORKSPACE}/LATEST_IMAGES.nvr)  > ${WORKSPACE}/LATEST_IMAGES.nvr.tagsonly
+${WORKSPACE}/getTagForImage.sh $(cat ${WORKSPACE}/LATEST_IMAGES.quay) -s > ${WORKSPACE}/LATEST_IMAGES.quay.tagsonly
+${WORKSPACE}/getTagForImage.sh $(cat ${WORKSPACE}/LATEST_IMAGES.nvr)  -s > ${WORKSPACE}/LATEST_IMAGES.nvr.tagsonly
                         ''', returnStdout: true)
                         def DIFF_LATEST_IMAGES_QUAY_V_NVR = sh (
                             script: 'diff -u0 ${WORKSPACE}/LATEST_IMAGES.{quay,nvr}.tagsonly | grep -v "@@" | grep -v "LATEST_IMAGES" || true',
