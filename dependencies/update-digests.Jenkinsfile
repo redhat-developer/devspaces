@@ -69,7 +69,7 @@ timeout(120) {
 
                 def NEW_IMAGES = sh (
                     script: '''#!/bin/bash -xe
-                    cd ${WORKSPACE}/crw/product && ./getLatestImageTags.sh -b ''' + MIDSTM_BRANCH + ''' --quay --sort | uniq | grep quay | \
+                    cd ${WORKSPACE}/crw/product && ./getLatestImageTags.sh -b ''' + MIDSTM_BRANCH + ''' --quay | \
                         tee ${WORKSPACE}/crw/dependencies/LATEST_IMAGES.new''',
                     returnStdout: true
                 ).trim().split()
@@ -127,7 +127,7 @@ timeout(120) {
 
                 // define what to do when we are ready to push changes
                 def COMMITCHANGES = '''#!/bin/bash -xe
-                    cd ${WORKSPACE}/crw/product && ./getLatestImageTags.sh -b ''' + MIDSTM_BRANCH + ''' --quay --sort | uniq | grep quay > ${WORKSPACE}/crw/dependencies/LATEST_IMAGES.new
+                    cd ${WORKSPACE}/crw/product && ./getLatestImageTags.sh -b ''' + MIDSTM_BRANCH + ''' --quay > ${WORKSPACE}/crw/dependencies/LATEST_IMAGES.new
 
                     echo "============ LATEST_IMAGES.new 3 ============>"
                     cat ${WORKSPACE}/crw/dependencies/LATEST_IMAGES.new
@@ -152,8 +152,8 @@ timeout(120) {
                     git remote set-url origin https://\$GITHUB_TOKEN:x-oauth-basic@github.com/redhat-developer/codeready-workspaces.git
                     git remote -v
 
-                    # replace LATES_IMAGES with new sorted/uniqd values
-                    cat dependencies/LATEST_IMAGES.new | sort | uniq | grep quay > dependencies/LATEST_IMAGES
+                    # replace LATEST_IMAGES with new values
+                    cat dependencies/LATEST_IMAGES.new > dependencies/LATEST_IMAGES
                     rm -f dependencies/LATEST_IMAGES.new
 
                     # generate list of NVRs, builds, and commit SHAs
@@ -210,7 +210,7 @@ timeout(120) {
                         //parallel jobs
                         while (true) {
                             def REBUILT_IMAGES = sh (
-                            script: 'cd ${WORKSPACE}/crw/product && ./getLatestImageTags.sh -c "crw/devfileregistry-rhel8 crw/pluginregistry-rhel8" --quay | sort | uniq | grep quay',
+                            script: 'cd ${WORKSPACE}/crw/product && ./getLatestImageTags.sh -c "crw/devfileregistry-rhel8 crw/pluginregistry-rhel8" --quay',
                             returnStdout: true
                             ).trim().split()
                             def rebuiltImagesSet = REBUILT_IMAGES as Set
@@ -245,7 +245,7 @@ timeout(120) {
                     while (true) 
                     {
                         def rebuiltOperatorMetadataImage = sh (
-                        script: 'cd ${WORKSPACE}/crw/product && ./getLatestImageTags.sh -c "crw/crw-2-rhel8-operator-metadata" --quay | sort | uniq | grep quay',
+                        script: 'cd ${WORKSPACE}/crw/product && ./getLatestImageTags.sh -c "crw/crw-2-rhel8-operator-metadata" --quay',
                         returnStdout: true
                         ).trim()
                         echo "${rebuiltOperatorMetadataImage}"
