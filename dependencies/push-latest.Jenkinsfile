@@ -21,6 +21,7 @@ def checkFailure(arrayLines,serverName,errorOccurred)
 
 def errorOccurred = ""
 def buildNode = "rhel7-32gb||rhel7-16gb||rhel7-8gb||rhel7-releng" // node label
+@Field String DIFF_LATEST_IMAGES_QUAY_V_STORED = "trigger-update"
 timeout(30) {
     node("${buildNode}"){ 
         try { 
@@ -108,6 +109,11 @@ ${WORKSPACE}/getTagForImage.sh $(cat ${WORKSPACE}/LATEST_IMAGES.nvr)  -s > ${WOR
                             currentBuild.result = 'FAILURE'
                         }
 
+                        DIFF_LATEST_IMAGES_QUAY_V_STORED = sh (
+                            script: 'diff -u0 ${WORKSPACE}/LATEST_IMAGES{,.quay} | grep -v "@@" | grep -v "LATEST_IMAGES" || true',
+                            returnStdout: true
+                        ).trim()
+
                         def NEW_QUAY_L=""; NEW_QUAY.each { line -> if (line?.trim()) { NEW_QUAY_L=NEW_QUAY_L+"  ${line}\n" } }
                         def NEW_NVR_L="";  NEW_NVR.each  { line -> if (line?.trim()) { NEW_NVR_L=NEW_NVR_L + "  ${line}\n" } } 
                         echo '''
@@ -140,10 +146,6 @@ node("${buildNode}"){
     echo "currentBuild.result = " + currentBuild.result
     if (!currentBuild.result.equals("ABORTED") && !currentBuild.result.equals("FAILED")) {
         // check if ${WORKSPACE}/LATEST_IMAGES.quay is different from stored LATEST_IMAGES
-        def DIFF_LATEST_IMAGES_QUAY_V_STORED = sh (
-            script: 'diff -u0 ${WORKSPACE}/LATEST_IMAGES{,.quay} | grep -v "@@" | grep -v "LATEST_IMAGES" || true',
-            returnStdout: true
-        ).trim()
         // if LATEST_IMAGES files are different, run downstream job, if not, echo warning / set status yellow
         if (!DIFF_LATEST_IMAGES_QUAY_V_STORED.equals("")) {
             println "Scheduling update-digests-in-registries-and-metadata for this update:"
@@ -185,7 +187,7 @@ node("${buildNode}"){
     echo "currentBuild.result = " + currentBuild.result
     if (!currentBuild.result.equals("ABORTED") && !currentBuild.result.equals("FAILED")) {
         // if CONTAINERS contains theia
-        if (CONTAINERS.trim().equals("theia") || CONTAINERS.trim().matches(" theia ")) {
+        if (CONTAINERS.trim().equals("theia") || CONTAINERS.trim().matches("theia ")) {
             println "Scheduling crw-theia-akamai for this update:"
             println DIFF_LATEST_IMAGES_QUAY_V_STORED
             CRW_VERSION = util.getCrwVersion(MIDSTM_BRANCH)
