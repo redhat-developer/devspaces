@@ -129,3 +129,47 @@ Brew NVRs:
     } // node
 } // timeout
 
+// trigger update_digests job if we have pushed new images that appear in the registry or metadata
+node("${buildNode}"){ 
+  stage ("Update registries and metadata") {
+    sh('curl -sSLO https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/'+ DWNSTM_BRANCH + '/product/util.groovy')
+    def util = load "${WORKSPACE}/util.groovy"
+    echo "currentBuild.result = " + currentBuild.result
+    if (!currentBuild.result.equals("ABORTED") && !currentBuild.result.equals("FAILED")) {
+      // check if ${WORKSPACE}/LATEST_IMAGES.quay is different from stored LATEST_IMAGES; if so, run downstream job, if not, echo warning / set status yellow
+      sh('curl -sSLO https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/'+ DWNSTM_BRANCH + '/dependencies/LATEST_IMAGES')
+      def DIFF_LATEST_IMAGES_QUAY_V_STORED = sh (
+        script: 'diff -u0 ${WORKSPACE}/LATEST_IMAGES{,.quay} | grep -v "@@" | grep -v "LATEST_IMAGES" || true',
+        returnStdout: true
+      ).trim()
+      if (!DIFF_LATEST_IMAGES_QUAY_V_STORED.equals("")) {
+        CRW_VERSION = util.getCrwVersion(DWNSTM_BRANCH)
+        println "CRW_VERSION = '" + CRW_VERSION + "'"
+        build(
+              job: 'update-digests-in-registries-and-metadata_' + CRW_VERSION,
+              wait: false,
+              propagate: false,
+              parameters: [
+                [
+                  $class: 'StringParameterValue',
+                  name: 'token',
+                  value: "CI_BUILD"
+                ],
+                [
+                  $class: 'StringParameterValue',
+                  name: 'cause',
+                  value: "push-latest-containers-to-quay+for+" + CONTAINERS.trim().replaceAll(" ","+") + "+by+${BUILD_TAG}"
+                ]
+              ]
+        )
+        currentBuild.description=currentBuild.description+"; update-digests-in-registries-and-metadata triggered"
+      } else {
+        println "No changes to LATEST_IMAGES, no need to trigger update-digests-in-registries-and-metadata_" + CRW_VERSION
+        currentBuild.result = 'UNSTABLE'
+        currentBuild.description=currentBuild.description+"; update-digests-in-registries-and-metadata not triggered"
+      }
+    } // if
+  } // stage
+} //node
+
+// TODO: https://issues.redhat.com/browse/CRW-1011 also if theia, trigger theia CDN job 
