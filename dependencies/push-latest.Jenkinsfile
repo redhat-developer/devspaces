@@ -71,6 +71,9 @@ wait
                             NEW_NVR = sh (
                                 script: "./getLatestImageTags.sh -b ${MIDSTM_BRANCH} --nvr | tee ${WORKSPACE}/LATEST_IMAGES.nvr",
                                 returnStdout: true).trim().split( '\n' )
+                        }, 
+                        get_latest_images: {
+                            sh('curl -sSLO https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/'+ MIDSTM_BRANCH + '/dependencies/LATEST_IMAGES')
                         }
 
                         def NEW_QUAY = ""
@@ -136,12 +139,12 @@ node("${buildNode}"){
     def util = load "${WORKSPACE}/util.groovy"
     echo "currentBuild.result = " + currentBuild.result
     if (!currentBuild.result.equals("ABORTED") && !currentBuild.result.equals("FAILED")) {
-      // check if ${WORKSPACE}/LATEST_IMAGES.quay is different from stored LATEST_IMAGES; if so, run downstream job, if not, echo warning / set status yellow
-      sh('curl -sSLO https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/'+ MIDSTM_BRANCH + '/dependencies/LATEST_IMAGES')
+      // check if ${WORKSPACE}/LATEST_IMAGES.quay is different from stored LATEST_IMAGES
       def DIFF_LATEST_IMAGES_QUAY_V_STORED = sh (
         script: 'diff -u0 ${WORKSPACE}/LATEST_IMAGES{,.quay} | grep -v "@@" | grep -v "LATEST_IMAGES" || true',
         returnStdout: true
       ).trim()
+      // if LATEST_IMAGES files are different, run downstream job, if not, echo warning / set status yellow
       if (!DIFF_LATEST_IMAGES_QUAY_V_STORED.equals("")) {
         println "Scheduling update-digests-in-registries-and-metadata for this update:"
         println DIFF_LATEST_IMAGES_QUAY_V_STORED
@@ -168,7 +171,7 @@ node("${buildNode}"){
       } else {
         println "No changes to LATEST_IMAGES, no need to trigger update-digests-in-registries-and-metadata_" + CRW_VERSION
         currentBuild.result = 'UNSTABLE'
-        currentBuild.description=currentBuild.description+"; update-digests-in-registries-and-metadata not triggered"
+        currentBuild.description=currentBuild.description+"; update-digests-in-registries-and-metadata NOT triggered"
       }
     } // if
   } // stage
