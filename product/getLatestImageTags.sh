@@ -368,10 +368,10 @@ for URLfrag in $CONTAINERS; do
 			if [[ ${QUAYDEST} == "operator" ]] || [[ ${QUAYDEST} == "operator-metadata" ]]; then QUAYDEST="crw-2-rhel8-${QUAYDEST}"; fi
 			QUAYDEST="quay.io/crw/${QUAYDEST}"
 			if [[ $VERBOSE -eq 1 ]]; then echo "Copy ${REGISTRYPRE}${URLfrag}:${LATESTTAG} to ${QUAYDEST}:${LATESTTAG}"; fi
-			CMD="skopeo copy --all docker://${REGISTRYPRE}${URLfrag}:${LATESTTAG} docker://${QUAYDEST}:${LATESTTAG}"; echo $CMD; $CMD
+			CMD="skopeo --insecure-policy copy --all docker://${REGISTRYPRE}${URLfrag}:${LATESTTAG} docker://${QUAYDEST}:${LATESTTAG}"; echo $CMD; $CMD
 			for qtag in ${PUSHTOQUAYTAGS}; do
 				if [[ $VERBOSE -eq 1 ]]; then echo "Copy ${REGISTRYPRE}${URLfrag}:${LATESTTAG} to ${QUAYDEST}:${qtag}"; fi
-				CMD="skopeo copy --all docker://${REGISTRYPRE}${URLfrag}:${LATESTTAG} docker://${QUAYDEST}:${qtag}"; echo $CMD; $CMD
+				CMD="skopeo --insecure-policy copy --all docker://${REGISTRYPRE}${URLfrag}:${LATESTTAG} docker://${QUAYDEST}:${qtag}"; echo $CMD; $CMD
 			done
 		fi
 
