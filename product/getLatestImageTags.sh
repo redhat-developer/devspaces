@@ -42,55 +42,71 @@ checkVersion 1.1 "$(skopeo --version | sed -e "s/skopeo version //")" skopeo
 DWNSTM_BRANCH="crw-2.5-rhel-8"
 
 CRW25_CONTAINERS_RHCC="\
+codeready-workspaces/configbump-rhel8 \
+codeready-workspaces/crw-2-rhel8-operator \
 codeready-workspaces/crw-2-rhel8-operator-metadata \
 codeready-workspaces/devfileregistry-rhel8 \
-codeready-workspaces/pluginregistry-rhel8 \
-\
-codeready-workspaces/server-rhel8 \
-codeready-workspaces/crw-2-rhel8-operator \
-\
-codeready-workspaces/configbump-rhel8 \
 codeready-workspaces/imagepuller-rhel8 \
+\
 codeready-workspaces/jwtproxy-rhel8 \
 codeready-workspaces/machineexec-rhel8 \
 codeready-workspaces/pluginbroker-artifacts-rhel8 \
 codeready-workspaces/pluginbroker-metadata-rhel8 \
-codeready-workspaces/theia-dev-rhel8          codeready-workspaces/theia-rhel8              codeready-workspaces/theia-endpoint-rhel8 \
-codeready-workspaces/traefik-rhel8 \
-\
 codeready-workspaces/plugin-intellij-rhel8 \
-codeready-workspaces/plugin-java8-rhel8        codeready-workspaces/plugin-java11-rhel8 \
-codeready-workspaces/plugin-java8-openj9-rhel8 codeready-workspaces/plugin-java11-openj9-rhel8 \
-codeready-workspaces/plugin-kubernetes-rhel8   codeready-workspaces/plugin-openshift-rhel8 \
 \
-codeready-workspaces/stacks-cpp-rhel8         codeready-workspaces/stacks-golang-rhel8      codeready-workspaces/stacks-php-rhel8 \
+codeready-workspaces/plugin-java11-openj9-rhel8 \
+codeready-workspaces/plugin-java11-rhel8 \
+codeready-workspaces/plugin-java8-openj9-rhel8 \
+codeready-workspaces/plugin-java8-rhel8 \
+codeready-workspaces/plugin-kubernetes-rhel8 \
+\
+codeready-workspaces/plugin-openshift-rhel8 \
+codeready-workspaces/pluginregistry-rhel8 \
+codeready-workspaces/server-rhel8 \
+codeready-workspaces/stacks-cpp-rhel8 \
 codeready-workspaces/stacks-dotnet-rhel8 \
+\
+codeready-workspaces/stacks-golang-rhel8 \
+codeready-workspaces/stacks-php-rhel8 \
+codeready-workspaces/theia-dev-rhel8 \
+codeready-workspaces/theia-endpoint-rhel8 \
+codeready-workspaces/theia-rhel8 \
+\
+codeready-workspaces/traefik-rhel8 \
 "
 
 CRW25_CONTAINERS_OSBS="\
-codeready-workspaces/operator-metadata \
-codeready-workspaces/devfileregistry-rhel8 \
-codeready-workspaces/pluginregistry-rhel8 \
-\
-codeready-workspaces/server-rhel8 \
-codeready-workspaces/operator \
-\
 codeready-workspaces/configbump-rhel8 \
+codeready-workspaces/devfileregistry-rhel8 \
+codeready-workspaces/operator \
+codeready-workspaces/operator-metadata \
 codeready-workspaces/imagepuller-rhel8 \
+\
 codeready-workspaces/jwtproxy-rhel8 \
 codeready-workspaces/machineexec-rhel8 \
 codeready-workspaces/pluginbroker-artifacts-rhel8 \
 codeready-workspaces/pluginbroker-metadata-rhel8 \
-codeready-workspaces/theia-dev-rhel8          codeready-workspaces/theia-rhel8              codeready-workspaces/theia-endpoint-rhel8 \
-codeready-workspaces/traefik-rhel8 \
-\
 codeready-workspaces/plugin-intellij-rhel8 \
-codeready-workspaces/plugin-java8-rhel8        codeready-workspaces/plugin-java11-rhel8  \
-codeready-workspaces/plugin-java8-openj9-rhel8 codeready-workspaces/plugin-java11-openj9-rhel8 \
-codeready-workspaces/plugin-kubernetes-rhel8   codeready-workspaces/plugin-openshift-rhel8 \
 \
-codeready-workspaces/stacks-cpp-rhel8         codeready-workspaces/stacks-golang-rhel8      codeready-workspaces/stacks-php-rhel8 \
+codeready-workspaces/plugin-java11-openj9-rhel8 \
+codeready-workspaces/plugin-java11-rhel8  \
+codeready-workspaces/plugin-java8-openj9-rhel8 \
+codeready-workspaces/plugin-java8-rhel8 \
+codeready-workspaces/plugin-kubernetes-rhel8 \
+\
+codeready-workspaces/plugin-openshift-rhel8 \
+codeready-workspaces/pluginregistry-rhel8 \
+codeready-workspaces/server-rhel8 \
+codeready-workspaces/stacks-cpp-rhel8 \
 codeready-workspaces/stacks-dotnet-rhel8 \
+\
+codeready-workspaces/stacks-golang-rhel8 \
+codeready-workspaces/stacks-php-rhel8 \
+codeready-workspaces/theia-dev-rhel8 \
+codeready-workspaces/theia-endpoint-rhel8 \
+codeready-workspaces/theia-rhel8 \
+\
+codeready-workspaces/traefik-rhel8 \
 "
 
 CRW24_CONTAINERS_RHCC="\
@@ -180,8 +196,8 @@ REGISTRY="https://registry.redhat.io" # or http://brew-pulp-docker01.web.prod.ex
 CONTAINERS=""
 # while [[ "$#" -gt 0 ]]; do
 #   case $1 in
-for key in "$@"; do
-  case $key in
+while [[ "$#" -gt 0 ]]; do
+  case $1 in
     '-b') DWNSTM_BRANCH="$2"; shift 1;; 
     '--crw24'|'--crw-2.4-rhel-8') CONTAINERS="${CRW24_CONTAINERS_RHCC}"; candidateTag="crw-2.4-rhel-8-container-candidate"; BASETAG=2.4;; 
     '-c') CONTAINERS="${CONTAINERS} $2"; shift 1;;
@@ -195,13 +211,13 @@ for key in "$@"; do
     '--pulp-old') REGISTRY="http://brew-pulp-docker01.web.prod.ext.phx2.redhat.com:8888"; EXCLUDES="latest|candidate|guest|containers";;
     '-p'|'--osbs') REGISTRY="http://registry-proxy.engineering.redhat.com/rh-osbs"; EXCLUDES="latest|candidate|guest|containers";;
     '-d'|'--docker') REGISTRY="http://docker.io";;
-           '--quay') REGISTRY="http://quay.io";;
-           '--pushtoquay') PUSHTOQUAY=1; PUSHTOQUAYTAGS="";;
-           --pushtoquay=*) PUSHTOQUAY=1; PUSHTOQUAYTAGS="$(echo "${key#*=}")";;
+    '--quay') REGISTRY="http://quay.io";;
+    '--pushtoquay') PUSHTOQUAY=1; PUSHTOQUAYTAGS="";;
+    --pushtoquay=*) PUSHTOQUAY=1; PUSHTOQUAYTAGS="$(echo "${1#*=}")";;
     '-n') NUMTAGS="$2"; shift 1;;
     '--dockerfile') SHOWHISTORY=1;;
-    '--tag') BASETAG="$1"; shift 1;; 
-    '--candidatetag') candidateTag="$1"; shift 1;; 
+    '--tag') BASETAG="$2"; shift 1;; 
+    '--candidatetag') candidateTag="$2"; shift 1;; 
     '--nvr') if [[ ! $CONTAINERS ]]; then CONTAINERS="${CRW25_CONTAINERS_OSBS}"; fi; SHOWNVR=1;;
     '--tagonly') TAGONLY=1;;
     '--log') SHOWLOG=1;;
