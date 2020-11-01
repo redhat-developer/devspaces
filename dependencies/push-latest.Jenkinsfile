@@ -143,6 +143,8 @@ node("${buildNode}"){
         returnStdout: true
       ).trim()
       if (!DIFF_LATEST_IMAGES_QUAY_V_STORED.equals("")) {
+        println "Scheduling update-digests-in-registries-and-metadata for this update:"
+        println DIFF_LATEST_IMAGES_QUAY_V_STORED
         CRW_VERSION = util.getCrwVersion(MIDSTM_BRANCH)
         println "CRW_VERSION = '" + CRW_VERSION + "'"
         build(
