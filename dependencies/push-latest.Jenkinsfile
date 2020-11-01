@@ -54,7 +54,10 @@ echo " Push latest images in osbs to quay: ''' + CONTAINERS.trim() + '''"
 echo " ########################################### "
 for c in ''' + CONTAINERS.trim() + '''; do
     d=codeready-workspaces-${c}-rhel8
-    if [[ $c == "operator" ]]; then d=codeready-workspaces-${c}; fi # special case for operator; all other images follow the pattern
+    # special case for operator; all other images follow the pattern
+    if [[ $c == "operator" ]] || [[ $c == "operator-metadata" ]]; then 
+        d=codeready-workspaces-${c}
+    fi 
     ./getLatestImageTags.sh -c ${d} --osbs --pushtoquay="''' + CRW_VERSION + ''' ''' + TAGS + '''" &
 done
 wait
