@@ -77,9 +77,9 @@ codeready-workspaces/traefik-rhel8 \
 
 CRW25_CONTAINERS_OSBS="\
 codeready-workspaces/configbump-rhel8 \
-codeready-workspaces/devfileregistry-rhel8 \
 codeready-workspaces/operator \
 codeready-workspaces/operator-metadata \
+codeready-workspaces/devfileregistry-rhel8 \
 codeready-workspaces/imagepuller-rhel8 \
 \
 codeready-workspaces/jwtproxy-rhel8 \
