@@ -182,16 +182,12 @@ node("${buildNode}"){
 // https://issues.redhat.com/browse/CRW-1011 trigger crw-theia-akamai job 
 node("${buildNode}"){ 
   stage ("Enable Akamai CDN support for CRW Theia image") {
-    sh('curl -sSLO https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/'+ MIDSTM_BRANCH + '/product/util.groovy')
-    def util = load "${WORKSPACE}/util.groovy"
     echo "currentBuild.result = " + currentBuild.result
     if (!currentBuild.result.equals("ABORTED") && !currentBuild.result.equals("FAILED")) {
         // if CONTAINERS contains theia
-        if (CONTAINERS.trim().equals("theia") || CONTAINERS.trim().matches("theia ")) {
-            println "Scheduling crw-theia-akamai for this update:"
-            println DIFF_LATEST_IMAGES_QUAY_V_STORED
-            CRW_VERSION = util.getCrwVersion(MIDSTM_BRANCH)
-            println "CRW_VERSION = '" + CRW_VERSION + "'"
+        println "Containers: " + CONTAINERS.trim()
+        if (CONTAINERS.trim().equals("theia") || CONTAINERS.trim().matches(".*theia .*")) {
+            println "Scheduling crw-theia-akamai"
             build(
                 job: 'crw-theia-akamai',
                 wait: false,
