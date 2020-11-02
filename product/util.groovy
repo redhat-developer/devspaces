@@ -21,7 +21,7 @@ def String getCrwVersion(String MIDSTM_BRANCH) {
 def installYq(){
 		sh '''#!/bin/bash -xe
 sudo yum -y install jq python3-six python3-pip
-sudo /usr/bin/python3 -m pip install --upgrade pip yq; jq --version; yq --version
+sudo /usr/bin/python3 -m pip install --upgrade pip yq jsonschema; jq --version; yq --version
 '''
 }
 
@@ -68,10 +68,9 @@ def cloneRepo(String URL, String REPO_PATH, String BRANCH) {
         git config user.name "Red Hat Devstudio Release Bot"
         git config --global push.default matching
         # SOLVED :: Fatal: Could not read Username for "https://github.com", No such device or address :: https://github.com/github/hub/issues/1644
-        git remote -v
         git config --global hub.protocol https
-        git remote set-url origin ''' + AUTH_URL + '''
-        git remote -v''')
+        git remote set-url origin ''' + AUTH_URL
+      )
     } else {
       sh('''#!/bin/bash -xe
         export KRB5CCNAME=/var/tmp/crw-build_ccache
