@@ -8,12 +8,14 @@ import groovy.transform.Field
 // NOTE: use https://github.com/redhat-developer/jetbrains-editor-images/tree/crw-2.5-rhel-8 instead of raw master branch upstream until we have stability/branches/tags there
 def SOURCE_REPO = "redhat-developer/jetbrains-editor-images" // upstream source repo should be https://github.com/che-incubator/jetbrains-editor-images
 def DWNSTM_REPO = "redhat-developer/codeready-workspaces-images" // repo to use as target
+def SYNC_REPO = "codeready-workspaces-intellij"
 
 // NOTE: must create branches manually
 String SOURCE_BRANCH = "crw-2.5-rhel-8" // upstream source repo branch, eg., crw-2.5-rhel-8 from fork 
 String DWNSTM_BRANCH = "crw-2.5-rhel-8" // target branch, eg., crw-2.5-rhel-8
 
 def OLD_SHA=""
+def NEW_SHA=""
 def SRC_SHA=""
 def buildNode = "rhel7-32gb||rhel7-16gb||rhel7-8gb||rhel7-releng" // node label
 timeout(120) {
@@ -121,3 +123,64 @@ ${WORKSPACE}/target/codeready-workspaces-plugin-intellij/Dockerfile
       } // stage 
   } // node
 } //timeout
+
+// kick off get-sources-rhpkg-container-build job
+node("${buildNode}"){
+  stage ("Build container") {
+    println "########################################################################################################"
+    println "##  Build ${SYNC_REPO} container"
+    println "########################################################################################################"
+    sh('curl -sSLO https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/'+ DWNSTM_BRANCH + '/product/util.groovy')
+    def util = load "${WORKSPACE}/util.groovy"
+    echo "currentBuild.result = " + currentBuild.result
+    if (!currentBuild.result.equals("ABORTED") && !currentBuild.result.equals("FAILED")) {
+      NEW_SHA = util.getLastCommitSHA("${WORKSPACE}/target")
+      println "Got NEW_SHA in target folder: " + NEW_SHA
+      if (NEW_SHA != OLD_SHA || FORCE_BUILD == "true") {
+        CRW_VERSION = util.getCrwVersion(DWNSTM_BRANCH)
+        println "CRW_VERSION = '" + CRW_VERSION + "'"
+        QUAY_REPO_PATH=""
+        if (SCRATCH == "false") {
+          QUAY_REPO_PATH=util.getCRWShortName(SYNC_REPO) + "-rhel8"
+        }
+        build(
+              job: 'crw-plugins-and-stacks_' + CRW_VERSION,
+              wait: false,
+              propagate: false,
+              parameters: [
+                [
+                  $class: 'StringParameterValue',
+                  name: 'token',
+                  value: "CI_BUILD"
+                ],
+                [
+                  $class: 'StringParameterValue',
+                  name: 'cause',
+                  value: SYNC_REPO.replaceAll("codeready-workspaces-","") + "+respin+by+${BUILD_TAG}"
+                ],
+                [
+                  $class: 'StringParameterValue',
+                  name: 'REPOS',
+                  value: "${SYNC_REPO}"
+                ],
+                [
+                  $class: 'StringParameterValue',
+                  name: 'FORCE_BUILD',
+                  value: "true"
+                ],
+                [
+                  $class: 'StringParameterValue',
+                  name: 'SCRATCH',
+                  value: "false"
+                ]
+              ]
+        )
+        currentBuild.description="Brew build triggered"
+      } else {
+        println "No changes upstream, nothing to build in brew!"
+        currentBuild.description="No Brew build"
+        currentBuild.result = 'UNSTABLE'
+      }
+    } // if
+  } // stage
+} //node
