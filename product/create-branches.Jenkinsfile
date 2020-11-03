@@ -11,7 +11,7 @@ timeout(120) {
         sh('curl -sSLO https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/'+ MIDSTM_BRANCH + '/product/util.groovy')
         def util = load "${WORKSPACE}/util.groovy"
         cleanWs()
-        sh('curl -sSLO https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/'+ MIDSTM_BRANCH + '/product/tagRelease.sh')
+        sh('curl -sSLO https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/'+ MIDSTM_BRANCH + '/product/tagRelease.sh && chmod +x tagRelease.sh')
         withCredentials([string(credentialsId:'devstudio-release.token', variable: 'GITHUB_TOKEN'), 
             file(credentialsId: 'crw-build.keytab', variable: 'CRW_KEYTAB')]) {
             util.bootstrap(CRW_KEYTAB)
