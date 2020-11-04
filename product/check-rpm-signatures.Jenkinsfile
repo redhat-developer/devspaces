@@ -13,7 +13,7 @@ timeout(120) {
                 sh('curl -sSLO https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/'+ MIDSTM_BRANCH + '/product/util.groovy')
                 def util = load "${WORKSPACE}/util.groovy"
                 cleanWs()
-                CRW_VERSION = util.getCrwVersion(DWNSTM_BRANCH)
+                CRW_VERSION = util.getCrwVersion(MIDSTM_BRANCH)
                 println "CRW_VERSION = '" + CRW_VERSION + "'"
                 util.installSkopeo(CRW_VERSION)
                 util.installYq()
