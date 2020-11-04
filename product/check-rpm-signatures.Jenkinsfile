@@ -22,7 +22,11 @@ timeout(120) {
                 withCredentials([string(credentialsId:'devstudio-release.token', variable: 'GITHUB_TOKEN'), file(credentialsId: 'crw-build.keytab', variable: 'CRW_KEYTAB')]) {
                     util.bootstrap(CRW_KEYTAB)
                     currentBuild.description="Checking RPM signatures ..."
-                    sh ('''./check-rpm-signatures.sh''' // set branch if needed with -b ''' + MIDSTM_BRANCH
+                    sh ('''
+export KRB5CCNAME=/var/tmp/crw-build_ccache
+kinit "crw-build/codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com@REDHAT.COM" -kt ''' + CRW_KEYTAB + '''
+klist # verify working
+./check-rpm-signatures.sh''' // set branch if needed with -b ''' + MIDSTM_BRANCH
                     )
                     MISSING_SIGS = sh(script: '''#!/bin/bash -xe
                         if [[ -f missing.signatures.txt ]]; then cat missing.signatures.txt; fi
@@ -30,10 +34,10 @@ timeout(120) {
                     if (MISSING_SIGS.equals("")){
                         currentBuild.description="RPM signatures checked: OK"
                     } else {
+                        archiveArtifacts fingerprint: true, artifacts:"missing.signatures.txt"
                         currentBuild.description="Unsigned RPM content found!"
                         currentBuild.result = 'FAILED'
                     }
-                    archiveArtifacts fingerprint: true, artifacts:"missing.signatures.txt"
                 } //with 
             } // wrap
         } // stage
