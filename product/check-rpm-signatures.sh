@@ -37,16 +37,8 @@ done
 # get latest NVRs
 "${SCRIPT_DIR}"/getLatestImageTags.sh -b "${DWNSTM_BRANCH}" --nvr | tee "${TMPDIR}"/nvrs.list.txt
 
-PODMAN=$(command -v podman || true)
-if [[ ! -x $PODMAN ]]; then
-  echo "[WARNING] podman is not installed."
-  PODMAN=$(command -v docker || true)
-  # switch to use docker executable if podman not installed
-  sed -i "${TMPDIR}"/check-image-rpm-sigs.sh -r -e "s/podman/docker/g"
-  if [[ ! -x $PODMAN ]]; then
-    echo "[ERROR] docker is not installed. Aborting."; exit 1
-  fi
-fi
+# switch to use docker executable in check-image-rpm-sigs.sh script, if podman is not installed
+command -v podman >/dev/null 2>&1 || { sed -i "${TMPDIR}"/check-image-rpm-sigs.sh -r -e "s/podman/docker/g"; echo "[WARNING] Using docker instead of podman in check-image-rpm-sigs.sh"; }
 
 rm -f "${SCRIPT_DIR}"/missing.signatures.txt
 for NVR in $(cat "${TMPDIR}"/nvrs.list.txt); do
