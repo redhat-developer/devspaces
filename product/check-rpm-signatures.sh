@@ -38,7 +38,7 @@ done
 "${SCRIPT_DIR}"/getLatestImageTags.sh -b "${DWNSTM_BRANCH}" --nvr | tee "${TMPDIR}"/nvrs.list.txt
 
 # switch to use docker executable in check-image-rpm-sigs.sh script, if podman is not installed
-command -v podman >/dev/null 2>&1 || { sed -i "${TMPDIR}"/check-image-rpm-sigs.sh -r -e "s/podman/docker/g"; echo "[WARNING] Using docker instead of podman in check-image-rpm-sigs.sh"; }
+command -v podman >/dev/null 2>&1 || { sudo yum install -y podman; }
 
 rm -f "${SCRIPT_DIR}"/missing.signatures.txt
 for NVR in $(cat "${TMPDIR}"/nvrs.list.txt); do

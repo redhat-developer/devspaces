@@ -17,6 +17,9 @@ timeout(120) {
                 println "CRW_VERSION = '" + CRW_VERSION + "'"
                 util.installSkopeo(CRW_VERSION)
                 util.installYq()
+                sh '''#!/bin/bash -xe
+                sudo yum -y install podman; podman --version
+                '''
                 sh('curl -sSLO https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/'+ MIDSTM_BRANCH + '/product/getLatestImageTags.sh && chmod +x getLatestImageTags.sh')
                 sh('curl -sSLO https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/'+ MIDSTM_BRANCH + '/product/check-rpm-signatures.sh && chmod +x check-rpm-signatures.sh')
                 withCredentials([string(credentialsId:'devstudio-release.token', variable: 'GITHUB_TOKEN'), file(credentialsId: 'crw-build.keytab', variable: 'CRW_KEYTAB')]) {
