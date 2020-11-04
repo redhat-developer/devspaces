@@ -23,6 +23,7 @@ mkdir -p "${TMPDIR}"; cd "${TMPDIR}" || exit
 curl -sSLO http://download.devel.redhat.com/scripts/rel-eng/utility/snippets/check-image-rpm-sigs.sh && chmod +x check-image-rpm-sigs.sh
 
 command -v jq >/dev/null 2>&1 || { echo "jq is not installed. Aborting."; exit 1; }
+command -v yq >/dev/null 2>&1 || { echo "jq is not installed. Aborting."; exit 1; }
 
 DWNSTM_BRANCH="crw-2.5-rhel-8"
 
@@ -35,6 +36,17 @@ done
 
 # get latest NVRs
 "${SCRIPT_DIR}"/getLatestImageTags.sh -b "${DWNSTM_BRANCH}" --nvr | tee "${TMPDIR}"/nvrs.list.txt
+
+PODMAN=$(command -v podman)
+if [[ ! -x $PODMAN ]]; then
+  echo "[WARNING] podman is not installed."
+  PODMAN=$(command -v docker)
+  # switch to use docker executable if podman not installed
+  sed -i "${TMPDIR}"/check-image-rpm-sigs.sh -r -e "s/podman/docker/g"
+  if [[ ! -x $PODMAN ]]; then
+    echo "[ERROR] docker is not installed. Aborting."; exit 1
+  fi
+fi
 
 rm -f "${SCRIPT_DIR}"/missing.signatures.txt
 for NVR in $(cat "${TMPDIR}"/nvrs.list.txt); do
