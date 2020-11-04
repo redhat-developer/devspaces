@@ -1,4 +1,4 @@
-#!/bin/bash -e
+#!/bin/bash -ex
 #
 # Copyright (c) 2020 Red Hat, Inc.
 # This program and the accompanying materials are made
