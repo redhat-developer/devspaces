@@ -28,7 +28,7 @@ timeout(120) {
           CRW_VERSION = util.getCrwVersion(DWNSTM_BRANCH)
           println "CRW_VERSION = '" + CRW_VERSION + "'"
           util.installSkopeo(CRW_VERSION)
-          installYq()
+          util.installYq()
           withCredentials([string(credentialsId:'devstudio-release.token', variable: 'GITHUB_TOKEN'), file(credentialsId: 'crw-build.keytab', variable: 'CRW_KEYTAB')]) {
             util.bootstrap(CRW_KEYTAB)
             util.cloneRepo("https://github.com/${SOURCE_REPO}.git", "${WORKSPACE}/source", SOURCE_BRANCH)
