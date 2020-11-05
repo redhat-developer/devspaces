@@ -5,49 +5,50 @@ import groovy.transform.Field
 // PARAMETERS for this pipeline:
 // def CHE_VER = "7.20.x"
 
-def SOURCE_REPO = "che-incubator/che-editor-intellij-community" // upstream source repo from which to find commits
+// NOTE: use https://github.com/redhat-developer/jetbrains-editor-images/tree/crw-2.5-rhel-8 instead of raw master branch upstream until we have stability/branches/tags there
+def SOURCE_REPO = "redhat-developer/jetbrains-editor-images" // upstream source repo should be https://github.com/che-incubator/jetbrains-editor-images
 def DWNSTM_REPO = "redhat-developer/codeready-workspaces-images" // repo to use as target
 
 // NOTE: must create branches manually
-String SOURCE_BRANCH = "master" // upstream source repo branch
+String SOURCE_BRANCH = "crw-2.5-rhel-8" // upstream source repo branch, eg., crw-2.5-rhel-8 from fork 
 String DWNSTM_BRANCH = "crw-2.5-rhel-8" // target branch, eg., crw-2.5-rhel-8
 
 def OLD_SHA=""
 def SRC_SHA=""
-
-
-def buildNode = "rhel7-32gb||rhel7-16gb||rhel7-8gb" // node label
+def buildNode = "rhel7-32gb||rhel7-16gb||rhel7-8gb||rhel7-releng" // node label
 timeout(120) {
-    node("${buildNode}"){ stage "Sync repos"
-    wrap([$class: 'TimestamperBuildWrapper']) {
-      sh('curl -sSLO https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/' + DWNSTM_BRANCH + '/product/util.groovy')
-      def util = load "${WORKSPACE}/util.groovy"
-      cleanWs()
-      CRW_VERSION = util.getCrwVersion(DWNSTM_BRANCH)
-      println "CRW_VERSION = '" + CRW_VERSION + "'"
-      util.installSkopeo(CRW_VERSION)
-      sh('pip install -I --user yq')
-      yq_bin = sh(script: 'python -m site --user-base', returnStdout:true).trim() + '/bin/yq'
+  node("${buildNode}"){ 
+      stage("Sync repos") {
+        wrap([$class: 'TimestamperBuildWrapper']) {
+          sh('curl -sSLO https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/' + DWNSTM_BRANCH + '/product/util.groovy')
+          def util = load "${WORKSPACE}/util.groovy"
+          cleanWs()
+          CRW_VERSION = util.getCrwVersion(DWNSTM_BRANCH)
+          println "CRW_VERSION = '" + CRW_VERSION + "'"
+          util.installSkopeo(CRW_VERSION)
+          installYq()
+          withCredentials([string(credentialsId:'devstudio-release.token', variable: 'GITHUB_TOKEN'), file(credentialsId: 'crw-build.keytab', variable: 'CRW_KEYTAB')]) {
+            util.bootstrap(CRW_KEYTAB)
+            util.cloneRepo("https://github.com/${SOURCE_REPO}.git", "${WORKSPACE}/source", SOURCE_BRANCH)
+            // if upsteam che plugin registry's image ref points to a valid commit sha in upstream repo, can use this logic to check out the matching commit
+            // however, it might be outdated
+            // https://github.com/eclipse/che-plugin-registry/blob/7.20.x/v3/plugins/che-incubator/intellij-community/2020.2.2/meta.yaml#L25 -> 0759693
+            // https://github.com/eclipse/che-plugin-registry/blob/master/v3/plugins/che-incubator/intellij-community/2020.2.2/meta.yaml#L25 -> 0759693
+            // https://github.com/redhat-developer/jetbrains-editor-images/commit/0759693 -> older than master branch latest commits
+            // sh('''#!/bin/bash
+            //   VER=$(curl -sSLo- https://raw.githubusercontent.com/eclipse/che-plugin-registry/''' + CHE_VER + '''/v3/plugins/che-incubator/intellij-community/latest.txt)
+            //   SHA=$(curl -sSLo- https://raw.githubusercontent.com/eclipse/che-plugin-registry/''' + CHE_VER + '''/v3/plugins/che-incubator/intellij-community/${VER}/meta.yaml | yq -r '.spec.containers[].image' | sed -r -e "s#.+:.+-##g")
+            //   cd ${WORKSPACE}/source
+            //   git checkout ${SHA}
+            // ''')
+            SRC_SHA = util.getLastCommitSHA("${WORKSPACE}/source")
+            println "Got SRC_SHA in source folder: " + SRC_SHA
 
-        withCredentials([string(credentialsId:'devstudio-release.token', variable: 'GITHUB_TOKEN'),
-          file(credentialsId: 'crw-build.keytab', variable: 'CRW_KEYTAB')]) {
-        util.bootstrap(CRW_KEYTAB)
+            util.cloneRepo("https://github.com/${DWNSTM_REPO}.git", "${WORKSPACE}/target", DWNSTM_BRANCH)
+            OLD_SHA = util.getLastCommitSHA("${WORKSPACE}/target")
+            println "Got OLD_SHA in target folder: " + OLD_SHA
 
-        util.cloneRepo("https://github.com/${SOURCE_REPO}.git", "${WORKSPACE}/source", SOURCE_BRANCH)
-        sh('''#!/bin/bash
-          VER=$(curl -sSLo- https://raw.githubusercontent.com/eclipse/che-plugin-registry/''' + CHE_VER + '''/v3/plugins/che-incubator/intellij-community/latest.txt)
-          SHA=$(curl -sSLo- https://raw.githubusercontent.com/eclipse/che-plugin-registry/''' + CHE_VER + '''/v3/plugins/che-incubator/intellij-community/${VER}/meta.yaml | ''' + yq_bin + ''' -r '.spec.containers[].image' | sed -r -e "s#.+:.+-##g")
-          cd ${WORKSPACE}/source
-          # git checkout ${SHA}
-        ''')
-        SRC_SHA = util.getLastCommitSHA("${WORKSPACE}/source")
-        println "Got SRC_SHA in source folder: " + SRC_SHA
-
-        util.cloneRepo("https://github.com/${DWNSTM_REPO}.git", "${WORKSPACE}/target", DWNSTM_BRANCH)
-        OLD_SHA = util.getLastCommitSHA("${WORKSPACE}/target")
-        println "Got OLD_SHA in target folder: " + OLD_SHA
-
-        writeFile file: "rsync-brew-exclude", text: '''
+            writeFile file: "rsync-brew-exclude", text: '''
 sources
 get-sources-jenkins.sh
 cvp.yml
@@ -56,11 +57,11 @@ content_sets.yml
 content_sets.repo
 container.yaml
 .gitignore'''
-        sh('''rsync -avhz --checksum --delete --exclude-from ${WORKSPACE}/rsync-brew-exclude --exclude .git/ --exclude .github/ ${WORKSPACE}/source/ ${WORKSPACE}/target/codeready-workspaces-plugin-intellij/''')
+            sh('''rsync -avhz --checksum --delete --exclude-from ${WORKSPACE}/rsync-brew-exclude --exclude .git/ --exclude .github/ ${WORKSPACE}/source/ ${WORKSPACE}/target/codeready-workspaces-plugin-intellij/''')
 
-        sh('''#!/bin/bash
-          cd ${WORKSPACE}/target
-          sed -i -e 's|^FROM .*|# https://access.redhat.com/containers/?tab=tags#/registry.access.redhat.com/ubi8-minimal \\
+            sh('''#!/bin/bash
+              cd ${WORKSPACE}/target
+              sed -i -e 's|^FROM .*|# https://access.redhat.com/containers/?tab=tags#/registry.access.redhat.com/ubi8-minimal \\
 FROM ubi8-minimal:8.2-349 \\
 \\
 ENV SUMMARY="Red Hat CodeReady Workspaces - IntelliJ Plugin" \\\\ \\
@@ -103,19 +104,20 @@ LABEL summary="$SUMMARY" \\\\ \\
       io.openshift.expose-services="" \\\\ \\
       usage=""' \\
 ${WORKSPACE}/target/codeready-workspaces-plugin-intellij/Dockerfile
-        ''')
+            ''')
 
-        sh('''#!/bin/bash
-          export KRB5CCNAME=/var/tmp/crw-build_ccache
-          cd ${WORKSPACE}/target
-          git add --all -f .
-          git commit -m "sync from ''' + SOURCE_REPO + ''' @ ''' + SRC_SHA[0..7] + '''" || true
-          COMMIT_SHA="$(git log origin/''' + DWNSTM_BRANCH + '''..''' + DWNSTM_BRANCH + ''' --pretty=format:%H)"
-          if [ ! -z "$COMMIT_SHA" ] ; then
-            git push origin ''' + DWNSTM_BRANCH + ''' || true
-          fi
-        ''')
-      } // withCredentials
-    } // wrap
+            sh('''#!/bin/bash
+              export KRB5CCNAME=/var/tmp/crw-build_ccache
+              cd ${WORKSPACE}/target
+              git add --all -f .
+              git commit -m "sync from ''' + SOURCE_REPO + ''' @ ''' + SRC_SHA[0..7] + '''" || true
+              COMMIT_SHA="$(git log origin/''' + DWNSTM_BRANCH + '''..''' + DWNSTM_BRANCH + ''' --pretty=format:%H)"
+              if [ ! -z "$COMMIT_SHA" ] ; then
+                git push origin ''' + DWNSTM_BRANCH + ''' || true
+              fi
+            ''')
+          } // withCredentials
+        } // wrap
+      } // stage 
   } // node
 } //timeout
