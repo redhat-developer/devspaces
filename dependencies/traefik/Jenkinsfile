@@ -5,15 +5,15 @@ import groovy.transform.Field
 // PARAMETERS for this pipeline:
 //   FORCE_BUILD
 
-def SOURCE_REPO = "traefik/traefik" // upstream source repo from which to find commits
+// NOTE: can use https://github.com/redhat-developer/traefik/tree/crw-2.5-rhel-8 if need to fork or use a commit that's not behind a tag/branch
+def SOURCE_REPO = "traefik/traefik" // upstream source repo should be https://github.com/traefik/traefik
 def DWNSTM_REPO = "containers/codeready-workspaces-traefik" // repo to use as target
 def SYNC_REPO="traefik"
 
 String GOLANG_VERSION = "1.15.3"
 
-// NOTE: must create branches manually
-String SOURCE_BRANCH = "master" // upstream source repo branch
-String SOURCE_TAG = "v2.3.2"
+String SOURCE_BRANCH = "master" // upstream source repo branch, eg., crw-2.5-rhel-8 from fork 
+String SOURCE_TAG = "v2.3.2" // after fetching from a branch, switch to this tag
 String DWNSTM_BRANCH = "crw-2.5-rhel-8" // target branch, eg., crw-2.5-rhel-8
 
 def OLD_SHA=""
@@ -77,7 +77,6 @@ content_sets.repo
 container.yaml
 .gitignore
 rhel.Dockerfile'''
-
                     sh('''
                       rsync -avhz --checksum --exclude-from ${WORKSPACE}/rsync-upstream-exclude --exclude-from ${WORKSPACE}/rsync-brew-exclude --exclude .git/ --exclude .github/ --exclude .gitignore \
                         ${WORKSPACE}/source/ ${WORKSPACE}/target/ | grep -E -v '/$'
