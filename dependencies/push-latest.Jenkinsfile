@@ -206,10 +206,10 @@ node("${buildNode}"){
                 ]
             )
             currentBuild.description=currentBuild.description+"; crw-theia-akamai triggered"
-        } else {
-            println "No theia image update; no need to trigger crw-theia-akamai"
-            currentBuild.result = 'UNSTABLE'
-            currentBuild.description=currentBuild.description+"; crw-theia-akamai NOT triggered"
+        // } else {
+        //     println "No theia image update; no need to trigger crw-theia-akamai"
+        //     currentBuild.result = 'UNSTABLE'
+        //     currentBuild.description=currentBuild.description+"; crw-theia-akamai NOT triggered"
         } // if 2
     } // if
   } // stage
