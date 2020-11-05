@@ -8,7 +8,7 @@ import groovy.transform.Field
 // NOTE: use https://github.com/redhat-developer/jetbrains-editor-images/tree/crw-2.5-rhel-8 instead of raw master branch upstream until we have stability/branches/tags there
 def SOURCE_REPO = "redhat-developer/jetbrains-editor-images" // upstream source repo should be https://github.com/che-incubator/jetbrains-editor-images
 def DWNSTM_REPO = "redhat-developer/codeready-workspaces-images" // repo to use as target
-def SYNC_REPO = "codeready-workspaces-intellij"
+def SYNC_REPO = "codeready-workspaces-plugin-intellij"
 
 // NOTE: must create branches manually
 String SOURCE_BRANCH = "crw-2.5-rhel-8" // upstream source repo branch, eg., crw-2.5-rhel-8 from fork 
