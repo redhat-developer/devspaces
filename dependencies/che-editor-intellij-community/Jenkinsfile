@@ -140,9 +140,7 @@ node("${buildNode}"){
         CRW_VERSION = util.getCrwVersion(DWNSTM_BRANCH)
         println "CRW_VERSION = '" + CRW_VERSION + "'"
         QUAY_REPO_PATH=""
-        if (SCRATCH == "false") {
-          QUAY_REPO_PATH=util.getCRWShortName(SYNC_REPO) + "-rhel8"
-        }
+        QUAY_REPO_PATH=util.getCRWShortName(SYNC_REPO) + "-rhel8"
         build(
               job: 'crw-plugins-and-stacks_' + CRW_VERSION,
               wait: false,
