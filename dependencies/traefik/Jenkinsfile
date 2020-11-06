@@ -102,7 +102,7 @@ RUN yum install -y python2|g' \\
           sed -i '/^## IMAGE/,$d' rhel.Dockerfile
 
           sed -i -e 's|^FROM .*|# https://access.redhat.com/containers/?tab=tags#/registry.access.redhat.com/ubi8-minimal \\
-FROM ubi8-minimal:8.2-349 \\
+FROM ubi8-minimal:8.3-201 \\
 \\
 ENV SUMMARY="Red Hat CodeReady Workspaces - Traefik" \\\\ \\
     DESCRIPTION="Red Hat CodeReady Workspaces - Traefik" \\\\ \\
@@ -116,6 +116,7 @@ COPY asset-*.tar.gz /tmp/assets/ \\
     tar xzf /tmp/assets/asset-traefik-$(uname -m).tar.gz -C / \\&\\& \\\\ \\
     rm -fr /tmp/assets/ \\&\\& \\\\ \\
     chmod 755 /traefik \\&\\& \\\\ \\
+    microdnf -y update || true \\&\\& \\\\ \\
     microdnf -y remove tar gzip \\&\\& \\\\ \\
     echo "Installed Packages" \\&\\& rpm -qa \\| sort -V \\&\\& echo "End Of Installed Packages" \\
 |g' \\
@@ -136,6 +137,8 @@ LABEL summary="$SUMMARY" \\\\ \\
       usage=""' \\
 Dockerfile
                     ''')
+
+                    // TODO: run updateBaseImages to get the latest ubi8 base (rather than hardcoding it above)
 
                     // push to dist-git
                     sh('''#!/bin/bash
