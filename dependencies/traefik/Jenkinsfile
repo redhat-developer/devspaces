@@ -116,7 +116,7 @@ COPY asset-*.tar.gz /tmp/assets/ \\
     tar xzf /tmp/assets/asset-traefik-$(uname -m).tar.gz -C / \\&\\& \\\\ \\
     rm -fr /tmp/assets/ \\&\\& \\\\ \\
     chmod 755 /traefik \\&\\& \\\\ \\
-    microdnf -y update || true \\&\\& \\\\ \\
+    microdnf -y update \\|\\| true \\&\\& \\\\ \\
     microdnf -y remove tar gzip \\&\\& \\\\ \\
     echo "Installed Packages" \\&\\& rpm -qa \\| sort -V \\&\\& echo "End Of Installed Packages" \\
 |g' \\
