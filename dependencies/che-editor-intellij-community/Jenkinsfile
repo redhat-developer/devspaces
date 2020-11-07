@@ -134,6 +134,7 @@ node("${buildNode}"){
     def util = load "${WORKSPACE}/util.groovy"
     echo "currentBuild.result = " + currentBuild.result
     if (!currentBuild.result.equals("ABORTED") && !currentBuild.result.equals("FAILED")) {
+      util.cloneRepo("https://github.com/${DWNSTM_REPO}.git", "${WORKSPACE}/target", DWNSTM_BRANCH)
       NEW_SHA = util.getLastCommitSHA("${WORKSPACE}/target")
       println "Got NEW_SHA in target folder: " + NEW_SHA
       if (NEW_SHA != OLD_SHA || FORCE_BUILD == "true") {
