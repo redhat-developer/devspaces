@@ -1,0 +1,7 @@
+metadata:
+  name: che-ideaic
+components:
+  - type: cheEditor
+    reference: 'https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/crw-2.5-rhel-8/dependencies/che-editor-intellij-community/devfiles/meta.yaml'
+    alias: ideaic-editor
+apiVersion: 1.0.0
