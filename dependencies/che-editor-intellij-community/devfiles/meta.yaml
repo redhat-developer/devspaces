@@ -1,0 +1,31 @@
+apiVersion: v2
+publisher: eclipse
+name: ideaIC-NOVNC
+version: 2020.2.3
+type: Che Editor
+displayName:  IntelliJ IDEA Community Edition
+title:  IntelliJ IDEA Community Edition (in browser using noVNC) as editor for Eclipse Che
+description:  IntelliJ IDEA Community Edition running on the Web with noVNC
+icon: https://resources.jetbrains.com/storage/products/intellij-idea/img/meta/intellij-idea_logo_300x300.png
+category: Editor
+repository: https://github.com/che-incubator/che-editor-intellij-community
+firstPublicationDate: "2020-09-25"
+spec:
+  endpoints:
+   -  name: "intellij"
+      public: true
+      targetPort: 8080
+      attributes:
+        protocol: http
+        type: ide
+        path: /vnc.html?resize=remote&autoconnect=true&reconnect=true
+  containers:
+   - name: ideaic-novnc
+     image: "quay.io/crw/plugin-intellij-rhel8:2.5"
+     mountSources: true
+     volumes:
+         - mountPath: "/JetBrains/ideaIC"
+           name: idea-configuration
+     ports:
+         - exposedPort: 8080
+     memoryLimit: "2048M"
