@@ -64,7 +64,7 @@ container.yaml
             sh('''#!/bin/bash
               cd ${WORKSPACE}/target
               sed -i -e 's|^FROM .*|# https://access.redhat.com/containers/?tab=tags#/registry.access.redhat.com/ubi8-minimal \\
-FROM ubi8-minimal:8.2-349 \\
+FROM ubi8-minimal:8.3-201 \\
 \\
 ENV SUMMARY="Red Hat CodeReady Workspaces - IntelliJ Plugin" \\\\ \\
     DESCRIPTION="Red Hat CodeReady Workspaces - IntelliJ Plugin" \\\\ \\
@@ -86,8 +86,8 @@ COPY . /tmp/assets/ \\
 |g' \\
 \\
 -e 's|^RUN yum install .*|RUN microdnf install -y yum \\
-RUN yum install -y tigervnc-server wget java-11-openjdk-devel which tar git \\
-RUN cd /tmp/assets \\&\\& yum localinstall -y *.noarch.rpm *.$(uname -m).rpm # fluxbox supervisor novnc|g' \\
+RUN yum install -y tigervnc-server wget java-11-openjdk-devel which tar git \\&\\& \\
+    cd /tmp/assets \\&\\& yum localinstall -y *.noarch.rpm *.$(uname -m).rpm # fluxbox supervisor novnc|g' \\
 \\
 -e 's|wget -qO- https://download.jetbrains.com/idea/|cat /tmp/assets/|g' \\
 \\
