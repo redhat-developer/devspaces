@@ -129,7 +129,7 @@ codeready-workspaces-theia \
 	else # for operator, inject latest CSV files w/ latest digests (CRW-833)
 		if [[ $d == "codeready-workspaces-operator" ]]; then
 			rsync -aPr ../containers_codeready-workspaces-operator-metadata/manifests/* ./manifests/
-			git add ./controller-manifests/
+			git add ./manifests/
 			git commit -s -m "[release] copy generated manifests/ content back to codeready-workspaces-operator before tagging" ./manifests/ || true
 			git push origin ${crw_repos_branch} || true
 		fi
