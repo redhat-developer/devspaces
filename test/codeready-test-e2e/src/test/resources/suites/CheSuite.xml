@@ -29,6 +29,10 @@
           <class name="com.redhat.codeready.selenium.workspaces.ProjectStateAfterRenameWorkspaceTest"/>
           <class name="com.redhat.codeready.selenium.workspaces.CheckStoppingWsByTimeoutTest"/>
           <class name="com.redhat.codeready.selenium.dashboard.AccountTest"/>
+          <class name="com.redhat.codeready.selenium.factory.CreateFactoryFromDevfileUrl"/>
+          <class name="com.redhat.codeready.selenium.factory.DirectUrlFactoryWithKeepDirectoryTest"/>
+          <class name="com.redhat.codeready.selenium.factory.DirectUrlFactoryWithRootFolderTest"/>
+          <class name="com.redhat.codeready.selenium.factory.DirectUrlFactoryWithSpecificBranchTest"/>
 
           <!-- Next tests can unexpectedly affect on other tests and so should be executed at the end -->
         </classes>
