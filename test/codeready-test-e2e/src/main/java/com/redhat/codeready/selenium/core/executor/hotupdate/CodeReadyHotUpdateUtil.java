@@ -33,7 +33,8 @@ public class CodeReadyHotUpdateUtil extends HotUpdateUtil {
   private static final String COMMAND_TO_GET_DEPLOYMENT_VERSION =
       "status | grep \"deployment #\" | awk 'NR == 1 {print $2}' | sed \"s/#//\"";
   private static final String UPDATE_COMMAND_TEMPLATE =
-      "patch deployment %s -p \"{\\\"spec\\\": {\\\"template\\\": {\\\"spec\\\":{\\\"terminationGracePeriodSeconds\\\":35}}}}\"";
+      "patch deployment codeready -p \"{\\\"spec\\\": {\\\"template\\\": {\\\"spec\\\":{\\\"terminationGracePeriodSeconds\\\":%s}}}}\"";
+  private static final String COMMAND_TO_GET_ROLLOUT_STATUS = "rollout status deployment/codeready";
 
   @Inject
   public CodeReadyHotUpdateUtil(
@@ -90,7 +91,9 @@ public class CodeReadyHotUpdateUtil extends HotUpdateUtil {
    */
   @Override
   public void executeMasterPodUpdateCommand() throws Exception {
-    openShiftCliCommandExecutor.execute(UPDATE_COMMAND_TEMPLATE);
+    int currentTerminationGracePeriod = getCurrentTerminationGracePeriod() + 1;
+    String updateCommand = String.format(UPDATE_COMMAND_TEMPLATE, currentTerminationGracePeriod);
+    openShiftCliCommandExecutor.execute(updateCommand);
   }
 
   /** Performs GET request to master pod API for checking its availability. */
@@ -121,5 +124,24 @@ public class CodeReadyHotUpdateUtil extends HotUpdateUtil {
   @Override
   public String getMasterPodName() {
     return "";
+  }
+
+  @Override
+  public String getRolloutStatus() {
+    try {
+      return openShiftCliCommandExecutor.execute(COMMAND_TO_GET_ROLLOUT_STATUS);
+    } catch (IOException ex) {
+      throw new RuntimeException(ex.getLocalizedMessage(), ex);
+    }
+  }
+
+  public int getCurrentTerminationGracePeriod() {
+    try {
+      return Integer.parseInt(
+          openShiftCliCommandExecutor.execute(
+              "get deployments/codeready -o jsonpath={..terminationGracePeriodSeconds}"));
+    } catch (IOException ex) {
+      throw new RuntimeException(ex.getLocalizedMessage(), ex);
+    }
   }
 }
