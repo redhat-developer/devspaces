@@ -48,8 +48,10 @@ def cloneRepo(String URL, String REPO_PATH, String BRANCH) {
   // Requires withCredentials() and bootstrap()
   if (!fileExists(REPO_PATH)) {
     if (URL.indexOf("pkgs.devel.redhat.com") == -1) {
-      def AUTH_URL_SHELL="https://\$GITHUB_TOKEN:x-oauth-basic@" + URL.minus("http://").minus("https://")
-      def AUTH_URL_GROOVY="https://$GITHUB_TOKEN:x-oauth-basic@" + URL.minus("http://").minus("https://")
+      // remove http(s) prefix, then trim any token@ prefix too
+      URL=URL - ~/http(s*):\/\// - ~/.*@/
+      def AUTH_URL_SHELL="https://\$GITHUB_TOKEN:x-oauth-basic@" + URL
+      def AUTH_URL_GROOVY="https://$GITHUB_TOKEN:x-oauth-basic@" + URL
       checkout([$class: 'GitSCM',
         branches: [[name: BRANCH]],
         doGenerateSubmoduleConfigurations: false,
