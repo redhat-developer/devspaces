@@ -48,7 +48,8 @@ def cloneRepo(String URL, String REPO_PATH, String BRANCH) {
   // Requires withCredentials() and bootstrap()
   if (!fileExists(REPO_PATH)) {
     if (URL.indexOf("pkgs.devel.redhat.com") == -1) {
-      def AUTH_URL="https://\$GITHUB_TOKEN:x-oauth-basic@" + URL.minus("http://").minus("https://")
+      def AUTH_URL_SHELL="https://\$GITHUB_TOKEN:x-oauth-basic@" + URL.minus("http://").minus("https://")
+      def AUTH_URL_GROOVY="https://$GITHUB_TOKEN:x-oauth-basic@" + URL.minus("http://").minus("https://")
       checkout([$class: 'GitSCM',
         branches: [[name: BRANCH]],
         doGenerateSubmoduleConfigurations: false,
@@ -59,7 +60,7 @@ def cloneRepo(String URL, String REPO_PATH, String BRANCH) {
           [$class: 'DisableRemotePoll']
         ],
         submoduleCfg: [],
-        userRemoteConfigs: [[url: AUTH_URL]]])
+        userRemoteConfigs: [[url: AUTH_URL_GROOVY]]])
       sh('''#!/bin/bash -xe
         cd ''' + REPO_PATH + '''
         git checkout --track origin/''' + BRANCH + ''' || true
@@ -69,7 +70,7 @@ def cloneRepo(String URL, String REPO_PATH, String BRANCH) {
         git config --global push.default matching
         # SOLVED :: Fatal: Could not read Username for "https://github.com", No such device or address :: https://github.com/github/hub/issues/1644
         git config --global hub.protocol https
-        git remote set-url origin ''' + AUTH_URL
+        git remote set-url origin ''' + AUTH_URL_SHELL
       )
     } else {
       sh('''#!/bin/bash -xe
