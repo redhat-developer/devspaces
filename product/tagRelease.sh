@@ -144,7 +144,7 @@ codeready-workspaces-theia \
 		# rsync -aPr ../containers_codeready-workspaces-operator-metadata/manifests/* ./manifests/
 
 		# CRW-1386 new way - use containerExtract.sh to get the live, published operator-metadata image and copy the manifests/ folder from there
-		rm -fr /tmp/registry.redhat.io-codeready-workspaces-crw-2-rhel8-operator-metadata-2.5*
+		rm -fr /tmp/registry.redhat.io-codeready-workspaces-crw-2-rhel8-operator-metadata-2.5* || true
 		"${SCRIPTPATH}"/containerExtract.sh registry.redhat.io/codeready-workspaces/crw-2-rhel8-operator-metadata:2.5
 		rsync -aPr /tmp/registry.redhat.io-codeready-workspaces-crw-2-rhel8-operator-metadata-2.5*/manifests/* ./manifests/
 
