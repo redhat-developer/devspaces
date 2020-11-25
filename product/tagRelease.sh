@@ -17,6 +17,7 @@ pduser=crw-build
 SOURCE_BRANCH="" # normally, use this script to create tags, not branches
 
 SCRIPT=$(readlink -f "$0"); SCRIPTPATH=$(dirname "$SCRIPT")
+CLEAN="false" #  if set true, delete existing folders and do fresh checkouts
 
 if [[ $# -lt 4 ]]; then
 	echo "
@@ -42,11 +43,15 @@ while [[ "$#" -gt 0 ]]; do
     '-ghtoken') GITHUB_TOKEN="$2"; shift 1;;
     '-pd') pkgs_devel_branch="$2"; shift 1;;
     '-pduser') pduser="$2"; shift 1;;
+	'--clean') CLEAN="true"; shift 0;; # if set true, delete existing folders and do fresh checkouts
   esac
   shift 1
 done
 
-rm -fr /tmp/tmp-checkouts || true
+if [[ ${CLEAN} == "true" ]]; then 
+	rm -fr /tmp/tmp-checkouts || true
+fi
+
 mkdir -p /tmp/tmp-checkouts
 cd /tmp/tmp-checkouts
 
