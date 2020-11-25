@@ -41,17 +41,18 @@ def installSkopeo(String CRW_VERSION)
     fi
     popd >/dev/null
     skopeo --version
-    ''')
+    '''
+  )
 }
 
 def cloneRepo(String URL, String REPO_PATH, String BRANCH) {
   // Requires withCredentials() and bootstrap()
-  if (!fileExists(REPO_PATH)) {
-    if (URL.indexOf("pkgs.devel.redhat.com") == -1) {
-      // remove http(s) prefix, then trim any token@ prefix too
-      URL=URL - ~/http(s*):\/\// - ~/.*@/
-      def AUTH_URL_SHELL="https://\$GITHUB_TOKEN:x-oauth-basic@" + URL
-      def AUTH_URL_GROOVY="https://$GITHUB_TOKEN:x-oauth-basic@" + URL
+  if (URL.indexOf("pkgs.devel.redhat.com") == -1) {
+    // remove http(s) prefix, then trim any token@ prefix too
+    URL=URL - ~/http(s*):\/\// - ~/.*@/
+    def AUTH_URL_SHELL="https://\$GITHUB_TOKEN:x-oauth-basic@" + URL
+    def AUTH_URL_GROOVY="https://$GITHUB_TOKEN:x-oauth-basic@" + URL
+    if (!fileExists(REPO_PATH)) {
       checkout([$class: 'GitSCM',
         branches: [[name: BRANCH]],
         doGenerateSubmoduleConfigurations: false,
@@ -63,26 +64,33 @@ def cloneRepo(String URL, String REPO_PATH, String BRANCH) {
         ],
         submoduleCfg: [],
         userRemoteConfigs: [[url: AUTH_URL_GROOVY]]])
-      sh('''#!/bin/bash -xe
-        cd ''' + REPO_PATH + '''
-        git checkout --track origin/''' + BRANCH + ''' || true
-        export GITHUB_TOKEN=''' + GITHUB_TOKEN + ''' # echo "''' + GITHUB_TOKEN + '''"
-        git config user.email "nickboldt+devstudio-release@gmail.com"
-        git config user.name "Red Hat Devstudio Release Bot"
-        git config --global push.default matching
-        # SOLVED :: Fatal: Could not read Username for "https://github.com", No such device or address :: https://github.com/github/hub/issues/1644
-        git config --global hub.protocol https
-        git remote set-url origin ''' + AUTH_URL_SHELL
-      )
-    } else {
+    }
+    sh('''#!/bin/bash -xe
+      cd ''' + REPO_PATH + '''
+      git checkout --track origin/''' + BRANCH + ''' || true
+      export GITHUB_TOKEN=''' + GITHUB_TOKEN + ''' # echo "''' + GITHUB_TOKEN + '''"
+      git config user.email "nickboldt+devstudio-release@gmail.com"
+      git config user.name "Red Hat Devstudio Release Bot"
+      git config --global push.default matching
+      # SOLVED :: Fatal: Could not read Username for "https://github.com", No such device or address :: https://github.com/github/hub/issues/1644
+      git config --global hub.protocol https
+      git remote set-url origin ''' + AUTH_URL_SHELL
+    )
+  } else {
+    if (!fileExists(REPO_PATH)) {
       sh('''#!/bin/bash -xe
         export KRB5CCNAME=/var/tmp/crw-build_ccache
-        git clone ''' + URL + ''' ''' + REPO_PATH + '''
+        git clone ''' + URL + ''' ''' + REPO_PATH
+      )
+    }
+    sh('''#!/bin/bash -xe
+        export KRB5CCNAME=/var/tmp/crw-build_ccache
         cd ''' + REPO_PATH + '''
         git checkout --track origin/''' + BRANCH + ''' || true
         git config user.email crw-build@REDHAT.COM
         git config user.name "CRW Build"
-        git config --global push.default matching''')
+        git config --global push.default matching'''
+      )
     }
   }
 }
@@ -93,13 +101,15 @@ def updateBaseImages(String REPO_PATH, String BRANCH, String FLAGS="") {
   if (!fileExists(updateBaseImages_bin)) {
     sh('''#!/bin/bash -xe
       curl -L -s -S https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/''' + BRANCH + '''/product/updateBaseImages.sh -o ''' + updateBaseImages_bin + '''
-      chmod +x ''' + updateBaseImages_bin)
+      chmod +x ''' + updateBaseImages_bin
+    )
   }
   sh('''#!/bin/bash -xe
     cd ''' + REPO_PATH + '''
     export GITHUB_TOKEN=''' + GITHUB_TOKEN + ''' # echo "''' + GITHUB_TOKEN + '''"
     export KRB5CCNAME=/var/tmp/crw-build_ccache
-    ''' + updateBaseImages_bin + ''' -b ''' + BRANCH + ''' ''' + FLAGS)
+    ''' + updateBaseImages_bin + ''' -b ''' + BRANCH + ''' ''' + FLAGS
+  )
 }
 
 def getLastCommitSHA(String REPO_PATH) {
@@ -140,7 +150,8 @@ User crw-build/codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com@REDH
     export KRB5CCNAME=/var/tmp/crw-build_ccache
     kinit "crw-build/codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com@REDHAT.COM" -kt ''' + CRW_KEYTAB + '''
     klist # verify working
-    ''')
+    '''
+  )
 }
 
 return this
