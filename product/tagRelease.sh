@@ -68,7 +68,7 @@ if [[ ${pkgs_devel_branch} ]] && [[ ${CRW_TAG} ]]; then
 	codeready-workspaces-plugin-intellij \
 	\
 	codeready-workspaces-plugin-java11-openj9 \
-	codeready-workspaces-plugin-java11  \
+	codeready-workspaces-plugin-java11 \
 	codeready-workspaces-plugin-java8-openj9 \
 	codeready-workspaces-plugin-java8 \
 	codeready-workspaces-plugin-kubernetes \
@@ -88,7 +88,7 @@ if [[ ${pkgs_devel_branch} ]] && [[ ${CRW_TAG} ]]; then
 	codeready-workspaces-traefik \
 	; do
 		echo; echo "== $d =="
-		if [[ ! -d ${d} ]]; then
+		if [[ ! -d containers_${d} ]]; then
 			git clone -b ${pkgs_devel_branch} ssh://${pduser}@pkgs.devel.redhat.com/containers/${d} containers_${d}
 			pushd containers_${d} >/dev/null || exit 1
 				export KRB5CCNAME=/var/tmp/${pduser}_ccache
@@ -119,7 +119,7 @@ codeready-workspaces-theia \
 ; do
 	echo; echo "== $d =="
 	if [[ ${SOURCE_BRANCH} ]]; then clone_branch=${SOURCE_BRANCH}; else clone_branch=${crw_repos_branch}; fi
-	if [[ ! -d ${d} ]]; then
+	if [[ ! -d projects_${d} ]]; then
 		git clone --depth 1 -b ${clone_branch} git@github.com:redhat-developer/${d}.git projects_${d}
 		pushd projects_${d} >/dev/null || exit 1
 			export GITHUB_TOKEN="${GITHUB_TOKEN}"
