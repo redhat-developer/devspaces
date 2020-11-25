@@ -80,16 +80,18 @@ codeready-workspaces-theia \
                     for (String d : projects.split(' |\\\\')) {
                         String project = d.trim()
                         if (project?.trim()) {
-                            String desc = "git clone -b ${MIDSTM_BRANCH} git@github.com:redhat-developer/${project}.git projects_${project}"
+                            String desc = "git clone -b ${MIDSTM_BRANCH} https://****:x-oauth-basic@github.com/redhat-developer/${project}.git projects_${project}"
                             currentBuild.description="${desc} ..."
                             println "##  ${desc}"
-                            util.cloneRepo("https://github.com/redhat-developer/${project}.git", "/tmp/tmp-checkouts/projects_${project}", MIDSTM_BRANCH)
+                            util.cloneRepo("https://${GITHUB_TOKEN}:x-oauth-basic@github.com/redhat-developer/${project}.git", "/tmp/tmp-checkouts/projects_${project}", MIDSTM_BRANCH)
                         }
                     }
 
                     currentBuild.description="Create ${CRW_TAG} tags in ${MIDSTM_BRANCH} ..."
                     // run tagRelease script to tag repos, but use previously checked out code from the above steps
-                    sh ("./tagRelease.sh -t ${CRW_TAG} -gh ${MIDSTM_BRANCH} -ghtoken ${GITHUB_TOKEN} -pd ${MIDSTM_BRANCH} -pduser ${pduser}")
+                    sh ('''#!/bin/bash -xe
+                    ./tagRelease.sh -t ''' + CRW_TAG + ''' -gh ''' + MIDSTM_BRANCH + ''' -ghtoken ''' + GITHUB_TOKEN + ''' -pd ''' + MIDSTM_BRANCH + ''' -pduser + ''' + pduser 
+                    )
                     currentBuild.description="Created ${CRW_TAG} tags"
                 } //with 
             } // wrap
