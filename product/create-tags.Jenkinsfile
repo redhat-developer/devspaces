@@ -2,6 +2,7 @@
 
 // PARAMETERS for this pipeline:
 // def MIDSTM_BRANCH = "crw-2.5-rhel-8" // redhat-developer/codeready-workspaces branch to use as source of the new branches
+// def FUTURE_BRANCH = "crw-2.6-rhel-8" // redhat-developer/codeready-workspaces branch to use as source of the scripts run
 // def CRW_TAG = "2.5.0" // tag to create
 
 def buildNode = "rhel7-releng||rhel7-32gb||rhel7-16gb||rhel7-8gb" // node label
@@ -9,11 +10,11 @@ timeout(120) {
     node("${buildNode}"){ 
         stage("Create tags") {
             wrap([$class: 'TimestamperBuildWrapper']) {
-                sh('curl -sSLO https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/'+ MIDSTM_BRANCH + '/product/util.groovy')
+                sh('curl -sSLO https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/'+ FUTURE_BRANCH + '/product/util.groovy')
                 def util = load "${WORKSPACE}/util.groovy"
                 cleanWs()
-                sh('curl -sSLO https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/'+ MIDSTM_BRANCH + '/product/tagRelease.sh && chmod +x tagRelease.sh')
-                sh('curl -sSLO https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/'+ MIDSTM_BRANCH + '/product/containerExtract.sh && chmod +x containerExtract.sh')
+                sh('curl -sSLO https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/'+ FUTURE_BRANCH + '/product/tagRelease.sh && chmod +x tagRelease.sh')
+                sh('curl -sSLO https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/'+ FUTURE_BRANCH + '/product/containerExtract.sh && chmod +x containerExtract.sh')
                 withCredentials([string(credentialsId:'devstudio-release.token', variable: 'GITHUB_TOKEN'), file(credentialsId: 'crw-build.keytab', variable: 'CRW_KEYTAB')]) {
                     util.bootstrap(CRW_KEYTAB)
 
