@@ -16,6 +16,8 @@ pkgs_devel_branch=crw-2.5-rhel-8
 pduser=crw-build
 SOURCE_BRANCH="" # normally, use this script to create tags, not branches
 
+SCRIPT=$(readlink -f "$0"); SCRIPTPATH=$(dirname "$SCRIPT")
+
 if [[ $# -lt 4 ]]; then
 	echo "
 To create tags:
@@ -128,7 +130,14 @@ codeready-workspaces-theia \
 		git push origin ${crw_repos_branch} || true
 	else # for operator, inject latest CSV files w/ latest digests (CRW-833)
 		if [[ $d == "codeready-workspaces-operator" ]]; then
-			rsync -aPr ../containers_codeready-workspaces-operator-metadata/manifests/* ./manifests/
+			# CRW-1386 OLD WAY, end up with internal repo refs in the published CSV
+			# rsync -aPr ../containers_codeready-workspaces-operator-metadata/manifests/* ./manifests/
+
+			# CRW-1386 new way - use containerExtract.sh to get the live, published operator-metadata image and copy the manifests/ folder from there
+			rm -fr /tmp/registry.redhat.io-codeready-workspaces-crw-2-rhel8-operator-metadata-2.5*
+			"${SCRIPTPATH}"/containerExtract.sh registry.redhat.io/codeready-workspaces/crw-2-rhel8-operator-metadata:2.5
+			rsync -aPr /tmp/registry.redhat.io-codeready-workspaces-crw-2-rhel8-operator-metadata-2.5*/manifests/* ./manifests/
+
 			git add ./manifests/
 			git commit -s -m "[release] copy generated manifests/ content back to codeready-workspaces-operator before tagging" ./manifests/ || true
 			git push origin ${crw_repos_branch} || true
