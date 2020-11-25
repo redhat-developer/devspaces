@@ -90,8 +90,7 @@ def cloneRepo(String URL, String REPO_PATH, String BRANCH) {
         git config user.email crw-build@REDHAT.COM
         git config user.name "CRW Build"
         git config --global push.default matching'''
-      )
-    }
+    )
   }
 }
 
