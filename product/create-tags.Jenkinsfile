@@ -79,7 +79,7 @@ codeready-workspaces-theia \
                             String desc = "git clone -b ${MIDSTM_BRANCH} git@github.com:redhat-developer/${project}.git projects_${project}"
                             currentBuild.description="${desc} ..."
                             println "##  ${desc}"
-                            util.cloneRepo("https://${GITHUB_TOKEN}:x-oauth-basic@github.com/redhat-developer/${project}.git", "/tmp/tmp-checkouts/projects_${project}", MIDSTM_BRANCH)
+                            util.cloneRepo("https://github.com/redhat-developer/${project}.git", "/tmp/tmp-checkouts/projects_${project}", MIDSTM_BRANCH)
                         }
                     }
 
