@@ -59,7 +59,7 @@ def cloneRepo(String URL, String REPO_PATH, String BRANCH) {
           [$class: 'DisableRemotePoll']
         ],
         submoduleCfg: [],
-        userRemoteConfigs: [[url: URL]]])
+        userRemoteConfigs: [[url: AUTH_URL]]])
       sh('''#!/bin/bash -xe
         cd ''' + REPO_PATH + '''
         git checkout --track origin/''' + BRANCH + ''' || true
