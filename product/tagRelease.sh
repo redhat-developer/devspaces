@@ -88,9 +88,9 @@ if [[ ${pkgs_devel_branch} ]] && [[ ${CRW_TAG} ]]; then
 	codeready-workspaces-traefik \
 	; do
 		echo; echo "== $d =="
-		if [[ ! -d containers_${d} ]]; then
+		if [[ ! -d /tmp/tmp-checkouts/containers_${d} ]]; then
 			git clone -b ${pkgs_devel_branch} ssh://${pduser}@pkgs.devel.redhat.com/containers/${d} containers_${d}
-			pushd containers_${d} >/dev/null || exit 1
+			pushd /tmp/tmp-checkouts/containers_${d} >/dev/null || exit 1
 				export KRB5CCNAME=/var/tmp/${pduser}_ccache
 				git config user.email ${pduser}@REDHAT.COM
 				git config user.name "CRW Build"
@@ -100,7 +100,7 @@ if [[ ${pkgs_devel_branch} ]] && [[ ${CRW_TAG} ]]; then
 				git pull -q
 			popd >/dev/null || exit 1
 		fi
-		pushd containers_${d} >/dev/null || exit 1
+		pushd /tmp/tmp-checkouts/containers_${d} >/dev/null || exit 1
 			# push new tag (no op if already exists)
 			git tag -a ${CRW_TAG} -m "${CRW_TAG}" || true
 			git push origin ${CRW_TAG} || true
@@ -119,9 +119,9 @@ codeready-workspaces-theia \
 ; do
 	echo; echo "== $d =="
 	if [[ ${SOURCE_BRANCH} ]]; then clone_branch=${SOURCE_BRANCH}; else clone_branch=${crw_repos_branch}; fi
-	if [[ ! -d projects_${d} ]]; then
+	if [[ ! -d /tmp/tmp-checkouts/projects_${d} ]]; then
 		git clone --depth 1 -b ${clone_branch} git@github.com:redhat-developer/${d}.git projects_${d}
-		pushd projects_${d} >/dev/null || exit 1
+		pushd /tmp/tmp-checkouts/projects_${d} >/dev/null || exit 1
 			export GITHUB_TOKEN="${GITHUB_TOKEN}"
 			git config user.email "nickboldt+devstudio-release@gmail.com"
 			git config user.name "Red Hat Devstudio Release Bot"
@@ -133,7 +133,7 @@ codeready-workspaces-theia \
 			git pull -q
 		popd >/dev/null || exit 1
 	fi
-	pushd projects_${d} >/dev/null || exit 1
+	pushd /tmp/tmp-checkouts/projects_${d} >/dev/null || exit 1
 	if [[ $d == "codeready-workspaces-operator" ]]; then
 		# CRW-1386 OLD WAY, end up with internal repo refs in the published CSV
 		# rsync -aPr ../containers_codeready-workspaces-operator-metadata/manifests/* ./manifests/
