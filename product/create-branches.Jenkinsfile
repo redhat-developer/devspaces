@@ -13,11 +13,17 @@ timeout(120) {
                 def util = load "${WORKSPACE}/util.groovy"
                 cleanWs()
                 sh('curl -sSLO https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/'+ MIDSTM_BRANCH + '/product/tagRelease.sh && chmod +x tagRelease.sh')
+                sh('curl -sSLO https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/'+ MIDSTM_BRANCH + '/product/containerExtract.sh && chmod +x containerExtract.sh')
                 withCredentials([string(credentialsId:'devstudio-release.token', variable: 'GITHUB_TOKEN'), file(credentialsId: 'crw-build.keytab', variable: 'CRW_KEYTAB')]) {
                     util.bootstrap(CRW_KEYTAB)
-                    currentBuild.description="Create ${FUTURE_BRANCH} from ${MIDSTM_BRANCH} ..."
+
+                    // TODO check if this works / is this needed?
+                    // println "##  Clone github.com/redhat-developer/codeready-workspaces-operator.git"
+                    // util.cloneRepo("https://github.com/redhat-developer/codeready-workspaces-operator.git", "/tmp/tmp-checkouts/sources/projects_codeready-workspaces-operator", MIDSTM_BRANCH)
+
+                    currentBuild.description="Create ${FUTURE_BRANCH} branch from ${MIDSTM_BRANCH} ..."
                     sh ('''
-                        ./tagRelease.sh --branchfrom ''' + MIDSTM_BRANCH + ''' -gh ''' + FUTURE_BRANCH + ''' -ghtoken ''' + GITHUB_TOKEN
+                    ./tagRelease.sh --branchfrom ''' + MIDSTM_BRANCH + ''' -gh ''' + FUTURE_BRANCH + ''' -ghtoken ''' + GITHUB_TOKEN
                     )
                     currentBuild.description="Created ${FUTURE_BRANCH} branches"
                 } //with 
