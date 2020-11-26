@@ -7,7 +7,7 @@ import groovy.transform.Field
 
 // TODO source from eclipse/che-devfile-registry too
 
-@Field String MIDSTM_BRANCH = "crw-2.5-rhel-8" // branch of GH and pkgs.devel repos to sync commits
+@Field String MIDSTM_BRANCH = "crw-2.6-rhel-8" // branch of GH and pkgs.devel repos to sync commits
 
 def MIDSTM_REPO = "redhat-developer/codeready-workspaces" //source repo from which to find and sync commits to pkgs.devel repo
 def DWNSTM_REPO = "containers/codeready-workspaces-devfileregistry" // dist-git repo to use as target
@@ -19,87 +19,52 @@ def USE_DIGESTS = "true" // if true, use @sha256:digest in registry; if false, u
 
 def OLD_SHA=""
 
-@Field String CRW_VERSION_F = ""
-def String getCrwVersion(String MIDSTM_BRANCH) {
-  if (CRW_VERSION_F.equals("")) {
-    CRW_VERSION_F = sh(script: '''#!/bin/bash -xe
-    curl -sSLo- https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/''' + MIDSTM_BRANCH + '''/dependencies/VERSION''', returnStdout: true).trim()
-  }
-  return CRW_VERSION_F
-}
-
-def installSkopeo(String CRW_VERSION)
-{
-sh '''#!/bin/bash -xe
-pushd /tmp >/dev/null
-# remove any older versions
-sudo yum remove -y skopeo || true
-# install from @kcrane build
-if [[ ! -x /usr/local/bin/skopeo ]]; then
-    sudo curl -sSLO "https://codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/crw-deprecated_''' + CRW_VERSION + '''/lastSuccessfulBuild/artifact/codeready-workspaces-deprecated/skopeo/target/skopeo-$(uname -m).tar.gz"
-fi
-if [[ -f /tmp/skopeo-$(uname -m).tar.gz ]]; then 
-    sudo tar xzf /tmp/skopeo-$(uname -m).tar.gz --overwrite -C /usr/local/bin/
-    sudo chmod 755 /usr/local/bin/skopeo
-    sudo rm -f /tmp/skopeo-$(uname -m).tar.gz
-fi
-popd >/dev/null
-skopeo --version
-'''
-}
-
 def buildNode = "rhel7-releng" // node label
 timeout(120) {
 	node("${buildNode}"){ stage "Sync repos"
     wrap([$class: 'TimestamperBuildWrapper']) {
+      sh('curl -sSLO https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/' + MIDSTM_BRANCH + '/product/util.groovy')
+      def util = load "${WORKSPACE}/util.groovy"
       cleanWs()
-      CRW_VERSION = getCrwVersion(MIDSTM_BRANCH)
+      CRW_VERSION = util.getCrwVersion(MIDSTM_BRANCH)
       println "CRW_VERSION = '" + CRW_VERSION + "'"
-      installSkopeo(CRW_VERSION)
+      util.installSkopeo(CRW_VERSION)
       withCredentials([string(credentialsId:'devstudio-release.token', variable: 'GITHUB_TOKEN'), 
         file(credentialsId: 'crw-build.keytab', variable: 'CRW_KEYTAB')]) {
-      checkout([$class: 'GitSCM',
-        branches: [[name: "${MIDSTM_BRANCH}"]],
-        doGenerateSubmoduleConfigurations: false,
-        credentialsId: 'devstudio-release',
-        poll: true,
-        extensions: [
-          [$class: 'RelativeTargetDirectory', relativeTargetDir: "targetmid"],
-          [$class: 'PathRestriction', excludedRegions: '', includedRegions: 'dependencies/che-devfile-registry/.*'],
-          [$class: 'DisableRemotePoll']
-        ],
-        submoduleCfg: [],
-        userRemoteConfigs: [[url: "https://github.com/${MIDSTM_REPO}.git"]]])
+          util.bootstrap(CRW_KEYTAB)
 
-  	 	def BOOTSTRAP = '''#!/bin/bash -xe
+          println "########################################################################################################"
+          println "##  Clone and update github.com/${MIDSTM_REPO}.git"
+          println "########################################################################################################"
+          SOURCE_DIR="${WORKSPACE}/targetmid/dependencies/che-devfile-registry/"
+          util.cloneRepo("https://github.com/${MIDSTM_REPO}.git", "${WORKSPACE}/targetmid", MIDSTM_BRANCH)
+          util.updateBaseImages(SOURCE_DIR + "build/dockerfiles", MIDSTM_BRANCH, "-f rhel.Dockerfile")
+     # TODO hasChanged=1 when updateBaseImages changes
+          SOURCE_SHA = util.getLastCommitSHA("${WORKSPACE}/sources")
+          println "Got SOURCE_SHA in sources folder: " + SOURCE_SHA
 
-# bootstrapping: if keytab is lost, upload to
-# https://codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/credentials/store/system/domain/_/
-# then set Use secret text above and set Bindings > Variable (path to the file) as ''' + CRW_KEYTAB + '''
-chmod 700 ''' + CRW_KEYTAB + ''' && chown ''' + USER + ''' ''' + CRW_KEYTAB + '''
-# create .k5login file
-echo "crw-build/codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com@REDHAT.COM" > ~/.k5login
-chmod 644 ~/.k5login && chown ''' + USER + ''' ~/.k5login
- echo "pkgs.devel.redhat.com,10.19.208.80 ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAplqWKs26qsoaTxvWn3DFcdbiBxqRLhFngGiMYhbudnAj4li9/VwAJqLm1M6YfjOoJrj9dlmuXhNzkSzvyoQODaRgsjCG5FaRjuN8CSM/y+glgCYsWX1HFZSnAasLDuW0ifNLPR2RBkmWx61QKq+TxFDjASBbBywtupJcCsA5ktkjLILS+1eWndPJeSUJiOtzhoN8KIigkYveHSetnxauxv1abqwQTk5PmxRgRt20kZEFSRqZOJUlcl85sZYzNC/G7mneptJtHlcNrPgImuOdus5CW+7W49Z/1xqqWI/iRjwipgEMGusPMlSzdxDX4JzIx6R53pDpAwSAQVGDz4F9eQ==
-" >> ~/.ssh/known_hosts
+          println "########################################################################################################"
+          println "##  Sync ${SYNC_REPOS[i]} to pkgs.devel"
+          println "########################################################################################################"
+          util.cloneRepo("ssh://crw-build@pkgs.devel.redhat.com/${DWNSTM_REPO}", "${WORKSPACE}/targetdwn", DWNSTM_BRANCH)
 
-ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts
-
-# see https://mojo.redhat.com/docs/DOC-1071739
-if [[ -f ~/.ssh/config ]]; then mv -f ~/.ssh/config{,.BAK}; fi
-echo "
-GSSAPIAuthentication yes
-GSSAPIDelegateCredentials yes
-
-Host pkgs.devel.redhat.com
-User crw-build/codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com@REDHAT.COM
-" > ~/.ssh/config
-chmod 600 ~/.ssh/config
-
-# initialize kerberos
-export KRB5CCNAME=/var/tmp/crw-build_ccache
-kinit "crw-build/codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com@REDHAT.COM" -kt ''' + CRW_KEYTAB + '''
-klist # verify working
+          sh('''#!/bin/bash -xe
+            # rsync files in github to dist-git
+            SOURCEDIR="''' + SOURCE_DIR + '''"
+            SYNC_FILES="arbitrary-users-patch build devfiles images .gitignore .htaccess LICENSE README.md VERSION"
+            for d in ${SYNC_FILES}; do
+              if [[ -f ${SOURCEDIR}/${d} ]]; then
+                rsync -azrlt ${SOURCEDIR}/${d} ${WORKSPACE}/targetdwn/${d}
+              elif [[ -d ${SOURCEDIR}/${d} ]]; then
+                # copy over the dir contents
+                rsync -azrlt ${SOURCEDIR}/${d}/* ${WORKSPACE}/targetdwn/${d}/
+                # sync the directory and delete from targetdwn if deleted from source
+                rsync -azrlt --delete ${SOURCEDIR}/${d}/ ${WORKSPACE}/targetdwn/${d}/
+              else
+                echo "[WARN] Could not find ${SOURCEDIR}/${d} to sync to ${WORKSPACE}/targetdwn/${d}"
+              fi
+            done
+          ''')
 
 hasChanged=0
 
