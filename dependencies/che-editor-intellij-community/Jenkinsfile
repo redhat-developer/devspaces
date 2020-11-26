@@ -11,8 +11,8 @@ def DWNSTM_REPO = "redhat-developer/codeready-workspaces-images" // repo to use 
 def SYNC_REPO = "codeready-workspaces-plugin-intellij"
 
 // NOTE: must create branches manually
-String SOURCE_BRANCH = "crw-2.5-rhel-8" // upstream source repo branch, eg., crw-2.5-rhel-8 from fork 
-String DWNSTM_BRANCH = "crw-2.5-rhel-8" // target branch, eg., crw-2.5-rhel-8
+String SOURCE_BRANCH = "crw-2.6-rhel-8" // upstream source repo branch, eg., crw-2.5-rhel-8 from fork 
+String DWNSTM_BRANCH = SOURCE_BRANCH // target branch, eg., crw-2.5-rhel-8
 
 def OLD_SHA=""
 def NEW_SHA=""
