@@ -1,7 +1,7 @@
 apiVersion: v2
 publisher: redhat
 name: vscode-openshift-connector
-version: 0.2.0
+version: 0.1.5
 type: VS Code extension
 displayName: OpenShift Connector
 title: OpenShift Connector
@@ -16,7 +16,7 @@ spec:
       name: "vscode-openshift-connector"
       memoryLimit: "1500Mi"
   extensions:
-    - https://download.jboss.org/jbosstools/vscode/3rdparty/vscode-openshift-tools/vscode-openshift-connector-0.2.0.vsix
+    - https://download.jboss.org/jbosstools/vscode/3rdparty/vscode-openshift-tools/vscode-openshift-connector-0.1.5.vsix
     - https://download.jboss.org/jbosstools/vscode/3rdparty/vscode-kubernetes-tools/vscode-kubernetes-tools-1.1.0.vsix
     - https://download.jboss.org/jbosstools/vscode/3rdparty/vscode-yaml/vscode-yaml-0.8.0.vsix
     - https://github.com/che-incubator/che-theia-openshift-auth/releases/download/0.0.1/che-openshift-authentication-plugin-0.0.1.vsix
