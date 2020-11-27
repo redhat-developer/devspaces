@@ -150,7 +150,7 @@ LABEL summary="$SUMMARY" \\\r
           fi
         ''')
         NEW_SHA = util.getLastCommitSHA("${WORKSPACE}/targetdwn")
-        if (OLD_SHA != SOURCE_SHA) { HAS_CHANGED="true" }
+        if (OLD_SHA != NEW_SHA) { HAS_CHANGED="true" }
 
         println "########################################################################################################"
         println "##  Update the tarballs"
