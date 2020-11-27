@@ -238,8 +238,7 @@ LABEL summary="$SUMMARY" \\\r
           sudo rm -fr /tmp/root-local /tmp/root-local-before /tmp/''' + QUAY_PROJECT + '''-resources /tmp/''' + QUAY_PROJECT + '''-resources-before
         ''')
         NEW_SHA = util.getLastCommitSHA("${WORKSPACE}/targetdwn")
-        if (OLD_SHA != SOURCE_SHA) { HAS_CHANGED="true" }
-
+        if (OLD_SHA != NEW_SHA) { HAS_CHANGED="true" }
 
         println "########################################################################################################"
         println "##  Container Build"

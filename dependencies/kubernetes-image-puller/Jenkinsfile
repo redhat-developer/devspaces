@@ -10,184 +10,75 @@ def DWNSTM_REPO = "containers/codeready-workspaces-imagepuller" // dist-git repo
 
 // NOTE: must create branches manually
 @Field String SOURCE_BRANCH = "7.20.x" // upstream source repo branch from which to find and sync commits to pkgs.devel repo
-@Field String DWNSTM_BRANCH = "crw-2.5-rhel-8" // target branch in dist-git repo, eg., crw-2.5-rhel-8
+@Field String DWNSTM_BRANCH = "crw-2.6-rhel-8" // target branch in dist-git repo, eg., crw-2.5-rhel-8
 def SCRATCH = "false"
 def PUSH_TO_QUAY = "true"
 def QUAY_PROJECT = "imagepuller" // also used for the Brew dockerfile params
 def EMAIL_BODY = ""
 def OLD_SHA=""
-
-@Field String CRW_VERSION_F = ""
-def String getCrwVersion(String MIDSTM_BRANCH) {
-  if (CRW_VERSION_F.equals("")) {
-    CRW_VERSION_F = sh(script: '''#!/bin/bash -xe
-    curl -sSLo- https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/''' + MIDSTM_BRANCH + '''/dependencies/VERSION''', returnStdout: true).trim()
-  }
-  return CRW_VERSION_F
-}
-
-def installSkopeo(String CRW_VERSION)
-{
-sh '''#!/bin/bash -xe
-pushd /tmp >/dev/null
-# remove any older versions
-sudo yum remove -y skopeo || true
-# install from @kcrane build
-if [[ ! -x /usr/local/bin/skopeo ]]; then
-    sudo curl -sSLO "https://codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/crw-deprecated_''' + CRW_VERSION + '''/lastSuccessfulBuild/artifact/codeready-workspaces-deprecated/skopeo/target/skopeo-$(uname -m).tar.gz"
-fi
-if [[ -f /tmp/skopeo-$(uname -m).tar.gz ]]; then 
-    sudo tar xzf /tmp/skopeo-$(uname -m).tar.gz --overwrite -C /usr/local/bin/
-    sudo chmod 755 /usr/local/bin/skopeo
-    sudo rm -f /tmp/skopeo-$(uname -m).tar.gz
-fi
-popd >/dev/null
-skopeo --version
-'''
-}
+def SYNC_FILES = "cfg cmd deploy docker e2e hack pkg utils dev-guide.adoc go.mod go.sum LICENSE Makefile README.md"
 
 def buildNode = "rhel7-releng" // node label
 timeout(120) {
 	node("${buildNode}"){ stage "Sync repos"
     wrap([$class: 'TimestamperBuildWrapper']) {
+      sh('curl -sSLO https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/' + DWNSTM_BRANCH + '/product/util.groovy')
+      def util = load "${WORKSPACE}/util.groovy"
 		  cleanWs()
-      CRW_VERSION = getCrwVersion(DWNSTM_BRANCH)
+      CRW_VERSION = util.getCrwVersion(DWNSTM_BRANCH)
       println "CRW_VERSION = '" + CRW_VERSION + "'"
-      installSkopeo(CRW_VERSION)
-      withCredentials([string(credentialsId:'devstudio-release.token', variable: 'GITHUB_TOKEN'), 
-      file(credentialsId: 'crw-build.keytab', variable: 'CRW_KEYTAB')]) {
-      checkout([$class: 'GitSCM',
-        branches: [[name: "${SOURCE_BRANCH}"]],
-        doGenerateSubmoduleConfigurations: false,
-        credentialsId: 'devstudio-release',
-        poll: true,
-        extensions: [
-          [$class: 'RelativeTargetDirectory', relativeTargetDir: "sources"],
-          [$class: 'PathRestriction', excludedRegions: '', includedRegions: 'dependencies/kubernetes-image-puller/.*'],
-          [$class: 'DisableRemotePoll']
-        ],
-        submoduleCfg: [],
-        userRemoteConfigs: [[url: "https://github.com/${SOURCE_REPO}.git"]]])
+      util.installSkopeo("2.5") // (CRW_VERSION)
+      withCredentials([string(credentialsId:'devstudio-release.token', variable: 'GITHUB_TOKEN'),
+          file(credentialsId: 'crw-build.keytab', variable: 'CRW_KEYTAB')]) {
+        util.bootstrap(CRW_KEYTAB)
 
-        def BOOTSTRAP = '''#!/bin/bash -xe
+        println "########################################################################################################"
+        println "##  Clone and update github.com/${SOURCE_REPO}.git"
+        println "########################################################################################################"
+        util.cloneRepo("https://github.com/${SOURCE_REPO}.git", "${WORKSPACE}/sources", SOURCE_BRANCH)
+        SOURCE_SHA = util.getLastCommitSHA("${WORKSPACE}/sources")
 
-# bootstrapping: if keytab is lost, upload to
-# https://codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/credentials/store/system/domain/_/
-# then set Use secret text above and set Bindings > Variable (path to the file) as ''' + CRW_KEYTAB + '''
-chmod 700 ''' + CRW_KEYTAB + ''' && chown ''' + USER + ''' ''' + CRW_KEYTAB + '''
-# create .k5login file
-echo "crw-build/codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com@REDHAT.COM" > ~/.k5login
-chmod 644 ~/.k5login && chown ''' + USER + ''' ~/.k5login
- echo "pkgs.devel.redhat.com,10.19.208.80 ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAplqWKs26qsoaTxvWn3DFcdbiBxqRLhFngGiMYhbudnAj4li9/VwAJqLm1M6YfjOoJrj9dlmuXhNzkSzvyoQODaRgsjCG5FaRjuN8CSM/y+glgCYsWX1HFZSnAasLDuW0ifNLPR2RBkmWx61QKq+TxFDjASBbBywtupJcCsA5ktkjLILS+1eWndPJeSUJiOtzhoN8KIigkYveHSetnxauxv1abqwQTk5PmxRgRt20kZEFSRqZOJUlcl85sZYzNC/G7mneptJtHlcNrPgImuOdus5CW+7W49Z/1xqqWI/iRjwipgEMGusPMlSzdxDX4JzIx6R53pDpAwSAQVGDz4F9eQ==
-" >> ~/.ssh/known_hosts
+        // can't yet generate a PR against eclipse/che-* repos, and can't push directly
+        // so check for a new base image but DO NOT commit/push/pull-request
+        //TODO updateBaseImages should use SOURCE_BRANCH, but curl from CRW_VERSION
+        util.updateBaseImages("${WORKSPACE}/sources", SOURCE_BRANCH, "-f Dockerfile --nocommit")
 
-ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts
+        println "########################################################################################################"
+        println "##  Sync ${QUAY_PROJECT} to pkgs.devel"
+        println "########################################################################################################"
+        util.cloneRepo("ssh://crw-build@pkgs.devel.redhat.com/${DWNSTM_REPO}", "${WORKSPACE}/targetdwn", DWNSTM_BRANCH)
+        OLD_SHA = util.getLastCommitSHA("${WORKSPACE}/targetdwn")
+        println "Got OLD_SHA in targetdwn folder: " + OLD_SHA
 
-# see https://mojo.redhat.com/docs/DOC-1071739
-if [[ -f ~/.ssh/config ]]; then mv -f ~/.ssh/config{,.BAK}; fi
-echo "
-GSSAPIAuthentication yes
-GSSAPIDelegateCredentials yes
+        // rsync files in github to dist-git
+        sh('''#!/bin/bash -xe
+          SYNC_FILES="''' + SYNC_FILES + '''"
+          for d in ${SYNC_FILES}; do
+            if [[ -f ${WORKSPACE}/sources/${d} ]]; then
+              rsync -zrlt ${WORKSPACE}/sources/${d} ${WORKSPACE}/targetdwn/${d}
+            elif [[ -d ${WORKSPACE}/sources/${d} ]]; then
+              # copy over the files
+              rsync -zrlt ${WORKSPACE}/sources/${d}/* ${WORKSPACE}/targetdwn/${d}/
+              # sync the directory and delete from targetdwn if deleted from source
+              rsync -zrlt --delete ${WORKSPACE}/sources/${d}/ ${WORKSPACE}/targetdwn/${d}/
+            fi
+          done
+        ''')
 
-Host pkgs.devel.redhat.com
-User crw-build/codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com@REDHAT.COM
-" > ~/.ssh/config
-chmod 600 ~/.ssh/config
+        sh('''#!/bin/bash -xe
+          cp -f ${WORKSPACE}/sources/docker/Dockerfile ${WORKSPACE}/targetdwn/Dockerfile
+          CRW_VERSION="''' + CRW_VERSION_F + '''"
+          # apply patches to transform Che upstream to pkgs.devel version
+          sed -i ${WORKSPACE}/targetdwn/Dockerfile --regexp-extended \
+            `# Replace ubi8 with rhel8 version` \
+            -e "s#ubi8/go-toolset#rhel8/go-toolset#g" \
+            `# more replacements` \
+            -e "s#FROM registry.redhat.io/#FROM #g" \
+            -e "s#FROM registry.access.redhat.com/#FROM #g" \
+            -e 's|ARG BOOTSTRAP=.*|ARG BOOTSTRAP=false|' \
+            -e 's|^# *(COPY resources.tgz .+)|\\1|' \
 
-# initialize kerberos
-export KRB5CCNAME=/var/tmp/crw-build_ccache
-kinit "crw-build/codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com@REDHAT.COM" -kt ''' + CRW_KEYTAB + '''
-klist # verify working
-
-hasChanged=0
-
-SOURCEDOCKERFILE=${WORKSPACE}/sources/docker/Dockerfile
-
-# REQUIRE: skopeo
-curl -L -s -S https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/''' + DWNSTM_BRANCH + '''/product/updateBaseImages.sh -o /tmp/updateBaseImages.sh
-chmod +x /tmp/updateBaseImages.sh
-cd ${WORKSPACE}/sources
-  git checkout --track origin/''' + SOURCE_BRANCH + ''' || true
-  export GITHUB_TOKEN=''' + GITHUB_TOKEN + ''' # echo "''' + GITHUB_TOKEN + '''"
-  git config user.email "nickboldt+devstudio-release@gmail.com"
-  git config user.name "Red Hat Devstudio Release Bot"
-  git config --global push.default matching
-  SOURCE_SHA=$(git rev-parse HEAD) # echo ${SOURCE_SHA:0:8}
-
-  # can't yet generate a PR against eclipse/che-* repos, and can't push directly
-  # so check for a new base image but DO NOT commit/push/pull-request
-	/tmp/updateBaseImages.sh -b ''' + SOURCE_BRANCH + ''' -f ${SOURCEDOCKERFILE##*/} --nocommit
-
-  # TEST CHANGES
-  # TODO move this out of bootstrap string so we don't add the same testchanges string 3 times
-  # echo testchanges >> ${SOURCEDOCKERFILE}
-
-  git diff
-
-  patch=$(git diff)
-  body="Run this script in a repository directory to generate a pull request:
-
-  git apply <(echo $patch)
-  "
-
-  echo $body
-
-  '''
-//   sh BOOTSTRAP
-//   emailext(
-//     body: 'no body',
-//     to: 'mkuznets@redhat.com',
-//     subject: 'Kubernetes image puller test mail'
-//   )
-  sh BOOTSTRAP +'''
-cd ..
-
-# fetch sources to be updated
-if [[ ! -d ${WORKSPACE}/targetdwn ]]; then git clone ssh://crw-build@pkgs.devel.redhat.com/''' + DWNSTM_REPO + ''' targetdwn; fi
-cd ${WORKSPACE}/targetdwn
-git checkout --track origin/''' + DWNSTM_BRANCH + ''' || true
-git config user.email crw-build@REDHAT.COM
-git config user.name "CRW Build"
-git config --global push.default matching
-cd ..
-
-'''
-      sh BOOTSTRAP
-
-      OLD_SHA = sh(script: '''#!/bin/bash -xe
-      cd ${WORKSPACE}/targetdwn; git rev-parse HEAD
-      ''', returnStdout: true)
-      println "Got OLD_SHA in targetdwn folder: " + OLD_SHA
-
-      sh BOOTSTRAP + '''
-
-# rsync files in github to dist-git
-SYNC_FILES="cfg cmd deploy docker e2e hack pkg utils dev-guide.adoc go.mod go.sum LICENSE Makefile README.md"
-for d in ${SYNC_FILES}; do
-  if [[ -f ${WORKSPACE}/sources/${d} ]]; then
-    rsync -zrlt ${WORKSPACE}/sources/${d} ${WORKSPACE}/targetdwn/${d}
-  elif [[ -d ${WORKSPACE}/sources/${d} ]]; then
-    # copy over the files
-    rsync -zrlt ${WORKSPACE}/sources/${d}/* ${WORKSPACE}/targetdwn/${d}/
-    # sync the directory and delete from targetdwn if deleted from source
-    rsync -zrlt --delete ${WORKSPACE}/sources/${d}/ ${WORKSPACE}/targetdwn/${d}/
-  fi
-done
-
-cp -f ${SOURCEDOCKERFILE} ${WORKSPACE}/targetdwn/Dockerfile
-
-CRW_VERSION="''' + CRW_VERSION_F + '''"
-# apply patches to transform Che upstream to pkgs.devel version
-sed -i ${WORKSPACE}/targetdwn/Dockerfile --regexp-extended \
-  `# Replace ubi8 with rhel8 version` \
-  -e "s#ubi8/go-toolset#rhel8/go-toolset#g" \
-  `# more replacements` \
-  -e "s#FROM registry.redhat.io/#FROM #g" \
-  -e "s#FROM registry.access.redhat.com/#FROM #g" \
-  -e 's|ARG BOOTSTRAP=.*|ARG BOOTSTRAP=false|' \
-  -e 's|^# *(COPY resources.tgz .+)|\\1|' \
-
-METADATA='ENV SUMMARY="Red Hat CodeReady Workspaces ''' + QUAY_PROJECT + ''' container" \\\r
+          METADATA='ENV SUMMARY="Red Hat CodeReady Workspaces ''' + QUAY_PROJECT + ''' container" \\\r
     DESCRIPTION="Red Hat CodeReady Workspaces ''' + QUAY_PROJECT + ''' container" \\\r
     PRODNAME="codeready-workspaces" \\\r
     COMPNAME="''' + QUAY_PROJECT + '''-rhel8" \r
@@ -204,126 +95,131 @@ LABEL summary="$SUMMARY" \\\r
       io.openshift.expose-services="" \\\r
       usage="" \r'
 
-echo -e "$METADATA" >> ${WORKSPACE}/targetdwn/Dockerfile
+          echo -e "$METADATA" >> ${WORKSPACE}/targetdwn/Dockerfile
+        ''')
 
-# push changes in github to dist-git
-cd ${WORKSPACE}/targetdwn
-if [[ \$(git diff --name-only) ]]; then # file changed
-	OLD_SHA=\$(git rev-parse HEAD) # echo ${OLD_SHA:0:8}
-	git add Dockerfile ${SYNC_FILES}
-	# note this might fail if we're syncing from a tag vs. a branch
-	git commit -s -m "[sync] Update from ''' + SOURCE_REPO + ''' @ ${SOURCE_SHA:0:8}" Dockerfile ${SYNC_FILES}
-	/tmp/updateBaseImages.sh -b ''' + DWNSTM_BRANCH + ''' --nocommit
-	git push origin ''' + DWNSTM_BRANCH + ''' || true
-	NEW_SHA=\$(git rev-parse HEAD) # echo ${NEW_SHA:0:8}
-	if [[ "${OLD_SHA}" != "${NEW_SHA}" ]]; then hasChanged=1; fi
-	echo "[sync] Updated pkgs.devel @ ${NEW_SHA:0:8} from ''' + SOURCE_REPO + ''' @ ${SOURCE_SHA:0:8}"
-else
-  # file not changed, but check if base image needs an update
-  # (this avoids having 2 commits for every change)
-  cd ${WORKSPACE}/targetdwn
-  OLD_SHA=\$(git rev-parse HEAD) # echo ${OLD_SHA:0:8}
-  /tmp/updateBaseImages.sh -b ''' + DWNSTM_BRANCH + '''
-  NEW_SHA=\$(git rev-parse HEAD) # echo ${NEW_SHA:0:8}
-  if [[ "${OLD_SHA}" != "${NEW_SHA}" ]]; then hasChanged=1; fi
-  cd ..
-fi
-cd ..
+        // push changes in github to dist-git
+        util.updateBaseImages("${WORKSPACE}/targetdwn", DWNSTM_BRANCH, "--nocommit")
+        sh('''#!/bin/bash -xe
+          export KRB5CCNAME=/var/tmp/crw-build_ccache
+          SYNC_FILES="''' + SYNC_FILES + '''"
+          cd ${WORKSPACE}/targetdwn
+          if [[ \$(git diff --name-only) ]]; then # file changed
+            git add Dockerfile ${SYNC_FILES}
+            # note this might fail if we're syncing from a tag vs. a branch
+            git commit -s -m "[sync] Update from ''' + SOURCE_REPO + ''' @ ''' + SOURCE_SHA[0..7] + '''" Dockerfile ${SYNC_FILES}
+            git push origin ''' + DWNSTM_BRANCH + ''' || true
+            NEW_SHA=\$(git rev-parse HEAD) # echo ${NEW_SHA:0:8}
+            echo "[sync] Updated pkgs.devel @ ${NEW_SHA:0:8} from ''' + SOURCE_REPO + ''' @ ${SOURCE_SHA:0:8}"
+          fi
+        ''')
+        NEW_SHA = util.getLastCommitSHA("${WORKSPACE}/targetdwn")
+        if (OLD_SHA != NEW_SHA) { HAS_CHANGED="true" }
 
-# update tarballs - step 1 - build the container
-cd ${WORKSPACE}/targetdwn
+        println "########################################################################################################"
+        println "##  Update the tarballs"
+        println "########################################################################################################"
+        sh('''#!/bin/bash -xe
+          export KRB5CCNAME=/var/tmp/crw-build_ccache
+          # step 1 - build the container
+          cd ${WORKSPACE}/targetdwn
 
-CONTAINERNAME="imagepullerbuilder"
-# transform Brew friendly Dockerfile so we can use it in Jenkins where base images need full registry path
-sed ${WORKSPACE}/targetdwn/Dockerfile --regexp-extended \
-  -e 's|^ *COPY resources.tgz|# &|' \
-  -e 's|ARG BOOTSTRAP=.*|ARG BOOTSTRAP=true|' \
-  `# replace org/container:tag with reg-proxy/rh-osbs/org-container:tag` \
-  `# DISABLED -e "s#^FROM ([^/:]+)/([^/:]+):([^/:]+)#FROM registry-proxy.engineering.redhat.com/rh-osbs/\\1-\\2:\\3#"` \
-  -e "s#^FROM ([^/:]+)/([^/:]+):([^/:]+)#FROM registry.redhat.io/\\1/\\2:\\3#" \
-  `# replace ubi8-minimal:tag with reg-proxy/rh-osbs/ubi-minimal:tag` \
-  `# DISABLED -e "s#^FROM ([^/:]+):([^/:]+)#FROM registry-proxy.engineering.redhat.com/rh-osbs/\\1:\\2#"` \
-  -e "s#^FROM ([^/:]+):([^/:]+)#FROM registry.redhat.io/\\1:\\2#" \
-  > ${WORKSPACE}/bootstrap.Dockerfile
+          CONTAINERNAME="imagepullerbuilder"
+          # transform Brew friendly Dockerfile so we can use it in Jenkins where base images need full registry path
+          sed ${WORKSPACE}/targetdwn/Dockerfile --regexp-extended \
+            -e 's|^ *COPY resources.tgz|# &|' \
+            -e 's|ARG BOOTSTRAP=.*|ARG BOOTSTRAP=true|' \
+            `# replace org/container:tag with reg-proxy/rh-osbs/org-container:tag` \
+            `# DISABLED -e "s#^FROM ([^/:]+)/([^/:]+):([^/:]+)#FROM registry-proxy.engineering.redhat.com/rh-osbs/\\1-\\2:\\3#"` \
+            -e "s#^FROM ([^/:]+)/([^/:]+):([^/:]+)#FROM registry.redhat.io/\\1/\\2:\\3#" \
+            `# replace ubi8-minimal:tag with reg-proxy/rh-osbs/ubi-minimal:tag` \
+            `# DISABLED -e "s#^FROM ([^/:]+):([^/:]+)#FROM registry-proxy.engineering.redhat.com/rh-osbs/\\1:\\2#"` \
+            -e "s#^FROM ([^/:]+):([^/:]+)#FROM registry.redhat.io/\\1:\\2#" \
+            > ${WORKSPACE}/bootstrap.Dockerfile
 
-echo "======= BOOTSTRAP DOCKERFILE =======>"
-cat ${WORKSPACE}/bootstrap.Dockerfile
-echo "<======= BOOTSTRAP DOCKERFILE ======="
+          echo "======= BOOTSTRAP DOCKERFILE =======>"
+          cat ${WORKSPACE}/bootstrap.Dockerfile
+          echo "<======= BOOTSTRAP DOCKERFILE ======="
 
-echo "======= START BOOTSTRAP BUILD =======>"
-docker build -t ${CONTAINERNAME} . --no-cache -f ${WORKSPACE}/bootstrap.Dockerfile \
-  --target builder --build-arg BOOTSTRAP=true
-echo "<======= END BOOTSTRAP BUILD ======="
+          echo "======= START BOOTSTRAP BUILD =======>"
+          docker build -t ${CONTAINERNAME} . --no-cache -f ${WORKSPACE}/bootstrap.Dockerfile \
+            --target builder --build-arg BOOTSTRAP=true
+          echo "<======= END BOOTSTRAP BUILD ======="
 
-# update tarballs - step 2 - create tarballs in targetdwn folder
-docker run --rm --entrypoint sh ${CONTAINERNAME} -c 'tar -pzcf - \
-    /opt/app-root/src/go/pkg/mod' > /tmp/resources.tgz
-mkdir -p /tmp/resources
-tar xvzf /tmp/resources.tgz -C /tmp/resources
+          # update tarballs - step 2 - create tarballs in targetdwn folder
+          docker run --rm --entrypoint sh ${CONTAINERNAME} -c 'tar -pzcf - \
+              /opt/app-root/src/go/pkg/mod' > /tmp/resources.tgz
+          mkdir -p /tmp/resources
+          tar xvzf /tmp/resources.tgz -C /tmp/resources
 
-# update tarballs - step 3 - check old sources' tarballs
-cd ${WORKSPACE}/targetdwn
-# TODO is there a better way to determine if we need to push sources? 
-rhpkg sources
+          # update tarballs - step 3 - check old sources' tarballs
+          cd ${WORKSPACE}/targetdwn
+          # TODO is there a better way to determine if we need to push sources?
+          rhpkg sources
 
-# check diff
-if [[ -f ${WORKSPACE}/targetdwn/resources.tgz ]]; then
-  BEFORE_DIR=/tmp/resources-before
-  rm -fr ${BEFORE_DIR}; mkdir ${BEFORE_DIR} && tar xzf ${WORKSPACE}/targetdwn/resources.tgz -C ${BEFORE_DIR}
-  TAR_DIFF=$(sudo diff --suppress-common-lines -u -r ${BEFORE_DIR} /tmp/resources) || true
-else
-  TAR_DIFF="No such file ${WORKSPACE}/targetdwn/resources.tgz -- creating a new one for the first time"
-fi
-if [[ ${TAR_DIFF} ]]; then
-  echo "DIFF START *****"
-  echo "${TAR_DIFF}"
-  echo "***** END DIFF"
-  mv -f /tmp/resources.tgz ${WORKSPACE}/targetdwn/resources.tgz
-fi
+          # check diff
+          if [[ -f ${WORKSPACE}/targetdwn/resources.tgz ]]; then
+            BEFORE_DIR=/tmp/resources-before
+            rm -fr ${BEFORE_DIR}; mkdir ${BEFORE_DIR} && tar xzf ${WORKSPACE}/targetdwn/resources.tgz -C ${BEFORE_DIR}
+            TAR_DIFF=$(sudo diff --suppress-common-lines -u -r ${BEFORE_DIR} /tmp/resources) || true
+          else
+            TAR_DIFF="No such file ${WORKSPACE}/targetdwn/resources.tgz -- creating a new one for the first time"
+          fi
+          if [[ ${TAR_DIFF} ]]; then
+            echo "DIFF START *****"
+            echo "${TAR_DIFF}"
+            echo "***** END DIFF"
+            mv -f /tmp/resources.tgz ${WORKSPACE}/targetdwn/resources.tgz
+          fi
 
-# update tarballs - step 4 - commit changes if diff different
-if [[ ${TAR_DIFF} ]]; then
-  hasChanged=1
-  rhpkg new-sources resources.tgz
-  git commit -s -m "[tgz] Update resources.tgz" sources
-  git push origin ''' + DWNSTM_BRANCH + '''
-else
-  echo "No changes since previous tarball was created."
-fi
+          # update tarballs - step 4 - commit changes if diff different
+          if [[ ${TAR_DIFF} ]]; then
+            rhpkg new-sources resources.tgz
+            git commit -s -m "[tgz] Update resources.tgz" sources
+            git push origin ''' + DWNSTM_BRANCH + '''
+          else
+            echo "No changes since previous tarball was created."
+          fi
 
-# clean up diff dirs
-sudo rm -fr /tmp/resources /tmp/resources-before
+          # clean up diff dirs
+          sudo rm -fr /tmp/resources /tmp/resources-before
+        ''')
+        NEW_SHA = util.getLastCommitSHA("${WORKSPACE}/targetdwn")
+        if (OLD_SHA != NEW_SHA) { HAS_CHANGED="true" }
 
-if [[ ''' + FORCE_BUILD + ''' == "true" ]]; then hasChanged=1; fi
-if [[ ${hasChanged} -eq 1 ]]; then
-  for QRP in ''' + QUAY_PROJECT + '''; do
-    QUAY_REPO_PATH=""; if [[ ''' + PUSH_TO_QUAY + ''' == "true" ]]; then QUAY_REPO_PATH="${QRP}-rhel8"; fi
-    curl \
+        println "########################################################################################################"
+        println "##  Container Build"
+        println "########################################################################################################"
+        if (HAS_CHANGED == "true" || FORCE_BUILD == "true") {
+          sh('''#!/bin/bash -xe
+            # NOTE: this image needs to build in Brew (CRW <=2.3), then rebuild for Quay, so use QUAY_REBUILD_PATH instead of QUAY_REPO_PATHs variable
+            # For CRW 2.4, do not rebuild (just copy to Quay) and use an ImageContentSourcePolicy file to resolve images
+            # https://gitlab.cee.redhat.com/codeready-workspaces/knowledge-base/-/blob/master/installStagingCRW.md#create-imagecontentsourcepolicy
+            for QRP in ''' + QUAY_PROJECT + '''; do
+              QUAY_REPO_PATH=""; if [[ ''' + PUSH_TO_QUAY + ''' == "true" ]]; then QUAY_REPO_PATH="${QRP}-rhel8"; fi
+              curl \
 "https://codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/get-sources-rhpkg-container-build/buildWithParameters?\
 token=CI_BUILD&\
 cause=${QUAY_REPO_PATH}+respin+by+${BUILD_TAG}&\
 GIT_BRANCH=''' + DWNSTM_BRANCH + '''&\
 GIT_PATHs=containers/codeready-workspaces-${QRP}&\
 QUAY_REPO_PATHs=${QUAY_REPO_PATH}&\
-JOB_BRANCH=${CRW_VERSION}&\
+JOB_BRANCH=''' + CRW_VERSION + '''&\
 FORCE_BUILD=true&\
 SCRATCH=''' + SCRATCH + '''"
-  done
-fi
+            done
+          ''')
+        } else {
+          println "No changes upstream, nothing to commit"
+        }
 
-if [[ ${hasChanged} -eq 0 ]]; then
-  echo "No changes upstream, nothing to commit"
-fi
-'''
-    }
-      def NEW_SHA = sh(script: '''#!/bin/bash -xe
-      cd ${WORKSPACE}/targetdwn; git rev-parse HEAD
-      ''', returnStdout: true)
-      println "Got NEW_SHA in targetdwn folder: " + NEW_SHA
+        NEW_SHA = util.getLastCommitSHA("${WORKSPACE}/targetdwn")
+        println "Got NEW_SHA in targetdwn folder: " + NEW_SHA
 
-      if (NEW_SHA.equals(OLD_SHA) && !FORCE_BUILD.equals("true")) {
-        currentBuild.result='UNSTABLE'
-      }
-    }
-	}
-}
+        if (NEW_SHA.equals(OLD_SHA) && !FORCE_BUILD.equals("true")) {
+          currentBuild.result='UNSTABLE'
+        }
+      } // withCredentials
+    } // wrap
+  } // node
+} // timeout
