@@ -54,8 +54,8 @@ timeout(120) {
         util.cloneRepo("ssh://crw-build@pkgs.devel.redhat.com/${DWNSTM_REPO}", "${WORKSPACE}/targetdwn", DWNSTM_BRANCH)
         OLD_SHA = util.getLastCommitSHA("${WORKSPACE}/targetdwn")
 
+        // rsync files in github to dist-git
         sh('''#!/bin/bash -xe
-          # rsync files in github to dist-git
           SOURCEDIR="''' + SOURCE_DIR + '''"
           SYNC_FILES="''' + SYNC_FILES + '''"
           for d in ${SYNC_FILES}; do
@@ -105,7 +105,7 @@ COPY ./build/dockerfiles/rhel.cache_projects.sh resources.tgz /tmp/ \\
 RUN /tmp/rhel.cache_projects.sh /build/ && rm -rf /tmp/rhel.cache_projects.sh /tmp/resources.tgz \\
 '
 
-METADATA='ENV SUMMARY="Red Hat CodeReady Workspaces ''' + QUAY_PROJECT + ''' container" \\\r
+          METADATA='ENV SUMMARY="Red Hat CodeReady Workspaces ''' + QUAY_PROJECT + ''' container" \\\r
     DESCRIPTION="Red Hat CodeReady Workspaces ''' + QUAY_PROJECT + ''' container" \\\r
     PRODNAME="codeready-workspaces" \\\r
     COMPNAME="''' + QUAY_PROJECT + '''-rhel8" \r
