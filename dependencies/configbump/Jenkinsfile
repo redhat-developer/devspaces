@@ -10,7 +10,7 @@ def DWNSTM_REPO = "containers/codeready-workspaces-configbump" // repo to use as
 def SYNC_REPO="configbump"
 
 String SOURCE_BRANCH = "master" // or a tag like "v0.1.4"
-String DWNSTM_BRANCH = "crw-2.5-rhel-8" // target branch, eg., crw-2.5-rhel-8
+String DWNSTM_BRANCH = "crw-2.6-rhel-8" // target branch, eg., crw-2.5-rhel-8
 
 def OLD_SHA=""
 def SRC_SHA=""
@@ -24,7 +24,7 @@ def Map tasks = [failFast: false]
 
 def buildNode = "rhel7-32gb||rhel7-16gb||rhel7-8gb" // node label
 timeout(30) {
-    node("${buildNode}"){ 
+    node("${buildNode}"){
         stage("Sync repos") {
             wrap([$class: 'TimestamperBuildWrapper']) {
                 sh('curl -sSLO https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/'+ DWNSTM_BRANCH + '/product/util.groovy')

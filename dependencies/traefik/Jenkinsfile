@@ -12,9 +12,9 @@ def SYNC_REPO="traefik"
 
 String GOLANG_VERSION = "1.15.3"
 
-String SOURCE_BRANCH = "master" // upstream source repo branch, eg., crw-2.5-rhel-8 from fork 
+String SOURCE_BRANCH = "master" // upstream source repo branch, eg., crw-2.5-rhel-8 from fork
 String SOURCE_TAG = "v2.3.2" // after fetching from a branch, switch to this tag
-String DWNSTM_BRANCH = "crw-2.5-rhel-8" // target branch, eg., crw-2.5-rhel-8
+String DWNSTM_BRANCH = "crw-2.6-rhel-8" // target branch, eg., crw-2.5-rhel-8
 
 def OLD_SHA=""
 def SRC_SHA=""
@@ -28,7 +28,7 @@ def Map tasks = [failFast: false]
 
 def buildNode = "rhel7-32gb||rhel7-16gb||rhel7-8gb" // node label
 timeout(30) {
-    node("${buildNode}"){ 
+    node("${buildNode}"){
         stage("Sync repos") {
             wrap([$class: 'TimestamperBuildWrapper']) {
                 sh('curl -sSLO https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/'+ DWNSTM_BRANCH + '/product/util.groovy')
@@ -163,7 +163,7 @@ for (int i=0; i < build_nodes.size(); i++) {
   def String nodeLabel = "${build_nodes[i]}"
   tasks[build_nodes[i]] = { ->
     timeout(120) {
-        node(nodeLabel){ 
+        node(nodeLabel){
             stage("Build artifacts") {
                 wrap([$class: 'TimestamperBuildWrapper']) {
                     sh('curl -sSLO https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/'+ DWNSTM_BRANCH + '/product/util.groovy')
