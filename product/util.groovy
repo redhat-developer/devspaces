@@ -98,12 +98,12 @@ def updateBaseImages(String REPO_PATH, String BRANCH, String FLAGS="") {
   // Requires installSkopeo()
   def String updateBaseImages_bin="${WORKSPACE}/updateBaseImages.sh"
   if (!fileExists(updateBaseImages_bin)) {
-    if (CSV_VERSION_F.equals("")) {
+    if (CRW_VERSION_F.equals("")) {
       println("ERROR: execute getCrwVersion() before calling updateBaseImages")
       exit 1
     }
     sh('''#!/bin/bash -xe
-      curl -L -s -S https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/''' +  CSV_VERSION_F + '''/product/updateBaseImages.sh -o ''' + updateBaseImages_bin + '''
+      curl -L -s -S https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/''' +  CRW_VERSION_F + '''/product/updateBaseImages.sh -o ''' + updateBaseImages_bin + '''
       chmod +x ''' + updateBaseImages_bin
     )
   }
