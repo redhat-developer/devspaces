@@ -7,9 +7,10 @@ arches="x86_64" # TODO add s390x and ppc64le eventually
 allNVRs=""
 MATCH=""
 quiet=0
-HELP="
 
-How to use this script:
+usage () {
+	echo -e "
+Usage:
 NVR1 NVR2 ...   | list of NVRs to query. If omitted, generate list from ${candidateTag}
 -b              | branch of redhat-developer/codeready-workspaces-operator, eg., crw-2.y-rhel-8
 -v              | CSV version, eg., 2.y.0; if not set, will be computed from codeready-workspaces.csv.yaml using branch
@@ -23,9 +24,11 @@ $0 stacks-dotnet -g \"/(libssh2|python|python-libs).x86_64\" # check one contain
 
 $0 # to generate overall log for all latest NVRs
 "
+	exit 
+}
 while [[ "$#" -gt 0 ]]; do
   case $1 in
-    '-h'|'--help') echo -e "$HELP"; exit 1;;
+    '-h'|'--help') usage;;
     '-b')  MIDSTM_BRANCH="$2";     shift 2;;
     '-v')    CSV_VERSION="$2";     shift 2;;
     '-a'|'--arches') arches="$2";  shift 2;; 
