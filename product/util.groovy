@@ -10,8 +10,10 @@ def String getCSVVersion(String MIDSTM_BRANCH) {
 }
 
 @Field String CRW_VERSION_F = ""
+@Field String CRW_BRANCH_F = ""
 def String getCrwVersion(String MIDSTM_BRANCH) {
   if (CRW_VERSION_F.equals("")) {
+    CRW_BRANCH_F = MIDSTM_BRANCH
     CRW_VERSION_F = sh(script: '''#!/bin/bash -xe
     curl -sSLo- https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/''' + MIDSTM_BRANCH + '''/dependencies/VERSION''', returnStdout: true).trim()
   }
@@ -98,12 +100,12 @@ def updateBaseImages(String REPO_PATH, String BRANCH, String FLAGS="") {
   // Requires installSkopeo()
   def String updateBaseImages_bin="${WORKSPACE}/updateBaseImages.sh"
   if (!fileExists(updateBaseImages_bin)) {
-    if (CRW_VERSION_F.equals("")) {
+    if (CRW_BRANCH_F.equals("")) {
       println("ERROR: execute getCrwVersion() before calling updateBaseImages")
       exit 1
     }
     sh('''#!/bin/bash -xe
-      curl -L -s -S https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/''' +  CRW_VERSION_F + '''/product/updateBaseImages.sh -o ''' + updateBaseImages_bin + '''
+      curl -L -s -S https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/''' + CRW_BRANCH_F + '''/product/updateBaseImages.sh -o ''' + updateBaseImages_bin + '''
       chmod +x ''' + updateBaseImages_bin
     )
   }
