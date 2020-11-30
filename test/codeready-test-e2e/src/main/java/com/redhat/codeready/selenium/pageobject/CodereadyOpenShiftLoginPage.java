@@ -46,11 +46,11 @@ public class CodereadyOpenShiftLoginPage extends OpenShiftLoginPage {
   private final CheLoginPage cheLoginPage;
 
   @Inject(optional = true)
-  @Named("env.openshift.regular.username")
+  @Named("env.openshift.username")
   private String openShiftUsername;
 
   @Inject(optional = true)
-  @Named("env.openshift.regular.password")
+  @Named("env.openshift.password")
   private String openShiftPassword;
 
   @Inject(optional = true)
