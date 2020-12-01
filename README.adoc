@@ -130,3 +130,5 @@ To reskin this assembly, you need to edit the following files:
 See also SVG assets in link:product/branding/[product/branding/] folder.
 
 NOTE: When saving files in Inkscape, make sure you export as *Plain SVG*, then edit the resulting .svg file to remove any `<metadata>...</metadata>` tags and all their contents. You can also remove the `xmlns:rdf` definition. This will ensure they compile correctly.
+
+![.github/workflows/gh_actions_pr.yaml](https://github.com/redhat-developer/codeready-workspaces/workflows/.github/workflows/gh_actions_pr.yaml/badge.svg?event=pull_request)
