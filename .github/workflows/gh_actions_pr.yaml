@@ -1,0 +1,19 @@
+name: Test crw-build token for authenticated connection to RHEC
+
+on: pull_request
+jobs:
+  build:
+    name: Build stuff
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Login to RHEC
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.CRW_BUILD_USER }}
+          password: ${{ secrets.CRW_BUILD_TOKEN }}
+          registry: registry.redhat.io
+      - name: Test authenticated connection
+        run: |
+      docker pull registry.redhat.io/codeready-workspaces/imagepuller-rhel8:2.5
