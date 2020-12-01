@@ -1,6 +1,7 @@
 name: Test crw-build token for authenticated connection to RHEC
 
-on: pull_request
+on: 
+  pull_request:
 jobs:
   build:
     name: Build stuff
@@ -16,4 +17,4 @@ jobs:
           registry: registry.redhat.io
       - name: Test authenticated connection
         run: |
-      docker pull registry.redhat.io/codeready-workspaces/imagepuller-rhel8:2.5
+          docker pull registry.redhat.io/codeready-workspaces/imagepuller-rhel8:2.5
