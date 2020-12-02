@@ -20,6 +20,6 @@ jobs:
         run: |
           set -x
           set +e
-          echo "[INFO]: Log into registry.redhat.io as ${{ CRW_BUILD_USER }} ..."
-          echo "${{ CRW_BUILD_TOKEN }}" | docker login -u="${{ CRW_BUILD_USER }}" --password-stdin registry.redhat.io
+          echo "[INFO]: Log into registry.redhat.io as ${CRW_BUILD_USER} ..."
+          echo "${CRW_BUILD_TOKEN}" | docker login -u="${CRW_BUILD_USER}" --password-stdin registry.redhat.io
           docker pull registry.redhat.io/codeready-workspaces/imagepuller-rhel8:2.5
