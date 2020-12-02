@@ -1,11 +1,9 @@
 name: Test crw-build token for authenticated connection to RHEC
 
-on: 
-  pull_request:
+on: [pull_request]
 jobs:
-  build:
-    name: Build stuff
-    runs-on: ubuntu-latest
+  job1:
+    runs-on: ubuntu-18.04
     env:
       CRW_BUILD_USER: ${{ secrets.CRW_BUILD_USER }}
       CRW_BUILD_TOKEN: ${{ secrets.CRW_BUILD_TOKEN }}
@@ -19,7 +17,6 @@ jobs:
           password: ${{ secrets.CRW_BUILD_TOKEN }}
           registry: registry.redhat.io
       - name: Test authenticated connection
-        shell: bash
         run: |
           set -x
           set +e
