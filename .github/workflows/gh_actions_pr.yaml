@@ -1,5 +1,6 @@
 name: Test crw-build token for authenticated connection to RHEC
 
+# note, this only works against pull requests from the origin fork (redhat-developer, eclipse), not from personal forks!
 on: [pull_request]
 jobs:
   job1:
@@ -20,6 +21,6 @@ jobs:
         run: |
           set -x
           set +e
-          echo "[INFO]: Log into registry.redhat.io as ${{ CRW_BUILD_USER }} ..."
-          echo "${{ CRW_BUILD_TOKEN }}" | docker login -u="${{ CRW_BUILD_USER }}" --password-stdin registry.redhat.io
+          # echo "[INFO]: Log into registry.redhat.io as ${CRW_BUILD_USER} ..."
+          # echo "${CRW_BUILD_TOKEN}" | docker login -u="${CRW_BUILD_USER}" --password-stdin registry.redhat.io
           docker pull registry.redhat.io/codeready-workspaces/imagepuller-rhel8:2.5
