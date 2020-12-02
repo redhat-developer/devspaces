@@ -17,5 +17,7 @@ jobs:
       #     registry: registry.redhat.io
       - name: Test authenticated connection
         run: |
+          set -x
+          set +e
           docker login -u='${{ secrets.CRW_BUILD_USER }}' -p=${{ secrets.CRW_BUILD_TOKEN }} registry.redhat.io
           docker pull registry.redhat.io/codeready-workspaces/imagepuller-rhel8:2.5
