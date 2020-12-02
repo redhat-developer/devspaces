@@ -6,20 +6,20 @@ jobs:
   build:
     name: Build stuff
     runs-on: ubuntu-latest
+    env:
+      CRW_BUILD_USER: ${{ secrets.CRW_BUILD_USER }}
+      CRW_BUILD_TOKEN: ${{ secrets.CRW_BUILD_TOKEN }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-      # - name: Login to RHEC
-      #   uses: docker/login-action@v1
-      #   with:
-      #     username: ${{ secrets.CRW_BUILD_USER }}
-      #     password: ${{ secrets.CRW_BUILD_TOKEN }}
-      #     registry: registry.redhat.io
+      - name: Login to RHEC
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.CRW_BUILD_USER }}
+          password: ${{ secrets.CRW_BUILD_TOKEN }}
+          registry: registry.redhat.io
       - name: Test authenticated connection
         shell: bash
-        env:
-          CRW_BUILD_USER: ${{ secrets.CRW_BUILD_USER }}
-          CRW_BUILD_TOKEN: ${{ secrets.CRW_BUILD_TOKEN }}
         run: |
           set -x
           set +e
