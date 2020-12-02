@@ -33,7 +33,7 @@ Run the following command in the root of a repository:
 mvn clean install
 ```
 
-The build artifact used in the Docker image will be in `assembly/assembly-main/target/codeready-${version}/codeready-${version}`
+The build artifact used in the container image will be in `assembly/codeready-worksapces-assembly-main/target`
 
 
 ### How to Build Container Image Locally
@@ -47,8 +47,8 @@ mvn clean install
 Then just use the `Dockerfile` in this repo to build:
 
 ```
-docker build --force-rm -t registry.redhat.io/codeready-workspaces/server-rhel8:1.2 . && \
-docker images | grep registry.redhat.io/codeready-workspaces/server-rhel8:1.2
+podman build --force-rm -t registry.redhat.io/codeready-workspaces/server-rhel8:2.5 . && \
+podman images | grep registry.redhat.io/codeready-workspaces/server-rhel8:2.5
 ```
 
 You can then reference this image in your deployment (set image pull policy to *`Always`* to make sure it's pulled instead of the default one).
@@ -57,32 +57,33 @@ For more info on how to test locally built changes in a local OKD 3.11 (Minishif
 
 [NOTE]
 ====
-Stacks may reference non-existing images like `docker-registry.default.svc:5000/openshift/rhel-base-jdk8`. These images are built as a post installation step.
 
-Once published, they will be in locations like these:
+Once published, images will be in locations like these:
 
-* registry.redhat.io/codeready-workspaces-devfileregistry-rhel8
-* registry.redhat.io/codeready-workspaces-imagepuller-rhel8
-* registry.redhat.io/codeready-workspaces-jwtproxy-rhel8
-* registry.redhat.io/codeready-workspaces-machineexec-rhel8
-* registry.redhat.io/codeready-workspaces-operator
-* registry.redhat.io/codeready-workspaces-operator-metadata
-* registry.redhat.io/codeready-workspaces-plugin-java11-openj9-rhel8
-* registry.redhat.io/codeready-workspaces-plugin-java11-rhel8
-* registry.redhat.io/codeready-workspaces-plugin-java8-openj9-rhel8
-* registry.redhat.io/codeready-workspaces-plugin-java8-rhel8
-* registry.redhat.io/codeready-workspaces-plugin-kubernetes-rhel8
-* registry.redhat.io/codeready-workspaces-plugin-openshift-rhel8
-* registry.redhat.io/codeready-workspaces-pluginbroker-artifacts-rhel8
-* registry.redhat.io/codeready-workspaces-pluginbroker-metadata-rhel8
-* registry.redhat.io/codeready-workspaces-pluginregistry-rhel8
-* registry.redhat.io/codeready-workspaces-server-rhel8
-* registry.redhat.io/codeready-workspaces-stacks-cpp-rhel8
-* registry.redhat.io/codeready-workspaces-stacks-dotnet-rhel8
-* registry.redhat.io/codeready-workspaces-stacks-golang-rhel8
-* registry.redhat.io/codeready-workspaces-stacks-php-rhel8
-* registry.redhat.io/codeready-workspaces-theia-endpoint-rhel8
-* registry.redhat.io/codeready-workspaces-theia-rhel8
+* registry.redhat.io/codeready-workspaces/configbump-rhel8
+* registry.redhat.io/codeready-workspaces/crw-2-rhel8-operator
+* registry.redhat.io/codeready-workspaces/crw-2-rhel8-operator-metadata
+* registry.redhat.io/codeready-workspaces/devfileregistry-rhel8
+* registry.redhat.io/codeready-workspaces/imagepuller-rhel8
+* registry.redhat.io/codeready-workspaces/jwtproxy-rhel8
+* registry.redhat.io/codeready-workspaces/machineexec-rhel8
+* registry.redhat.io/codeready-workspaces/pluginbroker-artifacts-rhel8
+* registry.redhat.io/codeready-workspaces/pluginbroker-metadata-rhel8
+* registry.redhat.io/codeready-workspaces/plugin-java11-openj9-rhel8
+* registry.redhat.io/codeready-workspaces/plugin-java11-rhel8
+* registry.redhat.io/codeready-workspaces/plugin-java8-openj9-rhel8
+* registry.redhat.io/codeready-workspaces/plugin-java8-rhel8
+* registry.redhat.io/codeready-workspaces/plugin-kubernetes-rhel8
+* registry.redhat.io/codeready-workspaces/plugin-openshift-rhel8
+* registry.redhat.io/codeready-workspaces/pluginregistry-rhel8
+* registry.redhat.io/codeready-workspaces/server-rhel8
+* registry.redhat.io/codeready-workspaces/stacks-cpp-rhel8
+* registry.redhat.io/codeready-workspaces/stacks-dotnet-rhel8
+* registry.redhat.io/codeready-workspaces/stacks-golang-rhel8
+* registry.redhat.io/codeready-workspaces/stacks-php-rhel8
+* registry.redhat.io/codeready-workspaces/theia-endpoint-rhel8
+* registry.redhat.io/codeready-workspaces/theia-rhel8
+* registry.redhat.io/codeready-workspaces/traefik-rhel8
 ====
 
 ### How to Build Container Using Jenkins and OSBS/Brew (REQUIRES VPN)
@@ -98,7 +99,7 @@ cd codeready-workspaces
 
 See also:
 
-* http://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces/tree/README.adoc?h=crw-1.2-rhel-8
+* http://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces/tree/README.adoc?h=crw-2.6-rhel-8
 
 See this document for more on how to use those build systems, in order to publish a container image to Red Hat Container Catalog:
 
@@ -106,9 +107,9 @@ See this document for more on how to use those build systems, in order to publis
 
 ### Keeping in sync with upstream
 
-The Dockerfile and entrypoint.sh scripts in this repo are copied from link:http://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces/tree/?h=crw-1.2-rhel-8[upstream repo] into this one using a link:https://codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/CRW_CI/view/Releng/job/crw_sync-pkgs.devel-to-github/[Jenkins job] which adjusts it so it will work locally.
+The Dockerfile and entrypoint.sh scripts in this repo are copied from link:http://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces/tree/?h=crw-2.6-rhel-8[upstream repo] into this one using a link:https://codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/CRW_CI/view/Releng/job/crw_sync-pkgs.devel-to-github/[Jenkins job] which adjusts it so it will work locally.
 
-Upstream: http://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces/tree/?h=crw-1.2-rhel-8
+Upstream: http://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces/tree/?h=crw-2.6-rhel-8
 
 Job: https://codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/CRW_CI/view/Releng/job/crw_sync-pkgs.devel-to-github/
 
@@ -129,3 +130,5 @@ To reskin this assembly, you need to edit the following files:
 See also SVG assets in link:product/branding/[product/branding/] folder.
 
 NOTE: When saving files in Inkscape, make sure you export as *Plain SVG*, then edit the resulting .svg file to remove any `<metadata>...</metadata>` tags and all their contents. You can also remove the `xmlns:rdf` definition. This will ensure they compile correctly.
+
+![.github/workflows/gh_actions_pr.yaml](https://github.com/redhat-developer/codeready-workspaces/workflows/.github/workflows/gh_actions_pr.yaml/badge.svg?event=pull_request)
