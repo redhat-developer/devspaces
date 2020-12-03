@@ -1,5 +1,4 @@
-#!/bin/bash
-set -e +x
+#!/bin/bash -e
 
 usage ()
 {
@@ -57,12 +56,13 @@ ${PODMAN} create --name="${tmpcontainer}" $container sh 2>&1 >/dev/null || ${POD
 
 # export and unpack
 ${PODMAN} export "${tmpcontainer}" > /tmp/${tmpcontainer}.tar
-rm -fr "$unpackdir"; mkdir -p "$unpackdir"
+rm -fr "$unpackdir" || true
+mkdir -p "$unpackdir"
 echo "[INFO] Extract from container ..."
-tar xf /tmp/${tmpcontainer}.tar --wildcards -C "$unpackdir" ${TAR_FLAGS}
+tar xf /tmp/${tmpcontainer}.tar --wildcards -C "$unpackdir" ${TAR_FLAGS} || true
 
 # cleanup
 ${PODMAN} rm -f "${tmpcontainer}" 2>&1 >/dev/null || true
-rm -fr  /tmp/${tmpcontainer}.tar
+rm -fr /tmp/${tmpcontainer}.tar || true
 
 echo "[INFO] Container $container unpacked to $unpackdir"
