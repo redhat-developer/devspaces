@@ -123,6 +123,13 @@ def getLastCommitSHA(String REPO_PATH) {
     git rev-parse HEAD''', returnStdout: true)
 }
 
+def getCRWLongName(String SHORT_NAME) {
+  if (SHORT_NAME == "server") {
+    return "codeready-workspaces"
+  }
+  return "codeready-workspaces-" + SHORT_NAME
+}
+
 def getCRWShortName(String LONG_NAME) {
   if (LONG_NAME == "codeready-workspaces") {
     return "server"
