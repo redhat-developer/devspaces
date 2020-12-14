@@ -10,7 +10,7 @@ import groovy.transform.Field
 @Field String MIDSTM_BRANCH = "crw-2.6-rhel-8" // branch of GH and pkgs.devel repos to sync commits
 
 def MIDSTM_REPO = "redhat-developer/codeready-workspaces" //source repo from which to find and sync commits to pkgs.devel repo
-def DWNSTM_REPO = "containers/codeready-workspaces-devfileregistry" // dist-git repo to use as target
+def DWNSTM_REPO = "redhat-developer/codeready-workspaces-images" // dist-git repo to use as target
 def DWNSTM_BRANCH = MIDSTM_BRANCH // target branch in dist-git repo, eg., crw-2.5-rhel-8
 def SCRATCH = "false"
 def PUSH_TO_QUAY = "true"
@@ -18,12 +18,11 @@ def QUAY_PROJECT = "devfileregistry" // also used for the Brew dockerfile params
 def USE_DIGESTS = "true" // if true, use @sha256:digest in registry; if false, use :tag
 def SYNC_FILES="arbitrary-users-patch build devfiles images .gitignore .htaccess LICENSE README.md VERSION"
 
-
 def OLD_SHA=""
 def NEW_SHA=""
 def HAS_CHANGED="false"
 
-def buildNode = "rhel7-releng" // node label
+def buildNode = "s390x-rhel7-beaker" // node label
 timeout(120) {
   node("${buildNode}"){ stage "Sync repos"
     wrap([$class: 'TimestamperBuildWrapper']) {
@@ -43,41 +42,44 @@ timeout(120) {
         util.cloneRepo("https://github.com/${MIDSTM_REPO}.git", "${WORKSPACE}/targetmid", MIDSTM_BRANCH)
         OLD_SHA = util.getLastCommitSHA("${WORKSPACE}/targetmid")
         SOURCE_DIR="${WORKSPACE}/targetmid/dependencies/che-devfile-registry/"
+        TARGET_DIR="${WORKSPACE}/targetdwn/" + util.getCRWLongName(QUAY_PROJECT) + "/"
         util.updateBaseImages(SOURCE_DIR + "build/dockerfiles", DWNSTM_BRANCH, "-f rhel.Dockerfile")
         SOURCE_SHA = util.getLastCommitSHA("${WORKSPACE}/targetmid")
         println "Got SOURCE_SHA in sources folder: " + SOURCE_SHA
         if (OLD_SHA != SOURCE_SHA) { HAS_CHANGED="true" }
 
         println "########################################################################################################"
-        println "##  Sync ${QUAY_PROJECT} to pkgs.devel"
+        println "##  Sync ${QUAY_PROJECT} to codeready-workspaces-images"
         println "########################################################################################################"
-        util.cloneRepo("ssh://crw-build@pkgs.devel.redhat.com/${DWNSTM_REPO}", "${WORKSPACE}/targetdwn", DWNSTM_BRANCH)
+        util.cloneRepo("https://github.com/${DWNSTM_REPO}", "${WORKSPACE}/targetdwn", DWNSTM_BRANCH)
         OLD_SHA = util.getLastCommitSHA("${WORKSPACE}/targetdwn")
 
-        // rsync files in github to dist-git
+        // rsync files to codeready-workspaces-images
         sh('''#!/bin/bash -xe
           SOURCEDIR="''' + SOURCE_DIR + '''"
+          TARGETDIR="''' + TARGET_DIR + '''"
           SYNC_FILES="''' + SYNC_FILES + '''"
+          [ ! -d ${TARGETDIR} ] && mkdir -p ${TARGETDIR}
           for d in ${SYNC_FILES}; do
             if [[ -f ${SOURCEDIR}/${d} ]]; then
-              rsync -azrlt ${SOURCEDIR}/${d} ${WORKSPACE}/targetdwn/${d}
+              rsync -azrlt ${SOURCEDIR}/${d} ${TARGETDIR}/${d}
             elif [[ -d ${SOURCEDIR}/${d} ]]; then
               # copy over the dir contents
-              rsync -azrlt ${SOURCEDIR}/${d}/* ${WORKSPACE}/targetdwn/${d}/
+              rsync -azrlt ${SOURCEDIR}/${d}/* ${TARGETDIR}/${d}/
               # sync the directory and delete from targetdwn if deleted from source
-              rsync -azrlt --delete ${SOURCEDIR}/${d}/ ${WORKSPACE}/targetdwn/${d}/
+              rsync -azrlt --delete ${SOURCEDIR}/${d}/ ${TARGETDIR}/${d}/
             else
-              echo "[WARN] Could not find ${SOURCEDIR}/${d} to sync to ${WORKSPACE}/targetdwn/${d}"
+              echo "[WARN] Could not find ${SOURCEDIR}/${d} to sync to ${TARGETDIR}/${d}"
             fi
           done
         ''')
 
         sh('''#!/bin/bash -xe
-          cp -f ''' + SOURCE_DIR + '''build/dockerfiles/rhel.Dockerfile  ${WORKSPACE}/targetdwn/Dockerfile
+          cp -f ''' + SOURCE_DIR + '''build/dockerfiles/rhel.Dockerfile  ''' + TARGET_DIR + '''Dockerfile
 
           CRW_VERSION="''' + CRW_VERSION_F + '''"
           # apply patches to transform CRW upstream to pkgs.devel version
-          sed -i ${WORKSPACE}/targetdwn/Dockerfile --regexp-extended \
+          sed -i ''' + TARGET_DIR + '''Dockerfile --regexp-extended \
           `# Replace image used for registry with rhel8/httpd-24` \
           -e 's|^ *FROM registry.access.redhat.com/.* AS registry|# &|' \
           -e 's|# *(FROM.*rhel8/httpd.*)|\\1|' \
@@ -122,20 +124,22 @@ LABEL summary="$SUMMARY" \\\r
       io.openshift.expose-services="" \\\r
       usage="" \r'
 
-          echo -e "$METADATA" >> ${WORKSPACE}/targetdwn/Dockerfile
+          echo -e "$METADATA" >> ''' + TARGET_DIR + '''Dockerfile
 
           echo "======= DOWNSTREAM DOCKERFILE =======>"
-          cat ${WORKSPACE}/targetdwn/Dockerfile
+          cat ''' + TARGET_DIR + '''Dockerfile
           echo "<======= DOWNSTREAM DOCKERFILE ======="
         ''')
 
-        // push changes in github to dist-git
-        util.updateBaseImages("${WORKSPACE}/targetdwn", DWNSTM_BRANCH, "--nocommit")
+        // push changes to codeready-workspaces-images
+        util.updateBaseImages(TARGET_DIR, DWNSTM_BRANCH, "--nocommit")
         sh('''#!/bin/bash -xe
-          export KRB5CCNAME=/var/tmp/crw-build_ccache
           SYNC_FILES="''' + SYNC_FILES + '''"
           cd ${WORKSPACE}/targetdwn
-          if [[ \$(git diff --name-only) ]]; then # file changed
+          git add ''' + util.getCRWLongName(QUAY_PROJECT) + '''
+          git update-index --refresh  # ignore timestamp updates
+          if [[ \$(git diff-index HEAD --) ]]; then # file changed
+            cd ''' + TARGET_DIR + '''
             git add Dockerfile ${SYNC_FILES}
             # note this might fail if we're syncing from a tag vs. a branch
             git commit -s -m "[sync] Update from ''' + MIDSTM_REPO + ''' @ ''' + SOURCE_SHA[0..7] + '''" Dockerfile ${SYNC_FILES}
@@ -148,120 +152,42 @@ LABEL summary="$SUMMARY" \\\r
         if (OLD_SHA != NEW_SHA) { HAS_CHANGED="true" }
 
         println "########################################################################################################"
-        println "##  Update the tarballs"
-        println "########################################################################################################"
-        sh('''#!/bin/bash -xe
-          export KRB5CCNAME=/var/tmp/crw-build_ccache
-          # step 1 - build the container
-          cd ${WORKSPACE}/targetdwn
-
-          # transform Brew friendly Dockerfile so we can use it in Jenkins where base images need full registry path
-          sed ${WORKSPACE}/targetdwn/Dockerfile --regexp-extended \
-            -e 's|COPY (.*) resources.tgz (.*)|COPY \\1 \\2|' \
-            -e 's|ARG BOOTSTRAP=.*|ARG BOOTSTRAP=true|' \
-            -e 's|ARG USE_DIGESTS=.*|ARG USE_DIGESTS=''' + USE_DIGESTS + '''|' \
-            -e 's|^ *COPY root-local.tgz|# &|' \
-            `# replace org/container:tag with reg-proxy/rh-osbs/org-container:tag` \
-            -e "s#^FROM ([^/:]+)/([^/:]+):([^/:]+)#FROM registry-proxy.engineering.redhat.com/rh-osbs/\\1-\\2:\\3#" \
-            `# replace ubi8-minimal:tag with reg-proxy/rh-osbs/ubi-minimal:tag` \
-            -e "s#^FROM ([^/:]+):([^/:]+)#FROM registry-proxy.engineering.redhat.com/rh-osbs/\\1:\\2#" \
-            -e 's|# (COPY .*content_sets.*)|\\1|' \
-            > ${WORKSPACE}/bootstrap.Dockerfile
-
-          echo "======= BOOTSTRAP DOCKERFILE =======>"
-          cat ${WORKSPACE}/bootstrap.Dockerfile
-          echo "<======= BOOTSTRAP DOCKERFILE ======="
-
-          echo "======= START BOOTSTRAP BUILD =======>"
-          # do not need digests in the BOOTSTRAP build so override default with false
-          CONTAINERNAME="''' + QUAY_PROJECT + '''offline"
-          docker build -t ${CONTAINERNAME} . --no-cache -f ${WORKSPACE}/bootstrap.Dockerfile \
-            --target builder --build-arg BOOTSTRAP=true --build-arg USE_DIGESTS=false
-          echo "<======= END BOOTSTRAP BUILD ======="
-
-          # update tarballs - step 2 - check old sources' tarballs
-          cd ${WORKSPACE}/targetdwn
-          # TODO is there a better way to determine if we need to push sources?
-          rhpkg sources
-
-          # update tarballs - step 3 - create tarballs in targetdwn folder
-          mkdir -p /tmp/root-local/ && docker run --rm -v \
-            /tmp/root-local/:/tmp/root-local/ ${CONTAINERNAME} /bin/bash \
-            -c "cd /root/.local/ && cp -r bin/ lib/ /tmp/root-local/"
-
-          # check diff
-          BEFORE_DIR=/tmp/root-local-before
-          rm -fr ${BEFORE_DIR}; mkdir ${BEFORE_DIR} && tar xzf ${WORKSPACE}/targetdwn/root-local.tgz -C ${BEFORE_DIR}
-          TAR_DIFF=$(sudo diff --suppress-common-lines -u -r ${BEFORE_DIR} /tmp/root-local -x "*.pyc" -x "installed-files.txt") || true
-          if [[ ${TAR_DIFF} ]]; then
-            echo "DIFF START *****"
-            echo "${TAR_DIFF}"
-            echo "***** END DIFF"
-            pushd /tmp/root-local >/dev/null && sudo tar czf root-local.tgz lib/ bin/ && popd >/dev/null && mv -f /tmp/root-local/root-local.tgz . && sudo rm -fr /tmp/root-local/
-          fi
-
-          mkdir -p /tmp/''' + QUAY_PROJECT + '''-resources/
-          docker run --rm -v /tmp/''' + QUAY_PROJECT + '''-resources/:/tmp/''' + QUAY_PROJECT + '''-resources/ \
-            --entrypoint /bin/bash ${CONTAINERNAME} -c \
-            "cd /build && cp -r ./devfiles ./resources /tmp/''' + QUAY_PROJECT + '''-resources/"
-
-          # check diff
-          if [[ -f ${WORKSPACE}/targetdwn/resources.tgz ]]; then
-            BEFORE_DIR=/tmp/''' + QUAY_PROJECT + '''-resources-before
-            rm -fr ${BEFORE_DIR}; mkdir ${BEFORE_DIR} && tar xzf ${WORKSPACE}/targetdwn/resources.tgz -C ${BEFORE_DIR}
-            TAR_DIFF2=$(sudo diff --suppress-common-lines -u -r ${BEFORE_DIR} /tmp/''' + QUAY_PROJECT + '''-resources) || true
-          else
-            TAR_DIFF2="No such file ${WORKSPACE}/targetdwn/resources.tgz -- creating a new one for the first time"
-          fi
-          if [[ ${TAR_DIFF2} ]]; then
-            echo "DIFF START *****"
-            echo "${TAR_DIFF2}"
-            echo "***** END DIFF"
-            pushd /tmp/''' + QUAY_PROJECT + '''-resources/ >/dev/null && \
-              sudo tar czf resources.tgz ./* && \
-              popd >/dev/null && \
-              mv -f /tmp/''' + QUAY_PROJECT + '''-resources/resources.tgz . && \
-              sudo rm -fr /tmp/''' + QUAY_PROJECT + '''-resources/
-          fi
-
-          # update tarballs - step 4 - commit changes if diff different
-          if [[ ${TAR_DIFF} ]] || [[ ${TAR_DIFF2} ]]; then
-            git pull origin ''' + DWNSTM_BRANCH + ''' || true
-            rhpkg new-sources root-local.tgz resources.tgz
-            git commit -s -m "[tgz] Update root-local.tgz and resources.tgz" sources
-            git push origin ''' + DWNSTM_BRANCH + '''
-          else
-            echo "No changes since previous tarball was created."
-          fi
-
-          # clean up diff dirs
-          sudo rm -fr /tmp/root-local /tmp/root-local-before /tmp/''' + QUAY_PROJECT + '''-resources /tmp/''' + QUAY_PROJECT + '''-resources-before
-        ''')
-        NEW_SHA = util.getLastCommitSHA("${WORKSPACE}/targetdwn")
-        if (OLD_SHA != NEW_SHA) { HAS_CHANGED="true" }
-
-        println "########################################################################################################"
-        println "##  Container Build"
+        println "##  Kickoff Sync to downstream job"
         println "########################################################################################################"
         if (HAS_CHANGED == "true" || FORCE_BUILD == "true") {
-          sh('''#!/bin/bash -xe
-            # NOTE: this image needs to build in Brew (CRW <=2.3), then rebuild for Quay, so use QUAY_REBUILD_PATH instead of QUAY_REPO_PATHs variable
-            # For CRW 2.4, do not rebuild (just copy to Quay) and use an ImageContentSourcePolicy file to resolve images
-            # https://gitlab.cee.redhat.com/codeready-workspaces/knowledge-base/-/blob/master/installStagingCRW.md#create-imagecontentsourcepolicy
-            for QRP in ''' + QUAY_PROJECT + '''; do
-              QUAY_REPO_PATH=""; if [[ ''' + PUSH_TO_QUAY + ''' == "true" ]]; then QUAY_REPO_PATH="${QRP}-rhel8"; fi
-              curl \
-"https://codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/get-sources-rhpkg-container-build/buildWithParameters?\
-token=CI_BUILD&\
-cause=${QUAY_REPO_PATH}+respin+by+${BUILD_TAG}&\
-GIT_BRANCH=''' + DWNSTM_BRANCH + '''&\
-GIT_PATHs=containers/codeready-workspaces-${QRP}&\
-QUAY_REPO_PATHs=${QUAY_REPO_PATH}&\
-JOB_BRANCH=''' + CRW_VERSION + '''&\
-FORCE_BUILD=true&\
-SCRATCH=''' + SCRATCH + '''"
-            done
-          ''')
+          SYNC_REPO = util.getCRWLongName(QUAY_PROJECT)
+          build(
+              job: 'crw-plugins-and-stacks_' + CRW_VERSION,
+              wait: false,
+              propagate: false,
+              parameters: [
+                [
+                  $class: 'StringParameterValue',
+                  name: 'token',
+                  value: "CI_BUILD"
+                ],
+                [
+                  $class: 'StringParameterValue',
+                  name: 'cause',
+                  value: SYNC_REPO.replaceAll("codeready-workspaces-","") + "+respin+by+${BUILD_TAG}"
+                ],
+                [
+                  $class: 'StringParameterValue',
+                  name: 'REPOS',
+                  value: "${SYNC_REPO}"
+                ],
+                [
+                  $class: 'StringParameterValue',
+                  name: 'FORCE_BUILD',
+                  value: "true"
+                ],
+                [
+                  $class: 'StringParameterValue',
+                  name: 'SCRATCH',
+                  value: "false"
+                ]
+              ]
+            )
         } else {
           println "No changes upstream, nothing to commit"
         }
