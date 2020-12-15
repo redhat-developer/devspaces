@@ -22,7 +22,7 @@ def OLD_SHA=""
 def NEW_SHA=""
 def HAS_CHANGED="false"
 
-def buildNode = "s390x-rhel7-beaker" // node label
+def buildNode = "rhel7-releng" // node label
 timeout(120) {
   node("${buildNode}"){ stage "Sync repos"
     wrap([$class: 'TimestamperBuildWrapper']) {
@@ -42,7 +42,6 @@ timeout(120) {
         util.cloneRepo("https://github.com/${MIDSTM_REPO}.git", "${WORKSPACE}/targetmid", MIDSTM_BRANCH)
         OLD_SHA = util.getLastCommitSHA("${WORKSPACE}/targetmid")
         SOURCE_DIR="${WORKSPACE}/targetmid/dependencies/che-devfile-registry/"
-        TARGET_DIR="${WORKSPACE}/targetdwn/" + util.getCRWLongName(QUAY_PROJECT) + "/"
         util.updateBaseImages(SOURCE_DIR + "build/dockerfiles", DWNSTM_BRANCH, "-f rhel.Dockerfile")
         SOURCE_SHA = util.getLastCommitSHA("${WORKSPACE}/targetmid")
         println "Got SOURCE_SHA in sources folder: " + SOURCE_SHA
@@ -52,6 +51,7 @@ timeout(120) {
         println "##  Sync ${QUAY_PROJECT} to codeready-workspaces-images"
         println "########################################################################################################"
         util.cloneRepo("https://github.com/${DWNSTM_REPO}", "${WORKSPACE}/targetdwn", DWNSTM_BRANCH)
+        TARGET_DIR="${WORKSPACE}/targetdwn/" + util.getCRWLongName(QUAY_PROJECT) + "/"
         OLD_SHA = util.getLastCommitSHA("${WORKSPACE}/targetdwn")
 
         // rsync files to codeready-workspaces-images
