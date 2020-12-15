@@ -33,15 +33,18 @@ def installSkopeoFromContainer(String container) {
   if (!container?.trim()) {
     container="registry.redhat.io/rhel8/skopeo"
   }
-  sh('''#!/bin/bash -xe
-    sudo yum remove -y -q skopeo || true
-    PODMAN=$(command -v podman || true)
-    if [[ ! -x $PODMAN ]]; then echo "[WARNING] podman is not installed."; PODMAN=$(command -v docker || true); fi
-    if [[ ! -x $PODMAN ]]; then echo "[ERROR] docker is not installed. Aborting."; exit 1; fi
-    ${PODMAN} run --rm -v /tmp:/skopeo registry.redhat.io/rhel8/skopeo sh -c "cp /usr/bin/skopeo /skopeo"; sudo cp -f /tmp/skopeo /usr/local/bin/skopeo; rm -f /tmp/skopeo
-    skopeo --version
-    '''
-  )
+  withCredentials([usernamePassword(credentialsId: 'registry.redhat.io_crw_bot', usernameVariable: 'CRW_BOT_USERNAME', passwordVariable: 'CRW_BOT_PASSWORD')]){
+    sh('''#!/bin/bash -xe
+      sudo yum remove -y -q skopeo || true
+      PODMAN=$(command -v podman || true)
+      if [[ ! -x $PODMAN ]]; then echo "[WARNING] podman is not installed."; PODMAN=$(command -v docker || true); fi
+      if [[ ! -x $PODMAN ]]; then echo "[ERROR] docker is not installed. Aborting."; exit 1; fi
+      echo "''' + CRW_BOT_PASSWORD + '''" | ${PODMAN} login -u="''' + CRW_BOT_USERNAME + '''" --password-stdin registry.redhat.io
+      ${PODMAN} run --rm -v /tmp:/skopeo registry.redhat.io/rhel8/skopeo sh -c "cp /usr/bin/skopeo /skopeo"; sudo cp -f /tmp/skopeo /usr/local/bin/skopeo; rm -f /tmp/skopeo
+      skopeo --version
+      '''
+    )
+  }
 }
 
 // OLD WAY <= CRW 2.5, uses version built in Jenkins from latest sources
