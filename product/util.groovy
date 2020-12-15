@@ -20,15 +20,32 @@ def String getCrwVersion(String MIDSTM_BRANCH) {
   return CRW_VERSION_F
 }
 
-def installYq(){
+def installYq() {
 		sh '''#!/bin/bash -xe
 sudo yum -y install jq python3-six python3-pip
 sudo /usr/bin/python3 -m pip install --upgrade pip yq jsonschema; jq --version; yq --version
 '''
 }
 
-def installSkopeo(String CRW_VERSION)
-{
+// NEW WAY >= CRW 2.6, uses RHEC containerized skopeo build
+def installSkopeoFromContainer(String container) {
+  // default container to use - should be multiarch
+  if (!container?.trim()) {
+    container="registry.redhat.io/rhel8/skopeo"
+  }
+  sh('''#!/bin/bash -xe
+    sudo yum remove -y -q skopeo || true
+    PODMAN=$(command -v podman || true)
+    if [[ ! -x $PODMAN ]]; then echo "[WARNING] podman is not installed."; PODMAN=$(command -v docker || true); fi
+    if [[ ! -x $PODMAN ]]; then echo "[ERROR] docker is not installed. Aborting."; exit 1; fi
+    ${PODMAN} run --rm -v /tmp:/skopeo registry.redhat.io/rhel8/skopeo sh -c "cp /usr/bin/skopeo /skopeo"; sudo cp -f /tmp/skopeo /usr/local/bin/skopeo; rm -f /tmp/skopeo
+    skopeo --version
+    '''
+  )
+}
+
+// OLD WAY <= CRW 2.5, uses version built in Jenkins from latest sources
+def installSkopeo(String CRW_VERSION) {
   sh('''#!/bin/bash -xe
     pushd /tmp >/dev/null
     # remove any older versions
