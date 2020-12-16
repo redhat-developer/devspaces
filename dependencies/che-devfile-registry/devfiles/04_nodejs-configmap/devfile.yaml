@@ -5,9 +5,9 @@ metadata:
 projects:
   - name: nodejs-configmap
     source:
-      location: "https://github.com/nodeshift-starters/nodejs-configmap"
+      location: "https://github.com/crw-samples/nodejs-configmap.git"
       type: git
-      branch: master
+      branch: 12.x
 components:
   - id: che-incubator/typescript/latest
     type: chePlugin
