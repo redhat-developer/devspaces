@@ -27,6 +27,23 @@ sudo /usr/bin/python3 -m pip install --upgrade pip yq jsonschema; jq --version; 
 '''
 }
 
+// to log into quay and RHEC, use this method where needed
+def loginToRegistries() {
+  withCredentials([
+      string(credentialsId: 'quay.io-crw-crwci_user_token', variable: 'QUAY_TOKEN'),
+      usernamePassword(credentialsId: 'registry.redhat.io_crw_bot', usernameVariable: 'CRW_BOT_USERNAME', passwordVariable: 'CRW_BOT_PASSWORD')
+  ]){
+    sh('''#!/bin/bash -xe
+      PODMAN=$(command -v podman || true)
+      if [[ ! -x $PODMAN ]]; then echo "[WARNING] podman is not installed."; PODMAN=$(command -v docker || true); fi
+      if [[ ! -x $PODMAN ]]; then echo "[ERROR] docker is not installed. Aborting."; exit 1; fi
+      echo "''' + QUAY_TOKEN + '''" | ${PODMAN} login -u="crw+crwci" --password-stdin quay.io
+      echo "''' + CRW_BOT_PASSWORD + '''" | ${PODMAN} login -u="''' + CRW_BOT_USERNAME + '''" --password-stdin registry.redhat.io
+      '''
+    )
+  }
+}
+
 // NEW WAY >= CRW 2.6, uses RHEC containerized skopeo build
 def installSkopeoFromContainer(String container) {
   // default container to use - should be multiarch
@@ -180,8 +197,11 @@ User crw-build/codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com@REDH
     chmod 600 ~/.ssh/config
     # initialize kerberos
     export KRB5CCNAME=/var/tmp/crw-build_ccache
+    # verify keytab is a valid file
+    # sudo klist -k ''' + CRW_KEYTAB + '''
     kinit "crw-build/codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com@REDHAT.COM" -kt ''' + CRW_KEYTAB + '''
-    klist # verify working
+    # verify keytab loaded
+    # klist
     '''
   )
 }
