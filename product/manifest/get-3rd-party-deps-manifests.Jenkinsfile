@@ -149,7 +149,9 @@ if [[ "''' + TAG_RELEASE + '''" == "true" ]]; then
 fi
 
 # generate source files
-cd ${WORKSPACE}/crw/product/manifest/ && ./get-3rd-party-deps-manifests.sh -v ${CSV_VERSION} -b ''' + MIDSTM_BRANCH + '''
+cd ${WORKSPACE}/crw/product/manifest/
+export GITHUB_TOKEN=''' + GITHUB_TOKEN + ''' # echo "''' + GITHUB_TOKEN + '''"
+./get-3rd-party-deps-manifests.sh -v ${CSV_VERSION} -b ''' + MIDSTM_BRANCH + '''
 
 # copy over the dir contents
 rsync -azrlt ${WORKSPACE}/${CSV_VERSION}/* ${WORKSPACE}/crw/product/manifest/${CSV_VERSION}/
@@ -159,7 +161,6 @@ tree ${WORKSPACE}/crw/product/manifest/${CSV_VERSION}
 
 # commit manifest files
 git checkout --track origin/''' + MIDSTM_BRANCH + ''' || true
-export GITHUB_TOKEN=''' + GITHUB_TOKEN + ''' # echo "''' + GITHUB_TOKEN + '''"
 git config user.email "nickboldt+devstudio-release@gmail.com"
 git config user.name "Red Hat Devstudio Release Bot"
 git config --global push.default matching
