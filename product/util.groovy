@@ -45,6 +45,7 @@ def loginToRegistries() {
 }
 
 // NEW WAY >= CRW 2.6, uses RHEC containerized skopeo build
+// DOES NOT WORK on RHEL7: /lib64/libc.so.6: version `GLIBC_2.28' not found
 def installSkopeoFromContainer(String container) {
   // default container to use - should be multiarch
   if (!container?.trim()) {
