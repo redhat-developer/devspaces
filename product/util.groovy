@@ -57,7 +57,7 @@ def installSkopeoFromContainer(String container) {
       if [[ ! -x $PODMAN ]]; then echo "[WARNING] podman is not installed."; PODMAN=$(command -v docker || true); fi
       if [[ ! -x $PODMAN ]]; then echo "[ERROR] docker is not installed. Aborting."; exit 1; fi
       echo "''' + CRW_BOT_PASSWORD + '''" | ${PODMAN} login -u="''' + CRW_BOT_USERNAME + '''" --password-stdin registry.redhat.io
-      ${PODMAN} run --rm -v /tmp:/skopeo registry.redhat.io/rhel8/skopeo sh -c "cp /usr/bin/skopeo /skopeo"; sudo cp -f /tmp/skopeo /usr/local/bin/skopeo; rm -f /tmp/skopeo
+      ${PODMAN} run --rm -v /tmp:/skopeo registry.redhat.io/rhel8/skopeo sh -c "cp /usr/bin/skopeo /skopeo"; sudo cp -f /tmp/skopeo /usr/local/bin/skopeo; rm -f /tmp/skopeo || true
       skopeo --version
       '''
     )
