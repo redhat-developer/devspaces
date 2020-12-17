@@ -87,6 +87,19 @@ def installBrewKoji() {
 def installRhpkg() {
   installRPMs("rhpkg krb5-workstation")
 }
+
+// For RHEL8 only!
+def installPodman() {
+  sh('''#!/bin/bash -xe
+  sudo yum -y -q module install container-tools
+  ''')
+  installRPMs("fuse3 podman podman-docker")
+  sh('''#!/bin/bash -xe
+  # suppress message re: docker emulation w/ podman
+  sudo touch /etc/containers/nodocker 
+  podman --version
+  ''')
+}
 def installRPMs(String whichRPMs) {
   sh('''#!/bin/bash -xe
   sudo yum install -y -q yum-utils || true
