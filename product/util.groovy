@@ -22,9 +22,17 @@ def String getCrwVersion(String MIDSTM_BRANCH) {
 
 def installYq() {
 		sh '''#!/bin/bash -xe
-sudo yum -y install jq python3-six python3-pip
-sudo /usr/bin/python3 -m pip install --upgrade pip yq jsonschema; jq --version; yq --version
+sudo yum install -y -q jq python3-six python3-pip
+sudo /usr/bin/python3 -m pip install -q --upgrade pip yq jsonschema; jq --version; yq --version
 '''
+}
+
+def installRhpkg() {
+  sh('''#!/bin/bash -xe
+  sudo yum install -y -q yum-utils || true
+  sudo yum-config-manager --add-repo http://download-node-02.eng.bos.redhat.com/rel-eng/RCMTOOLS/latest-RCMTOOLS-1-RHEL-8/compose/BaseOS/x86_64/os/ || true
+  sudo yum install -y -q --nogpgcheck rhpkg krb5-workstation
+  ''')
 }
 
 // to log into quay and RHEC, use this method where needed
@@ -70,7 +78,7 @@ def installSkopeo(String CRW_VERSION) {
   sh('''#!/bin/bash -xe
     pushd /tmp >/dev/null
     # remove any older versions
-    sudo yum remove -y skopeo || true
+    sudo yum remove -y -q skopeo || true
     if [[ ! -x /usr/local/bin/skopeo ]]; then
       sudo curl -sSLO "https://codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/crw-deprecated_''' + CRW_VERSION + '''/lastSuccessfulBuild/artifact/codeready-workspaces-deprecated/skopeo/target/skopeo-$(uname -m).tar.gz"
     fi
