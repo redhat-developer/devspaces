@@ -21,17 +21,22 @@ def String getCrwVersion(String MIDSTM_BRANCH) {
 }
 
 def installYq() {
-		sh '''#!/bin/bash -xe
-sudo yum install -y -q jq python3-six python3-pip
+  installRPMs("jq python3-six python3-pip")
+  sh('''#!/bin/bash -xe
 sudo /usr/bin/python3 -m pip install -q --upgrade pip yq jsonschema; jq --version; yq --version
-'''
+  ''')
 }
-
+def installBrewKoji() {
+  installRPMs("brewkoji")
+}
 def installRhpkg() {
+  installRPMs("rhpkg krb5-workstation")
+}
+def installRPMs(String whichRPMs) {
   sh('''#!/bin/bash -xe
   sudo yum install -y -q yum-utils || true
-  sudo yum-config-manager --add-repo http://download-node-02.eng.bos.redhat.com/rel-eng/RCMTOOLS/latest-RCMTOOLS-1-RHEL-8/compose/BaseOS/x86_64/os/ || true
-  sudo yum install -y -q --nogpgcheck rhpkg krb5-workstation
+  sudo yum-config-manager -y -q --add-repo http://download.devel.redhat.com/rel-eng/RCMTOOLS/latest-RCMTOOLS-2-RHEL-8/compose/BaseOS/x86_64/os/ || true
+  sudo yum install -y -q --nogpgcheck ''' + whichRPMs + '''
   ''')
 }
 
