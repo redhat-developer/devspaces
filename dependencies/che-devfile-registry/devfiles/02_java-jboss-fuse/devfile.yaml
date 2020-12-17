@@ -7,7 +7,8 @@ projects:
     name: java-jboss-fuse
     source:
       type: git
-      location: 'https://github.com/jboss-fuse/fuse-rest-http-booster/'
+      location: 'https://github.com/crw-samples/fuse-rest-http-booster.git'
+      branch: redhat-crw
 components:
   -
     type: chePlugin
