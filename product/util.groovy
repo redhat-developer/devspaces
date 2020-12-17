@@ -20,6 +20,61 @@ def String getCrwVersion(String MIDSTM_BRANCH) {
   return CRW_VERSION_F
 }
 
+// TODO https://issues.redhat.com/browse/CRW-360 - eventually we should use RH npm mirror
+def installNPM(String nodeVersion, String yarnVersion) {
+  USE_PUBLIC_NEXUS = true
+
+  sh '''#!/bin/bash -e
+export LATEST_NVM="$(git ls-remote --refs --tags https://github.com/nvm-sh/nvm.git \
+          | cut --delimiter='/' --fields=3 | tr '-' '~'| sort --version-sort| tail --lines=1)"
+
+export NODE_VERSION=''' + nodeVersion + '''
+export METHOD=script
+export PROFILE=/dev/null
+curl -sSLo- https://raw.githubusercontent.com/nvm-sh/nvm/${LATEST_NVM}/install.sh | bash
+'''
+  def nodeHome = sh(script: '''#!/bin/bash -e
+source $HOME/.nvm/nvm.sh
+nvm use --silent ''' + nodeVersion + '''
+dirname $(nvm which node)''' , returnStdout: true).trim()
+  env.PATH="${nodeHome}:${env.PATH}"
+  sh "echo USE_PUBLIC_NEXUS = ${USE_PUBLIC_NEXUS}"
+  if (!USE_PUBLIC_NEXUS) {
+      sh '''#!/bin/bash -xe
+
+echo '
+registry=https://repository.engineering.redhat.com/nexus/repository/registry.npmjs.org/
+cafile=/etc/pki/ca-trust/source/anchors/RH-IT-Root-CA.crt
+strict-ssl=false
+virtual/:_authToken=credentials
+always-auth=true
+' > ${HOME}/.npmrc
+
+echo '
+# registry "https://repository.engineering.redhat.com/nexus/repository/registry.npmjs.org/"
+registry "https://registry.yarnpkg.com"
+cafile /etc/pki/ca-trust/source/anchors/RH-IT-Root-CA.crt
+strict-ssl false
+' > ${HOME}/.yarnrc
+
+cat ${HOME}/.npmrc
+cat ${HOME}/.yarnrc
+
+npm install --global yarn@''' + yarnVersion + '''
+npm config get; yarn config get list
+npm --version; yarn --version
+'''
+  }
+  else
+  {
+        sh '''#!/bin/bash -xe
+rm -f ${HOME}/.npmrc ${HOME}/.yarnrc
+npm install --global yarn@''' + yarnVersion + '''
+node --version; npm --version; yarn --version
+'''
+  }
+}
+
 def installYq() {
   installRPMs("jq python3-six python3-pip")
   sh('''#!/bin/bash -xe
