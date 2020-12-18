@@ -52,7 +52,7 @@ commands:
       -
         type: exec
         component: maven
-        command: "mvn compile quarkus:dev"
+        command: "mvn compile quarkus:dev -Dquarkus.http.host=0.0.0.0"
         workdir: ${CHE_PROJECTS_ROOT}/quarkus-quickstarts/getting-started
   -
     name: Attach remote debugger
