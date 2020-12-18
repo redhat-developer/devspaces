@@ -177,8 +177,6 @@ def cloneRepo(String URL, String REPO_PATH, String BRANCH) {
       checkout([$class: 'GitSCM',
         branches: [[name: BRANCH]],
         doGenerateSubmoduleConfigurations: false,
-        credentialsId: 'devstudio-release',
-        poll: true,
         extensions: [
           [$class: 'RelativeTargetDirectory', relativeTargetDir: REPO_PATH],
           [$class: 'DisableRemotePoll']
