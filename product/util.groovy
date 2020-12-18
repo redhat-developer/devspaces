@@ -232,7 +232,7 @@ def updateBaseImages(String REPO_PATH, String BRANCH, String FLAGS="") {
     cd ''' + REPO_PATH + '''
     export GITHUB_TOKEN=''' + GITHUB_TOKEN + ''' # echo "''' + GITHUB_TOKEN + '''"
     export KRB5CCNAME=/var/tmp/crw-build_ccache
-    ''' + updateBaseImages_bin + ''' -b ''' + BRANCH + ''' ''' + FLAGS
+    ''' + updateBaseImages_bin + ''' -b ''' + BRANCH + ''' ''' + FLAGS + ''' || true'''
   )
 }
 
