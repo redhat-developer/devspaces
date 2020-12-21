@@ -21,7 +21,7 @@ spec:
       - -c
       - ${PLUGIN_REMOTE_ENDPOINT_EXECUTABLE}
     volumes:
-    - mountPath: "/home/theia/.m2"
+    - mountPath: "/home/jboss/.m2"
       name: m2
   extensions:
     - https://download.jboss.org/jbosstools/vscode/3rdparty/vscode-java-debug/vscode-java-debug-0.26.0.vsix
