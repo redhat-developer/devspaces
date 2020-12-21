@@ -100,11 +100,22 @@ def installPodman() {
   podman --version
   ''')
 }
+
 def installRPMs(String whichRPMs) {
   sh('''#!/bin/bash -xe
-  sudo yum install -y -q yum-utils || true
-  sudo yum-config-manager -y -q --add-repo http://download.devel.redhat.com/rel-eng/RCMTOOLS/latest-RCMTOOLS-2-RHEL-8/compose/BaseOS/x86_64/os/ || true
-  sudo yum install -y -q --nogpgcheck ''' + whichRPMs + '''
+  # sudo yum install -y -q yum-utils || true # needed for yum-config-manager
+  # sudo yum-config-manager -y -q --add-repo http://download.devel.redhat.com/rel-eng/RCMTOOLS/latest-RCMTOOLS-2-RHEL-8/compose/BaseOS/x86_64/os/ || true
+
+  # insert multi-arch version, with gpgcheck disabled
+  cat <<EOF | sudo tee /etc/yum.repos.d/latest-RCMTOOLS-2-RHEL-8.repo
+[latest-RCMTOOLS-2-RHEL-8]
+name=latest-RCMTOOLS-2-RHEL-8
+baseurl=http://download.devel.redhat.com/rel-eng/RCMTOOLS/latest-RCMTOOLS-2-RHEL-8/compose/BaseOS/\\$basearch/os/
+enabled=1
+gpgcheck=0
+skip_if_unavailable=True
+EOF
+  sudo yum install -y -q ''' + whichRPMs + '''
   ''')
 }
 
