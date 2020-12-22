@@ -119,19 +119,22 @@ EOF
   ''')
 }
 
-// to log into quay and RHEC, use this method where needed
+// to log into dockerhub, quay and RHEC, use this method where needed
+// if process fails, return code marking failure
 def loginToRegistries() {
   withCredentials([
+      usernamePassword(credentialsId: 'che_dockerhub-user-password', usernameVariable: 'DOCKERHUB_USERNAME', passwordVariable: 'DOCKERHUB_PASSWORD'),
       string(credentialsId: 'quay.io-crw-crwci_user_token', variable: 'QUAY_TOKEN'),
       usernamePassword(credentialsId: 'registry.redhat.io_crw_bot', usernameVariable: 'CRW_BOT_USERNAME', passwordVariable: 'CRW_BOT_PASSWORD')
   ]){
-    sh('''#!/bin/bash -xe
+    return sh(script: '''#!/bin/bash -xe
       PODMAN=$(command -v podman || true)
       if [[ ! -x $PODMAN ]]; then echo "[WARNING] podman is not installed."; PODMAN=$(command -v docker || true); fi
       if [[ ! -x $PODMAN ]]; then echo "[ERROR] docker is not installed. Aborting."; exit 1; fi
+      echo "''' + DOCKERHUB_PASSWORD + '''" | ${PODMAN} login -u="''' + DOCKERHUB_USERNAME + '''" --password-stdin docker.io
       echo "''' + QUAY_TOKEN + '''" | ${PODMAN} login -u="crw+crwci" --password-stdin quay.io
       echo "''' + CRW_BOT_PASSWORD + '''" | ${PODMAN} login -u="''' + CRW_BOT_USERNAME + '''" --password-stdin registry.redhat.io
-      '''
+      ''', returnStatus:true
     )
   }
 }
