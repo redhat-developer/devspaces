@@ -10,6 +10,7 @@ import groovy.transform.Field
 @Field String branchToBuildDev = "refs/tags/19"
 @Field String branchToBuildParent = "refs/tags/7.15.0"
 @Field String branchToBuildChe = "7.20.x"
+@Field String branchToBuildCheDashboard = "7.20.x"
 @Field String MIDSTM_BRANCH = "crw-2.5-rhel-8" // target branch in GH repo, eg., crw-2.5-rhel-8
 
 @Field String PUSH_TO_QUAY = "true"
@@ -202,7 +203,7 @@ PREVVERSION="${BASE}.${PREV}"; echo ${PREVVERSION}
 
 		echo "===== Build che-dashboard =====>"
 		checkout([$class: 'GitSCM', 
-			branches: [[name: "${branchToBuildChe}"]], 
+			branches: [[name: "${branchToBuildCheDashboard}"]],
 			doGenerateSubmoduleConfigurations: false, 
 			poll: true,
 			extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: "${CHE_DB_path}"]], 
