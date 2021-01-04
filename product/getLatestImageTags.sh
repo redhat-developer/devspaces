@@ -8,7 +8,7 @@
 # SPDX-License-Identifier: EPL-2.0
 #
 
-# script to query latest tags for a given list of imags in RHCC
+# script to query latest tags for a given list of imags in RHEC
 # REQUIRES: 
 #    * brew for OSBS queries, 
 #    * skopeo >=1.1 (for authenticated registry queries, and to use --override-arch for s390x images)
@@ -42,7 +42,7 @@ checkVersion() {
 }
 checkVersion 1.1 "$(skopeo --version | sed -e "s/skopeo version //")" skopeo
 
-CRW_CONTAINERS_RHCC="\
+CRW_CONTAINERS_RHEC="\
 codeready-workspaces/configbump-rhel8 \
 codeready-workspaces/crw-2-rhel8-operator \
 codeready-workspaces/crw-2-rhel8-operator-metadata \
@@ -110,8 +110,8 @@ codeready-workspaces/theia-rhel8 \
 codeready-workspaces/traefik-rhel8 \
 "
 
-# regex pattern of container versions/names to exclude, eg., Beta1 (because version sort thinks 1.0.0.Beta1 > 1.0-12)
-EXCLUDES="latest" 
+# regex pattern of container tags to exclude, eg., latest and -sources
+EXCLUDES="latest|\\-sources" 
 
 QUIET=1 	# less output - omit container tag URLs
 VERBOSE=0	# more output
@@ -127,22 +127,22 @@ SORTED=0 # if 0, use the order of containers in the CRW*_CONTAINERS_* strings ab
 usage () {
 	echo "
 Usage: 
-  $0 -b ${DWNSTM_BRANCH}                                       | use default list of CRW images in RHCC Prod
-  $0 -b ${DWNSTM_BRANCH} --stage --sort                        | use default list of CRW images in RHCC Stage, sorted alphabetically
-  $0 -b ${DWNSTM_BRANCH} --quay --arches                       | use default list of CRW images in quay.io/crw; show arches
+  $0 -b ${DWNSTM_BRANCH} --nvr --log                           | check images in brew; output NVRs can be copied to Errata; show Brew builds/logs
 
-  $0 -c 'crw/theia-rhel8 crw/theia-endpoint-rhel8' --quay    | check a specific image in quay
-  $0 -c 'rhoar-nodejs/nodejs-10 jboss-eap-7/eap72-openshift' | use specific list of RHCC images
-  $0 -c ubi7 -c ubi8:8.0 --osbs -n 5                         | check OSBS registry; show 8.0* tags; show 5 tags per container
-  $0 -c ubi7 -c ubi8:8.0 --stage -n 5                        | check RHCC stage registry; show 8.0* tags; show 5 tags per container
-  $0 -c pivotaldata/centos --docker --dockerfile             | check docker registry; show Dockerfile contents (requires dfimage)
-  $0 -c codeready-workspaces-plugin-java11-openj9-rhel8 --quay             | check a non-amd64 image
-  $0 -c codeready-workspaces-theia-rhel8 --osbs --pushtoquay='${JOB_BRANCH} latest'  | pull an image from osbs, push 3 tags to quay
-
-  $0 -b ${DWNSTM_BRANCH} --nvr --log                           | check images in brew; output NVRs can be copied to Errata; show links to Brew logs
+  $0 -b ${DWNSTM_BRANCH} --quay                                | use default list of CRW images in quay.io/crw
   $0 -b ${DWNSTM_BRANCH} --osbs                                | check images in OSBS ( registry-proxy.engineering.redhat.com/rh-osbs )
-  $0 -b ${DWNSTM_BRANCH} --osbs --pushtoquay='${JOB_BRANCH} latest'      | pull images from OSBS, then push matching tag to quay, including extra tags if set
+  $0 -b ${DWNSTM_BRANCH} --osbs --pushtoquay='${JOB_BRANCH} latest'      | pull images from OSBS, push ${JOB_BRANCH}-z tag + 2 extras to quay
+  $0 -b ${DWNSTM_BRANCH} --stage --sort                        | use default list of CRW images in RHEC Stage, sorted alphabetically
+  $0 -b ${DWNSTM_BRANCH} --arches                              | use default list of CRW images in RHEC Prod; show arches
 
+  $0 -c 'crw/theia-rhel8 crw/theia-endpoint-rhel8' --quay      | check latest tag for specific Quay images, with branch = ${DWNSTM_BRANCH}
+  $0 -c crw/plugin-java11-openj9-rhel8 --quay                  | check a non-amd64 image
+  $0 -c codeready-workspaces-jwtproxy-rhel8 --osbs             | pull an image from OSBS
+  $0 -c 'rhoar-nodejs/nodejs-10 jboss-eap-7/eap72-openshift'   | check latest tags for specific RHEC images
+  $0 -c ubi7-minimal -c ubi8-minimal --osbs -n 3 --tag .       | check OSBS registry; show all tags; show 3 tags per container
+  $0 -c 'devtools/go-toolset-rhel7 ubi7/go-toolset' --tag 1.1* | check RHEC prod registry; show 1.1* tags (exclude latest and -sources)
+
+  $0 -c pivotaldata/centos --docker --dockerfile               | check docker registry; show Dockerfile contents (requires dfimage)
 "
 }
 if [[ $# -lt 1 ]]; then usage; exit 1; fi
@@ -161,7 +161,7 @@ while [[ "$#" -gt 0 ]]; do
     '-v') QUIET=0; VERBOSE=1;;
     '-a'|'--arches') ARCHES=1;;
     '-r') REGISTRY="$2"; shift 1;;
-    '--rhcc') REGISTRY="http://registry.redhat.io";;
+    '--rhec'|'--rhcc') REGISTRY="http://registry.redhat.io";;
     '--stage') REGISTRY="http://registry.stage.redhat.io";;
     '--pulp-old') REGISTRY="http://brew-pulp-docker01.web.prod.ext.phx2.redhat.com:8888"; EXCLUDES="latest|candidate|guest|containers";;
     '-p'|'--osbs') REGISTRY="http://registry-proxy.engineering.redhat.com/rh-osbs"; EXCLUDES="latest|candidate|guest|containers";;
@@ -187,6 +187,8 @@ done
 if [[ -z ${BASETAG} ]] && [[ ${DWNSTM_BRANCH} ]]; then
 	BASETAG=${DWNSTM_BRANCH#*-}
 	BASETAG=${BASETAG%%-*}
+elif [[ "${BASETAG}" ]]; then # if --tag flag used, don't use derived value or fail
+	true
 else
 	usage; exit 1
 fi
@@ -205,10 +207,10 @@ if [[ ${REGISTRY} != "" ]]; then
 	REGISTRYPRE="${REGISTRY##*://}/"
 	if [[ ${REGISTRY} == *"registry-proxy.engineering.redhat.com"* ]]; then
 		if [[ ${CONTAINERS} == "" ]]; then CONTAINERS="${CRW_CONTAINERS_OSBS//codeready-workspaces\//codeready-workspaces-}"; fi
-		if [[ ${CONTAINERS} == "${CRW_CONTAINERS_RHCC}" ]]; then CONTAINERS="${CRW_CONTAINERS_OSBS//codeready-workspaces\//codeready-workspaces-}"; fi
+		if [[ ${CONTAINERS} == "${CRW_CONTAINERS_RHEC}" ]]; then CONTAINERS="${CRW_CONTAINERS_OSBS//codeready-workspaces\//codeready-workspaces-}"; fi
 	elif [[ ${REGISTRY} == *"quay.io"* ]]; then
-		if [[ ${CONTAINERS} == "${CRW_CONTAINERS_RHCC}" ]] || [[ ${CONTAINERS} == "" ]]; then
-			CONTAINERS="${CRW_CONTAINERS_RHCC}"; 
+		if [[ ${CONTAINERS} == "${CRW_CONTAINERS_RHEC}" ]] || [[ ${CONTAINERS} == "" ]]; then
+			CONTAINERS="${CRW_CONTAINERS_RHEC}"; 
 			CONTAINERS="${CONTAINERS//codeready-workspaces/crw}"
 		fi
 	fi
@@ -275,15 +277,15 @@ for URLfrag in $CONTAINERS; do
 	# shellcheck disable=SC2001
 	QUERY="$(echo $URL | sed -e "s#.\+\(registry.redhat.io\|registry.access.redhat.com\)/#skopeo inspect ${ARCH_OVERRIDE} docker://${REGISTRYPRE}#g")"
 	if [[ $VERBOSE -eq 1 ]]; then 
-		      echo ""; echo "# $QUERY | jq -r .RepoTags[] | egrep -v '${EXCLUDES}' | grep -F '${BASETAG}' | sort -V | tail -5"
+		      echo ""; echo "# $QUERY | jq -r .RepoTags[] | grep -E -v '${EXCLUDES}' | grep -E '${BASETAG}' | sort -V | tail -5"
 	fi
-	LATESTTAGs=$(${QUERY} 2>/dev/null | jq -r .RepoTags[] | egrep -v "${EXCLUDES}" | grep -F "${BASETAG}" | sort -V | tail -${NUMTAGS})
+	LATESTTAGs=$(${QUERY} 2>/dev/null | jq -r .RepoTags[] | grep -E -v "${EXCLUDES}" | grep -E "${BASETAG}" | sort -V | tail -${NUMTAGS})
 	if [[ ! ${LATESTTAGs} ]]; then # try again with -container suffix
 		QUERY="$(echo ${URL}-container | sed -e "s#.\+\(registry.redhat.io\|registry.access.redhat.com\)/#skopeo inspect ${ARCH_OVERRIDE} docker://${REGISTRYPRE}#g")"
 		if [[ $VERBOSE -eq 1 ]]; then 
-			      echo ""; echo "# $QUERY | jq -r .RepoTags[] | egrep -v '${EXCLUDES}' | grep -F '${BASETAG}' | sort -V | tail -5" 
+			      echo ""; echo "# $QUERY | jq -r .RepoTags[] | grep -E -v '${EXCLUDES}' | grep -E '${BASETAG}' | sort -V | tail -5" 
 		fi
-		LATESTTAGs=$(${QUERY} 2>/dev/null | jq -r .RepoTags[] | egrep -v "${EXCLUDES}" | grep -F "${BASETAG}" | sort -V | tail -${NUMTAGS})
+		LATESTTAGs=$(${QUERY} 2>/dev/null | jq -r .RepoTags[] | grep -E -v "${EXCLUDES}" | grep -E "${BASETAG}" | sort -V | tail -${NUMTAGS})
 	fi
 
 	if [[ ! ${LATESTTAGs} ]]; then
