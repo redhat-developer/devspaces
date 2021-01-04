@@ -300,4 +300,24 @@ User crw-build/codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com@REDH
   )
 }
 
+def notifyBuildFailed() {
+    emailext (
+        subject: "Build failed in Jenkins: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+        body: """
+Build failed in Jenkins: ${env.JOB_NAME} #${env.BUILD_NUMBER}
+
+Build:   ${env.BUILD_URL}
+Steps:   ${env.BUILD_URL}/flowGraphTable
+
+Params:  ${env.BUILD_URL}/parameters
+Console: ${env.BUILD_URL}/console
+
+Rebuild: ${env.BUILD_URL}/rebuild
+""",
+        recipientProviders: [culprits(), developers(), requestor()]
+        // [$class: 'CulpritsRecipientProvider'],[$class: 'DevelopersRecipientProvider']]
+    )
+}
+
+
 return this
