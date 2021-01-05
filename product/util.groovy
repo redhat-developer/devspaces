@@ -93,10 +93,11 @@ def installPodman() {
   PODMAN="$(command -v podman || true)"
   if [[ ! -x $PODMAN ]]; then PODMAN="$(command -v docker || true)"; fi
   echo "$PODMAN"''', returnStdout: true)
+  println "PODMAN = [" + PODMAN + "]"
   if (PODMAN?.trim()) { // either podman or docker is already installed
     sh(script: '''#!/bin/bash -xe
-      echo -n "[INFO] podman and/or docker is already installed: "
-''' + PODMAN + ''' --version
+      PODMAN_VERSION="$(''' + PODMAN + ''' --version | awk '{ print $3 }')"
+      echo "[INFO] podman and/or docker present as ''' + PODMAN + ''', version ${PODMAN_VERSION}"
   ''')
   } else {
     OS_IS_RHEL8 = sh(script: '''#!/bin/bash -xe
