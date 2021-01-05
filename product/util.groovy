@@ -308,14 +308,18 @@ def cloneRepo(String URL, String REPO_PATH, String BRANCH) {
   }
 }
 
+// Requires installSkopeo*() and installYq() to run
+// Requires getCrwVersion() to set CRW_BRANCH_F in order to install correct version of the script; or, if JOB_BRANCH is defined by .groovy param or in .jenkinsfile, will use that version
 def updateBaseImages(String REPO_PATH, String BRANCH, String FLAGS="") {
-  // Requires installSkopeo()
   def String updateBaseImages_bin="${WORKSPACE}/updateBaseImages.sh"
   if (!fileExists(updateBaseImages_bin)) {
-    if (CRW_BRANCH_F.equals("")) {
-      println("ERROR: execute getCrwVersion() before calling updateBaseImages")
-      exit 1
+    if (!CRW_BRANCH_F?.trim() && JOB_BRANCH?.trim()) {
+      CRW_BRANCH_F = JOB_BRANCH
     }
+    // fail build if not true
+    assert (!CRW_BRANCH_F?.trim() && !JOB_BRANCH?.trim()) : "ERROR: execute getCrwVersion() before calling updateBaseImages()"
+
+    // otherwise continue
     sh('''#!/bin/bash -xe
       curl -L -s -S https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/''' + CRW_BRANCH_F + '''/product/updateBaseImages.sh -o ''' + updateBaseImages_bin + '''
       chmod +x ''' + updateBaseImages_bin
