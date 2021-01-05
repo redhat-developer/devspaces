@@ -12,7 +12,7 @@ category: Linter
 repository: https://github.com/SonarSource/sonarlint-vscode
 spec:
   containers:
-    - image: "registry.redhat.io/codeready-workspaces/plugin-java11-rhel8:2.5"
+    - image: "registry.redhat.io/codeready-workspaces/plugin-java11-rhel8:2.6"
       name: vscode-sonarlint
       memoryLimit: "512Mi"
       volumes:
