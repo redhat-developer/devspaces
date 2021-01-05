@@ -92,8 +92,7 @@ def installPodman() {
   PODMAN = sh(script: '''#!/bin/bash -e
   PODMAN="$(command -v podman || true)"
   if [[ ! -x $PODMAN ]]; then PODMAN="$(command -v docker || true)"; fi
-  echo "$PODMAN"''', returnStdout: true)
-  println "PODMAN = [" + PODMAN + "]"
+  echo "$PODMAN"''', returnStdout: true).trim()
   if (PODMAN?.trim()) { // either podman or docker is already installed
     sh(script: '''#!/bin/bash -xe
       PODMAN_VERSION="$(''' + PODMAN + ''' --version | awk '{ print $3 }')"
