@@ -142,19 +142,76 @@ def loginToRegistries() {
 // NEW WAY >= CRW 2.6, uses RHEC containerized skopeo build
 // DOES NOT WORK on RHEL7: /lib64/libc.so.6: version `GLIBC_2.28' not found
 def installSkopeoFromContainer(String container) {
+  if (!container?.trim()) {
+    container="registry.redhat.io/rhel8/skopeo"
+  }
+  installSkopeoFromContainer(container,"1.1")
+}
+def installSkopeoFromContainer(String container, String minimumVersion) {
   // default container to use - should be multiarch
   if (!container?.trim()) {
     container="registry.redhat.io/rhel8/skopeo"
   }
+  if (!minimumVersion?.trim()) {
+    minimumVersion="1.1"
+  }
   withCredentials([usernamePassword(credentialsId: 'registry.redhat.io_crw_bot', usernameVariable: 'CRW_BOT_USERNAME', passwordVariable: 'CRW_BOT_PASSWORD')]){
     sh('''#!/bin/bash -xe
-      sudo yum remove -y -q skopeo || true
-      PODMAN=$(command -v podman || true)
-      if [[ ! -x $PODMAN ]]; then echo "[WARNING] podman is not installed."; PODMAN=$(command -v docker || true); fi
-      if [[ ! -x $PODMAN ]]; then echo "[ERROR] docker is not installed. Aborting."; exit 1; fi
-      echo "''' + CRW_BOT_PASSWORD + '''" | ${PODMAN} login -u="''' + CRW_BOT_USERNAME + '''" --password-stdin registry.redhat.io
-      ${PODMAN} run --rm -v /tmp:/skopeo registry.redhat.io/rhel8/skopeo sh -c "cp /usr/bin/skopeo /skopeo"; sudo cp -f /tmp/skopeo /usr/local/bin/skopeo; rm -f /tmp/skopeo || true
-      skopeo --version
+
+      # NEW WAY >= CRW 2.6, uses RHEC containerized skopeo build, requires RHEL 8 worker node
+      installFromContainer()
+      {
+        installable="$1"
+        sudo yum remove -y -q ${installable} || true
+        PODMAN=$(command -v podman || true)
+        if [[ ! -x $PODMAN ]]; then echo "[WARNING] podman is not installed."; PODMAN=$(command -v docker || true); fi
+        if [[ ! -x $PODMAN ]]; then echo "[ERROR] docker is not installed. Aborting."; exit 1; fi
+        echo "''' + CRW_BOT_PASSWORD + '''" | ${PODMAN} login -u="''' + CRW_BOT_USERNAME + '''" --password-stdin registry.redhat.io
+        ${PODMAN} run --rm -v /tmp:/${installable} ''' + container + ''' sh -c "cp /usr/bin/${installable} /${installable}"; sudo cp -f /tmp/${installable} /usr/local/bin/${installable}; rm -f /tmp/${installable} || true
+        ${installable} --version
+      }
+
+      # OLD WAY, <= CRW 2.5 and for RHEL 7 beaker worker nodes
+      installFromTarball()
+      {
+        CRW_VERSION="$1"
+        jenkinsURL="https://codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/crw-deprecated_${CRW_VERSION}/lastSuccessfulBuild/artifact/codeready-workspaces-deprecated/skopeo/target"
+        pushd /tmp >/dev/null
+        # remove any older versions
+        sudo yum remove -y -q skopeo || true
+        if [[ ! -x /usr/local/bin/skopeo ]]; then
+          sudo curl -sSLO "${jenkinsURL}/skopeo-$(uname -m).tar.gz"
+        fi
+        if [[ -f /tmp/skopeo-$(uname -m).tar.gz ]]; then
+          sudo tar xzf /tmp/skopeo-$(uname -m).tar.gz --overwrite -C /usr/local/bin/
+          sudo chmod 755 /usr/local/bin/skopeo
+          sudo rm -f /tmp/skopeo-$(uname -m).tar.gz
+        fi
+        popd >/dev/null
+        skopeo --version
+      }
+
+      checkVersion() {
+        if [[  "$1" = "$(echo -e "$1\n$2" | sort -V | head -n1)" ]]; then
+          echo "[INFO] $3 version $2 installed is >= $1, can proceed."
+        else 
+          if [[ ! -z "$(cat /etc/os-release | grep -E '^VERSION=\"*8.')" ]]; then # RHEL 8
+            echo "[INFO] $3 version $2 installed is < $1, will attempt to install latest from ''' + container + ''' ..."
+            installFromContainer $3
+          elif [[ ! -z "$(cat /etc/os-release | grep -E '^VERSION=\"*7.')" ]]; then # RHEL 7
+            echo "[INFO] $3 version $2 installed is < $1, will attempt to install latest from ${jenkinsURL}/skopeo-$(uname -m).tar.gz ..."
+            installFromTarball 2.5
+          else
+            echo "[ERROR] Cannot determine which version of RHEL is currently running. Please install ${installable} manually to proceed."
+            exit 1
+        fi
+      }
+
+      SKOPEO_VERSION=""
+      if [ ! -z "$(which skopeo)" ] ; then
+        SKOPEO_VERSION="$(skopeo -v 2> /dev/null | awk '{ print $3 }')"
+      fi
+      checkVersion ''' + minimumVersion + ''' "${SKOPEO_VERSION}" skopeo
       '''
     )
   }
