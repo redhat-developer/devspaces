@@ -99,7 +99,7 @@ def installPodman() {
 ''' + PODMAN + ''' --version
   ''')
   } else {
-    OS_IS_RHEL8 = sh(script: '''!#/bin/bash -xe
+    OS_IS_RHEL8 = sh(script: '''#!/bin/bash -xe
       grep -E '^VERSION=\"*8.' /etc/os-release
     ''', returnStdout: true)
     if (OS_IS_RHEL8?.trim()) {
