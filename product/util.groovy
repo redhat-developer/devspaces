@@ -317,7 +317,7 @@ def updateBaseImages(String REPO_PATH, String BRANCH, String FLAGS="") {
       CRW_BRANCH_F = JOB_BRANCH
     }
     // fail build if not true
-    assert (!CRW_BRANCH_F?.trim() && !JOB_BRANCH?.trim()) : "ERROR: execute getCrwVersion() before calling updateBaseImages()"
+    assert (CRW_BRANCH_F?.trim()) : "ERROR: execute getCrwVersion() before calling updateBaseImages()"
 
     // otherwise continue
     sh('''#!/bin/bash -xe
