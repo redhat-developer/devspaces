@@ -89,15 +89,14 @@ def installRhpkg() {
 
 // For RHEL8 only; for RHEL7 assume podman or docker is already installed
 def installPodman() {
-  PODMAN = sh(script: '''#!/bin/bash -xe
+  PODMAN = sh(script: '''#!/bin/bash -e
   PODMAN="$(command -v podman || true)"
   if [[ ! -x $PODMAN ]]; then PODMAN="$(command -v docker || true)"; fi
-  echo $PODMAN
-  ''', returnStdout: true)
+  echo "$PODMAN"''', returnStdout: true)
   if (PODMAN?.trim()) { // either podman or docker is already installed
     sh(script: '''#!/bin/bash -xe
       echo -n "[INFO] podman and/or docker is already installed: "
-    ''' + PODMAN + ''' --version
+''' + PODMAN + ''' --version
   ''')
   } else {
     OS_IS_RHEL8 = sh(script: '''!#/bin/bash -xe
