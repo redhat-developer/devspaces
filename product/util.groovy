@@ -41,7 +41,6 @@ dirname $(nvm which node)''' , returnStdout: true).trim()
   sh "echo USE_PUBLIC_NEXUS = ${USE_PUBLIC_NEXUS}"
   if (!USE_PUBLIC_NEXUS) {
       sh '''#!/bin/bash -xe
-
 echo '
 registry=https://repository.engineering.redhat.com/nexus/repository/registry.npmjs.org/
 cafile=/etc/pki/ca-trust/source/anchors/RH-IT-Root-CA.crt
@@ -88,17 +87,40 @@ def installRhpkg() {
   installRPMs("rhpkg krb5-workstation")
 }
 
-// For RHEL8 only!
+// For RHEL8 only; for RHEL7 assume podman or docker is already installed
 def installPodman() {
-  sh('''#!/bin/bash -xe
-  sudo yum -y -q module install container-tools
+  PODMAN = sh(script: '''#!/bin/bash -xe
+  PODMAN="$(command -v podman || true)"
+  if [[ ! -x $PODMAN ]]; then PODMAN="$(command -v docker || true)"; fi
+  echo $PODMAN
+  ''', returnStdout: true)
+  if (PODMAN?.trim()) { // either podman or docker is already installed
+    sh(script: '''#!/bin/bash -xe
+      echo -n "[INFO] podman and/or docker is already installed: "
+    ''' + PODMAN + ''' --version
   ''')
-  installRPMs("fuse3 podman podman-docker")
-  sh('''#!/bin/bash -xe
-  # suppress message re: docker emulation w/ podman
-  sudo touch /etc/containers/nodocker 
-  podman --version
-  ''')
+  } else {
+    OS_IS_RHEL8 = sh(script: '''!#/bin/bash -xe
+      grep -E '^VERSION=\"*8.' /etc/os-release
+    ''', returnStdout: true)
+    if (OS_IS_RHEL8?.trim()) {
+      sh('''#!/bin/bash -xe
+        echo "[INFO] Installing podman with docker emulation ..."
+        sudo yum -y -q module install container-tools
+      ''')
+      installRPMs("fuse3 podman podman-docker")
+      sh('''#!/bin/bash -xe
+        # suppress message re: docker emulation w/ podman
+        sudo touch /etc/containers/nodocker 
+        podman --version
+      ''')
+    } else {
+      sh('''#!/bin/bash -xe
+        echo "[ERROR] RHEL 8 not detected: please install docker or podman manually to proceed."
+        exit 1
+      ''')
+    }
+  }
 }
 
 def installRPMs(String whichRPMs) {
@@ -140,7 +162,7 @@ def loginToRegistries() {
 }
 
 // NEW WAY >= CRW 2.6, uses RHEC containerized skopeo build
-// DOES NOT WORK on RHEL7: /lib64/libc.so.6: version `GLIBC_2.28' not found
+// DOES NOT WORK on RHEL7: /lib64/libc.so.6: version `GLIBC_2.28' not found, so fall back to old way from CRW 2.5 Jenkins if Skopeo not installed on RHEL7 node
 def installSkopeoFromContainer(String container) {
   if (!container?.trim()) {
     container="registry.redhat.io/rhel8/skopeo"
@@ -168,10 +190,11 @@ def installSkopeoFromContainer(String container, String minimumVersion) {
         if [[ ! -x $PODMAN ]]; then echo "[ERROR] docker is not installed. Aborting."; exit 1; fi
         echo "''' + CRW_BOT_PASSWORD + '''" | ${PODMAN} login -u="''' + CRW_BOT_USERNAME + '''" --password-stdin registry.redhat.io
         ${PODMAN} run --rm -v /tmp:/${installable} ''' + container + ''' sh -c "cp /usr/bin/${installable} /${installable}"; sudo cp -f /tmp/${installable} /usr/local/bin/${installable}; rm -f /tmp/${installable} || true
+        sudo chmod 755 /usr/local/bin/${installable}
         ${installable} --version
       }
 
-      # OLD WAY, <= CRW 2.5 and for RHEL 7 beaker worker nodes
+      # OLD WAY, <= CRW 2.5 and for RHEL 7 worker nodes (including Beaker)
       installFromTarball()
       {
         CRW_VERSION="$1"
@@ -194,7 +217,7 @@ def installSkopeoFromContainer(String container, String minimumVersion) {
       checkVersion() {
         if [[  "$1" = "$(echo -e "$1\n$2" | sort -V | head -n1)" ]]; then
           echo "[INFO] $3 version $2 installed is >= $1, can proceed."
-        else 
+        else
           if [[ ! -z "$(cat /etc/os-release | grep -E '^VERSION=\"*8.')" ]]; then # RHEL 8
             echo "[INFO] $3 version $2 installed is < $1, will attempt to install latest from ''' + container + ''' ..."
             installFromContainer $3
@@ -204,6 +227,7 @@ def installSkopeoFromContainer(String container, String minimumVersion) {
           else
             echo "[ERROR] Cannot determine which version of RHEL is currently running. Please install ${installable} manually to proceed."
             exit 1
+          fi
         fi
       }
 
