@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (c) 2019-2021 Red Hat, Inc.
+    Copyright (c) 2018-2021 Red Hat, Inc.
     This program and the accompanying materials are made
     available under the terms of the Eclipse Public License 2.0
     which is available at https://www.eclipse.org/legal/epl-2.0/
@@ -46,7 +46,7 @@
         <crw.dashboard.version>${crw.version} (Eclipse Che ${che.version})</crw.dashboard.version>
         <crw.docs.version>2.6</crw.docs.version>
         <crw.version>${project.version}</crw.version>
-        <license_years>2019-2021</license_years>
+        <license_years>2018-2021</license_years>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <nightly>false</nightly>
