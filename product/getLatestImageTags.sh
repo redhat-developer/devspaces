@@ -290,7 +290,9 @@ for URLfrag in $CONTAINERS; do
 
 	if [[ ! ${LATESTTAGs} ]]; then
 	  nocontainer=${QUERY##*docker://}; nocontainer=${nocontainer%%-container}
-	  echo "[ERROR] No tags matching ${BASETAG} found for $nocontainer or ${nocontainer}-container. Is the container public and populated?"
+		if [[ $QUIET -eq 0 ]] || [[ $VERBOSE -eq 1 ]]; then 
+		  echo "[ERROR] No tags matching ${BASETAG} found for $nocontainer or ${nocontainer}-container. Is the container public and populated?"
+		fi
 	fi
 	for LATESTTAG in ${LATESTTAGs}; do
 		if [[ "$REGISTRY" = *"registry.access.redhat.com"* ]]; then
