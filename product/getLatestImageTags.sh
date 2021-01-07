@@ -187,6 +187,8 @@ done
 if [[ -z ${BASETAG} ]] && [[ ${DWNSTM_BRANCH} ]]; then
 	BASETAG=${DWNSTM_BRANCH#*-}
 	BASETAG=${BASETAG%%-*}
+	# since now using extended grep, add \ before the . so it only matches ., not anything
+	BASETAG=${BASETAG//\./\\.}
 elif [[ "${BASETAG}" ]]; then # if --tag flag used, don't use derived value or fail
 	true
 else
@@ -291,7 +293,9 @@ for URLfrag in $CONTAINERS; do
 	if [[ ! ${LATESTTAGs} ]]; then
 	  nocontainer=${QUERY##*docker://}; nocontainer=${nocontainer%%-container}
 		if [[ $QUIET -eq 0 ]] || [[ $VERBOSE -eq 1 ]]; then 
-		  echo "[ERROR] No tags matching ${BASETAG} found for $nocontainer or ${nocontainer}-container. Is the container public and populated?"
+			echo "[ERROR] No tags matching ${BASETAG} found for $nocontainer or ${nocontainer}-container. Is the container public and populated?"
+		else
+			echo "${nocontainer}:???"
 		fi
 	fi
 	for LATESTTAG in ${LATESTTAGs}; do
