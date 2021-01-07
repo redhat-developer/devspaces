@@ -168,6 +168,8 @@ def installSkopeoFromContainer(String container) {
   }
   installSkopeoFromContainer(container,"1.1")
 }
+
+// note that SElinux needs to be permissive or disabled to volume mount a container to extract file(s)
 def installSkopeoFromContainer(String container, String minimumVersion) {
   // default container to use - should be multiarch
   if (!container?.trim()) {
