@@ -22,6 +22,9 @@ def String getCrwVersion(String MIDSTM_BRANCH) {
 
 // TODO https://issues.redhat.com/browse/CRW-360 - eventually we should use RH npm mirror
 def installNPM(String nodeVersion, String yarnVersion) {
+  installNPM(nodeVersion, yarnVersion, false)
+}
+def installNPM(String nodeVersion, String yarnVersion, boolean installP7zip) {
   USE_PUBLIC_NEXUS = true
 
   sh '''#!/bin/bash -e
@@ -44,11 +47,18 @@ source $HOME/.nvm/nvm.sh
 nvm use --silent ''' + nodeVersion + '''
 dirname $(nvm which node)''' , returnStdout: true).trim()
   env.PATH="${nodeHome}:${env.PATH}"
-  sh '''#!/bin/bash -xe
+
+  // used by crwctl build
+  if (installP7zip) {
+    installRPMs("p7zip")
+    sh '''#!/bin/bash -xe
 # remove windows 7z if installed; link to rpm-installed p7zip instead 
 rm -fr ${nodeHome}/lib/node_modules/7zip; 
 if [[ -x /usr/bin/7za ]]; then pushd ${nodeHome}/bin >/dev/null; rm -f 7z*; ln -s /usr/bin/7za 7z; popd >/dev/null; fi
-
+'''
+  }
+  
+  sh '''#!/bin/bash -xe
 rm -f ${HOME}/.npmrc ${HOME}/.yarnrc
 npm install --global yarn@''' + yarnVersion + '''
 node --version && npm --version; yarn --version
