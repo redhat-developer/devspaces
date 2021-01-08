@@ -55,7 +55,7 @@ dirname $(nvm which node)''' , returnStdout: true).trim()
 # remove windows 7z if installed; link to rpm-installed p7zip instead 
 rm -fr ''' + nodeHome + '''/lib/node_modules/7zip; 
 if [[ -x /usr/bin/7za ]]; then pushd ''' + nodeHome + ''' >/dev/null; sudo rm -f 7z*; sudo ln -s /usr/bin/7za 7z; popd >/dev/null; fi
-''' + nodeHome + '''/bin/7z | grep -i version
+''' + nodeHome + '''/7z | grep -i version
 /usr/bin/7za | grep -i version
 '''
   }
