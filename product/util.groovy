@@ -39,7 +39,7 @@ curl -sSLo- https://raw.githubusercontent.com/nvm-sh/nvm/${LATEST_NVM}/install.s
 # nvm post-install recommendation
 echo '
 export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/nvm.sh" ] && \\. "$NVM_DIR/nvm.sh"  # This loads nvm
 ' >> ${HOME}/.bashrc
 '''
   def nodeHome = sh(script: '''#!/bin/bash -e
@@ -57,7 +57,7 @@ rm -fr ${nodeHome}/lib/node_modules/7zip;
 if [[ -x /usr/bin/7za ]]; then pushd ${nodeHome}/bin >/dev/null; rm -f 7z*; ln -s /usr/bin/7za 7z; popd >/dev/null; fi
 '''
   }
-  
+
   sh '''#!/bin/bash -xe
 rm -f ${HOME}/.npmrc ${HOME}/.yarnrc
 npm install --global yarn@''' + yarnVersion + '''
