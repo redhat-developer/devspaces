@@ -26,18 +26,34 @@ def installNPM(String nodeVersion, String yarnVersion) {
 
   sh '''#!/bin/bash -e
 export LATEST_NVM="$(git ls-remote --refs --tags https://github.com/nvm-sh/nvm.git \
-          | cut --delimiter='/' --fields=3 | tr '-' '~'| sort --version-sort| tail --lines=1)"
+  | cut --delimiter='/' --fields=3 | tr '-' '~'| sort --version-sort| tail --lines=1)"
 
 export NODE_VERSION=''' + nodeVersion + '''
 export METHOD=script
 export PROFILE=/dev/null
 curl -sSLo- https://raw.githubusercontent.com/nvm-sh/nvm/${LATEST_NVM}/install.sh | bash
+
+# nvm post-install recommendation
+echo '
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+' >> ${HOME}/.bashrc
 '''
   def nodeHome = sh(script: '''#!/bin/bash -e
 source $HOME/.nvm/nvm.sh
 nvm use --silent ''' + nodeVersion + '''
 dirname $(nvm which node)''' , returnStdout: true).trim()
   env.PATH="${nodeHome}:${env.PATH}"
+  sh '''#!/bin/bash -xe
+# remove windows 7z if installed; link to rpm-installed p7zip instead 
+rm -fr ${nodeHome}/lib/node_modules/7zip; 
+if [[ -x /usr/bin/7za ]]; then pushd ${nodeHome}/bin >/dev/null; rm -f 7z*; ln -s /usr/bin/7za 7z; popd >/dev/null; fi
+
+rm -f ${HOME}/.npmrc ${HOME}/.yarnrc
+npm install --global yarn@''' + yarnVersion + '''
+node --version && npm --version; yarn --version
+'''
+
   sh "echo USE_PUBLIC_NEXUS = ${USE_PUBLIC_NEXUS}"
   if (!USE_PUBLIC_NEXUS) {
       sh '''#!/bin/bash -xe
