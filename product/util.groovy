@@ -128,7 +128,7 @@ def installPodman() {
   ''')
   } else {
     OS_IS_RHEL8 = sh(script: '''#!/bin/bash -xe
-      grep -E '^VERSION=\"*8.' /etc/os-release
+      grep -E '^VERSION=\"*8.' /etc/os-release || true
     ''', returnStdout: true)
     if (OS_IS_RHEL8?.trim()) {
       sh('''#!/bin/bash -xe
@@ -248,10 +248,10 @@ def installSkopeoFromContainer(String container, String minimumVersion) {
         if [[  "$1" = "$(echo -e "$1\n$2" | sort -V | head -n1)" ]]; then
           echo "[INFO] $3 version $2 installed is >= $1, can proceed."
         else
-          if [[ ! -z "$(cat /etc/os-release | grep -E '^VERSION=\"*8.')" ]]; then # RHEL 8
+          if [[ ! -z "$(cat /etc/os-release | grep -E '^VERSION=\"*8.' || true)" ]]; then # RHEL 8
             echo "[INFO] $3 version $2 installed is < $1, will attempt to install latest from ''' + container + ''' ..."
             installFromContainer $3
-          elif [[ ! -z "$(cat /etc/os-release | grep -E '^VERSION=\"*7.')" ]]; then # RHEL 7
+          elif [[ ! -z "$(cat /etc/os-release | grep -E '^VERSION=\"*7.' || true)" ]]; then # RHEL 7
             echo "[INFO] $3 version $2 installed is < $1, will attempt to install latest from ${jenkinsURL}/skopeo-$(uname -m).tar.gz ..."
             installFromTarball 2.5
           else
