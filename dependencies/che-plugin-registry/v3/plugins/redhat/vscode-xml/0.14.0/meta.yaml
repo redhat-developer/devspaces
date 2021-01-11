@@ -1,7 +1,7 @@
 apiVersion: v2
 publisher: redhat
 name: vscode-xml
-version: 0.11.0
+version: 0.14.0
 type: VS Code extension
 displayName: XML
 title: XML Language Support by Red Hat
@@ -9,7 +9,7 @@ description: This VS Code extension provides support for creating and editing XM
 icon: https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/master/dependencies/che-plugin-registry/resources/images/default.svg?sanitize=true
 repository: https://github.com/redhat-developer/vscode-xml
 category: Language
-firstPublicationDate: "2020-05-27"
+firstPublicationDate: "2021-01-06"
 spec:
   containers:
     - image: "registry.redhat.io/codeready-workspaces/plugin-java11-rhel8:2.6"
@@ -20,4 +20,4 @@ spec:
         - -c
         - ${PLUGIN_REMOTE_ENDPOINT_EXECUTABLE}
   extensions:
-    - https://github.com/redhat-developer/vscode-xml/releases/download/0.11.0/redhat.vscode-xml-0.11.0.vsix
+    - https://github.com/redhat-developer/codeready-workspaces-vscode-extensions/releases/download/v356aec7/vscode-xml-0.14.0.vsix
