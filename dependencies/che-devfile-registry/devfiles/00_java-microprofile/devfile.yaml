@@ -1,4 +1,5 @@
 ---
+# TODO: Need to change an image for a dev-container; Update project source; Remove -Dinsecure.repositories=WARN from bootable commands; 
 apiVersion: 1.0.0
 metadata:
   generateName: jboss-eap-quickstart-
@@ -29,6 +30,14 @@ components:
         value: "-Xrunjdwp:transport=dt_socket,address=8000,server=y,suspend=n -Dsun.util.logging.disableCallerCheck=true"
     memoryLimit: 1024Mi
     endpoints:
+      - name: debug
+        attributes:
+          public: 'false'
+        port: 8787
+      - name: eap-management
+        attributes:
+          public: 'false'
+        port: 9990
       - name: coffee
         port: 8080
         attributes:
@@ -37,35 +46,91 @@ components:
         port: 8080
         attributes:
           path: /microprofile-fault-tolerance/coffee/2/availability
+      - name: eap-http
+        port: 8080
     mountSources: true
     volumes:
       - name: m2
         containerPath: /home/jboss/.m2
 commands:
   -
-    name: 1. Build
+    name: 1.1. Build
     actions:
       - workdir: '${CHE_PROJECTS_ROOT}/jboss-eap-quickstart/microprofile-fault-tolerance'
         type: exec
         command: mvn clean install
         component: maven
   -
-    name: 2. Deploy the application
+    name: 1.2. Configure and start server
+    actions:
+      - type: exec
+        command: sed -i '/kubernetes.KUBE_PING/d' /opt/eap/standalone/configuration/standalone-openshift.xml && /opt/eap/bin/openshift-launch.sh
+        component: maven
+  -
+    name: 1.3. Deploy the application
     actions:
       -
         type: exec
         component: maven
         command: mvn package wildfly:deploy && 
-          echo 'The application was deployed, click on the endpoint from Workspace view to test it'
+          echo 'The application was deployed, click on coffee or coffee-availability endpoint from Workspace view to test it'
         workdir: '${CHE_PROJECTS_ROOT}/jboss-eap-quickstart/microprofile-fault-tolerance'
   -
-    name: 3. Hot update
+    name: 1.4. Hot update
     actions:
       -
         type: exec
         component: maven
         command: "mvn clean install && sleep 2 && cp target/*.war /opt/eap/standalone/deployments/ROOT.war"
         workdir: '${CHE_PROJECTS_ROOT}/jboss-eap-quickstart/microprofile-fault-tolerance'
+  - 
+    name: 1.5. Stop server
+    actions:
+      - type: exec
+        command: '/opt/eap/bin/jboss-cli.sh --connect command=:shutdown'
+        component: maven
+  -
+    name: 2.1. Bootable jar. Build
+    actions:
+      - workdir: '${CHE_PROJECTS_ROOT}/jboss-eap-quickstart/microprofile-fault-tolerance'
+        type: exec
+        command: mvn -Pbootable-jar -Dinsecure.repositories=WARN clean package
+        component: maven
+  -
+    name: 2.2. Bootable jar. Run
+    actions:
+      - workdir: '${CHE_PROJECTS_ROOT}/jboss-eap-quickstart/microprofile-fault-tolerance'
+        type: exec
+        command: 'mvn -Pbootable-jar -Dwildfly.bootable.arguments="-b=0.0.0.0" -Dinsecure.repositories=WARN org.wildfly.plugins:wildfly-jar-maven-plugin:run'
+        component: maven
+  -
+    name: 2.3. Bootable jar. Start server
+    actions:
+      - workdir: '${CHE_PROJECTS_ROOT}/jboss-eap-quickstart/microprofile-fault-tolerance'
+        type: exec
+        command: 'mvn -Pbootable-jar -Dwildfly.bootable.arguments="-b=0.0.0.0" -Dwildfly.bootable.jvmArguments="-agentlib:jdwp=transport=dt_socket,address=0.0.0.0:8000,server=y,suspend=n" -Dinsecure.repositories=WARN org.wildfly.plugins:wildfly-jar-maven-plugin:start'
+        component: maven
+  -
+    name: 2.4. Bootable jar. Build and run in debug
+    actions:
+      - workdir: '${CHE_PROJECTS_ROOT}/jboss-eap-quickstart/microprofile-fault-tolerance'
+        type: exec
+        command: 'mvn -Pbootable-jar -Dinsecure.repositories=WARN -Dwildfly.bootable.arguments="-b=0.0.0.0" -Dwildfly.bootable.jvmArguments="-agentlib:jdwp=transport=dt_socket,address=0.0.0.0:8000,server=y,suspend=n" clean org.wildfly.plugins:wildfly-jar-maven-plugin:dev && mvn package -Ddev -Dinsecure.repositories=WARN -Pbootable-jar'
+        component: maven
+  -
+    name: 2.5. Bootable jar. Hot update
+    actions:
+      - workdir: '${CHE_PROJECTS_ROOT}/jboss-eap-quickstart/microprofile-fault-tolerance'
+        type: exec
+        command: 'mvn package -Ddev -Dinsecure.repositories=WARN -Pbootable-jar'
+        component: maven
+  -
+    name: 2.6. Bootable jar. Stop server
+    actions:
+      - workdir: '${CHE_PROJECTS_ROOT}/jboss-eap-quickstart/microprofile-fault-tolerance'
+        type: exec
+        command: 'mvn -Pbootable-jar -Dinsecure.repositories=WARN org.wildfly.plugins:wildfly-jar-maven-plugin:shutdown'
+        component: maven
   -
     name: Debug (Attach)
     actions:
