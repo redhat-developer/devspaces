@@ -19,7 +19,7 @@
 command -v jq >/dev/null 2>&1 || { echo "jq is not installed. Aborting."; exit 1; }
 command -v skopeo >/dev/null 2>&1 || { echo "skopeo is not installed. Aborting."; exit 1; }
 checkVersion() {
-  if [[  "$1" = "`echo -e "$1\n$2" | sort -V | head -n1`" ]]; then
+  if [[  "$1" = "$(echo -e "$1\n$2" | sort -V | head -n1)" ]]; then
     # echo "[INFO] $3 version $2 >= $1, can proceed."
 	true
   else 
@@ -31,8 +31,8 @@ checkVersion 0.40 "$(skopeo --version | sed -e "s/skopeo version //")" skopeo
 
 QUIET=0 	# less output - omit container tag URLs
 VERBOSE=0	# more output
-WORKDIR=`pwd`
-BRANCH=crw-2.5-rhel-8 # or another branch, depends on the repo
+WORKDIR=$(pwd)
+BRANCH="crw-2.6-rhel-8" # or another branch, depends on the repo
 DOCKERFILE="Dockerfile" # or "rhel.Dockerfile"
 MAXDEPTH=2
 PR_BRANCH="pr-new-base-images-$(date +%s)"
@@ -76,10 +76,14 @@ usage () {
 
 if [[ $# -lt 1 ]]; then usage; exit; fi
 
+BASETAG="."
+EXCLUDES="latest|-source"
 while [[ "$#" -gt 0 ]]; do
   case $1 in
     '-w') WORKDIR="$2"; shift 1;;
     '-b') BRANCH="$2"; shift 1;;
+    '--tag') BASETAG="$2"; shift 1;; # rather than fetching latest tag, grab latest tag matching a pattern like "1.13"
+    '-x') EXCLUDES="$2"; shift 1;;
     '-f') DOCKERFILE="$2"; shift 1;;
     '-maxdepth') MAXDEPTH="$2"; shift 1;;
     '-c') buildCommand="rhpkg container-build"; shift 0;; # NOTE: will trigger a new build for each commit, rather than for each change set (eg., Dockefiles with more than one FROM)
@@ -171,10 +175,16 @@ for d in $(find ${WORKDIR} -maxdepth ${MAXDEPTH} -name ${DOCKERFILE} | sort); do
 			URL=${URL#registry.redhat.io/}
 			if [[ $VERBOSE -eq 1 ]]; then echo "[DEBUG] URL=$URL"; fi
 			if [[ $URL == "https"* ]]; then 
-				QUERY="$(echo $URL | sed -e "s#.\+\(registry.redhat.io\|registry.access.redhat.com\)/#skopeo inspect docker://registry.redhat.io/#g")"
-				if [[ ${QUIET} -eq 0 ]]; then echo "# $QUERY| jq .RepoTags| egrep -v \"\[|\]|latest|-source\"|sed -e 's#.*\"\(.\+\)\",*#- \1#'|sort -V|tail -5"; fi
+				# QUERY="$(echo $URL | sed -e "s#.\+\(registry.redhat.io\|registry.access.redhat.com\)/#skopeo inspect docker://registry.redhat.io/#g")"
+				# if [[ ${QUIET} -eq 0 ]]; then echo "# $QUERY| jq .RepoTags| egrep -v \"\[|\]|latest|-source\"|sed -e 's#.*\"\(.\+\)\",*#- \1#'|sort -V|tail -5"; fi
+				# LATESTTAG=$(${QUERY} 2>/dev/null| jq .RepoTags|egrep -v "\[|\]|latest|-source"|sed -e 's#.*\"\(.\+\)\",*#\1#'|sort -V|tail -1)
 				FROMPREFIX=$(echo $URL | sed -e "s#.\+registry.access.redhat.com/##g")
-				LATESTTAG=$(${QUERY} 2>/dev/null| jq .RepoTags|egrep -v "\[|\]|latest|-source"|sed -e 's#.*\"\(.\+\)\",*#\1#'|sort -V|tail -1)
+
+				# get getLatestImageTags script
+				curl -sSLO https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/${BRANCH}/product/getLatestImageTags.sh && chmod +x getLatestImageTags.sh
+				LATESTTAG=$(./getLatestImageTags.sh -c ${FROMPREFIX} -x "${EXCLUDES}" --tag "${BASETAG}")
+				LATESTTAG=${LATESTTAG##*:}
+
 				LATE_TAGver=${LATESTTAG%%-*} # 1.0
 				LATE_TAGrev=${LATESTTAG##*-} # 15.1553789946 or 15
 				LATE_TAGrevbase=${LATE_TAGrev%%.*} # 15
