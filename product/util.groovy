@@ -340,14 +340,7 @@ def cloneRepo(String URL, String REPO_PATH, String BRANCH) {
 
 // Requires installSkopeo*() and installYq() to run
 // Requires getCrwVersion() to set CRW_BRANCH_F in order to install correct version of the script; or, if JOB_BRANCH is defined by .groovy param or in .jenkinsfile, will use that version
-def updateBaseImages(String REPO_PATH, String SOURCES_BRANCH, String FLAGS="") {
-  if (CRW_BRANCH_F?.trim()) { 
-    updateBaseImages(REPO_PATH, SOURCES_BRANCH, CRW_BRANCH_F, FLAGS)
-  } else { // try to fall back to what should be globally defined
-    updateBaseImages(REPO_PATH, SOURCES_BRANCH, MIDSTM_BRANCH, FLAGS)
-  }
-}
-def updateBaseImages(String REPO_PATH, String SOURCES_BRANCH, String SCRIPTS_BRANCH, String FLAGS="") {
+def updateBaseImages(String REPO_PATH, String SOURCES_BRANCH, String FLAGS="", String SCRIPTS_BRANCH="") {
   def String updateBaseImages_bin="${WORKSPACE}/updateBaseImages.sh"
   if (!fileExists(updateBaseImages_bin)) {
     if (!SCRIPTS_BRANCH?.trim() && CRW_BRANCH_F?.trim()) {
