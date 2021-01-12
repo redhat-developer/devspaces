@@ -4,7 +4,9 @@
 #
 # SPDX-License-Identifier: EPL-2.0
 
-# script common across operator-metadata, devfileregistry, and pluginregistry
+# search for yaml files with filename extension containing arch running on.
+# if they exist, replace.  if any devfile has size 0, remove it and corresponding
+# yaml files from that directory.
 
 SCRIPT_DIR=$(cd "$(dirname "$0")" || exit; pwd)
 YAML_ROOT="$1"
