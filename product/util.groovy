@@ -340,27 +340,45 @@ def cloneRepo(String URL, String REPO_PATH, String BRANCH) {
 
 // Requires installSkopeo*() and installYq() to run
 // Requires getCrwVersion() to set CRW_BRANCH_F in order to install correct version of the script; or, if JOB_BRANCH is defined by .groovy param or in .jenkinsfile, will use that version
-def updateBaseImages(String REPO_PATH, String BRANCH, String FLAGS="") {
+def updateBaseImages(String REPO_PATH, String SOURCES_BRANCH, String FLAGS="") {
+  if (CRW_BRANCH_F?.trim()) { 
+    updateBaseImages(REPO_PATH, SOURCES_BRANCH, CRW_BRANCH_F, FLAGS)
+  } else { // try to fall back to what should be globally defined
+    updateBaseImages(REPO_PATH, SOURCES_BRANCH, MIDSTM_BRANCH, FLAGS)
+  }
+}
+def updateBaseImages(String REPO_PATH, String SOURCES_BRANCH, String SCRIPTS_BRANCH, String FLAGS="") {
   def String updateBaseImages_bin="${WORKSPACE}/updateBaseImages.sh"
   if (!fileExists(updateBaseImages_bin)) {
-    if (!CRW_BRANCH_F?.trim() && JOB_BRANCH?.trim()) {
-      CRW_BRANCH_F = JOB_BRANCH
+    if (!SCRIPTS_BRANCH?.trim() && CRW_BRANCH_F?.trim()) {
+      SCRIPTS_BRANCH = CRW_BRANCH_F // this should work for midstream/downstream branches like crw-2.6-rhel-8
+    } else if (!SCRIPTS_BRANCH?.trim() && MIDSTM_BRANCH?.trim()) {
+      SCRIPTS_BRANCH = MIDSTM_BRANCH // this should work for midstream/downstream branches like crw-2.6-rhel-8
+    } else if (!SCRIPTS_BRANCH?.trim() && JOB_BRANCH?.trim()) {
+      SCRIPTS_BRANCH = JOB_BRANCH // this might fail if the JOB_BRANCH is 2.6 and there's no such branch
     }
     // fail build if not true
     assert (CRW_BRANCH_F?.trim()) : "ERROR: execute getCrwVersion() before calling updateBaseImages()"
 
     // otherwise continue
     sh('''#!/bin/bash -xe
-      curl -L -s -S https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/''' + CRW_BRANCH_F + '''/product/updateBaseImages.sh -o ''' + updateBaseImages_bin + '''
-      chmod +x ''' + updateBaseImages_bin
-    )
+URL="https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/''' + SCRIPTS_BRANCH + '''/product/updateBaseImages.sh"
+# check for 404 and fail if can't load the file
+if [[ $(curl -L -s -S $URL -I | grep -E "404|Not Found") ]]; then 
+  echo "[ERROR] Can not resolved $URL : 404 Not Found 
+  echo "[ERROR] Please check the value of SCRIPTS_BRANCH = ''' + SCRIPTS_BRANCH + ''' to confirm it's a valid branch."
+  exit 1
+else
+  curl -L -s -S $URL -o ''' + updateBaseImages_bin + ''' && chmod +x ''' + updateBaseImages_bin + '''
+fi
+    ''')
   }
   sh('''#!/bin/bash -xe
     cd ''' + REPO_PATH + '''
     export GITHUB_TOKEN=''' + GITHUB_TOKEN + ''' # echo "''' + GITHUB_TOKEN + '''"
     export KRB5CCNAME=/var/tmp/crw-build_ccache
     # NOTE: b = sources branch, sb = scripts branch
-    ''' + updateBaseImages_bin + ''' -b ''' + BRANCH + ''' -sb ''' + CRW_BRANCH_F + ''' ''' + FLAGS + ''' || true'''
+    ''' + updateBaseImages_bin + ''' -b ''' + SOURCES_BRANCH + ''' -sb ''' + SCRIPTS_BRANCH + ''' ''' + FLAGS + ''' || true'''
   )
 }
 
