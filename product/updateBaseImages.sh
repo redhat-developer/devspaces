@@ -32,7 +32,8 @@ checkVersion 0.40 "$(skopeo --version | sed -e "s/skopeo version //")" skopeo
 QUIET=0 	# less output - omit container tag URLs
 VERBOSE=0	# more output
 WORKDIR=$(pwd)
-BRANCH="crw-2.6-rhel-8" # or another branch, depends on the repo
+SOURCES_BRANCH="crw-2.6-rhel-8" # where to find source branch to update, crw-2.6-rhel-8, 7.24.x, etc.
+SCRIPTS_BRANCH="crw-2.6-rhel-8" # where to find redhat-developer/codeready-workspaces/${SCRIPTS_BRANCH}/product/getLatestImageTags.sh
 DOCKERFILE="Dockerfile" # or "rhel.Dockerfile"
 MAXDEPTH=2
 PR_BRANCH="pr-new-base-images-$(date +%s)"
@@ -59,9 +60,11 @@ checkrecentupdates () {
 
 usage () {
 	echo "Usage:   $0 -b [BRANCH] [-w WORKDIR] [-f DOCKERFILE] [-maxdepth MAXDEPTH]"
-	echo "Downstream Example: $0 -b crw-2.5-rhel-8 -w $(pwd) -f rhel.Dockerfile -maxdepth 2"
-	echo "Upstream   Example: $0 -b master -w dockerfiles/ -f \*from.dockerfile -maxdepth 5 -o -prb pr-new-theia-base-images"
+	echo "Downstream Example: $0 -b ${SOURCES_BRANCH} -w $(pwd) -f rhel.Dockerfile -maxdepth 2"
+	echo "Upstream   Example: $0 -b 7.24.x -w dockerfiles/ -f \*from.dockerfile -maxdepth 5 -o -prb pr-new-theia-base-images"
 	echo "Options: 
+	--sources-branch, -b    set sources branch (project to update), eg., 7.24.x
+	--scripts-branch, -sb   set scripts branch (project with helper scripts), eg., crw-2.6-rhel-8
 	--no-commit, -n    do not commit to BRANCH
 	--no-push, -p      do not push to BRANCH
 	-prb               set a PR_BRANCH; default: pr-new-base-images-(timestamp)
@@ -81,7 +84,8 @@ EXCLUDES="latest|-source"
 while [[ "$#" -gt 0 ]]; do
   case $1 in
     '-w') WORKDIR="$2"; shift 1;;
-    '-b') BRANCH="$2"; shift 1;;
+    '-b'|'--sources-branch') SOURCES_BRANCH="$2"; shift 1;;
+    '-sb'|'--scripts-branch') SCRIPTS_BRANCH="$2"; shift 1;;
     '--tag') BASETAG="$2"; shift 1;; # rather than fetching latest tag, grab latest tag matching a pattern like "1.13"
     '-x') EXCLUDES="$2"; shift 1;;
     '-f') DOCKERFILE="$2"; shift 1;;
@@ -157,9 +161,9 @@ for d in $(find ${WORKDIR} -maxdepth ${MAXDEPTH} -name ${DOCKERFILE} | sort); do
 		# pull latest commits
 		if [[ -d ${d%%/${DOCKERFILE}} ]]; then pushd ${d%%/${DOCKERFILE}} >/dev/null; pushedIn=1; fi
 		if [[ "${d%/${DOCKERFILE}}" == *"-rhel8" ]]; then
-			BRANCHUSED=${BRANCH/rhel-7/rhel-8}
+			BRANCHUSED=${SOURCES_BRANCH/rhel-7/rhel-8}
 		else
-			BRANCHUSED=${BRANCH}
+			BRANCHUSED=${SOURCES_BRANCH}
 		fi
 		git branch --set-upstream-to=origin/${BRANCHUSED} ${BRANCHUSED} -q || true
 		git checkout ${BRANCHUSED} -q || true 
@@ -181,8 +185,10 @@ for d in $(find ${WORKDIR} -maxdepth ${MAXDEPTH} -name ${DOCKERFILE} | sort); do
 				FROMPREFIX=$(echo $URL | sed -e "s#.\+registry.access.redhat.com/##g")
 
 				# get getLatestImageTags script
-				curl -sSLO https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/${BRANCH}/product/getLatestImageTags.sh && chmod +x getLatestImageTags.sh
-				LATESTTAG=$(./getLatestImageTags.sh -c ${FROMPREFIX} -x "${EXCLUDES}" --tag "${BASETAG}")
+				pushd /tmp >/dev/null || exit 1
+				curl -sSLO https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/${SCRIPTS_BRANCH}/product/getLatestImageTags.sh && chmod +x getLatestImageTags.sh
+				popd >/dev/null || exit 1
+				LATESTTAG=$(/tmp/getLatestImageTags.sh -c ${FROMPREFIX} -x "${EXCLUDES}" --tag "${BASETAG}")
 				LATESTTAG=${LATESTTAG##*:}
 
 				LATE_TAGver=${LATESTTAG%%-*} # 1.0
