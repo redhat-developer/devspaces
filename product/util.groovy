@@ -358,7 +358,7 @@ def updateBaseImages(String REPO_PATH, String SOURCES_BRANCH, String FLAGS="", S
 URL="https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/''' + SCRIPTS_BRANCH + '''/product/updateBaseImages.sh"
 # check for 404 and fail if can't load the file
 if [[ $(curl -L -s -S $URL -I | grep -E "404|Not Found") ]]; then 
-  echo "[ERROR] Can not resolved $URL : 404 Not Found 
+  echo "[ERROR] Can not resolved $URL : 404 Not Found "
   echo "[ERROR] Please check the value of SCRIPTS_BRANCH = ''' + SCRIPTS_BRANCH + ''' to confirm it's a valid branch."
   exit 1
 else
