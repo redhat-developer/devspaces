@@ -42,6 +42,7 @@ checkVersion() {
 }
 checkVersion 1.1 "$(skopeo --version | sed -e "s/skopeo version //")" skopeo
 
+# codeready-workspaces/plugin-intellij-rhel8 \
 CRW_CONTAINERS_RHEC="\
 codeready-workspaces/configbump-rhel8 \
 codeready-workspaces/crw-2-rhel8-operator \
@@ -53,7 +54,6 @@ codeready-workspaces/jwtproxy-rhel8 \
 codeready-workspaces/machineexec-rhel8 \
 codeready-workspaces/pluginbroker-artifacts-rhel8 \
 codeready-workspaces/pluginbroker-metadata-rhel8 \
-codeready-workspaces/plugin-intellij-rhel8 \
 \
 codeready-workspaces/plugin-java11-openj9-rhel8 \
 codeready-workspaces/plugin-java11-rhel8 \
@@ -76,6 +76,7 @@ codeready-workspaces/theia-rhel8 \
 codeready-workspaces/traefik-rhel8 \
 "
 
+# codeready-workspaces/plugin-intellij-rhel8 \
 CRW_CONTAINERS_OSBS="\
 codeready-workspaces/configbump-rhel8 \
 codeready-workspaces/operator \
@@ -87,7 +88,6 @@ codeready-workspaces/jwtproxy-rhel8 \
 codeready-workspaces/machineexec-rhel8 \
 codeready-workspaces/pluginbroker-artifacts-rhel8 \
 codeready-workspaces/pluginbroker-metadata-rhel8 \
-codeready-workspaces/plugin-intellij-rhel8 \
 \
 codeready-workspaces/plugin-java11-openj9-rhel8 \
 codeready-workspaces/plugin-java11-rhel8  \
