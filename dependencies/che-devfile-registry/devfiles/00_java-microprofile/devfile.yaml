@@ -111,7 +111,7 @@ commands:
       - workdir: '${CHE_PROJECTS_ROOT}/jboss-eap-quickstart/microprofile-fault-tolerance'
         type: exec
         command: mvn -Pbootable-jar  -Dwildfly.bootable.arguments="-b=0.0.0.0" -Dwildfly.bootable.jvmArguments="-agentlib:jdwp=transport=dt_socket,address=0.0.0.0:8000,server=y,suspend=n" clean org.wildfly.plugins:wildfly-jar-maven-plugin:dev && 
-          mvn package -Ddev -Pbootable-jar && BOOTABLE_XP_PID=$(jps | grep microprofile-opentracing-bootable.jar | awk '{print $1}') && while [[ ( -d /proc/$BOOTABLE_XP_PID )]]; do sleep 1; done 
+          mvn package -Ddev -Pbootable-jar && BOOTABLE_XP_PID=$(jps | grep microprofile-fault-tolerance-bootable.jar | awk '{print $1}') && while [[ ( -d /proc/$BOOTABLE_XP_PID )]]; do sleep 1; done 
         component: maven
   -
     name: 2.4. Bootable jar. Hot update
