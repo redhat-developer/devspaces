@@ -12,6 +12,9 @@ if ! whoami &> /dev/null; then
   if [ -w /etc/passwd ]; then
     echo "${USER_NAME:-jboss}:x:$(id -u):0:${USER_NAME:-jboss} user:${HOME}:/sbin/nologin" >> /etc/passwd
   fi
+  # CRW-1483 fix group own/perm for registry files
+  chown -R ${USER_NAME:-jboss}:${USER_NAME:-jboss} /var/www/html
+  chmod -R g+rw /var/www/html
 fi
 
 set -x
