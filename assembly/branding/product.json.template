@@ -4,34 +4,12 @@
   "productVersion": "@@crw.version@@",
   "logoFile": "che-logo.svg",
   "logoTextFile": "che-logo-text.svg",
-  "favicon": "favicon.ico",
-  "loader": "loader.svg",
-  "websocketContext": "/api/websocket",
   "helpPath": "https://access.redhat.com/products/red-hat-codeready-workspaces/",
   "helpTitle": "Support",
   "supportEmail": "codeready-workspaces-wish@redhat.com",
-  "oauthDocs": "Configure GitHub OAuth in RH SSO realm settings",
-  "workspace": {
-    "priorityStacks": [
-      "JBoss EAP", 
-      "Java", 
-      "Vert.x", 
-      "Spring Boot", 
-      "Wildfly Swarm", 
-      "Red Hat Fuse"
-    ],
-    "defaultStack": "eap-default",
-    "creationLink": "#/getstarted?tab=customWorkspace"
-  },
-  "cli": {
-    "configName": "che.env",
-    "name": "CHE"
-  },
   "docs": {
     "devfile" : "@@crw.docs.baseurl@@/html-single/end-user_guide/index#configuring-a-workspace-using-a-devfile_crw",
     "workspace" : "@@crw.docs.baseurl@@/html-single/end-user_guide/index#workspaces-overview_crw",
-    "factory" : "@@crw.docs.baseurl@@/html-single/end-user_guide/index#overriding-devfile-values-using-factory-parameters_configuring-a-workspace-using-a-devfile",
-    "organization": "@@crw.docs.baseurl@@/html-single/administration_guide/index#managing-users_crw",
     "converting": "https://access.redhat.com/documentation/en-us/red_hat_codeready_workspaces/2.0/html-single/end-user_guide/index#converting-a-codeready-workspaces-1.2-workspace-to-a-codeready-workspaces-2.0-devfile",
     "certificate": "@@crw.docs.baseurl@@/html-single/end-user_guide/index#importing-certificates-to-browsers_crw",
     "general": "@@crw.docs.baseurl@@/",
