@@ -64,6 +64,8 @@ fi
 
 for d in $CONTAINERS; do
 	echo "$d"
+	d=${d/crw-2-rhel8-/} # special case for operator and metadata images
+
 	#strip off the registry and just find the container name
 	dd=${d#*/}
 	TAG=${dd##*:}; # echo $TAG
