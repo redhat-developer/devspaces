@@ -104,7 +104,8 @@ RUN mkdir -m 777 /var/www/html/v3
 COPY README.md .htaccess /var/www/html/
 COPY --from=builder /build/v3 /var/www/html/v3
 COPY ./build/dockerfiles/rhel.entrypoint.sh ./build/dockerfiles/entrypoint.sh /usr/local/bin/
-RUN chmod g+rwX /usr/local/bin/entrypoint.sh /usr/local/bin/rhel.entrypoint.sh
+RUN chmod g+rwX /usr/local/bin/entrypoint.sh /usr/local/bin/rhel.entrypoint.sh && \
+    chgrp -R 0 /var/www/html && chmod -R g+rw /var/www/html
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 CMD ["/usr/local/bin/rhel.entrypoint.sh"]
 
