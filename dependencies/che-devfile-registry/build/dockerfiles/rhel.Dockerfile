@@ -102,7 +102,6 @@ COPY --from=builder /build/devfiles /var/www/html/devfiles
 COPY ./images /var/www/html/images
 COPY ./build/dockerfiles/rhel.entrypoint.sh ./build/dockerfiles/entrypoint.sh /usr/local/bin/
 RUN chmod g+rwX /usr/local/bin/entrypoint.sh /usr/local/bin/rhel.entrypoint.sh && \
-    # CRW-1483 fix group own/perm for registry files
     chgrp -R 0 /var/www/html && chmod -R g+rw /var/www/html
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 CMD ["/usr/local/bin/rhel.entrypoint.sh"]
