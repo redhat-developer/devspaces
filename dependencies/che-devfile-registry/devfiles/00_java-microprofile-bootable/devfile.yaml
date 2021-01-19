@@ -1,0 +1,98 @@
+---
+apiVersion: 1.0.0
+metadata:
+  generateName: jboss-eap-bootable-
+projects:
+  -
+    name: jboss-eap-quickstart
+    source:
+      type: git
+      location: "https://github.com/crw-samples/microprofile-quickstart.git"
+      branch: "xp-2.0.x"
+components:
+  -
+    type: chePlugin
+    id: redhat/java11/latest
+    preferences:
+      java.server.launchMode: Standard
+  -
+    # NOTE: instead of the old stack-analysis script, should be able to use the latest dependency-analysis plugin instead
+    type: chePlugin
+    id: redhat/dependency-analytics/latest
+  -
+    type: dockerimage
+    alias: maven
+    image: registry.redhat.io/codeready-workspaces/plugin-java11-rhel8:2.6
+    env:
+      - name: MAVEN_OPTS
+        value: "-Xmx200m -XX:+UseParallelGC -XX:MinHeapFreeRatio=10 -XX:MaxHeapFreeRatio=20 -XX:GCTimeRatio=4 -XX:AdaptiveSizePolicyWeight=90 -Dsun.zip.disableMemoryMapping=true -Xms20m -Djava.security.egd=file:/dev/./urandom -Duser.home=/home/jboss"
+    memoryLimit: 1024Mi
+    endpoints:
+      - name: eap-http
+        port: 8080
+      - name: debug
+        attributes:
+          public: 'false'
+        port: 8000
+      - name: eap-management
+        attributes:
+          public: 'false'
+        port: 9990
+    mountSources: true
+    volumes:
+      - name: m2
+        containerPath: /home/jboss/.m2
+commands:
+  -
+    name: 1. Build
+    actions:
+      - workdir: '${CHE_PROJECTS_ROOT}/jboss-eap-quickstart/microprofile-fault-tolerance'
+        type: exec
+        command: mvn -Pbootable-jar  clean package
+        component: maven
+  -
+    name: 2. Run
+    actions:
+      - workdir: '${CHE_PROJECTS_ROOT}/jboss-eap-quickstart/microprofile-fault-tolerance'
+        type: exec
+        command: mvn -Pbootable-jar -Dwildfly.bootable.arguments="-b=0.0.0.0"  org.wildfly.plugins:wildfly-jar-maven-plugin:run
+        component: maven
+  -
+    name: 3. Build and run in debug
+    actions:
+      - workdir: '${CHE_PROJECTS_ROOT}/jboss-eap-quickstart/microprofile-fault-tolerance'
+        type: exec
+        command: mvn -Pbootable-jar  -Dwildfly.bootable.arguments="-b=0.0.0.0" -Dwildfly.bootable.jvmArguments="-agentlib:jdwp=transport=dt_socket,address=0.0.0.0:8000,server=y,suspend=n" clean org.wildfly.plugins:wildfly-jar-maven-plugin:dev && 
+          mvn package -Ddev -Pbootable-jar && BOOTABLE_XP_PID=$(jps | grep microprofile-fault-tolerance-bootable.jar | awk '{print $1}') && while [[ ( -d /proc/$BOOTABLE_XP_PID ) && ( -z `grep zombie /proc/$BOOTABLE_XP_PID/status` ) ]]; do sleep 1; done 
+        component: maven
+  -
+    name: 4. Hot update
+    actions:
+      - workdir: '${CHE_PROJECTS_ROOT}/jboss-eap-quickstart/microprofile-fault-tolerance'
+        type: exec
+        command: mvn package -Ddev  -Pbootable-jar
+        component: maven
+  -
+    name: 5. Stop server
+    actions:
+      - workdir: '${CHE_PROJECTS_ROOT}/jboss-eap-quickstart/microprofile-fault-tolerance'
+        type: exec
+        command: mvn -Pbootable-jar  org.wildfly.plugins:wildfly-jar-maven-plugin:shutdown
+        component: maven
+  -
+    name: Debug (Attach)
+    actions:
+    - type: vscode-launch
+      referenceContent: |
+        {
+        "version": "0.2.0",
+        "configurations": [
+        {
+            "type": "java",
+            "request": "attach",
+            "name": "Debug (Attach)",
+            "hostName": "localhost",
+            "port": 8000
+        }
+        ]
+        }
