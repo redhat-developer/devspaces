@@ -378,7 +378,7 @@ fi
 def getLastCommitSHA(String REPO_PATH) {
   return sh(script: '''#!/bin/bash -xe
     cd ''' + REPO_PATH + '''
-    git rev-parse HEAD''', returnStdout: true)
+    git rev-parse --short=4 HEAD''', returnStdout: true).trim()
 }
 
 def getCRWLongName(String SHORT_NAME) {
