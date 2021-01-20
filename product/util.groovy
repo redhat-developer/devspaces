@@ -371,16 +371,19 @@ fi
 cd ''' + REPO_PATH + '''
 ''' + updateBaseImages_bin + ''' -b ''' + SOURCES_BRANCH + ''' -sb ''' + SCRIPTS_BRANCH + ''' ''' + FLAGS + ''' || true
 '''
-  if (URL.indexOf("pkgs.devel.redhat.com") == -1) {
-    assert (GITHUB_TOKEN?.trim()) : "ERROR: GITHUB_TOKEN is not set; must be defined in order to manipulate github repos"
+  is_pkgsdevel = sh(script: '''#!/bin/bash -xe
+cd ''' + REPO_PATH + '''; git remote -v | grep pkgs.devel.redhat.com ||''', returnStdout: true).trim()
+  if (is_pkgsdevel?.trim()) {
     sh('''#!/bin/bash -xe
-      export GITHUB_TOKEN=''' + GITHUB_TOKEN + updateBaseImages_cmd
+export KRB5CCNAME=/var/tmp/crw-build_ccache''' + updateBaseImages_cmd
     )
   } else {
+    assert (GITHUB_TOKEN?.trim()) : "ERROR: GITHUB_TOKEN is not set; must be defined in order to manipulate github repos"
     sh('''#!/bin/bash -xe
-      export KRB5CCNAME=/var/tmp/crw-build_ccache''' + updateBaseImages_cmd
-    )
+export GITHUB_TOKEN=''' + GITHUB_TOKEN + updateBaseImages_cmd
+)
   }
+
 }
 
 def getLastCommitSHA(String REPO_PATH) {
