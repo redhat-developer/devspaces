@@ -366,13 +366,21 @@ else
 fi
     ''')
   }
-  sh('''#!/bin/bash -xe
-    cd ''' + REPO_PATH + '''
-    export GITHUB_TOKEN=''' + GITHUB_TOKEN + ''' # echo "''' + GITHUB_TOKEN + '''"
-    export KRB5CCNAME=/var/tmp/crw-build_ccache
-    # NOTE: b = sources branch, sb = scripts branch
-    ''' + updateBaseImages_bin + ''' -b ''' + SOURCES_BRANCH + ''' -sb ''' + SCRIPTS_BRANCH + ''' ''' + FLAGS + ''' || true'''
-  )
+  // NOTE: b = sources branch, sb = scripts branch
+  updateBaseImages_cmd='''
+cd ''' + REPO_PATH + '''
+''' + updateBaseImages_bin + ''' -b ''' + SOURCES_BRANCH + ''' -sb ''' + SCRIPTS_BRANCH + ''' ''' + FLAGS + ''' || true
+'''
+  if (URL.indexOf("pkgs.devel.redhat.com") == -1) {
+    assert (GITHUB_TOKEN?.trim()) : "ERROR: GITHUB_TOKEN is not set; must be defined in order to manipulate github repos"
+    sh('''#!/bin/bash -xe
+      export GITHUB_TOKEN=''' + GITHUB_TOKEN + updateBaseImages_cmd
+    )
+  } else {
+    sh('''#!/bin/bash -xe
+      export KRB5CCNAME=/var/tmp/crw-build_ccache''' + updateBaseImages_cmd
+    )
+  }
 }
 
 def getLastCommitSHA(String REPO_PATH) {
