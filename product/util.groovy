@@ -375,12 +375,14 @@ cd ''' + REPO_PATH + '''
 cd ''' + REPO_PATH + '''; git remote -v | grep pkgs.devel.redhat.com ||''', returnStdout: true).trim()
   if (is_pkgsdevel?.trim()) {
     sh('''#!/bin/bash -xe
-export KRB5CCNAME=/var/tmp/crw-build_ccache''' + updateBaseImages_cmd
+export KRB5CCNAME="/var/tmp/crw-build_ccache"
+''' + updateBaseImages_cmd
     )
   } else {
     assert (GITHUB_TOKEN?.trim()) : "ERROR: GITHUB_TOKEN is not set; must be defined in order to manipulate github repos"
     sh('''#!/bin/bash -xe
-export GITHUB_TOKEN=''' + GITHUB_TOKEN + updateBaseImages_cmd
+export GITHUB_TOKEN="''' + GITHUB_TOKEN + '''"
+''' + updateBaseImages_cmd
 )
   }
 
