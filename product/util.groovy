@@ -372,7 +372,7 @@ cd ''' + REPO_PATH + '''
 ''' + updateBaseImages_bin + ''' -b ''' + SOURCES_BRANCH + ''' -sb ''' + SCRIPTS_BRANCH + ''' ''' + FLAGS + ''' || true
 '''
   is_pkgsdevel = sh(script: '''#!/bin/bash -xe
-cd ''' + REPO_PATH + '''; git remote -v | grep pkgs.devel.redhat.com ||''', returnStdout: true).trim()
+cd ''' + REPO_PATH + '''; git remote -v | grep pkgs.devel.redhat.com || true''', returnStdout: true).trim()
   if (is_pkgsdevel?.trim()) {
     sh('''#!/bin/bash -xe
 export KRB5CCNAME="/var/tmp/crw-build_ccache"
