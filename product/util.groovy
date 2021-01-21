@@ -173,11 +173,11 @@ def installPodman() {
 // sudo must already be installed and user must be a sudoer
 def installRPMs(String whichRPMs) {
   sh('''#!/bin/bash -xe
-  # sudo yum install -y -q yum-utils || true # needed for yum-config-manager
-  # sudo yum-config-manager -y -q --add-repo http://download.devel.redhat.com/rel-eng/RCMTOOLS/latest-RCMTOOLS-2-RHEL-8/compose/BaseOS/x86_64/os/ || true
+# sudo yum install -y -q yum-utils || true # needed for yum-config-manager
+# sudo yum-config-manager -y -q --add-repo http://download.devel.redhat.com/rel-eng/RCMTOOLS/latest-RCMTOOLS-2-RHEL-8/compose/BaseOS/x86_64/os/ || true
 
-  # insert multi-arch version, with gpgcheck disabled
-  cat <<EOF | sudo tee /etc/yum.repos.d/latest-RCMTOOLS-2-RHEL-8.repo
+# insert multi-arch version, with gpgcheck disabled
+cat <<EOF | sudo tee /etc/yum.repos.d/latest-RCMTOOLS-2-RHEL-8.repo
 [latest-RCMTOOLS-2-RHEL-8]
 name=latest-RCMTOOLS-2-RHEL-8
 baseurl=http://download.devel.redhat.com/rel-eng/RCMTOOLS/latest-RCMTOOLS-2-RHEL-8/compose/BaseOS/\\$basearch/os/
@@ -185,8 +185,18 @@ enabled=1
 gpgcheck=0
 skip_if_unavailable=True
 EOF
-  sudo yum install -y -q ''' + whichRPMs + '''
-  ''')
+
+# mark repos skip_if_unavailable=True so we don't die if epel isn't resolveable today
+for r in $(find /etc/yum.repos.d/ -name "*.repo"); do
+  sudo sed -i $r -r -e "s#skip_if_unavailable=False#skip_if_unavailable=True#g" || true
+  if [[ ! $(sudo grep "skip_if_unavailable=True" $r || true) ]]; then
+    echo "
+skip_if_unavailable=True" | sudo tee -a $r
+  fi
+done
+
+sudo yum install -y -q ''' + whichRPMs + '''
+''')
 }
 
 // to log into dockerhub, quay and RHEC, use this method where needed
