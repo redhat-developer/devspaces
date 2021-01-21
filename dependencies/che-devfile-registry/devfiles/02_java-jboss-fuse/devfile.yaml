@@ -36,6 +36,10 @@ components:
     endpoints:
       - name: '8080'
         port: 8080
+      - name: debug
+        attributes:
+          public: 'false'
+        port: 5005
     mountSources: true
     volumes:
       - name: m2
@@ -63,7 +67,7 @@ commands:
       -
         type: exec
         component: maven
-        command: "mvn spring-boot:run -Drun.jvmArguments=\"-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005\""
+        command: "mvn spring-boot:run -Dspring-boot.run.jvmArguments=\"-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005\""
         workdir: "${CHE_PROJECTS_ROOT}/java-jboss-fuse"
   - 
     name: 4. Log into deployment cluster
