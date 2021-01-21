@@ -170,23 +170,63 @@ def installPodman() {
   }
 }
 
-// sudo must already be installed and user must be a sudoer
-def installRPMs(String whichRPMs) {
-  sh('''#!/bin/bash -xe
-  # sudo yum install -y -q yum-utils || true # needed for yum-config-manager
-  # sudo yum-config-manager -y -q --add-repo http://download.devel.redhat.com/rel-eng/RCMTOOLS/latest-RCMTOOLS-2-RHEL-8/compose/BaseOS/x86_64/os/ || true
+def installRPMsFromPulpRepos(String whichRPMs) {
+   installRPMs(whichRPMs, true)
+}
 
-  # insert multi-arch version, with gpgcheck disabled
-  cat <<EOF | sudo tee /etc/yum.repos.d/latest-RCMTOOLS-2-RHEL-8.repo
-[latest-RCMTOOLS-2-RHEL-8]
-name=latest-RCMTOOLS-2-RHEL-8
-baseurl=http://download.devel.redhat.com/rel-eng/RCMTOOLS/latest-RCMTOOLS-2-RHEL-8/compose/BaseOS/\\$basearch/os/
+// sudo must already be installed and user must be a sudoer
+def installRPMs(String whichRPMs, boolean enablePulpRepos=false) {
+  sh '''#!/bin/bash -xe
+# sudo yum install -y -q yum-utils || true # needed for yum-config-manager
+# sudo yum-config-manager -y -q --add-repo http://download.devel.redhat.com/rel-eng/RCMTOOLS/latest-RCMTOOLS-2-RHEL-8/compose/BaseOS/x86_64/os/ || true
+
+# required for rhpkg and kinit; use multi-arch repo, with gpgcheck disabled
+repo=latest-RCMTOOLS-2-RHEL-8
+cat <<EOF | sudo tee /etc/yum.repos.d/${repo}.repo
+[${repo}]
+name=${repo}
+baseurl=http://download.devel.redhat.com/rel-eng/RCMTOOLS/${repo}/compose/BaseOS/\\$basearch/os/
 enabled=1
 gpgcheck=0
 skip_if_unavailable=True
 EOF
-  sudo yum install -y -q ''' + whichRPMs + '''
-  ''')
+'''
+
+  if (enablePulpRepos) {
+    sh '''#!/bin/bash -xe
+# required for podman 1.9; use multi-arch repo, with gpgcheck disabled
+repo=rhocp-4.6
+cat <<EOF | sudo tee /etc/yum.repos.d/${repo}
+[${repo}]
+name=${repo}
+baseurl=http://pulp.dist.prod.ext.phx2.redhat.com/content/dist/layered/rhel8/\\$basearch/${repo/-/\\/}/os/
+enabled=1
+gpgcheck=0
+skip_if_unavailable=True
+EOF
+
+# also enable rhel8 pulp repos
+repo=rhel8-8
+cat <<EOF | sudo tee /etc/yum.repos.d/${repo}
+[${repo}-appstream]
+name=${repo}-appstream
+baseurl=http://pulp.dist.prod.ext.phx2.redhat.com/content/dist/${repo/-/\\/}/\\$basearch/appstream/os
+enabled=1
+gpgcheck=0
+skip_if_unavailable=True
+
+[${repo}-baseos]
+name=${repo}-baseos
+baseurl=http://pulp.dist.prod.ext.phx2.redhat.com/content/dist/${repo/-/\\/}/\\$basearch/baseos/os
+enabled=1
+gpgcheck=0
+skip_if_unavailable=True
+EOF
+'''
+  }
+  sh '''#!/bin/bash -xe
+sudo yum install -y -q ''' + whichRPMs + '''
+'''
 }
 
 // to log into dockerhub, quay and RHEC, use this method where needed
