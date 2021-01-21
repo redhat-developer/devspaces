@@ -20,6 +20,26 @@ def String getCrwVersion(String MIDSTM_BRANCH) {
   return CRW_VERSION_F
 }
 
+def installMaven(String MAVEN_VERSION, String JAVA_VERSION){
+  mURL="https://www.apache.org/dyn/mirrors/mirrors.cgi?action=download&filename=maven/maven-3/" + MAVEN_VERSION + "/binaries/apache-maven-" + MAVEN_VERSION + "-bin.tar.gz"
+  sh('''#!/bin/bash -xe
+    if [[ ! -x /opt/apache-maven/bin/mvn ]]; then 
+        cd /tmp; curl -sSLO "''' + mURL + '''"
+        rm -fr /opt/apache-maven /opt/apache-maven-*-bin.tar.gz
+        mkdir -p /opt && sudo tar xzf /tmp/apache-maven-''' + MAVEN_VERSION + '''-bin.tar.gz -C /opt && sudo mv /opt/apache-maven-''' + MAVEN_VERSION + ''' /opt/apache-maven
+        # fix permissions in bin/* files \
+        for d in $(find /opt/apache-maven -name bin -type d); do echo $d; sudo chmod +x $d/*; done
+        rm -fr /opt/apache-maven-*-bin.tar.gz
+    else
+      /opt/apache-maven/bin/mvn -v
+    fi
+  ''')
+  env.PATH="/usr/lib/jvm/java-"+JAVA_VERSION+"-openjdk:/opt/apache-maven/bin:/usr/bin:${env.PATH}"
+  env.JAVA_HOME="/usr/lib/jvm/java-"+JAVA_VERSION+"-openjdk"
+  env.M2_HOME="/opt/apache-maven" 
+  sh ("mvn -v")
+}
+
 // TODO https://issues.redhat.com/browse/CRW-360 - eventually we should use RH npm mirror
 def installNPM(String nodeVersion, String yarnVersion) {
   installNPM(nodeVersion, yarnVersion, false)
@@ -357,12 +377,13 @@ def updateBaseImages(String REPO_PATH, String SOURCES_BRANCH, String FLAGS="", S
     sh('''#!/bin/bash -xe
 URL="https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/''' + SCRIPTS_BRANCH + '''/product/updateBaseImages.sh"
 # check for 404 and fail if can't load the file
-if [[ $(curl -L -s -S $URL -I | grep -E "404|Not Found") ]]; then 
-  echo "[ERROR] Can not resolved $URL : 404 Not Found "
+header404="$(curl -sSLI $URL | | grep -E -v "id: |^x-" | grep -E "404|Not Found")"
+if [[ $header404 ]]; then
+  echo "[ERROR] Can not resolved $URL : $header404 "
   echo "[ERROR] Please check the value of SCRIPTS_BRANCH = ''' + SCRIPTS_BRANCH + ''' to confirm it's a valid branch."
   exit 1
 else
-  curl -L -s -S $URL -o ''' + updateBaseImages_bin + ''' && chmod +x ''' + updateBaseImages_bin + '''
+  curl -sSL $URL -o ''' + updateBaseImages_bin + ''' && chmod +x ''' + updateBaseImages_bin + '''
 fi
     ''')
   }
