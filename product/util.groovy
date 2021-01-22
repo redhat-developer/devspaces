@@ -363,6 +363,9 @@ def cloneRepo(String URL, String REPO_PATH, String BRANCH) {
 def updateBaseImages(String REPO_PATH, String SOURCES_BRANCH, String FLAGS="", String SCRIPTS_BRANCH="") {
   def String updateBaseImages_bin="${WORKSPACE}/updateBaseImages.sh"
   if (!fileExists(updateBaseImages_bin)) {
+    if (MIDSTM_BRANCH?.trim() && !CRW_BRANCH_F?.trim()) {
+      getCrwVersion(MIDSTM_BRANCH)
+    }
     if (!SCRIPTS_BRANCH?.trim() && CRW_BRANCH_F?.trim()) {
       SCRIPTS_BRANCH = CRW_BRANCH_F // this should work for midstream/downstream branches like crw-2.6-rhel-8
     } else if (!SCRIPTS_BRANCH?.trim() && MIDSTM_BRANCH?.trim()) {
