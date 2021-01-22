@@ -186,6 +186,7 @@ for d in $(find ${WORKDIR} -maxdepth ${MAXDEPTH} -name ${DOCKERFILE} | sort); do
 
 				# get getLatestImageTags script
 				pushd /tmp >/dev/null || exit 1
+				# TODO CRW-1511 sometimes this returns a 404 instead of a valid script. Why?
 				curl -sSLO https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/${SCRIPTS_BRANCH}/product/getLatestImageTags.sh && chmod +x getLatestImageTags.sh
 				popd >/dev/null || exit 1
 				LATESTTAG=$(/tmp/getLatestImageTags.sh -c ${FROMPREFIX} -x "${EXCLUDES}" --tag "${BASETAG}")

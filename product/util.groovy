@@ -391,7 +391,10 @@ fi
     ''')
   }
   // NOTE: b = sources branch, sb = scripts branch
+  // TODO CRW-1511 sometimes updateBaseImages gets a 404 instead of a valid script for getLatestImageTags. Why? 
   updateBaseImages_cmd='''
+echo "[INFO] util.groovy :: updateBaseImages :: SOURCES_BRANCH = ''' + SOURCES_BRANCH + '''"
+echo "[INFO] util.groovy :: updateBaseImages :: SCRIPTS_BRANCH = ''' + SCRIPTS_BRANCH + '''"
 cd ''' + REPO_PATH + '''
 ''' + updateBaseImages_bin + ''' -b ''' + SOURCES_BRANCH + ''' -sb ''' + SCRIPTS_BRANCH + ''' ''' + FLAGS + ''' || true
 '''
