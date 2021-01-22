@@ -362,20 +362,20 @@ def cloneRepo(String URL, String REPO_PATH, String BRANCH) {
 // Requires getCrwVersion() to set CRW_BRANCH_F in order to install correct version of the script; or, if JOB_BRANCH is defined by .groovy param or in .jenkinsfile, will use that version
 def updateBaseImages(String REPO_PATH, String SOURCES_BRANCH, String FLAGS="", String SCRIPTS_BRANCH="") {
   def String updateBaseImages_bin="${WORKSPACE}/updateBaseImages.sh"
-  if (!fileExists(updateBaseImages_bin)) {
-    if (SOURCES_BRANCH?.trim() && !CRW_BRANCH_F?.trim()) {
-      getCrwVersion(SOURCES_BRANCH)
-    }
-    if (!SCRIPTS_BRANCH?.trim() && CRW_BRANCH_F?.trim()) {
-      SCRIPTS_BRANCH = CRW_BRANCH_F // this should work for midstream/downstream branches like crw-2.6-rhel-8
-    } else if (!SCRIPTS_BRANCH?.trim() && MIDSTM_BRANCH?.trim()) {
-      SCRIPTS_BRANCH = MIDSTM_BRANCH // this should work for midstream/downstream branches like crw-2.6-rhel-8
-    } else if (!SCRIPTS_BRANCH?.trim() && JOB_BRANCH?.trim()) {
-      SCRIPTS_BRANCH = JOB_BRANCH // this might fail if the JOB_BRANCH is 2.6 and there's no such branch
-    }
-    // fail build if not true
-    assert (CRW_BRANCH_F?.trim()) : "ERROR: execute getCrwVersion() before calling updateBaseImages()"
+  if (SOURCES_BRANCH?.trim() && !CRW_BRANCH_F?.trim()) {
+    getCrwVersion(SOURCES_BRANCH)
+  }
+  if (!SCRIPTS_BRANCH?.trim() && CRW_BRANCH_F?.trim()) {
+    SCRIPTS_BRANCH = CRW_BRANCH_F // this should work for midstream/downstream branches like crw-2.6-rhel-8
+  } else if (!SCRIPTS_BRANCH?.trim() && MIDSTM_BRANCH?.trim()) {
+    SCRIPTS_BRANCH = MIDSTM_BRANCH // this should work for midstream/downstream branches like crw-2.6-rhel-8
+  } else if (!SCRIPTS_BRANCH?.trim() && JOB_BRANCH?.trim()) {
+    SCRIPTS_BRANCH = JOB_BRANCH // this might fail if the JOB_BRANCH is 2.6 and there's no such branch
+  }
+  // fail build if not true
+  assert (CRW_BRANCH_F?.trim()) : "ERROR: execute getCrwVersion() before calling updateBaseImages()"
 
+  if (!fileExists(updateBaseImages_bin)) {
     // otherwise continue
     sh('''#!/bin/bash -xe
 URL="https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/''' + SCRIPTS_BRANCH + '''/product/updateBaseImages.sh"
@@ -396,7 +396,7 @@ fi
 echo "[INFO] util.groovy :: updateBaseImages :: SOURCES_BRANCH = ''' + SOURCES_BRANCH + '''"
 echo "[INFO] util.groovy :: updateBaseImages :: SCRIPTS_BRANCH = ''' + SCRIPTS_BRANCH + '''"
 cd ''' + REPO_PATH + '''
-''' + updateBaseImages_bin + ''' -b ''' + SOURCES_BRANCH + ''' -sb ''' + SCRIPTS_BRANCH + ''' ''' + FLAGS + ''' || true
+''' + updateBaseImages_bin + ''' --sources-branch ''' + SOURCES_BRANCH + ''' --scripts-branch ''' + SCRIPTS_BRANCH + ''' ''' + FLAGS + ''' || true
 '''
   is_pkgsdevel = sh(script: '''#!/bin/bash -xe
 cd ''' + REPO_PATH + '''; git remote -v | grep pkgs.devel.redhat.com || true''', returnStdout: true).trim()
