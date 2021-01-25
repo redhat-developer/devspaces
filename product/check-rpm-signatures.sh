@@ -25,7 +25,7 @@ curl -sSLO http://download.devel.redhat.com/scripts/rel-eng/utility/snippets/che
 command -v jq >/dev/null 2>&1 || { echo "jq is not installed. Aborting."; exit 1; }
 command -v yq >/dev/null 2>&1 || { echo "jq is not installed. Aborting."; exit 1; }
 
-DWNSTM_BRANCH="crw-2.5-rhel-8"
+DWNSTM_BRANCH="crw-2.6-rhel-8"
 
 while [[ "$#" -gt 0 ]]; do
   case $1 in

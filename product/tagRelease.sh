@@ -11,8 +11,8 @@
 # script to tag the Che/CRW repos for a given release
 
 # defaults
-crw_repos_branch=crw-2.5-rhel-8
-pkgs_devel_branch=crw-2.5-rhel-8
+crw_repos_branch=crw-2.6-rhel-8
+pkgs_devel_branch=crw-2.6-rhel-8
 pduser=crw-build
 SOURCE_BRANCH="" # normally, use this script to create tags, not branches
 
@@ -24,12 +24,12 @@ if [[ $# -lt 4 ]]; then
 To create tags:
   $0 -t CRW_TAG -gh CRW_GH_BRANCH -ghtoken GITHUB_TOKEN -pd PKGS_DEVEL_BRANCH -pduser kerberos_user
 Example: 
-  $0 -t 2.5.0 -gh crw-2.5-rhel-8 -ghtoken \$GITHUB_TOKEN -pd crw-2.5-rhel-8 -pduser crw-build
+  $0 -t 2.y.0 -gh ${crw_repos_branch} -ghtoken \$GITHUB_TOKEN -pd ${pkgs_devel_branch} -pduser crw-build
 
 To create branches:
   $0 --branchfrom PREVIOUS_CRW_GH_BRANCH -gh NEW_CRW_GH_BRANCH -ghtoken GITHUB_TOKEN
 Example: 
-  $0 --branchfrom crw-2.5-rhel-8 -gh crw-2.6-rhel-8 -ghtoken \$GITHUB_TOKEN
+  $0 --branchfrom crw-2-rhel-8 -gh ${crw_repos_branch} -ghtoken \$GITHUB_TOKEN
 "
 	exit 1
 fi
