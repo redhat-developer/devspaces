@@ -14,7 +14,7 @@ WORKDIR="$(pwd)"
 
 usage () {
 	echo "Usage:   $0 -b [BRANCH] -v [CRW CSV VERSION] -t [CRW TAG VERSION] [-w WORKDIR]"
-	echo "Example: $0 -b crw-2.5-rhel-8 -v 2.5.0 -t 2.5 -w $(pwd)"
+	echo "Example: $0 -b crw-2.y-rhel-8 -v 2.y.0 -t 2.y -w $(pwd)"
 	echo "Options: 
 	--no-commit, -n    do not commit to BRANCH
 	--no-push, -p      do not push to BRANCH
@@ -30,8 +30,8 @@ while [[ "$#" -gt 0 ]]; do
   case $1 in
     '-w') WORKDIR="$2"; shift 1;;
     '-b') BRANCH="$2"; shift 1;;
-    '-v') CSV_VERSION="$2"; shift 1;; # 2.5.0
-    '-t') CRW_VERSION="$2"; shift 1;; # 2.5
+    '-v') CSV_VERSION="$2"; shift 1;; # 2.y.0
+    '-t') CRW_VERSION="$2"; shift 1;; # 2.y
     '-n'|'--no-commit') docommit=0; dopush=0; shift 0;;
     '-p'|'--no-push') dopush=0; shift 0;;
     '-prb') PR_BRANCH="$2"; shift 1;;
@@ -43,7 +43,7 @@ while [[ "$#" -gt 0 ]]; do
 done
 
 if [[ ! ${CRW_VERSION} ]]; then
-  CRW_VERSION=${CSV_VERSION%.*} # given 2.5.0, want 2.5
+  CRW_VERSION=${CSV_VERSION%.*} # given 2.y.0, want 2.y
 fi
 
 # update VERSION file to product version (x.y)

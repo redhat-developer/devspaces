@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e 
 
-DWNSTRM_BRANCH="crw-2.5-rhel-8"
+DWNSTRM_BRANCH="crw-2.6-rhel-8"
 usage()
 {
     echo "
