@@ -119,7 +119,6 @@ codeready-workspaces-chectl \
 codeready-workspaces-deprecated \
 codeready-workspaces-images \
 codeready-workspaces-operator \
-codeready-workspaces-productization \
 codeready-workspaces-theia \
 ; do
 	echo; echo "== $d =="
