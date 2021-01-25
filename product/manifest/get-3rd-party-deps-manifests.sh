@@ -343,9 +343,8 @@ if [[ ${phases} == *"5"* ]]; then
 	rm -fr /tmp/python-deps-tmp
 	mkdir -p python-deps-tmp && cd python-deps-tmp
 
-	python3 -m virtualenv env
+	/usr/bin/python3 -m virtualenv env
 	source env/bin/activate
-	which python
 	/usr/bin/python3 -m pip install --upgrade pip
 	{ /usr/bin/python3 -m pip install python-language-server[all]==${PYTHON_LS_VERSION} | tee -a ${LOG_FILE}; } || true
 	log ""
