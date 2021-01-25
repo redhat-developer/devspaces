@@ -171,6 +171,7 @@ if [[ ${phases} == *"2"* ]]; then
 	log " == golang =="
 	log ""
 	log "2a. Install golang go deps: go-language-server@${GOLANG_LS_VERSION}"
+	if [[ ! -x /usr/bin/go ]]; then sudo yum -y -q install golang || true; fi
 	if [[ ! -x /usr/bin/go ]]; then echo "Error: install golang to run this script: sudo yum -y install golang"; exit 1; fi
 	getBashVars golang
 	for d in \
@@ -215,6 +216,7 @@ if [[ ${phases} == *"2"* ]]; then
 
 	log ""
 	log "2b. Install golang npm deps: go-language-server@${GOLANG_LS_VERSION}"
+	if [[ ! $(which npm) ]]; then sudo yum -y -q install nodejs npm || true; fi
 	if [[ ! $(which npm) ]]; then echo "Error: install nodejs and npm to run this script: sudo yum -y install nodejs npm"; exit 1; fi
 	log ""
 	cd /tmp
@@ -251,6 +253,7 @@ if [[ ${phases} == *"3"* ]]; then
 	log " == node10 (plugin-java8 container) =="
 	log""
 	log "3. Install node10 deps: typescript@${TYPERSCRIPT_VERSION} typescript-language-server@${TYPESCRIPT_LS_VERSION}"
+	if [[ ! $(which npm) ]]; then sudo yum -y -q install nodejs npm || true; fi
 	if [[ ! $(which npm) ]]; then echo "Error: install nodejs and npm to run this script: sudo yum -y install nodejs npm"; exit 1; fi
 	getBashVars node10
 	for d in \
@@ -283,6 +286,7 @@ if [[ ${phases} == *"4"* ]]; then
 	log " == php =="
 	log""
 	log "4. Install php deps: "
+	if [[ ! $(which php) ]]; then sudo yum -y -q install php-devel || true; fi
 	if [[ ! $(which php) ]]; then echo "Error: install php to run this script: sudo yum -y install php-devel"; exit 1; fi
 	getBashVars php
 	for d in \
@@ -323,8 +327,10 @@ if [[ ${phases} == *"5"* ]]; then
 	log ""
 	log " == python (plugin-java8 container) =="
 	log ""
-	log "5. Install python deps: pip install python-language-server[all]==${PYTHON_LS_VERSION}"
-	if [[ ! $(which python3) ]] || [[ ! $(pydoc modules | grep virtualenv) ]]; then echo "Error: install python3-six and python3-pip python-virtualenv to run this script: sudo yum -y install python3-six python3-pip python-virtualenv"; exit 1; fi
+	log "5. Install python deps (including python-virtualenv): pip install python-language-server[all]==${PYTHON_LS_VERSION}"
+	pyrpms="python3-six python3-pip python-virtualenv"
+	if [[ ! $(which python3) ]] || [[ ! $(pydoc modules | grep virtualenv) ]]; then sudo yum install -y -q $pyrpms || true; fi
+	if [[ ! $(which python3) ]] || [[ ! $(pydoc modules | grep virtualenv) ]]; then echo "Error: install $pyrpms to run this script: sudo yum -y install $pyrpms"; exit 1; fi
 	getBashVars python
 	for d in \
 		"PYTHON_IMAGE_VERSION" \
