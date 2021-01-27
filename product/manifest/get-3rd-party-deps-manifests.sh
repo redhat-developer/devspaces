@@ -286,8 +286,8 @@ if [[ ${phases} == *"4"* ]]; then
 	log " == php =="
 	log""
 	log "4. Install php deps: "
-	if [[ ! $(which php) ]]; then sudo yum -y -q install php-devel || true; fi
-	if [[ ! $(which php) ]]; then echo "Error: install php to run this script: sudo yum -y install php-devel"; exit 1; fi
+	if [[ ! $(which php) ]]; then sudo yum -y -q install php-devel php-json || true; fi
+	if [[ ! $(which php) ]]; then echo "Error: install php to run this script: sudo yum -y install php-devel php-json"; exit 1; fi
 	getBashVars php
 	for d in \
 		"PHP_LS_VERSION" \
