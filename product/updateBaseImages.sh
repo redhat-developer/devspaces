@@ -60,13 +60,15 @@ checkrecentupdates () {
 
 usage () {
 	echo "Usage:   $0 -b [BRANCH] [-w WORKDIR] [-f DOCKERFILE] [-maxdepth MAXDEPTH]"
-	echo "Downstream Example: $0 -b ${SOURCES_BRANCH} -w $(pwd) -f rhel.Dockerfile -maxdepth 2"
-	echo "Upstream   Example: $0 -b 7.24.x -w dockerfiles/ -f \*from.dockerfile -maxdepth 5 -o -prb pr-new-theia-base-images"
+	echo "Downstream Example: $0 -b ${SOURCES_BRANCH} -w \$(pwd) -f rhel.Dockerfile -maxdepth 2"
+	echo "Upstream Example 1: $0 -b 7.24.x -w dockerfiles/ -f \*from.dockerfile -maxdepth 5 -o -prb pr-new-theia-base-images"
+	echo "Upstream Example 2: $0 -b 7.24.x -w \$(pwd) -f Dockerfile -maxdepth 1 --tag '1\.13|8\.[0-9]-' --no-commit"
 	echo "Options: 
 	--sources-branch, -b    set sources branch (project to update), eg., 7.24.x
 	--scripts-branch, -sb   set scripts branch (project with helper scripts), eg., crw-2.6-rhel-8
 	--no-commit, -n    do not commit to BRANCH
 	--no-push, -p      do not push to BRANCH
+	--tag              regex match to restrict results, eg., '1\.13|8\.[0-9]-' to find golang 1.13 (not 1.14) and any ubi 8-x- tag
 	-prb               set a PR_BRANCH; default: pr-new-base-images-(timestamp)
 	-o                 open browser if PR generated
 	-q, -v             quiet, verbose output
@@ -92,8 +94,8 @@ while [[ "$#" -gt 0 ]]; do
     '-maxdepth') MAXDEPTH="$2"; shift 1;;
     '-c') buildCommand="rhpkg container-build"; shift 0;; # NOTE: will trigger a new build for each commit, rather than for each change set (eg., Dockefiles with more than one FROM)
     '-s') buildCommand="rhpkg container-build --scratch"; shift 0;;
-    '-n'|'--no-commit') docommit=0; dopush=0; shift 0;;
-    '-p'|'--no-push') dopush=0; shift 0;;
+    '-n'|'--nocommit'|'--no-commit') docommit=0; dopush=0; shift 0;;
+    '-p'|'--nopush'|'--no-push') dopush=0; shift 0;;
     '-prb') PR_BRANCH="$2"; shift 1;;
     '-o') OPENBROWSERFLAG="-o"; shift 0;;
     '-q') QUIET=1; shift 0;;
@@ -154,7 +156,7 @@ testvercomp () {
 }
 
 pushedIn=0
-for d in $(find ${WORKDIR} -maxdepth ${MAXDEPTH} -name ${DOCKERFILE} | sort); do
+for d in $(find ${WORKDIR} -maxdepth ${MAXDEPTH} -name ${DOCKERFILE} | sort -r); do
 	if [[ -f ${d} ]]; then
 		echo ""
 		echo "# Checking ${d} ..."
@@ -229,7 +231,7 @@ for d in $(find ${WORKDIR} -maxdepth ${MAXDEPTH} -name ${DOCKERFILE} | sort); do
 
 							# commit change and push it
 							if [[ -d ${d%%/${DOCKERFILE}} ]]; then pushd ${d%%/${DOCKERFILE}} >/dev/null; pushedIn=1; fi
-							set -x
+							# set -x
 							if [[ ${docommit} -eq 1 ]]; then 
 								git add ${DOCKERFILE} || true
 								git commit -s -m "[base] Update from ${URL} to ${FROMPREFIX}:${LATESTTAG}" ${DOCKERFILE}
