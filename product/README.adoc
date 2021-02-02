@@ -1,0 +1,17 @@
+# What's inside?
+
+This folder contains useful scripts for working with containers, Brew builds, and other release engineering tasks.
+
+Over time this content will be migrated to other places, such as https://gitlab.cee.redhat.com/codeready-workspaces/crw-jenkins
+
+See also https://github.com/redhat-developer/codeready-workspaces/tree/crw-2-rhel-8/devdoc
+
+These files have moved:
+
+    * create-branches.Jenkinsfile
+    * updateVersionAndRegistryTags.Jenkinsfile 
+    * create-tags.Jenkinsfile
+    * manifest/get-3rd-party-deps-manifests.Jenkinsfile
+    * manifest/get-3rd-party-sources.Jenkinsfile
+
+See https://gitlab.cee.redhat.com/codeready-workspaces/crw-jenkins/-/tree/master/jobs/CRW_CI/jobs/Releng and https://github.com/redhat-developer/codeready-workspaces-images#jenkins-jobs

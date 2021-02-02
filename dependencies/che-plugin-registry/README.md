@@ -1,10 +1,4 @@
-[![CircleCI](https://circleci.com/gh/eclipse/che-plugin-registry.svg?style=svg)](https://circleci.com/gh/eclipse/che-plugin-registry)
-[![Master Build Status](https://ci.centos.org/buildStatus/icon?subject=master&job=devtools-che-plugin-registry-build-master/)](https://ci.centos.org/job/devtools-che-plugin-registry-build-master/)
-[![Nightly Build Status](https://ci.centos.org/buildStatus/icon?subject=nightly&job=devtools-che-plugin-registry-nightly/)](https://ci.centos.org/job/devtools-che-plugin-registry-nightly/)
-[![Release Build Status](https://ci.centos.org/buildStatus/icon?subject=release&job=devtools-che-plugin-registry-release/)](https://ci.centos.org/job/devtools-che-plugin-registry-release/)
-[![Release Preview Build Status](https://ci.centos.org/buildStatus/icon?subject=release-preview&job=devtools-che-plugin-registry-release-preview/)](https://ci.centos.org/job/devtools-che-plugin-registry-release-preview/)
-
-# Eclipse Che plugin registry
+# CodeReady Workspaces plugin registry
 
 This repository holds ready-to-use plugins for different languages and technologies.
 
@@ -35,6 +29,15 @@ Options:
 ```
 
 Note that the Dockerfiles in this repository utilize multi-stage builds, so Docker version 17.05 or higher is required.
+
+
+### Build in Brew
+
+The Jenkinsfile in this repo has moved. See:
+
+* https://gitlab.cee.redhat.com/codeready-workspaces/crw-jenkins/-/tree/master/jobs/CRW_CI
+* https://github.com/redhat-developer/codeready-workspaces-images#jenkins-jobs
+
 
 ### Offline and airgapped registry images
 
