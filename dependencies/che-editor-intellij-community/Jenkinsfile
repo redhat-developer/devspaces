@@ -5,14 +5,14 @@ import groovy.transform.Field
 // PARAMETERS for this pipeline:
 // def CHE_VER = "7.20.x"
 
-// NOTE: use https://github.com/redhat-developer/jetbrains-editor-images/tree/crw-2.5-rhel-8 instead of raw master branch upstream until we have stability/branches/tags there
+// NOTE: use https://github.com/redhat-developer/jetbrains-editor-images/tree/crw-2.y-rhel-8 instead of raw master branch upstream until we have stability/branches/tags there
 def SOURCE_REPO = "redhat-developer/jetbrains-editor-images" // upstream source repo should be https://github.com/che-incubator/jetbrains-editor-images
 def DWNSTM_REPO = "redhat-developer/codeready-workspaces-images" // repo to use as target
 def SYNC_REPO = "codeready-workspaces-plugin-intellij"
 
 // NOTE: must create branches manually
-String SOURCE_BRANCH = "crw-2.6-rhel-8" // upstream source repo branch, eg., crw-2.5-rhel-8 from fork 
-String DWNSTM_BRANCH = SOURCE_BRANCH // target branch, eg., crw-2.5-rhel-8
+String SOURCE_BRANCH = "crw-2.6-rhel-8" // upstream source repo branch, eg., crw-2.y-rhel-8 from fork 
+String DWNSTM_BRANCH = SOURCE_BRANCH // target branch, eg., crw-2.y-rhel-8
 
 def OLD_SHA=""
 def NEW_SHA=""
@@ -100,7 +100,7 @@ LABEL summary="$SUMMARY" \\\\ \\
       io.openshift.tags="$PRODNAME,$COMPNAME" \\\\ \\
       com.redhat.component="$PRODNAME-$COMPNAME-container" \\\\ \\
       name="$PRODNAME/$COMPNAME" \\\\ \\
-      version="2.5" \\\\ \\
+      version="''' + CRW_VERSION + '''" \\\\ \\
       license="EPLv2" \\\\ \\
       maintainer="Nick Boldt <nboldt@redhat.com>" \\\\ \\
       io.openshift.expose-services="" \\\\ \\
