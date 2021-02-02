@@ -7,7 +7,7 @@ JENKINS=https://main-jenkins-csb-crwqe.apps.ocp4.prod.psi.redhat.com/job/CRW_CI/
 MIDSTM_BRANCH=""
 usage () 
 {
-    echo "Usage: $0 -b crw-2.y-rhel-8 -v 2.y.0"
+    echo "Usage: $0 -b $(git rev-parse --abbrev-ref HEAD) -v 2.y.0"
     exit
 }
 # commandline args
@@ -38,7 +38,7 @@ function log () {
 	echo "$1" | tee -a ${LOG_FILE}
 }
 
-rm -f ${MANIFEST_FILE} ${MANIFEST_FILE}.2 ${MANIFEST_FILE}.3 ${LOG_FILE}
+rm -f ${MANIFEST_FILE} ${MANIFEST_FILE}.2 ${LOG_FILE}
 echo "Parsing ${JENKINS}/crw-theia-sources_${CRW_VERSION}/lastSuccessfulBuild/consoleText ..."
 curl -sSL -o ${MANIFEST_FILE} ${JENKINS}/crw-theia-sources_${CRW_VERSION}/lastSuccessfulBuild/consoleText
 CHE_THEIA_BRANCH=$(grep "build.include" ${MANIFEST_FILE} | sort -u | grep curl | sed -r -e "s#.+che-theia/(.+)/build.include#\1#") # 7.yy.x
@@ -51,16 +51,13 @@ cat ${MANIFEST_FILE}.2 | uniq | sort | grep -E -v "${EXCLUDE_LINES}" | uniq | so
 rm -f ${MANIFEST_FILE}.2
 
 TMPDIR=$(mktemp -d)
-pushd $TMPDIR
-	if [[ ! -d che-theia ]]; then
-		git clone git@github.com:eclipse/che-theia.git 
-	else
-		cd che-theia || exit
+pushd $TMPDIR >/dev/null || exit
+	git clone git@github.com:eclipse/che-theia.git 
+	cd che-theia || exit
 		git fetch || true
 		git checkout --track origin/${CHE_THEIA_BRANCH}
 		git pull origin ${CHE_THEIA_BRANCH}
-		cd ..
-	fi
+	cd ..
 
 	Dockerfiles="$(find che-theia -name Dockerfile | grep -E -v "${EXCLUDE_FILES}")"
 	for df in $Dockerfiles; do
@@ -70,7 +67,7 @@ pushd $TMPDIR
 		done
 		echo "" | tee -a ${LOG_FILE}
 	done
-popd
+popd >/dev/null || exit
 rm -fr $TMPDIR
 
 ##################################
