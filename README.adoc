@@ -47,8 +47,8 @@ mvn clean install
 Then just use the `Dockerfile` in this repo to build:
 
 ```
-podman build --force-rm -t registry.redhat.io/codeready-workspaces/server-rhel8:2.5 . && \
-podman images | grep registry.redhat.io/codeready-workspaces/server-rhel8:2.5
+podman build --force-rm -t registry.redhat.io/codeready-workspaces/server-rhel8:2.y . && \
+podman images | grep registry.redhat.io/codeready-workspaces/server-rhel8:2.y
 ```
 
 You can then reference this image in your deployment (set image pull policy to *`Always`* to make sure it's pulled instead of the default one).
