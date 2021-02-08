@@ -328,9 +328,9 @@ if [[ ${phases} == *"5"* ]]; then
 	log " == python (plugin-java8 container) =="
 	log ""
 	log "5. Install python deps (including python-virtualenv): pip install python-language-server[all]==${PYTHON_LS_VERSION}"
-	pyrpms="python3-six python3-pip python-virtualenv"
-	if [[ ! $(which python3) ]] || [[ ! $(pydoc modules | grep virtualenv) ]]; then sudo yum install -y -q $pyrpms || true; fi
-	if [[ ! $(which python3) ]] || [[ ! $(pydoc modules | grep virtualenv) ]]; then echo "Error: install $pyrpms to run this script: sudo yum -y install $pyrpms"; exit 1; fi
+	pyrpms="python3-six python3-pip python3-virtualenv"
+	if [[ ! $(which python3) ]] || [[ ! $(pydoc3 modules | grep virtualenv) ]]; then sudo yum install -y -q $pyrpms || true; fi
+	if [[ ! $(which python3) ]] || [[ ! $(pydoc3 modules | grep virtualenv) ]]; then echo "Error: install $pyrpms to run this script: sudo yum -y install $pyrpms"; exit 1; fi
 	getBashVars python
 	for d in \
 		"PYTHON_IMAGE_VERSION" \
