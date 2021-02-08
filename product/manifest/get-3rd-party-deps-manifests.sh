@@ -175,11 +175,10 @@ if [[ ${phases} == *"2"* ]]; then
 	if [[ ! -x /usr/bin/go ]]; then echo "Error: install golang to run this script: sudo yum -y install golang"; exit 1; fi
 	getBashVars golang
 	for d in \
-		"GOLANG_IMAGE_VERSION" \
+		"GOLANG_IMAGE" \
 		"GOLANG_LINT_VERSION" \
 		"GOLANG_LS_OLD_DEPS" \
 		"GOLANG_LS_VERSION" \
-		"NODEJS_IMAGE_VERSION" \
 		; do
 		log " * $d = ${!d}"
 	done
@@ -237,7 +236,7 @@ if [[ ${phases} == *"2"* ]]; then
 	log "2c. kamel is built from go sources with no additional requirements"
 	getBashVars kamel
 	for d in \
-		"GOLANG_IMAGE_VERSION" \
+		"GOLANG_IMAGE" \
 		"KAMEL_VERSION" \
 		; do
 		log " * $d = ${!d}"
@@ -257,7 +256,7 @@ if [[ ${phases} == *"3"* ]]; then
 	if [[ ! $(which npm) ]]; then echo "Error: install nodejs and npm to run this script: sudo yum -y install nodejs npm"; exit 1; fi
 	getBashVars node10
 	for d in \
-		"NODEJS_IMAGE_VERSION" \
+		"NODEJS_IMAGE" \
 		"NODEMON_VERSION" \
 		"TYPERSCRIPT_VERSION" \
 		"TYPESCRIPT_LS_VERSION" \
@@ -333,7 +332,7 @@ if [[ ${phases} == *"5"* ]]; then
 	if [[ ! $(which python3) ]] || [[ ! $(pydoc3 modules | grep virtualenv) ]]; then echo "Error: install $pyrpms to run this script: sudo yum -y install $pyrpms"; exit 1; fi
 	getBashVars python
 	for d in \
-		"PYTHON_IMAGE_VERSION" \
+		"PYTHON_IMAGE_" \
 		"PYTHON_LS_VERSION" \
 		; do
 		log " * $d = ${!d}"
