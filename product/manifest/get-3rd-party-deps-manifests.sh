@@ -60,7 +60,8 @@ function getBashVars () {
 		for p in ${dir}/build.sh; do 
 			grep -E "export " $p | grep -E -v "SCRIPT_DIR" | sed -r -e "s@#.+@@g" > "${p}.tmp"
 			# shellcheck disable=SC1090
-			. "${p}.tmp" && rm -f ${p}.tmp
+			. "${p}.tmp"
+			rm -f ${p}.tmp
 		done
 	popd >/dev/null || exit 1
 }
