@@ -17,9 +17,8 @@ timeout(120) {
                 println "CRW_VERSION = '" + CRW_VERSION + "'"
                 util.installSkopeo(CRW_VERSION)
                 util.installYq()
-                sh '''#!/bin/bash -xe
-                sudo yum -y install podman; podman --version
-                '''
+                util.installBrewKoji()
+                util.installPodman()
                 sh('curl -sSLO https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/'+ MIDSTM_BRANCH + '/product/getLatestImageTags.sh && chmod +x getLatestImageTags.sh')
                 sh('curl -sSLO https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/'+ MIDSTM_BRANCH + '/product/check-rpm-signatures.sh && chmod +x check-rpm-signatures.sh')
                 withCredentials([string(credentialsId:'devstudio-release.token', variable: 'GITHUB_TOKEN'), file(credentialsId: 'crw-build.keytab', variable: 'CRW_KEYTAB')]) {
@@ -27,9 +26,7 @@ timeout(120) {
                     currentBuild.description="Checking RPM signatures ..."
                     sh ('''
 export KRB5CCNAME=/var/tmp/crw-build_ccache
-kinit "crw-build/codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com@REDHAT.COM" -kt ''' + CRW_KEYTAB + '''
-klist # verify working
-./check-rpm-signatures.sh''' // set branch if needed with -b ''' + MIDSTM_BRANCH
+./check-rpm-signatures.sh -b ''' + MIDSTM_BRANCH
                     )
                     MISSING_SIGS = sh(script: '''#!/bin/bash -xe
                         if [[ -f missing.signatures.txt ]]; then cat missing.signatures.txt; fi
