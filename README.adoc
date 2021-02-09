@@ -153,7 +153,7 @@ These files have moved, as they sync directly from an upstream repo:
 
 To reskin this assembly, you need to edit the following files:
 
-* link:assembly/codeready-workspaces-assembly-dashboard-war/src/main/webapp/assets/branding/branding-crw.css[assembly/codeready-workspaces-assembly-dashboard-war/src/main/webapp/assets/branding/branding-crw.css] - replacement for link:https://github.com/eclipse/che/blob/master/dashboard/src/assets/branding/branding.css[Che default css], copied via link:https://github.com/redhat-developer/codeready-workspaces/blob/master/Jenkinsfile#L177-L183[Jenkinsfile] during Pipeline build
+* link:assembly/codeready-workspaces-assembly-dashboard-war/src/main/webapp/assets/branding/branding-crw.css[assembly/codeready-workspaces-assembly-dashboard-war/src/main/webapp/assets/branding/branding-crw.css] - replacement for link:https://github.com/eclipse/che/blob/master/dashboard/src/assets/branding/branding.css[Che default css], copied via link:https://github.com/redhat-developer/codeready-workspaces-images/blob/crw-2-rhel-8/crw-jenkins/jobs/CRW_CI/crw-server_2.groovy[Jenkinsfile] during Pipeline build
 
 * link:assembly/codeready-workspaces-assembly-dashboard-war/src/main/webapp/assets/branding/product.json.template[assembly/codeready-workspaces-assembly-dashboard-war/src/main/webapp/assets/branding/product.json.template]
 ** link:assembly/codeready-workspaces-assembly-dashboard-war/src/main/webapp/assets/branding/CodeReady.ico[assembly/codeready-workspaces-assembly-dashboard-war/src/main/webapp/assets/branding/CodeReady.ico] - browser tab favicon
@@ -164,5 +164,3 @@ To reskin this assembly, you need to edit the following files:
 See also SVG assets in link:product/branding/[product/branding/] folder.
 
 NOTE: When saving files in Inkscape, make sure you export as *Plain SVG*, then edit the resulting .svg file to remove any `<metadata>...</metadata>` tags and all their contents. You can also remove the `xmlns:rdf` definition. This will ensure they compile correctly.
-
-![.github/workflows/gh_actions_pr.yaml](https://github.com/redhat-developer/codeready-workspaces/workflows/.github/workflows/gh_actions_pr.yaml/badge.svg?event=pull_request)
