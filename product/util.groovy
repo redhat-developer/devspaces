@@ -129,7 +129,7 @@ sudo /usr/bin/python3 -m pip install -q --upgrade pip yq jsonschema; jq --versio
   ''')
 }
 def installBrewKoji() {
-  installRPMs("brewkoji")
+  installRPMs("brewkoji python3-pyOpenSSL python3-cryptography python3-dateutil python3-six")
 }
 def installRhpkg() {
   installRPMs("rhpkg krb5-workstation")
