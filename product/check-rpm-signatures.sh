@@ -43,7 +43,7 @@ command -v podman >/dev/null 2>&1 || { sudo yum install -y podman; }
 rm -f "${SCRIPT_DIR}"/missing.signatures.txt
 for NVR in $(cat "${TMPDIR}"/nvrs.list.txt); do
   "${TMPDIR}"/check-image-rpm-sigs.sh ${NVR} | tee "${TMPDIR}"/${NVR}.signatures.txt
-  unsigned=$(cat "${TMPDIR}"/${NVR}.signatures.txt | jq '.images[] | to_entries | map_values(.value + { rpm: .key }) | .[] | select(.timestamp == "").rpm' -r | sort | uniq | grep -v gpg-pubkey-)
+  unsigned=$(cat "${TMPDIR}"/${NVR}.signatures.txt | jq '.images[] | to_entries | map_values(.value + { rpm: .key }) | .[] | select(.timestamp == "").rpm' -r | sort | uniq | grep -v gpg-pubkey- || true)
 
   if [[ ${unsigned} ]]; then
     echo "[ERROR] Found unsigned RPMs in ${NVR}:" | tee -a "${SCRIPT_DIR}"/missing.signatures.txt
