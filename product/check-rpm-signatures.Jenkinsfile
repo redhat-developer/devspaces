@@ -15,7 +15,8 @@ timeout(120) {
                 cleanWs()
                 CRW_VERSION = util.getCrwVersion(MIDSTM_BRANCH)
                 println "CRW_VERSION = '" + CRW_VERSION + "'"
-                util.installSkopeoFromContainer("")
+                // on new Jenkins, use util.installSkopeoFromContainer("")
+                util.installSkopeo("2.5") // only works on old jenkins
                 util.installYq()
                 util.installBrewKoji()
                 util.installPodman()
