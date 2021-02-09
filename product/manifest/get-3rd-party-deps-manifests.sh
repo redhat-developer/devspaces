@@ -58,7 +58,7 @@ function getBashVars () {
 	# parse the specific file and export the correct variables
 	pushd /tmp/codeready-workspaces-deprecated >/dev/null || exit 1
 		for p in ${dir}/build.sh; do 
-			egrep "export " $p | egrep -v "SCRIPT_DIR" | sed -r -e "s@#.+@@g" > "${p}.tmp"
+			grep -E "export " $p | grep -E -v "SCRIPT_DIR" | sed -r -e "s@#.+@@g" > "${p}.tmp"
 			# shellcheck disable=SC1090
 			. "${p}.tmp" && rm -f ${p}.tmp
 		done
@@ -102,8 +102,8 @@ function logDockerDetails ()
 	theFile=/tmp/curl.tmp
 	curl -sSL $theFileURL > $theFile
 	prefix="$2" # echo prefix="$2"
-	log "$(cat $theFile | egrep -i "FROM|yum|rh-|INSTALL|COPY|ADD|curl|_VERSION" | egrep -v "opt/rh|yum clean all|yum-config-manager|^( *)#|useradd|entrypoint.sh|gopath")"
-	mnf "$(cat $theFile | egrep "^FROM" | sed -e "s#^FROM #${prefix}#g")"
+	log "$(cat $theFile | grep -E -i "FROM|yum|rh-|INSTALL|COPY|ADD|curl|_VERSION" | grep -E -v "opt/rh|yum clean all|yum-config-manager|^( *)#|useradd|entrypoint.sh|gopath")"
+	mnf "$(cat $theFile | grep -E "^FROM" | sed -e "s#^FROM #${prefix}#g")"
 	rm -f $theFile
 }
 
@@ -189,7 +189,7 @@ if [[ ${phases} == *"2"* ]]; then
 	mkdir -p go-deps-tmp && cd go-deps-tmp
 
 	# run the same set of go get -v commands in the build.sh script:
-	egrep "go get -v|go build -o" /tmp/codeready-workspaces-deprecated/golang/build.sh > todos.txt
+	grep -E "go get -v|go build -o" /tmp/codeready-workspaces-deprecated/golang/build.sh > todos.txt
 	while read p; do
 		# if you want more detailed output and logging, comment the next 1 line and uncomment the following 4 lines
 		log "  ${p%%;*}"; ${p%%;*} || true
@@ -198,7 +198,7 @@ if [[ ${phases} == *"2"* ]]; then
 		#log "<== ${p%%;*} =="
 		#log ""
 	done <todos.txt
-	egrep "GOLANG_LINT_VERSION" /tmp/codeready-workspaces-deprecated/golang/build.sh > todos.txt
+	grep -E "GOLANG_LINT_VERSION" /tmp/codeready-workspaces-deprecated/golang/build.sh > todos.txt
 	. todos.txt
 	rm -f todos.txt
 
