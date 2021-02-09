@@ -58,7 +58,7 @@ function getBashVars () {
 	# parse the specific file and export the correct variables
 	pushd /tmp/codeready-workspaces-deprecated >/dev/null || exit 1
 		for p in ${dir}/build.sh; do 
-			grep -E "export " $p | grep -E -v "SCRIPT_DIR" | sed -r -e "s@#.+@@g" > "${p}.tmp"
+			grep -E "export " $p | grep -E -v "SCRIPT_DIR|PATH=" | sed -r -e "s@#.+@@g" > "${p}.tmp"
 			# shellcheck disable=SC1090
 			. "${p}.tmp"
 			rm -f ${p}.tmp
@@ -327,13 +327,13 @@ if [[ ${phases} == *"5"* ]]; then
 	log ""
 	log " == python (plugin-java8 container) =="
 	log ""
-	log "5. Install python deps (including python-virtualenv): pip install python-language-server[all]==${PYTHON_LS_VERSION}"
+	log "5. Install python deps (including python3-virtualenv): pip install python-language-server[all]==${PYTHON_LS_VERSION}"
 	pyrpms="python3-six python3-pip python3-virtualenv"
 	if [[ ! $(which python3) ]] || [[ ! $(pydoc3 modules | grep virtualenv) ]]; then sudo yum install -y -q $pyrpms || true; fi
 	if [[ ! $(which python3) ]] || [[ ! $(pydoc3 modules | grep virtualenv) ]]; then echo "Error: install $pyrpms to run this script: sudo yum -y install $pyrpms"; exit 1; fi
 	getBashVars python
 	for d in \
-		"PYTHON_IMAGE_" \
+		"PYTHON_IMAGE" \
 		"PYTHON_LS_VERSION" \
 		; do
 		log " * $d = ${!d}"
