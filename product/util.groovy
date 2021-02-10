@@ -134,9 +134,34 @@ def installBrewKoji() {
 def installRhpkg() {
   installRPMs("rhpkg krb5-workstation")
 }
+def installSshfs() {
+  // provides shasum for oclif-dev; need fuse-sshfs for mounting drive to copy to rcm-guest
+  installRPMs("perl-Digest-SHA fuse-sshfs", true)
+}
+def installPodman2() {
+  updatePodman(true)
+}
+
+// install podman from latest pulp repos, >=2.0.5
+def updatePodman(boolean usePulpRepos=true) {
+  if (usePulpRepos) { enablePulpRepos() }
+  sh('''#!/bin/bash -xe
+echo "[INFO] Installing podman with docker emulation ..."
+sudo yum -y -q module install container-tools
+  ''')
+  installRPMs("fuse3 podman podman-docker")
+  sh('''#!/bin/bash -xe
+sudo yum update -y -q fuse3 podman podman-docker || true
+
+# suppress message re: docker emulation w/ podman
+sudo touch /etc/containers/nodocker
+podman --version
+  ''')
+}
 
 // For RHEL8 only; for RHEL7 assume podman or docker is already installed
-def installPodman() {
+// if already installed, don't reinstall
+def installPodman(boolean usePulpRepos=false) {
   PODMAN = sh(script: '''#!/bin/bash -e
   PODMAN="$(command -v podman || true)"
   if [[ ! -x $PODMAN ]]; then PODMAN="$(command -v docker || true)"; fi
@@ -151,16 +176,7 @@ def installPodman() {
       grep -E '^VERSION=\"*8.' /etc/os-release || true
     ''', returnStdout: true)
     if (OS_IS_RHEL8?.trim()) {
-      sh('''#!/bin/bash -xe
-        echo "[INFO] Installing podman with docker emulation ..."
-        sudo yum -y -q module install container-tools
-      ''')
-      installRPMs("fuse3 podman podman-docker")
-      sh('''#!/bin/bash -xe
-        # suppress message re: docker emulation w/ podman
-        sudo touch /etc/containers/nodocker 
-        podman --version
-      ''')
+      updatePodman(usePulpRepos)
     } else {
       sh('''#!/bin/bash -xe
         echo "[ERROR] RHEL 8 not detected: please install docker or podman manually to proceed."
@@ -170,23 +186,75 @@ def installPodman() {
   }
 }
 
-// sudo must already be installed and user must be a sudoer
-def installRPMs(String whichRPMs) {
-  sh('''#!/bin/bash -xe
-  # sudo yum install -y -q yum-utils || true # needed for yum-config-manager
-  # sudo yum-config-manager -y -q --add-repo http://download.devel.redhat.com/rel-eng/RCMTOOLS/latest-RCMTOOLS-2-RHEL-8/compose/BaseOS/x86_64/os/ || true
+def enableRcmToolsRepo() {
+  sh '''#!/bin/bash -xe
+# rather than creating .repo files, could shortcut using yum-utils, but
+# this creates single-arch .repo files with gpg enabled and no skip_if_unavailable=True
+# sudo yum install -y -q yum-utils || true # needed for yum-config-manager
+# sudo yum-config-manager -y -q --add-repo http://download.devel.redhat.com/rel-eng/RCMTOOLS/latest-RCMTOOLS-2-RHEL-8/compose/BaseOS/x86_64/os/ || true
 
-  # insert multi-arch version, with gpgcheck disabled
-  cat <<EOF | sudo tee /etc/yum.repos.d/latest-RCMTOOLS-2-RHEL-8.repo
-[latest-RCMTOOLS-2-RHEL-8]
-name=latest-RCMTOOLS-2-RHEL-8
-baseurl=http://download.devel.redhat.com/rel-eng/RCMTOOLS/latest-RCMTOOLS-2-RHEL-8/compose/BaseOS/\\$basearch/os/
+# required for rhpkg and kinit; use multi-arch repo, with gpgcheck disabled
+repo=latest-RCMTOOLS-2-RHEL-8
+cat <<EOF | sudo tee /etc/yum.repos.d/${repo}.repo
+[${repo}]
+name=${repo}
+baseurl=http://download.devel.redhat.com/rel-eng/RCMTOOLS/${repo}/compose/BaseOS/\\$basearch/os/
 enabled=1
 gpgcheck=0
 skip_if_unavailable=True
 EOF
-  sudo yum install -y -q ''' + whichRPMs + '''
-  ''')
+'''
+}
+
+// rhel8-8-codeready-builder repo required fuse-sshfs (to push release bits/sources to rcm-guest)
+// rhel8-8-appstream repo required for podman >=2.0.5 (includes --override-arch) and skopeo >=1.1
+def enablePulpRepos() {
+  sh '''#!/bin/bash -xe
+# use multi-arch repos, with gpgcheck disabled
+repo=rhocp-4.6
+cat <<EOF | sudo tee /etc/yum.repos.d/${repo}-pulp.repo
+[${repo}]
+name=${repo}
+baseurl=http://pulp.dist.prod.ext.phx2.redhat.com/content/dist/layered/rhel8/\\$basearch/${repo/-/\\/}/os/
+enabled=1
+gpgcheck=0
+skip_if_unavailable=True
+EOF
+
+# enable rhel8 pulp repos to resolve newer dependencies; use multi-arch repo, with gpgcheck disabled
+repo=rhel8-8
+cat <<EOF | sudo tee /etc/yum.repos.d/${repo}-pulp.repo
+[${repo}-appstream]
+name=${repo}-appstream
+baseurl=http://pulp.dist.prod.ext.phx2.redhat.com/content/dist/${repo/-/\\/}/\\$basearch/appstream/os
+enabled=1
+gpgcheck=0
+skip_if_unavailable=True
+
+[${repo}-baseos]
+name=${repo}-baseos
+baseurl=http://pulp.dist.prod.ext.phx2.redhat.com/content/dist/${repo/-/\\/}/\\$basearch/baseos/os
+enabled=1
+gpgcheck=0
+skip_if_unavailable=True
+
+[${repo}-codeready-builder]
+name=${repo}-codeready-builder
+baseurl=http://pulp.dist.prod.ext.phx2.redhat.com/content/dist/${repo/-/\\/}/\\$basearch/codeready-builder/os
+enabled=1
+gpgcheck=0
+skip_if_unavailable=True
+EOF
+'''
+}
+
+// sudo must already be installed and user must be a sudoer
+def installRPMs(String whichRPMs, boolean usePulpRepos=false) {
+  enableRcmToolsRepo()
+  if (usePulpRepos) { enablePulpRepos() }
+  sh '''#!/bin/bash -xe
+sudo yum install -y -q ''' + whichRPMs + '''
+'''
 }
 
 // to log into dockerhub, quay and RHEC, use this method where needed
