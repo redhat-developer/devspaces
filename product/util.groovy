@@ -267,14 +267,13 @@ def loginToRegistries() {
       usernamePassword(credentialsId: 'registry.redhat.io_crw_bot', usernameVariable: 'CRW_BOT_USERNAME', passwordVariable: 'CRW_BOT_PASSWORD')
   ]){
     return sh(script: '''#!/bin/bash -xe
-      PODMAN=$(command -v podman || true)
-      if [[ ! -x $PODMAN ]]; then echo "[WARNING] podman is not installed."; PODMAN=$(command -v docker || true); fi
-      if [[ ! -x $PODMAN ]]; then echo "[ERROR] docker is not installed. Aborting."; exit 1; fi
-      echo "''' + DOCKERHUB_PASSWORD + '''" | ${PODMAN} login -u="''' + DOCKERHUB_USERNAME + '''" --password-stdin docker.io
-      echo "''' + QUAY_TOKEN + '''" | ${PODMAN} login -u="crw+crwci" --password-stdin quay.io
-      echo "''' + CRW_BOT_PASSWORD + '''" | ${PODMAN} login -u="''' + CRW_BOT_USERNAME + '''" --password-stdin registry.redhat.io
-      ''', returnStatus:true
-    )
+PODMAN=$(command -v podman || true)
+if [[ ! -x $PODMAN ]]; then echo "[WARNING] podman is not installed."; PODMAN=$(command -v docker || true); fi
+if [[ ! -x $PODMAN ]]; then echo "[ERROR] docker is not installed. Aborting."; exit 1; fi
+echo "''' + DOCKERHUB_PASSWORD + '''" | ${PODMAN} login -u="''' + DOCKERHUB_USERNAME + '''" --password-stdin docker.io
+echo "''' + QUAY_TOKEN + '''" | ${PODMAN} login -u="crw+crwci" --password-stdin quay.io
+echo "''' + CRW_BOT_PASSWORD + '''" | ${PODMAN} login -u="''' + CRW_BOT_USERNAME + '''" --password-stdin registry.redhat.io
+    ''', returnStatus:true)
   }
 }
 
@@ -362,22 +361,21 @@ def installSkopeoFromContainer(String container, String minimumVersion) {
 
 // OLD WAY <= CRW 2.5, uses version built in Jenkins from latest sources
 def installSkopeo(String CRW_VERSION) {
-  sh('''#!/bin/bash -xe
-    pushd /tmp >/dev/null
-    # remove any older versions
-    sudo yum remove -y -q skopeo || true
-    if [[ ! -x /usr/local/bin/skopeo ]]; then
-      sudo curl -sSLO "https://codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/crw-deprecated_''' + CRW_VERSION + '''/lastSuccessfulBuild/artifact/codeready-workspaces-deprecated/skopeo/target/skopeo-$(uname -m).tar.gz"
-    fi
-    if [[ -f /tmp/skopeo-$(uname -m).tar.gz ]]; then
-      sudo tar xzf /tmp/skopeo-$(uname -m).tar.gz --overwrite -C /usr/local/bin/
-      sudo chmod 755 /usr/local/bin/skopeo
-      sudo rm -f /tmp/skopeo-$(uname -m).tar.gz
-    fi
-    popd >/dev/null
-    skopeo --version
-    '''
-  )
+  sh '''#!/bin/bash -xe
+pushd /tmp >/dev/null
+# remove any older versions
+sudo yum remove -y -q skopeo || true
+if [[ ! -x /usr/local/bin/skopeo ]]; then
+  sudo curl -sSLO "https://codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/crw-deprecated_''' + CRW_VERSION + '''/lastSuccessfulBuild/artifact/codeready-workspaces-deprecated/skopeo/target/skopeo-$(uname -m).tar.gz"
+fi
+if [[ -f /tmp/skopeo-$(uname -m).tar.gz ]]; then
+  sudo tar xzf /tmp/skopeo-$(uname -m).tar.gz --overwrite -C /usr/local/bin/
+  sudo chmod 755 /usr/local/bin/skopeo
+  sudo rm -f /tmp/skopeo-$(uname -m).tar.gz
+fi
+popd >/dev/null
+skopeo --version
+'''
 }
 
 def cloneRepo(String URL, String REPO_PATH, String BRANCH) {
@@ -399,30 +397,31 @@ def cloneRepo(String URL, String REPO_PATH, String BRANCH) {
         userRemoteConfigs: [[url: AUTH_URL_GROOVY]]])
     }
     sh('''#!/bin/bash -xe
-      cd ''' + REPO_PATH + '''
-      git checkout --track origin/''' + BRANCH + ''' || true
-      export GITHUB_TOKEN=''' + GITHUB_TOKEN + ''' # echo "''' + GITHUB_TOKEN + '''"
-      git config user.email "nickboldt+devstudio-release@gmail.com"
-      git config user.name "Red Hat Devstudio Release Bot"
-      git config --global push.default matching
-      # SOLVED :: Fatal: Could not read Username for "https://github.com", No such device or address :: https://github.com/github/hub/issues/1644
-      git config --global hub.protocol https
-      git remote set-url origin ''' + AUTH_URL_SHELL
+cd ''' + REPO_PATH + '''
+git checkout --track origin/''' + BRANCH + ''' || true
+export GITHUB_TOKEN=''' + GITHUB_TOKEN + ''' # echo "''' + GITHUB_TOKEN + '''"
+git config user.email "nickboldt+devstudio-release@gmail.com"
+git config user.name "Red Hat Devstudio Release Bot"
+git config --global push.default matching
+# SOLVED :: Fatal: Could not read Username for "https://github.com", No such device or address :: https://github.com/github/hub/issues/1644
+git config --global hub.protocol https
+git remote set-url origin ''' + AUTH_URL_SHELL
     )
   } else {
     if (!fileExists(REPO_PATH)) {
       sh('''#!/bin/bash -xe
-        export KRB5CCNAME=/var/tmp/crw-build_ccache
-        git clone ''' + URL + ''' ''' + REPO_PATH
+export KRB5CCNAME=/var/tmp/crw-build_ccache
+git clone ''' + URL + ''' ''' + REPO_PATH
       )
     }
     sh('''#!/bin/bash -xe
-        export KRB5CCNAME=/var/tmp/crw-build_ccache
-        cd ''' + REPO_PATH + '''
-        git checkout --track origin/''' + BRANCH + ''' || true
-        git config user.email crw-build@REDHAT.COM
-        git config user.name "CRW Build"
-        git config --global push.default matching'''
+export KRB5CCNAME=/var/tmp/crw-build_ccache
+cd ''' + REPO_PATH + '''
+git checkout --track origin/''' + BRANCH + ''' || true
+git config user.email crw-build@REDHAT.COM
+git config user.name "CRW Build"
+git config --global push.default matching
+'''
     )
   }
 }
@@ -508,33 +507,33 @@ def bootstrap(String CRW_KEYTAB) {
   // rpm -qf $(which kinit ssh-keyscan chmod) ==> krb5-workstation openssh-clients coreutils
   installRPMs("krb5-workstation openssh-clients coreutils")
   sh('''#!/bin/bash -xe
-    # bootstrapping: if keytab is lost, upload to
-    # https://codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/credentials/store/system/domain/_/
-    # then set Use secret text above and set Bindings > Variable (path to the file) as ''' + CRW_KEYTAB + '''
-    chmod 700 ''' + CRW_KEYTAB + ''' && chown ''' + USER + ''' ''' + CRW_KEYTAB + '''
-    # create .k5login file
-    echo "crw-build/codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com@REDHAT.COM" > ~/.k5login
-    chmod 644 ~/.k5login && chown ''' + USER + ''' ~/.k5login
-    echo "pkgs.devel.redhat.com,10.19.208.80 ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAplqWKs26qsoaTxvWn3DFcdbiBxqRLhFngGiMYhbudnAj4li9/VwAJqLm1M6YfjOoJrj9dlmuXhNzkSzvyoQODaRgsjCG5FaRjuN8CSM/y+glgCYsWX1HFZSnAasLDuW0ifNLPR2RBkmWx61QKq+TxFDjASBbBywtupJcCsA5ktkjLILS+1eWndPJeSUJiOtzhoN8KIigkYveHSetnxauxv1abqwQTk5PmxRgRt20kZEFSRqZOJUlcl85sZYzNC/G7mneptJtHlcNrPgImuOdus5CW+7W49Z/1xqqWI/iRjwipgEMGusPMlSzdxDX4JzIx6R53pDpAwSAQVGDz4F9eQ==
+# bootstrapping: if keytab is lost, upload to
+# https://codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/credentials/store/system/domain/_/
+# then set Use secret text above and set Bindings > Variable (path to the file) as ''' + CRW_KEYTAB + '''
+chmod 700 ''' + CRW_KEYTAB + ''' && chown ''' + USER + ''' ''' + CRW_KEYTAB + '''
+# create .k5login file
+echo "crw-build/codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com@REDHAT.COM" > ~/.k5login
+chmod 644 ~/.k5login && chown ''' + USER + ''' ~/.k5login
+echo "pkgs.devel.redhat.com,10.19.208.80 ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAplqWKs26qsoaTxvWn3DFcdbiBxqRLhFngGiMYhbudnAj4li9/VwAJqLm1M6YfjOoJrj9dlmuXhNzkSzvyoQODaRgsjCG5FaRjuN8CSM/y+glgCYsWX1HFZSnAasLDuW0ifNLPR2RBkmWx61QKq+TxFDjASBbBywtupJcCsA5ktkjLILS+1eWndPJeSUJiOtzhoN8KIigkYveHSetnxauxv1abqwQTk5PmxRgRt20kZEFSRqZOJUlcl85sZYzNC/G7mneptJtHlcNrPgImuOdus5CW+7W49Z/1xqqWI/iRjwipgEMGusPMlSzdxDX4JzIx6R53pDpAwSAQVGDz4F9eQ==
 " >> ~/.ssh/known_hosts
-    ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts
-    # see https://mojo.redhat.com/docs/DOC-1071739
-    if [[ -f ~/.ssh/config ]]; then mv -f ~/.ssh/config{,.BAK}; fi
-    echo "
+ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts
+# see https://mojo.redhat.com/docs/DOC-1071739
+if [[ -f ~/.ssh/config ]]; then mv -f ~/.ssh/config{,.BAK}; fi
+echo "
 GSSAPIAuthentication yes
 GSSAPIDelegateCredentials yes
 Host pkgs.devel.redhat.com
 User crw-build/codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com@REDHAT.COM
 " > ~/.ssh/config
-    chmod 600 ~/.ssh/config
-    # initialize kerberos
-    export KRB5CCNAME=/var/tmp/crw-build_ccache
-    # verify keytab is a valid file
-    # sudo klist -k ''' + CRW_KEYTAB + '''
-    kinit "crw-build/codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com@REDHAT.COM" -kt ''' + CRW_KEYTAB + '''
-    # verify keytab loaded
-    # klist
-    '''
+chmod 600 ~/.ssh/config
+# initialize kerberos
+export KRB5CCNAME=/var/tmp/crw-build_ccache
+# verify keytab is a valid file
+# sudo klist -k ''' + CRW_KEYTAB + '''
+kinit "crw-build/codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com@REDHAT.COM" -kt ''' + CRW_KEYTAB + '''
+# verify keytab loaded
+# klist
+'''
   )
 
   // also install commonly needed tools
@@ -561,6 +560,5 @@ Rebuild: ${env.BUILD_URL}/rebuild
         // [$class: 'CulpritsRecipientProvider'],[$class: 'DevelopersRecipientProvider']]
     )
 }
-
 
 return this
