@@ -186,6 +186,7 @@ def installPodman(boolean usePulpRepos=false) {
   }
 }
 
+// rcmtools repo required for rhpkg and kinit
 def enableRcmToolsRepo() {
   sh '''#!/bin/bash -xe
 # rather than creating .repo files, could shortcut using yum-utils, but
@@ -193,7 +194,7 @@ def enableRcmToolsRepo() {
 # sudo yum install -y -q yum-utils || true # needed for yum-config-manager
 # sudo yum-config-manager -y -q --add-repo http://download.devel.redhat.com/rel-eng/RCMTOOLS/latest-RCMTOOLS-2-RHEL-8/compose/BaseOS/x86_64/os/ || true
 
-# required for rhpkg and kinit; use multi-arch repo, with gpgcheck disabled
+# use multi-arch repo, with gpgcheck disabled
 repo=latest-RCMTOOLS-2-RHEL-8
 cat <<EOF | sudo tee /etc/yum.repos.d/${repo}.repo
 [${repo}]
