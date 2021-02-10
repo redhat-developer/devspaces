@@ -135,8 +135,8 @@ def installRhpkg() {
   installRPMs("rhpkg krb5-workstation")
 }
 def installSshfs() {
-  // provides shasum for oclif-dev; need fuse-sshfs for mounting drive to copy to rcm-guest
-  installRPMs("perl-Digest-SHA fuse-sshfs", true)
+  // install fuse-sshfs for mounting drive to copy to rcm-guest
+  installRPMs("fuse-sshfs", true)
 }
 def installPodman2() {
   updatePodman(true)
