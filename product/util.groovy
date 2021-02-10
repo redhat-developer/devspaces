@@ -134,9 +134,34 @@ def installBrewKoji() {
 def installRhpkg() {
   installRPMs("rhpkg krb5-workstation")
 }
+def installSshfs() {
+  // provides shasum for oclif-dev; need fuse-sshfs for mounting drive to copy to rcm-guest
+  installRPMs("perl-Digest-SHA fuse-sshfs", true)
+}
+def installPodman2() {
+  updatePodman(true)
+}
+
+// install podman from latest pulp repos, >=2.0.5
+def updatePodman(boolean usePulpRepos=true) {
+  if (usePulpRepos) { enablePulpRepos() }
+  sh('''#!/bin/bash -xe
+echo "[INFO] Installing podman with docker emulation ..."
+sudo yum -y -q module install container-tools
+  ''')
+  installRPMs("fuse3 podman podman-docker")
+  sh('''#!/bin/bash -xe
+sudo yum update -y -q fuse3 podman podman-docker || true
+
+# suppress message re: docker emulation w/ podman
+sudo touch /etc/containers/nodocker
+podman --version
+  ''')
+}
 
 // For RHEL8 only; for RHEL7 assume podman or docker is already installed
-def installPodman() {
+// if already installed, don't reinstall
+def installPodman(boolean usePulpRepos=false) {
   PODMAN = sh(script: '''#!/bin/bash -e
   PODMAN="$(command -v podman || true)"
   if [[ ! -x $PODMAN ]]; then PODMAN="$(command -v docker || true)"; fi
@@ -151,16 +176,7 @@ def installPodman() {
       grep -E '^VERSION=\"*8.' /etc/os-release || true
     ''', returnStdout: true)
     if (OS_IS_RHEL8?.trim()) {
-      sh('''#!/bin/bash -xe
-        echo "[INFO] Installing podman with docker emulation ..."
-        sudo yum -y -q module install container-tools
-      ''')
-      installRPMs("fuse3 podman podman-docker")
-      sh('''#!/bin/bash -xe
-        # suppress message re: docker emulation w/ podman
-        sudo touch /etc/containers/nodocker 
-        podman --version
-      ''')
+      updatePodman(usePulpRepos)
     } else {
       sh('''#!/bin/bash -xe
         echo "[ERROR] RHEL 8 not detected: please install docker or podman manually to proceed."
@@ -170,23 +186,76 @@ def installPodman() {
   }
 }
 
-// sudo must already be installed and user must be a sudoer
-def installRPMs(String whichRPMs) {
-  sh('''#!/bin/bash -xe
-  # sudo yum install -y -q yum-utils || true # needed for yum-config-manager
-  # sudo yum-config-manager -y -q --add-repo http://download.devel.redhat.com/rel-eng/RCMTOOLS/latest-RCMTOOLS-2-RHEL-8/compose/BaseOS/x86_64/os/ || true
+// rcmtools repo required for rhpkg and kinit
+def enableRcmToolsRepo() {
+  sh '''#!/bin/bash -xe
+# rather than creating .repo files, could shortcut using yum-utils, but
+# this creates single-arch .repo files with gpg enabled and no skip_if_unavailable=True
+# sudo yum install -y -q yum-utils || true # needed for yum-config-manager
+# sudo yum-config-manager -y -q --add-repo http://download.devel.redhat.com/rel-eng/RCMTOOLS/latest-RCMTOOLS-2-RHEL-8/compose/BaseOS/x86_64/os/ || true
 
-  # insert multi-arch version, with gpgcheck disabled
-  cat <<EOF | sudo tee /etc/yum.repos.d/latest-RCMTOOLS-2-RHEL-8.repo
-[latest-RCMTOOLS-2-RHEL-8]
-name=latest-RCMTOOLS-2-RHEL-8
-baseurl=http://download.devel.redhat.com/rel-eng/RCMTOOLS/latest-RCMTOOLS-2-RHEL-8/compose/BaseOS/\\$basearch/os/
+# use multi-arch repo, with gpgcheck disabled
+repo=latest-RCMTOOLS-2-RHEL-8
+cat <<EOF | sudo tee /etc/yum.repos.d/${repo}.repo
+[${repo}]
+name=${repo}
+baseurl=http://download.devel.redhat.com/rel-eng/RCMTOOLS/${repo}/compose/BaseOS/\\$basearch/os/
 enabled=1
 gpgcheck=0
 skip_if_unavailable=True
 EOF
-  sudo yum install -y -q ''' + whichRPMs + '''
-  ''')
+'''
+}
+
+// rhel8-8-codeready-builder repo required fuse-sshfs (to push release bits/sources to rcm-guest)
+// rhel8-8-appstream repo required for podman >=2.0.5 (includes --override-arch) and skopeo >=1.1
+def enablePulpRepos() {
+  sh '''#!/bin/bash -xe
+# use multi-arch repos, with gpgcheck disabled
+repo=rhocp-4.6
+cat <<EOF | sudo tee /etc/yum.repos.d/${repo}-pulp.repo
+[${repo}]
+name=${repo}
+baseurl=http://pulp.dist.prod.ext.phx2.redhat.com/content/dist/layered/rhel8/\\$basearch/${repo/-/\\/}/os/
+enabled=1
+gpgcheck=0
+skip_if_unavailable=True
+EOF
+
+# enable rhel8 pulp repos to resolve newer dependencies; use multi-arch repo, with gpgcheck disabled
+repo=rhel8-8
+cat <<EOF | sudo tee /etc/yum.repos.d/${repo}-pulp.repo
+[${repo}-appstream]
+name=${repo}-appstream
+baseurl=http://pulp.dist.prod.ext.phx2.redhat.com/content/dist/${repo/-/\\/}/\\$basearch/appstream/os
+enabled=1
+gpgcheck=0
+skip_if_unavailable=True
+
+[${repo}-baseos]
+name=${repo}-baseos
+baseurl=http://pulp.dist.prod.ext.phx2.redhat.com/content/dist/${repo/-/\\/}/\\$basearch/baseos/os
+enabled=1
+gpgcheck=0
+skip_if_unavailable=True
+
+[${repo}-codeready-builder]
+name=${repo}-codeready-builder
+baseurl=http://pulp.dist.prod.ext.phx2.redhat.com/content/dist/${repo/-/\\/}/\\$basearch/codeready-builder/os
+enabled=1
+gpgcheck=0
+skip_if_unavailable=True
+EOF
+'''
+}
+
+// sudo must already be installed and user must be a sudoer
+def installRPMs(String whichRPMs, boolean usePulpRepos=false) {
+  enableRcmToolsRepo()
+  if (usePulpRepos) { enablePulpRepos() }
+  sh '''#!/bin/bash -xe
+sudo yum install -y -q ''' + whichRPMs + '''
+'''
 }
 
 // to log into dockerhub, quay and RHEC, use this method where needed
@@ -198,14 +267,13 @@ def loginToRegistries() {
       usernamePassword(credentialsId: 'registry.redhat.io_crw_bot', usernameVariable: 'CRW_BOT_USERNAME', passwordVariable: 'CRW_BOT_PASSWORD')
   ]){
     return sh(script: '''#!/bin/bash -xe
-      PODMAN=$(command -v podman || true)
-      if [[ ! -x $PODMAN ]]; then echo "[WARNING] podman is not installed."; PODMAN=$(command -v docker || true); fi
-      if [[ ! -x $PODMAN ]]; then echo "[ERROR] docker is not installed. Aborting."; exit 1; fi
-      echo "''' + DOCKERHUB_PASSWORD + '''" | ${PODMAN} login -u="''' + DOCKERHUB_USERNAME + '''" --password-stdin docker.io
-      echo "''' + QUAY_TOKEN + '''" | ${PODMAN} login -u="crw+crwci" --password-stdin quay.io
-      echo "''' + CRW_BOT_PASSWORD + '''" | ${PODMAN} login -u="''' + CRW_BOT_USERNAME + '''" --password-stdin registry.redhat.io
-      ''', returnStatus:true
-    )
+PODMAN=$(command -v podman || true)
+if [[ ! -x $PODMAN ]]; then echo "[WARNING] podman is not installed."; PODMAN=$(command -v docker || true); fi
+if [[ ! -x $PODMAN ]]; then echo "[ERROR] docker is not installed. Aborting."; exit 1; fi
+echo "''' + DOCKERHUB_PASSWORD + '''" | ${PODMAN} login -u="''' + DOCKERHUB_USERNAME + '''" --password-stdin docker.io
+echo "''' + QUAY_TOKEN + '''" | ${PODMAN} login -u="crw+crwci" --password-stdin quay.io
+echo "''' + CRW_BOT_PASSWORD + '''" | ${PODMAN} login -u="''' + CRW_BOT_USERNAME + '''" --password-stdin registry.redhat.io
+    ''', returnStatus:true)
   }
 }
 
@@ -293,22 +361,21 @@ def installSkopeoFromContainer(String container, String minimumVersion) {
 
 // OLD WAY <= CRW 2.5, uses version built in Jenkins from latest sources
 def installSkopeo(String CRW_VERSION) {
-  sh('''#!/bin/bash -xe
-    pushd /tmp >/dev/null
-    # remove any older versions
-    sudo yum remove -y -q skopeo || true
-    if [[ ! -x /usr/local/bin/skopeo ]]; then
-      sudo curl -sSLO "https://codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/crw-deprecated_''' + CRW_VERSION + '''/lastSuccessfulBuild/artifact/codeready-workspaces-deprecated/skopeo/target/skopeo-$(uname -m).tar.gz"
-    fi
-    if [[ -f /tmp/skopeo-$(uname -m).tar.gz ]]; then
-      sudo tar xzf /tmp/skopeo-$(uname -m).tar.gz --overwrite -C /usr/local/bin/
-      sudo chmod 755 /usr/local/bin/skopeo
-      sudo rm -f /tmp/skopeo-$(uname -m).tar.gz
-    fi
-    popd >/dev/null
-    skopeo --version
-    '''
-  )
+  sh '''#!/bin/bash -xe
+pushd /tmp >/dev/null
+# remove any older versions
+sudo yum remove -y -q skopeo || true
+if [[ ! -x /usr/local/bin/skopeo ]]; then
+  sudo curl -sSLO "https://codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/crw-deprecated_''' + CRW_VERSION + '''/lastSuccessfulBuild/artifact/codeready-workspaces-deprecated/skopeo/target/skopeo-$(uname -m).tar.gz"
+fi
+if [[ -f /tmp/skopeo-$(uname -m).tar.gz ]]; then
+  sudo tar xzf /tmp/skopeo-$(uname -m).tar.gz --overwrite -C /usr/local/bin/
+  sudo chmod 755 /usr/local/bin/skopeo
+  sudo rm -f /tmp/skopeo-$(uname -m).tar.gz
+fi
+popd >/dev/null
+skopeo --version
+'''
 }
 
 def cloneRepo(String URL, String REPO_PATH, String BRANCH) {
@@ -330,30 +397,31 @@ def cloneRepo(String URL, String REPO_PATH, String BRANCH) {
         userRemoteConfigs: [[url: AUTH_URL_GROOVY]]])
     }
     sh('''#!/bin/bash -xe
-      cd ''' + REPO_PATH + '''
-      git checkout --track origin/''' + BRANCH + ''' || true
-      export GITHUB_TOKEN=''' + GITHUB_TOKEN + ''' # echo "''' + GITHUB_TOKEN + '''"
-      git config user.email "nickboldt+devstudio-release@gmail.com"
-      git config user.name "Red Hat Devstudio Release Bot"
-      git config --global push.default matching
-      # SOLVED :: Fatal: Could not read Username for "https://github.com", No such device or address :: https://github.com/github/hub/issues/1644
-      git config --global hub.protocol https
-      git remote set-url origin ''' + AUTH_URL_SHELL
+cd ''' + REPO_PATH + '''
+git checkout --track origin/''' + BRANCH + ''' || true
+export GITHUB_TOKEN=''' + GITHUB_TOKEN + ''' # echo "''' + GITHUB_TOKEN + '''"
+git config user.email "nickboldt+devstudio-release@gmail.com"
+git config user.name "Red Hat Devstudio Release Bot"
+git config --global push.default matching
+# SOLVED :: Fatal: Could not read Username for "https://github.com", No such device or address :: https://github.com/github/hub/issues/1644
+git config --global hub.protocol https
+git remote set-url origin ''' + AUTH_URL_SHELL
     )
   } else {
     if (!fileExists(REPO_PATH)) {
       sh('''#!/bin/bash -xe
-        export KRB5CCNAME=/var/tmp/crw-build_ccache
-        git clone ''' + URL + ''' ''' + REPO_PATH
+export KRB5CCNAME=/var/tmp/crw-build_ccache
+git clone ''' + URL + ''' ''' + REPO_PATH
       )
     }
     sh('''#!/bin/bash -xe
-        export KRB5CCNAME=/var/tmp/crw-build_ccache
-        cd ''' + REPO_PATH + '''
-        git checkout --track origin/''' + BRANCH + ''' || true
-        git config user.email crw-build@REDHAT.COM
-        git config user.name "CRW Build"
-        git config --global push.default matching'''
+export KRB5CCNAME=/var/tmp/crw-build_ccache
+cd ''' + REPO_PATH + '''
+git checkout --track origin/''' + BRANCH + ''' || true
+git config user.email crw-build@REDHAT.COM
+git config user.name "CRW Build"
+git config --global push.default matching
+'''
     )
   }
 }
@@ -439,33 +507,33 @@ def bootstrap(String CRW_KEYTAB) {
   // rpm -qf $(which kinit ssh-keyscan chmod) ==> krb5-workstation openssh-clients coreutils
   installRPMs("krb5-workstation openssh-clients coreutils")
   sh('''#!/bin/bash -xe
-    # bootstrapping: if keytab is lost, upload to
-    # https://codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/credentials/store/system/domain/_/
-    # then set Use secret text above and set Bindings > Variable (path to the file) as ''' + CRW_KEYTAB + '''
-    chmod 700 ''' + CRW_KEYTAB + ''' && chown ''' + USER + ''' ''' + CRW_KEYTAB + '''
-    # create .k5login file
-    echo "crw-build/codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com@REDHAT.COM" > ~/.k5login
-    chmod 644 ~/.k5login && chown ''' + USER + ''' ~/.k5login
-    echo "pkgs.devel.redhat.com,10.19.208.80 ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAplqWKs26qsoaTxvWn3DFcdbiBxqRLhFngGiMYhbudnAj4li9/VwAJqLm1M6YfjOoJrj9dlmuXhNzkSzvyoQODaRgsjCG5FaRjuN8CSM/y+glgCYsWX1HFZSnAasLDuW0ifNLPR2RBkmWx61QKq+TxFDjASBbBywtupJcCsA5ktkjLILS+1eWndPJeSUJiOtzhoN8KIigkYveHSetnxauxv1abqwQTk5PmxRgRt20kZEFSRqZOJUlcl85sZYzNC/G7mneptJtHlcNrPgImuOdus5CW+7W49Z/1xqqWI/iRjwipgEMGusPMlSzdxDX4JzIx6R53pDpAwSAQVGDz4F9eQ==
+# bootstrapping: if keytab is lost, upload to
+# https://codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/credentials/store/system/domain/_/
+# then set Use secret text above and set Bindings > Variable (path to the file) as ''' + CRW_KEYTAB + '''
+chmod 700 ''' + CRW_KEYTAB + ''' && chown ''' + USER + ''' ''' + CRW_KEYTAB + '''
+# create .k5login file
+echo "crw-build/codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com@REDHAT.COM" > ~/.k5login
+chmod 644 ~/.k5login && chown ''' + USER + ''' ~/.k5login
+echo "pkgs.devel.redhat.com,10.19.208.80 ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAplqWKs26qsoaTxvWn3DFcdbiBxqRLhFngGiMYhbudnAj4li9/VwAJqLm1M6YfjOoJrj9dlmuXhNzkSzvyoQODaRgsjCG5FaRjuN8CSM/y+glgCYsWX1HFZSnAasLDuW0ifNLPR2RBkmWx61QKq+TxFDjASBbBywtupJcCsA5ktkjLILS+1eWndPJeSUJiOtzhoN8KIigkYveHSetnxauxv1abqwQTk5PmxRgRt20kZEFSRqZOJUlcl85sZYzNC/G7mneptJtHlcNrPgImuOdus5CW+7W49Z/1xqqWI/iRjwipgEMGusPMlSzdxDX4JzIx6R53pDpAwSAQVGDz4F9eQ==
 " >> ~/.ssh/known_hosts
-    ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts
-    # see https://mojo.redhat.com/docs/DOC-1071739
-    if [[ -f ~/.ssh/config ]]; then mv -f ~/.ssh/config{,.BAK}; fi
-    echo "
+ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts
+# see https://mojo.redhat.com/docs/DOC-1071739
+if [[ -f ~/.ssh/config ]]; then mv -f ~/.ssh/config{,.BAK}; fi
+echo "
 GSSAPIAuthentication yes
 GSSAPIDelegateCredentials yes
 Host pkgs.devel.redhat.com
 User crw-build/codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com@REDHAT.COM
 " > ~/.ssh/config
-    chmod 600 ~/.ssh/config
-    # initialize kerberos
-    export KRB5CCNAME=/var/tmp/crw-build_ccache
-    # verify keytab is a valid file
-    # sudo klist -k ''' + CRW_KEYTAB + '''
-    kinit "crw-build/codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com@REDHAT.COM" -kt ''' + CRW_KEYTAB + '''
-    # verify keytab loaded
-    # klist
-    '''
+chmod 600 ~/.ssh/config
+# initialize kerberos
+export KRB5CCNAME=/var/tmp/crw-build_ccache
+# verify keytab is a valid file
+# sudo klist -k ''' + CRW_KEYTAB + '''
+kinit "crw-build/codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com@REDHAT.COM" -kt ''' + CRW_KEYTAB + '''
+# verify keytab loaded
+# klist
+'''
   )
 
   // also install commonly needed tools
@@ -492,6 +560,5 @@ Rebuild: ${env.BUILD_URL}/rebuild
         // [$class: 'CulpritsRecipientProvider'],[$class: 'DevelopersRecipientProvider']]
     )
 }
-
 
 return this
