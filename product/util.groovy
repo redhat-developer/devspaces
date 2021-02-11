@@ -561,4 +561,27 @@ Rebuild: ${env.BUILD_URL}/rebuild
     )
 }
 
+// commit all changed files in dir with message to branch
+def commitChanges(String dir, String message, String branch) {
+  sh('''#!/bin/bash -xe
+cd ''' + dir + ''' || exit 1
+if [[ \$(git diff --name-only) ]]; then # file changed
+  git add --all -f . || true
+  git commit -s -m "''' + message + '''" || true
+  git push origin ''' + branch + ''' || true
+fi
+  ''')
+}
+
+// ensure static Dockerfiles have the correct version encoded in them, then commit changes
+def updateDockerfileVersions(String dir="${WORKSPACE}/sources", String branch=MIDSTM_BRANCH, String CRW_VERSION=CRW_VERSION_F) {
+  sh('''#!/bin/bash -xe
+cd ''' + dir + ''' || exit 1
+for d in $(find . -name "*ockerfile*" -type f); do
+  sed -i $d -r -e 's#version="[0-9.]+"#version="''' + CRW_VERSION + '''"#g' || true
+done
+  ''')
+  commitChanges(dir, "[sync] Update Dockerfiles to latest version = " + CRW_VERSION, branch)
+}
+
 return this
