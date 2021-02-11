@@ -10,7 +10,7 @@
 
 # For a given tag, produce a link to the commit that was used for that tag.
 # 
-# Eg., for quay.io/crw/plugin-java8:2.2-1 get https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-plugin-java8/commit?id=53306c3f99d3b35d4bdeb22b5ef2081e322db7f8
+# Eg., for quay.io/crw/plugin-java8:2.y-1 get https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-plugin-java8/commit?id=53306c3f99d3b35d4bdeb22b5ef2081e322db7f8
 
 if [[ ! -x /usr/bin/brew ]]; then 
 	echo "Brew is required. Please install brewkoji rpm from one of these repos:";
@@ -21,15 +21,15 @@ fi
 usage () {
 	echo "
 Usage: for 1 or more containes in quay or Pulp, compute the NVR, Build URL, and Source commit for that build. eg., 
-  $0  quay.io/crw/plugin-java8-rhel8:2.6-1 quay.io/crw/plugin-java11-rhel8:2.6-1 ...
-  $0  registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-plugin-java8-rhel8 -j 2.6 -n 2      | show last 2 tags
+  $0  quay.io/crw/plugin-java8-rhel8:2.y-1 quay.io/crw/plugin-java11-rhel8:2.y-1 ...
+  $0  registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-plugin-java8-rhel8 -j 2.y -n 2      | show last 2 tags
 "
 exit
 }
 
 if [[ $# -lt 1 ]]; then usage; fi
 
-# JOB_BRANCH=2.6
+# JOB_BRANCH=2.y
 # # could this be computed from $(git rev-parse --abbrev-ref HEAD) ?
 # DWNSTM_BRANCH="crw-${JOB_BRANCH}-rhel-8"
 NUMTAGS=1 # by default show only the latest tag for each container; or show n latest ones
