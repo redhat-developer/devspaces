@@ -18,9 +18,16 @@
 # https://registry.redhat.io is v2 and requires authentication to query, so login in first like this:
 # docker login registry.redhat.io -u=USERNAME -p=PASSWORD
 
-JOB_BRANCH=2.6
-# could this be computed from $(git rev-parse --abbrev-ref HEAD) ?
-DWNSTM_BRANCH="crw-${JOB_BRANCH}-rhel-8"
+# try to compute branches from currently checked out branch; else fall back to hard coded value
+DWNSTM_BRANCH="$(git rev-parse --abbrev-ref HEAD 2>/dev/null || true)"
+if [[ $DWNSTM_BRANCH != "crw-2."*"-rhel-8" ]]; then
+	JOB_BRANCH=2.7
+	DWNSTM_BRANCH="crw-${JOB_BRANCH}-rhel-8"
+else
+	JOB_BRANCH=${DWNSTM_BRANCH/crw-/}
+	JOB_BRANCH=${JOB_BRANCH/-rhel-8/}
+fi
+# echo "Using JOB_BRANCH=${JOB_BRANCH} and DWNSTM_BRANCH = ${DWNSTM_BRANCH}"
 
 if [[ ! -x /usr/bin/brew ]]; then 
 	echo "Brew is required. Please install brewkoji rpm from one of these repos:";
