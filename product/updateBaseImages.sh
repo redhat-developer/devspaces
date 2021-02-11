@@ -32,8 +32,16 @@ checkVersion 0.40 "$(skopeo --version | sed -e "s/skopeo version //")" skopeo
 QUIET=0 	# less output - omit container tag URLs
 VERBOSE=0	# more output
 WORKDIR=$(pwd)
-SOURCES_BRANCH="crw-2.6-rhel-8" # where to find source branch to update, crw-2.6-rhel-8, 7.24.x, etc.
-SCRIPTS_BRANCH="crw-2.6-rhel-8" # where to find redhat-developer/codeready-workspaces/${SCRIPTS_BRANCH}/product/getLatestImageTags.sh
+
+# try to compute branches from currently checked out branch; else fall back to hard coded value
+# where to find redhat-developer/codeready-workspaces/${SCRIPTS_BRANCH}/product/getLatestImageTags.sh
+SCRIPTS_BRANCH="$(git rev-parse --abbrev-ref HEAD 2>/dev/null || true)"
+if [[ $SCRIPTS_BRANCH != "crw-2."*"-rhel-8" ]]; then
+	SCRIPTS_BRANCH="crw-2.7-rhel-8"
+fi
+# where to find source branch to update, crw-2.y-rhel-8, 7.yy.x, etc.
+SOURCES_BRANCH=${SCRIPTS_BRANCH}
+
 DOCKERFILE="Dockerfile" # or "rhel.Dockerfile"
 MAXDEPTH=2
 PR_BRANCH="pr-new-base-images-$(date +%s)"
@@ -61,11 +69,11 @@ checkrecentupdates () {
 usage () {
 	echo "Usage:   $0 -b [BRANCH] [-w WORKDIR] [-f DOCKERFILE] [-maxdepth MAXDEPTH]"
 	echo "Downstream Example: $0 -b ${SOURCES_BRANCH} -w \$(pwd) -f rhel.Dockerfile -maxdepth 2"
-	echo "Upstream Example 1: $0 -b 7.24.x -w dockerfiles/ -f \*from.dockerfile -maxdepth 5 -o -prb pr-new-theia-base-images"
-	echo "Upstream Example 2: $0 -b 7.24.x -w \$(pwd) -f Dockerfile -maxdepth 1 --tag '1\.13|8\.[0-9]-' --no-commit"
+	echo "Upstream Example 1: $0 -b 7.yy.x -w dockerfiles/ -f \*from.dockerfile -maxdepth 5 -o -prb pr-new-theia-base-images"
+	echo "Upstream Example 2: $0 -b 7.yy.x -w \$(pwd) -f Dockerfile -maxdepth 1 --tag '1\.13|8\.[0-9]-' --no-commit"
 	echo "Options: 
-	--sources-branch, -b    set sources branch (project to update), eg., 7.24.x
-	--scripts-branch, -sb   set scripts branch (project with helper scripts), eg., crw-2.6-rhel-8
+	--sources-branch, -b    set sources branch (project to update), eg., 7.yy.x
+	--scripts-branch, -sb   set scripts branch (project with helper scripts), eg., crw-2.y-rhel-8
 	--no-commit, -n    do not commit to BRANCH
 	--no-push, -p      do not push to BRANCH
 	--tag              regex match to restrict results, eg., '1\.13|8\.[0-9]-' to find golang 1.13 (not 1.14) and any ubi 8-x- tag
