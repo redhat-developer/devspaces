@@ -11,8 +11,13 @@
 # script to tag the Che/CRW repos for a given release
 
 # defaults
-crw_repos_branch=crw-2.6-rhel-8
-pkgs_devel_branch=crw-2.6-rhel-8
+# try to compute branches from currently checked out branch; else fall back to hard coded value
+crw_repos_branch="$(git rev-parse --abbrev-ref HEAD 2>/dev/null || true)"
+if [[ $crw_repos_branch != "crw-2."*"-rhel-8" ]]; then
+	crw_repos_branch="crw-2.7-rhel-8"
+fi
+pkgs_devel_branch=${crw_repos_branch}
+
 pduser=crw-build
 SOURCE_BRANCH="" # normally, use this script to create tags, not branches
 

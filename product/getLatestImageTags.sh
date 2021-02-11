@@ -24,8 +24,7 @@ if [[ $DWNSTM_BRANCH != "crw-2."*"-rhel-8" ]]; then
 	JOB_BRANCH=2.7
 	DWNSTM_BRANCH="crw-${JOB_BRANCH}-rhel-8"
 else
-	JOB_BRANCH=${DWNSTM_BRANCH/crw-/}
-	JOB_BRANCH=${JOB_BRANCH/-rhel-8/}
+	JOB_BRANCH=${DWNSTM_BRANCH/crw-/}; JOB_BRANCH=${JOB_BRANCH/-rhel-8/}
 fi
 # echo "Using JOB_BRANCH=${JOB_BRANCH} and DWNSTM_BRANCH = ${DWNSTM_BRANCH}"
 
