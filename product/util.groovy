@@ -37,7 +37,7 @@ def installMaven(String MAVEN_VERSION, String JAVA_VERSION){
   env.PATH="/usr/lib/jvm/java-"+JAVA_VERSION+"-openjdk:/opt/apache-maven/bin:/usr/bin:${env.PATH}"
   env.JAVA_HOME="/usr/lib/jvm/java-"+JAVA_VERSION+"-openjdk"
   env.M2_HOME="/opt/apache-maven" 
-  sh ("mvn -v")
+ sh("mvn -v")
 }
 
 // TODO https://issues.redhat.com/browse/CRW-360 - eventually we should use RH npm mirror
@@ -582,6 +582,76 @@ for d in $(find . -name "*ockerfile*" -type f); do
 done
   ''')
   commitChanges(dir, "[sync] Update Dockerfiles to latest version = " + CRW_VERSION, branch)
+}
+
+// run a job with default token, FORCE_BUILD=true, and SCRATCH=false
+def runJob(String jobName, String jenkinsURL, boolean doWait=true, boolean doPropagateStatus=true) {
+  build(
+    job: jobName,
+    wait: doWait,
+    propagate: doPropagateStatus,
+    parameters: [
+      [
+        $class: 'StringParameterValue',
+        name: 'token',
+        value: "CI_BUILD"
+      ],
+      [
+        $class: 'BooleanParameterValue',
+        name: 'FORCE_BUILD',
+        value: true
+      ],
+      [
+        $class: 'BooleanParameterValue',
+        name: 'SCRATCH',
+        value: false
+      ]
+    ]
+  )
+  return getLastBuildId(jenkinsURL + jobName)
+}
+
+// TODO: verify this return the build ID correctly - want the in-progress job
+def getLastBuildId(String url) {
+  return sh(returnStdout: true, script: "curl -sSLo- " + url + "/lastBuild/api/json | jq -r '.number'").trim()
+}
+
+// check {jobURL}/lastSuccessfulBuild/api/json | jq -r '.number' and wait until it increments
+def waitForNewBuild(String jobURL, String oldId) {
+  echo "Id baseline: " + oldId
+  while (true) {
+      def newId = getLastBuildId(jobURL)
+      if (newId>oldId) {
+          echo "Id rebuilt: " + newId
+          break
+      }
+      sleep(time:90,unit:"SECONDS")
+  }
+}
+
+// requires brew, skopeo, jq, yq
+// for a given image, return latest image tag in quay
+def getLatestQuayImageAndTag(String quayOrgAndImage) {
+  sh '''#!/bin/bash -xe
+if [[ ! -x getLatestImageTags.sh ]]; then 
+  curl -sSLO https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/''' + MIDSTM_BRANCH + '''/product/getLatestImageTags.sh && chmod +x getLatestImageTags.sh
+fi
+'''
+  return sh(returnStdout: true, script: './getLatestImageTags.sh -b ' + MIDSTM_BRANCH + ' -c "' + quayOrgAndImage + '" --quay').trim()
+}
+
+// requires brew, skopeo, jq, yq
+// check for latest image tags in quay for a given image
+def waitForNewQuayImage(String quayOrgAndImage, String oldImage) {
+  echo "Image baseline: " + oldImage
+  while (true) {
+      def newImage = getLatestQuayImageAndTag(quayOrgAndImage)
+      if (newImage!=oldImage) {
+          echo "Image rebuilt: " + newImage
+          break
+      }
+      sleep(time:90,unit:"SECONDS")
+  }
 }
 
 return this
