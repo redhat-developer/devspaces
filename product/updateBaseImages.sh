@@ -37,7 +37,7 @@ WORKDIR=$(pwd)
 # where to find redhat-developer/codeready-workspaces/${SCRIPTS_BRANCH}/product/getLatestImageTags.sh
 SCRIPTS_BRANCH="$(git rev-parse --abbrev-ref HEAD 2>/dev/null || true)"
 if [[ $SCRIPTS_BRANCH != "crw-2."*"-rhel-8" ]]; then
-	SCRIPTS_BRANCH="crw-2.7-rhel-8"
+	SCRIPTS_BRANCH="crw-2.8-rhel-8"
 fi
 # where to find source branch to update, crw-2.y-rhel-8, 7.yy.x, etc.
 SOURCES_BRANCH=${SCRIPTS_BRANCH}
