@@ -13,7 +13,7 @@
 # Utility script to uncomment a previously commented-out arch in a container.yaml file
 # This script has questionable usefulness, so YMMV. Might delete it some day. ~nboldt
 
-DWNSTM_BRANCH="crw-2.7-rhel-8"
+DWNSTM_BRANCH="crw-2.8-rhel-8"
 
 while [[ "$#" -gt 0 ]]; do
   case $1 in
