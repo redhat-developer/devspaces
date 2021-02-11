@@ -21,7 +21,7 @@
 # try to compute branches from currently checked out branch; else fall back to hard coded value
 DWNSTM_BRANCH="$(git rev-parse --abbrev-ref HEAD 2>/dev/null || true)"
 if [[ $DWNSTM_BRANCH != "crw-2."*"-rhel-8" ]]; then
-	JOB_BRANCH=2.7
+	JOB_BRANCH=2.8
 	DWNSTM_BRANCH="crw-${JOB_BRANCH}-rhel-8"
 else
 	JOB_BRANCH=${DWNSTM_BRANCH/crw-/}
