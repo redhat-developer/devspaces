@@ -639,15 +639,15 @@ if [[ ! -x getLatestImageTags.sh ]]; then
   curl -sSLO https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/''' + MIDSTM_BRANCH + '''/product/getLatestImageTags.sh && chmod +x getLatestImageTags.sh
 fi
 '''
-  return sh(returnStdout: true, script: './getLatestImageTags.sh -b ' + MIDSTM_BRANCH + ' -c "' + quayOrgAndImage + '" --' + repo).trim()
+  return sh(returnStdout: true, script: './getLatestImageTags.sh -b ' + MIDSTM_BRANCH + ' -c "' + orgAndImage + '" --' + repo).trim()
 }
 
 // requires brew, skopeo, jq, yq
 // check for latest image tags in quay for a given image
-def waitForNewQuayImage(String quayOrgAndImage, String oldImage) {
+def waitForNewQuayImage(String orgAndImage, String oldImage) {
   echo "Image baseline: " + oldImage
   while (true) {
-      def newImage = getLatestImageAndTag(quayOrgAndImage, "quay")
+      def newImage = getLatestImageAndTag(orgAndImage, "quay")
       if (newImage!=oldImage) {
           echo "Image rebuilt: " + newImage
           break
