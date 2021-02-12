@@ -633,13 +633,13 @@ def waitForNewBuild(String jobURL, String oldId) {
 
 // requires brew, skopeo, jq, yq
 // for a given image, return latest image tag in quay
-def getLatestQuayImageAndTag(String quayOrgAndImage) {
+def getLatestImageAndTag(String orgAndImage, String repo="quay") {
   sh '''#!/bin/bash -xe
 if [[ ! -x getLatestImageTags.sh ]]; then 
   curl -sSLO https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/''' + MIDSTM_BRANCH + '''/product/getLatestImageTags.sh && chmod +x getLatestImageTags.sh
 fi
 '''
-  return sh(returnStdout: true, script: './getLatestImageTags.sh -b ' + MIDSTM_BRANCH + ' -c "' + quayOrgAndImage + '" --quay').trim()
+  return sh(returnStdout: true, script: './getLatestImageTags.sh -b ' + MIDSTM_BRANCH + ' -c "' + quayOrgAndImage + '" --' + repo).trim()
 }
 
 // requires brew, skopeo, jq, yq
@@ -647,7 +647,7 @@ fi
 def waitForNewQuayImage(String quayOrgAndImage, String oldImage) {
   echo "Image baseline: " + oldImage
   while (true) {
-      def newImage = getLatestQuayImageAndTag(quayOrgAndImage)
+      def newImage = getLatestImageAndTag(quayOrgAndImage, "quay")
       if (newImage!=oldImage) {
           echo "Image rebuilt: " + newImage
           break
