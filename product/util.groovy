@@ -661,15 +661,14 @@ def waitForNewQuayImage(String quayOrgAndImage, String oldImage) {
 def createSums(String filePath, String filePattern, String algorithm=512) {
   sh '''#!/bin/bash -xe
 suffix=".sha''' + algorithm + '''"
-cd ''' + filePath + '''
 # delete any existing .shaZZZ files so we don't accidentally use them as shasum input if filePattern is too aggressive
-for d in $(find . -name "''' + filePattern + '''${suffix}"); do
+for d in $(find ''' + filePath + ''' -name "''' + filePattern + '''${suffix}"); do
   rm -f $d
 done
 
 # create new .shaZZZ files
 prefix="SHA''' + algorithm + '''"
-for d in $(find . -name "''' + filePattern + '''"); do
+for d in $(find ''' + filePath + ''' -name "''' + filePattern + '''"); do
   sum=""
   if [[ -x /usr/bin/sha''' + algorithm + '''sum ]]; then
     sum="$(/usr/bin/sha''' + algorithm + '''sum $d)"
