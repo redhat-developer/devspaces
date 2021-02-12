@@ -615,7 +615,7 @@ def runJob(String jobPath, boolean doWait=false, boolean doPropagateStatus=true,
 
 // TODO: verify this return the build ID correctly - want the in-progress job
 def getLastBuildId(String url) {
-  return sh(returnStdout: true, script: "curl -sSLo- " + url + "/lastBuild/api/json | jq -r '.number'").trim()
+  return sh(returnStdout: true, script: "curl -sSLo- " + url + "/lastSuccessfulBuild/api/json | jq -r '.number'").trim()
 }
 
 // check {jobURL}/lastSuccessfulBuild/api/json | jq -r '.number' and wait until it increments
