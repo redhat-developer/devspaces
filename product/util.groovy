@@ -656,4 +656,29 @@ def waitForNewQuayImage(String quayOrgAndImage, String oldImage) {
   }
 }
 
+// depends on rpm perl-Digest-SHA for 'shasum -a ZZZ', or rpm coreutils for 'shaZZZsum'
+// createSums("${CRW_path}/*/target/", "*.tar.*")
+def createSums(String filePath, String filePattern, String algorithm=512) {
+  sh '''#!/bin/bash -xe
+cd ''' + filePath + '''
+# delete any existing .shaZZZ files so we don't accidentally use them as shasum input if filePattern is too aggressive
+for d in $(find . -name "''' + filePattern + '''.sha''' + algorithm + '''"); do
+  rm -f $d
+done
+
+# create new .shaZZZ files
+for d in $(find . -name "''' + filePattern + '''"); do
+  if [[ -x /usr/bin/sha''' + algorithm + '''sum ]]; then
+    /usr/bin/sha''' + algorithm + '''sum $d     | sed -r -e "s#  ${d}##" -e "s#^#SHA''' + algorithm + ''' (${d##*/}) = #" > ${d}.sha''' + algorithm + '''
+  elif [[ -x /usr/bin/shasum ]]; then
+    /usr/bin/shasum -a ''' + algorithm + ''' $d | sed -r -e "s#  ${d}##" -e "s#^#SHA''' + algorithm + ''' (${d##*/}) = #" > ${d}.sha''' + algorithm + '''
+  else
+    echo "[ERROR] Could not find /usr/bin/shasum or /usr/bin/sha''' + algorithm + '''sum!"
+    echo "[ERROR] Install rpm package perl-Digest-SHA for shasum, or coreutils for shaZZZsum to proceed."
+    exit 1
+  fi
+done
+'''
+}
+
 return this
