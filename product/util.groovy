@@ -585,9 +585,11 @@ done
 }
 
 // run a job with default token, FORCE_BUILD=true, and SCRATCH=false
-def runJob(String jobName, String jenkinsURL, boolean doWait=true, boolean doPropagateStatus=true) {
+// use jobPath = /job/folder/job/jobname so we can both invoke a job, and then use json API in getLastBuildId()
+def runJob(String jobPath, boolean doWait=false, boolean doPropagateStatus=true, String jenkinsURL=JENKINS_URL) {
   build(
-    job: jobName,
+    // convert jobPath /job/folder/job/jobname (used in json API in getLastBuildID() to /folder/jobname (used in build())
+    job: jobPath.replaceAll("/job/","/"),
     wait: doWait,
     propagate: doPropagateStatus,
     parameters: [
@@ -608,7 +610,7 @@ def runJob(String jobName, String jenkinsURL, boolean doWait=true, boolean doPro
       ]
     ]
   )
-  return getLastBuildId(jenkinsURL + jobName)
+  return getLastBuildId(jenkinsURL + jobPath)
 }
 
 // TODO: verify this return the build ID correctly - want the in-progress job
