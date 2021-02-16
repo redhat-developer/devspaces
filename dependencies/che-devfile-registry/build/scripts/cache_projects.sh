@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Copyright (c) 2018-2021 Red Hat, Inc.
+# Copyright (c) 2018-2020 Red Hat, Inc.
 # This program and the accompanying materials are made
 # available under the terms of the Eclipse Public License 2.0
 # which is available at https://www.eclipse.org/legal/epl-2.0/
@@ -27,14 +27,26 @@ TEMP_REPO="${TEMP_DIR}/cloned"
 #   $2 - branch to archive
 #   $3 - destination path for the archived project zip file
 #   $4 - sparse checkout directory
+#   $5 - commitId
 function cache_project() {
   local repo="$1"
   local branch="$2"
   local destination="$3"
   local sparse_checkout_dir="$4"
+  local commitId="$5"
 
   rm -fr "$TEMP_REPO"
-  git clone "$repo" -b "$branch" --depth 1 "$TEMP_REPO" -q
+  if [[ ! "$commitId" ]] || [[ "$commitId" == "null" ]]; then
+    git clone "$repo" -b "$branch" --depth 1 "$TEMP_REPO" -q
+  else
+    git clone "$repo" "$TEMP_REPO" -q
+    pushd "$TEMP_REPO" &>/dev/null
+    git reset --hard "${commitId}"
+    popd &>/dev/null
+    # change branch name for the archive
+    branch="HEAD"
+  fi
+
   pushd "$TEMP_REPO" &>/dev/null
     if [ -n "$sparse_checkout_dir" ]; then
       echo "    Using sparse checkout dir '$sparse_checkout_dir'"
@@ -116,17 +128,22 @@ for devfile in "${devfiles[@]}"; do
     if [[ ! "$branch" ]] || [[ "$branch" == "null" ]]; then
       branch="master"
     fi
+    commitId=$(echo "$project" | jq -r '.source.commitId')
     sparse_checkout_dir=$(echo "$project" | jq -r '.source.sparseCheckoutDir')
     if [[ ! "$sparse_checkout_dir" ]] || [[ "$sparse_checkout_dir" == "null" ]]; then
       unset sparse_checkout_dir
     fi
 
     # echo "    Caching project $project_name from branch $branch"
-    destination="${RESOURCES_DIR}/${devfile_name}-${project_name}-${branch}.zip"
+    if [[ ! "$commitId" ]] || [[ "$commitId" == "null" ]]; then
+      destination="${RESOURCES_DIR}/${devfile_name}-${project_name}-${branch}.zip"
+    else
+      destination="${RESOURCES_DIR}/${devfile_name}-${project_name}-${commitId}.zip"
+    fi
     absolute_destination=$(realpath "$destination")
     # echo "    Caching project to $absolute_destination"
     echo "    Caching project from $location/blob/${branch} to $destination"
-    cache_project "$location" "$branch" "$absolute_destination" "$sparse_checkout_dir"
+    cache_project "$location" "$branch" "$absolute_destination" "$sparse_checkout_dir" "$commitId"
 
     echo "    Updating devfile $devfile to point at cached project zip $destination"
     update_devfile "$devfile" "$project_name" "$destination"

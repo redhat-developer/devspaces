@@ -1,0 +1,13 @@
+[fedora30-updates]
+name=Fedora 30 updates - $basearch
+baseurl=http://download.fedoraproject.org/pub/fedora/linux/updates/30/Everything/$basearch/
+gpgcheck=0
+enabled=1
+skip_if_unavailable=True
+
+[fedora30-secondary-updates]
+name=Fedora 30 secondary updates - $basearch
+baseurl=https://dl.fedoraproject.org/pub/fedora-secondary/releases/30/Everything/$basearch/os/
+gpgcheck=0
+enabled=1
+skip_if_unavailable=True

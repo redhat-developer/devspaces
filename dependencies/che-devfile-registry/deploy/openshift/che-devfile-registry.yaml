@@ -1,0 +1,157 @@
+#
+# Copyright (c) 2018-2020 Red Hat, Inc.
+# This program and the accompanying materials are made
+# available under the terms of the Eclipse Public License 2.0
+# which is available at https://www.eclipse.org/legal/epl-2.0/
+#
+# SPDX-License-Identifier: EPL-2.0
+#
+---
+apiVersion: v1
+kind: Template
+metadata:
+  name: codeready-devfile-registry
+objects:
+- apiVersion: v1
+  kind: DeploymentConfig
+  metadata:
+    name: codeready-devfile-registry
+    labels:
+      app: codeready
+      component: devfile-registry
+      app.kubernetes.io/name: codeready
+      app.kubernetes.io/instance: codeready
+      app.kubernetes.io/component: devfile-registry
+  spec:
+    replicas: 1
+    selector:
+      app: codeready
+      component: devfile-registry
+    strategy:
+      rollingParams:
+        intervalSeconds: 1
+        maxSurge: 25%
+        maxUnavailable: 25%
+        timeoutSeconds: 600
+        updatePeriodSeconds: 1
+      type: Rolling
+    template:
+      metadata:
+        labels:
+          app: codeready
+          component: devfile-registry
+          app.kubernetes.io/name: codeready
+          app.kubernetes.io/instance: codeready
+          app.kubernetes.io/component: devfile-registry
+      spec:
+        containers:
+        - image: ${IMAGE}:${IMAGE_TAG}
+          imagePullPolicy: "${PULL_POLICY}"
+          name: codeready-devfile-registry
+          ports:
+          - containerPort: 8080
+          livenessProbe:
+            httpGet:
+              path: /devfiles/
+              port: 8080
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 3
+          readinessProbe:
+            httpGet:
+              path: /devfiles/
+              port: 8080
+            initialDelaySeconds: 3
+            periodSeconds: 10
+            timeoutSeconds: 3
+          securityContext:
+            capabilities:
+              drop:
+                - ALL
+          resources:
+            requests:
+              cpu: 100m
+              memory: 32Mi
+            limits:
+              cpu: 500m
+              memory: ${MEMORY_LIMIT}
+          envFrom:
+          - configMapRef:
+              name: codeready-devfile-registry
+              optional: true
+    triggers:
+    - type: ConfigChange
+- apiVersion: v1
+  kind: Service
+  metadata:
+    name: codeready-devfile-registry
+    labels:
+      app.kubernetes.io/name: codeready
+      app.kubernetes.io/instance: codeready
+      app.kubernetes.io/component: devfile-registry
+  spec:
+    ports:
+      - name: http
+        protocol: TCP
+        port: 8080
+        targetPort: 8080
+    selector:
+      app: codeready
+      component: devfile-registry
+- apiVersion: v1
+  kind: Route
+  metadata:
+    name: codeready-devfile-registry
+    labels:
+      app.kubernetes.io/name: codeready
+      app.kubernetes.io/instance: codeready
+      app.kubernetes.io/component: devfile-registry
+  spec:
+    to:
+      kind: Service
+      name: codeready-devfile-registry
+      weight: 100
+    port:
+      targetPort: 8080
+    tls:
+      termination: edge
+      insecureEdgeTerminationPolicy: Redirect
+- apiVersion: v1
+  kind: ConfigMap
+  metadata:
+    name: codeready-devfile-registry
+    labels:
+      app.kubernetes.io/name: codeready
+      app.kubernetes.io/instance: codeready
+      app.kubernetes.io/component: devfile-registry
+  data:
+     CODEREADY_DEVFILE_IMAGES_REGISTRY_URL: ${CODEREADY_DEVFILE_IMAGES_REGISTRY_URL}
+     CODEREADY_DEVFILE_IMAGES_REGISTRY_ORGANIZATION: ${CODEREADY_DEVFILE_IMAGES_REGISTRY_ORGANIZATION}
+     CODEREADY_DEVFILE_IMAGES_REGISTRY_TAG: ${CODEREADY_DEVFILE_IMAGES_REGISTRY_TAG}
+
+parameters:
+- name: IMAGE
+  value: registry.redhat.io/codeready-workspaces/devfileregistry-rhel8
+  displayName: CodeReady Workspaces devfile registry image
+  description: Che devfile registry Docker image. Defaults to registry.redhat.io/codeready-workspaces/devfileregistry-rhel8
+- name: IMAGE_TAG
+  value: '2.7'
+  displayName: CodeReady Workspaces devfile registry version
+  description: CodeReady Workspaces devfile registry version which defaults to nightly
+- name: MEMORY_LIMIT
+  value: 256Mi
+  displayName: Memory Limit
+  description: Maximum amount of memory the container can use. Defaults 256Mi
+- name: PULL_POLICY
+  value: Always
+  displayName: CodeReady Workspaces devfile registry image pull policy
+  description: Always pull by default. Can be IfNotPresent
+- name: CODEREADY_DEVFILE_IMAGES_REGISTRY_URL
+  displayName: Devfile image registry URL
+  description: URL of docker registry containing base images refered in devfiles; used to override base images in devfiles
+- name: CODEREADY_DEVFILE_IMAGES_REGISTRY_ORGANIZATION
+  displayName: Devfile image registry organization
+  description: Organization containing images referenced in devfiles; used to override base images in devfiles
+- name: CODEREADY_DEVFILE_IMAGES_REGISTRY_TAG
+  displayName: Devfile image registry tag
+  description: Tag used for custom devfile images; used to override base images in devfiles

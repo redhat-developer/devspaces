@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Copyright (c) 2018-2021 Red Hat, Inc.
+# Copyright (c) 2019-2020 Red Hat, Inc.
 # This program and the accompanying materials are made
 # available under the terms of the Eclipse Public License 2.0
 # which is available at https://www.eclipse.org/legal/epl-2.0/
@@ -12,12 +12,10 @@ set -e
 
 REGISTRY="quay.io"
 ORGANIZATION="eclipse"
-CONTAINERNAME="che-devfile-registry"
 TAG="nightly"
 TARGET="registry" # or offline-registry
 USE_DIGESTS=false
 DOCKERFILE="./build/dockerfiles/Dockerfile"
-PODMAN="" # by default, use docker
 
 USAGE="
 Usage: ./build.sh [OPTIONS]
@@ -35,10 +33,6 @@ Options:
     --offline
         Build offline version of registry, with all artifacts included
         cached in the registry; disabled by default.
-    --builder
-        Create a dev image for building this registry. See also devfile.yaml.
-    --podman
-        Use podman instead of docker
     --rhel
         Build using the rhel.Dockerfile (UBI images) instead of default
 "
@@ -53,19 +47,15 @@ function parse_arguments() {
         case $key in
             -t|--tag)
             TAG="$2"
-            shift 2
+            shift; shift;
             ;;
             -r|--registry)
             REGISTRY="$2"
-            shift 2
+            shift; shift;
             ;;
             -o|--organization)
             ORGANIZATION="$2"
-            shift 2
-            ;;
-            -c|--container)
-            CONTAINERNAME="$2"
-            shift 2
+            shift; shift;
             ;;
             --use-digests)
             USE_DIGESTS=true
@@ -75,16 +65,8 @@ function parse_arguments() {
             TARGET="offline-registry"
             shift
             ;;
-            --builder)
-            TARGET="builder"
-            shift
-            ;;
             --rhel)
             DOCKERFILE="./build/dockerfiles/rhel.Dockerfile"
-            shift
-            ;;
-            '--podman')
-            PODMAN=$(which podman 2>/dev/null || true)
             shift
             ;;
             *)
@@ -96,15 +78,43 @@ function parse_arguments() {
 
 parse_arguments "$@"
 
-# to build with podman if present, use --podman flag, else use docker
-DOCKER="docker"; if [[ ${PODMAN} ]]; then DOCKER="${PODMAN}"; fi
+BUILD_COMMAND="build"
+if [[ -z $BUILDER ]]; then
+    echo "BUILDER not specified, trying with podman"
+    BUILDER=$(command -v podman || true)
+    if [[ ! -x $BUILDER ]]; then
+        echo "[WARNING] podman is not installed, trying with buildah"
+        BUILDER=$(command -v buildah || true)
+        if [[ ! -x $BUILDER ]]; then
+            echo "[WARNING] buildah is not installed, trying with docker"
+            BUILDER=$(command -v docker || true)
+            if [[ ! -x $BUILDER ]]; then
+                echo "[ERROR] neither docker, buildah, nor podman are installed. Aborting"; exit 1
+            fi
+        else
+            BUILD_COMMAND="bud"
+        fi
+    fi
+else
+    if [[ ! -x $(command -v "$BUILDER" || true) ]]; then
+        echo "Builder $BUILDER is missing. Aborting."; exit 1
+    fi
+    if [[ $BUILDER =~ "docker" || $BUILDER =~ "podman" ]]; then
+        if [[ ! $($BUILDER ps) ]]; then
+            echo "Builder $BUILDER is not functioning. Aborting."; exit 1
+        fi
+    fi
+    if [[ $BUILDER =~ "buildah" ]]; then
+        BUILD_COMMAND="bud"
+    fi
+fi
 
-IMAGE="${REGISTRY}/${ORGANIZATION}/${CONTAINERNAME}:${TAG}"
+IMAGE="${REGISTRY}/${ORGANIZATION}/che-devfile-registry:${TAG}"
 VERSION=$(head -n 1 VERSION)
 case $VERSION in
   *SNAPSHOT)
     echo "Snapshot version (${VERSION}) specified in $(find . -name VERSION): building nightly plugin registry."
-    ${DOCKER} build \
+    ${BUILDER} ${BUILD_COMMAND} \
         -t "${IMAGE}" \
         -f ${DOCKERFILE} \
         --build-arg "USE_DIGESTS=${USE_DIGESTS}" \
@@ -112,7 +122,7 @@ case $VERSION in
     ;;
   *)
     echo "Release version specified in $(find . -name VERSION): Building plugin registry for release ${VERSION}."
-    ${DOCKER} build \
+    ${BUILDER} ${BUILD_COMMAND} \
         -t "${IMAGE}" \
         -f "${DOCKERFILE}" \
         --build-arg "PATCHED_IMAGES_TAG=${VERSION}" \

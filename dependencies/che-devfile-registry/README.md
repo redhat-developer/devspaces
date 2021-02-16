@@ -1,4 +1,9 @@
-# CodeReady Workspaces devfile registry
+[![Master Build Status](https://ci.centos.org/buildStatus/icon?subject=master&job=devtools-che-devfile-registry-build-master/)](https://ci.centos.org/job/devtools-che-devfile-registry-build-master/)
+[![Nightly Build Status](https://ci.centos.org/buildStatus/icon?subject=nightly&job=devtools-che-devfile-registry-nightly/)](https://ci.centos.org/job/devtools-che-devfile-registry-nightly/)
+[![Release Build Status](https://ci.centos.org/buildStatus/icon?subject=release&job=devtools-che-devfile-registry-release/)](https://ci.centos.org/job/devtools-che-devfile-registry-release/)
+[![Preview Release Build Status](https://ci.centos.org/buildStatus/icon?subject=release-preview&job=devtools-che-devfile-registry-release-preview/)](https://ci.centos.org/job/devtools-che-devfile-registry-release-preview/)
+
+# Eclipse Che devfile registry
 
 This repository holds ready-to-use Devfiles for different languages and technologies.
 
@@ -24,16 +29,14 @@ Options:
 ```
 By default, the built registry will be tagged `quay.io/eclipse/che-devfile-registry:nightly`, and will be built with offline mode disabled.
 
+This script listens to the `BUILDER` variable, and will use the tool specified there to build the image. For example:
+```sh
+BUILDER=buildah ./build.sh
+```
+
+will force the build to use `buildah`. If `BUILDER` is not specified, the script will try to use `podman` by default. If `podman` is not installed, then `buildah` will be chosen. If neither `podman` nor `buildah` are installed, the script will finally try to build with `docker`.
+
 Note that the Dockerfiles in this repository utilize multi-stage builds, so Docker version 17.05 or higher is required.
-
-
-### Build in Brew
-
-The Jenkinsfile in this repo has moved. See:
-
-* https://gitlab.cee.redhat.com/codeready-workspaces/crw-jenkins/-/tree/master/jobs/CRW_CI
-* https://github.com/redhat-developer/codeready-workspaces-images#jenkins-jobs
-
 
 ### Offline and airgapped registry images
 
@@ -53,6 +56,26 @@ You can deploy the registry to Openshift as follows:
              -p IMAGE="quay.io/eclipse/che-devfile-registry" \
              -p IMAGE_TAG="nightly" \
              -p PULL_POLICY="Always"
+```
+
+## Kubernetes
+
+You can deploy Che devfile registry on Kubernetes using [helm](https://docs.helm.sh/). For example if you want to deploy it in the namespace `kube-che` and you are using `minikube` you can use the following command.
+
+```bash
+NAMESPACE="kube-che"
+DOMAIN="$(minikube ip).nip.io"
+helm upgrade --install che-devfile-registry \
+    --debug \
+    --namespace ${NAMESPACE} \
+    --set global.ingressDomain=${DOMAIN} \
+    ./deploy/kubernetes/che-devfile-registry/
+```
+
+You can use the following command to uninstall it.
+
+```bash
+helm delete --purge che-devfile-registry
 ```
 
 ## Run the registry

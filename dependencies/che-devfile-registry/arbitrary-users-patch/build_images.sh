@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Copyright (c) 2018-2021 Red Hat, Inc.
+# Copyright (c) 2018-2020 Red Hat, Inc.
 # This program and the accompanying materials are made
 # available under the terms of the Eclipse Public License 2.0
 # which is available at https://www.eclipse.org/legal/epl-2.0/
@@ -27,6 +27,7 @@ if [ "$1" == "--push" ]; then
   PUSH_IMAGES=true
 fi
 
+BUILT_IMAGES=""
 while read -r line; do
   base_image_name=$(echo "$line" | tr -s ' ' | cut -f 1 -d ' ')
   base_image=$(echo "$line" | tr -s ' ' | cut -f 2 -d ' ')
@@ -36,4 +37,8 @@ while read -r line; do
     echo "Pushing ${NAME_FORMAT}/${base_image_name}:${TAG}" to remote registry
     docker push "${NAME_FORMAT}/${base_image_name}:${TAG}" | cat
   fi
+  BUILT_IMAGES="${BUILT_IMAGES}    ${NAME_FORMAT}/${base_image_name}:${TAG}\n"
 done < "${SCRIPT_DIR}"/base_images
+
+echo "Built images:"
+echo -e "$BUILT_IMAGES"
