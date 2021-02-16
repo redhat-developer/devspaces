@@ -16,4 +16,5 @@ devfiles=$($SCRIPT_DIR/list_yaml.sh "$YAML_ROOT")
 if [[ "$(uname -m)" != "x86_64" ]] || [[ "$2" == "-f" ]]; then 
     sed -E -i 's|plugin-java8-rhel8|plugin-java8-openj9-rhel8|g' $devfiles
     sed -E -i 's|plugin-java11-rhel8|plugin-java11-openj9-rhel8|g' $devfiles
+    sed -E -i 's|eap-xp2-openjdk11-openshift-rhel8:.*|eap-xp2-openj9-11-openshift-rhel8:2.0-2|g' $devfiles
 fi
