@@ -31,6 +31,16 @@ spec:
         cookiesAuthEnabled: true
         discoverable: false
         unique: true
+   -  name: "mini-browser"
+      public: true
+      targetPort: 3100
+      attributes:
+        protocol: http
+        type: mini-browser
+        secure: true
+        cookiesAuthEnabled: true
+        discoverable: false
+        unique: true
    -  name: "theia-dev"
       public: true
       targetPort: 3130
