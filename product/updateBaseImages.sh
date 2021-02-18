@@ -42,7 +42,7 @@ fi
 # where to find source branch to update, crw-2.y-rhel-8, 7.yy.x, etc.
 SOURCES_BRANCH=${SCRIPTS_BRANCH}
 
-DOCKERFILE="Dockerfile" # or "rhel.Dockerfile"
+DOCKERFILE="Dockerfile"
 MAXDEPTH=2
 PR_BRANCH="pr-new-base-images-$(date +%s)"
 OPENBROWSERFLAG="" # if a PR is generated, open it in a browser
