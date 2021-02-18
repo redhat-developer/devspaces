@@ -13,6 +13,6 @@ metayaml=$($SCRIPT_DIR/list_yaml.sh "$YAML_ROOT"/plugins/eclipse/che-theia/next)
 
 # we bump up memory for che-theia's meta.yaml only for power 
 if [[ "$(uname -m)" == "ppc64le" ]]; then
-   sed -E -i 's|memoryLimit: "512M"|memoryLimit: "3Gi"|g' $metayaml
+   sed -E -i 's|memoryLimit: "512M"|memoryLimit: "2Gi"|g' $metayaml
 fi
 
