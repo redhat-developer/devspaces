@@ -112,9 +112,9 @@ objects:
 
 parameters:
 - name: IMAGE
-  value: quay.io/eclipse/codeready-plugin-registry
+  value: registry.redhat.io/codeready-workspaces/pluginregistry-rhel8
   displayName: CodeReady Workspaces plugin registry image
-  description: Che plugin registry Docker image. Defaults to eclipse/codeready-plugin-registry
+  description: Che plugin registry Docker image. Defaults to registry.redhat.io/codeready-workspaces/pluginregistry-rhel8
 - name: IMAGE_TAG
   value: '2.7'
   displayName: CodeReady Workspaces plugin registry version

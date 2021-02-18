@@ -38,7 +38,7 @@ if [[ -z "${TEMPLATE+x}" ]]; then usage; fi
 sed -i \
     -e "s|Eclipse Che|CodeReady Workspaces|g" \
     -e "s|CHE_|CRW_|g" \
-    -e "s|quay.io/eclipse/che-devfile-registry|registry.redhat.io/codeready-workspaces/devfileregistry-rhel8|g" \
+    -e "s|quay.io/eclipse/che-plugin-registry|registry.redhat.io/codeready-workspaces/pluginregistry-rhel8|g" \
     -e "s|nightly|\'${DEFAULT_TAG}\'|g" \
     -e "s|che|codeready|g" \
     ${TEMPLATE}
