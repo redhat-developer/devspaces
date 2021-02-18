@@ -28,8 +28,8 @@ fi
 # generate new meta.yaml files for the plugins, and update the latest.txt files
 createNewPlugins () {
   newVERSION=$1
-  rsync -aPrz v3/plugins/eclipse/che-machine-exec-plugin/nightly/* "v3/plugins/eclipse/che-machine-exec-plugin/${newVERSION}/"
-  rsync -aPrz v3/plugins/eclipse/che-theia/next/* "v3/plugins/eclipse/che-theia/${newVERSION}/"
+  rsync -aqrz v3/plugins/eclipse/che-machine-exec-plugin/nightly/* "v3/plugins/eclipse/che-machine-exec-plugin/${newVERSION}/"
+  rsync -aqrz v3/plugins/eclipse/che-theia/next/* "v3/plugins/eclipse/che-theia/${newVERSION}/"
   pwd
   for m in "v3/plugins/eclipse/che-theia/${newVERSION}/meta.yaml" "v3/plugins/eclipse/che-machine-exec-plugin/${newVERSION}/meta.yaml"; do
     sed -i "${m}" \
@@ -44,6 +44,17 @@ createNewPlugins () {
   done
 }
 
+removeOldPlugins () {
+  newVERSION=$1
+  for d in $(find v3/plugins/eclipse/che-machine-exec-plugin v3/plugins/eclipse/che-theia -maxdepth 1 -mindepth 1 -type d); do
+    if [[ $d != *"next" ]] && [[ $d != *"nightly" ]] && [[ $d != *"$newVERSION" ]]; then
+      # echo "Remove old plugin dir $d"
+      git rm -fr $d || true
+      rm -fr $d || true
+    fi
+  done
+}
+
 # check if che-machine-exec-plugin and che-theia version is already installed to avoid redundent commits
 if [[ ! -d "v3/plugins/eclipse/che-machine-exec-plugin" ]] || \
    [[ ! -d "v3/plugins/eclipse/che-machine-exec-plugin/${VERSION}/" ]] || \
@@ -55,6 +66,8 @@ if [[ ! -d "v3/plugins/eclipse/che-machine-exec-plugin" ]] || \
   [[ $(cat "v3/plugins/eclipse/che-theia/latest.txt") != "${VERSION}" ]]; then
   # change VERSION file
   echo "${VERSION}" > VERSION
+  # remove old che-machine-exec and che-theia plugins, keeping only nightly, next, and ${VERSION}
+  removeOldPlugins "${VERSION}"
   # add new plugins + update latest.txt files
   createNewPlugins "${VERSION}"
 
