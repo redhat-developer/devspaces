@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Copyright (c) 2019-2020 Red Hat, Inc.
+# Copyright (c) 2021 Red Hat, Inc.
 # This program and the accompanying materials are made
 # available under the terms of the Eclipse Public License 2.0
 # which is available at https://www.eclipse.org/legal/epl-2.0/
@@ -16,6 +16,7 @@ unset TEMPLATE
 
 MIDSTM_BRANCH=$(git rev-parse --abbrev-ref HEAD)
 DEFAULT_TAG=${MIDSTM_BRANCH#*-}; DEFAULT_TAG=${DEFAULT_TAG%%-*};
+[[ ${DEFAULT_TAG} == "2" ]] && DEFAULT_TAG="latest"
 
 usage () {
     echo "Usage:   $0 -t TEMPLATE"
