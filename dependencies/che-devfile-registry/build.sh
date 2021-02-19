@@ -11,13 +11,12 @@
 set -e
 
 REGISTRY="quay.io"
-ORGANIZATION="eclipse"
-CONTAINERNAME="che-devfile-registry"
+ORGANIZATION="crw"
+CONTAINERNAME="devfileregistry-rhel8"
 TAG="nightly"
 TARGET="registry" # or offline-registry
 USE_DIGESTS=false
 DOCKERFILE="./build/dockerfiles/Dockerfile"
-PODMAN="" # by default, use docker
 
 USAGE="
 Usage: ./build.sh [OPTIONS]
@@ -29,7 +28,7 @@ Options:
     --registry, -r [REGISTRY]
         Docker registry to be used for image; default 'quay.io'
     --organization, -o [ORGANIZATION]
-        Docker image organization to be used for image; default: 'eclipse'
+        Docker image organization to be used for image; default: 'crw'
     --use-digests
         Build registry to use images pinned by digest instead of tag
     --offline
@@ -37,10 +36,6 @@ Options:
         cached in the registry; disabled by default.
     --builder
         Create a dev image for building this registry. See also devfile.yaml.
-    --podman
-        Use podman instead of docker
-    --rhel
-        Build using the rhel.Dockerfile (UBI images) instead of default
 "
 
 function print_usage() {
@@ -79,14 +74,6 @@ function parse_arguments() {
             TARGET="builder"
             shift
             ;;
-            --rhel)
-            DOCKERFILE="./build/dockerfiles/rhel.Dockerfile"
-            shift
-            ;;
-            '--podman')
-            PODMAN=$(which podman 2>/dev/null || true)
-            shift
-            ;;
             *)
             print_usage
             exit 0
@@ -96,15 +83,43 @@ function parse_arguments() {
 
 parse_arguments "$@"
 
-# to build with podman if present, use --podman flag, else use docker
-DOCKER="docker"; if [[ ${PODMAN} ]]; then DOCKER="${PODMAN}"; fi
+BUILD_COMMAND="build"
+if [[ -z $BUILDER ]]; then
+    echo "BUILDER not specified, trying with podman"
+    BUILDER=$(command -v podman || true)
+    if [[ ! -x $BUILDER ]]; then
+        echo "[WARNING] podman is not installed, trying with buildah"
+        BUILDER=$(command -v buildah || true)
+        if [[ ! -x $BUILDER ]]; then
+            echo "[WARNING] buildah is not installed, trying with docker"
+            BUILDER=$(command -v docker || true)
+            if [[ ! -x $BUILDER ]]; then
+                echo "[ERROR] neither docker, buildah, nor podman are installed. Aborting"; exit 1
+            fi
+        else
+            BUILD_COMMAND="bud"
+        fi
+    fi
+else
+    if [[ ! -x $(command -v "$BUILDER" || true) ]]; then
+        echo "Builder $BUILDER is missing. Aborting."; exit 1
+    fi
+    if [[ $BUILDER =~ "docker" || $BUILDER =~ "podman" ]]; then
+        if [[ ! $($BUILDER ps) ]]; then
+            echo "Builder $BUILDER is not functioning. Aborting."; exit 1
+        fi
+    fi
+    if [[ $BUILDER =~ "buildah" ]]; then
+        BUILD_COMMAND="bud"
+    fi
+fi
 
 IMAGE="${REGISTRY}/${ORGANIZATION}/${CONTAINERNAME}:${TAG}"
 VERSION=$(head -n 1 VERSION)
 case $VERSION in
   *SNAPSHOT)
     echo "Snapshot version (${VERSION}) specified in $(find . -name VERSION): building nightly plugin registry."
-    ${DOCKER} build \
+    ${BUILDER} ${BUILD_COMMAND} \
         -t "${IMAGE}" \
         -f ${DOCKERFILE} \
         --build-arg "USE_DIGESTS=${USE_DIGESTS}" \
@@ -112,7 +127,7 @@ case $VERSION in
     ;;
   *)
     echo "Release version specified in $(find . -name VERSION): Building plugin registry for release ${VERSION}."
-    ${DOCKER} build \
+    ${BUILDER} ${BUILD_COMMAND} \
         -t "${IMAGE}" \
         -f "${DOCKERFILE}" \
         --build-arg "PATCHED_IMAGES_TAG=${VERSION}" \
