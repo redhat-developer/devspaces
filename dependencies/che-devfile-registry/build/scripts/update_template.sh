@@ -7,8 +7,6 @@
 #
 # SPDX-License-Identifier: EPL-2.0
 #
-# List all images referenced in meta.yaml files
-#
 
 set -e
 set -x
