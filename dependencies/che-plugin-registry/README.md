@@ -2,8 +2,28 @@
 
 This repository holds ready-to-use plugins for different languages and technologies.
 
+
 ## Building and publishing third party VSIX extensions for plugin registry
+
 See: https://github.com/redhat-developer/codeready-workspaces-vscode-extensions/blob/main/README.md
+
+
+## Building and publishing third party binaries for and plugin registry sidecar containers
+
+Executables and language server depedencies needed in plugin sidecar containers can be built from this repo:
+
+* [redhat-developer/codeready-workspaces-deprecated](https://github.com/redhat-developer/codeready-workspaces-deprecated/blob/crw-2-rhel-8/)
+
+For example, [kamel](https://github.com/redhat-developer/codeready-workspaces-deprecated/blob/crw-2-rhel-8/kamel/build.sh) binaries are used in the kubernetes sidecar:
+
+* [codeready-workspaces/plugin-kubernetes-rhel8](https://catalog.redhat.com/software/containers/codeready-workspaces/plugin-kubernetes-rhel8/5dae28895a13461646def87a)
+* [crw/plugin-kubernetes-rhel8](https://quay.io/repository/crw/plugin-kubernetes-rhel8?tag=latest&tab=tags)
+
+Sidecar image sources are then synced from the [codeready-workspaces-images](https://github.com/redhat-developer/codeready-workspaces-images) repo to a dist-git repo at Red Hat, and from built in Brew. For example, the kubernetes sidecar:
+
+* [codeready-workspaces-images/codeready-workspaces-plugin-kubernetes](https://github.com/redhat-developer/codeready-workspaces-images/tree/crw-2-rhel-8/codeready-workspaces-plugin-kubernetes)
+* [containers/codeready-workspaces-plugin-kubernetes](http://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-plugin-kubernetes/tree/sources?h=crw-2-rhel-8)
+
 
 ## Build registry container image
 
@@ -48,6 +68,7 @@ The Jenkinsfile in this repo has moved. See:
 
 Using the `--offline` option in `build.sh` will build the registry to contain all referenced extension artifacts (i.e. all `.theia` and `.vsix` archives). The offline version of the plugin registry is useful in network-limited scenarios, as it avoids the need to download plugin extensions from the outside internet.
 
+
 ## Deploy the registry to OpenShift
 
 You can deploy the registry to Openshift as follows:
@@ -59,11 +80,13 @@ You can deploy the registry to Openshift as follows:
              -p PULL_POLICY="Always"
 ```
 
+
 ## Run the registry 
 
 ```bash
 docker run -it  --rm  -p 8080:8080 quay.io/crw/pluginregistry-rhel8:nightly
 ```
+
 
 ## Plugin meta YAML structure
 
@@ -190,6 +213,7 @@ Note that the `spec` section above comes from the older `che-plugin.yaml` spec. 
 
 At the moment, some of these fields (that are related to plugin viewer) are validated during the Plugin Registry dockerimage build.
 
+
 ## Get index list of all plugins
 
 Example:
@@ -262,6 +286,7 @@ Response:
   }
 ]
 ```
+
 
 ## Get meta.yaml of a plugin
 
@@ -351,6 +376,7 @@ spec:
     memoryLimit: 512M
 latestUpdateDate: "2019-07-05"
 ```
+
 
 ### License
 
