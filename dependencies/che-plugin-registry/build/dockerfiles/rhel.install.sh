@@ -29,8 +29,19 @@ timeout=60
 " > /etc/yum.conf 
 ${DNF} install -y drpm dnf || exit 1 # enable delta rpms
 dnf install -y findutils bash wget yum git gzip tar jq python3-six python3-pip skopeo || exit 1
-# install yq (depends on jq and pyyaml - if jq and pyyaml not already installed, this will try to compile it)
-ln -s /usr/bin/python3.8 /usr/bin/python
+
+PYTHON_BIN=$(ls -1 /usr/bin | grep -E "^python3.[0-9]$" || true) # 3.6, 3.7, 3.8, etc.
+if [[ ! ${PYTHON_BIN} ]]; then
+    PYTHON_BIN=$(/usr/bin/python3 -V | sed -r -e "s#Python ##" -e "s#([0-9])\.([0-9]+)\.([0-9]+)#\1.\2#")
+    if [[ ! ${PYTHON_BIN} ]]; then
+        PYTHON_BIN=$(/usr/bin/python -V | sed -r -e "s#Python ##" -e "s#([0-9])\.([0-9]+)\.([0-9]+)#\1.\2#")
+    fi
+fi
+if [[ ! -L /usr/bin/python ]]; then
+    ln -s /usr/bin/${PYTHON_BIN} /usr/bin/python
+fi
+
+# install yq (depends on jq and pyyaml - if jq and pyyaml not already installed, this will try to compile it) and jsonschema
 if [[ -f /tmp/root-local.tgz ]] || [[ ${BOOTSTRAP} == "true" ]]; then
     mkdir -p /root/.local
     if [[ -f /tmp/root-local.tgz ]]; then
@@ -42,8 +53,8 @@ if [[ -f /tmp/root-local.tgz ]] || [[ ${BOOTSTRAP} == "true" ]]; then
     for d in /opt/app-root/src/.local /root/.local; do
         if [[ -d ${d} ]]; then
             cp ${d}/bin/yq ${d}/bin/jsonschema /usr/local/bin/
-            pushd ${d}/lib/python3.6/site-packages/ >/dev/null
-            cp -r PyYAML* xmltodict* yaml* yq* jsonschema* /usr/lib/python3.6/site-packages/
+            pushd ${d}/lib/${PYTHON_BIN}/site-packages/ >/dev/null
+            cp -r PyYAML* xmltodict* yaml* yq* jsonschema* /usr/lib/${PYTHON_BIN}/site-packages/
             popd >/dev/null
         fi
     done
