@@ -63,6 +63,10 @@ if [[ -f /tmp/root-local.tgz ]] || [[ ${BOOTSTRAP} == "true" ]]; then
 else
     /usr/bin/python -m pip install yq jsonschema
 fi
+# 
+if [[ ! -d /root/.local ]] && [[ ! -L /root/.local ]]; then 
+    ln -s /opt/app-root/src/.local /root/.local
+fi
 # test install worked
 for d in python yq jq jsonschema; do echo -n "$d: "; $d --version; done
 
