@@ -28,10 +28,9 @@ retries=20
 timeout=60
 " > /etc/yum.conf 
 ${DNF} install -y drpm dnf || exit 1 # enable delta rpms
-# note: one of these requires python 3.6 (not 3.8)
 dnf install -y findutils bash wget yum git gzip tar jq python3-six python3-pip skopeo || exit 1
 # install yq (depends on jq and pyyaml - if jq and pyyaml not already installed, this will try to compile it)
-ln -s /usr/bin/python3.6 /usr/bin/python
+ln -s /usr/bin/python3.8 /usr/bin/python
 if [[ -f /tmp/root-local.tgz ]] || [[ ${BOOTSTRAP} == "true" ]]; then
     mkdir -p /root/.local
     if [[ -f /tmp/root-local.tgz ]]; then
