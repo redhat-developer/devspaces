@@ -30,7 +30,7 @@ timeout=60
 ${DNF} install -y drpm dnf || exit 1 # enable delta rpms
 dnf install -y findutils bash wget yum git gzip tar jq python3-six python3-pip skopeo || exit 1
 
-PYTHON_BIN=$(ls -1 /usr/bin | grep -E "^python3.[0-9]$" || true) # 3.6, 3.7, 3.8, etc.
+PYTHON_BIN=$(ls -1 /usr/bin | grep -E "^python3.[0-9]$" | sort -V | tail -1 || true) # 3.6, 3.7, 3.8, etc.
 if [[ ! ${PYTHON_BIN} ]]; then
     PYTHON_BIN=$(/usr/bin/python3 -V | sed -r -e "s#Python ##" -e "s#([0-9])\.([0-9]+)\.([0-9]+)#\1.\2#")
     if [[ ! ${PYTHON_BIN} ]]; then
