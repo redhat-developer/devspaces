@@ -62,7 +62,6 @@ RUN if [[ ${USE_DIGESTS} == "true" ]]; then ./write_image_digests.sh devfiles; f
 RUN ./index.sh > /build/devfiles/index.json
 RUN ./list_referenced_images.sh devfiles > /build/devfiles/external_images.txt
 RUN chmod -R g+rwX /build/devfiles
-CMD tail -f /dev/null
 
 ################# 
 # PHASE TWO: configure registry image
