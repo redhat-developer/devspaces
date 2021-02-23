@@ -11,12 +11,12 @@
 #
 
 # Builder: check meta.yamls and create index.json
-# https://access.redhat.com/containers/?tab=tags#/registry.access.redhat.com/ubi8-minimal
-FROM registry.access.redhat.com/ubi8-minimal:8.3-291 as builder
+# https://access.redhat.com/containers/?tab=tags#/registry.access.redhat.com/ubi8/s2i-base
+FROM registry.access.redhat.com/ubi8/s2i-base:1-222 as builder
 USER 0
 
 ################# 
-# PHASE ONE: create ubi8-minimal image with yq
+# PHASE ONE: create ubi8 image with yq
 ################# 
 
 ARG BOOTSTRAP=false
@@ -42,13 +42,8 @@ ENV LATEST_ONLY=${LATEST_ONLY}
 # NOTE: uncomment for local build. Must also set full registry path in FROM to registry.redhat.io or registry.access.redhat.com
 # enable rhel 7 or 8 content sets (from Brew) to resolve jq as rpm
 COPY ./build/dockerfiles/content_set*.repo /etc/yum.repos.d/
-
 COPY ./build/dockerfiles/rhel.install.sh /tmp
 RUN /tmp/rhel.install.sh && rm -f /tmp/rhel.install.sh
-
-################# 
-# PHASE TWO: configure registry image
-#################
 
 COPY ./build/scripts/*.sh ./build/scripts/meta.yaml.schema /build/
 COPY ./v3 /build/v3
@@ -71,7 +66,7 @@ RUN ./list_referenced_images.sh v3 > /build/v3/external_images.txt
 RUN chmod -R g+rwX /build
 
 ################# 
-# PHASE THREE: configure registry image
+# PHASE TWO: configure registry image
 ################# 
 
 # Build registry, copying meta.yamls and index.json from builder
@@ -83,6 +78,7 @@ FROM registry.access.redhat.com/rhscl/httpd-24-rhel7:2.4-136 AS registry
 # https://access.redhat.com/containers/?tab=tags#/registry.access.redhat.com/rhel8/httpd-24
 # FROM registry.redhat.io/rhel8/httpd-24:1-123 AS registry
 USER 0
+
 # latest httpd container doesn't include ssl cert, so generate one
 RUN chmod +x /usr/share/container-scripts/httpd/pre-init/40-ssl-certs.sh && \
     /usr/share/container-scripts/httpd/pre-init/40-ssl-certs.sh

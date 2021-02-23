@@ -9,7 +9,26 @@
 #
 set -x
 
-microdnf install -y findutils bash wget yum git gzip tar jq python3-six python3-pip skopeo && microdnf -y clean all
+DNF=dnf
+if [[ ! -x $(command -v $DNF || true) ]]; then   DNF=yum
+  if [[ ! -x $(command -v $DNF || true) ]]; then DNF=microdnf; fi
+fi
+
+# workaround for performance issues in CRW-1610
+echo "[main]
+gpgcheck=0
+installonly_limit=3
+clean_requirements_on_remove=True
+best=True
+skip_if_unavailable=True
+fastestmirror=True
+max_parallel_downloads=10
+minrate=1
+retries=20
+timeout=60
+" > /etc/yum.conf 
+${DNF} install -y drpm dnf || exit 1 # enable delta rpms
+dnf install -y findutils bash wget yum git gzip tar jq python3-six python3-pip skopeo || exit 1
 # install yq (depends on jq and pyyaml - if jq and pyyaml not already installed, this will try to compile it)
 if [[ -f /tmp/root-local.tgz ]] || [[ ${BOOTSTRAP} == "true" ]]; then
     mkdir -p /root/.local
@@ -36,4 +55,4 @@ ln -s /usr/bin/python3.6 /usr/bin/python
 for d in python yq jq jsonschema; do echo -n "$d: "; $d --version; done
 
 # for debugging only
-# microdnf install -y util-linux && whereis python pip jq yq && python --version && jq --version && yq --version
+# ${DNF} install -y util-linux && whereis python pip jq yq && python --version && jq --version && yq --version
