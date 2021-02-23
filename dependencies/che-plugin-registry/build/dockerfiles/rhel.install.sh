@@ -43,14 +43,14 @@ fi
 
 # install yq (depends on jq and pyyaml - if jq and pyyaml not already installed, this will try to compile it) and jsonschema
 if [[ -f /tmp/root-local.tgz ]] || [[ ${BOOTSTRAP} == "true" ]]; then
-    mkdir -p /root/.local
+    mkdir -p /opt/app-root/src/.local
     if [[ -f /tmp/root-local.tgz ]]; then
-        tar xf /tmp/root-local.tgz -C /root/.local/
+        tar xf /tmp/root-local.tgz -C /opt/app-root/src/.local
         rm -fr /tmp/root-local.tgz
     fi
     /usr/bin/python -m pip install --user yq jsonschema
-    # could be installed in /opt/app-root/src/.local/bin or /root/.local/bin
-    for d in /opt/app-root/src/.local /root/.local; do
+    # NOTE: used to be in /root/.local but now can be found in /opt/app-root/src/.local
+    for d in /opt/app-root/src/.local; do
         if [[ -d ${d} ]]; then
             cp ${d}/bin/yq ${d}/bin/jsonschema /usr/local/bin/
             mkdir -p ${d}/lib/${PYTHON_BIN}/site-packages/
@@ -62,10 +62,6 @@ if [[ -f /tmp/root-local.tgz ]] || [[ ${BOOTSTRAP} == "true" ]]; then
     chmod -c +x /usr/local/bin/*
 else
     /usr/bin/python -m pip install yq jsonschema
-fi
-# 
-if [[ ! -d /root/.local ]] && [[ ! -L /root/.local ]]; then 
-    ln -s /opt/app-root/src/.local /root/.local
 fi
 # test install worked
 for d in python yq jq jsonschema; do echo -n "$d: "; $d --version; done
