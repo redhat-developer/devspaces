@@ -30,13 +30,14 @@ timeout=60
 ${DNF} install -y drpm dnf || exit 1 # enable delta rpms
 dnf install -y findutils bash wget yum git gzip tar jq python3-six python3-pip skopeo || exit 1
 # install yq (depends on jq and pyyaml - if jq and pyyaml not already installed, this will try to compile it)
+ln -s /usr/bin/python3.8 /usr/bin/python
 if [[ -f /tmp/root-local.tgz ]] || [[ ${BOOTSTRAP} == "true" ]]; then
     mkdir -p /root/.local
     if [[ -f /tmp/root-local.tgz ]]; then
         tar xf /tmp/root-local.tgz -C /root/.local/
         rm -fr /tmp/root-local.tgz
     fi
-    /usr/bin/pip3.6 install --user yq jsonschema
+    /usr/bin/python -m pip install --user yq jsonschema
     # could be installed in /opt/app-root/src/.local/bin or /root/.local/bin
     for d in /opt/app-root/src/.local /root/.local; do
         if [[ -d ${d} ]]; then
@@ -48,9 +49,8 @@ if [[ -f /tmp/root-local.tgz ]] || [[ ${BOOTSTRAP} == "true" ]]; then
     done
     chmod -c +x /usr/local/bin/*
 else
-    /usr/bin/pip3.6 install yq jsonschema
+    /usr/bin/python -m pip install yq jsonschema
 fi
-ln -s /usr/bin/python3.6 /usr/bin/python
 # test install worked
 for d in python yq jq jsonschema; do echo -n "$d: "; $d --version; done
 

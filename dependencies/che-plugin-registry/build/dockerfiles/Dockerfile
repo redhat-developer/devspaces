@@ -11,8 +11,8 @@
 #
 
 # Builder: check meta.yamls and create index.json
-# https://access.redhat.com/containers/?tab=tags#/registry.access.redhat.com/ubi8/s2i-base
-FROM registry.access.redhat.com/ubi8/s2i-base:1-222 as builder
+# https://access.redhat.com/containers/?tab=tags#/registry.access.redhat.com/ubi8/python-38
+FROM registry.access.redhat.com/ubi8/python-38:1-47 as builder
 USER 0
 
 ################# 
