@@ -29,9 +29,15 @@ ENV LATEST_ONLY=${LATEST_ONLY}
 # to get all the python deps pre-fetched so we can build in Brew:
 # 1. extract files in the container to your local filesystem
 #    find v3 -type f -exec dos2unix {} \;
-#    CONTAINERNAME="tmpregistrybuilder" && docker build -t ${CONTAINERNAME} . --target=builder --no-cache --squash --build-arg BOOTSTRAP=true
-#    mkdir -p /tmp/root-local/ && docker run -it -v /tmp/root-local/:/tmp/root-local/ ${CONTAINERNAME} /bin/bash -c "cd /root/.local/ && cp -r bin/ lib/ /tmp/root-local/"
-#    pushd /tmp/root-local >/dev/null && sudo tar czf root-local.tgz lib/ bin/ && popd >/dev/null && mv -f /tmp/root-local/root-local.tgz . && sudo rm -fr /tmp/root-local/
+
+# NOTE: used to be in /root/.local but now can be found in /opt/app-root/src/.local
+# CONTAINERNAME=pluginregistryoffline && \
+# docker build -t ${CONTAINERNAME} . --no-cache  --target builder \
+#   --build-arg BOOTSTRAP=true --build-arg USE_DIGESTS=false -f build/dockerfiles/Dockerfile 
+# mkdir -p /tmp/root-local/ && docker run --rm -v \
+#   /tmp/root-local/:/tmp/root-local/ ${CONTAINERNAME} /bin/bash \
+#   -c 'cd /opt/app-root/src/.local/ && cp -r bin/ lib/ /tmp/root-local/'
+# pushd /tmp/root-local >/dev/null && sudo tar czf root-local.tgz lib/ bin/ && popd >/dev/null && mv -f /tmp/root-local/root-local.tgz . && sudo rm -fr /tmp/root-local/
 
 # 2. then add it to dist-git so it's part of this repo
 #    rhpkg new-sources root-local.tgz 
