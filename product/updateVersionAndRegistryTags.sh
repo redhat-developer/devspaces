@@ -61,9 +61,10 @@ updatePomVersion () {
 }
 
 updateDevfileRegistry() {
-    SCRIPT_DIR="${WORKDIR}/dependencies/che-devfile-registry/build/scripts"
-    YAML_ROOT="${WORKDIR}/dependencies/che-devfile-registry/devfiles"
-    CRW_DEVFILE_REGISTRY_TEMPLATE="${WORKDIR}/dependencies/che-devfile-registry/deploy/openshift/crw-devfile-registry.yaml"
+    REG_ROOT="${WORKDIR}/dependencies/che-devfile-registry"
+    SCRIPT_DIR="${REG_ROOT}/build/scripts"
+    YAML_ROOT="${REG_ROOT}/devfiles"
+    TEMPLATE_FILE="${REG_ROOT}/deploy/openshift/crw-devfile-registry.yaml"
 
     # replace CRW devfiles with image references to current version tag
     for devfile in $("$SCRIPT_DIR"/list_yaml.sh "$YAML_ROOT"); do
@@ -71,15 +72,16 @@ updateDevfileRegistry() {
            -i "${devfile}"
     done
 
-    "${SCRIPT_DIR}/update_template.sh" -s ${CRW_DEVFILE_REGISTRY_TEMPLATE} -t ${CRW_VERSION}
+    "${SCRIPT_DIR}/update_template.sh" -s ${TEMPLATE_FILE} -t ${CRW_VERSION}
 
-    git diff -q ${YAML_ROOT} || true
+    git diff -q ${YAML_ROOT} ${TEMPLATE_FILE} || true
 }
 
 updatePluginRegistry() {
-    SCRIPT_DIR="${WORKDIR}/dependencies/che-plugin-registry/build/scripts"
-    YAML_ROOT="${WORKDIR}/dependencies/che-plugin-registry/v3/plugins"
-    CRW_PLUGIN_REGISTRY_TEMPLATE="${WORKDIR}/dependencies/che-plugin-registry/deploy/openshift/crw-plugin-registry.yaml"
+    REG_ROOT="${WORKDIR}/dependencies/che-plugin-registry"
+    SCRIPT_DIR="${REG_ROOT}/build/scripts"
+    YAML_ROOT="${REG_ROOT}/v3/plugins"
+    TEMPLATE_FILE="${REG_ROOT}/deploy/openshift/crw-plugin-registry.yaml"
 
     declare -a latestPlugins
     for plugin in $("$SCRIPT_DIR"/list_yaml.sh "$YAML_ROOT"); do
@@ -103,9 +105,9 @@ updatePluginRegistry() {
             -i "${latestPlugin}"
     done
 
-    "${SCRIPT_DIR}/update_template.sh" -s ${CRW_PLUGIN_REGISTRY_TEMPLATE} -t ${CRW_VERSION}
+    "${SCRIPT_DIR}/update_template.sh" -s ${TEMPLATE_FILE} -t ${CRW_VERSION}
 
-    git diff -q ${YAML_ROOT} || true
+    git diff -q ${YAML_ROOT} ${TEMPLATE_FILE} || true
 }
 
 commitChanges() {
