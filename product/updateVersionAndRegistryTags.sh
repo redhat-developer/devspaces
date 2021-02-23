@@ -3,7 +3,7 @@
 # which is available at https://www.eclipse.org/legal/epl-2.0/
 #
 # SPDX-License-Identifier: EPL-2.0
-# 
+#
 # set newer version across the CRW repository in dependencies/VERSION file and registry image tags
 
 PR_BRANCH="pr-update-version-and-registry-tags-$(date +%s)"
@@ -15,7 +15,7 @@ WORKDIR="$(pwd)"
 usage () {
 	echo "Usage:   $0 -b [BRANCH] -v [CRW CSV VERSION] -t [CRW TAG VERSION] [-w WORKDIR]"
 	echo "Example: $0 -b crw-2.y-rhel-8 -v 2.y.0 -t 2.y -w $(pwd)"
-	echo "Options: 
+	echo "Options:
 	--no-commit, -n    do not commit to BRANCH
 	--no-push, -p      do not push to BRANCH
 	-prb               set a PR_BRANCH; default: pr-update-version-and-registry-tags-(timestamp)
@@ -37,7 +37,7 @@ while [[ "$#" -gt 0 ]]; do
     '-prb') PR_BRANCH="$2"; shift 1;;
     '-o') OPENBROWSERFLAG="-o"; shift 0;;
     '--help'|'-h') usage; exit;;
-    *) OTHER="${OTHER} $1"; shift 0;; 
+    *) OTHER="${OTHER} $1"; shift 0;;
   esac
   shift 1
 done
@@ -63,18 +63,23 @@ updatePomVersion () {
 updateDevfileRegistry() {
     SCRIPT_DIR="${WORKDIR}/dependencies/che-devfile-registry/build/scripts"
     YAML_ROOT="${WORKDIR}/dependencies/che-devfile-registry/devfiles"
+    CRW_DEVFILE_REGISTRY_TEMPLATE="${WORKDIR}/dependencies/che-devfile-registry/deploy/openshift/crw-devfile-registry.yaml"
 
     # replace CRW devfiles with image references to current version tag
     for devfile in $("$SCRIPT_DIR"/list_yaml.sh "$YAML_ROOT"); do
        sed -E -e "s|(.*image: *?.*registry.redhat.io/codeready-workspaces/.*:).+|\1${CRW_VERSION}|g" \
            -i "${devfile}"
     done
+
+    "${SCRIPT_DIR}/update_template.sh" -s ${CRW_DEVFILE_REGISTRY_TEMPLATE} -t ${CRW_VERSION}
+
     git diff -q ${YAML_ROOT} || true
 }
 
 updatePluginRegistry() {
     SCRIPT_DIR="${WORKDIR}/dependencies/che-plugin-registry/build/scripts"
     YAML_ROOT="${WORKDIR}/dependencies/che-plugin-registry/v3/plugins"
+    CRW_PLUGIN_REGISTRY_TEMPLATE="${WORKDIR}/dependencies/che-plugin-registry/deploy/openshift/crw-plugin-registry.yaml"
 
     declare -a latestPlugins
     for plugin in $("$SCRIPT_DIR"/list_yaml.sh "$YAML_ROOT"); do
@@ -82,7 +87,7 @@ updatePluginRegistry() {
         var1=${plugin%/*}
         var2=${var1%/*}
         latestVersion=$(cat "$var2/latest.txt")
-        latestPlugin="$var2/$latestVersion/meta.yaml" 
+        latestPlugin="$var2/$latestVersion/meta.yaml"
         if [[ "$plugin" == "$latestPlugin" ]]; then
             latestPlugins+=($plugin)
         fi
@@ -90,19 +95,22 @@ updatePluginRegistry() {
         for nn in "$var2/next/meta.yaml" "$var2/nightly/meta.yaml"; do
             if [[ -f $nn ]]; then latestPlugins+=($nn); fi
         done
-    done        
+    done
     # replace latest CRW plugins with current version tag
     for latestPlugin in "${latestPlugins[@]}"; do
         sed -E -e "s|(.*image: \"registry.redhat.io/codeready-workspaces/.*:).+\"|\1${CRW_VERSION}\"|g" \
             -e "s|(.*image: registry.redhat.io/codeready-workspaces/.*:).+|\1${CRW_VERSION}|g" \
             -i "${latestPlugin}"
     done
+
+    "${SCRIPT_DIR}/update_template.sh" -s ${CRW_PLUGIN_REGISTRY_TEMPLATE} -t ${CRW_VERSION}
+
     git diff -q ${YAML_ROOT} || true
 }
 
 commitChanges() {
-    if [[ ${docommit} -eq 1 ]]; then 
-        git commit -a -s -m "chore(tags) update VERSION and registry references to :${CRW_VERSION}" 
+    if [[ ${docommit} -eq 1 ]]; then
+        git commit -a -s -m "chore(tags) update VERSION and registry references to :${CRW_VERSION}"
         git pull origin "${BRANCH}"
         if [[ ${dopush} -eq 1 ]]; then
             PUSH_TRY="$(git push origin "${BRANCH}" 2>&1 || git push origin "${PR_BRANCH}" || true)"
@@ -115,7 +123,7 @@ commitChanges() {
                 git push origin "${PR_BRANCH}"
                 lastCommitComment="$(git log -1 --pretty=%B)"
                 if [[ $(/usr/local/bin/hub version 2>/dev/null || true) ]] || [[ $(which hub 2>/dev/null || true) ]]; then
-                    # collect additional commits in the same PR if it already exists 
+                    # collect additional commits in the same PR if it already exists
                     { hub pull-request -f -m "${lastCommitComment}
 
 ${lastCommitComment}" -b "${BRANCH}" -h "${PR_BRANCH}" "${OPENBROWSERFLAG}"; } || { git merge ${BRANCH}; git push origin "${PR_BRANCH}"; }
