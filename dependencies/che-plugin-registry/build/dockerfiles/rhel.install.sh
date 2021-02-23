@@ -53,6 +53,7 @@ if [[ -f /tmp/root-local.tgz ]] || [[ ${BOOTSTRAP} == "true" ]]; then
     for d in /opt/app-root/src/.local /root/.local; do
         if [[ -d ${d} ]]; then
             cp ${d}/bin/yq ${d}/bin/jsonschema /usr/local/bin/
+            mkdir -p ${d}/lib/${PYTHON_BIN}/site-packages/
             pushd ${d}/lib/${PYTHON_BIN}/site-packages/ >/dev/null
             cp -r PyYAML* xmltodict* yaml* yq* jsonschema* /usr/lib/${PYTHON_BIN}/site-packages/
             popd >/dev/null
