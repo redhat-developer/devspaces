@@ -8,10 +8,10 @@ quay.io/crw/crw-2-rhel8-operator:2.7-2
    Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1499618
   Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-operator/commit?id=87eb2c0eb7e64f5dc9e10608803392d576a3548e
 
-quay.io/crw/crw-2-rhel8-operator-metadata:2.7-6
-     NVR: codeready-workspaces-rhel8-operator-metadata-container-2.7-6
-   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1507458
-  Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-operator-metadata/commit?id=786fa08724b8dadbf799fee4d95d13b4053f143c
+quay.io/crw/crw-2-rhel8-operator-metadata:2.7-8
+     NVR: codeready-workspaces-rhel8-operator-metadata-container-2.7-8
+   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1516014
+  Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-operator-metadata/commit?id=166f662a7043d6cb2d1130d99a5ff0872d4f0d2b
 
 quay.io/crw/devfileregistry-rhel8:2.7-3
      NVR: codeready-workspaces-devfileregistry-rhel8-container-2.7-3
@@ -73,10 +73,10 @@ quay.io/crw/plugin-openshift-rhel8:2.7-3
    Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1501432
   Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-plugin-openshift/commit?id=835c246ebabaa4287d2d84822248f72a9897f839
 
-quay.io/crw/pluginregistry-rhel8:2.7-4
-     NVR: codeready-workspaces-pluginregistry-rhel8-container-2.7-4
-   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1506733
-  Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-pluginregistry/commit?id=da81e6c79083a7c912a5c0f67e3917e9ffc74a07
+quay.io/crw/pluginregistry-rhel8:2.7-5
+     NVR: codeready-workspaces-pluginregistry-rhel8-container-2.7-5
+   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1515854
+  Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-pluginregistry/commit?id=3476aab93167ff24f0ea1d818a3e25324bd3e323
 
 quay.io/crw/server-rhel8:2.7-3
      NVR: codeready-workspaces-server-rhel8-container-2.7-3
