@@ -51,11 +51,20 @@ updateVersion() {
     echo "${CRW_VERSION}" > ${WORKDIR}/dependencies/VERSION
 }
 
+# update a pom property to a new value
+updatePomProperty() {
+    file=$1
+    propertyname=$2
+    newvalue=$3
+    sed -i $file -r -e "s#(<${propertyname}>)([^<>/]*)(</${propertyname}>)#\1${newvalue}\3#g"
+}
+
 # update poms to latest CSV version (x.y.z.GA)
-updatePomVersion () {
+updatePomVersions () {
     pushd ${WORKDIR} >/dev/null || exit
     echo "Running 'mvn versions:set' with version = ${CSV_VERSION}.GA"
     mvn versions:set -DgenerateBackupPoms=false -DnewVersion=${CSV_VERSION}.GA -q
+    updatePomProperty ${WORKDIR}/pom.xml crw.docs.version ${CRW_VERSION}
     git diff -q || true
     popd >/dev/null || exit
 }
@@ -144,7 +153,7 @@ if [[ -z ${CRW_VERSION} ]]; then
     exit 1
 fi
 
-updatePomVersion
+updatePomVersions
 updateVersion
 updatePluginRegistry
 updateDevfileRegistry
