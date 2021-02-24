@@ -505,7 +505,7 @@ def getCRWShortName(String LONG_NAME) {
 
 def bootstrap(String CRW_KEYTAB) {
   // rpm -qf $(which kinit ssh-keyscan chmod) ==> krb5-workstation openssh-clients coreutils
-  installRPMs("krb5-workstation openssh-clients coreutils")
+  installRPMs("krb5-workstation openssh-clients coreutils git")
   sh('''#!/bin/bash -xe
 # bootstrapping: if keytab is lost, upload to
 # https://codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/credentials/store/system/domain/_/
