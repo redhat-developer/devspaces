@@ -72,7 +72,7 @@ updateDevfileRegistry() {
            -i "${devfile}"
     done
 
-    "${SCRIPT_DIR}/update_template.sh" -s ${TEMPLATE_FILE} -t ${CRW_VERSION}
+    "${SCRIPT_DIR}/update_template.sh" -rn devfile -s ${TEMPLATE_FILE} -t ${CRW_VERSION}
 
     git diff -q ${YAML_ROOT} ${TEMPLATE_FILE} || true
 }
@@ -105,7 +105,7 @@ updatePluginRegistry() {
             -i "${latestPlugin}"
     done
 
-    "${SCRIPT_DIR}/update_template.sh" -s ${TEMPLATE_FILE} -t ${CRW_VERSION}
+    "${SCRIPT_DIR}/update_template.sh" -rn plugin -s ${TEMPLATE_FILE} -t ${CRW_VERSION}
 
     git diff -q ${YAML_ROOT} ${TEMPLATE_FILE} || true
 }
