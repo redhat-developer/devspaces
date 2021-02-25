@@ -17,7 +17,7 @@ components:
   memoryLimit: 512Mi
   preferences:
     go.lintTool: 'golangci-lint'
-    go.lintFlags: ['--fast']
+    go.lintFlags: '--fast'
 -
   type: dockerimage
   image: registry.redhat.io/codeready-workspaces/stacks-golang-rhel8:2.7
