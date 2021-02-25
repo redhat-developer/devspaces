@@ -155,8 +155,6 @@ if [[ $# -lt 1 ]]; then usage; exit 1; fi
 
 REGISTRY="https://registry.redhat.io" # or http://brew-pulp-docker01.web.prod.ext.phx2.redhat.com:8888 or https://registry-1.docker.io or https://registry.access.redhat.com
 CONTAINERS=""
-# while [[ "$#" -gt 0 ]]; do
-#   case $1 in
 while [[ "$#" -gt 0 ]]; do
   case $1 in
     '-j') JOB_BRANCH="$2"; DWNSTM_BRANCH="crw-${JOB_BRANCH}-rhel-8"; shift 1;; 

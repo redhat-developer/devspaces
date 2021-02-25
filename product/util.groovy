@@ -584,6 +584,27 @@ done
   commitChanges(dir, "[sync] Update Dockerfiles to latest version = " + CRW_VERSION, branch)
 }
 
+// call getLatestRPM.sh -s SOURCE_DIR -r RPM_PATTERN  -u BASE_URL -a 'ARCH1 ... ARCHN' -q
+// TODO update content_sets.* files too, if ocp version has changed
+def updateRpms(String RPM_PATTERN, String BASE_URL, String dir="${WORKSPACE}/sources", String branch=MIDSTM_BRANCH, String ARCHES="x86_64 s390x ppc64le") {
+  return sh(returnStdout: true, script: '''#!/bin/bash -xe
+cd /tmp
+curl -sSLo- https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/''' + branch + '''/product/getLatestRPM.sh && chmod +x getLatestRPM.sh
+./getLatestRPM.sh -r "''' + RPM_PATTERN + '''" -u "''' + BASE_URL + '''" -s "''' + dir + '''" -a "''' + ARCHES + '''" -q
+  ''').trim()
+}
+
+// ./getLatestRPM.sh -r "openshift-clients-4" -u http://rhsm-pulp.corp.redhat.com/content/dist/layered/rhel8/basearch/rhocp/4.7 -s ...
+def updateOCRpms(String rpmRepoVersion="4.7", String dir="${WORKSPACE}/sources", String branch=MIDSTM_BRANCH, String ARCHES="x86_64 s390x ppc64le") {
+  updatedVersion=updateRpms("openshift-clients-4", "http://rhsm-pulp.corp.redhat.com/content/dist/layered/rhel8/basearch/rhocp/" + rpmRepoVersion, dir, branch, ARCHES)
+  commitChanges(dir, "[rpms] Update to " + updatedVersion, branch)
+}
+// ./getLatestRPM.sh -r "helm-3"             -u http://rhsm-pulp.corp.redhat.com/content/dist/layered/rhel8/basearch/ocp-tools/4.7 -s ...
+def updateHelmRpms(String rpmRepoVersion="4.7", String dir="${WORKSPACE}/sources", String branch=MIDSTM_BRANCH, String ARCHES="x86_64 s390x ppc64le") {
+  updatedVersion=updateRpms("helm-3", "http://rhsm-pulp.corp.redhat.com/content/dist/layered/rhel8/basearch/ocp-tools/" + rpmRepoVersion, dir, branch, ARCHES)
+  commitChanges(dir, "[rpms] Update to " + updatedVersion, branch)
+}
+
 // run a job with default token, FORCE_BUILD=true, and SCRATCH=false
 // use jobPath = /job/folder/job/jobname so we can both invoke a job, and then use json API in getLastBuildId()
 def runJob(String jobPath, boolean doWait=false, boolean doPropagateStatus=true, String jenkinsURL=JENKINS_URL) {
