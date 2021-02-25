@@ -588,8 +588,9 @@ done
 // TODO update content_sets.* files too, if ocp version has changed
 def updateRpms(String RPM_PATTERN, String BASE_URL, String dir="${WORKSPACE}/sources", String branch=MIDSTM_BRANCH, String ARCHES="x86_64 s390x ppc64le") {
   return sh(returnStdout: true, script: '''#!/bin/bash -xe
-cd /tmp
-curl -sSLo- https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/''' + branch + '''/product/getLatestRPM.sh && chmod +x getLatestRPM.sh
+if [[ ! -x getLatestRPM.sh ]]; then 
+  curl -sSLO https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/''' + branch + '''/product/getLatestRPM.sh && chmod +x getLatestRPM.sh
+fi
 ./getLatestRPM.sh -r "''' + RPM_PATTERN + '''" -u "''' + BASE_URL + '''" -s "''' + dir + '''" -a "''' + ARCHES + '''" -q
   ''').trim()
 }
