@@ -606,10 +606,12 @@ def updateHelmRpms(String rpmRepoVersion="4.7", String dir="${WORKSPACE}/sources
 }
 
 // run a job with default token, FORCE_BUILD=true, and SCRATCH=false
-// use jobPath = /job/folder/job/jobname so we can both invoke a job, and then use json API in getLastBuildId()
+// use jobPath = /job/folder/job/jobname so we can both invoke a job, and then use json API in getLastSuccessfulBuildId()
 def runJob(String jobPath, boolean doWait=false, boolean doPropagateStatus=true, String jenkinsURL=JENKINS_URL) {
+  prevSuccesfulBuildId = getLastSuccessfulBuildId(jenkinsURL + jobPath) // eg., #5
+  println ("runJob(" + jobPath + ") :: prevSuccesfulBuildId = " + prevSuccesfulBuildId)
   build(
-    // convert jobPath /job/folder/job/jobname (used in json API in getLastBuildID() to /folder/jobname (used in build())
+    // convert jobPath /job/folder/job/jobname (used in json API in getLastSuccessfulBuildId() to /folder/jobname (used in build())
     job: jobPath.replaceAll("/job/","/"),
     wait: doWait,
     propagate: doPropagateStatus,
@@ -631,25 +633,59 @@ def runJob(String jobPath, boolean doWait=false, boolean doPropagateStatus=true,
       ]
     ]
   )
-  return getLastBuildId(jenkinsURL + jobPath)
+  // wait until #5 -> #6
+  if (doWait) { 
+    if (!waitForNewBuild(jenkinsURL + jobPath, prevSuccesfulBuildId)) { 
+      currentBuild.result = 'FAILED'
+      notifyBuildFailed()
+    }
+  }
+  return getLastSuccessfulBuildId(jenkinsURL + jobPath)
 }
 
-// TODO: verify this return the build ID correctly - want the in-progress job
+/* 
+lastBuild: build in progress -- if running, .result = null; else "FAILURE", "SUCCESS", etc
+lastSuccessfulBuild
+lastFailedBuild
+*/
+def getBuildJSON(String url, String buildType, String field) {
+  return sh(returnStdout: true, script: "curl -sSLo- " + url + "/" + buildType + "/api/json | jq -r '" + field + "'").trim()
+}
 def getLastBuildId(String url) {
-  return sh(returnStdout: true, script: "curl -sSLo- " + url + "/lastSuccessfulBuild/api/json | jq -r '.number'").trim()
+  return getBuildJSON(url, "lastBuild", ".number")
+}
+def getLastBuildResult(String url) {
+  return getBuildJSON(url, "lastBuild", ".result")
+}
+def getLastSuccessfulBuildId(String url) {
+  return getBuildJSON(url, "lastSuccessfulBuild", ".number")
+}
+def getLastFailedBuildId(String url) {
+  return getBuildJSON(url, "lastFailedBuild", ".number")
 }
 
-// check {jobURL}/lastSuccessfulBuild/api/json | jq -r '.number' and wait until it increments
+// TODO: add a timeout?
 def waitForNewBuild(String jobURL, String oldId) {
   echo "Id baseline: " + oldId
   while (true) {
-      def newId = getLastBuildId(jobURL)
-      if (newId>oldId) {
-          echo "Id rebuilt: " + newId
+      newId=getLastSuccessfulBuildId(jobURL)
+      if (newId > oldId && getLastBuildResult(jobURL).equals("SUCCESS")) {
+          echo "Id rebuilt (SUCCESS): " + newId
           break
+      } else {
+        if (newId > oldId && getLastFailedBuildId(jobURL).equals(newId)) {
+          echo "Id rebuilt (FAILURE): " + newId
+          return false
+        }
+        newId=getLastBuildID(jobURL)
+        if (newId > oldId && getLastBuildResult(jobURL).equals("FAILURE")) {
+          echo "Id rebuilt (FAILURE): " + newId
+          return false
+        }
       }
       sleep(time:90,unit:"SECONDS")
   }
+  return true
 }
 
 // requires brew, skopeo, jq, yq
