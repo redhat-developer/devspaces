@@ -10,7 +10,7 @@ See: https://github.com/redhat-developer/codeready-workspaces-vscode-extensions/
 
 ## Building and publishing third party binaries for and plugin registry sidecar containers
 
-Executables and language server depedencies needed in plugin sidecar containers can be built from this repo:
+Executables and language server dependencies needed in plugin sidecar containers can be built from this repo:
 
 * [redhat-developer/codeready-workspaces-deprecated](https://github.com/redhat-developer/codeready-workspaces-deprecated/blob/crw-2-rhel-8/)
 
