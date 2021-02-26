@@ -678,7 +678,7 @@ def waitForNewBuild(String jobURL, String oldId) {
           echo "Id rebuilt (FAILURE): " + newId
           return false
         }
-        newId=getLastBuildID(jobURL)
+        newId=getLastBuildId(jobURL)
         if (newId > oldId && getLastBuildResult(jobURL).equals("FAILURE")) {
           echo "Id rebuilt (FAILURE): " + newId
           return false
