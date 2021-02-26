@@ -38,11 +38,14 @@ Example:
 Options:
   -q quieter output; only reports changed rpm version or 0 if failure
 "
+  exit 1
 }
 if [[ ! ${RPM_PATTERN} ]] || [[ ! ${SOURCE_DIR} ]] || [[ ! ${BASE_URL} ]]; then usage; fi
-
+if [[ ${SOURCE_DIR} ]] && [[ ! -d ${SOURCE_DIR} ]]; then
+  echo "[ERROR] SOURCE_DIR = $SOURCE_DIR is not a directory!"; usage
+fi
 # find Dockerfiles to update
-dockerfiles=$(find ${SOURCE_DIR} -type f -name "*ockerfile")
+dockerfiles=$(find ${SOURCE_DIR}/ -type f -name "*ockerfile")
 
 # compute latest version that spans all ARCHES
 declare -A versions=()
@@ -59,7 +62,7 @@ for arch in $ARCHES; do
         exit 1
     fi
     for thisver in $thisarchversions; do
-    # echo "[DEBUG] Found ${thisver} for ${arch}"
+    # if [[ $QUIET -eq 0 ]]; then echo "[DEBUG] Found ${thisver} for ${arch}"; fi
     versions[${thisver}]+="$arch "
     done
 done
@@ -71,7 +74,7 @@ done < <(printf '%s\0' "${!versions[@]}" | sort -zr)
 # find first good key w/ all required arches
 for i in "${sorted[@]}"; do
     versions[$i]=$(echo ${versions[$i]} | xargs) # trim and condense separator spaces
-    # echo "[DEBUG] $i: '${versions[$i]}'"
+    # if [[ $QUIET -eq 0 ]]; then echo "[DEBUG] $i: '${versions[$i]}'"; fi
     if [[ "${versions[$i]}" == "${ARCHES}" ]]; then # found largest version for all required arches
         newVersion=${i}
         break 1;
@@ -82,13 +85,21 @@ done
 for d in $dockerfiles; do
   # echo "[DEBUG] Checking $d ..."
   if [[ $(grep -E "${RPM_PATTERN}" $d) ]]; then
-    # echo "[Debug] Dockerfile contains ${RPM_PATTERN} ..."
+    # if [[ $QUIET -eq 0 ]]; then echo "[Debug] Dockerfile contains ${RPM_PATTERN} ..."; fi
     if [[ $QUIET -eq 0 ]]; then echo "[INFO] $RPM_PATTERN -> $newVersion in $d"; fi
     sed -i $d -r -e "s#(/| )(${RPM_PATTERN}[^ ]+.el8)#\1$newVersion#g"
   fi
 done
 
-# TODO update content_sets.* files too, if ocp version has changed
+# update content_sets.* files too, to ensure ocp version matches content sets
+content_sets=$(find ${SOURCE_DIR}/ -type f -name "content_set*")
+OCP_VER=${BASE_URL##*/}
+SITE_NAME=${BASE_URL%/${OCP_VER}}; SITE_NAME=${SITE_NAME##*/};
+if [[ $QUIET -eq 0 ]]; then echo "[INFO] Replace ${SITE_NAME}-x.y-for- with ${SITE_NAME}-${OCP_VER}-for- in content_set* files"; fi
+for d in $content_sets; do
+  # if [[ $QUIET -eq 0 ]]; then echo "[DEBUG] Replace ${SITE_NAME}-x.y-for- with ${SITE_NAME}-${OCP_VER}-for- in $d"; fi
+  sed -i $d -r -e "s#${SITE_NAME}-[0-9]\.[0-9]+-for-#${SITE_NAME}-${OCP_VER}-for-#g"
+done
 
 # just echo the version we found and changed if we're in quiet mode
 if [[ $QUIET -eq 1 ]]; then echo $newVersion; fi
