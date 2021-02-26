@@ -249,6 +249,26 @@ EOF
 '''
 }
 
+// workaround for performance issues in CRW-1610
+def yumConf() {
+  sh '''#!/bin/bash -xe
+cat <<EOF | sudo tee /etc/yum.conf
+[main]
+gpgcheck=0
+installonly_limit=3
+clean_requirements_on_remove=True
+best=True
+skip_if_unavailable=True
+fastestmirror=True
+max_parallel_downloads=10
+minrate=1
+retries=20
+timeout=60
+EOF
+sudo yum install -yq drpm dnf || exit 1 # enable delta rpms
+'''
+}
+
 // sudo must already be installed and user must be a sudoer
 def installRPMs(String whichRPMs, boolean usePulpRepos=false) {
   enableRcmToolsRepo()
@@ -504,8 +524,12 @@ def getCRWShortName(String LONG_NAME) {
 }
 
 def bootstrap(String CRW_KEYTAB) {
+  yumConf()
   // rpm -qf $(which kinit ssh-keyscan chmod) ==> krb5-workstation openssh-clients coreutils
-  installRPMs("krb5-workstation openssh-clients coreutils git")
+  installRPMs("krb5-workstation openssh-clients coreutils git rhpkg jq python3-six python3-pip")
+  // also install commonly needed tools
+  installSkopeoFromContainer("")
+  installYq()
   sh('''#!/bin/bash -xe
 # bootstrapping: if keytab is lost, upload to
 # https://codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/credentials/store/system/domain/_/
@@ -535,11 +559,6 @@ kinit "crw-build/codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com@RE
 # klist
 '''
   )
-
-  // also install commonly needed tools
-  installSkopeoFromContainer("")
-  installYq()
-  installRhpkg()
 }
 
 def notifyBuildFailed() {
