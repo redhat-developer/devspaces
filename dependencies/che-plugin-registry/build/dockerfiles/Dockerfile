@@ -23,8 +23,6 @@ ARG BOOTSTRAP=false
 ENV BOOTSTRAP=${BOOTSTRAP}
 ARG USE_DIGESTS=false
 ENV USE_DIGESTS=${USE_DIGESTS}
-ARG LATEST_ONLY=false
-ENV LATEST_ONLY=${LATEST_ONLY}
 
 # to get all the python deps pre-fetched so we can build in Brew:
 # 1. extract files in the container to your local filesystem
@@ -56,10 +54,7 @@ COPY ./v3 /build/v3
 WORKDIR /build/
 
 # if only including the /latest/ plugins, apply this line to remove them from builder
-RUN if [[ ${LATEST_ONLY} == "true" ]]; then \
-      ./keep_only_latest.sh; \
-    fi
-
+RUN ./keep_only_latest.sh
 RUN ./generate_latest_metas.sh v3
 RUN ./check_plugins_location.sh v3
 RUN ./set_plugin_dates.sh v3

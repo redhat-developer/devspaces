@@ -15,7 +15,6 @@ ORGANIZATION="crw"
 TAG="nightly"
 TARGET="registry" # or offline-registry
 USE_DIGESTS=false
-LATEST_ONLY=false
 DOCKERFILE="./build/dockerfiles/Dockerfile"
 
 USAGE="
@@ -29,8 +28,6 @@ Options:
         Docker registry to be used for image; default 'quay.io'
     --organization, -o [ORGANIZATION]
         Docker image organization to be used for image; default: 'crw'
-    --latest-only
-        Build registry to only contain 'latest' meta.yamls; default: 'false'
     --use-digests
         Build registry to use images pinned by digest instead of tag
     --offline
@@ -57,10 +54,6 @@ function parse_arguments() {
             -o|--organization)
             ORGANIZATION="$2"
             shift; shift;
-            ;;
-            --latest-only)
-            LATEST_ONLY=true
-            shift
             ;;
             --use-digests)
             USE_DIGESTS=true
@@ -118,7 +111,6 @@ case $VERSION in
     ${BUILDER} ${BUILD_COMMAND} \
         -t "${IMAGE}" \
         -f ${DOCKERFILE} \
-        --build-arg LATEST_ONLY="${LATEST_ONLY}" \
         --build-arg "USE_DIGESTS=${USE_DIGESTS}" \
         --target "${TARGET}" .
     ;;
@@ -128,7 +120,6 @@ case $VERSION in
         -t "${IMAGE}" \
         -f "${DOCKERFILE}" \
         --build-arg "PATCHED_IMAGES_TAG=${VERSION}" \
-        --build-arg LATEST_ONLY="${LATEST_ONLY}" \
         --build-arg "USE_DIGESTS=${USE_DIGESTS}" \
         --target "${TARGET}" .
     ;;
