@@ -13,7 +13,7 @@
 set -e
 
 for plugin_dir in v3/plugins/*/*; do
-  # Make sure every plugin has a 'latest.version' file
+  # Make sure every plugin has a 'latest.txt' file
   if [ ! -f "${plugin_dir}"/latest.txt ]; then
     echo "    Missing latest.txt: ${plugin_dir}/latest.txt"
     exit 1
