@@ -219,8 +219,8 @@ if [[ ${REGISTRY} != "" ]]; then
 			CONTAINERS="${CRW_CONTAINERS_RHEC}"; 
 			CONTAINERS="${CONTAINERS//codeready-workspaces/crw}"
 		fi
-	else
-		CONTAINERS="${CRW_CONTAINERS_RHEC}"; 
+	elif [[ ! ${CONTAINERS} ]]; then
+		CONTAINERS="${CRW_CONTAINERS_RHEC}"
 	fi
 else
 	REGISTRYSTRING=""
