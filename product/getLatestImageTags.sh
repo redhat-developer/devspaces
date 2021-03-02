@@ -205,7 +205,7 @@ else
 fi
 
 # echo "BASETAG = $BASETAG"
-# echo "candidateTag = $candidateTag
+# echo "candidateTag = $candidateTag"
 # echo "containers = $CONTAINERS"
 
 if [[ ${REGISTRY} != "" ]]; then 
@@ -219,6 +219,8 @@ if [[ ${REGISTRY} != "" ]]; then
 			CONTAINERS="${CRW_CONTAINERS_RHEC}"; 
 			CONTAINERS="${CONTAINERS//codeready-workspaces/crw}"
 		fi
+	else
+		CONTAINERS="${CRW_CONTAINERS_RHEC}"; 
 	fi
 else
 	REGISTRYSTRING=""
