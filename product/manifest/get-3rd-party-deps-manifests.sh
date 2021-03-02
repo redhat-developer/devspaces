@@ -5,9 +5,43 @@ MIDSTM_BRANCH=""
 
 # script to generate a manifest of all the 3rd party deps not built in OSBS, but built in Jenkins or imported from upstream community.
 
+checkdependencies ()
+{
+# see also https://gitlab.cee.redhat.com/codeready-workspaces/crw-jenkins/-/blob/master/jobs/CRW_CI/Releng/get-3rd-party-deps-manifests.jenkinsfile (live sources)
+# or https://github.com/redhat-developer/codeready-workspaces-images/blob/crw-2-rhel-8/crw-jenkins/jobs/CRW_CI/Releng/get-3rd-party-deps-manifests.jenkinsfile (external copy)
+
+# rpm installed dependencies
+# rhpkg krb5-workstation tree golang php-devel php-json python3-six python3-pip python3-virtualenv
+for rpm in rhpkg kinit tree pyvenv; do
+  rpm -qf $(which $rpm) || { echo "$rpm not installed!"; exit 1; }; echo "-----"
+done
+go version || { echo "go not installed!"; exit 1; }; echo "-----"
+php --version || { echo "php not installed!"; exit 1; }; echo "-----"
+python3 --version || { echo "python3 not installed!"; exit 1; }; echo "-----"
+
+# skopeo >1.1, installed via rpm or other method
+skopeo -v || { echo "skopeo not installed!"; exit 1; }; echo "-----"
+
+# yq (the jq wrapper installed via python + pip, not the standalone project)
+jq --version || { echo "jq not installed!"; exit 1; }; echo "-----"
+yq --version || { echo "yq not installed!"; exit 1; }; echo "-----"
+
+# node 12 and yarn 1.17 or newer (rpm or other install method)
+echo -n "node "; node --version || { echo "node not installed!"; exit 1; }; echo "-----"
+echo -n "npm "; npm --version || { echo "npm not installed!"; exit 1; }; echo "-----"
+echo -n "yarn "; yarn --version || { echo "yarn not installed!"; exit 1; }; echo "-----"
+
+# openjdk 11 and maven 3.6 (rpm or other install method)
+mvn --version || { echo "mvn not installed!"; exit 1; }; echo "-----"
+exit
+}
+
 usage () 
 {
     echo "Usage: $0 -b crw-2.y-rhel-8 -v 2.y.0"
+	echo ""
+	echo "To check if all dependencies are installed: "
+	echo "  $0 --check-dependencies"
     exit
 }
 
@@ -18,6 +52,8 @@ while [[ "$#" -gt 0 ]]; do
   case $1 in
     '-b') MIDSTM_BRANCH="$2"; shift 1;;
     '-v') CSV_VERSION="$2"; shift 1;;
+    '--check-dependencies') checkdependencies;;
+    '-h') usage;;
     *) phases="${phases} $1 ";;
   esac
   shift 1
