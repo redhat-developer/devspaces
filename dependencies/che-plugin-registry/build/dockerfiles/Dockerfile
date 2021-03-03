@@ -60,7 +60,7 @@ RUN ./check_plugins_location.sh v3
 RUN ./set_plugin_dates.sh v3
 RUN ./check_metas_schema.sh v3
 RUN ./swap_images.sh v3
-RUN ./swap_theia_memory.sh v3
+RUN ./swap_plugins_memory.sh v3
 RUN if [[ ${USE_DIGESTS} == "true" ]]; then ./write_image_digests.sh v3; fi
 RUN ./index.sh v3 > /build/v3/plugins/index.json
 RUN ./list_referenced_images.sh v3 > /build/v3/external_images.txt
