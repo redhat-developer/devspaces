@@ -12,8 +12,6 @@
 SCRIPT_DIR=$(cd "$(dirname "$0")" || exit; pwd)
 YAML_ROOT="$1"
 
-metayamls="$($SCRIPT_DIR/list_yaml.sh "$YAML_ROOT"/plugins/eclipse/che-theia)"
-
 replaceField()
 {
   yamlFile="$1"
@@ -25,7 +23,24 @@ replaceField()
 
 # Note: optional -f flag will force this transformation even on an incompatible architecture for testing purposes
 if [[ "$(uname -m)" == "ppc64le" ]] || [[ "$2" == "-f" ]]; then 
-   for metayaml in $metayamls; do
+
+   # CRW-1475
+   for metayaml in $($SCRIPT_DIR/list_yaml.sh "$YAML_ROOT"/plugins/eclipse/che-theia); do
       replaceField $metayaml '.spec.containers[].memoryLimit' "2Gi"
+   done
+
+   # CRW-1633
+   for metayaml in $($SCRIPT_DIR/list_yaml.sh "$YAML_ROOT"/plugins/redhat/vscode-camelk); do
+      replaceField $metayaml '.spec.containers[].memoryLimit' "1.5Gi"
+   done
+
+   # CRW-1634
+   for metayaml in $($SCRIPT_DIR/list_yaml.sh "$YAML_ROOT"/plugins/redhat/vscode-openshift-connector); do
+      replaceField $metayaml '.spec.containers[].memoryLimit' "2.5Gi"
+   done
+
+   # CRW-1635
+   for metayaml in $($SCRIPT_DIR/list_yaml.sh "$YAML_ROOT"/plugins/ms-python/python); do
+      replaceField $metayaml '.spec.containers[].memoryLimit' "1Gi"
    done
 fi
