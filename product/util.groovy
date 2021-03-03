@@ -420,7 +420,7 @@ def cloneRepoPoll(String URL, String REPO_PATH, String BRANCH, boolean withPolli
           extensions: [
             [$class: 'RelativeTargetDirectory', relativeTargetDir: REPO_PATH],
             [$class: 'DisableRemotePoll'],
-            [$class: 'PathRestriction', excludedRegions: excludeRegions, includedRegions: includedRegions]
+            [$class: 'PathRestriction', excludedRegions: excludeRegions, includedRegions: includeRegions]
           ],
           submoduleCfg: [],
           userRemoteConfigs: [[url: AUTH_URL_GROOVY]]
