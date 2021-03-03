@@ -412,7 +412,7 @@ def cloneRepoPoll(String URL, String REPO_PATH, String BRANCH, boolean withPolli
       checkout(
         poll: withPolling,
         changelog: withPolling,
-        [
+        scm: [
           $class: 'GitSCM',
           branches: [[name: BRANCH]],
           clean: true,
