@@ -1,20 +1,13 @@
 [rhel-8-for-appstream-rpms-pulp]
 name=rhel-8-for-appstream-rpms-pulp
-baseurl=http://pulp.dist.prod.ext.phx2.redhat.com/content/dist/rhel8/8/$basearch/appstream/os
+baseurl=http://rhsm-pulp.corp.redhat.com/content/dist/rhel8/8/$basearch/appstream/os
 enabled=1
 gpgcheck=0
 skip_if_unavailable=True
  
 [rhel-8-for-baseos-rpms-pulp]
 name=rhel-8-for-baseos-rpms-pulp
-baseurl=http://pulp.dist.prod.ext.phx2.redhat.com/content/dist/rhel8/8/$basearch/baseos/os
-enabled=1
-gpgcheck=0
-skip_if_unavailable=True
-
-[codeready-builder-for-rhel-8-rpms]
-name=codeready-builder-for-rhel-8-rpms
-baseurl=http://pulp-read.dist.prod.ext.phx2.redhat.com/content/dist/rhel8/8/$basearch/codeready-builder/os/
+baseurl=http://rhsm-pulp.corp.redhat.com/content/dist/rhel8/8/$basearch/baseos/os
 enabled=1
 gpgcheck=0
 skip_if_unavailable=True
