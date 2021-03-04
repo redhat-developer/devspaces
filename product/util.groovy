@@ -266,6 +266,16 @@ retries=20
 timeout=60
 EOF
 sudo yum install -yq drpm dnf || exit 1 # enable delta rpms
+
+# mark repos with skip_if_unavailable=True so we don't die if built in repos (like epel) can't be resolved today
+for r in $(find /etc/yum.repos.d/ -name "*.repo"); do
+  sudo sed -i ${r} -r -e "s#skip_if_unavailable=False#skip_if_unavailable=True#g" || true
+  if [[ ! $(sudo grep "skip_if_unavailable=True" ${r} || true) ]]; then
+    cat <<EOF | sudo tee -a ${r}
+skip_if_unavailable=True
+EOF
+  fi
+done
 '''
 }
 
