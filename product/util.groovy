@@ -207,7 +207,9 @@ EOF
 '''
 }
 
-def pulpRepoURL="http://rhsm-pulp.corp.redhat.com"
+// URL from which to get internal RPM installations
+@Field String pulpRepoURL = "http://rhsm-pulp.corp.redhat.com"
+
 // rhel8-8-codeready-builder repo required fuse-sshfs (to push release bits/sources to rcm-guest)
 // rhel8-8-appstream repo required for podman >=2.0.5 (includes --override-arch) and skopeo >=1.1
 def enablePulpRepos() {
