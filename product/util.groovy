@@ -20,6 +20,20 @@ def String getCrwVersion(String MIDSTM_BRANCH) {
   return CRW_VERSION_F
 }
 
+@Field String JOB_BRANCH
+// JOB_BRANCH defines which set of jobs to run, eg., crw-server_ + JOB_BRANCH
+def String getJobBranch(String MIDSTM_BRANCH) {
+  if (JOB_BRANCH.equals("")) {
+    if (MIDSTM_BRANCH.equals("crw-2-rhel-8") || MIDSTM_BRANCH.equals("main")) {
+      JOB_BRANCH="2.x"
+    } else {
+      // for 2.7, 2.8, etc.
+      JOB_BRANCH=MIDSTM_BRANCH.replaceAll("crw-","").replaceAll("-rhel-8","")
+    }
+  }
+  return JOB_BRANCH
+}
+
 def installMaven(String MAVEN_VERSION, String JAVA_VERSION){
   mURL="https://www.apache.org/dyn/mirrors/mirrors.cgi?action=download&filename=maven/maven-3/" + MAVEN_VERSION + "/binaries/apache-maven-" + MAVEN_VERSION + "-bin.tar.gz"
   sh('''#!/bin/bash -xe
