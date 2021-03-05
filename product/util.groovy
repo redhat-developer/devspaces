@@ -207,6 +207,7 @@ EOF
 '''
 }
 
+def pulpRepoURL="http://rhsm-pulp.corp.redhat.com"
 // rhel8-8-codeready-builder repo required fuse-sshfs (to push release bits/sources to rcm-guest)
 // rhel8-8-appstream repo required for podman >=2.0.5 (includes --override-arch) and skopeo >=1.1
 def enablePulpRepos() {
@@ -216,7 +217,7 @@ repo=rhocp-4.6
 cat <<EOF | sudo tee /etc/yum.repos.d/${repo}-pulp.repo
 [${repo}]
 name=${repo}
-baseurl=http://pulp.dist.prod.ext.phx2.redhat.com/content/dist/layered/rhel8/\\$basearch/${repo/-/\\/}/os/
+baseurl=''' + pulpRepoURL + '''/content/dist/layered/rhel8/\\$basearch/${repo/-/\\/}/os/
 enabled=1
 gpgcheck=0
 skip_if_unavailable=True
@@ -227,21 +228,21 @@ repo=rhel8-8
 cat <<EOF | sudo tee /etc/yum.repos.d/${repo}-pulp.repo
 [${repo}-appstream]
 name=${repo}-appstream
-baseurl=http://pulp.dist.prod.ext.phx2.redhat.com/content/dist/${repo/-/\\/}/\\$basearch/appstream/os
+baseurl=''' + pulpRepoURL + '''/content/dist/${repo/-/\\/}/\\$basearch/appstream/os
 enabled=1
 gpgcheck=0
 skip_if_unavailable=True
 
 [${repo}-baseos]
 name=${repo}-baseos
-baseurl=http://pulp.dist.prod.ext.phx2.redhat.com/content/dist/${repo/-/\\/}/\\$basearch/baseos/os
+baseurl=''' + pulpRepoURL + '''/content/dist/${repo/-/\\/}/\\$basearch/baseos/os
 enabled=1
 gpgcheck=0
 skip_if_unavailable=True
 
 [${repo}-codeready-builder]
 name=${repo}-codeready-builder
-baseurl=http://pulp.dist.prod.ext.phx2.redhat.com/content/dist/${repo/-/\\/}/\\$basearch/codeready-builder/os
+baseurl=''' + pulpRepoURL + '''/content/dist/${repo/-/\\/}/\\$basearch/codeready-builder/os
 enabled=1
 gpgcheck=0
 skip_if_unavailable=True
@@ -685,12 +686,12 @@ fi
 
 // ./getLatestRPM.sh -r "openshift-clients-4" -u http://rhsm-pulp.corp.redhat.com/content/dist/layered/rhel8/basearch/rhocp/4.7 -s ...
 def updateOCRpms(String rpmRepoVersion="4.7", String dir="${WORKSPACE}/sources", String branch=MIDSTM_BRANCH, String ARCHES="x86_64 s390x ppc64le") {
-  updatedVersion=updateRpms("openshift-clients-4", "http://rhsm-pulp.corp.redhat.com/content/dist/layered/rhel8/basearch/rhocp/" + rpmRepoVersion, dir, branch, ARCHES)
+  updatedVersion=updateRpms("openshift-clients-4", pulpRepoURL + "/content/dist/layered/rhel8/basearch/rhocp/" + rpmRepoVersion, dir, branch, ARCHES)
   commitChanges(dir, "[rpms] Update to " + updatedVersion, branch)
 }
 // ./getLatestRPM.sh -r "helm-3"             -u http://rhsm-pulp.corp.redhat.com/content/dist/layered/rhel8/basearch/ocp-tools/4.7 -s ...
 def updateHelmRpms(String rpmRepoVersion="4.7", String dir="${WORKSPACE}/sources", String branch=MIDSTM_BRANCH, String ARCHES="x86_64 s390x ppc64le") {
-  updatedVersion=updateRpms("helm-3", "http://rhsm-pulp.corp.redhat.com/content/dist/layered/rhel8/basearch/ocp-tools/" + rpmRepoVersion, dir, branch, ARCHES)
+  updatedVersion=updateRpms("helm-3", pulpRepoURL + "/content/dist/layered/rhel8/basearch/ocp-tools/" + rpmRepoVersion, dir, branch, ARCHES)
   commitChanges(dir, "[rpms] Update to " + updatedVersion, branch)
 }
 
