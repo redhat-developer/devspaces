@@ -1,0 +1,19 @@
+apiVersion: v2
+publisher: redhat
+name: vscode-ibmideveloper
+version: 0.0.1
+type: VS Code extension
+displayName: IBMi-Developer
+title: IBMi-Developer for RPG support
+description: Provides RPG development support to Visual Studio Code.
+icon: /v3/images/redhat-vscode-ibmideveloper-icon.png
+repository: https://github.com/redhat-developer/vscode-yaml
+category: Other
+firstPublicationDate: "2021-03-08"
+spec:
+  containers:
+    - image:
+      name:
+      memoryLimit:
+  extensions:
+    - https://github.com/changlexc/RPGPlugin/releases/download/0.0.1/ibmideveloper-0.0.1.vsix
