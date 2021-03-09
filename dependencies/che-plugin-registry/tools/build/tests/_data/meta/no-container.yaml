@@ -1,0 +1,17 @@
+apiVersion: v2
+publisher: eclipse
+name: che-theia
+version: next
+type: Che Editor
+displayName: no-container
+title: Eclipse Theia development version.
+description: 'Eclipse Theia, get the latest release each day.'
+icon: /v3/images/eclipse-che-logo.png
+category: Editor
+repository: 'https://github.com/eclipse/che-theia'
+firstPublicationDate: '2019-03-07'
+latestUpdateDate: '2021-02-19'
+spec:
+  initContainers:
+    - name: foo
+      image: 'quay.io/foobar:next'

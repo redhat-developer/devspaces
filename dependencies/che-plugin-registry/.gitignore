@@ -18,7 +18,14 @@ test-output/
 .DAV
 
 che-dto.ts
+v3/**/latest/
+
 resources/
 /root-local.tgz
 /resources.tgz
 airgap.Dockerfile
+
+node_modules/
+.eslintcache
+coverage
+output
