@@ -1,0 +1,55 @@
+#
+# Copyright (c) 2020-2021 Red Hat, Inc.
+# This program and the accompanying materials are made
+# available under the terms of the Eclipse Public License 2.0
+# which is available at https://www.eclipse.org/legal/epl-2.0/
+#
+# SPDX-License-Identifier: EPL-2.0
+#
+
+name: Publish Registry Content
+
+on:
+  workflow_run:
+    workflows: ["Build/Publish"]
+    types:
+      - completed
+
+jobs:
+  publish:
+    name: publish
+    runs-on: ubuntu-20.04
+    defaults:
+      run:
+        working-directory: dependencies/che-plugin-registry
+    steps:
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '12'
+      - name: extract content
+        run: |
+          docker create --name pluginRegistry quay.io/crw/plugin-registry-rhel8:nightly-gh-action sh
+          mkdir content
+          docker cp pluginRegistry:/var/www/html/v3 content/v3
+          docker rm -f pluginRegistry
+          cp content/v3/plugins/index.json content/index.json
+      - name: publish
+        env:
+          SURGE_TOKEN: ${{ secrets.SURGE_TOKEN }}
+        run: |
+          sudo apt-get install tree
+          npm install -g surge
+          # generate tree index on all directories
+          for directory in `find content/ -type d`
+            do
+              (cd $directory && tree -H '.' -L 1 --noreport --charset utf-8 | sed '/<p class="VERSION">/,/<\/p>/d' > index.html)
+           done
+           # Make meta.yaml as index
+           for file in $(find content -name 'meta.yaml' -type f)
+             do
+               PARENT_DIR=$(dirname $file);
+               cp ${PARENT_DIR}/meta.yaml ${PARENT_DIR}/index.html
+             done
+           export DEPLOY_DOMAIN=https://crw-plugin-registry-main.surge.sh
+           echo "DEPLOY_DOMAIN=$DEPLOY_DOMAIN" >> $GITHUB_ENV
+           surge ./content --domain $DEPLOY_DOMAIN

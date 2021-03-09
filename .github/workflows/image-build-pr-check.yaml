@@ -1,0 +1,94 @@
+#
+# Copyright (c) 2020-2021 Red Hat, Inc.
+# This program and the accompanying materials are made
+# available under the terms of the Eclipse Public License 2.0
+# which is available at https://www.eclipse.org/legal/epl-2.0/
+#
+# SPDX-License-Identifier: EPL-2.0
+#
+
+name: Image Build PR check
+
+on: 
+  push:
+    paths:
+    - 'dependencies/che-plugin-registry/**'
+  pull_request:
+    paths:
+    - 'dependencies/che-plugin-registry/**'
+
+jobs:
+  image-build:
+    runs-on: ubuntu-20.04
+    defaults:
+      run:
+        working-directory: dependencies/che-plugin-registry
+    steps:
+    - name: Clone source code
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+    - uses: actions/setup-node@v1
+      with:
+        node-version: '12'
+    - name: Get yarn cache directory path
+      id: yarn-cache-dir-path
+      run: echo "::set-output name=dir::$(yarn cache dir)"
+
+    - uses: actions/cache@v2
+      name: Cache yarn dependencies
+      id: yarn-cache
+      with:
+        path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+        key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-yarn-
+
+    - uses: actions/cache@v2
+      name: Cache vsix dependencies
+      id: download-unpacked-cache
+      with:
+        path: | 
+          /tmp/che-plugin-registry/download-folder
+          /tmp/che-plugin-registry/unpack-folder
+        key: download-unpacked-cache-${{ hashFiles('**/che-theia-plugins.yaml') }}
+        restore-keys: |
+          download-unpacked-cache-
+
+    - name: image-build
+      run: |
+        export SKIP_FORMAT=true
+        export SKIP_LINT=true
+        export SKIP_TEST=true
+        docker pull quay.io/crw/plugin-registry-rhel8:nightly-gh-action
+        BUILDER=docker ./build.sh --tag pr-check
+        EXPORTED_FOLDER=/usr/local/apache2/htdocs/v3
+        ls -la output/
+        docker run --rm --entrypoint=sh quay.io/crw/plugin-registry-rhel8:pr-check -c "ls -la ${EXPORTED_FOLDER}"
+        docker create --name pluginRegistry quay.io/crw/plugin-registry-rhel8:pr-check sh
+        mkdir root-dir
+        docker cp pluginRegistry:${EXPORTED_FOLDER} root-dir/v3
+        docker rm -f pluginRegistry
+        cp root-dir/v3/plugins/index.json root-dir/index.json
+        tar zcvf content-crw.tgz -C root-dir .
+    - uses: actions/upload-artifact@v2
+      with:
+        name: plugin-registry-content-crw
+        path: content-crw.tgz
+  pull-request-info:
+    if: ${{ github.event_name == 'pull_request' }}
+    runs-on: ubuntu-20.04
+    needs: [image-build]
+    steps:
+     - name: Store PR info
+       run: |
+         echo "${{ github.event.number }}" > PR_NUMBER
+         echo "${{ github.event.pull_request.head.sha }}" > PR_SHA
+     - uses: actions/upload-artifact@v2
+       with:
+         name: pull-request-number
+         path: PR_NUMBER
+     - uses: actions/upload-artifact@v2
+       with:
+         name: pull-request-sha
+         path: PR_SHA

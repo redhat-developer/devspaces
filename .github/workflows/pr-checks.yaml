@@ -1,0 +1,40 @@
+#
+# Copyright (c) 2020-2021 Red Hat, Inc.
+# This program and the accompanying materials are made
+# available under the terms of the Eclipse Public License 2.0
+# which is available at https://www.eclipse.org/legal/epl-2.0/
+#
+# SPDX-License-Identifier: EPL-2.0
+#
+
+name: PR Checks
+on:
+  pull_request:
+    branches: 
+      - crw-2-rhel-8
+    paths:
+      - 'dependencies/che-plugin-registry/**'
+jobs:
+  # check EOF newline
+  linelint:
+    runs-on: ubuntu-20.04
+    defaults:
+      run:
+        working-directory: dependencies/che-plugin-registry
+    name: eof-newline
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 10
+      - name: Linelint
+        uses: fernandrone/linelint@0.0.5
+        id: linelint
+  digest-validation:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - name: Run script which checks container image digest
+      run: |
+        sudo pip install yq
+        /bin/bash .ci/digest-validation-pr.sh
