@@ -1,0 +1,33 @@
+apiVersion: v2
+publisher: eclipse
+name: che-machine-exec-plugin
+version: nightly
+type: Che Plugin
+displayName: Che machine-exec Service
+title: Che machine-exec Service
+description: Che Plug-in with che-machine-exec service to provide creation terminal or tasks for Eclipse Che workspace containers.
+icon: /v3/images/eclipse-che-logo.png
+category: Other
+repository: 'https://github.com/eclipse/che-machine-exec/'
+firstPublicationDate: '2019-11-07'
+latestUpdateDate: '2021-02-19'
+spec:
+  endpoints:
+    - name: che-machine-exec
+      public: true
+      targetPort: 4444
+      attributes:
+        protocol: ws
+        type: terminal
+        discoverable: false
+        secure: true
+        cookiesAuthEnabled: true
+  containers:
+    - name: che-machine-exec
+      image: 'quay.io/eclipse/che-machine-exec:nightly'
+      ports:
+        - exposedPort: 4444
+      command:
+        - /go/bin/che-machine-exec
+        - '--url'
+        - '127.0.0.1:4444'

@@ -1,0 +1,23 @@
+{
+  "name": "partial-java",
+  "categories": [
+    "Programming Languages",
+    "Linters",
+    "Formatters",
+    "Snippets"
+  ],
+  "activationEvents": [
+    "onLanguage:java",
+    "workspaceContains:pom.xml",
+    "workspaceContains:build.gradle",
+    "workspaceContains:.classpath",
+    "onCommand:_java.templateVariables"
+  ],
+  "contributes": {
+    "languages": [
+      {
+        "id": "java"
+      }
+    ]
+  }
+}

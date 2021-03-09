@@ -1,0 +1,9 @@
+displayName: minimal-endpoint
+type: Che Plugin
+spec:
+  endpoints:
+    - name: www
+      targetPort: 3100
+  containers:
+    - name: minimal-endpoint
+      image: 'quay.io/minimal-endpoint'
