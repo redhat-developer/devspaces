@@ -23,7 +23,7 @@ def String getCrwVersion(String MIDSTM_BRANCH) {
 @Field String JOB_BRANCH
 // JOB_BRANCH defines which set of jobs to run, eg., crw-server_ + JOB_BRANCH
 def String getJobBranch(String MIDSTM_BRANCH) {
-  if (JOB_BRANCH.equals("")) {
+  if (JOB_BRANCH.equals("") || JOB_BRANCH == null) {
     if (MIDSTM_BRANCH.equals("crw-2-rhel-8") || MIDSTM_BRANCH.equals("main")) {
       JOB_BRANCH="2.x"
     } else {
