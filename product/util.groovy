@@ -755,7 +755,16 @@ lastSuccessfulBuild
 lastFailedBuild
 */
 def getBuildJSON(String url, String buildType, String field) {
-  return sh(returnStdout: true, script: "curl -sSLo- " + url + "/" + buildType + "/api/json | jq -r '" + field + "'").trim()
+  return sh(returnStdout: true, script: '''
+URL="''' + url + '''/''' + buildType + '''/api/json"
+# check for 404 and return 0 if can't load, or the actual value if loaded
+header404="$(curl -sSLI ${URL} | grep -E -v "id: |^x-" | grep -E "404|Not Found" || true)"
+if [[ $header404 ]]; then # echo "[WARNING] Can not resolve ${URL} : $header404 "
+  echo "0"
+else
+  curl -sSLo- ${URL} | jq -r "''' + field + '''"
+fi
+''').trim()
 }
 def getLastBuildId(String url) {
   return getBuildJSON(url, "lastBuild", ".number")
