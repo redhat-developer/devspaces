@@ -796,13 +796,16 @@ def waitForNewBuild(String jobURL, String oldId) {
 
 // requires brew, skopeo, jq, yq
 // for a given image, return latest image tag in quay
-def getLatestImageAndTag(String orgAndImage, String repo="quay") {
+def getLatestImageAndTag(String orgAndImage, String repo="quay", String tag=CRW_VERSION_F) {
   sh '''#!/bin/bash -xe
 if [[ ! -x getLatestImageTags.sh ]]; then 
   curl -sSLO https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/''' + MIDSTM_BRANCH + '''/product/getLatestImageTags.sh && chmod +x getLatestImageTags.sh
 fi
 '''
-  return sh(returnStdout: true, script: './getLatestImageTags.sh -b ' + MIDSTM_BRANCH + ' -c "' + orgAndImage + '" --' + repo).trim()
+  return sh(
+    returnStdout: true, 
+    script: './getLatestImageTags.sh -b ' + MIDSTM_BRANCH + ' -c "' + orgAndImage + ' --tag ' + tag + '" --' + repo
+  ).trim()
 }
 
 // requires brew, skopeo, jq, yq
