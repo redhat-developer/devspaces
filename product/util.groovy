@@ -760,45 +760,48 @@ URL="''' + url + '''/''' + buildType + '''/api/json"
 # check for 404 and return 0 if can't load, or the actual value if loaded
 header404="$(curl -sSLI ${URL} | grep -E -v "id: |^x-" | grep -E "404|Not Found" || true)"
 if [[ $header404 ]]; then # echo "[WARNING] Can not resolve ${URL} : $header404 "
-  echo "0"
+  echo 0
 else
   curl -sSLo- ${URL} | jq -r "''' + field + '''"
 fi
 ''').trim()
 }
 def getLastBuildId(String url) {
-  return getBuildJSON(url, "lastBuild", ".number")
+  return (getBuildJSON(url, "lastBuild", ".number") as int)
 }
 def getLastBuildResult(String url) {
   return getBuildJSON(url, "lastBuild", ".result")
 }
 def getLastSuccessfulBuildId(String url) {
-  return getBuildJSON(url, "lastSuccessfulBuild", ".number")
+  return (getBuildJSON(url, "lastSuccessfulBuild", ".number") as int)
 }
 def getLastFailedBuildId(String url) {
-  return getBuildJSON(url, "lastFailedBuild", ".number")
+  return (getBuildJSON(url, "lastFailedBuild", ".number") as int)
 }
 
 // TODO: add a timeout?
-def waitForNewBuild(String jobURL, String oldId) {
-  echo "Id baseline: " + oldId
+def waitForNewBuild(String jobURL, int oldId) {
+  // echo "Id baseline for " + jobURL + " :: " + oldId
   while (true) {
       newId=getLastSuccessfulBuildId(jobURL)
       if (newId > oldId && getLastBuildResult(jobURL).equals("SUCCESS")) {
-          echo "Id rebuilt (SUCCESS): " + newId
+          println "Id rebuilt (SUCCESS): " + newId
           break
       } else {
         if (newId > oldId && getLastFailedBuildId(jobURL).equals(newId)) {
-          echo "Id rebuilt (FAILURE): " + newId
+          println "Id rebuilt (FAILURE): " + newId
           return false
         }
         newId=getLastBuildId(jobURL)
         if (newId > oldId && getLastBuildResult(jobURL).equals("FAILURE")) {
-          echo "Id rebuilt (FAILURE): " + newId
+          println "Id rebuilt (FAILURE): " + newId
           return false
         }
       }
-      sleep(time:90,unit:"SECONDS")
+      nextId=oldId+1
+      checkInterval=120
+      println "Waiting " + checkInterval + "s for " + jobURL + "/" + nextId + " to complete"
+      sleep(time:checkInterval,unit:"SECONDS")
   }
   return true
 }
