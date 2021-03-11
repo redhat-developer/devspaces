@@ -12,7 +12,7 @@
 
 # Builder: check meta.yamls and create index.json
 # https://access.redhat.com/containers/?tab=tags#/registry.access.redhat.com/ubi8/python-38
-FROM registry.access.redhat.com/ubi8/python-38:1-47 as builder
+FROM registry.access.redhat.com/ubi8/python-38:1-47.1614874861 as builder
 USER 0
 
 ################# 
@@ -76,11 +76,11 @@ RUN chmod -R g+rwX /build/devfiles
 # Build registry, copying meta.yamls and index.json from builder
 # UPSTREAM: use RHEL7/RHSCL/httpd image so we're not required to authenticate with registry.redhat.io
 # https://access.redhat.com/containers/?tab=tags#/registry.access.redhat.com/rhscl/httpd-24-rhel7
-FROM registry.access.redhat.com/rhscl/httpd-24-rhel7:2.4-136 AS registry
+FROM registry.access.redhat.com/rhscl/httpd-24-rhel7:2.4-136.1614612498 AS registry
 
 # DOWNSTREAM: use RHEL8/httpd
 # https://access.redhat.com/containers/?tab=tags#/registry.access.redhat.com/rhel8/httpd-24
-# FROM registry.redhat.io/rhel8/httpd-24:1-123 AS registry
+# FROM registry.redhat.io/rhel8/httpd-24:1-123.1614609239 AS registry
 USER 0
 
 # latest httpd container doesn't include ssl cert, so generate one
