@@ -813,7 +813,7 @@ fi
 '''
   return sh(
     returnStdout: true, 
-    script: './getLatestImageTags.sh -b ' + MIDSTM_BRANCH + ' -c "' + orgAndImage + ' --tag ' + tag + '" --' + repo
+    script: './getLatestImageTags.sh -b ' + MIDSTM_BRANCH + ' -c "' + orgAndImage + '" --tag "' + tag.replaceAll(".","\\\\.") + '" --' + repo
   ).trim()
 }
 
