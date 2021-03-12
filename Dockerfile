@@ -14,12 +14,13 @@ FROM registry.access.redhat.com/ubi8-minimal:8.3-291
 USER root
 ENV CHE_HOME=/home/user/codeready
 ENV JAVA_HOME=/usr/lib/jvm/jre
-RUN microdnf install java-11-openjdk-headless tar gzip shadow-utils findutils dnf && \
-    dnf -y -q update && \
-    dnf -y -q clean all && rm -rf /var/cache/yum && echo "Installed Packages" && rpm -qa | sort -V && echo "End Of Installed Packages" && \
+RUN microdnf install java-11-openjdk-headless tar gzip shadow-utils findutils && \
+    microdnf update -y gnutls && \
+    microdnf -y clean all && rm -rf /var/cache/yum && echo "Installed Packages" && rpm -qa | sort -V && echo "End Of Installed Packages" && \
     adduser -G root user && mkdir -p /home/user/codeready
 COPY entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh"]
+
 
 # NOTE: if built in Brew, use get-sources-jenkins.sh to pull latest
 COPY assembly/codeready-workspaces-assembly-main/target/codeready-workspaces-assembly-main.tar.gz /tmp/codeready-workspaces-assembly-main.tar.gz
