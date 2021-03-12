@@ -8,6 +8,7 @@ projects:
     source:
       type: git
       location: "https://github.com/quarkusio/quarkus-quickstarts.git"
+      branch: "main"
       sparseCheckoutDir: getting-started
 components:
   -
