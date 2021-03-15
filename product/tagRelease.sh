@@ -148,20 +148,27 @@ codeready-workspaces-theia \
 		popd >/dev/null || exit 1
 	fi
 	pushd /tmp/tmp-checkouts/projects_${d} >/dev/null || exit 1
+
 	# only do this when tagging, not when creating branches
-	if [[ ! ${SOURCE_BRANCH} ]] && [[ $d == "codeready-workspaces-operator" ]]; then
-		# CRW-1386 OLD WAY, end up with internal repo refs in the published CSV
-		# rsync -aPr ../containers_codeready-workspaces-operator-metadata/manifests/* ./manifests/
+	# TODO https://issues.redhat.com/browse/CRW-1564 remove this block; move to new workflow so we get this content for EVERY rebuild, rather than relying on a tag
+	# if [[ ! ${SOURCE_BRANCH} ]] && [[ $d == "codeready-workspaces-operator" ]]; then
+	# 	# CRW-1386 OLD WAY, end up with internal repo refs in the published CSV
+	# 	# rsync -aPr ../containers_codeready-workspaces-operator-metadata/manifests/* ./manifests/
 
-		# CRW-1386 new way - use containerExtract.sh to get the live, published operator-metadata image and copy the manifests/ folder from there
-		rm -fr /tmp/registry.redhat.io-codeready-workspaces-crw-2-rhel8-operator-metadata-${CRW_VERSION}* || true
-		bash -x "${SCRIPTPATH}"/containerExtract.sh registry.redhat.io/codeready-workspaces/crw-2-rhel8-operator-metadata:${CRW_VERSION}
-		rsync -aPr /tmp/registry.redhat.io-codeready-workspaces-crw-2-rhel8-operator-metadata-${CRW_VERSION}*/manifests/* ./manifests/
+	# 	# CRW-1386 new way - use containerExtract.sh to get the live, published operator-metadata image and copy the manifests/ folder from there
+	# 	rm -fr /tmp/registry.redhat.io-codeready-workspaces-crw-2-rhel8-operator-metadata-${CRW_VERSION}* || true
+	# 	if [[ $(skopeo inspect docker://registry.redhat.io/codeready-workspaces/crw-2-rhel8-operator-metadata:2.7 --raw 2>/dev/null || true) ]]; then
+	# 		bash -x "${SCRIPTPATH}"/containerExtract.sh registry.redhat.io/codeready-workspaces/crw-2-rhel8-operator-metadata:${CRW_VERSION}
+	# 		rsync -aPr /tmp/registry.redhat.io-codeready-workspaces-crw-2-rhel8-operator-metadata-${CRW_VERSION}*/manifests/* ./manifests/
 
-		git add ./manifests/
-		git commit -s -m "[release] copy generated manifests/ content back to codeready-workspaces-operator before tagging" ./manifests/ || true
-		git push origin ${clone_branch}
-	fi
+	# 		git add ./manifests/
+	# 		git commit -s -m "[release] copy generated manifests/ content back to codeready-workspaces-operator before tagging" ./manifests/ || true
+	# 		git push origin ${clone_branch}
+	# 	else
+	# 		echo "[WARN] Could not update codeready-workspaces-operator with generated CSV data"
+	# 	fi
+	# fi
+
 	if [[ ${SOURCE_BRANCH} ]]; then # push a new branch (or no-op if exists)
 		git branch ${crw_repos_branch} || true
 		git push origin ${crw_repos_branch} || true
