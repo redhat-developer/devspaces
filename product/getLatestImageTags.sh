@@ -121,6 +121,7 @@ EXCLUDES="latest|\\-sources"
 
 QUIET=1 	# less output - omit container tag URLs
 VERBOSE=0	# more output
+HIDE_MISSING=0 # if 0, show repo/org/image:??? for missing tags; if 1, don't show anything if tag missing
 ARCHES=0	# show architectures
 NUMTAGS=1 	# by default show only the latest tag for each container; or show n latest ones
 TAGONLY=0 	# by default show the whole image or NVR; if true, show ONLY tags
@@ -135,7 +136,7 @@ usage () {
 Usage: 
   $0 -b ${DWNSTM_BRANCH} --nvr --log                           | check images in brew; output NVRs can be copied to Errata; show Brew builds/logs
 
-  $0 -b ${DWNSTM_BRANCH} --quay                                | use default list of CRW images in quay.io/crw
+  $0 -b ${DWNSTM_BRANCH} --quay --tag \"2.y-\" --hide          | use default list of CRW images in quay.io/crw, for tag 2.y-; show nothing if tag umatched
   $0 -b ${DWNSTM_BRANCH} --osbs                                | check images in OSBS ( registry-proxy.engineering.redhat.com/rh-osbs )
   $0 -b ${DWNSTM_BRANCH} --osbs --pushtoquay='${JOB_BRANCH} latest'      | pull images from OSBS, push ${JOB_BRANCH}-z tag + 2 extras to quay
   $0 -b ${DWNSTM_BRANCH} --stage --sort                        | use default list of CRW images in RHEC Stage, sorted alphabetically
@@ -163,6 +164,7 @@ while [[ "$#" -gt 0 ]]; do
     '-x') EXCLUDES="$2"; shift 1;;
     '-q') QUIET=1;;
     '-v') QUIET=0; VERBOSE=1;;
+	'--hide') HIDE_MISSING=1;;
     '-a'|'--arches') ARCHES=1;;
     '-r') REGISTRY="$2"; shift 1;;
     '--rhec'|'--rhcc') REGISTRY="http://registry.redhat.io";;
@@ -300,7 +302,7 @@ for URLfrag in $CONTAINERS; do
 	  nocontainer=${QUERY##*docker://}; nocontainer=${nocontainer%%-container}
 		if [[ $QUIET -eq 0 ]] || [[ $VERBOSE -eq 1 ]]; then 
 			echo "[ERROR] No tags matching ${BASETAG} found for $nocontainer or ${nocontainer}-container. Is the container public and populated?"
-		else
+		elif [[ $HIDE_MISSING -eq 0 ]]; then
 			echo "${nocontainer}:???"
 		fi
 	fi
