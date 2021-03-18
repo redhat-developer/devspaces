@@ -1,0 +1,226 @@
+{
+    "version": "1.0.0",
+    "featured": [
+      {
+        "id": "che-incubator/typescript",
+        "onLanguages": [
+          "javascript",
+          "javascriptreact",
+          "typescript",
+          "typescriptreact",
+          "jsx-tags",
+          "jsonc"
+        ],
+        "workspaceContains": [],
+        "contributes": {
+          "languages": []
+        }
+      },
+      {
+        "id": "che-incubator/cpptools",
+        "onLanguages": [
+          "cpp",
+          "c",
+          "objective-c",
+          "objective-cpp",
+          "c",
+          "cpp",
+          "cuda",
+          "objective-c",
+          "objective-cpp"
+        ],
+        "workspaceContains": [],
+        "contributes": {
+          "languages": [
+            {
+              "id": "cpp",
+              "filenamePatterns": [
+                "**/include/c++/**",
+                "**/MSVC/*/include/**"
+              ]
+            },
+            {
+              "id": "cuda"
+            }
+          ]
+        }
+      },
+      {
+        "id": "redhat/php",
+        "onLanguages": [
+          "php"
+        ],
+        "workspaceContains": [],
+        "contributes": {
+          "languages": [
+            {
+              "id": "php"
+            }
+          ]
+        }
+      },
+      {
+        "id": "ms-python/python",
+        "onLanguages": [
+          "python",
+          "jupyter"
+        ],
+        "workspaceContains": [
+          "mspythonconfig.json",
+          "pyproject.toml"
+        ],
+        "contributes": {
+          "languages": [
+            {
+              "id": "pip-requirements",
+              "aliases": [
+                "pip requirements",
+                "requirements.txt"
+              ],
+              "filenames": [
+                "requirements.txt",
+                "constraints.txt",
+                "requirements.in"
+              ],
+              "filenamePatterns": [
+                "*-requirements.txt",
+                "requirements-*.txt",
+                "constraints-*.txt",
+                "*-constraints.txt",
+                "*-requirements.in",
+                "requirements-*.in"
+              ]
+            },
+            {
+              "id": "yaml",
+              "filenames": [
+                ".condarc"
+              ]
+            },
+            {
+              "id": "toml",
+              "filenames": [
+                "poetry.lock",
+                "Pipfile"
+              ]
+            },
+            {
+              "id": "json",
+              "filenames": [
+                "Pipfile.lock"
+              ]
+            },
+            {
+              "id": "ini",
+              "filenames": [
+                ".flake8"
+              ]
+            },
+            {
+              "id": "jinja",
+              "aliases": [
+                "Jinja"
+              ]
+            },
+            {
+              "id": "jupyter",
+              "aliases": [
+                "Jupyter",
+                "Notebook"
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "id": "golang/go",
+        "onLanguages": [
+          "go"
+        ],
+        "workspaceContains": [
+          "**/*.go"
+        ],
+        "contributes": {
+          "languages": [
+            {
+              "id": "go",
+              "aliases": [
+                "Go"
+              ]
+            },
+            {
+              "id": "go.mod",
+              "aliases": [
+                "Go Module File"
+              ]
+            },
+            {
+              "id": "go.sum",
+              "aliases": [
+                "Go Checksum File"
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "id": "redhat/vscode-yaml",
+        "onLanguages": [
+          "yaml"
+        ],
+        "workspaceContains": [],
+        "contributes": {
+          "languages": [
+            {
+              "id": "yaml",
+              "aliases": [
+                "YAML",
+                "yaml"
+              ],
+              "filenames": [
+                ".clang-format",
+                "_clang-format"
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "id": "redhat/java11",
+        "onLanguages": [
+          "java",
+          "java",
+          "java"
+        ],
+        "workspaceContains": [
+          "pom.xml",
+          "build.gradle",
+          ".classpath",
+          "pom.xml",
+          "build.gradle"
+        ],
+        "contributes": {
+          "languages": [
+            {
+              "id": "java"
+            }
+          ]
+        }
+      },
+      {
+        "id": "redhat/vscode-xml",
+        "onLanguages": [
+          "xml",
+          "xsl"
+        ],
+        "workspaceContains": [],
+        "contributes": {
+          "languages": [
+            {
+              "id": "xml"
+            }
+          ]
+        }
+      }
+    ]
+  }
