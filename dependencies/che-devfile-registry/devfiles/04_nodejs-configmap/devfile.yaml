@@ -9,7 +9,7 @@ projects:
       type: git
       branch: 12.x
 components:
-  - id: che-incubator/typescript/latest
+  - id: vscode/typescript-language-features/latest
     type: chePlugin
     memoryLimit: 512Mi
   - type: chePlugin

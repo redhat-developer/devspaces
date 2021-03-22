@@ -9,7 +9,7 @@ projects:
       location: "https://github.com/crw-samples/nodejs-mongodb-sample"
 components:
   - type: chePlugin
-    id: che-incubator/typescript/latest
+    id: vscode/typescript-language-features/latest
     memoryLimit: 512Mi
   - type: chePlugin
     id: ms-vscode/node-debug2/latest
