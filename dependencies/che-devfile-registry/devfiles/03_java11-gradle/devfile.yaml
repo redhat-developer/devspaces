@@ -30,7 +30,6 @@ components:
         value: $(JAVA_OPTS)
       - name: HOME
         value: /home/jboss
-    memoryLimit: 640Mi
     volumes:
       - name: gradle
         containerPath: /home/jboss/.gradle

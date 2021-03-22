@@ -12,16 +12,13 @@ components:
 -
   type: chePlugin
   id: redhat/php/latest
-  memoryLimit: 1Gi
 -
   type: chePlugin
   id: redhat/php-debugger/latest
-  memoryLimit: 256Mi
 -
   type: dockerimage
   alias: php
   image: registry.redhat.io/codeready-workspaces/stacks-php-rhel8:2.8
-  memoryLimit: 512Mi
   mountSources: true
   endpoints:
     - name: '8080-tcp'

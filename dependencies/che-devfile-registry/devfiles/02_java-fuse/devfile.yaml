@@ -32,7 +32,6 @@ components:
           -Duser.home=/home/jboss"
       - name: MAVEN_OPTS
         value: $(JAVA_OPTS)
-    memoryLimit: 768Mi
     endpoints:
       - name: '8080'
         port: 8080

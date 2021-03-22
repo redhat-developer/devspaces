@@ -14,12 +14,10 @@ components:
     id: ms-python/python/latest
     preferences:
       python.globalModuleInstallation: true
-    memoryLimit: 512Mi
   -
     type: dockerimage
     alias: python
     image: registry.redhat.io/codeready-workspaces/plugin-java8-rhel8:2.8
-    memoryLimit: 512Mi
     mountSources: true
 commands:
   -

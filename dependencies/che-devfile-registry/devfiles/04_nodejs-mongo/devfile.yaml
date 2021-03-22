@@ -10,7 +10,6 @@ projects:
 components:
   - type: chePlugin
     id: che-incubator/typescript/latest
-    memoryLimit: 512Mi
   - type: chePlugin
     id: ms-vscode/node-debug2/latest
   - type: dockerimage
@@ -22,7 +21,6 @@ components:
         value: 220fd770-c028-480d-8f95-f84353c7d55a
       - name: NODE_ENV
         value: production
-    memoryLimit: 512Mi
     endpoints:
       - name: "nodejs"
         port: 8080
@@ -30,7 +28,6 @@ components:
   - type: dockerimage
     alias: mongo
     image: registry.redhat.io/rhscl/mongodb-36-rhel7:1-50
-    memoryLimit: 512Mi
     env:
       - name: MONGODB_USER
         value: user

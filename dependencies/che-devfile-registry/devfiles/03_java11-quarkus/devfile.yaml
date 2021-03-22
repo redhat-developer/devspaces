@@ -26,7 +26,6 @@ components:
           -Duser.home=/home/jboss"
       - name: MAVEN_OPTS
         value: $(JAVA_OPTS)  
-    memoryLimit: 512Mi
     mountSources: true
     volumes:
       - name: m2
