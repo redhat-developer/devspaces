@@ -1,13 +1,13 @@
 apiVersion: v2
 publisher: sonarsource
 name: sonarlint-vscode
-version: 1.16.0
+version: 1.20.1
 type: VS Code extension
 displayName: vscode-sonarlint
 title: Sonarlint code intelligence
 description: VS Code extension that provides sonarlint features
 icon: /v3/images/sonarsource-sonarlint-vscode-icon.png
-firstPublicationDate: "2020-07-22"
+firstPublicationDate: "2021-03-22"
 category: Linter
 repository: https://github.com/SonarSource/sonarlint-vscode
 spec:
@@ -19,4 +19,5 @@ spec:
         - mountPath: "/home/jboss/.m2"
           name: m2
   extensions:
-    - https://github.com/SonarSource/sonarlint-vscode/releases/download/1.16.0/sonarlint-vscode-1.16.0.vsix
+    - https://github.com/redhat-developer/codeready-workspaces-vscode-extensions/releases/download/v8521e74/vscode-sonarlint-1.20.1.vsix
+    - https://github.com/redhat-developer/codeready-workspaces-vscode-extensions/releases/download/v2cebc1e/typescript-language-features-1.49.3.vsix
