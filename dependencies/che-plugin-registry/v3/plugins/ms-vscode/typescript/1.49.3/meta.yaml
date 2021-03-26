@@ -1,7 +1,7 @@
 apiVersion: v2
-publisher: che-incubator
-name: typescript
-version: 1.35.1
+publisher: vscode
+name: typescript-language-features
+version: 1.49.3
 type: VS Code extension
 displayName: Typescript
 title: Typescript language features
@@ -9,7 +9,7 @@ description: Typescript language features
 icon: /v3/images/vscode-typescript-language-features-icon.png
 repository: https://github.com/Microsoft/vscode
 category: Language
-firstPublicationDate: '2019-06-20'
+firstPublicationDate: '2021-03-22'
 spec:
   containers:
   - image: "registry.redhat.io/codeready-workspaces/plugin-java8-rhel8:2.8"
@@ -20,4 +20,4 @@ spec:
       - -c
       - ${PLUGIN_REMOTE_ENDPOINT_EXECUTABLE}
   extensions:
-  - https://download.jboss.org/jbosstools/vscode/3rdparty/ms-code.typescript/che-typescript-language-1.35.1.vsix
+  - https://github.com/redhat-developer/codeready-workspaces-vscode-extensions/releases/download/v2cebc1e/typescript-language-features-1.49.3.vsix

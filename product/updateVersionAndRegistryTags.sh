@@ -14,7 +14,7 @@ WORKDIR="$(pwd)"
 
 usage () {
 	echo "Usage:   $0 -b [BRANCH] -v [CRW CSV VERSION] -t [CRW TAG VERSION] [-w WORKDIR]"
-	echo "Example: $0 -b crw-2.y-rhel-8 -v 2.y.0 -t 2.y -w $(pwd)"
+	echo "Example: $0 -b crw-2-rhel-8 -v 2.y+1.0 -t 2.y+1 -w $(pwd)"
 	echo "Options:
 	--no-commit, -n    do not commit to BRANCH
 	--no-push, -p      do not push to BRANCH

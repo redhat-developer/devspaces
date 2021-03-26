@@ -32,7 +32,7 @@ commands:
       - type: exec
         component: nodejs
         command: npm install
-        workdir: ${CHE_PROJECTS_ROOT}/nodejs-web-app/app  
+        workdir: ${CHE_PROJECTS_ROOT}/nodejs-web-app/app
   - name: 3. Run the web app
     actions:
       - type: exec
@@ -51,7 +51,7 @@ commands:
         component: nodejs
         command: >-
           node_server_pids=$(pgrep -fx '.*nodemon (--inspect )?app.js' | tr "\\n" " ") &&
-          echo "Stopping node server with PIDs: ${node_server_pids}" && 
+          echo "Stopping node server with PIDs: ${node_server_pids}" &&
           kill -15 ${node_server_pids} &>/dev/null && echo 'Done.'
   - name: Attach remote debugger
     actions:
