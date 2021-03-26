@@ -264,8 +264,8 @@ for d in $(find ${WORKDIR} -maxdepth ${MAXDEPTH} -name ${DOCKERFILE} | sort -r);
 									# shellcheck disable=SC2181
 									if [[ $? -gt 0 ]] || [[ $PUSH_TRY == *"protected branch hook declined"* ]]; then
 										# create pull request if target branch is restricted access
-										cherrypickLastCommit "${PR_BRANCH}"
 										lastCommitComment="$(git log -1 --pretty=%B)"
+										cherrypickLastCommit "${PR_BRANCH}"
 										if [[ $(/usr/local/bin/hub version 2>/dev/null || true) ]] || [[ $(which hub 2>/dev/null || true) ]]; then
 											hub pull-request -f -m "${lastCommitComment}
 
