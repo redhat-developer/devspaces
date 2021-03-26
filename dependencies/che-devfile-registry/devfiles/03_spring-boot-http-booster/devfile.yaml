@@ -18,6 +18,7 @@ components:
       - name: 8080-tcp
         port: 8080
     type: dockerimage
+    memoryLimit: 768Mi
     volumes:
       - name: m2
         containerPath: /home/jboss/.m2
