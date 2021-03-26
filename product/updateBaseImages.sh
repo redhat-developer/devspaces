@@ -44,7 +44,7 @@ SOURCES_BRANCH=${SCRIPTS_BRANCH}
 
 DOCKERFILE="Dockerfile"
 MAXDEPTH=2
-PR_BRANCH="pr-new-base-images-$(date +%s)"
+PR_BRANCH="pr-update-base-images-$(date +%s)"
 OPENBROWSERFLAG="" # if a PR is generated, open it in a browser
 docommit=1 # by default DO commit the change
 dopush=1 # by default DO push the change
@@ -52,7 +52,7 @@ buildCommand="echo" # By default, no build will be triggered when a change occur
 
 checkrecentupdates () {
 	# set +e
-	for d in $(find ${WORKDIR} -maxdepth ${MAXDEPTH} -name ${DOCKERFILE} | sort); do
+	for d in $(find ${WORKDIR}/ -maxdepth ${MAXDEPTH} -name ${DOCKERFILE} | sort); do
 		pushdir=${d%/${DOCKERFILE}}
 		pushd ${pushdir} >/dev/null
 			last=$(git lg -1 | grep -v days || true)
@@ -69,8 +69,13 @@ checkrecentupdates () {
 usage () {
 	echo "Usage:   $0 -b [BRANCH] [-w WORKDIR] [-f DOCKERFILE] [-maxdepth MAXDEPTH]"
 	echo "Downstream Example: $0 -b ${SOURCES_BRANCH} -w \$(pwd) -f rhel.Dockerfile -maxdepth 2"
-	echo "Upstream Example 1: $0 -b 7.yy.x -w dockerfiles/ -f \*from.dockerfile -maxdepth 5 -o -prb pr-new-theia-base-images"
-	echo "Upstream Example 2: $0 -b 7.yy.x -w \$(pwd) -f Dockerfile -maxdepth 1 --tag '1\.13|8\.[0-9]-' --no-commit"
+	echo "Upstream Examples:
+
+$0 -b 7.yy.x -w dockerfiles/ -f \*from.dockerfile -maxdepth 5 -o # che-theia
+$0 -b master -w \$(pwd)      -f rhel.Dockerfile   -maxdepth 4 -o # che-plugin-broker
+$0 -b 7.yy.x -w \$(pwd)      -f Dockerfile        -maxdepth 1 --tag '1\.13|8\.[0-9]-' --no-commit # che-operator
+
+"
 	echo "Options: 
 	--sources-branch, -b    set sources branch (project to update), eg., 7.yy.x
 	--scripts-branch, -sb   set scripts branch (project with helper scripts), eg., crw-2.y-rhel-8
@@ -174,7 +179,7 @@ cherrypickLastCommit() {
 }
 
 pushedIn=0
-for d in $(find ${WORKDIR} -maxdepth ${MAXDEPTH} -name ${DOCKERFILE} | sort -r); do
+for d in $(find ${WORKDIR}/ -maxdepth ${MAXDEPTH} -name ${DOCKERFILE} | sort -r); do
 	if [[ -f ${d} ]]; then
 		echo ""
 		echo "# Checking ${d} ..."
