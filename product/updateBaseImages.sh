@@ -37,7 +37,7 @@ WORKDIR=$(pwd)
 # where to find redhat-developer/codeready-workspaces/${SCRIPTS_BRANCH}/product/getLatestImageTags.sh
 SCRIPTS_BRANCH="$(git rev-parse --abbrev-ref HEAD 2>/dev/null || true)"
 if [[ $SCRIPTS_BRANCH != "crw-2."*"-rhel-8" ]]; then
-	SCRIPTS_BRANCH="crw-2.8-rhel-8"
+	SCRIPTS_BRANCH="crw-2-rhel-8"
 fi
 # where to find source branch to update, crw-2.y-rhel-8, 7.yy.x, etc.
 SOURCES_BRANCH=${SCRIPTS_BRANCH}
@@ -195,10 +195,14 @@ for d in $(find ${WORKDIR} -maxdepth ${MAXDEPTH} -name ${DOCKERFILE} | sort -r);
 				FROMPREFIX=$(echo $URL | sed -e "s#.\+registry.access.redhat.com/##g")
 
 				# get getLatestImageTags script
-				pushd /tmp >/dev/null || exit 1
 				# TODO CRW-1511 sometimes this returns a 404 instead of a valid script. Why?
-				curl -sSLO https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/${SCRIPTS_BRANCH}/product/getLatestImageTags.sh && chmod +x getLatestImageTags.sh
-				popd >/dev/null || exit 1
+				if [[ ! -x /tmp/getLatestImageTags.sh ]]; then 
+					pushd /tmp >/dev/null || exit 1
+					glit=https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/${SCRIPTS_BRANCH}/product/getLatestImageTags.sh
+					if [[ $VERBOSE -eq 1 ]]; then echo "[DEBUG] Downloading $glit ..."; fi
+					curl -sSLO $glit && chmod +x getLatestImageTags.sh
+					popd >/dev/null || exit 1
+				fi
 				LATESTTAG=$(/tmp/getLatestImageTags.sh -c ${FROMPREFIX} -x "${EXCLUDES}" --tag "${BASETAG}")
 				LATESTTAG=${LATESTTAG##*:}
 
