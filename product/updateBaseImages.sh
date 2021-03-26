@@ -163,6 +163,16 @@ testvercomp () {
     fi
 }
 
+cherrypickLastCommit() {
+	cherryPickBranch=$1
+	lastCommit="$(git rev-parse HEAD)"
+	git branch ${cherryPickBranch} || true
+	git checkout ${cherryPickBranch} || true
+	git pull origin ${cherryPickBranch} || true
+	git cherry-pick $lastCommit || git commit --allow-empty -sm "${lastCommitComment}"
+	git push origin ${cherryPickBranch}
+}
+
 pushedIn=0
 for d in $(find ${WORKDIR} -maxdepth ${MAXDEPTH} -name ${DOCKERFILE} | sort -r); do
 	if [[ -f ${d} ]]; then
@@ -254,15 +264,12 @@ for d in $(find ${WORKDIR} -maxdepth ${MAXDEPTH} -name ${DOCKERFILE} | sort -r);
 									# shellcheck disable=SC2181
 									if [[ $? -gt 0 ]] || [[ $PUSH_TRY == *"protected branch hook declined"* ]]; then
 										# create pull request if target branch is restricted access
-										git branch "${PR_BRANCH}" || true
-										git checkout "${PR_BRANCH}" || true
-										git pull origin "${PR_BRANCH}" || true
-										git push origin "${PR_BRANCH}"
+										cherrypickLastCommit "${PR_BRANCH}"
 										lastCommitComment="$(git log -1 --pretty=%B)"
 										if [[ $(/usr/local/bin/hub version 2>/dev/null || true) ]] || [[ $(which hub 2>/dev/null || true) ]]; then
 											hub pull-request -f -m "${lastCommitComment}
 
-${lastCommitComment}" -b "${BRANCHUSED}" -h "${PR_BRANCH}" "${OPENBROWSERFLAG}"
+${lastCommitComment}" -b "${BRANCHUSED}" -h "${PR_BRANCH}" "${OPENBROWSERFLAG}" || true 
 										else
 											echo "# Warning: hub is required to generate pull requests. See https://hub.github.com/ to install it."
 											echo -n "# To manually create a pull request, go here: "
