@@ -1,7 +1,7 @@
 apiVersion: v2
 publisher: eclipse
 name: che-theia
-version: 7.28.0
+version: 7.28.1
 type: Che Editor
 displayName: theia-ide
 title: Eclipse Theia
@@ -9,7 +9,7 @@ description: Eclipse Theia
 icon: /v3/images/eclipse-che-logo.png
 category: Editor
 repository: https://github.com/eclipse/che-theia
-firstPublicationDate: "2021-03-19"
+firstPublicationDate: "2021-03-29"
 spec:
   endpoints:
    -  name: "theia"
@@ -98,14 +98,14 @@ spec:
          - exposedPort: 13132
          - exposedPort: 13133
      memoryLimit: "512M"
-   - name: che-machine-exec
-     image: "registry.redhat.io/codeready-workspaces/machineexec-rhel8:2.8"
-     ports:
-       - exposedPort: 3333
-     command:
-       - /go/bin/che-machine-exec
-       - '--url'
-       - '127.0.0.1:3333'
+    - name: che-machine-exec
+      image: 'registry.redhat.io/codeready-workspaces/machineexec-rhel8:2.8'
+      ports:
+        - exposedPort: 3333
+      command:
+        - /go/bin/che-machine-exec
+        - '--url'
+        - '127.0.0.1:3333'
   initContainers:
   - name: remote-runtime-injector
     image: registry.redhat.io/codeready-workspaces/theia-endpoint-rhel8:2.8
