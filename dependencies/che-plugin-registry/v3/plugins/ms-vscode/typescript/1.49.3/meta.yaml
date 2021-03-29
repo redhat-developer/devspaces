@@ -12,7 +12,7 @@ category: Language
 firstPublicationDate: '2021-03-22'
 spec:
   containers:
-  - image: "registry.redhat.io/codeready-workspaces/plugin-java8-rhel8:2.8"
+  - image: "registry.redhat.io/codeready-workspaces/plugin-java8-rhel8:2.9"
     name: vscode-typescript
     memoryLimit: '512Mi'
     args:

@@ -12,7 +12,7 @@ category: Language
 firstPublicationDate: '2021-03-02'
 spec:
   containers:
-  - image: "registry.redhat.io/codeready-workspaces/plugin-java11-rhel8:2.8"
+  - image: "registry.redhat.io/codeready-workspaces/plugin-java11-rhel8:2.9"
     name: vscode-apache-camel
     memoryLimit: "512Mi"
     args:

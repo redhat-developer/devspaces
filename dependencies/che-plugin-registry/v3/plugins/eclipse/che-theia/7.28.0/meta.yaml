@@ -77,7 +77,7 @@ spec:
        cookiesAuthEnabled: true
   containers:
    - name: theia-ide
-     image: "registry.redhat.io/codeready-workspaces/theia-rhel8:2.8"
+     image: "registry.redhat.io/codeready-workspaces/theia-rhel8:2.9"
      env:
          - name: THEIA_PLUGINS
            value: local-dir:///plugins
@@ -99,7 +99,7 @@ spec:
          - exposedPort: 13133
      memoryLimit: "512M"
    - name: che-machine-exec
-     image: "registry.redhat.io/codeready-workspaces/machineexec-rhel8:2.8"
+     image: "registry.redhat.io/codeready-workspaces/machineexec-rhel8:2.9"
      ports:
        - exposedPort: 3333
      command:
@@ -108,7 +108,7 @@ spec:
        - '127.0.0.1:3333'
   initContainers:
   - name: remote-runtime-injector
-    image: registry.redhat.io/codeready-workspaces/theia-endpoint-rhel8:2.8
+    image: registry.redhat.io/codeready-workspaces/theia-endpoint-rhel8:2.9
     volumes:
       - mountPath: "/remote-endpoint"
         name: remote-endpoint
