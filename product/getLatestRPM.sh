@@ -21,7 +21,7 @@ while [[ "$#" -gt 0 ]]; do
   '-r') RPM_PATTERN="$2"; shift 1;; # eg., openshift-clients or helm
   '-s') SOURCE_DIR="$2"; shift 1;; # dir to search for Dockerfiles
   '-a') ARCHES="$ARCHES $2"; shift 1;; # use space-separated list of arches, or use multiple -a flags
-  '-u') BASE_URL="$2"; shift 1;; # eg., http://pulp.dist.prod.ext.phx2.redhat.com/content/dist/layered/rhel8/basearch/rhocp/4.7
+  '-u') BASE_URL="$2"; shift 1;; # eg., http://rhsm-pulp.corp.redhat.com/content/dist/layered/rhel8/basearch/rhocp/4.7
   '-q') QUIET=1; shift 0;;
   '-h') usage;;
   esac
@@ -33,7 +33,7 @@ usage () {
 Usage: 
   $0 -s SOURCE_DIR -r RPM_PATTERN  -u BASE_URL -a 'ARCH1 ... ARCHN' 
 Example: 
-  $0 -s /path/to/dockerfiles/ -r openshift-clients-4 -u http://pulp.dist.prod.ext.phx2.redhat.com/content/dist/layered/rhel8/basearch/rhocp/4.7
+  $0 -s /path/to/dockerfiles/ -r openshift-clients-4 -u http://rhsm-pulp.corp.redhat.com/content/dist/layered/rhel8/basearch/rhocp/4.7
   $0 -s /path/to/dockerfiles/ -r helm-3              -u http://rhsm-pulp.corp.redhat.com/content/dist/layered/rhel8/basearch/ocp-tools/4.7
 Options:
   -q quieter output; only reports changed rpm version or 0 if failure
@@ -98,7 +98,9 @@ SITE_NAME=${BASE_URL%/${OCP_VER}}; SITE_NAME=${SITE_NAME##*/};
 if [[ $QUIET -eq 0 ]]; then echo "[INFO] Replace ${SITE_NAME}-x.y-for- with ${SITE_NAME}-${OCP_VER}-for- in content_set* files"; fi
 for d in $content_sets; do
   # if [[ $QUIET -eq 0 ]]; then echo "[DEBUG] Replace ${SITE_NAME}-x.y-for- with ${SITE_NAME}-${OCP_VER}-for- in $d"; fi
-  sed -i $d -r -e "s#${SITE_NAME}-[0-9]\.[0-9]+-for-#${SITE_NAME}-${OCP_VER}-for-#g"
+  sed -i $d -r \
+    -e "s#${SITE_NAME}-[0-9]\.[0-9]+-for-#${SITE_NAME}-${OCP_VER}-for-#g" \
+    -e "s#${SITE_NAME}/[0-9]\.[0-9]+/#${SITE_NAME}/${OCP_VER}/#g"
 done
 
 # just echo the version we found and changed if we're in quiet mode
