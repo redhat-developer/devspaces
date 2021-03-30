@@ -14,12 +14,10 @@ components:
     type: chePlugin
     alias: omnisharp
     id: redhat-developer/che-omnisharp-plugin/latest
-    memoryLimit: 1024Mi
   -
     type: chePlugin
     alias: netcoredbg
     id: redhat-developer/netcoredbg-theia-plugin/latest
-    memoryLimit: 512Mi
   -
     type: dockerimage
     alias: dotnet
