@@ -14,7 +14,6 @@ components:
     id: ms-python/python/latest
     preferences:
       python.globalModuleInstallation: true
-    memoryLimit: 512Mi
   -
     type: dockerimage
     alias: python

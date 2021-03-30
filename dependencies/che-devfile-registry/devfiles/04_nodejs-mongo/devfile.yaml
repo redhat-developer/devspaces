@@ -10,7 +10,6 @@ projects:
 components:
   - type: chePlugin
     id: vscode/typescript-language-features/latest
-    memoryLimit: 512Mi
   - type: chePlugin
     id: ms-vscode/node-debug2/latest
   - type: dockerimage

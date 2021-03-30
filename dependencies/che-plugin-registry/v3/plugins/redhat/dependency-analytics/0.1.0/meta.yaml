@@ -14,7 +14,7 @@ spec:
   containers:
     - image: "registry.redhat.io/codeready-workspaces/plugin-java8-rhel8:2.8"
       name: dependency-analytics
-      memoryLimit: "512Mi"
+      memoryLimit: "1Gi"
       args:
         - sh
         - -c

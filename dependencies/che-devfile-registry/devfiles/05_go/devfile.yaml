@@ -14,7 +14,6 @@ components:
   type: chePlugin
   id: golang/go/latest
   alias: go-plugin
-  memoryLimit: 512Mi
   preferences:
     go.lintTool: 'golangci-lint'
     go.lintFlags: '--fast'

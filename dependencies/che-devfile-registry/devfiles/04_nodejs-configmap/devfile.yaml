@@ -11,12 +11,11 @@ projects:
 components:
   - id: vscode/typescript-language-features/latest
     type: chePlugin
-    memoryLimit: 512Mi
   - type: chePlugin
     id: ms-vscode/node-debug2/latest
   - mountSources: true
-    memoryLimit: 1Gi
     type: dockerimage
+    memoryLimit: 1Gi
     alias: nodejs
     image: registry.redhat.io/codeready-workspaces/plugin-java8-rhel8:2.8
     endpoints:
@@ -25,7 +24,6 @@ components:
   - id: redhat/vscode-openshift-connector/latest
     type: chePlugin
     alias: openshift-connector
-    memoryLimit: 1280Mi
 commands:
   - name: 1. Install dependencies
     actions:

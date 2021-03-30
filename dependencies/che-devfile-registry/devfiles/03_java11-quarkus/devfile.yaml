@@ -25,7 +25,7 @@ components:
           -Dsun.zip.disableMemoryMapping=true -Xms20m -Djava.security.egd=file:/dev/./urandom
           -Duser.home=/home/jboss"
       - name: MAVEN_OPTS
-        value: $(JAVA_OPTS)  
+        value: $(JAVA_OPTS) 
     memoryLimit: 512Mi
     mountSources: true
     volumes:
