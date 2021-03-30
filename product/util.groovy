@@ -816,7 +816,8 @@ fi
 '''
   return sh(
     returnStdout: true, 
-    script: './getLatestImageTags.sh -b ' + MIDSTM_BRANCH + ' -c "' + orgAndImage + '" --tag "' + tag.replaceAll(".","\\\\.") + '" --' + repo
+    // -b crw-2.8-rhel-8 -c crw/server-rhel8 --tag "2.8-" --quay
+    script: './getLatestImageTags.sh -b ' + MIDSTM_BRANCH + ' -c "' + orgAndImage + '" --tag "' + tag + '-" --' + repo
   ).trim()
 }
 
