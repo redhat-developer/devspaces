@@ -76,36 +76,36 @@ spec:
        secure: true
        cookiesAuthEnabled: true
   containers:
-   - name: theia-ide
-     image: "registry.redhat.io/codeready-workspaces/theia-rhel8:2.8"
-     env:
-         - name: THEIA_PLUGINS
-           value: local-dir:///plugins
-         - name: HOSTED_PLUGIN_HOSTNAME
-           value: 0.0.0.0
-         - name: HOSTED_PLUGIN_PORT
-           value: "3130"
-         - name: THEIA_HOST
-           value: 127.0.0.1
-     volumes:
-         - mountPath: "/plugins"
-           name: plugins
-     mountSources: true
-     ports:
-         - exposedPort: 3100
-         - exposedPort: 3130
-         - exposedPort: 13131
-         - exposedPort: 13132
-         - exposedPort: 13133
-     memoryLimit: "512M"
-    - name: che-machine-exec
-      image: 'registry.redhat.io/codeready-workspaces/machineexec-rhel8:2.8'
-      ports:
-        - exposedPort: 3333
-      command:
-        - /go/bin/che-machine-exec
-        - '--url'
-        - '127.0.0.1:3333'
+  - name: theia-ide
+    image: "registry.redhat.io/codeready-workspaces/theia-rhel8:2.8"
+    env:
+        - name: THEIA_PLUGINS
+          value: local-dir:///plugins
+        - name: HOSTED_PLUGIN_HOSTNAME
+          value: 0.0.0.0
+        - name: HOSTED_PLUGIN_PORT
+          value: "3130"
+        - name: THEIA_HOST
+          value: 127.0.0.1
+    volumes:
+        - mountPath: "/plugins"
+          name: plugins
+    mountSources: true
+    ports:
+        - exposedPort: 3100
+        - exposedPort: 3130
+        - exposedPort: 13131
+        - exposedPort: 13132
+        - exposedPort: 13133
+    memoryLimit: "512M"
+  - name: che-machine-exec
+    image: 'registry.redhat.io/codeready-workspaces/machineexec-rhel8:2.8'
+    ports:
+      - exposedPort: 3333
+    command:
+      - /go/bin/che-machine-exec
+      - '--url'
+      - '127.0.0.1:3333'
   initContainers:
   - name: remote-runtime-injector
     image: registry.redhat.io/codeready-workspaces/theia-endpoint-rhel8:2.8
