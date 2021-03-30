@@ -2,22 +2,30 @@ quay.io/crw/configbump-rhel8:2.8-1
 quay.io/crw/crw-2-rhel8-operator:2.8-2
 quay.io/crw/crw-2-rhel8-operator-metadata:???
 quay.io/crw/devfileregistry-rhel8:2.8-91
-quay.io/crw/imagepuller-rhel8:2.8-4
+quay.io/crw/imagepuller-rhel8:2.8-5
+     NVR: codeready-workspaces-imagepuller-rhel8-container-2.8-5
+   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1555755
+  Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-imagepuller/commit?id=ea11add489f400da8f8186d140ac6c44165cfe7e
+
 quay.io/crw/jwtproxy-rhel8:2.8-2
 quay.io/crw/machineexec-rhel8:2.8-4
 quay.io/crw/pluginbroker-artifacts-rhel8:2.8-4
 quay.io/crw/pluginbroker-metadata-rhel8:2.8-4
 quay.io/crw/plugin-java11-openj9-rhel8:2.8-4
 quay.io/crw/plugin-java11-rhel8:2.8-4
-quay.io/crw/plugin-java8-openj9-rhel8:2.8-4
+quay.io/crw/plugin-java8-openj9-rhel8:2.8-5
+     NVR: codeready-workspaces-plugin-java8-openj9-rhel8-container-2.8-5
+   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1555794
+  Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-plugin-java8-openj9/commit?id=e32ebed1e472eebbe817b0462567064fe08d96d7
+
 quay.io/crw/plugin-java8-rhel8:2.8-4
 quay.io/crw/plugin-kubernetes-rhel8:2.8-5
 quay.io/crw/plugin-openshift-rhel8:2.8-4
 quay.io/crw/pluginregistry-rhel8:2.8-89
-quay.io/crw/server-rhel8:2.8-5
-     NVR: codeready-workspaces-server-rhel8-container-2.8-5
-   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1555696
-  Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces/commit?id=3ca3bdaaa27bb9e114dbba04ea22f09cf52deecd
+quay.io/crw/server-rhel8:2.8-6
+     NVR: codeready-workspaces-server-rhel8-container-2.8-6
+   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1555768
+  Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces/commit?id=d2521678ecf79ddfd757744f91f5dffda4738ccd
 
 quay.io/crw/stacks-cpp-rhel8:2.8-4
 quay.io/crw/stacks-dotnet-rhel8:2.8-4
@@ -26,4 +34,8 @@ quay.io/crw/stacks-php-rhel8:2.8-3
 quay.io/crw/theia-dev-rhel8:2.8-1
 quay.io/crw/theia-endpoint-rhel8:2.8-1
 quay.io/crw/theia-rhel8:2.8-1
-quay.io/crw/traefik-rhel8:???
+quay.io/crw/traefik-rhel8:2.8-1
+     NVR: codeready-workspaces-traefik-rhel8-container-2.8-1
+   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1555765
+  Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-traefik/commit?id=17b66a1348602f4d11da200b78b3d37cfea1e367
+
