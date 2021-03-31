@@ -446,7 +446,6 @@ def cloneRepoPoll(String URL, String REPO_PATH, String BRANCH, boolean withPolli
           doGenerateSubmoduleConfigurations: false,
           extensions: [
             [$class: 'RelativeTargetDirectory', relativeTargetDir: REPO_PATH],
-            [$class: 'DisableRemotePoll'],
             [$class: 'PathRestriction', excludedRegions: excludeRegions, includedRegions: includeRegions]
           ],
           submoduleCfg: [],
