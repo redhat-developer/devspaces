@@ -31,8 +31,20 @@ checkVersion() {
 }
 checkVersion 1.1 "$(skopeo --version | sed -e "s/skopeo version //")" skopeo
 
+if [[ -f dependencies/VERSION ]]; then
+  VERSION=$(cat dependencies/VERSION)
+fi
+
+# try to compute branches from currently checked out branch; else fall back to hard coded value
+DWNSTM_BRANCH="$(git rev-parse --abbrev-ref HEAD 2>/dev/null || true)"
+if [[ $DWNSTM_BRANCH != "crw-2."*"-rhel-8" ]] && [[ $DWNSTM_BRANCH != "crw-2-rhel-8" ]]; then
+	DWNSTM_BRANCH="crw-${VERSION}-rhel-8"
+fi
+
 # STEP 1 :: regenerate image tag list in LATEST_IMAGES
-./product/getLatestImageTags.sh --quay --sort | tee dependencies/LATEST_IMAGES
+CMD="./product/getLatestImageTags.sh --quay -b ${DWNSTM_BRANCH} --tag '${VERSION}-' --hide"
+echo $CMD
+$CMD | tee dependencies/LATEST_IMAGES
 
 # STEP 2 :: # regenerate image set digests (not the per-arch digests) from list of LATEST_IMAGES
 # requires skopeo >= 1.1 for the --override-arch flag
