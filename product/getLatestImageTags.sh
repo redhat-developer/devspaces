@@ -20,13 +20,25 @@
 
 # try to compute branches from currently checked out branch; else fall back to hard coded value
 DWNSTM_BRANCH="$(git rev-parse --abbrev-ref HEAD 2>/dev/null || true)"
-if [[ $DWNSTM_BRANCH != "crw-2."*"-rhel-8" ]]; then
-	JOB_BRANCH=2.8
-	DWNSTM_BRANCH="crw-${JOB_BRANCH}-rhel-8"
-else
-	JOB_BRANCH=${DWNSTM_BRANCH/crw-/}; JOB_BRANCH=${JOB_BRANCH/-rhel-8/}
+VERSION=""
+if [[ -f dependencies/VERSION ]]; then
+	VERSION=$(cat dependencies/VERSION)
 fi
-# echo "Using JOB_BRANCH=${JOB_BRANCH} and DWNSTM_BRANCH = ${DWNSTM_BRANCH}"
+if [[ $DWNSTM_BRANCH != "crw-2."*"-rhel-8" ]] && [[ $DWNSTM_BRANCH != "crw-2-rhel-8" ]]; then
+	if [[ ${VERSION} != "" ]]; then
+		DWNSTM_BRANCH="crw-${VERSION}-rhel-8"
+	fi
+else
+	CRW_VERSION=${DWNSTM_BRANCH/crw-/}; CRW_VERSION=${CRW_VERSION/-rhel-8/}
+	if [[ $CRW_VERSION == 2 ]]; then # invalid version
+		if [[ ${VERSION} ]]; then # use version from VERSION file
+			CRW_VERSION=${VERSION}
+		else # set placeholder version 2.y
+			CRW_VERSION="2.y"
+		fi
+	fi
+fi
+# echo "Using CRW_VERSION=${CRW_VERSION} and DWNSTM_BRANCH = ${DWNSTM_BRANCH}"
 
 if [[ ! -x /usr/bin/brew ]]; then 
 	echo "Brew is required. Please install brewkoji rpm from one of these repos:";
@@ -134,13 +146,13 @@ SORTED=0 # if 0, use the order of containers in the CRW*_CONTAINERS_* strings ab
 usage () {
 	echo "
 Usage: 
-  $0 -b ${DWNSTM_BRANCH} --nvr --log                           | check images in brew; output NVRs can be copied to Errata; show Brew builds/logs
+  $0 -b ${DWNSTM_BRANCH} --nvr --log                         | check images in brew; output NVRs can be copied to Errata; show Brew builds/logs
 
-  $0 -b ${DWNSTM_BRANCH} --quay --tag \"2.y-\" --hide          | use default list of CRW images in quay.io/crw, for tag 2.y-; show nothing if tag umatched
-  $0 -b ${DWNSTM_BRANCH} --osbs                                | check images in OSBS ( registry-proxy.engineering.redhat.com/rh-osbs )
-  $0 -b ${DWNSTM_BRANCH} --osbs --pushtoquay='${JOB_BRANCH} latest'      | pull images from OSBS, push ${JOB_BRANCH}-z tag + 2 extras to quay
-  $0 -b ${DWNSTM_BRANCH} --stage --sort                        | use default list of CRW images in RHEC Stage, sorted alphabetically
-  $0 -b ${DWNSTM_BRANCH} --arches                              | use default list of CRW images in RHEC Prod; show arches
+  $0 -b ${DWNSTM_BRANCH} --quay --tag \"${CRW_VERSION}-\" --hide          | use default list of CRW images in quay.io/crw, for tag 2.y-; show nothing if tag umatched
+  $0 -b ${DWNSTM_BRANCH} --osbs                              | check images in OSBS ( registry-proxy.engineering.redhat.com/rh-osbs )
+  $0 -b ${DWNSTM_BRANCH} --osbs --pushtoquay='${CRW_VERSION} latest'    | pull images from OSBS, push ${CRW_VERSION}-z tag + 2 extras to quay
+  $0 -b ${DWNSTM_BRANCH} --stage --sort                      | use default list of CRW images in RHEC Stage, sorted alphabetically
+  $0 -b ${DWNSTM_BRANCH} --arches                            | use default list of CRW images in RHEC Prod; show arches
 
   $0 -c 'crw/theia-rhel8 crw/theia-endpoint-rhel8' --quay      | check latest tag for specific Quay images, with branch = ${DWNSTM_BRANCH}
   $0 -c crw/plugin-java11-openj9-rhel8 --quay                  | check a non-amd64 image
@@ -158,7 +170,7 @@ REGISTRY="https://registry.redhat.io" # or http://brew-pulp-docker01.web.prod.ex
 CONTAINERS=""
 while [[ "$#" -gt 0 ]]; do
   case $1 in
-    '-j') JOB_BRANCH="$2"; DWNSTM_BRANCH="crw-${JOB_BRANCH}-rhel-8"; shift 1;; 
+    '-j') CRW_VERSION="$2"; DWNSTM_BRANCH="crw-${CRW_VERSION}-rhel-8"; shift 1;;
     '-b') DWNSTM_BRANCH="$2"; shift 1;; 
     '-c') CONTAINERS="${CONTAINERS} $2"; shift 1;;
     '-x') EXCLUDES="$2"; shift 1;;
