@@ -12,7 +12,7 @@
 /*
 
 This file contains the branding changes needed for CodeReady Workspaces Dashboard.
-See branding-crw.css for the overrides to be applied for CodeReady Workspaces.
+It should override settings in default Che.
 
 Copy this file to https://github.com/eclipse/che-dashboard/blob/master/assets/branding/branding.css
 before building Che, apply these changes to the dashboard war.
