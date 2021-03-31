@@ -9,7 +9,7 @@ projects:
       type: git
       branch: 12.x
 components:
-  - id: ms-vscode/typescript/latest
+  - id: vscode/typescript-language-features/latest
     type: chePlugin
   - type: chePlugin
     id: ms-vscode/node-debug2/latest
