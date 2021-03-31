@@ -34,6 +34,8 @@ def String getJobBranch(String MIDSTM_BRANCH) {
   return JOB_BRANCH
 }
 
+@Field boolean BOOTSTRAPPED_F = false
+
 def installMaven(String MAVEN_VERSION, String JAVA_VERSION){
   mURL="https://www.apache.org/dyn/mirrors/mirrors.cgi?action=download&filename=maven/maven-3/" + MAVEN_VERSION + "/binaries/apache-maven-" + MAVEN_VERSION + "-bin.tar.gz"
   sh('''#!/bin/bash -xe
@@ -425,9 +427,19 @@ skopeo --version
 '''
 }
 
+// to clone a repo for scmpolling only (eg., che-theia); simplifies jenkinsfiles
+def cloneRepoWithBootstrap(String URL, String REPO_PATH, String BRANCH, boolean withPolling=false, String excludeRegions='', String includeRegions='*') {
+  withCredentials([string(credentialsId:'crw_devstudio-release-token', variable: 'GITHUB_TOKEN'), file(credentialsId: 'crw_crw-build-keytab', variable: 'CRW_KEYTAB')]) {
+    cloneRepoPoll(URL, REPO_PATH, BRANCH, withPolling, excludeRegions, includeRegions)
+  }
+}
+
 // TODO merge this into cloneRepo if it's working & safe
+// Must be run inside a withCredentials() block
 def cloneRepoPoll(String URL, String REPO_PATH, String BRANCH, boolean withPolling=false, String excludeRegions='', String includeRegions='*') {
-  // Requires withCredentials() and bootstrap()
+  if (!BOOTSTRAPPED_F) {
+    BOOTSTRAPPED_F = bootstrap(CRW_KEYTAB)
+  }
   if (URL.indexOf("pkgs.devel.redhat.com") == -1) {
     // remove http(s) prefix, then trim any token@ prefix too
     URL=URL - ~/http(s*):\/\// - ~/.*@/
@@ -483,8 +495,9 @@ git config --global push.default matching
   }
 }
 
+// Must be run inside a withCredentials() block, after running bootstrap()
+// see also cloneRepoPoll
 def cloneRepo(String URL, String REPO_PATH, String BRANCH) {
-  // Requires withCredentials() and bootstrap()
   if (URL.indexOf("pkgs.devel.redhat.com") == -1) {
     // remove http(s) prefix, then trim any token@ prefix too
     URL=URL - ~/http(s*):\/\// - ~/.*@/
@@ -585,7 +598,6 @@ export GITHUB_TOKEN="''' + GITHUB_TOKEN + '''"
 ''' + updateBaseImages_cmd
 )
   }
-
 }
 
 def getLastCommitSHA(String REPO_PATH) {
@@ -608,14 +620,15 @@ def getCRWShortName(String LONG_NAME) {
   return LONG_NAME.minus("codeready-workspaces-")
 }
 
-def bootstrap(String CRW_KEYTAB) {
-  yumConf()
-  // rpm -qf $(which kinit ssh-keyscan chmod) ==> krb5-workstation openssh-clients coreutils
-  installRPMs("krb5-workstation openssh-clients coreutils git rhpkg jq python3-six python3-pip")
-  // also install commonly needed tools
-  installSkopeoFromContainer("")
-  installYq()
-  sh('''#!/bin/bash -xe
+def bootstrap(String CRW_KEYTAB, boolean force=false) {
+  if (!BOOTSTRAPPED_F || force) {
+    yumConf()
+    // rpm -qf $(which kinit ssh-keyscan chmod) ==> krb5-workstation openssh-clients coreutils
+    installRPMs("krb5-workstation openssh-clients coreutils git rhpkg jq python3-six python3-pip")
+    // also install commonly needed tools
+    installSkopeoFromContainer("")
+    installYq()
+    sh('''#!/bin/bash -xe
 # bootstrapping: if keytab is lost, upload to
 # https://codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/credentials/store/system/domain/_/
 # then set Use secret text above and set Bindings > Variable (path to the file) as ''' + CRW_KEYTAB + '''
@@ -642,8 +655,9 @@ export KRB5CCNAME=/var/tmp/crw-build_ccache
 kinit "crw-build/codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com@REDHAT.COM" -kt ''' + CRW_KEYTAB + '''
 # verify keytab loaded
 # klist
-'''
-  )
+''')
+  }
+  return true
 }
 
 def notifyBuildFailed() {
