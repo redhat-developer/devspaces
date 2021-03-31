@@ -427,6 +427,10 @@ skopeo --version
 '''
 }
 
+// TODO CRW-1534 implement sparse checkout w/ excluded paths (to avoid unneeded respins of registries)
+// https://stackoverflow.com/questions/60559819/scm-polling-with-includedregions-in-jenkins-pipeline-job
+// or https://stackoverflow.com/questions/49812267/call-pathrestriction-in-a-dsl-in-the-sandbox-mode
+
 // to clone a repo for scmpolling only (eg., che-theia); simplifies jenkinsfiles
 def cloneRepoWithBootstrap(String URL, String REPO_PATH, String BRANCH, boolean withPolling=false, String excludeRegions='', String includeRegions='*') {
   withCredentials([string(credentialsId:'crw_devstudio-release-token', variable: 'GITHUB_TOKEN'), file(credentialsId: 'crw_crw-build-keytab', variable: 'CRW_KEYTAB')]) {
