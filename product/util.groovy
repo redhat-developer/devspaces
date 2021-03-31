@@ -430,6 +430,9 @@ skopeo --version
 // to clone a repo for scmpolling only (eg., che-theia); simplifies jenkinsfiles
 def cloneRepoWithBootstrap(String URL, String REPO_PATH, String BRANCH, boolean withPolling=false, String excludeRegions='', String includeRegions='*') {
   withCredentials([string(credentialsId:'crw_devstudio-release-token', variable: 'GITHUB_TOKEN'), file(credentialsId: 'crw_crw-build-keytab', variable: 'CRW_KEYTAB')]) {
+    if (!BOOTSTRAPPED_F) {
+      BOOTSTRAPPED_F = bootstrap(CRW_KEYTAB)
+    }
     cloneRepoPoll(URL, REPO_PATH, BRANCH, withPolling, excludeRegions, includeRegions)
   }
 }
@@ -437,9 +440,6 @@ def cloneRepoWithBootstrap(String URL, String REPO_PATH, String BRANCH, boolean 
 // TODO merge this into cloneRepo if it's working & safe
 // Must be run inside a withCredentials() block
 def cloneRepoPoll(String URL, String REPO_PATH, String BRANCH, boolean withPolling=false, String excludeRegions='', String includeRegions='*') {
-  if (!BOOTSTRAPPED_F) {
-    BOOTSTRAPPED_F = bootstrap(CRW_KEYTAB)
-  }
   if (URL.indexOf("pkgs.devel.redhat.com") == -1) {
     // remove http(s) prefix, then trim any token@ prefix too
     URL=URL - ~/http(s*):\/\// - ~/.*@/
