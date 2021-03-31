@@ -11,63 +11,49 @@
  */
 /* 
 
-This file contains the default branding in Eclipse Che.
+This file contains the default branding in Eclipse Che Dashboard.
 See branding-crw.css for the overrides to be applied for CodeReady Workspaces.
 
-Copy this file to https://github.com/eclipse/che/blob/master/dashboard/src/assets/branding/branding.css
+Copy this file to https://github.com/eclipse/che-dashboard/blob/master/assets/branding/branding.css
 before building Che, apply these changes to the dashboard war.
-
-
-There's also https://github.com/eclipse/che/blob/master/dashboard/src/app/navbar/navbar-theme.styl 
-with parameterized color vars, such as $navbar-background-color = #282E44 
-
 */
 
-/* dashboard background color */
-.left-sidebar-container md-toolbar
-{
-	background-color: #282e44;
-	border-right: 1px solid #000;
+.main-page-loader {
+	position: absolute;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	z-index: 80;
+	margin: auto;
+	color: #fff;
+	font-size: 24px;
+	font-family: Helvetica, Arial, sans-serif;
+	background-color: #000;
 }
 
-/* dashboard text labels */
-.admin-navbar-menu .navbar-header, .admin-navbar-menu .navbar-identity, .admin-navbar-menu section a.md-button span, .navbar-submenu-content a.md-button span
-{
-	background-color: #d3d3d3;
+.main-page-loader .ide-page-loader-content img {
+	position: absolute;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	max-width: 140px;
+	max-height: 140px;
+	margin: auto;
+	animation-name: opacity;
+	animation-duration: 2s;
+	animation-timing-function: ease-in-out;
+	animation-iteration-count: infinite;
 }
 
-/* active selected dashboard item */
-.admin-navbar-menu md-list-item a.md-button.che-navbar-selected .navbar-icon, .admin-navbar-menu md-list-item a.md-button.che-navbar-selected span 
-{ 
-	background-color: #f1f1f1;
-}
+@keyframes opacity {
+	0%,
+	100% {
+		opacity: 0;
+	}
 
-/* headers */
-.admin-navbar-menu .navbar-section.navbar-section-title {
-    color: #62687c;
+	50% {
+		opacity: 1;
+	}
 }
-
-/* dashboard icons */
-.admin-navbar-menu section a.md-button .navbar-icon, .navbar-submenu-content a.md-button .navbar-icon
-{
-	background-color: #808b9c;
-}
-
-/* number of workspaces */
-.admin-navbar-menu md-list-item a.md-button span.navbar-number 
-{
-	background-color: #808b9c;
-}
-
-/* blue cross (plus / add wksp) */
-.navbar-primary
-{
-	color: #4a90e2!important;
-}
-
-/* bell icon */
-.navbar-notification-icon
-{
-	color: #808b9c;
-}
-
