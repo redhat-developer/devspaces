@@ -88,14 +88,14 @@ commands:
     actions:
       - referenceContent: |
           {
-          "version": "0.2.0",
-          "configurations": [
-            {
-              "type": "java",
-              "name": "Debug (Attach) - Remote",
-              "request": "attach",
-              "hostName": "localhost",
-              "port": 5005
-            }]
-          }
+           "version": "0.2.0",
+           "configurations": [
+             {
+               "type": "java",
+               "name": "Debug (Attach) - Remote",
+               "request": "attach",
+               "hostName": "localhost",
+               "port": 5005
+             }]
+           }
         type: vscode-launch

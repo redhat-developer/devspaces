@@ -88,11 +88,9 @@ commands:
         component: maven
         command: "mvn fabric8:deploy -Popenshift -DskipTests"
         workdir: "${CHE_PROJECTS_ROOT}/java-fuse"
-  -
-    name: Debug remote java application
+  - name: Debug remote java application
     actions:
-      - type: vscode-launch
-        referenceContent: |
+      - referenceContent: |
           {
           "version": "0.2.0",
           "configurations": [
@@ -104,3 +102,4 @@ commands:
               "port": 5005
             }]
           }
+        type: vscode-launch
