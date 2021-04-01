@@ -14,7 +14,9 @@ spec:
   containers:
   - image: "registry.redhat.io/codeready-workspaces/stacks-dotnet-rhel8:2.9"
     name: theia-omnisharp
-    memoryLimit: "1024Mi"
+    memoryLimit: 1Gi
+    cpuLimit: 500m
+    cpuRequest: 30m
     args:
       - sh
       - -c

@@ -15,7 +15,9 @@ spec:
   containers:
   - image: "registry.redhat.io/codeready-workspaces/plugin-java8-rhel8:2.9"
     name: vscode-node-debug
-    memoryLimit: '1Gi'
+    memoryLimit: 1Gi
+    cpuLimit: 500m
+    cpuRequest: 30m
     args:
       - sh
       - -c

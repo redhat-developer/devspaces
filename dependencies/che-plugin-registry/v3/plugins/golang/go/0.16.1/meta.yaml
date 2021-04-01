@@ -14,7 +14,9 @@ spec:
   containers:
     - image: "registry.redhat.io/codeready-workspaces/stacks-golang-rhel8:2.9"
       name: vscode-go
-      memoryLimit: '512Mi'
+      memoryLimit: 512Mi
+      cpuLimit: 500m
+      cpuRequest: 30m
       args:
         - sh
         - -c
