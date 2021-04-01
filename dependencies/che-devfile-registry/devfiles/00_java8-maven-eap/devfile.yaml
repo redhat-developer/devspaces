@@ -29,6 +29,10 @@ components:
     endpoints:
       - name: 'eap'
         port: 8080
+      - name: 'jgroups'
+        port: 7600
+        attributes:
+          public: 'false'
     mountSources: true
     volumes:
       - name: m2
