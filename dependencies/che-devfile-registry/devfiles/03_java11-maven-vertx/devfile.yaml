@@ -84,20 +84,18 @@ commands:
         type: exec
         command: "mvn fabric8:deploy -Popenshift -DskipTests -Dvertx.disableDnsResolver=true"
         component: maven
-  -
-    name: Attach remote debugger
+  - name: Debug remote java application
     actions:
-    - type: vscode-launch
-      referenceContent: |
-        {
-        "version": "0.2.0",
-        "configurations": [
-        {
-            "type": "java",
-            "request": "attach",
-            "name": "Debug (Attach)",
-            "hostName": "localhost",
-            "port": 5005
-        }
-        ]
-        }
+      - referenceContent: |
+          {
+           "version": "0.2.0",
+           "configurations": [
+             {
+               "type": "java",
+               "name": "Debug (Attach) - Remote",
+               "request": "attach",
+               "hostName": "localhost",
+               "port": 5005
+             }]
+           }
+        type: vscode-launch
