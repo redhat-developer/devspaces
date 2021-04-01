@@ -14,7 +14,9 @@ spec:
   containers:
   - image: "registry.redhat.io/codeready-workspaces/plugin-kubernetes-rhel8:2.8"
     name: vscode-camelk
-    memoryLimit: "1G"
+    memoryLimit: 1Gi
+    cpuLimit: 500m
+    cpuRequest: 30m
   extensions:
   - https://download.jboss.org/jbosstools/vscode/stable/vscode-camelk/vscode-camelk-0.0.22-135.vsix
   - https://download.jboss.org/jbosstools/vscode/3rdparty/vscode-kubernetes-tools/vscode-kubernetes-tools-1.2.1.vsix

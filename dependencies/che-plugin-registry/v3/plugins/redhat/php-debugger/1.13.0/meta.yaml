@@ -15,6 +15,8 @@ spec:
     - image: "registry.redhat.io/codeready-workspaces/stacks-php-rhel8:2.8"
       name: php-debugger
       memoryLimit: 512Mi
+      cpuLimit: 500m
+      cpuRequest: 30m
       args:
         - sh
         - -c

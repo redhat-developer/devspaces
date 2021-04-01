@@ -14,7 +14,9 @@ spec:
   containers:
     - image: "registry.redhat.io/codeready-workspaces/plugin-java11-rhel8:2.8"
       name: vscode-sonarlint
-      memoryLimit: "512Mi"
+      memoryLimit: 512Mi
+      cpuLimit: 500m
+      cpuRequest: 30m
       volumes:
         - mountPath: "/home/jboss/.m2"
           name: m2
