@@ -97,7 +97,9 @@ spec:
         - exposedPort: 13131
         - exposedPort: 13132
         - exposedPort: 13133
-    memoryLimit: "512M"
+    memoryLimit: 512M
+    cpuLimit: 1500m
+    cpuRequest: 100m
   - name: che-machine-exec
     image: 'registry.redhat.io/codeready-workspaces/machineexec-rhel8:2.9'
     ports:

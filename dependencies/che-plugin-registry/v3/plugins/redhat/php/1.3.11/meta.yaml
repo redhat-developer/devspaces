@@ -14,7 +14,9 @@ spec:
   containers:
     - image: "registry.redhat.io/codeready-workspaces/stacks-php-rhel8:2.9"
       name: php-intelephense
-      memoryLimit: "1000Mi"
+      memoryLimit: 1Gi
+      cpuLimit: 500m
+      cpuRequest: 30m
       args:
         - sh
         - -c
