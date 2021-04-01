@@ -35,7 +35,7 @@ components:
 
 commands:
 
-  - name: maven build
+  - name: Maven build
     actions:
       - type: exec
         component: maven
