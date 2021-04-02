@@ -10,7 +10,7 @@
 
 set -e
 
-readarray -d '' metas < <(find devfiles -name 'meta.yaml' -print0)
+readarray -d '' metas < <(find devfiles -name 'meta.yaml' -print0 | sort -z)
 for meta in "${metas[@]}"; do
     META_DIR=$(dirname "${meta}")
     # Workaround to include self-links, since it's not possible to
