@@ -38,6 +38,14 @@ components:
         port: 8080
         attributes:
           path: /hello/greeting/che-user
+      - name: 'debug'
+        port: 5005
+        attributes:
+          public: 'false'
+      - name: 'tests'
+        port: 8081
+        attributes:
+          public: 'false'
 commands:
   -
     name: 1. Package the application
@@ -53,7 +61,7 @@ commands:
       -
         type: exec
         component: maven
-        command: "mvn compile quarkus:dev -Dquarkus.http.host=0.0.0.0"
+        command: "mvn compile quarkus:dev -Dquarkus.http.host=0.0.0.0 -Dquarkus.live-reload.instrumentation=false"
         workdir: ${CHE_PROJECTS_ROOT}/quarkus-quickstarts/getting-started
   -
     name: Attach remote debugger
