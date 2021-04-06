@@ -7,7 +7,9 @@ projects:
     name: kitchensink-example
     source:
       type: git
-      location: "https://github.com/che-samples/kitchensink-example"
+      tag: EAP_7.3.0.GA
+      sparseCheckoutDir: kitchensink-jsp
+      location: "https://github.com/jboss-developer/jboss-eap-quickstarts.git"
 components:
   -
     type: chePlugin
