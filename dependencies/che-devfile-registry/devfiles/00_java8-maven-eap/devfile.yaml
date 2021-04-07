@@ -6,10 +6,10 @@ projects:
   -
     name: kitchensink-example
     source:
+      location: 'https://github.com/jboss-developer/jboss-eap-quickstarts.git'
       type: git
       tag: EAP_7.3.0.GA
       sparseCheckoutDir: kitchensink-jsp
-      location: "https://github.com/jboss-developer/jboss-eap-quickstarts.git"
 components:
   -
     type: chePlugin
@@ -27,10 +27,14 @@ components:
         value: "-Xmx200m -XX:+UseParallelGC -XX:MinHeapFreeRatio=10 -XX:MaxHeapFreeRatio=20 -XX:GCTimeRatio=4 -XX:AdaptiveSizePolicyWeight=90 -Dsun.zip.disableMemoryMapping=true -Xms20m -Djava.security.egd=file:/dev/./urandom -Duser.home=/home/jboss"
       - name: JAVA_OPTS_APPEND
         value: "-Xrunjdwp:transport=dt_socket,address=8000,server=y,suspend=n -Dsun.util.logging.disableCallerCheck=true"
+      - name: MVN_ARGS_APPEND
+        value: '-Dmaven.repo.local=/home/jboss/.m2/repository -Dcom.redhat.xpaas.repo.jbossorg'
     memoryLimit: 1024Mi
     endpoints:
       - name: 'eap'
         port: 8080
+        attributes:
+          path: /index.jsp
       - name: 'jgroups'
         port: 7600
         attributes:
@@ -38,14 +42,14 @@ components:
     mountSources: true
     volumes:
       - name: m2
-        containerPath: /home/jboss/.m2
+        containerPath: /home/jboss/.m2/repository
 commands:
   -
     name: 1. Build
     actions:
       - workdir: '${CHE_PROJECTS_ROOT}/kitchensink-example/kitchensink-jsp'
         type: exec
-        command: scl enable rh-maven35 'mvn clean install'
+        command: scl enable rh-maven35 'mvn ${MVN_ARGS_APPEND} clean install'
         component: maven
   - name: 2. Configure web server
     actions:
@@ -72,7 +76,7 @@ commands:
       -
         type: exec
         component: maven
-        command: "scl enable rh-maven35 'mvn clean install' && sleep 2 && cp target/*.war /opt/eap/standalone/deployments/ROOT.war"
+        command: "scl enable rh-maven35 'mvn ${MVN_ARGS_APPEND} clean install' && sleep 2 && cp target/*.war /opt/eap/standalone/deployments/ROOT.war"
         workdir: ${CHE_PROJECTS_ROOT}/kitchensink-example/kitchensink-jsp
   -
     name: Debug (Attach)
