@@ -10,7 +10,7 @@
 #
 
 # https://access.redhat.com/containers/?tab=tags#/registry.access.redhat.com/ubi8-minimal
-FROM registry.access.redhat.com/ubi8-minimal:8.3-291
+FROM registry.access.redhat.com/ubi8-minimal:8.3-298
 USER root
 ENV CHE_HOME=/home/user/codeready
 ENV JAVA_HOME=/usr/lib/jvm/jre
