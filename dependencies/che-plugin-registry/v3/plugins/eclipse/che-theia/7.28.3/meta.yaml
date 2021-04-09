@@ -1,7 +1,7 @@
 apiVersion: v2
 publisher: eclipse
 name: che-theia
-version: 7.28.1
+version: 7.28.3
 type: Che Editor
 displayName: theia-ide
 title: Eclipse Theia
@@ -9,7 +9,7 @@ description: Eclipse Theia
 icon: /v3/images/eclipse-che-logo.png
 category: Editor
 repository: https://github.com/eclipse/che-theia
-firstPublicationDate: "2021-03-29"
+firstPublicationDate: "2021-04-09"
 spec:
   endpoints:
    -  name: "theia"
