@@ -163,21 +163,38 @@ fi
 if [[ ${phases} == *"1"* ]]; then
 	log "1b. Define list of upstream containers & RPMs pulled into them from https://pkgs.devel.redhat.com/cgit/?q=codeready-workspaces "
 	for d in \
-	codeready-workspaces \
-	codeready-workspaces-operator codeready-workspaces-operator-metadata \
+	codeready-workspaces-configbump \
+	codeready-workspaces-operator \
+	codeready-workspaces-operator-metadata \
+	codeready-workspaces-devfileregistry \
+	codeready-workspaces-devworkspace-controller \
 	\
-	codeready-workspaces-jwtproxy codeready-workspaces-machineexec \
-	codeready-workspaces-devfileregistry codeready-workspaces-pluginregistry \
-	codeready-workspaces-pluginbroker-metadata codeready-workspaces-plugin-artifacts \
-	codeready-workspaces-plugin-kubernetes codeready-workspaces-plugin-openshift \
-	codeready-workspaces-plugin-java11 codeready-workspaces-plugin-java8 \
+	codeready-workspaces-devworkspace \
 	codeready-workspaces-imagepuller \
+	codeready-workspaces-jwtproxy \
+	codeready-workspaces-machineexec \
+	codeready-workspaces-pluginbroker-artifacts \
 	\
+	codeready-workspaces-pluginbroker-metadata \
+	codeready-workspaces-plugin-java11-openj9 \
+	codeready-workspaces-plugin-java11 \
+	codeready-workspaces-plugin-java8-openj9 \
+	codeready-workspaces-plugin-java8 \
+	\
+	codeready-workspaces-plugin-kubernetes \
+	codeready-workspaces-plugin-openshift \
+	codeready-workspaces-pluginregistry \
+	codeready-workspaces \
+	codeready-workspaces-stacks-cpp \
+	\
+	codeready-workspaces-stacks-dotnet \
+	codeready-workspaces-stacks-golang \
+	codeready-workspaces-stacks-php \
 	codeready-workspaces-theia-dev \
-	codeready-workspaces-theia codeready-workspaces-theia-endpoint \
+	codeready-workspaces-theia-endpoint \
 	\
-	codeready-workspaces-stacks-cpp codeready-workspaces-stacks-dotnet \
-	codeready-workspaces-stacks-golang codeready-workspaces-stacks-php \
+	codeready-workspaces-theia \
+	codeready-workspaces-traefik \
 	; do
 		if [[ $d == "codeready-workspaces" ]]; then
 			containerName=${d##containers/}-server-rhel8-container
