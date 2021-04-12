@@ -30,11 +30,3 @@ jobs:
       - name: Linelint
         uses: fernandrone/linelint@0.0.5
         id: linelint
-  digest-validation:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v1
-    - name: Run script which checks container image digest
-      run: |
-        sudo pip install yq
-        /bin/bash .ci/digest-validation-pr.sh
