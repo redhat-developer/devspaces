@@ -55,6 +55,13 @@ jobs:
         restore-keys: |
           download-unpacked-cache-
 
+    - name: Login to Quay.io
+      uses: azure/docker-login@v1
+      with:
+        login-server: quay.io
+        username: ${{ secrets.QUAY_USERNAME }}
+        password: ${{ secrets.QUAY_PASSWORD }}
+
     - name: image-build
       run: |
         export SKIP_FORMAT=true
