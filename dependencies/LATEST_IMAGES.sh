@@ -42,7 +42,7 @@ if [[ $DWNSTM_BRANCH != "crw-2."*"-rhel-8" ]] && [[ $DWNSTM_BRANCH != "crw-2-rhe
 fi
 
 # STEP 1 :: regenerate image tag list in LATEST_IMAGES
-CMD="./product/getLatestImageTags.sh --quay -b ${DWNSTM_BRANCH} --tag '${VERSION}-' --hide"
+CMD="./product/getLatestImageTags.sh --quay -b ${DWNSTM_BRANCH} --tag ${VERSION}- --hide"
 echo $CMD
 $CMD | tee dependencies/LATEST_IMAGES
 
@@ -74,7 +74,7 @@ done
 # STEP 3 :: regenerate commit info in LATEST_IMAGES_COMMITS
 rm -f dependencies/LATEST_IMAGES_COMMITS
 for d in $(cat dependencies/LATEST_IMAGES); do 
-  ./product/getCommitSHAForTag.sh ${d} | tee -a dependencies/LATEST_IMAGES_COMMITS
+  ./product/getCommitSHAForTag.sh ${d} -b ${DWNSTM_BRANCH} | tee -a dependencies/LATEST_IMAGES_COMMITS
 done
 
 # now commit changes
