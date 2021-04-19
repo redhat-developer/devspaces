@@ -28,9 +28,12 @@ if [[ $brewTaskID ]]; then
   google-chrome "https://brewweb.engineering.redhat.com/brew/taskinfo?taskID=${brewTaskID}"
   brew watch-logs ${brewTaskID} | tee /tmp/${brewTaskID}.txt
 
+  container="codeready-workspaces-${IMG}-rhel8"
+  if [[ $container == *"operator" ]]; then container="codeready-workspaces-${IMG}"; fi # special case for operator & metadata images
+
   grep -E "registry.access.redhat.com/codeready-workspaces/.+/images/2.8-[0-9]+" /tmp/${brewTaskID}.txt | \
     grep -E "setting label" | \
     sed -r -e "s@.+(registry.access.redhat.com/codeready-workspaces/)(.+)/images/(2.8-[0-9]+)\"@\2:\3@g" | \
     tr -d "'" | tail -1 && \
-  getLatestImageTags.sh -b crw-2.8-rhel-8 --osbs --pushtoquay='2.8 latest' -c codeready-workspaces-${IMG}-rhel8
+  getLatestImageTags.sh -b crw-2.8-rhel-8 --osbs --pushtoquay='2.8 latest' -c $container
 fi
