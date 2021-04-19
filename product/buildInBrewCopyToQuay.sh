@@ -29,7 +29,7 @@ if [[ $brewTaskID ]]; then
   brew watch-logs ${brewTaskID} | tee /tmp/${brewTaskID}.txt
 
   container="codeready-workspaces-${IMG}-rhel8"
-  if [[ $container == *"operator" ]]; then container="codeready-workspaces-${IMG}"; fi # special case for operator & metadata images
+  if [[ $container == *"operator"* ]]; then container="codeready-workspaces-${IMG}"; fi # special case for operator & metadata images
 
   grep -E "registry.access.redhat.com/codeready-workspaces/.+/images/2.8-[0-9]+" /tmp/${brewTaskID}.txt | \
     grep -E "setting label" | \
