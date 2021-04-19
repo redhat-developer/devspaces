@@ -148,13 +148,15 @@ PUSHTOQUAY=0 # utility method to pull then push to quay
 PUSHTOQUAYTAGS="" # utility method to pull then push to quay (extra tags to push)
 SORTED=0 # if 0, use the order of containers in the CRW*_CONTAINERS_* strings above; if 1, sort alphabetically
 usage () {
+	latestNightly=" latest"
+	if [[ ${CRW_VERSION} == "2.y" ]]; then latestNightly="nightly"; fi
 	echo "
 Usage: 
   $0 -b ${DWNSTM_BRANCH} --nvr --log                         | check images in brew; output NVRs can be copied to Errata; show Brew builds/logs
 
   $0 -b ${DWNSTM_BRANCH} --quay --tag \"${CRW_VERSION}-\" --hide          | use default list of CRW images in quay.io/crw, for tag 2.y-; show nothing if tag umatched
   $0 -b ${DWNSTM_BRANCH} --osbs                              | check images in OSBS ( registry-proxy.engineering.redhat.com/rh-osbs )
-  $0 -b ${DWNSTM_BRANCH} --osbs --pushtoquay='${CRW_VERSION} latest'    | pull images from OSBS, push ${CRW_VERSION}-z tag + 2 extras to quay
+  $0 -b ${DWNSTM_BRANCH} --osbs --pushtoquay='${CRW_VERSION} ${latestNightly}'   | pull images from OSBS, push ${CRW_VERSION}-z tag + 2 extras to quay
   $0 -b ${DWNSTM_BRANCH} --stage --sort                      | use default list of CRW images in RHEC Stage, sorted alphabetically
   $0 -b ${DWNSTM_BRANCH} --arches                            | use default list of CRW images in RHEC Prod; show arches
 
