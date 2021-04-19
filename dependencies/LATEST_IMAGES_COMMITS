@@ -8,9 +8,9 @@ quay.io/crw/crw-2-rhel8-operator:2.8-5
    Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1570287
   Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-operator/commit?id=940698c2384f7bdce704aac827a1eb28258a3756
 
-quay.io/crw/crw-2-rhel8-operator-metadata:2.8-27
-     NVR: codeready-workspaces-rhel8-operator-metadata-container-2.8-27
-   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1574033
+quay.io/crw/crw-2-rhel8-operator-metadata:2.8-29
+     NVR: codeready-workspaces-rhel8-operator-metadata-container-2.8-29
+   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1580777
   Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-operator-metadata/commit?id=54b2bd626c1e203ba572bc36f50d0f317bdfe099
 
 quay.io/crw/devfileregistry-rhel8:2.8-98
@@ -83,9 +83,9 @@ quay.io/crw/plugin-openshift-rhel8:2.8-6
    Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1580655
   Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-plugin-openshift/commit?id=96d3b61692b48ae041be878d1e87359473552eb4
 
-quay.io/crw/pluginregistry-rhel8:2.8-109
-     NVR: codeready-workspaces-pluginregistry-rhel8-container-2.8-109
-   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1578039
+quay.io/crw/pluginregistry-rhel8:2.8-112
+     NVR: codeready-workspaces-pluginregistry-rhel8-container-2.8-112
+   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1580688
   Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-pluginregistry/commit?id=8622cdd6ca9ce7944e20539b69407ada7f142fd6
 
 quay.io/crw/server-rhel8:2.8-9
@@ -103,9 +103,9 @@ quay.io/crw/stacks-dotnet-rhel8:2.8-6
    Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1578863
   Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-stacks-dotnet/commit?id=df1ca496982bce395661624b4f653ec60f32002c
 
-quay.io/crw/stacks-golang-rhel8:2.8-5
-     NVR: codeready-workspaces-stacks-golang-rhel8-container-2.8-5
-   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1555997
+quay.io/crw/stacks-golang-rhel8:2.8-6
+     NVR: codeready-workspaces-stacks-golang-rhel8-container-2.8-6
+   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1578889
   Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-stacks-golang/commit?id=9ab650cc8468b28b246d1e6327cbac96dabf8a08
 
 quay.io/crw/stacks-php-rhel8:2.8-5
