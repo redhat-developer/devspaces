@@ -6,10 +6,10 @@ projects:
   -
     name: quarkus-quickstarts
     source:
-      type: git
       location: "https://github.com/quarkusio/quarkus-quickstarts.git"
       branch: "main"
-      sparseCheckoutDir: getting-started
+      type: git
+      sparseCheckoutDir: "getting-started"
 components:
   -
     type: chePlugin

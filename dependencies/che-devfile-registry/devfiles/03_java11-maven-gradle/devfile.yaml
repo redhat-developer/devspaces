@@ -6,9 +6,10 @@ projects:
   -
     name: validating-form-input
     source:
-      type: git
       location: "https://github.com/crw-samples/gs-validating-form-input.git"
-      sparseCheckoutDir: complete
+      branch: master
+      type: git
+      sparseCheckoutDir: "complete"
 components:
   -
     type: chePlugin

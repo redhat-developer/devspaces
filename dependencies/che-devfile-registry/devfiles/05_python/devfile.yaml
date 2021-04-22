@@ -6,8 +6,9 @@ projects:
   -
     name: python-hello-world
     source:
-      type: git
       location: "https://github.com/che-samples/python-hello-world.git"
+      branch: master
+      type: git
 components:
   -
     type: chePlugin

@@ -8,8 +8,8 @@ projects:
   - name: lombok-project-example
     source:
       location: 'https://github.com/che-samples/lombok-project-sample'
-      type: git
       branch: master
+      type: git
 
 components:
 

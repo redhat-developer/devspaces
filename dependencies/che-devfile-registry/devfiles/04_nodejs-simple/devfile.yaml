@@ -5,8 +5,9 @@ metadata:
 projects:
   - name: nodejs-web-app
     source:
-      type: git
       location: "https://github.com/che-samples/web-nodejs-sample.git"
+      branch: master
+      type: git
 components:
   - type: chePlugin
     id: vscode/typescript-language-features/latest

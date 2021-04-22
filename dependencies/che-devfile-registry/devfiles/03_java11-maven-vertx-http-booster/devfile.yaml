@@ -5,8 +5,8 @@ projects:
   - name: vertx-http-booster
     source:
       location: 'https://github.com/openshiftio-vertx-boosters/vertx-http-booster'
-      type: git
       branch: master
+      type: git
 components:
   - id: redhat/java11/latest
     type: chePlugin

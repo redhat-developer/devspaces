@@ -6,8 +6,9 @@ projects:
   -
     name: kitchensink-example
     source:
-      type: git
       location: "https://github.com/che-samples/kitchensink-example"
+      branch: master
+      type: git
 components:
   -
     type: chePlugin

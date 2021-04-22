@@ -5,8 +5,8 @@ projects:
   - name: spring-boot-http-booster
     source:
       location: 'https://github.com/crw-samples/rest-http-example.git'
-      type: git
       branch: sb-2.3.x
+      type: git
 components:
   - id: redhat/java8/latest
     type: chePlugin

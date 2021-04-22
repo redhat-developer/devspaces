@@ -6,9 +6,9 @@ projects:
   -
     name: java-fuse
     source:
-      type: git
       location: 'https://github.com/crw-samples/fuse-rest-http-booster.git'
       branch: redhat-crw
+      type: git
 components:
   -
     type: chePlugin

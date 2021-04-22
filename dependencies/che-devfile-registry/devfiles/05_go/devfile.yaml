@@ -6,9 +6,9 @@ projects:
 -
   name: golang-health-check
   source:
-    type: git
     location: https://github.com/crw-samples/golang-health-check.git
     branch: master
+    type: git
 components:
 -
   type: chePlugin

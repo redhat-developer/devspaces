@@ -6,9 +6,9 @@ projects:
   -
     name: dotnet-web-simple
     source:
-      type: git
       location: "https://github.com/che-samples/dotnet-web-simple"
       branch: netcoreapp3.1
+      type: git
 components:
   -
     type: chePlugin

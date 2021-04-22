@@ -6,8 +6,9 @@ projects:
 -
     name: cakephp-ex
     source:
-        type: git
         location: "https://github.com/sclorg/cakephp-ex"
+        branch: master
+        type: git
 components:
 -
   type: chePlugin

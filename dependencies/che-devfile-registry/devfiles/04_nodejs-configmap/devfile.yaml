@@ -6,8 +6,8 @@ projects:
   - name: nodejs-configmap
     source:
       location: "https://github.com/crw-samples/nodejs-configmap.git"
-      type: git
       branch: 12.x
+      type: git
 components:
   - id: vscode/typescript-language-features/latest
     type: chePlugin
