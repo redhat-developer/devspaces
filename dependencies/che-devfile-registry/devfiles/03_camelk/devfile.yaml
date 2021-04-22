@@ -6,8 +6,9 @@ projects:
   -
     name: camel-k-examples
     source:
-      type: git
       location: "https://github.com/apache/camel-k"
+      branch: release-1.4.x
+      type: git
       sparseCheckoutDir: "examples"
 components:
   -
