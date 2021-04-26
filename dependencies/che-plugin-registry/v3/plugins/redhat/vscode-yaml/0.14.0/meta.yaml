@@ -1,7 +1,7 @@
 apiVersion: v2
 publisher: redhat
 name: vscode-yaml
-version: 0.11.1
+version: 0.14.0
 type: VS Code extension
 displayName: YAML
 title: YAML Language Support by Red Hat, with built-in Kubernetes and Kedge syntax support
@@ -22,4 +22,4 @@ spec:
         - -c
         - ${PLUGIN_REMOTE_ENDPOINT_EXECUTABLE}
   extensions:
-    - https://download.jboss.org/jbosstools/vscode/3rdparty/vscode-yaml/vscode-yaml-0.11.1.vsix
+    - https://github.com/redhat-developer/codeready-workspaces-vscode-extensions/releases/download/ve96a2bb/vscode-yaml-0.14.0.vsix
