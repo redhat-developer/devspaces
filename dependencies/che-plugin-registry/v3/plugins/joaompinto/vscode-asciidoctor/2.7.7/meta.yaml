@@ -10,6 +10,8 @@ icon: /v3/images/joaompinto-asciidoctor-vscode-icon.png
 category: Language
 repository: https://github.com/asciidoctor/asciidoctor-vscode
 firstPublicationDate: "2019-12-02"
+deprecate:
+  autoMigrate: false
 spec:
   extensions:
   - https://download.jboss.org/jbosstools/vscode/3rdparty/asciidoctor-vscode/asciidoctor-vscode-2.7.7.vsix
