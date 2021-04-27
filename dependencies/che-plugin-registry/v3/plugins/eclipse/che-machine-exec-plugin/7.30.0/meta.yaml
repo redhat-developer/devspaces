@@ -1,7 +1,7 @@
 apiVersion: v2
 publisher: eclipse
 name: che-machine-exec-plugin
-version: 7.29.0
+version: 7.30.0
 type: Che Plugin
 displayName: Che machine-exec Service
 title: Che machine-exec Service Plugin
@@ -9,7 +9,7 @@ description: Che Plug-in with che-machine-exec service to provide creation termi
   or tasks for Eclipse Che workspace containers.
 icon: /v3/images/eclipse-che-logo.png
 repository: https://github.com/eclipse/che-machine-exec/
-firstPublicationDate: "2021-03-29"
+firstPublicationDate: "2021-04-27"
 category: Other
 spec:
   endpoints:
