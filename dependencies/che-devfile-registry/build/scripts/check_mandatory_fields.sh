@@ -10,7 +10,7 @@
 
 set -e
 
-FIELDS=('displayName' 'description' 'tags' 'icon' 'globalMemoryLimit')
+FIELDS=('displayName' 'description' 'tags' 'icon')
 
 readarray -d '' metas < <(find devfiles -name 'meta.yaml' -print0)
 for meta in "${metas[@]}"; do
