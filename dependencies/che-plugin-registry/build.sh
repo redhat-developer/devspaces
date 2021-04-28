@@ -34,8 +34,6 @@ Options:
     --offline
         Build offline version of registry, with all artifacts included
         cached in the registry; disabled by default.
-    --rhel
-        Build using the rhel.Dockerfile (UBI images) instead of default
     --skip-oci-image
         Build artifacts but do not create the image
 "
