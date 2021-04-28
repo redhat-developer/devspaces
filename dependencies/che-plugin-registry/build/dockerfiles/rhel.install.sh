@@ -30,6 +30,7 @@ timeout=60
 ${DNF} install -y drpm dnf || exit 1 # enable delta rpms
 dnf install -y findutils bash wget yum git gzip tar jq python3-six python3-pip skopeo || exit 1
 
+# shellcheck disable=SC2010
 PYTHON_BIN=$(ls -1 /usr/bin | grep -E "^python3.[0-9]$" | sort -V | tail -1 || true) # 3.6, 3.7, 3.8, etc.
 if [[ ! ${PYTHON_BIN} ]]; then
     PYTHON_BIN=$(/usr/bin/python3 -V | sed -r -e "s#Python ##" -e "s#([0-9])\.([0-9]+)\.([0-9]+)#\1.\2#")
@@ -38,7 +39,7 @@ if [[ ! ${PYTHON_BIN} ]]; then
     fi
 fi
 if [[ ! -L /usr/bin/python ]]; then
-    ln -s /usr/bin/${PYTHON_BIN} /usr/bin/python
+    ln -s /usr/bin/"${PYTHON_BIN}" /usr/bin/python
 fi
 
 # install yq (depends on jq and pyyaml - if jq and pyyaml not already installed, this will try to compile it) and jsonschema
@@ -50,12 +51,15 @@ if [[ -f /tmp/root-local.tgz ]] || [[ ${BOOTSTRAP} == "true" ]]; then
     fi
     /usr/bin/python -m pip install --user yq jsonschema
     # NOTE: used to be in /root/.local but now can be found in /opt/app-root/src/.local
+    # shellcheck disable=SC2043
     for d in /opt/app-root/src/.local; do
         if [[ -d ${d} ]]; then
             cp ${d}/bin/yq ${d}/bin/jsonschema /usr/local/bin/
-            mkdir -p ${d}/lib/${PYTHON_BIN}/site-packages/
-            pushd ${d}/lib/${PYTHON_BIN}/site-packages/ >/dev/null
-            cp -r PyYAML* xmltodict* yaml* yq* jsonschema* /usr/lib/${PYTHON_BIN}/site-packages/
+            mkdir -p ${d}/lib/"${PYTHON_BIN}"/site-packages/
+            # shellcheck disable=SC2164
+            pushd ${d}/lib/"${PYTHON_BIN}"/site-packages/ >/dev/null
+            cp -r PyYAML* xmltodict* yaml* yq* jsonschema* /usr/lib/"${PYTHON_BIN}"/site-packages/
+            # shellcheck disable=SC2164
             popd >/dev/null
         fi
     done
