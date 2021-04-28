@@ -37,7 +37,7 @@ jobs:
         fetch-depth: 10
     - name: Get yarn cache directory path
       id: yarn-cache-dir-path
-      run: echo "::set-output name=dir::$(yarn cache dir)"
+      run: echo "::set-output name=dir::$(yarn config get cacheFolder)"
     - uses: actions/cache@v2
       id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
       with:
@@ -47,7 +47,7 @@ jobs:
     - name: typescript
       run: |
         yarn
-        yarn workspaces run build
+        yarn workspaces foreach run build
     - name: report-coverage
       uses: codecov/codecov-action@v1
       with:

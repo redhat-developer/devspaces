@@ -10,6 +10,8 @@
 
 set -e
 
+base_dir=$(cd "$(dirname "$0")"; pwd)
+
 REGISTRY="quay.io"
 ORGANIZATION="eclipse"
 TAG="nightly"
@@ -32,8 +34,6 @@ Options:
     --offline
         Build offline version of registry, with all artifacts included
         cached in the registry; disabled by default.
-    --rhel
-        Build using the rhel.Dockerfile (UBI images) instead of default
     --skip-oci-image
         Build artifacts but do not create the image
 "
@@ -78,9 +78,11 @@ parse_arguments "$@"
 echo "Update yarn dependencies..."
 yarn
 echo "Build tooling..."
-yarn --cwd "$(pwd)/tools/build" build
+pushd "${base_dir}"/tools/build > /dev/null
+yarn build
 echo "Generate artifacts..."
-eval node "${NODE_BUILD_OPTIONS}" tools/build/lib/entrypoint.js --output-folder:"$(pwd)/output" ${BUILD_FLAGS}
+eval yarn node "${NODE_BUILD_OPTIONS}" lib/entrypoint.js --output-folder:"${base_dir}/output" ${BUILD_FLAGS}
+popd > /dev/null
 
 if [ "${SKIP_OCI_IMAGE}" != "true" ]; then
     BUILD_COMMAND="build"
