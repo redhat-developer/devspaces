@@ -65,6 +65,7 @@ CRW_CONTAINERS_RHEC="\
 codeready-workspaces/configbump-rhel8 \
 codeready-workspaces/crw-2-rhel8-operator \
 codeready-workspaces/crw-2-rhel8-operator-metadata \
+codeready-workspaces/dashboard-rhel8 \
 codeready-workspaces/devfileregistry-rhel8 \
 codeready-workspaces/devworkspace-controller-rhel8 \
 \

@@ -73,6 +73,7 @@ if [[ ${pkgs_devel_branch} ]] && [[ ${CSV_VERSION} ]]; then
 	codeready-workspaces-configbump \
 	codeready-workspaces-operator \
 	codeready-workspaces-operator-metadata \
+	codeready-workspaces-dashboard \
 	codeready-workspaces-devfileregistry \
 	codeready-workspaces-devworkspace-controller \
 	\

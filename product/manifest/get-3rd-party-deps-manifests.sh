@@ -166,6 +166,7 @@ if [[ ${phases} == *"1"* ]]; then
 	codeready-workspaces-configbump \
 	codeready-workspaces-operator \
 	codeready-workspaces-operator-metadata \
+	codeready-workspaces-dashboard \
 	codeready-workspaces-devfileregistry \
 	codeready-workspaces-devworkspace-controller \
 	\
