@@ -28,7 +28,7 @@ jobs:
           node-version: '12'
       - name: extract content
         run: |
-          docker create --name pluginRegistry quay.io/crw/plugin-registry-rhel8:nightly-gh-action sh
+          docker create --name pluginRegistry quay.io/crw/pluginregistry-rhel8:nightly-gh-action sh
           mkdir content
           docker cp pluginRegistry:/var/www/html/v3 content/v3
           docker rm -f pluginRegistry

@@ -65,9 +65,9 @@ jobs:
 
       - name: image-build
         run: |
-          docker pull quay.io/crw/plugin-registry-rhel8:nightly-gh-action
+          docker pull quay.io/crw/pluginregistry-rhel8:nightly-gh-action
           BUILDER=docker SKIP_FORMAT=true SKIP_LINT=true SKIP_TEST=true ./build.sh --tag nightly-gh-action
 
       - name: push plugin registry image
         run: |
-          docker push quay.io/crw/plugin-registry-rhel8:nightly-gh-action
+          docker push quay.io/crw/pluginregistry-rhel8:nightly-gh-action

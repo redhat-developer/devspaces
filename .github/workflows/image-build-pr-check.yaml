@@ -67,12 +67,12 @@ jobs:
         export SKIP_FORMAT=true
         export SKIP_LINT=true
         export SKIP_TEST=true
-        docker pull quay.io/crw/plugin-registry-rhel8:nightly-gh-action
+        docker pull quay.io/crw/pluginregistry-rhel8:nightly-gh-action
         BUILDER=docker ./build.sh --tag pr-check
         EXPORTED_FOLDER=/usr/local/apache2/htdocs/v3
         ls -la output/
-        docker run --rm --entrypoint=sh quay.io/crw/plugin-registry-rhel8:pr-check -c "ls -la ${EXPORTED_FOLDER}"
-        docker create --name pluginRegistry quay.io/crw/plugin-registry-rhel8:pr-check sh
+        docker run --rm --entrypoint=sh quay.io/crw/pluginregistry-rhel8:pr-check -c "ls -la ${EXPORTED_FOLDER}"
+        docker create --name pluginRegistry quay.io/crw/pluginregistry-rhel8:pr-check sh
         mkdir root-dir
         docker cp pluginRegistry:${EXPORTED_FOLDER} root-dir/v3
         docker rm -f pluginRegistry
