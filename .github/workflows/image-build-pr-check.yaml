@@ -69,7 +69,7 @@ jobs:
         export SKIP_TEST=true
         docker pull quay.io/crw/pluginregistry-rhel8:nightly-gh-action
         BUILDER=docker ./build.sh --tag pr-check
-        EXPORTED_FOLDER=/usr/local/apache2/htdocs/v3
+        EXPORTED_FOLDER=/var/www/html/v3
         ls -la output/
         docker run --rm --entrypoint=sh quay.io/crw/pluginregistry-rhel8:pr-check -c "ls -la ${EXPORTED_FOLDER}"
         docker create --name pluginRegistry quay.io/crw/pluginregistry-rhel8:pr-check sh
@@ -81,7 +81,7 @@ jobs:
     - uses: actions/upload-artifact@v2
       with:
         name: plugin-registry-content-crw
-        path: content-crw.tgz
+        path: dependencies/che-plugin-registry/content-crw.tgz
   pull-request-info:
     if: ${{ github.event_name == 'pull_request' }}
     runs-on: ubuntu-20.04
