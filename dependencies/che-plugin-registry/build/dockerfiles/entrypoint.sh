@@ -37,6 +37,8 @@ METAS_DIR="${METAS_DIR:-${DEFAULT_METAS_DIR}}"
 #   \7 - Optional quotation following image reference
 IMAGE_REGEX='([[:space:]]*"?)([._:a-zA-Z0-9-]*)/([._a-zA-Z0-9-]*)/([._a-zA-Z0-9-]*)(@sha256)?:([._a-zA-Z0-9-]*)("?)'
 
+function update_container_image_references() {
+
 # We can't use the `-d` option for readarray because
 # registry.centos.org/centos/httpd-24-centos7 ships with Bash 4.2
 # The below command will fail if any path contains whitespace
@@ -58,6 +60,13 @@ for meta in "${metas[@]}"; do
     sed -i -E "s|image:$IMAGE_REGEX|image:\1\2/\3/\4:${TAG}\7|" "$meta"
   fi
 done
+
+}
+
+
+function run_main() {
+
+update_container_image_references
 
 # For testing, the images used for the che-theia, theia runtime, and machine-exec
 # plugins can be overridden via the environment variables
@@ -83,3 +92,11 @@ if [ -n "$CHE_PLUGIN_REGISTRY_MACHINE_EXEC_IMAGE" ]; then
 fi
 
 exec "${@}"
+
+}
+
+# do not execute the main function in unit tests
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]
+then
+    run_main "${@}"
+fi
