@@ -35,8 +35,7 @@ METAS_DIR="${METAS_DIR:-${DEFAULT_METAS_DIR}}"
 #   \5 - Optional image digest identifier (empty for tags), e.g. quay.io/eclipse/che-theia(@sha256):digest
 #   \6 - Tag of image or digest, e.g. quay.io/eclipse/che-theia:(tag)
 #   \7 - Optional quotation following image reference
-IMAGE_REGEX='([[:space:]]*"?)([._:a-zA-Z0-9-]*)/([._a-zA-Z0-9-]*)/([._a-zA-Z0-9-]*)(@sha256)?:([._a-zA-Z0-9-]*)("?)'
-
+IMAGE_REGEX="([[:space:]]*[\"']?)([._:a-zA-Z0-9-]*)/([._a-zA-Z0-9-]*)/([._a-zA-Z0-9-]*)(@sha256)?:([._a-zA-Z0-9-]*)([\"']?)"
 function update_container_image_references() {
 
     # We can't use the `-d` option for readarray because
