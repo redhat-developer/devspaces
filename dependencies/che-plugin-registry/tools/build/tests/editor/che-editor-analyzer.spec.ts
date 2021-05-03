@@ -36,10 +36,10 @@ describe('Test CheEditorsAnalyzer', () => {
     expect(result.editors.length).toBeGreaterThan(1);
 
     // search for editors with an id provided in yaml
-    const theiaEditors = result.editors.filter(plugin => plugin.id === 'eclipse/che-theia/next');
+    const theiaEditors = result.editors.filter(plugin => plugin.metadata.name === 'eclipse/che-theia/next');
     expect(theiaEditors).toBeDefined();
     expect(theiaEditors.length).toBe(1);
     const theiaEditor = theiaEditors[0];
-    expect(theiaEditor.repository).toBe('https://github.com/eclipse-che/che-theia');
+    expect(theiaEditor.metadata.attributes.repository).toBe('https://github.com/eclipse-che/che-theia');
   });
 });

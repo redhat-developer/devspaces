@@ -34,12 +34,5 @@ describe('Test ChePluginsAnalyzer', () => {
     expect(result).toBeDefined();
     expect(result.plugins).toBeDefined();
     expect(result.plugins.length).toBeGreaterThan(1);
-
-    // search for plugins with an id provided in yaml
-    const machineExecPlugins = result.plugins.filter(plugin => plugin.id === 'eclipse/che-machine-exec-plugin/nightly');
-    expect(machineExecPlugins).toBeDefined();
-    expect(machineExecPlugins.length).toBe(1);
-    const machineExecPlugin = machineExecPlugins[0];
-    expect(machineExecPlugin.repository).toBe('https://github.com/eclipse/che-machine-exec/');
   });
 });
