@@ -59,15 +59,15 @@ You can then reference this image in your deployment (set image pull policy to *
 
 For more info on how to test locally built changes in a local OKD 3.11 (Minishift 1.34) cluster, see link:devdoc/building/building-crw.adoc#make-changes-to-crw-and-re-deploy-to-minishift[Build CodeReady Workspaces server container locally and deploy using Minishift].
 
-[NOTE]
-====
-
 Once published, images will be in locations like these:
 
 * registry.redhat.io/codeready-workspaces/configbump-rhel8
 * registry.redhat.io/codeready-workspaces/crw-2-rhel8-operator
 * registry.redhat.io/codeready-workspaces/crw-2-rhel8-operator-metadata
+* registry.redhat.io/codeready-workspaces/dashboard-rhel8
 * registry.redhat.io/codeready-workspaces/devfileregistry-rhel8
+* registry.redhat.io/codeready-workspaces/devworkspace-controller-rhel8
+* registry.redhat.io/codeready-workspaces/devworkspace-rhel8
 * registry.redhat.io/codeready-workspaces/imagepuller-rhel8
 * registry.redhat.io/codeready-workspaces/jwtproxy-rhel8
 * registry.redhat.io/codeready-workspaces/machineexec-rhel8
@@ -88,7 +88,6 @@ Once published, images will be in locations like these:
 * registry.redhat.io/codeready-workspaces/theia-endpoint-rhel8
 * registry.redhat.io/codeready-workspaces/theia-rhel8
 * registry.redhat.io/codeready-workspaces/traefik-rhel8
-====
 
 ### How to Build CRW Server Container Using casc Jenkins (REQUIRES VPN)
 
@@ -114,9 +113,9 @@ cd codeready-workspaces
 
 ### Keeping CRW Server in sync with upstream and downstream
 
-Upstream: https://github.com/eclipse/che
-Midstream: (this repo)
-Downstream: http://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces/tree/?h=crw-2-rhel-8
+* Upstream: https://github.com/eclipse/che
+* Midstream: (this repo)
+* Downstream: http://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces/tree/?h=crw-2-rhel-8
 
 Sync jobs:
 
@@ -154,9 +153,9 @@ Branding is currently in two places.
 
 ### Dashboard
 
-To reskin the Che server assembly, you need to edit the following files, which are used in the link:https://github.com/eclipse/che-dashboard/tree/master/assets/branding[Che Dashboard]:
+To reskin the Che server assembly, you need to edit the following files, which are used in the link:https://github.com/eclipse-che/che-dashboard/tree/main/assets/branding[Che Dashboard]:
 
-* link:assembly/branding/branding-crw.css[assembly/branding/branding-crw.css] - replacement for link:https://github.com/eclipse/che-dashboard/tree/master/assets/branding/branding.css[Che default css], copied via link:https://github.com/redhat-developer/codeready-workspaces-images/blob/crw-2-rhel-8/crw-jenkins/jobs/CRW_CI/crw-server_2.x.jenkinsfile[Jenkinsfile] during Pipeline build
+* link:assembly/branding/branding-crw.css[assembly/branding/branding-crw.css] - replacement for link:https://github.com/eclipse-che/che-dashboard/tree/main/assets/branding/branding.css[Che default css], copied via link:https://github.com/redhat-developer/codeready-workspaces-images/blob/crw-2-rhel-8/crw-jenkins/jobs/CRW_CI/crw-server_2.x.jenkinsfile[Jenkinsfile] during Pipeline build
 
 * link:assembly/branding/product.json.template[assembly/branding/product.json.template]
 ** link:assembly/branding/favicon.ico[assembly/branding/favicon.ico] - browser tab favicon
@@ -166,7 +165,7 @@ To reskin the Che server assembly, you need to edit the following files, which a
 
 See also SVG assets in link:product/branding/[product/branding/] folder.
 
-NOTE: In a future release, the Che Dashboard will be a separate deployment from the Che Server, which means the above information may become incorrect.
+NOTE: In a future release (CRW 2.9), the link:https://github.com/eclipse-che/che-dashboard/[Che Dashboard] will become a separate image & deployment from the Che Server, which means the above information may become incorrect.
 
 ### Theia
 
