@@ -35,7 +35,7 @@ METAS_DIR="${METAS_DIR:-${DEFAULT_METAS_DIR}}"
 #   \5 - Optional image digest identifier (empty for tags), e.g. quay.io/eclipse/che-theia(@sha256):digest
 #   \6 - Tag of image or digest, e.g. quay.io/eclipse/che-theia:(tag)
 #   \7 - Optional quotation following image reference
-IMAGE_REGEX="([[:space:]]*[\"']?)([._:a-zA-Z0-9-]*)/([._a-zA-Z0-9-]*)/([._a-zA-Z0-9-]*)(@sha256)?:([._a-zA-Z0-9-]*)([\"']?)"
+IMAGE_REGEX="([[:space:]>-]*[\r]?[[:space:]]*[\"']?)([._:a-zA-Z0-9-]*)/([._a-zA-Z0-9-]*)/([._a-zA-Z0-9-]*)(@sha256)?:([._a-zA-Z0-9-]*)([\"']?)"
 function update_container_image_references() {
 
     # We can't use the `-d` option for readarray because
@@ -48,15 +48,15 @@ function update_container_image_references() {
     # Defaults don't work because registry and tags may be different.
     if [ -n "$REGISTRY" ]; then
         echo "    Updating image registry to $REGISTRY"
-        sed -i -E "s|image:$IMAGE_REGEX|image:\1${REGISTRY}/\3/\4\5:\6\7|" "$meta"
+        < "$meta" tr '\n' '\r' | sed -E "s|image:$IMAGE_REGEX|image:\1${REGISTRY}/\3/\4\5:\6\7|g" |  tr '\r' '\n' > "$meta.tmp" && cat "$meta.tmp" > "$meta" && rm "$meta.tmp"
     fi
     if [ -n "$ORGANIZATION" ]; then
         echo "    Updating image organization to $ORGANIZATION"
-        sed -i -E "s|image:$IMAGE_REGEX|image:\1\2/${ORGANIZATION}/\4\5:\6\7|" "$meta"
+        < "$meta" tr '\n' '\r' | sed -E "s|image:$IMAGE_REGEX|image:\1\2/${ORGANIZATION}/\4\5:\6\7|g" |  tr '\r' '\n' > "$meta.tmp" && cat "$meta.tmp" > "$meta" && rm "$meta.tmp"
     fi
     if [ -n "$TAG" ]; then
         echo "    Updating image tag to $TAG"
-        sed -i -E "s|image:$IMAGE_REGEX|image:\1\2/\3/\4:${TAG}\7|" "$meta"
+        < "$meta" tr '\n' '\r' | sed -E "s|image:$IMAGE_REGEX|image:\1\2/\3/\4:${TAG}\7|g" |  tr '\r' '\n' > "$meta.tmp" && cat "$meta.tmp" > "$meta" && rm "$meta.tmp"
     fi
     done
 
