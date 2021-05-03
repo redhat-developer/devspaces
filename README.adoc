@@ -1,3 +1,7 @@
+Links marked with this icon :door: are _internal to Red Hat_. This includes Jenkins servers, job configs in gitlab, and container sources in dist-git. 
+
+Because these services are internal, in the interest of making all things open, we've copied as much as possible into the link:https://github.com/redhat-developer/codeready-workspaces-images[codeready-workspaces-images] repo.
+
 # What's inside?
 
 NOTE: the so-called master branch is deprecated and is no longer kept up to date. Instead, the latest nightly sources are in **crw-2-rhel-8 branch**, synced to upstream projects' main (or master) branches.
@@ -94,7 +98,7 @@ See this document for how to use those build systems, in order to publish a cont
 
 See also:
 
-* https://main-jenkins-csb-crwqe.apps.ocp4.prod.psi.redhat.com/job/CRW_CI/ (crw-server_*)
+* https://main-jenkins-csb-crwqe.apps.ocp4.prod.psi.redhat.com/job/CRW_CI/ (crw-server_*) :door:
 * https://github.com/redhat-developer/codeready-workspaces-images#jenkins-jobs
 
 ### How to Build CRW Server Container Locally (REQUIRES VPN)
@@ -116,38 +120,33 @@ Downstream: http://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces/tr
 
 Sync jobs:
 
-* https://main-jenkins-csb-crwqe.apps.ocp4.prod.psi.redhat.com/job/CRW_CI/ (crw-server_*)
-* https://gitlab.cee.redhat.com/codeready-workspaces/crw-jenkins/-/tree/master/jobs/CRW_CI (sources)
+* https://main-jenkins-csb-crwqe.apps.ocp4.prod.psi.redhat.com/job/CRW_CI/ (crw-server_*) :door:
+* https://gitlab.cee.redhat.com/codeready-workspaces/crw-jenkins/-/tree/master/jobs/CRW_CI (sources) :door:
 * https://github.com/redhat-developer/codeready-workspaces-images#jenkins-jobs (copied sources)
 
 The Jenkinsfile in this repo has moved. See:
 
-* https://gitlab.cee.redhat.com/codeready-workspaces/crw-jenkins/-/tree/master/jobs/CRW_CI
+* https://gitlab.cee.redhat.com/codeready-workspaces/crw-jenkins/-/tree/master/jobs/CRW_CI :door:
 * https://github.com/redhat-developer/codeready-workspaces-images#jenkins-jobs
 
 
 ### Keeping CRW dependencies in sync with upstream and downstream
 
-Folders under link:dependencies[/dependencies] are synced to https://github.com/redhat-developer/codeready-workspaces-images. If no matching project exists under the link:dependencies[/dependencies] folder, sync occurs directly from an upstream Che project.
+Folders under link:dependencies[/dependencies] are synced to https://github.com/redhat-developer/codeready-workspaces-images. If no matching project exists under the link:dependencies[/dependencies] folder, sync occurs directly from an upstream Che project. 
+
+The sync logic is in one of three places:
+
+* a Jenkins job - eg., link:https://github.com/redhat-developer/codeready-workspaces-images/blob/crw-2-rhel-8/crw-jenkins/jobs/CRW_CI/crw-server_2.x.jenkinsfile[crw-server_2.x.jenkinsfile], 
+* a get-sources-jenkins.sh script - eg., link:https://github.com/redhat-developer/codeready-workspaces-images/blob/crw-2-rhel-8/codeready-workspaces-plugin-java8/get-sources-jenkins.sh[plugin-java8 get-sources-jenkins.sh], or
+* a sync-*.sh script - eg., link:https://github.com/redhat-developer/codeready-workspaces-images/blob/crw-2-rhel-8/codeready-workspaces-devworkspace-controller/build/scripts/sync.sh[devworkspace controller build/scripts/sync.sh]. 
+
+Note over time we're trying to move all sync logic out of Jenkinsfiles and into scripts that can be run locally, so during outages build process can still be orchestrated. Goal is to have Jenkins simply call sync.sh scripts to perform syncs, and get-sources.sh scripts to collect assets from Jenkins (or other places) in order to commit those source tarballs + trigger Brew builds.
 
 Sync jobs:
 
-* https://main-jenkins-csb-crwqe.apps.ocp4.prod.psi.redhat.com/job/CRW_CI/ (jobs)
-* https://gitlab.cee.redhat.com/codeready-workspaces/crw-jenkins/-/tree/master/jobs/CRW_CI (sources)
+* https://main-jenkins-csb-crwqe.apps.ocp4.prod.psi.redhat.com/job/CRW_CI/ (jobs) :door:
+* https://gitlab.cee.redhat.com/codeready-workspaces/crw-jenkins/-/tree/master/jobs/CRW_CI (sources) :door:
 * https://github.com/redhat-developer/codeready-workspaces-images#jenkins-jobs (copied sources)
-
-These files have moved, as they sync directly from an upstream repo:
-
-    * dependencies/che-jwtproxy/Jenkinsfile
-    * dependencies/che-machine-exec/Jenkinsfile
-    * dependencies/che-pluginbroker/Jenkinsfile
-    * dependencies/configbump/Jenkinsfile
-    * dependencies/kubernetes-image-puller/Jenkinsfile
-    * dependencies/push-latest.Jenkinsfile
-    * dependencies/send-email-qe-build-list.Jenkinsfile
-    * dependencies/traefik/Jenkinsfile
-    * dependencies/update-digests.Jenkinsfile
-
 
 ## Branding
 
