@@ -31,7 +31,7 @@ plugins:
     sidecar:
       image: "quay.io/crw/plugin-java8-rhel8:nightly"
       name: vscode-node-debug
-      memoryLimit: 512Mi
+      memoryLimit: 1Gi
       cpuLimit: 500m
       cpuRequest: 30m
       args:
@@ -44,8 +44,6 @@ plugins:
       revision: 1.49.3
       directory: extensions/typescript-language-features
     featured: true
-    aliases:
-      - che-incubator/typescript
     sidecar:
       image: "quay.io/crw/plugin-java8-rhel8:nightly"
       memoryLimit: 512Mi
@@ -91,6 +89,12 @@ plugins:
   - repository:
       url: 'https://github.com/eclipse-cdt/cdt-vscode'
       revision: 2edfc3a3474bc7a732014e1a4631561b991f845a
+    aliases:
+      - che-incubator/cpptools
+    metaYaml:
+      extraDependencies:
+        - eclipse-cdt/cdt-gdb-vscode
+        - llvm-vs-code-extensions/vscode-clangd
     featured: true
     sidecar:
       image: "quay.io/crw/stacks-cpp-rhel8:nightly"
@@ -243,9 +247,6 @@ plugins:
       memoryLimit: 1500Mi
       cpuLimit: 500m
       cpuRequest: 30m
-      volumeMounts:
-        - name: kube
-          path: /home/theia/.kube
     extension: https://download.jboss.org/jbosstools/vscode/3rdparty/vscode-openshift-tools/vscode-openshift-connector-0.1.5.vsix
     metaYaml:
       extraDependencies:
@@ -283,13 +284,11 @@ plugins:
         - -c
         - ${PLUGIN_REMOTE_ENDPOINT_EXECUTABLE}
     extension: https://download.jboss.org/jbosstools/vscode/3rdparty/vscode-java-debug/vscode-java-debug-0.26.0.vsix
-  - id: redhat/java
+  - id: redhat/java11
     repository:
       url: 'https://github.com/redhat-developer/vscode-java'
       revision: v0.69.0
     featured: true
-    aliases:
-      - redhat/java11
     preferences:
       java.server.launchMode: Standard
     sidecar:
@@ -298,6 +297,9 @@ plugins:
       memoryLimit: 1500Mi
       cpuLimit: 500m
       cpuRequest: 30m
+      env:
+        - name: GRADLE_HOME
+          value: /opt/gradle/
       args:
         - sh
         - -c
@@ -311,10 +313,12 @@ plugins:
     metaYaml:
       extraDependencies:
         - vscjava/vscode-java-debug
-  - id: redhat/java8
+  - id: redhat/java
     repository:
       url: 'https://github.com/redhat-developer/vscode-java'
       revision: v0.63.0
+    aliases:
+      - redhat/java8
     preferences:
       java.server.launchMode: Standard
     sidecar:
