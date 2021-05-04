@@ -10,6 +10,8 @@
 
 set -e
 
+base_dir=$(cd "$(dirname "$0")"; pwd)
+
 REGISTRY="quay.io"
 ORGANIZATION="crw"
 TAG="nightly"
@@ -71,6 +73,9 @@ function parse_arguments() {
 }
 
 parse_arguments "$@"
+
+echo -e "\nTest entrypoint.sh"
+EMOJI_HEADER="-" EMOJI_PASS="[PASS]" EMOJI_FAIL="[FAIL]" "${base_dir}"/build/dockerfiles/test_entrypoint.sh
 
 BUILD_COMMAND="build"
 if [[ -z $BUILDER ]]; then
