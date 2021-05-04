@@ -11,22 +11,17 @@ name: PR Checks
 on:
   pull_request:
     branches: 
-      - crw-2-rhel-8
-    paths:
-      - 'dependencies/che-plugin-registry/**'
+      - '**'
 jobs:
   # check EOF newline
   linelint:
     runs-on: ubuntu-20.04
-    defaults:
-      run:
-        working-directory: dependencies/che-plugin-registry
     name: eof-newline
     steps:
       - name: Checkout
         uses: actions/checkout@v2
         with:
-          fetch-depth: 10
+          fetch-depth: 0
       - name: Linelint
         uses: fernandrone/linelint@0.0.5
         id: linelint

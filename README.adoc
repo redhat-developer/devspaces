@@ -174,4 +174,3 @@ In addition to the Che Dashboard branding, there is also branding elements for l
 ### A note about SVG files 
 
 If using Inkscape to save files, make sure you export as *Plain SVG*, then edit the resulting .svg file to remove any `<metadata>...</metadata>` tags and all their contents. You can also remove the `xmlns:rdf` definition. This will ensure they compile correctly.
-

@@ -56,4 +56,3 @@ echo "[INFO] Missing RPM signatures logged to: "
 echo "${SCRIPT_DIR}"/missing.signatures.txt
 echo
 echo "[INFO] Additional temporary files in ${TMPDIR}"
-
