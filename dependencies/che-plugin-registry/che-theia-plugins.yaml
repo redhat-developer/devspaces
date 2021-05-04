@@ -155,14 +155,14 @@ plugins:
     extension: https://download.jboss.org/jbosstools/vscode/3rdparty/vscode-go/go-0.16.1.vsix
   - repository:
       url: 'https://github.com/camel-tooling/vscode-camelk'
-      revision: 0.0.23
+      revision: 0.0.24
     sidecar:
       image: "quay.io/crw/plugin-kubernetes-rhel8:nightly"
       name: vscode-camelk
       memoryLimit: 1Gi
       cpuLimit: 500m
       cpuRequest: 30m
-    extension: https://download.jboss.org/jbosstools/vscode/stable/vscode-camelk/vscode-camelk-0.0.23-159.vsix
+    extension: https://download.jboss.org/jbosstools/vscode/stable/vscode-camelk/vscode-camelk-0.0.24-198.vsix
     metaYaml:
       skipDependencies:
         - redhat/vscode-commons
@@ -348,7 +348,7 @@ plugins:
     extension: https://download.jboss.org/jbosstools/vscode/3rdparty/vscode-php-debug/php-debug-1.13.0.vsix
   - repository:
       url: 'https://github.com/camel-tooling/camel-lsp-client-vscode'
-      revision: 0.0.31
+      revision: 0.0.32
     sidecar:
       image: "quay.io/crw/plugin-java11-rhel8:nightly"
       name: vscode-apache-camel
@@ -359,7 +359,7 @@ plugins:
         - sh
         - -c
         - ${PLUGIN_REMOTE_ENDPOINT_EXECUTABLE}
-    extension: https://download.jboss.org/jbosstools/vscode/stable/vscode-apache-camel/vscode-apache-camel-0.0.31-143.vsix
+    extension: https://download.jboss.org/jbosstools/vscode/stable/vscode-apache-camel/vscode-apache-camel-0.0.32-205.vsix
   - repository:
       url: 'https://github.com/redhat-developer/vscode-xml'
       revision: 0.14.0
