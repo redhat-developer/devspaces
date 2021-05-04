@@ -36,32 +36,6 @@ METAS_DIR="${METAS_DIR:-${DEFAULT_METAS_DIR}}"
 #   \6 - Tag of image or digest, e.g. quay.io/eclipse/che-theia:(tag)
 #   \7 - Optional quotation following image reference
 IMAGE_REGEX="([[:space:]>-]*[\r]?[[:space:]]*[\"']?)([._:a-zA-Z0-9-]*)/([._a-zA-Z0-9-]*)/([._a-zA-Z0-9-]*)(@sha256)?:([._a-zA-Z0-9-]*)([\"']?)"
-function update_container_image_references() {
-
-    # We can't use the `-d` option for readarray because
-    # registry.centos.org/centos/httpd-24-centos7 ships with Bash 4.2
-    # The below command will fail if any path contains whitespace
-    readarray -t metas < <(find "${METAS_DIR}" -name 'meta.yaml')
-    for meta in "${metas[@]}"; do
-    echo "Checking meta $meta"
-    # Need to update each field separately in case they are not defined.
-    # Defaults don't work because registry and tags may be different.
-    if [ -n "$REGISTRY" ]; then
-        echo "    Updating image registry to $REGISTRY"
-        < "$meta" tr '\n' '\r' | sed -E "s|image:$IMAGE_REGEX|image:\1${REGISTRY}/\3/\4\5:\6\7|g" |  tr '\r' '\n' > "$meta.tmp" && cat "$meta.tmp" > "$meta" && rm "$meta.tmp"
-    fi
-    if [ -n "$ORGANIZATION" ]; then
-        echo "    Updating image organization to $ORGANIZATION"
-        < "$meta" tr '\n' '\r' | sed -E "s|image:$IMAGE_REGEX|image:\1\2/${ORGANIZATION}/\4\5:\6\7|g" |  tr '\r' '\n' > "$meta.tmp" && cat "$meta.tmp" > "$meta" && rm "$meta.tmp"
-    fi
-    if [ -n "$TAG" ]; then
-        echo "    Updating image tag to $TAG"
-        < "$meta" tr '\n' '\r' | sed -E "s|image:$IMAGE_REGEX|image:\1\2/\3/\4:${TAG}\7|g" |  tr '\r' '\n' > "$meta.tmp" && cat "$meta.tmp" > "$meta" && rm "$meta.tmp"
-    fi
-    done
-
-}
-
 
 function run_main() {
 
@@ -91,6 +65,32 @@ function run_main() {
     fi
 
     exec "${@}"
+
+}
+
+function update_container_image_references() {
+
+    # We can't use the `-d` option for readarray because
+    # registry.centos.org/centos/httpd-24-centos7 ships with Bash 4.2
+    # The below command will fail if any path contains whitespace
+    readarray -t metas < <(find "${METAS_DIR}" -name 'meta.yaml')
+    for meta in "${metas[@]}"; do
+    echo "Checking meta $meta"
+    # Need to update each field separately in case they are not defined.
+    # Defaults don't work because registry and tags may be different.
+    if [ -n "$REGISTRY" ]; then
+        echo "    Updating image registry to $REGISTRY"
+        < "$meta" tr '\n' '\r' | sed -E "s|image:$IMAGE_REGEX|image:\1${REGISTRY}/\3/\4\5:\6\7|g" |  tr '\r' '\n' > "$meta.tmp" && cat "$meta.tmp" > "$meta" && rm "$meta.tmp"
+    fi
+    if [ -n "$ORGANIZATION" ]; then
+        echo "    Updating image organization to $ORGANIZATION"
+        < "$meta" tr '\n' '\r' | sed -E "s|image:$IMAGE_REGEX|image:\1\2/${ORGANIZATION}/\4\5:\6\7|g" |  tr '\r' '\n' > "$meta.tmp" && cat "$meta.tmp" > "$meta" && rm "$meta.tmp"
+    fi
+    if [ -n "$TAG" ]; then
+        echo "    Updating image tag to $TAG"
+        < "$meta" tr '\n' '\r' | sed -E "s|image:$IMAGE_REGEX|image:\1\2/\3/\4:${TAG}\7|g" |  tr '\r' '\n' > "$meta.tmp" && cat "$meta.tmp" > "$meta" && rm "$meta.tmp"
+    fi
+    done
 
 }
 
