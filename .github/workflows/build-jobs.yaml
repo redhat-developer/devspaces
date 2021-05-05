@@ -1,0 +1,73 @@
+#
+# Copyright (c) 2020-2021 Red Hat, Inc.
+# This program and the accompanying materials are made
+# available under the terms of the Eclipse Public License 2.0
+# which is available at https://www.eclipse.org/legal/epl-2.0/
+#
+# SPDX-License-Identifier: EPL-2.0
+#
+
+name: Build/Publish
+
+on:
+  push:
+    branches: 
+      - crw-2-rhel-8
+    paths:
+      - 'dependencies/che-plugin-registry/**'
+
+jobs:
+  nightly-build-publish:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: dependencies/che-plugin-registry
+    steps:
+      - name: Clone source code
+        uses: actions/checkout@v1
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '12'
+
+      - name: Login to quay.io
+        uses: docker/login-action@v1
+        with:
+          registry: quay.io
+          username: ${{ secrets.QUAY_USERNAME }}
+          password: ${{ secrets.QUAY_PASSWORD }}
+
+      - name: Get yarn cache directory path
+        id: yarn-cache-dir-path
+        run: echo "::set-output name=dir::$(yarn config get cacheFolder)"
+
+      - uses: actions/cache@v2
+        name: Cache yarn dependencies
+        id: yarn-cache
+        with:
+          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+
+      - uses: actions/cache@v2
+        name: Cache vsix dependencies
+        id: download-unpacked-cache
+        with:
+          path: | 
+            /tmp/che-plugin-registry/download-folder
+            /tmp/che-plugin-registry/unpack-folder
+          key: download-unpacked-cache-${{ hashFiles('**/che-theia-plugins.yaml') }}
+          restore-keys: |
+            download-unpacked-cache-
+
+      - name: image-build
+        run: |
+          docker pull quay.io/crw/pluginregistry-rhel8:nightly-gh-action
+          BUILDER=docker SKIP_FORMAT=true SKIP_LINT=true SKIP_TEST=true ./build.sh --tag nightly-gh-action
+
+      - name: push plugin registry image
+        run: |
+          docker push quay.io/crw/pluginregistry-rhel8:nightly-gh-action
