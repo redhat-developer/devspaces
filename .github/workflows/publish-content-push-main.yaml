@@ -19,20 +19,19 @@ jobs:
   publish:
     name: publish
     runs-on: ubuntu-20.04
-    defaults:
-      run:
-        working-directory: dependencies/che-plugin-registry
     steps:
       - uses: actions/setup-node@v1
         with:
           node-version: '12'
       - name: extract content
         run: |
+          docker pull quay.io/crw/pluginregistry-rhel8:nightly-gh-action
           docker create --name pluginRegistry quay.io/crw/pluginregistry-rhel8:nightly-gh-action sh
-          mkdir content
-          docker cp pluginRegistry:/var/www/html/v3 content/v3
+          mkdir /tmp/crw-plugin-registry/content
+          docker cp pluginRegistry:/var/www/html/v3 /tmp/crw-plugin-registry/content/v3
+          ls -a /tmp/crw-plugin-registry/content/v3
           docker rm -f pluginRegistry
-          cp content/v3/plugins/index.json content/index.json
+          cp /tmp/crw-plugin-registry/content/v3/plugins/index.json /tmp/crw-plugin-registry/content/index.json
       - name: publish
         env:
           SURGE_TOKEN: ${{ secrets.SURGE_TOKEN }}
@@ -40,16 +39,16 @@ jobs:
           sudo apt-get install tree
           npm install -g surge
           # generate tree index on all directories
-          for directory in `find content/ -type d`
+          for directory in `find /tmp/crw-plugin-registry/content/ -type d`
             do
               (cd $directory && tree -H '.' -L 1 --noreport --charset utf-8 | sed '/<p class="VERSION">/,/<\/p>/d' > index.html)
            done
            # Make meta.yaml as index
-           for file in $(find content -name 'meta.yaml' -type f)
+           for file in $(find /tmp/crw-plugin-registry/content -name 'meta.yaml' -type f)
              do
                PARENT_DIR=$(dirname $file);
                cp ${PARENT_DIR}/meta.yaml ${PARENT_DIR}/index.html
              done
            export DEPLOY_DOMAIN=https://crw-plugin-registry-main.surge.sh
            echo "DEPLOY_DOMAIN=$DEPLOY_DOMAIN" >> $GITHUB_ENV
-           surge ./content --domain $DEPLOY_DOMAIN
+           surge /tmp/crw-plugin-registry/content --domain $DEPLOY_DOMAIN
