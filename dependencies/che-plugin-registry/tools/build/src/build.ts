@@ -68,6 +68,10 @@ export class Build {
   @named('OUTPUT_ROOT_DIRECTORY')
   private outputRootDirectory: string;
 
+  @inject('boolean')
+  @named('SKIP_DIGEST_GENERATION')
+  private skipDigests: boolean;
+
   @inject(FeaturedAnalyzer)
   private featuredAnalyzer: FeaturedAnalyzer;
 
@@ -315,11 +319,14 @@ export class Build {
 
     const computedYamls = [...cheTheiaPluginsMetaYaml, ...cheEditorsMetaYaml, ...chePluginsMetaYaml];
 
-    // update all images to use digest instead of tags
-    const allMetaYamls = await this.wrapIntoTask(
-      'Update tags by digests for OCI images',
-      this.digestImagesHelper.updateImages(computedYamls)
-    );
+    let allMetaYamls = computedYamls;
+    if (!this.skipDigests) {
+      // update all images to use digest instead of tags
+      allMetaYamls = await this.wrapIntoTask(
+        'Update tags by digests for OCI images',
+        this.digestImagesHelper.updateImages(computedYamls)
+      );
+    }
 
     // generate v3/external_images.txt
     await this.wrapIntoTask('Generate v3/external_images.txt', this.externalImagesWriter.write(allMetaYamls));

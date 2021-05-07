@@ -38,6 +38,7 @@ export class InversifyBinding {
     const pluginRegistryRootDirectory = path.resolve(__dirname, '..', '..', '..');
 
     let embedVsix = false;
+    let skipDigestGeneration = false;
 
     const args = process.argv.slice(2);
     args.forEach(arg => {
@@ -46,6 +47,9 @@ export class InversifyBinding {
       }
       if (arg.startsWith('--embed-vsix:')) {
         embedVsix = 'true' === arg.substring('--embed-vsix:'.length);
+      }
+      if (arg.startsWith('--skip-digest-generation:')) {
+        skipDigestGeneration = 'true' === arg.substring('--skip-digest-generation:'.length);
       }
     });
     this.container = new Container();
@@ -74,6 +78,8 @@ export class InversifyBinding {
     this.container.bind('string').toConstantValue(outputDirectory).whenTargetNamed('OUTPUT_ROOT_DIRECTORY');
 
     this.container.bind('boolean').toConstantValue(embedVsix).whenTargetNamed('EMBED_VSIX');
+
+    this.container.bind('boolean').toConstantValue(skipDigestGeneration).whenTargetNamed('SKIP_DIGEST_GENERATION');
 
     await fs.mkdirs(unpackedDirectory);
     await fs.mkdirs(downloadDirectory);
