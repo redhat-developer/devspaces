@@ -1,0 +1,25 @@
+apiVersion: v2
+publisher: redhat-developer
+name: che-omnisharp-plugin
+version: latest
+type: VS Code extension
+displayName: omnisharp-theia-plugin
+title: omnisharp-theia-plugin
+description: omnisharp-theia-plugin
+icon: /v3/images/eclipse-che-logo.png
+category: Other
+repository: 'https://github.com/redhat-developer/omnisharp-theia-plugin'
+firstPublicationDate: '2019-12-03'
+latestUpdateDate: '2021-02-19'
+spec:
+  containers:
+    - image: 'quay.io/eclipse/che-plugin-sidecar@sha256:f398e3ffd5200c56bf56a6f7f9e8db4aa3f639a6125850f169414528260dce8a'
+      name: theia-omnisharp
+      volumes:
+        - name: nuget
+          mountPath: /home/theia/.nuget
+      memoryLimit: 1Gi
+      cpuRequest: 30m
+      cpuLimit: 500m
+  extensions:
+    - 'https://github.com/redhat-developer/omnisharp-theia-plugin/releases/download/v0.0.6/omnisharp_theia_plugin.theia'

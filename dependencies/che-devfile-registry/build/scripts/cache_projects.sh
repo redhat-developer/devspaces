@@ -134,4 +134,3 @@ for devfile in "${devfiles[@]}"; do
 done
 
 rm -rf "$TEMP_DIR"
-

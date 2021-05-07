@@ -18,7 +18,24 @@ test-output/
 .DAV
 
 che-dto.ts
+v3/**/latest/
+
 resources/
 /root-local.tgz
 /resources.tgz
 airgap.Dockerfile
+
+node_modules/
+.eslintcache
+coverage
+output
+
+# https://yarnpkg.com/getting-started/qa#which-files-should-be-gitignored
+# not zero-install mode
+.yarn/*
+!.yarn/patches
+!.yarn/releases
+!.yarn/plugins
+!.yarn/sdks
+!.yarn/versions
+.pnp.*

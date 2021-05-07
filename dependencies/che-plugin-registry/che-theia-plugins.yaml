@@ -1,0 +1,449 @@
+version: 1.0.0
+plugins:
+  - repository:
+      url: 'https://github.com/microsoft/vscode-pull-request-github'
+      revision: 0.20.0
+    aliases:
+      - ms-vscode/vscode-github-pullrequest
+    extension: https://github.com/redhat-developer/codeready-workspaces-vscode-extensions/releases/download/vdb8b64f/vscode-pull-request-github-0.20.0.vsix
+  - repository:
+      url: 'https://github.com/Microsoft/vscode-node-debug'
+      revision: v1.41.1
+    sidecar:
+      image: "quay.io/crw/plugin-java8-rhel8:nightly"
+      name: vscode-node-debug
+      memoryLimit: 512Mi
+      cpuLimit: 500m
+      cpuRequest: 30m
+      args:
+        - sh
+        - -c
+        - ${PLUGIN_REMOTE_ENDPOINT_EXECUTABLE}
+    extension: https://download.jboss.org/jbosstools/vscode/3rdparty/vscode-node-debug/node-debug-1.41.1.vsix
+  - repository:
+      url: 'https://github.com/Microsoft/vscode-node-debug2'
+      revision: v1.42.3
+    metaYaml:
+      extraDependencies:
+        - ms-vscode/node-debug
+    preferences:
+      debug.node.useV3: false
+    sidecar:
+      image: "quay.io/crw/plugin-java8-rhel8:nightly"
+      name: vscode-node-debug
+      memoryLimit: 1Gi
+      cpuLimit: 500m
+      cpuRequest: 30m
+      args:
+        - sh
+        - -c
+        - ${PLUGIN_REMOTE_ENDPOINT_EXECUTABLE}
+    extension: https://download.jboss.org/jbosstools/vscode/3rdparty/vscode-node-debug2/node-debug2-1.42.3.vsix
+  - repository:
+      url: 'https://github.com/Microsoft/vscode'
+      revision: 1.49.3
+      directory: extensions/typescript-language-features
+    featured: true
+    sidecar:
+      image: "quay.io/crw/plugin-java8-rhel8:nightly"
+      memoryLimit: 512Mi
+      cpuLimit: 500m
+      cpuRequest: 30m
+      args:
+        - sh
+        - -c
+        - ${PLUGIN_REMOTE_ENDPOINT_EXECUTABLE}
+    extension: https://github.com/redhat-developer/codeready-workspaces-vscode-extensions/releases/download/v2cebc1e/typescript-language-features-1.49.3.vsix
+  - repository:
+      url: https://github.com/clangd/vscode-clangd
+      revision: c7f4a1b84fcc10d5b8241750cf2a84097ee4c37e
+    metaYaml:
+     skipIndex: true
+    sidecar:
+      image: "quay.io/crw/stacks-cpp-rhel8:nightly"
+      name: cpp-plugins
+      memoryLimit: 512Mi
+      cpuLimit: 500m
+      cpuRequest: 30m
+      args:
+        - sh
+        - -c
+        - ${PLUGIN_REMOTE_ENDPOINT_EXECUTABLE}
+    extension: https://download.jboss.org/jbosstools/vscode/3rdparty/vscode-clangd/vscode-clangd-0.1.5-562d00.vsix
+  - repository:
+      url: https://github.com/eclipse-cdt/cdt-gdb-vscode
+      revision: 2cbbb857a2acf0b2e46bab30e0cbbfb547514856
+    metaYaml:
+     skipIndex: true
+    sidecar:
+      image: "quay.io/crw/stacks-cpp-rhel8:nightly"
+      name: cpp-plugins
+      memoryLimit: 512Mi
+      cpuLimit: 500m
+      cpuRequest: 30m
+      args:
+        - sh
+        - -c
+        - ${PLUGIN_REMOTE_ENDPOINT_EXECUTABLE}
+    extension: https://download.jboss.org/jbosstools/vscode/3rdparty/cdt-gdb-vscode/cdt-gdb-vscode-0.0.91-2cbbb8.vsix
+  - repository:
+      url: 'https://github.com/eclipse-cdt/cdt-vscode'
+      revision: 2edfc3a3474bc7a732014e1a4631561b991f845a
+    aliases:
+      - che-incubator/cpptools
+    metaYaml:
+      extraDependencies:
+        - eclipse-cdt/cdt-gdb-vscode
+        - llvm-vs-code-extensions/vscode-clangd
+    featured: true
+    sidecar:
+      image: "quay.io/crw/stacks-cpp-rhel8:nightly"
+      name: cpp-plugins
+      memoryLimit: 512Mi
+      cpuLimit: 500m
+      cpuRequest: 30m
+      args:
+        - sh
+        - -c
+        - ${PLUGIN_REMOTE_ENDPOINT_EXECUTABLE}
+    extension: https://download.jboss.org/jbosstools/vscode/3rdparty/cdt-vscode/cdt-vscode-0.0.7-75cf95.vsix
+  - repository:
+      url: 'https://github.com/bmewburn/vscode-intelephense'
+      revision: v1.3.11
+    featured: true
+    aliases:
+      - redhat/php
+    sidecar:
+      image: "quay.io/crw/stacks-php-rhel8:nightly"
+      name: php-intelephense
+      memoryLimit: 1Gi
+      cpuLimit: 500m
+      cpuRequest: 30m
+      args:
+        - sh
+        - -c
+        - ${PLUGIN_REMOTE_ENDPOINT_EXECUTABLE}
+    extension: https://download.jboss.org/jbosstools/vscode/3rdparty/vscode-intelephense/vscode-intelephense-client-1.3.11.vsix
+  - repository:
+      url: 'https://github.com/Microsoft/vscode-python'
+      revision: 2020.7.94776
+    featured: true
+    sidecar:
+      image: "quay.io/crw/plugin-java8-rhel8:nightly"
+      name: vscode-python
+      memoryLimit: 512Mi
+      cpuLimit: 500m
+      cpuRequest: 30m
+      args:
+        - sh
+        - -c
+        - ${PLUGIN_REMOTE_ENDPOINT_EXECUTABLE}
+    extension: https://github.com/redhat-developer/codeready-workspaces-vscode-extensions/releases/download/vfa62888/vscode-python-2020.7.94776.vsix
+  - repository:
+      url: 'https://github.com/golang/vscode-go'
+      revision: v0.16.1
+    featured: true
+    sidecar:
+      image: "quay.io/crw/stacks-golang-rhel8:nightly"
+      name: vscode-go
+      memoryLimit: 512Mi
+      cpuLimit: 500m
+      cpuRequest: 30m
+      args:
+        - sh
+        - -c
+        - ${PLUGIN_REMOTE_ENDPOINT_EXECUTABLE}
+      env:
+        - name: GOPATH
+          value: /projects/.che/gopath:$(CHE_PROJECTS_ROOT)
+    extension: https://download.jboss.org/jbosstools/vscode/3rdparty/vscode-go/go-0.16.1.vsix
+  - repository:
+      url: 'https://github.com/camel-tooling/vscode-camelk'
+      revision: 0.0.24
+    sidecar:
+      image: "quay.io/crw/plugin-kubernetes-rhel8:nightly"
+      name: vscode-camelk
+      memoryLimit: 1Gi
+      cpuLimit: 500m
+      cpuRequest: 30m
+    extension: https://download.jboss.org/jbosstools/vscode/stable/vscode-camelk/vscode-camelk-0.0.24-198.vsix
+    metaYaml:
+      skipDependencies:
+        - redhat/vscode-commons
+  - id: redhat/quarkus-java11
+    repository:
+      url: 'https://github.com/redhat-developer/vscode-quarkus'
+      revision: v1.5.0
+    preferences:
+      java.server.launchMode: Standard
+    sidecar:
+      image: "quay.io/crw/plugin-java11-rhel8:nightly"
+      name: vscode-quarkus
+      memoryLimit: 3500Mi
+      cpuLimit: 500m
+      cpuRequest: 30m
+      args:
+        - sh
+        - -c
+        - ${PLUGIN_REMOTE_ENDPOINT_EXECUTABLE}
+      volumeMounts:
+        - name: m2
+          path: /home/jboss/.m2
+        - name: gradle
+          path: /home/jboss/.gradle
+    extension: https://download.jboss.org/jbosstools/vscode/stable/vscode-quarkus/vscode-quarkus-1.5.0-324.vsix
+    metaYaml:
+      skipDependencies:
+        - redhat/vscode-commons
+      extraDependencies:
+        - vscjava/vscode-java-debug
+  - repository:
+      url: 'https://github.com/camel-tooling/vscode-wsdl2rest'
+      revision: 0.0.11
+    sidecar:
+      image: "quay.io/crw/plugin-java11-rhel8:nightly"
+      memoryLimit: 256Mi
+      cpuLimit: 500m
+      cpuRequest: 30m
+      args:
+        - sh
+        - -c
+        - ${PLUGIN_REMOTE_ENDPOINT_EXECUTABLE}
+    extension: https://download.jboss.org/jbosstools/vscode/stable/vscode-wsdl2rest/vscode-wsdl2rest-0.0.11-106.vsix
+  - repository:
+      url: 'https://github.com/fabric8-analytics/fabric8-analytics-vscode-extension'
+      revision: 0.1.0
+    aliases:
+      - redhat/dependency-analytics
+    sidecar:
+      image: "quay.io/crw/plugin-java8-rhel8:nightly"
+      name: dependency-analytics
+      memoryLimit: 1Gi
+      cpuLimit: 500m
+      cpuRequest: 30m
+      args:
+        - sh
+        - -c
+        - ${PLUGIN_REMOTE_ENDPOINT_EXECUTABLE}
+    extension: https://github.com/fabric8-analytics/fabric8-analytics-vscode-extension/releases/download/0.1.0/fabric8-analytics-0.1.0.vsix
+  - repository:
+      url: 'https://github.com/redhat-developer/vscode-project-initializer'
+      revision: v0.0.10
+    aliases:
+      - redhat/project-initializer
+    extension: https://download.jboss.org/jbosstools/vscode/stable/vscode-project-initializer/project-initializer-0.0.10-582.vsix
+  - repository:
+      url: 'https://github.com/che-incubator/che-theia-openshift-auth'
+      revision: 0.0.1
+    metaYaml:
+      skipIndex: true
+    extension: https://github.com/che-incubator/che-theia-openshift-auth/releases/download/0.0.1/che-openshift-authentication-plugin-0.0.1.vsix
+  - repository:
+      url: 'https://github.com/redhat-developer/vscode-openshift-tools'
+      revision: v0.1.5
+    sidecar:
+      image: "quay.io/crw/plugin-openshift-rhel8:nightly"
+      name: vscode-openshift-connector
+      memoryLimit: 1500Mi
+      cpuLimit: 500m
+      cpuRequest: 30m
+    extension: https://download.jboss.org/jbosstools/vscode/3rdparty/vscode-openshift-tools/vscode-openshift-connector-0.1.5.vsix
+    metaYaml:
+      extraDependencies:
+        - ms-kubernetes-tools/vscode-kubernetes-tools
+        - redhat/vscode-yaml
+        - che-theia/che-openshift-authentication-plugin
+  - repository:
+      url: 'https://github.com/redhat-developer/vscode-yaml'
+      revision: 0.14.0
+    featured: true
+    sidecar:
+      image: "quay.io/crw/plugin-java8-rhel8:nightly"
+      name: vscode-yaml
+      memoryLimit: 256Mi
+      cpuLimit: 500m
+      cpuRequest: 30m
+      args:
+        - sh
+        - -c
+        - ${PLUGIN_REMOTE_ENDPOINT_EXECUTABLE}
+    extension: https://github.com/redhat-developer/codeready-workspaces-vscode-extensions/releases/download/ve96a2bb/vscode-yaml-0.14.0.vsix
+  - repository:
+      url: 'https://github.com/microsoft/vscode-java-debug'
+      revision: 0.26.0
+    metaYaml:
+      skipIndex: true
+    sidecar:
+      image: "quay.io/crw/plugin-java11-rhel8:nightly"
+      name: vscode-java
+      memoryLimit: 1500Mi
+      cpuLimit: 500m
+      cpuRequest: 30m
+      args:
+        - sh
+        - -c
+        - ${PLUGIN_REMOTE_ENDPOINT_EXECUTABLE}
+    extension: https://download.jboss.org/jbosstools/vscode/3rdparty/vscode-java-debug/vscode-java-debug-0.26.0.vsix
+  - id: redhat/java11
+    repository:
+      url: 'https://github.com/redhat-developer/vscode-java'
+      revision: v0.69.0
+    featured: true
+    preferences:
+      java.server.launchMode: Standard
+    sidecar:
+      image: "quay.io/crw/plugin-java11-rhel8:nightly"
+      name: vscode-java
+      memoryLimit: 1500Mi
+      cpuLimit: 500m
+      cpuRequest: 30m
+      env:
+        - name: GRADLE_HOME
+          value: /opt/gradle/
+      args:
+        - sh
+        - -c
+        - ${PLUGIN_REMOTE_ENDPOINT_EXECUTABLE}
+      volumeMounts:
+        - name: m2
+          path: /home/jboss/.m2
+        - name: gradle
+          path: /home/jboss/.gradle
+    extension: https://download.jboss.org/jbosstools/static/jdt.ls/stable/java-0.69.0-2547.vsix
+    metaYaml:
+      extraDependencies:
+        - vscjava/vscode-java-debug
+  - id: redhat/java
+    repository:
+      url: 'https://github.com/redhat-developer/vscode-java'
+      revision: v0.63.0
+    aliases:
+      - redhat/java8
+    preferences:
+      java.server.launchMode: Standard
+    sidecar:
+      image: "quay.io/crw/plugin-java8-rhel8:nightly"
+      name: vscode-java
+      memoryLimit: 1500Mi
+      cpuLimit: 500m
+      cpuRequest: 30m
+      volumeMounts:
+        - name: m2
+          path: /home/jboss/.m2
+    extension: https://download.jboss.org/jbosstools/static/jdt.ls/stable/java-0.63.0-2222.vsix
+    metaYaml:
+      extraDependencies:
+        - vscjava/vscode-java-debug
+  - repository:
+      url: 'https://github.com/felixfbecker/vscode-php-debug'
+      revision: v1.13.0
+    aliases:
+      - redhat/php-debugger
+    sidecar:
+      image: "quay.io/crw/stacks-php-rhel8:nightly"
+      name: php-debugger
+      memoryLimit: 512Mi
+      cpuLimit: 500m
+      cpuRequest: 30m
+      args:
+        - sh
+        - -c
+        - ${PLUGIN_REMOTE_ENDPOINT_EXECUTABLE}
+    extension: https://download.jboss.org/jbosstools/vscode/3rdparty/vscode-php-debug/php-debug-1.13.0.vsix
+  - repository:
+      url: 'https://github.com/camel-tooling/camel-lsp-client-vscode'
+      revision: 0.0.32
+    sidecar:
+      image: "quay.io/crw/plugin-java11-rhel8:nightly"
+      name: vscode-apache-camel
+      memoryLimit: 768Mi
+      cpuLimit: 500m
+      cpuRequest: 30m
+      args:
+        - sh
+        - -c
+        - ${PLUGIN_REMOTE_ENDPOINT_EXECUTABLE}
+    extension: https://download.jboss.org/jbosstools/vscode/stable/vscode-apache-camel/vscode-apache-camel-0.0.32-205.vsix
+  - repository:
+      url: 'https://github.com/redhat-developer/vscode-xml'
+      revision: 0.14.0
+    featured: true
+    sidecar:
+      image: "quay.io/crw/plugin-java11-rhel8:nightly"
+      name: vscode-xml
+      memoryLimit: 768Mi
+      cpuLimit: 500m
+      cpuRequest: 30m
+      args:
+        - sh
+        - -c
+        - ${PLUGIN_REMOTE_ENDPOINT_EXECUTABLE}
+    extension: https://github.com/redhat-developer/codeready-workspaces-vscode-extensions/releases/download/v356aec7/vscode-xml-0.14.0.vsix
+  - repository:
+      url: 'https://github.com/Azure/vscode-kubernetes-tools'
+      revision: 1.2.0
+    sidecar:
+      image: "quay.io/crw/plugin-kubernetes-rhel8:nightly"
+      name: vscode-kubernetes-tools
+      memoryLimit: 1Gi
+      cpuLimit: 500m
+      cpuRequest: 30m
+    extension: https://download.jboss.org/jbosstools/vscode/3rdparty/vscode-kubernetes-tools/vscode-kubernetes-tools-1.2.1.vsix
+  - id: redhat-developer/netcoredbg-theia-plugin
+    repository:
+      url: 'https://github.com/redhat-developer/netcoredbg-theia-plugin'
+      revision: v0.0.3
+    sidecar:
+      image: "quay.io/crw/stacks-dotnet-rhel8:nightly"
+      name: theia-netcoredbg
+      memoryLimit: 512Mi
+      cpuLimit: 500m
+      cpuRequest: 30m
+      args:
+        - sh
+        - -c
+        - ${PLUGIN_REMOTE_ENDPOINT_EXECUTABLE}
+    extension: https://github.com/redhat-developer/netcoredbg-theia-plugin/releases/download/v0.0.3/netcoredbg_theia_plugin.theia
+  - id: redhat-developer/che-omnisharp-plugin
+    repository:
+      url: 'https://github.com/redhat-developer/omnisharp-theia-plugin'
+      revision: v0.0.6
+    sidecar:
+      image: "quay.io/crw/stacks-dotnet-rhel8:nightly"
+      name: theia-omnisharp
+      memoryLimit: 1Gi
+      cpuLimit: 500m
+      cpuRequest: 30m
+      args:
+        - sh
+        - -c
+        - ${PLUGIN_REMOTE_ENDPOINT_EXECUTABLE}
+      volumeMounts:
+        - name: nuget
+          path: /home/jboss/.nuget
+    extension: https://github.com/redhat-developer/omnisharp-theia-plugin/releases/download/v0.0.6/omnisharp_theia_plugin.theia
+  - repository:
+      url: 'https://github.com/asciidoctor/asciidoctor-vscode'
+      revision: v2.7.7
+    extension: https://download.jboss.org/jbosstools/vscode/3rdparty/asciidoctor-vscode/asciidoctor-vscode-2.7.7.vsix
+  - repository:
+      url: 'https://github.com/SonarSource/sonarlint-vscode'
+      revision: 1.20.1
+    sidecar:
+      image: "quay.io/crw/plugin-java11-rhel8:nightly"
+      name: vscode-sonarlint
+      memoryLimit: 512Mi
+      cpuLimit: 500m
+      cpuRequest: 30m
+      args:
+        - sh
+        - -c
+        - ${PLUGIN_REMOTE_ENDPOINT_EXECUTABLE}
+      volumeMounts:
+        - name: m2
+          path: /home/jboss/.m2
+    extension: https://github.com/redhat-developer/codeready-workspaces-vscode-extensions/releases/download/v8521e74/vscode-sonarlint-1.20.1.vsix
+  - repository:
+      url: 'https://github.com/microsoft/vscode-eslint'
+      revision: 1e15d3495da89072d48cf583d48d92829f0c4b82
+    extension: https://download.jboss.org/jbosstools/vscode/3rdparty/vscode-eslint/vscode-eslint-2.1.1-1e15d3.vsix
