@@ -65,33 +65,34 @@ CRW_CONTAINERS_RHEC="\
 codeready-workspaces/configbump-rhel8 \
 codeready-workspaces/crw-2-rhel8-operator \
 codeready-workspaces/crw-2-rhel8-operator-metadata \
+codeready-workspaces/dashboard-rhel8 \
 codeready-workspaces/devfileregistry-rhel8 \
-codeready-workspaces/devworkspace-controller-rhel8 \
 \
+codeready-workspaces/devworkspace-controller-rhel8 \
 codeready-workspaces/devworkspace-rhel8 \
 codeready-workspaces/imagepuller-rhel8 \
 codeready-workspaces/jwtproxy-rhel8 \
 codeready-workspaces/machineexec-rhel8 \
-codeready-workspaces/pluginbroker-artifacts-rhel8 \
 \
+codeready-workspaces/pluginbroker-artifacts-rhel8 \
 codeready-workspaces/pluginbroker-metadata-rhel8 \
 codeready-workspaces/plugin-java11-openj9-rhel8 \
 codeready-workspaces/plugin-java11-rhel8 \
 codeready-workspaces/plugin-java8-openj9-rhel8 \
-codeready-workspaces/plugin-java8-rhel8 \
 \
+codeready-workspaces/plugin-java8-rhel8 \
 codeready-workspaces/plugin-kubernetes-rhel8 \
 codeready-workspaces/plugin-openshift-rhel8 \
 codeready-workspaces/pluginregistry-rhel8 \
 codeready-workspaces/server-rhel8 \
-codeready-workspaces/stacks-cpp-rhel8 \
 \
+codeready-workspaces/stacks-cpp-rhel8 \
 codeready-workspaces/stacks-dotnet-rhel8 \
 codeready-workspaces/stacks-golang-rhel8 \
 codeready-workspaces/stacks-php-rhel8 \
 codeready-workspaces/theia-dev-rhel8 \
-codeready-workspaces/theia-endpoint-rhel8 \
 \
+codeready-workspaces/theia-endpoint-rhel8 \
 codeready-workspaces/theia-rhel8 \
 codeready-workspaces/traefik-rhel8 \
 "
@@ -101,33 +102,34 @@ CRW_CONTAINERS_OSBS="\
 codeready-workspaces/configbump-rhel8 \
 codeready-workspaces/operator \
 codeready-workspaces/operator-metadata \
+codeready-workspaces/dashboard-rhel8 \
 codeready-workspaces/devfileregistry-rhel8 \
-codeready-workspaces/devworkspace-controller-rhel8 \
 \
+codeready-workspaces/devworkspace-controller-rhel8 \
 codeready-workspaces/devworkspace-rhel8 \
 codeready-workspaces/imagepuller-rhel8 \
 codeready-workspaces/jwtproxy-rhel8 \
 codeready-workspaces/machineexec-rhel8 \
-codeready-workspaces/pluginbroker-artifacts-rhel8 \
 \
+codeready-workspaces/pluginbroker-artifacts-rhel8 \
 codeready-workspaces/pluginbroker-metadata-rhel8 \
 codeready-workspaces/plugin-java11-openj9-rhel8 \
 codeready-workspaces/plugin-java11-rhel8  \
 codeready-workspaces/plugin-java8-openj9-rhel8 \
-codeready-workspaces/plugin-java8-rhel8 \
 \
+codeready-workspaces/plugin-java8-rhel8 \
 codeready-workspaces/plugin-kubernetes-rhel8 \
 codeready-workspaces/plugin-openshift-rhel8 \
 codeready-workspaces/pluginregistry-rhel8 \
 codeready-workspaces/server-rhel8 \
-codeready-workspaces/stacks-cpp-rhel8 \
 \
+codeready-workspaces/stacks-cpp-rhel8 \
 codeready-workspaces/stacks-dotnet-rhel8 \
 codeready-workspaces/stacks-golang-rhel8 \
 codeready-workspaces/stacks-php-rhel8 \
 codeready-workspaces/theia-dev-rhel8 \
-codeready-workspaces/theia-endpoint-rhel8 \
 \
+codeready-workspaces/theia-endpoint-rhel8 \
 codeready-workspaces/theia-rhel8 \
 codeready-workspaces/traefik-rhel8 \
 "
