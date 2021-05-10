@@ -1,8 +1,0 @@
-tests:
-  playbooks:
-    - location: tests/basic-test.yaml
-results:
-  delivery_types:
-    email:
-      - nboldt@redhat.com
-      - rhopp@redhat.com
