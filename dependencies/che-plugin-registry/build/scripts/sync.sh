@@ -59,10 +59,6 @@ fi
 echo ".github/
 .git/
 .gitattributes
-build/scripts/sync.sh
-get-sources-jenkins.sh
-container.yaml
-content_sets.yml
 " > /tmp/rsync-excludes
 echo "Rsync ${SOURCEDIR} to ${TARGETDIR}"
 rsync -azrlt --checksum --exclude-from /tmp/rsync-excludes --delete ${SOURCEDIR}/ ${TARGETDIR}/
