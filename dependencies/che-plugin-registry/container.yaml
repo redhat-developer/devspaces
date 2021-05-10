@@ -1,0 +1,16 @@
+---
+platforms:
+  # all these keys are optional - see https://osbs.readthedocs.io/en/latest/users.html#image-configuration for more info
+
+  only:
+  - x86_64   # can be a list (as here) or a string (as below)
+  - s390x
+  - ppc64le
+
+compose:
+  inherit: false
+  pulp_repos: true
+  signing_intent: release
+
+# instead of docker_api, use imagebuilder for multistage builds
+image_build_method: imagebuilder
