@@ -31,11 +31,13 @@ coverage
 output
 
 # https://yarnpkg.com/getting-started/qa#which-files-should-be-gitignored
-# not zero-install mode
+# zero-install mode
 .yarn/*
+!.yarn/cache
 !.yarn/patches
 !.yarn/releases
 !.yarn/plugins
 !.yarn/sdks
 !.yarn/versions
-.pnp.*
+# Needed because the repo root .gitignore includes all .zip files
+!.yarn/cache/*.zip

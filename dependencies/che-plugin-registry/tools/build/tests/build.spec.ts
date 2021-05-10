@@ -216,6 +216,7 @@ describe('Test Build', () => {
     container = new Container();
     container.bind('string').toConstantValue('/fake-root-directory').whenTargetNamed('PLUGIN_REGISTRY_ROOT_DIRECTORY');
     container.bind('string').toConstantValue('/fake-root-directory/output').whenTargetNamed('OUTPUT_ROOT_DIRECTORY');
+    container.bind('boolean').toConstantValue(false).whenTargetNamed('SKIP_DIGEST_GENERATION');
     container.bind('string[]').toConstantValue([]).whenTargetNamed('ARGUMENTS');
     container.bind(FeaturedAnalyzer).toConstantValue(featuredAnalyzer);
     container.bind(FeaturedWriter).toConstantValue(featuredWriter);
@@ -292,6 +293,7 @@ describe('Test Build', () => {
     expect(indexWriter.write).toBeCalled();
     expect(cheTheiaPluginsYamlWriter.write).toBeCalled();
     expect(cheTheiaPluginsYamlGenerator.compute).toBeCalled();
+    expect(digestImagesHelper.updateImages).toBeCalled();
   });
 
   test('basics without package.json', async () => {
@@ -505,5 +507,47 @@ describe('Test Build', () => {
     await expect(deferred.promise).rejects.toMatch('rejecting');
     expect(spyFailTask).toBeCalled();
     expect(spyFailTask.mock.calls[0][0]).toBeUndefined();
+  });
+
+  test('basics with skip Digests', async () => {
+    container.rebind('boolean').toConstantValue(true).whenTargetNamed('SKIP_DIGEST_GENERATION');
+    // force to refresh the singleton
+    container.rebind(Build).toSelf().inSingletonScope();
+    build = container.get(Build);
+    const cheTheiaPluginYaml = await buildCheMetaPluginYaml();
+    // no id, so it will be computed
+
+    const packageJson: any = {
+      publisher: 'foobar-Publisher',
+      name: 'ACuStOmName',
+    };
+
+    vsixUrlAnalyzerAnalyzeMock.mockImplementation((vsixInfo: any) => {
+      vsixInfo.packageJson = packageJson;
+    });
+    const cheTheiaPluginsYaml: CheTheiaPluginsYaml = {
+      plugins: [cheTheiaPluginYaml],
+    };
+    cheTheiaPluginsAnalyzerAnalyzeMock.mockResolvedValueOnce(cheTheiaPluginsYaml);
+
+    const chePluginYaml = await buildChePluginYaml();
+    const chePluginsYaml: ChePluginsYaml = {
+      plugins: [chePluginYaml],
+    };
+    chePluginsAnalyzerAnalyzeMock.mockResolvedValueOnce(chePluginsYaml);
+
+    const cheEditorPluginYaml = await buildCheEditorYaml();
+    const cheEditorsYaml: CheEditorsYaml = {
+      editors: [cheEditorPluginYaml],
+    };
+    cheEditorsAnalyzerAnalyzeMock.mockResolvedValueOnce(cheEditorsYaml);
+
+    metaYamlGeneratorComputeMock.mockResolvedValueOnce([]);
+    metaYamlEditorGeneratorComputeMock.mockResolvedValueOnce([]);
+    metaYamlPluginsGeneratorComputeMock.mockResolvedValueOnce([]);
+
+    await build.build();
+    //  check that we don't call digest update
+    expect(digestImagesHelper.updateImages).toBeCalledTimes(0);
   });
 });

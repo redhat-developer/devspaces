@@ -97,13 +97,16 @@ describe('Test InversifyBinding', () => {
     mockedArgv.push(`--output-folder:${myCustomOutputDir}`);
     mockedArgv.push('--foo-arg:bar');
     mockedArgv.push('--embed-vsix:true');
+    mockedArgv.push('--skip-digest-generation:true');
     const inversifyBinding = new InversifyBinding();
     const container: Container = await inversifyBinding.initBindings();
 
     const outputDir = container.getNamed('string', 'OUTPUT_ROOT_DIRECTORY');
     const embedded = container.getNamed('boolean', 'EMBED_VSIX');
+    const skipDigests = container.getNamed('boolean', 'SKIP_DIGEST_GENERATION');
 
     expect(outputDir).toEqual(myCustomOutputDir);
     expect(embedded).toBeTruthy();
+    expect(skipDigests).toBeTruthy();
   });
 });
