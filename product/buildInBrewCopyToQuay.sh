@@ -34,15 +34,15 @@ Options:
   exit
 }
 
-latestNightly=" latest"
+latestNightly="latest"
 if [[ ${DWNSTM_BRANCH} == "crw-2-rhel-8" ]]; then latestNightly="nightly"; fi
 
 while [[ "$#" -gt 0 ]]; do
   case $1 in
     '-t') CRW_VERSION="$2"; shift 1;;
     '-b') DWNSTM_BRANCH="$2"; shift 1;;
-    '--latest') latestNightly=" latest";;
-    '--nightly') latestNightly=" nightly";;
+    '--latest') latestNightly="latest";;
+    '--nightly') latestNightly="nightly";;
     '-h') usage;;
     *) IMG=$1;;
   esac
@@ -65,5 +65,5 @@ if [[ $brewTaskID ]]; then
     grep -E "setting label" | \
     sed -r -e "s@.+(registry.access.redhat.com/codeready-workspaces/)(.+)/images/(${CRW_VERSION}-[0-9]+)\"@\2:\3@g" | \
     tr -d "'" | tail -1 && \
-  getLatestImageTags.sh -b ${DWNSTM_BRANCH} --osbs --pushtoquay="${CRW_VERSION}${latestNightly}" -c $container
+  getLatestImageTags.sh -b ${DWNSTM_BRANCH} --osbs --pushtoquay="${CRW_VERSION} ${latestNightly}" -c $container
 fi
