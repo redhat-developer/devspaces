@@ -28,7 +28,8 @@ retries=20
 timeout=60
 " > /etc/yum.conf 
 ${DNF} install -y drpm dnf || exit 1 # enable delta rpms
-dnf install -y findutils bash wget yum git gzip tar jq python3-six python3-pip skopeo || exit 1
+dnf install -y npm findutils bash wget yum git gzip tar jq python3-six python3-pip skopeo || exit 1
+npm install --global yarn || exit 1
 
 # shellcheck disable=SC2010
 PYTHON_BIN=$(ls -1 /usr/bin | grep -E "^python3.[0-9]$" | sort -V | tail -1 || true) # 3.6, 3.7, 3.8, etc.

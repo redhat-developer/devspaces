@@ -95,6 +95,8 @@ EMOJI_HEADER="-" EMOJI_PASS="[PASS]" EMOJI_FAIL="[FAIL]" "${base_dir}"/build/doc
 
 if [ "${SKIP_OCI_IMAGE}" != "true" ]; then
     BUILD_COMMAND="build"
+    # Tar up the outputted files as the Dockerfile depends on them
+    tar -czvf resources.tgz ./output/v3/
     if [[ -z $BUILDER ]]; then
         echo "BUILDER not specified, trying with podman"
         BUILDER=$(command -v podman || true)
@@ -128,5 +130,9 @@ if [ "${SKIP_OCI_IMAGE}" != "true" ]; then
     IMAGE="${REGISTRY}/${ORGANIZATION}/pluginregistry-rhel8:${TAG}"
     VERSION=$(head -n 1 VERSION)
     echo "Building che plugin registry ${VERSION}."
-    ${BUILDER} ${BUILD_COMMAND} -t "${IMAGE}" -f "${DOCKERFILE}" .
+    # Copy to root directory to behave as if in Brew or codeready-workspaces-images
+    cp "${DOCKERFILE}" ./builder.Dockerfile
+    ${BUILDER} ${BUILD_COMMAND} -t "${IMAGE}" -f ./builder.Dockerfile .
+    # Remove copied Dockerfile and tarred zip
+    rm ./builder.Dockerfile resources.tgz
 fi

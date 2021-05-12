@@ -68,7 +68,7 @@ jobs:
         export SKIP_LINT=true
         export SKIP_TEST=true
         docker pull quay.io/crw/pluginregistry-rhel8:nightly-gh-action
-        BUILDER=docker ./build.sh --tag pr-check
+        BUILDER=docker ./build.sh --tag pr-check --offline --skip-digest-generation
         EXPORTED_FOLDER=/var/www/html/v3
         ls -la output/
         docker run --rm --entrypoint=sh quay.io/crw/pluginregistry-rhel8:pr-check -c "ls -la ${EXPORTED_FOLDER}"
