@@ -206,6 +206,7 @@ export class CheTheiaPluginsMetaYamlGenerator {
         const skipDependencies = chePlugin.skipDependencies || [];
         const extraDependencies = chePlugin.extraDependencies || [];
         let skipIndex = false;
+        const vsixInfos = new Map(chePlugin.vsixInfos);
 
         if (chePlugin.metaYaml) {
           // extra dependencies ?
@@ -238,13 +239,17 @@ export class CheTheiaPluginsMetaYamlGenerator {
             }
             // add the extension there
             resolvedExtensions.push(dependencyMeta.extension);
+
+            // add vsixInfos from that dependency
+            dependencyMeta.vsixInfos.forEach((value, key) => {
+              if (!vsixInfos.has(key)) {
+                vsixInfos.set(key, value);
+              }
+            });
           });
         }
 
         spec.extensions = resolvedExtensions;
-
-        // grab vsix infos
-        const vsixInfos = chePlugin.vsixInfos;
 
         const aliases = chePlugin.aliases;
 

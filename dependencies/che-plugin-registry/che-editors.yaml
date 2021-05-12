@@ -22,7 +22,7 @@ editors:
     components:
       - name: theia-ide
         container:
-          image: 'quay.io/crw/che-theia:nightly'
+          image: 'registry.redhat.io/codeready-workspaces/theia-rhel8:2.9'
           env:
             - name: THEIA_PLUGINS
               value: 'local-dir:///plugins'
@@ -109,7 +109,7 @@ editors:
         volume: {}
       - name: che-machine-exec
         container:
-          image: 'quay.io/crw/machineexec-rhel8:nightly'
+          image: 'registry.redhat.io/codeready-workspaces/machineexec-rhel8:2.9'
           command:
             - /go/bin/che-machine-exec
             - '--url'
@@ -129,7 +129,7 @@ editors:
             - exposedPort: 3333
       - name: remote-runtime-injector
         container:
-          image: 'quay.io/crw/theia-endpoint-rhel8:nightly'
+          image: 'registry.redhat.io/codeready-workspaces/theia-endpoint-rhel8:2.9'
           env:
             - name: PLUGIN_REMOTE_ENDPOINT_EXECUTABLE
               value: /remote-endpoint/plugin-remote-endpoint
@@ -163,7 +163,7 @@ editors:
     components:
       - name: theia-ide
         container:
-          image: "quay.io/crw/che-theia:nightly"
+          image: "registry.redhat.io/codeready-workspaces/theia-rhel8:2.9"
           env:
             - name: THEIA_PLUGINS
               value: 'local-dir:///plugins'
@@ -248,7 +248,7 @@ editors:
         volume: {}
       - name: che-machine-exec
         container:
-          image: 'quay.io/crw/machineexec-rhel8:2.9'
+          image: 'registry.redhat.io/codeready-workspaces/machineexec-rhel8:2.9'
           command:
             - /go/bin/che-machine-exec
             - '--url'
@@ -268,7 +268,7 @@ editors:
             - exposedPort: 3333
       - name: remote-runtime-injector
         container:
-          image: "quay.io/crw/theia-endpoint-rhel8:2.9"
+          image: "registry.redhat.io/codeready-workspaces/theia-endpoint-rhel8:2.9"
           env:
             - name: PLUGIN_REMOTE_ENDPOINT_EXECUTABLE
               value: /remote-endpoint/plugin-remote-endpoint

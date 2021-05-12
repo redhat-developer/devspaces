@@ -35,7 +35,7 @@ describe('Test CheTheiaPluginsAnalyzer', () => {
   };
 
   async function generatePluginMetaInfo(id: string): Promise<CheTheiaPluginMetaInfo> {
-    const extensionLink = 'https://fake-first.vsix';
+    const extensionLink = `https://fake-${id.replace(/\//g, '-')}-first.vsix`;
     const vscodeGoPackageJsonPath = path.resolve(__dirname, '..', '_data', 'packages', 'vscode-go-package.json');
     const vscodeGoPackageJsonContent = await fs.readFile(vscodeGoPackageJsonPath, 'utf-8');
     const packageJson = JSON.parse(vscodeGoPackageJsonContent);
@@ -100,7 +100,7 @@ describe('Test CheTheiaPluginsAnalyzer', () => {
       vsixInfos,
     };
     const vsixInfo: VsixInfo = {
-      uri: 'http://www.fake.uri',
+      uri: extensionLink,
       cheTheiaPlugin,
       downloadedArchive: '/fake/downloaded-archive',
       unpackedArchive: '/fake/unpacked-archive',
@@ -136,18 +136,31 @@ describe('Test CheTheiaPluginsAnalyzer', () => {
 
   test('basics', async () => {
     const anotherPluginMetaInfo = await generatePluginMetaInfo('foo/bar');
+    anotherPluginMetaInfo.extension = 'http://second.vsix';
+    const yetAnotherPluginMetaInfo = await generatePluginMetaInfo('yet/bar');
+    yetAnotherPluginMetaInfo.extension = 'http://third.vsix';
+    yetAnotherPluginMetaInfo.vsixInfos = new Map([
+      ...anotherPluginMetaInfo.vsixInfos,
+      ...yetAnotherPluginMetaInfo.vsixInfos,
+    ]);
+
     const cheTheiaPluginMetaInfo = await generatePluginMetaInfo('my/first/plugin');
+    cheTheiaPluginMetaInfo.extension = 'http://first.vsix';
     cheTheiaPluginMetaInfo.metaYaml = {
-      extraDependencies: ['foo/bar'],
+      extraDependencies: ['foo/bar', 'yet/bar'],
       skipDependencies: ['hello/world'],
     };
     const vsixInfo = cheTheiaPluginMetaInfo.vsixInfos.values().next().value;
     (vsixInfo as any).packageJson.extensionDependencies = ['foo.bar'];
 
-    const cheTheiaPluginMetaInfos: CheTheiaPluginMetaInfo[] = [cheTheiaPluginMetaInfo, anotherPluginMetaInfo];
+    const cheTheiaPluginMetaInfos: CheTheiaPluginMetaInfo[] = [
+      cheTheiaPluginMetaInfo,
+      anotherPluginMetaInfo,
+      yetAnotherPluginMetaInfo,
+    ];
     const result = await cheTheiaPluginsMetaYamlGenerator.compute(cheTheiaPluginMetaInfos);
     expect(result).toBeDefined();
-    expect(result.length).toBe(2);
+    expect(result.length).toBe(3);
     const metaYamlInfo = result[0];
 
     const metaYamlInfoSpec = metaYamlInfo.spec;
@@ -167,6 +180,20 @@ describe('Test CheTheiaPluginsAnalyzer', () => {
     expect(metaYamlInfoSpecContainers[0].image).toBe(fakeImage);
     expect(metaYamlInfoSpecContainers[0].command).toStrictEqual(['/bin/sh']);
     expect(metaYamlInfoSpecContainers[0].args).toStrictEqual(['-c', './entrypoint.sh']);
+
+    // check extensions
+    const metaYamlInfoSpecExtensions = metaYamlInfoSpec.extensions;
+    if (!metaYamlInfoSpecExtensions) {
+      throw new Error('No spec extensions');
+    }
+    expect(metaYamlInfoSpecExtensions).toStrictEqual(['http://first.vsix', 'http://second.vsix', 'http://third.vsix']);
+
+    // check vsixInfos
+    const vsixInfos = metaYamlInfo.vsixInfos;
+    // need to have information on all dependencies
+    expect(vsixInfos.size).toBe(3);
+    expect(vsixInfos.get('https://fake-my-first-plugin-first.vsix')).toBeDefined();
+    expect(vsixInfos.get('https://fake-foo-bar-first.vsix')).toBeDefined();
   });
 
   test('basics without metaYaml information', async () => {
