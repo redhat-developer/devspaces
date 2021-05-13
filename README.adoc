@@ -29,7 +29,7 @@ Folders under link:dependencies[/dependencies] are synced to https://github.com/
 
 The sync logic is in one of three places:
 
-* a Jenkins job - eg., link:https://github.com/redhat-developer/codeready-workspaces-images/blob/crw-2-rhel-8/crw-jenkins/jobs/CRW_CI/crw-server_2.x.jenkinsfile[crw-server_2.x.jenkinsfile], 
+* a Jenkins job - eg., link:https://github.com/redhat-developer/codeready-workspaces-images/blob/crw-2-rhel-8/crw-jenkins/jobs/CRW_CI/crw-theia-sources_2.x.jenkinsfile[crw-theia-sources_2.x.jenkinsfile], 
 * a get-sources-jenkins.sh script - eg., link:https://github.com/redhat-developer/codeready-workspaces-images/blob/crw-2-rhel-8/codeready-workspaces-plugin-java8/get-sources-jenkins.sh[plugin-java8 get-sources-jenkins.sh], or
 * a sync-*.sh script - eg., link:https://github.com/redhat-developer/codeready-workspaces-images/blob/crw-2-rhel-8/codeready-workspaces-devworkspace-controller/build/scripts/sync.sh[devworkspace controller build/scripts/sync.sh]. 
 
@@ -45,10 +45,6 @@ Sync jobs:
 
 Branding is currently in two places.
 
-### Dashboard
+* To reskin link:https://github.com/eclipse-che/che-dashboard[Che Dashboard], see link:https://github.com/redhat-developer/codeready-workspaces-images/tree/crw-2-rhel-8/codeready-workspaces-dashboard/README.adoc[dashboard]
 
-To reskin the link:https://github.com/eclipse-che/che-dashboard[Che Dashboard], see link:https://github.com/redhat-developer/codeready-workspaces-images/tree/crw-2-rhel-8/codeready-workspaces-dashboard/README.adoc[codeready-workspaces-dashboard]
-
-### Theia
-
-In addition to the Che Dashboard branding, there is also branding elements for link:https://github.com/eclipse-che/che-theia[Che Theia]. See details in link:https://github.com/redhat-developer/codeready-workspaces-theia/tree/crw-2-rhel-8/conf/theia/branding[codeready-workspaces-theia/conf/theia/branding]. 
+* To reskin link:https://github.com/eclipse-che/che-theia[Che Theia], see link:https://github.com/redhat-developer/codeready-workspaces-theia/tree/crw-2-rhel-8/conf/theia/branding[theia/conf/theia/branding]
