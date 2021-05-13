@@ -37,6 +37,7 @@ def String getJobBranch(String MIDSTM_BRANCH) {
 @Field boolean BOOTSTRAPPED_F = false
 
 def installMaven(String MAVEN_VERSION, String JAVA_VERSION){
+  installRPMs("java-"+JAVA_VERSION+"-openjdk java-"+JAVA_VERSION+"-openjdk-devel")
   mURL="https://www.apache.org/dyn/mirrors/mirrors.cgi?action=download&filename=maven/maven-3/" + MAVEN_VERSION + "/binaries/apache-maven-" + MAVEN_VERSION + "-bin.tar.gz"
   sh('''#!/bin/bash -xe
     if [[ ! -x /opt/apache-maven/bin/mvn ]]; then 
