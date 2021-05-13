@@ -156,12 +156,11 @@ fi
 descriptString="${descriptString} ${TASK_ID}</a> : ${BUILD_DESC}"
 BUILD_DESC=${descriptString}
 
-echo "ERRORS_FOUND=${ERRORS_FOUND}"
+# collect these with grep 'TASK_URL=' /tmp/rhpkg-container-build.txt | sed -r -e "s#TASK_URL=##"
 echo "TAGs=${TAGs}"
 echo "TASK_URL=${TASK_URL}"
-echo "TASK_ID=${TASK_ID}"
-echo "========================================="
-echo "BUILD_RESULT=${BUILD_RESULT}"
-echo "========================================="
 echo "BUILD_DESC=${BUILD_DESC}"
-echo "========================================="
+# BUILD_RESULT is a multiline string and so must be at the end of the output here, so it can be 
+# easly collected by teeing to a file, then using sed -n '/BUILD_RESULT=/{:loop;n;p;b loop;}' ${WORKSPACE}/rhpkg-container-build.txt
+echo "BUILD_RESULT="
+echo "${BUILD_RESULT}"
