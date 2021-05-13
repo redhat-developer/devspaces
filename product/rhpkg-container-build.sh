@@ -1,18 +1,46 @@
-#!/bin/bash -xe
+#!/bin/bash -e
 # this script is called by jenkins job of a similar name, get-sources-rhpkg-container-build
 # 1. run the appropriate version of get-sources*.sh (which fetches or builds dependent binaries, then runs rhpkg container-build)
 # 2. collect log information to report on build status
 
-# params
-JOB_BRANCH="" # 2.8, 2.9, 2.x
-pushd ${WORKSPACE}/sources >/dev/null
+usage () {
+  echo "Usage:   $0 JOB_BRANCH -s [SOURCEDIR] [--nobuild]"
+  echo "Example: $0 2.9 -s /path/to/sources"
+  exit 1
+}
 
-# REQUIRE: rhpkg
-# get latest from Jenkins, then trigger a new OSBS build. Note: do not wrap JOB_BRANCH in quotes in case it includes trailing \n
-./get-sources-jenkins.sh --force-build ${JOB_BRANCH} | tee ${WORKSPACE}/get-sources-jenkins.log.txt
-wait
-cd ..
-rm -fr sources
+doRhpkgContainerBuild=1
+while [[ "$#" -gt 0 ]]; do
+  case $1 in
+	'-n'|'--nobuild') doRhpkgContainerBuild=0; shift 0;;
+  '-s') SOURCEDIR="$2"; SOURCEDIR="${SOURCEDIR%/}"; shift 1;;
+    *) JOB_BRANCH="$1"; shift 0;;
+  esac
+  shift 1
+done
+
+if [[ ! -d ${SOURCEDIR} ]] && [[ doRhpkgContainerBuild -eq 1 ]]; then usage; fi
+
+if [[ ! $WORKSPACE ]]; then
+  WORKSPACE=$(mktemp -d)
+fi
+
+if [[ ${doRhpkgContainerBuild} -eq 1 ]]; then
+  # if not set, compute from current branch
+  if [[ ! ${JOB_BRANCH} ]]; then 
+    JOB_BRANCH=$(git rev-parse --abbrev-ref HEAD || true); JOB_BRANCH=${JOB_BRANCH//crw-}; JOB_BRANCH=${JOB_BRANCH%%-rhel*}
+    if [[ ${JOB_BRANCH} == "2" ]]; then JOB_BRANCH="2.x"; fi
+  fi
+  pushd ${SOURCEDIR} >/dev/null
+    # REQUIRE: rhpkg
+    # get latest from Jenkins, then trigger a new OSBS build. Note: do not wrap JOB_BRANCH in quotes in case it includes trailing \n
+    ./get-sources-jenkins.sh --force-build ${JOB_BRANCH} | tee "${WORKSPACE}"/get-sources-jenkins.log.txt
+    wait
+    cd ..
+  popd >/dev/null
+else
+  echo "Skip fetching sources and building in Brew"
+fi
 
 #  "floating_tags": [
 #      "latest",
@@ -26,69 +54,114 @@ rm -fr sources
 #      "2.0-212"
 #  ],
 
+# set -x
+
 # make sure these files exist, in case get-sources-jenkins.sh didn't produce useful output
-touch ${WORKSPACE}/get-sources-jenkins.log.txt
+touch "${WORKSPACE}"/get-sources-jenkins.log.txt
 
 # get list of reg-proxy repo:tag as '2.y-zz'
-TAGs=$(grep -E -A2 '"(tags|floating_tags)": \[' ${WORKSPACE}/get-sources-jenkins.log.txt | grep -E -v "tags|\]|\[|--|latest" \
+TAGs=$(grep -E -A2 '"(tags|floating_tags)": \[' "${WORKSPACE}"/get-sources-jenkins.log.txt | grep -E -v "tags|\]|\[|--|latest" \
 | grep -E "[0-9]+\.[0-9]+-[0-9]+" | tr -d ' "' | sort -urV || true)
 
-# OPTION 1/4: Compute build desc from tag(s)
-echo "REPO_PATH=\"${TAGs}$(cat ${WORKSPACE}/get-sources-jenkins.log.txt \
+# OPTION 1/4: Successful non-scratch build - compute build desc from tag(s)
+echo "REPO_PATH=\"$(cat "${WORKSPACE}"/get-sources-jenkins.log.txt \
     | grep -E -A2 '"(pull)": \[' | grep -E -v "candidate" | grep -E "registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-" \
-    | grep -E -v "@sha" | sed -r -e "s@.+\"(.+)\",*@\1@" | tr "\n\r" " " )\"" \
-    | tee ${WORKSPACE}/build_desc.txt
-source ${WORKSPACE}/build_desc.txt
+    | grep -E -v "@sha" | sed -r -e "s@.+\"(.+)\",*@\1@" | sort -u | tr -d "\n\r" )\"" \
+    | tee "${WORKSPACE}"/build_desc.txt
+source "${WORKSPACE}"/build_desc.txt
 REPOS="${REPO_PATH}" # used for build description
 if [[ $REPOS ]]; then echo "#1 Console parser successful!"; fi
 
-# TODO make these console parsers smarter and remove all old flavours that don't work any more
-
-# OPTION 2/4: Compute build desc with image created eg., "2.y-65 quay.io/crw/pluginregistry-rhel8:2.y-65"
-if [[ ! ${REPOS} ]] || [[ ${REPOS} == " " ]]; then
-  # for scratch builds look for this line:
-  # platform:- - atomic_reactor.plugins.tag_from_config - DEBUG - Using additional unique tag 
-  # rh-osbs/codeready-workspaces-server-rhel8:crw-2.0-rhel-8-containers-candidate-89319-20191122035915
-  echo "REPO_PATH=\"$(grep -E "platform:- - atomic_reactor.plugins.tag_from_config - DEBUG - Using additional unique tag " ${WORKSPACE}/get-sources-jenkins.log.txt \
-    | sed -r -e "s@.+Using additional primary tag (.+)@registry-proxy.engineering.redhat.com/\1@" | tr "\n\r" " " )\"" \
-    | tee ${WORKSPACE}/build_desc.txt
-  source ${WORKSPACE}/build_desc.txt
-  REPOS="${REPO_PATH}" # used for build description
-  if [[ $REPOS ]]; then echo "#2 Console parser successful!"; fi
-fi
+# # OPTION 2/4: scratch build - Compute build desc with image created eg., "2.y-65 quay.io/crw/pluginregistry-rhel8:2.y-65"
+# if [[ ! ${REPOS} ]] || [[ ${REPOS} == " " ]]; then
+#   # for scratch builds look for this line:
+#   # platform:- - atomic_reactor.plugins.tag_from_config - DEBUG - Using additional unique tag 
+#   # rh-osbs/codeready-workspaces-server-rhel8:crw-2.0-rhel-8-containers-candidate-89319-20191122035915
+#   echo "REPO_PATH=\"$(grep -E "platform:- - atomic_reactor.plugins.tag_from_config - DEBUG - Using additional unique tag " "${WORKSPACE}"/get-sources-jenkins.log.txt \
+#     | grep -v grep | sed -r -e "s@.+Using additional primary tag (.+)@registry-proxy.engineering.redhat.com/\1@" | tr "\n\r" " " )\"" \
+#     | tee "${WORKSPACE}"/build_desc.txt
+#   source "${WORKSPACE}"/build_desc.txt
+#   REPOS="${REPO_PATH}" # used for build description
+#   if [[ $REPOS ]]; then echo "#2 Console parser successful!"; fi
+# fi
 
 # OPTION 3/4
 if [[ ! ${REPOS} ]] || [[ ${REPOS} == " " ]]; then
   # for scratch builds look for this line:
   # ^ADD Dockerfile-codeready-workspaces-server-rhel8-2.0-scratch-89319-20191122035915 /root/buildinfo/Dockerfile-codeready-workspaces-server-rhel8-2.0-scratch-89319-20191122035915
-  echo "REPO_PATH=\"$(grep -E "^ADD Dockerfile-codeready-workspaces-" ${WORKSPACE}/get-sources-jenkins.log.txt \
-    | sed -r -e "s@^ADD Dockerfile-codeready-workspaces-(.+) /root/.+@\1@" | tr "\n\r" " " )\"" \
-    | tee ${WORKSPACE}/build_desc.txt
-  source ${WORKSPACE}/build_desc.txt
+  echo "REPO_PATH=\"$(grep -E "^ADD Dockerfile-codeready-workspaces-" "${WORKSPACE}"/get-sources-jenkins.log.txt \
+    | sed -r -e "s@^ADD Dockerfile-codeready-workspaces-(.+) /root/.+@\1@" | sort -u | tr "\n\r" " " )\"" \
+    | tee "${WORKSPACE}"/build_desc.txt
+  source "${WORKSPACE}"/build_desc.txt
   REPOS="${REPO_PATH}" # used for build description
   if [[ $REPOS ]]; then echo "#3 Console parser successful!"; fi
 fi
 
 if [[ ! ${REPOS} ]] || [[ ${REPOS} == " " ]]; then
   # OPTION 4/4: unknown
-  echo "REPO_PATH=\"BREW:BUILD/STATUS:UNKNOWN\"" | tee -a ${WORKSPACE}/build_desc.txt
+  echo "REPO_PATH=\"BREW:BUILD/STATUS:UNKNOWN\"" | tee -a "${WORKSPACE}"/build_desc.txt
 fi
 
-ERRORS_FOUND=$(grep -E "Brew build has failed|failed with exit code|Problem loading ID" ${WORKSPACE}/get-sources-jenkins.log.txt || true)
-NEW_TAG=$(grep -E -A2 '"tags": \[' ${WORKSPACE}/get-sources-jenkins.log.txt | grep -E -v "tags|\]|\[|--" | tr -d " " | uniq || true)
-TASK_URL=$(grep "Task info: https://brewweb.engineering.redhat.com/brew/taskinfo?taskID=" ${WORKSPACE}/get-sources-jenkins.log.txt || true)
-BUILD_DESC=$(cat ${WORKSPACE}/build_desc.txt | sed -r \
-    -e 's#REPO_PATH="##g' \
-    -e 's#"##g' \
-    -e 's# #","#g' \
+# scrub dupe lines out of error log
+ERRORS_FOUND=$(grep -E -B2 "Brew build has failed|failed with exit code|Problem loading ID|Finished: FAILURE" "${WORKSPACE}"/get-sources-jenkins.log.txt | \
+  grep -v "grep" | \
+  sed -r -e "s#[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2},[0-9]{3} -*##g" \
+    -e "s# \(rc=1\)##g" \
+    -e "s#\\\''##g" \
+    -e "s#platform:- - atomic_reactor.inner - ##g" \
+    \
+    -e "s#atomic_reactor.inner - (ERROR|DEBUG) - ##g" \
+    -e "s#atomic_reactor.plugins.imagebuilder - INFO - ##g" \
+    -e "s#atomic_reactor.plugin - ##g" \
+    -e 's#atomic_reactor.plugin.PluginFailedException: ##g' \
+    -e 's#PluginFailedException: ##g' \
+    \
+    -e 's#Build step plugin imagebuilder failed: ##g' \
+    -e 's#buildstep plugin failed: ##g' \
+    -e 's#image build failed: ##g' \
+    -e 's#build failed: ##g' \
+    -e 's#caught exception ##g' \
+    -e 's#\(PluginFailedException:  ##g' \
+    -e 's#\{"imagebuilder": ##g' \
+    \
+    -e 's#.+(running (.+) failed with exit code [0-9]+).*#\1#g' \
+    \
+    -e 's#platform:- - ERROR - Build step plugin orchestrate_##g' \
+    -e 's#^(INFO|LABEL| osbs\.|\[Pipeline\]).+##g' \
+    -e 's#.+(atomic_reactor|raise PluginFailedException).+##g' \
+    -e 's#.*(Dockerfile used for build:|End of Pipeline|Brew build has failed:|rm -f /tmp/tmp).*##g' \
+    -e 's#ERROR - running##g' \
+    `# remove short lines` \
+    -e '/^.{,9}$/d' \
+    | sort -u || true)
+
+TASK_URL="$(grep "Task info: https://brewweb.engineering.redhat.com/brew/taskinfo?taskID=" "${WORKSPACE}"/get-sources-jenkins.log.txt | grep -v grep | sed -e "s#Task info: ##" | head -1 || true)"
+TASK_ID="${TASK_URL##*=}"
+BUILD_DESC=$(echo $REPO_PATH | sed -r \
     -e 's#registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-#quay.io/crw/#g' \
-    -e 's#(quay.io/crw/.+-rhel8:[0-9.-]+) #<a href="https://\1">\1</a> #g' \
-    -e 's#(quay.io/crw)/(operator|operator-metadata):([0-9.-]+) #<a href="https://\1/crw-2-rhel8-\2:\3">\1/crw-2-rhel8-\2:\3</a> #g'
+    -e 's#(quay.io/crw/.+-rhel8:[0-9.-]+) *#<a href="https://\1">\1</a> #g' \
+    -e 's#(quay.io/crw)/(operator|operator-metadata):([0-9.-]+) *#<a href="https://\1/crw-2-rhel8-\2:\3">\1/crw-2-rhel8-\2:\3</a> #g'
 )
 BUILD_RESULT="SUCCESS"
-if [[ ${BUILD_DESC} == *"ERROR"* ]] || [[ ${ERRORS_FOUND} ]] || [[ ! ${TASK_URL} ]]; then BUILD_RESULT="FAILURE: ${ERRORS_FOUND}"; fi
 if [[ ${BUILD_DESC} == *"UNKNOWN"* ]]; then BUILD_RESULT="UNSTABLE"; fi
+if [[ ${BUILD_DESC} == *"ERROR"* ]] || [[ ${BUILD_DESC} == *"FAILURE"* ]] || [[ ${ERRORS_FOUND} ]] || [[ ! ${TASK_URL} ]]; then BUILD_RESULT="FAILURE: ${ERRORS_FOUND}"; fi
 
 # TODO using BUILD_DESC, TASK_URL, BUILD_RESULT, return string like this
 descriptString="<a href='${TASK_URL}'>"
-if [[ ${BUILD_RESULT} ==.result.equals("FAILURE") ? "Failed in ":"Build ") + TASK_URL.replaceAll(".+taskID=","") + "</a> : " + BUILD_DESC
+if [[ ${BUILD_RESULT} == *"FAILURE"* ]]; then 
+  descriptString="${descriptString} Failed in "
+else 
+  descriptString="${descriptString} Build "
+fi
+descriptString="${descriptString} ${TASK_ID}</a> : ${BUILD_DESC}"
+BUILD_DESC=${descriptString}
+
+echo "ERRORS_FOUND=${ERRORS_FOUND}"
+echo "TAGs=${TAGs}"
+echo "TASK_URL=${TASK_URL}"
+echo "TASK_ID=${TASK_ID}"
+echo "========================================="
+echo "BUILD_RESULT=${BUILD_RESULT}"
+echo "========================================="
+echo "BUILD_DESC=${BUILD_DESC}"
+echo "========================================="
