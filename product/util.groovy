@@ -624,11 +624,27 @@ def getCRWShortName(String LONG_NAME) {
   return LONG_NAME.minus("codeready-workspaces-")
 }
 
+// see http://hdn.corp.redhat.com/rhel7-csb-stage/repoview/redhat-internal-cert-install.html
+// and http://hdn.corp.redhat.com/rhel7-csb-stage/RPMS/noarch/?C=M;O=D
+def installRedHatInternalCerts() {
+  sh('''#!/bin/bash -xe
+  if [[ ! $(rpm -qa | grep redhat-internal-cert-install || true) ]]; then
+    cd /tmp
+    rpm=$(curl -sSLo- "http://hdn.corp.redhat.com/rhel7-csb-stage/RPMS/noarch/?C=M;O=D" | grep cert-install | head -1 | sed -r -e 's#.+>(redhat-internal-cert-install-.+[^<])</a.+#\\1#')
+    curl -sSLkO http://hdn.corp.redhat.com/rhel7-csb-stage/RPMS/noarch/${rpm}
+    sudo yum -y install ${rpm}
+    rm -fr /tmp/${rpm}
+  fi
+  ''')
+}
+
 def bootstrap(String CRW_KEYTAB, boolean force=false) {
   if (!BOOTSTRAPPED_F || force) {
     yumConf()
     // rpm -qf $(which kinit ssh-keyscan chmod) ==> krb5-workstation openssh-clients coreutils
     installRPMs("krb5-workstation openssh-clients coreutils git rhpkg jq python3-six python3-pip")
+    // install redhat internal certs (so we can connect to jenkins and brew registries)
+    installRedHatInternalCerts()
     // also install commonly needed tools
     installSkopeoFromContainer("")
     installYq()
