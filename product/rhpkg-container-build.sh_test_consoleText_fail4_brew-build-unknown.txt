@@ -1,0 +1,548 @@
+Started by upstream project "CRW_CI/crw-sync-to-downstream_2.x" build number 401
+originally caused by:
+ Started by upstream project "CRW_CI/crw-configbump_2.x" build number 11
+ originally caused by:
+  Started by upstream project "CRW_CI/Releng/build-all-images_2.x" build number 11
+  originally caused by:
+   Started by timer
+ Started by user Nick
+ Started by upstream project "CRW_CI/crw-sync-to-downstream_2.x" build number 400
+ originally caused by:
+  Started by upstream project "CRW_CI/crw-configbump_2.x" build number 11
+  Started by user Nick
+  Started by upstream project "CRW_CI/crw-sync-to-downstream_2.x" build number 399
+  originally caused by:
+   Started by upstream project "CRW_CI/crw-configbump_2.x" build number 11
+   Started by user Nick
+   Started by upstream project "CRW_CI/crw-sync-to-downstream_2.x" build number 398
+   originally caused by:
+    Started by upstream project "CRW_CI/crw-configbump_2.x" build number 11
+    Started by user Nick
+    Started by upstream project "CRW_CI/crw-sync-to-downstream_2.x" build number 381
+    originally caused by:
+     Started by upstream project "CRW_CI/crw-configbump_2.x" build number 11
+Running as Nick
+Resume disabled by user, switching to high-performance, low-durability mode.
+[Pipeline] Start of Pipeline
+[Pipeline] timeout
+Timeout set to expire in 4 hr 0 min
+[Pipeline] {
+[Pipeline] node
+Still waiting to schedule task
+Waiting for next available executor on ‘rhel8||s390x-rhel8||ppc64le-rhel8’
+Running on crwjen-ppc-1 in /var/lib/jenkins/workspace/CRW_CI/get-sources-rhpkg-container-build_2.x
+[Pipeline] {
+[Pipeline] stage
+[Pipeline] { (Build on rhel8||s390x-rhel8||ppc64le-rhel8)
+[Pipeline] wrap
+[Pipeline] {
+[Pipeline] withCredentials
+Masking supported pattern matches of $GITHUB_TOKEN or $QUAY_TOKEN or $CRW_KEYTAB or $CRW_BOT_USERNAME or $CRW_BOT_PASSWORD
+[Pipeline] {
+[Pipeline] sh
++ curl -sSLO https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/crw-2-rhel-8/product/util.groovy
+[Pipeline] load
+[Pipeline] { (/var/lib/jenkins/workspace/CRW_CI/get-sources-rhpkg-container-build_2.x/util.groovy)
+[Pipeline] }
+[Pipeline] // load
+[Pipeline] cleanWs
+[WS-CLEANUP] Deleting project workspace...
+[WS-CLEANUP] Deferred wipeout is used...
+[WS-CLEANUP] done
+[Pipeline] sh
++ cat
++ sudo tee /etc/yum.conf
+[main]
+gpgcheck=0
+installonly_limit=3
+clean_requirements_on_remove=True
+best=True
+skip_if_unavailable=True
+fastestmirror=True
+max_parallel_downloads=10
+minrate=1
+retries=20
+timeout=60
++ sudo yum install -yq drpm dnf
+++ find /etc/yum.repos.d/ -name '*.repo'
++ for r in $(find /etc/yum.repos.d/ -name "*.repo")
++ sudo sed -i /etc/yum.repos.d/beaker-AppStream-debuginfo.repo -r -e s#skip_if_unavailable=False#skip_if_unavailable=True#g
+++ sudo grep skip_if_unavailable=True /etc/yum.repos.d/beaker-AppStream-debuginfo.repo
++ [[ ! -n skip_if_unavailable=True ]]
++ for r in $(find /etc/yum.repos.d/ -name "*.repo")
++ sudo sed -i /etc/yum.repos.d/beaker-BaseOS-debuginfo.repo -r -e s#skip_if_unavailable=False#skip_if_unavailable=True#g
+++ sudo grep skip_if_unavailable=True /etc/yum.repos.d/beaker-BaseOS-debuginfo.repo
++ [[ ! -n skip_if_unavailable=True ]]
++ for r in $(find /etc/yum.repos.d/ -name "*.repo")
++ sudo sed -i /etc/yum.repos.d/beaker-CRB-debuginfo.repo -r -e s#skip_if_unavailable=False#skip_if_unavailable=True#g
+++ sudo grep skip_if_unavailable=True /etc/yum.repos.d/beaker-CRB-debuginfo.repo
++ [[ ! -n skip_if_unavailable=True ]]
++ for r in $(find /etc/yum.repos.d/ -name "*.repo")
++ sudo sed -i /etc/yum.repos.d/beaker-HighAvailability-debuginfo.repo -r -e s#skip_if_unavailable=False#skip_if_unavailable=True#g
+++ sudo grep skip_if_unavailable=True /etc/yum.repos.d/beaker-HighAvailability-debuginfo.repo
++ [[ ! -n skip_if_unavailable=True ]]
++ for r in $(find /etc/yum.repos.d/ -name "*.repo")
++ sudo sed -i /etc/yum.repos.d/beaker-ResilientStorage-debuginfo.repo -r -e s#skip_if_unavailable=False#skip_if_unavailable=True#g
+++ sudo grep skip_if_unavailable=True /etc/yum.repos.d/beaker-ResilientStorage-debuginfo.repo
++ [[ ! -n skip_if_unavailable=True ]]
++ for r in $(find /etc/yum.repos.d/ -name "*.repo")
++ sudo sed -i /etc/yum.repos.d/beaker-SAP-debuginfo.repo -r -e s#skip_if_unavailable=False#skip_if_unavailable=True#g
+++ sudo grep skip_if_unavailable=True /etc/yum.repos.d/beaker-SAP-debuginfo.repo
++ [[ ! -n skip_if_unavailable=True ]]
++ for r in $(find /etc/yum.repos.d/ -name "*.repo")
++ sudo sed -i /etc/yum.repos.d/beaker-SAPHANA-debuginfo.repo -r -e s#skip_if_unavailable=False#skip_if_unavailable=True#g
+++ sudo grep skip_if_unavailable=True /etc/yum.repos.d/beaker-SAPHANA-debuginfo.repo
++ [[ ! -n skip_if_unavailable=True ]]
++ for r in $(find /etc/yum.repos.d/ -name "*.repo")
++ sudo sed -i /etc/yum.repos.d/beaker-AppStream.repo -r -e s#skip_if_unavailable=False#skip_if_unavailable=True#g
+++ sudo grep skip_if_unavailable=True /etc/yum.repos.d/beaker-AppStream.repo
++ [[ ! -n skip_if_unavailable=True ]]
++ for r in $(find /etc/yum.repos.d/ -name "*.repo")
++ sudo sed -i /etc/yum.repos.d/beaker-BaseOS.repo -r -e s#skip_if_unavailable=False#skip_if_unavailable=True#g
+++ sudo grep skip_if_unavailable=True /etc/yum.repos.d/beaker-BaseOS.repo
++ [[ ! -n skip_if_unavailable=True ]]
++ for r in $(find /etc/yum.repos.d/ -name "*.repo")
++ sudo sed -i /etc/yum.repos.d/beaker-CRB.repo -r -e s#skip_if_unavailable=False#skip_if_unavailable=True#g
+++ sudo grep skip_if_unavailable=True /etc/yum.repos.d/beaker-CRB.repo
++ [[ ! -n skip_if_unavailable=True ]]
++ for r in $(find /etc/yum.repos.d/ -name "*.repo")
++ sudo sed -i /etc/yum.repos.d/beaker-HighAvailability.repo -r -e s#skip_if_unavailable=False#skip_if_unavailable=True#g
+++ sudo grep skip_if_unavailable=True /etc/yum.repos.d/beaker-HighAvailability.repo
++ [[ ! -n skip_if_unavailable=True ]]
++ for r in $(find /etc/yum.repos.d/ -name "*.repo")
++ sudo sed -i /etc/yum.repos.d/beaker-ResilientStorage.repo -r -e s#skip_if_unavailable=False#skip_if_unavailable=True#g
+++ sudo grep skip_if_unavailable=True /etc/yum.repos.d/beaker-ResilientStorage.repo
++ [[ ! -n skip_if_unavailable=True ]]
++ for r in $(find /etc/yum.repos.d/ -name "*.repo")
++ sudo sed -i /etc/yum.repos.d/beaker-SAP.repo -r -e s#skip_if_unavailable=False#skip_if_unavailable=True#g
+++ sudo grep skip_if_unavailable=True /etc/yum.repos.d/beaker-SAP.repo
++ [[ ! -n skip_if_unavailable=True ]]
++ for r in $(find /etc/yum.repos.d/ -name "*.repo")
++ sudo sed -i /etc/yum.repos.d/beaker-SAPHANA.repo -r -e s#skip_if_unavailable=False#skip_if_unavailable=True#g
+++ sudo grep skip_if_unavailable=True /etc/yum.repos.d/beaker-SAPHANA.repo
++ [[ ! -n skip_if_unavailable=True ]]
++ for r in $(find /etc/yum.repos.d/ -name "*.repo")
++ sudo sed -i /etc/yum.repos.d/latest-RCMTOOLS-2-RHEL-8.repo -r -e s#skip_if_unavailable=False#skip_if_unavailable=True#g
+++ sudo grep skip_if_unavailable=True /etc/yum.repos.d/latest-RCMTOOLS-2-RHEL-8.repo
++ [[ ! -n skip_if_unavailable=True ]]
++ for r in $(find /etc/yum.repos.d/ -name "*.repo")
++ sudo sed -i /etc/yum.repos.d/redhat.repo -r -e s#skip_if_unavailable=False#skip_if_unavailable=True#g
+++ sudo grep skip_if_unavailable=True /etc/yum.repos.d/redhat.repo
++ [[ ! -n skip_if_unavailable=True ]]
+[Pipeline] sh
++ repo=latest-RCMTOOLS-2-RHEL-8
++ cat
++ sudo tee /etc/yum.repos.d/latest-RCMTOOLS-2-RHEL-8.repo
+[latest-RCMTOOLS-2-RHEL-8]
+name=latest-RCMTOOLS-2-RHEL-8
+baseurl=http://download.devel.redhat.com/rel-eng/RCMTOOLS/latest-RCMTOOLS-2-RHEL-8/compose/BaseOS/$basearch/os/
+enabled=1
+gpgcheck=0
+skip_if_unavailable=True
+[Pipeline] sh
++ sudo yum install -y -q krb5-workstation openssh-clients coreutils git rhpkg jq python3-six python3-pip
+[Pipeline] withCredentials
+Masking supported pattern matches of $CRW_BOT_USERNAME or $CRW_BOT_PASSWORD
+[Pipeline] {
+[Pipeline] sh
++ SKOPEO_VERSION=
+++ which skopeo
++ '[' '!' -z /usr/local/bin/skopeo ']'
+++ skopeo -v
+++ awk '{ print $3 }'
++ SKOPEO_VERSION=1.1.1
++ checkVersion 1.1 1.1.1 skopeo
+++ echo -e '1.1
+1.1.1'
+++ sort -V
+++ head -n1
++ [[ 1.1 = \1\.\1 ]]
++ echo '[INFO] skopeo version 1.1.1 installed is >= 1.1, can proceed.'
+[INFO] skopeo version 1.1.1 installed is >= 1.1, can proceed.
+[Pipeline] }
+[Pipeline] // withCredentials
+[Pipeline] sh
++ repo=latest-RCMTOOLS-2-RHEL-8
++ cat
++ sudo tee /etc/yum.repos.d/latest-RCMTOOLS-2-RHEL-8.repo
+[latest-RCMTOOLS-2-RHEL-8]
+name=latest-RCMTOOLS-2-RHEL-8
+baseurl=http://download.devel.redhat.com/rel-eng/RCMTOOLS/latest-RCMTOOLS-2-RHEL-8/compose/BaseOS/$basearch/os/
+enabled=1
+gpgcheck=0
+skip_if_unavailable=True
+[Pipeline] sh
++ sudo yum install -y -q jq python3-six python3-pip
+[Pipeline] sh
++ sudo /usr/bin/python3 -m pip install -q --upgrade pip yq jsonschema
+WARNING: Running pip as root will break packages and permissions. You should install packages reliably by using venv: https://pip.pypa.io/warnings/venv
++ jq --version
+jq-1.5
++ yq --version
+yq 2.12.0
+[Pipeline] sh
++ chmod 700 ****
++ chown root ****
++ echo crw-build/codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com@REDHAT.COM
++ chmod 644 /root/.k5login
++ chown root /root/.k5login
++ echo 'pkgs.devel.redhat.com,10.19.208.80 ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAplqWKs26qsoaTxvWn3DFcdbiBxqRLhFngGiMYhbudnAj4li9/VwAJqLm1M6YfjOoJrj9dlmuXhNzkSzvyoQODaRgsjCG5FaRjuN8CSM/y+glgCYsWX1HFZSnAasLDuW0ifNLPR2RBkmWx61QKq+TxFDjASBbBywtupJcCsA5ktkjLILS+1eWndPJeSUJiOtzhoN8KIigkYveHSetnxauxv1abqwQTk5PmxRgRt20kZEFSRqZOJUlcl85sZYzNC/G7mneptJtHlcNrPgImuOdus5CW+7W49Z/1xqqWI/iRjwipgEMGusPMlSzdxDX4JzIx6R53pDpAwSAQVGDz4F9eQ==
+'
++ ssh-keyscan -t rsa github.com
+# github.com:22 SSH-2.0-babeld-cec9758f
++ [[ -f /root/.ssh/config ]]
++ mv -f /root/.ssh/config /root/.ssh/config.BAK
++ echo '
+GSSAPIAuthentication yes
+GSSAPIDelegateCredentials yes
+Host pkgs.devel.redhat.com
+User crw-build/codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com@REDHAT.COM
+'
++ chmod 600 /root/.ssh/config
++ export KRB5CCNAME=/var/tmp/crw-build_ccache
++ KRB5CCNAME=/var/tmp/crw-build_ccache
++ kinit crw-build/codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com@REDHAT.COM -kt ****
+[Pipeline] fileExists
+[Pipeline] sh
++ export KRB5CCNAME=/var/tmp/crw-build_ccache
++ KRB5CCNAME=/var/tmp/crw-build_ccache
++ git clone ssh://crw-build@pkgs.devel.redhat.com/containers/codeready-workspaces-configbump /var/lib/jenkins/workspace/CRW_CI/get-sources-rhpkg-container-build_2.x/sources
+Cloning into '/var/lib/jenkins/workspace/CRW_CI/get-sources-rhpkg-container-build_2.x/sources'...
+[Pipeline] sh
++ export KRB5CCNAME=/var/tmp/crw-build_ccache
++ KRB5CCNAME=/var/tmp/crw-build_ccache
++ cd /var/lib/jenkins/workspace/CRW_CI/get-sources-rhpkg-container-build_2.x/sources
++ git checkout --track origin/crw-2-rhel-8
+Switched to a new branch 'crw-2-rhel-8'
+Branch 'crw-2-rhel-8' set up to track remote branch 'crw-2-rhel-8' from 'origin'.
++ git config user.email crw-build@REDHAT.COM
++ git config user.name 'CRW Build'
++ git config --global push.default matching
+[Pipeline] sh
++ curl -sSLo- https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/crw-2-rhel-8/dependencies/VERSION
+[Pipeline] echo
+CRW_VERSION = '2.9'
+[Pipeline] fileExists
+[Pipeline] sh
++ URL=https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/crw-2-rhel-8/product/updateBaseImages.sh
+++ curl -sSLI https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/crw-2-rhel-8/product/updateBaseImages.sh
+++ grep -E -v 'id: |^x-'
+++ grep -E '404|Not Found'
+++ true
++ header404=
++ [[ -n '' ]]
++ curl -sSL https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/crw-2-rhel-8/product/updateBaseImages.sh -o /var/lib/jenkins/workspace/CRW_CI/get-sources-rhpkg-container-build_2.x/updateBaseImages.sh
++ chmod +x /var/lib/jenkins/workspace/CRW_CI/get-sources-rhpkg-container-build_2.x/updateBaseImages.sh
+[Pipeline] sh
++ cd /var/lib/jenkins/workspace/CRW_CI/get-sources-rhpkg-container-build_2.x/sources
++ grep pkgs.devel.redhat.com
++ git remote -v
+[Pipeline] sh
++ export KRB5CCNAME=/var/tmp/crw-build_ccache
++ KRB5CCNAME=/var/tmp/crw-build_ccache
++ echo '[INFO] util.groovy :: updateBaseImages :: SOURCES_BRANCH = crw-2-rhel-8'
+[INFO] util.groovy :: updateBaseImages :: SOURCES_BRANCH = crw-2-rhel-8
++ echo '[INFO] util.groovy :: updateBaseImages :: SCRIPTS_BRANCH = crw-2-rhel-8'
+[INFO] util.groovy :: updateBaseImages :: SCRIPTS_BRANCH = crw-2-rhel-8
++ cd /var/lib/jenkins/workspace/CRW_CI/get-sources-rhpkg-container-build_2.x/sources
++ /var/lib/jenkins/workspace/CRW_CI/get-sources-rhpkg-container-build_2.x/updateBaseImages.sh --sources-branch crw-2-rhel-8 --scripts-branch crw-2-rhel-8
+
+# Checking /var/lib/jenkins/workspace/CRW_CI/get-sources-rhpkg-container-build_2.x/sources/Dockerfile ...
++ ubi8-minimal:8.3-298.1618432845
+
+[base] No Dockerfiles changed - no new base images found.
+[Pipeline] echo
+[INFO] Attempt to run get-sources-jenkins.sh, with up to 2 retries
+[Pipeline] retry
+[Pipeline] {
+[Pipeline] sh
++ pushd /var/lib/jenkins/workspace/CRW_CI/get-sources-rhpkg-container-build_2.x/sources
++ SCRATCH_FLAG=
++ [[ false == \t\r\u\e ]]
++ FORCE_FLAG=
++ [[ true == \t\r\u\e ]]
++ FORCE_FLAG=--force-build
++ ./get-sources-jenkins.sh '' --force-build 2.x
++ tee /var/lib/jenkins/workspace/CRW_CI/get-sources-rhpkg-container-build_2.x/get-sources-jenkins.log.txt
++ verbose=1
++ scratchFlag=
++ JOB_BRANCH=
++ doRhpkgContainerBuild=1
++ forceBuild=0
++ forcePull=0
++ generateDockerfileLABELs=1
++ [[ 3 -gt 0 ]]
++ case $1 in
++ JOB_BRANCH=
++ shift 0
++ shift 1
++ [[ 2 -gt 0 ]]
++ case $1 in
++ forceBuild=1
++ shift 0
++ shift 1
++ [[ 1 -gt 0 ]]
++ case $1 in
++ JOB_BRANCH=2.x
++ shift 0
++ shift 1
++ [[ 0 -gt 0 ]]
++ [[ ! -n 2.x ]]
++ UPSTREAM_JOB_NAME=crw-configbump_2.x
++ jenkinsURL=
++ [[ -n https://main-jenkins-csb-crwqe.apps.ocp4.prod.psi.redhat.com/ ]]
++ checkJenkinsURL https://main-jenkins-csb-crwqe.apps.ocp4.prod.psi.redhat.com/job/CRW_CI/job/crw-configbump_2.x
++ checkURL=https://main-jenkins-csb-crwqe.apps.ocp4.prod.psi.redhat.com/job/CRW_CI/job/crw-configbump_2.x
+++ curl -sSLI https://main-jenkins-csb-crwqe.apps.ocp4.prod.psi.redhat.com/job/CRW_CI/job/crw-configbump_2.x
+++ grep -E '404|Not Found|Failed to connect|No route to host|Could not resolve host|Connection refused'
++ [[ ! -n '' ]]
++ jenkinsURL=https://main-jenkins-csb-crwqe.apps.ocp4.prod.psi.redhat.com/job/CRW_CI/job/crw-configbump_2.x
++ [[ ! -n https://main-jenkins-csb-crwqe.apps.ocp4.prod.psi.redhat.com/job/CRW_CI/job/crw-configbump_2.x ]]
++ [[ ! -n https://main-jenkins-csb-crwqe.apps.ocp4.prod.psi.redhat.com/job/CRW_CI/job/crw-configbump_2.x ]]
++ [[ ! -n https://main-jenkins-csb-crwqe.apps.ocp4.prod.psi.redhat.com/job/CRW_CI/job/crw-configbump_2.x ]]
++ theTarGzs='
+lastSuccessfulBuild/artifact/asset-configbump-x86_64.tar.gz
+lastSuccessfulBuild/artifact/asset-configbump-s390x.tar.gz
+lastSuccessfulBuild/artifact/asset-configbump-ppc64le.tar.gz
+'
++ lastSuccessfulURL='https://main-jenkins-csb-crwqe.apps.ocp4.prod.psi.redhat.com/job/CRW_CI/job/crw-configbump_2.x/lastSuccessfulBuild/api/xml?xpath=/workflowRun/'
++ LABELs=
++ outputFiles=
++ for theTarGz in ${theTarGzs}
++ outputFile=asset-configbump-x86_64.tar.gz
++ log '[INFO] Download https://main-jenkins-csb-crwqe.apps.ocp4.prod.psi.redhat.com/job/CRW_CI/job/crw-configbump_2.x/lastSuccessfulBuild/artifact/asset-configbump-x86_64.tar.gz:'
++ [[ 1 -gt 0 ]]
++ echo '[INFO] Download https://main-jenkins-csb-crwqe.apps.ocp4.prod.psi.redhat.com/job/CRW_CI/job/crw-configbump_2.x/lastSuccessfulBuild/artifact/asset-configbump-x86_64.tar.gz:'
+[INFO] Download https://main-jenkins-csb-crwqe.apps.ocp4.prod.psi.redhat.com/job/CRW_CI/job/crw-configbump_2.x/lastSuccessfulBuild/artifact/asset-configbump-x86_64.tar.gz:
++ rm -f asset-configbump-x86_64.tar.gz
++ getFingerprints asset-configbump-x86_64.tar.gz
++ outputFile=asset-configbump-x86_64.tar.gz
+++ curl -L https://main-jenkins-csb-crwqe.apps.ocp4.prod.psi.redhat.com/job/CRW_CI/job/crw-configbump_2.x/lastSuccessfulBuild/fingerprints/
+++ grep asset-configbump-x86_64.tar.gz
+++ sed -e 's#.\+/fingerprint/\([0-9a-f]\+\)/".\+#\1#'
++ latestFingerprint=
+++ cat sources
+++ grep asset-configbump-x86_64.tar.gz
+++ sed -e 's#\([0-9a-f]\+\) .\+#\1#'
++ currentFingerprint=SHA512
++ [[ ! -n '' ]]
++ echo '[WARNING] Cannot resolve artifact fingerprints for asset-configbump-x86_64.tar.gz'
++ [[ '' != \S\H\A\5\1\2 ]]
+[WARNING] Cannot resolve artifact fingerprints for asset-configbump-x86_64.tar.gz
++ curl -sSL --insecure -o asset-configbump-x86_64.tar.gz https://main-jenkins-csb-crwqe.apps.ocp4.prod.psi.redhat.com/job/CRW_CI/job/crw-configbump_2.x/lastSuccessfulBuild/artifact/asset-configbump-x86_64.tar.gz
++ outputFiles=' asset-configbump-x86_64.tar.gz'
++ for theTarGz in ${theTarGzs}
++ outputFile=asset-configbump-s390x.tar.gz
++ log '[INFO] Download https://main-jenkins-csb-crwqe.apps.ocp4.prod.psi.redhat.com/job/CRW_CI/job/crw-configbump_2.x/lastSuccessfulBuild/artifact/asset-configbump-s390x.tar.gz:'
++ [[ 1 -gt 0 ]]
++ echo '[INFO] Download https://main-jenkins-csb-crwqe.apps.ocp4.prod.psi.redhat.com/job/CRW_CI/job/crw-configbump_2.x/lastSuccessfulBuild/artifact/asset-configbump-s390x.tar.gz:'
+[INFO] Download https://main-jenkins-csb-crwqe.apps.ocp4.prod.psi.redhat.com/job/CRW_CI/job/crw-configbump_2.x/lastSuccessfulBuild/artifact/asset-configbump-s390x.tar.gz:
++ rm -f asset-configbump-s390x.tar.gz
++ getFingerprints asset-configbump-s390x.tar.gz
++ outputFile=asset-configbump-s390x.tar.gz
+++ curl -L https://main-jenkins-csb-crwqe.apps.ocp4.prod.psi.redhat.com/job/CRW_CI/job/crw-configbump_2.x/lastSuccessfulBuild/fingerprints/
+++ grep asset-configbump-s390x.tar.gz
+++ sed -e 's#.\+/fingerprint/\([0-9a-f]\+\)/".\+#\1#'
++ latestFingerprint=
+++ cat sources
+++ grep asset-configbump-s390x.tar.gz
+++ sed -e 's#\([0-9a-f]\+\) .\+#\1#'
++ currentFingerprint=SHA512
++ [[ ! -n '' ]]
++ echo '[WARNING] Cannot resolve artifact fingerprints for asset-configbump-s390x.tar.gz'
++ [[ '' != \S\H\A\5\1\2 ]]
+[WARNING] Cannot resolve artifact fingerprints for asset-configbump-s390x.tar.gz
++ curl -sSL --insecure -o asset-configbump-s390x.tar.gz https://main-jenkins-csb-crwqe.apps.ocp4.prod.psi.redhat.com/job/CRW_CI/job/crw-configbump_2.x/lastSuccessfulBuild/artifact/asset-configbump-s390x.tar.gz
++ outputFiles=' asset-configbump-x86_64.tar.gz asset-configbump-s390x.tar.gz'
++ for theTarGz in ${theTarGzs}
++ outputFile=asset-configbump-ppc64le.tar.gz
++ log '[INFO] Download https://main-jenkins-csb-crwqe.apps.ocp4.prod.psi.redhat.com/job/CRW_CI/job/crw-configbump_2.x/lastSuccessfulBuild/artifact/asset-configbump-ppc64le.tar.gz:'
++ [[ 1 -gt 0 ]]
++ echo '[INFO] Download https://main-jenkins-csb-crwqe.apps.ocp4.prod.psi.redhat.com/job/CRW_CI/job/crw-configbump_2.x/lastSuccessfulBuild/artifact/asset-configbump-ppc64le.tar.gz:'
+[INFO] Download https://main-jenkins-csb-crwqe.apps.ocp4.prod.psi.redhat.com/job/CRW_CI/job/crw-configbump_2.x/lastSuccessfulBuild/artifact/asset-configbump-ppc64le.tar.gz:
++ rm -f asset-configbump-ppc64le.tar.gz
++ getFingerprints asset-configbump-ppc64le.tar.gz
++ outputFile=asset-configbump-ppc64le.tar.gz
+++ curl -L https://main-jenkins-csb-crwqe.apps.ocp4.prod.psi.redhat.com/job/CRW_CI/job/crw-configbump_2.x/lastSuccessfulBuild/fingerprints/
+++ grep asset-configbump-ppc64le.tar.gz
+++ sed -e 's#.\+/fingerprint/\([0-9a-f]\+\)/".\+#\1#'
++ latestFingerprint=
+++ cat sources
+++ grep asset-configbump-ppc64le.tar.gz
+++ sed -e 's#\([0-9a-f]\+\) .\+#\1#'
++ currentFingerprint=SHA512
++ [[ ! -n '' ]]
++ echo '[WARNING] Cannot resolve artifact fingerprints for asset-configbump-ppc64le.tar.gz'
++ [[ '' != \S\H\A\5\1\2 ]]
+[WARNING] Cannot resolve artifact fingerprints for asset-configbump-ppc64le.tar.gz
++ curl -sSL --insecure -o asset-configbump-ppc64le.tar.gz https://main-jenkins-csb-crwqe.apps.ocp4.prod.psi.redhat.com/job/CRW_CI/job/crw-configbump_2.x/lastSuccessfulBuild/artifact/asset-configbump-ppc64le.tar.gz
++ outputFiles=' asset-configbump-x86_64.tar.gz asset-configbump-s390x.tar.gz asset-configbump-ppc64le.tar.gz'
++ [[ -n  asset-configbump-x86_64.tar.gz asset-configbump-s390x.tar.gz asset-configbump-ppc64le.tar.gz ]]
++ log '[INFO] Upload new sources: asset-configbump-x86_64.tar.gz asset-configbump-s390x.tar.gz asset-configbump-ppc64le.tar.gz'
++ [[ 1 -gt 0 ]]
++ echo '[INFO] Upload new sources: asset-configbump-x86_64.tar.gz asset-configbump-s390x.tar.gz asset-configbump-ppc64le.tar.gz'
+[INFO] Upload new sources: asset-configbump-x86_64.tar.gz asset-configbump-s390x.tar.gz asset-configbump-ppc64le.tar.gz
++ rhpkg new-sources asset-configbump-x86_64.tar.gz asset-configbump-s390x.tar.gz asset-configbump-ppc64le.tar.gz
+File already uploaded: asset-configbump-x86_64.tar.gz
+File already uploaded: asset-configbump-s390x.tar.gz
+File already uploaded: asset-configbump-ppc64le.tar.gz
+Source upload succeeded. Don't forget to commit the sources file
++ log '[INFO] Commit new sources from: asset-configbump-x86_64.tar.gz asset-configbump-s390x.tar.gz asset-configbump-ppc64le.tar.gz'
++ [[ 1 -gt 0 ]]
++ echo '[INFO] Commit new sources from: asset-configbump-x86_64.tar.gz asset-configbump-s390x.tar.gz asset-configbump-ppc64le.tar.gz'
++ field=id
+[INFO] Commit new sources from: asset-configbump-x86_64.tar.gz asset-configbump-s390x.tar.gz asset-configbump-ppc64le.tar.gz
+++ curl -sSL --insecure 'https://main-jenkins-csb-crwqe.apps.ocp4.prod.psi.redhat.com/job/CRW_CI/job/crw-configbump_2.x/lastSuccessfulBuild/api/xml?xpath=/workflowRun/id'
+++ sed -e 's#<id>\(.\+\)</id>#\1#' -e 's#&lt;br/&gt; #\n#g' -e 's#\&lt;a.\+/a\&gt;##g'
++ ID=11
+++ echo 11
+++ grep -E '404 Not Found|ERROR 404|Application is not available'
++ [[ -n '' ]]
++ COMMIT_MSG='Update from Jenkins :: crw-configbump_2.x :: 11
+:: asset-configbump-x86_64.tar.gz asset-configbump-s390x.tar.gz asset-configbump-ppc64le.tar.gz'
+++ git commit -s -m '[get sources] Update from Jenkins :: crw-configbump_2.x :: 11
+:: asset-configbump-x86_64.tar.gz asset-configbump-s390x.tar.gz asset-configbump-ppc64le.tar.gz' sources Dockerfile .gitignore
++ [[ On branch crw-2-rhel-8
+Your branch is up to date with 'origin/crw-2-rhel-8'.
+
+nothing to commit, working tree clean == *\n\o\t\h\i\n\g\ \t\o\ \c\o\m\m\i\t\,\ \w\o\r\k\i\n\g\ \t\r\e\e\ \c\l\e\a\n* ]]
++ log '[INFO] No new sources, so nothing to build.'
++ [[ 1 -gt 0 ]]
++ echo '[INFO] No new sources, so nothing to build.'
++ [[ 1 -eq 1 ]]
+[INFO] No new sources, so nothing to build.
++ echo '[INFO] #1 Trigger container-build in current branch: rhpkg container-build '
++ git status
+[INFO] #1 Trigger container-build in current branch: rhpkg container-build 
+On branch crw-2-rhel-8
+Your branch is up to date with 'origin/crw-2-rhel-8'.
+
+nothing to commit, working tree clean
+++ mktemp
++ tmpfile=/tmp/tmp.qx182kJy9l
++ rhpkg container-build --nowait
++ tee /tmp/tmp.qx182kJy9l
+Kerberos authentication is used, but you do not have a valid credential.
+Please use kinit to get credential with a principal that has realm REDHAT.COM, IPA.REDHAT.COM
+Kerberos authentication is used, but you do not have a valid credential.
+Please use kinit to get credential with a principal that has realm REDHAT.COM, IPA.REDHAT.COM
+Could not execute container_build: Could not login to https://brewhub.engineering.redhat.com/brewhub
+++ cat /tmp/tmp.qx182kJy9l
+++ grep 'Created task:'
+++ sed -e 's#Created task:##'
++ taskID=
++ brew watch-logs
++ tee /tmp/tmp.qx182kJy9l
+Usage: brew watch-logs [options] <task id> [<task id> ...]
+(Specify the --help global option for a list of other help options)
+
+brew: error: at least one task id must be specified
+++ grep 'image build failed' /tmp/tmp.qx182kJy9l
++ ERRORS=
++ [[ '' != '' ]]
++ wait
++ cd ..
++ rm -fr sources
++ [[ -n configbump-rhel8 ]]
++ touch /var/lib/jenkins/workspace/CRW_CI/get-sources-rhpkg-container-build_2.x/get-sources-jenkins.log.txt
+++ grep -E -A2 '"(tags|floating_tags)": \[' /var/lib/jenkins/workspace/CRW_CI/get-sources-rhpkg-container-build_2.x/get-sources-jenkins.log.txt
+++ grep -E -v 'tags|\]|\[|--|latest'
+++ sed -r -e 's@.+"(.+)",*@\1@'
+++ sort -u -r -V
+++ tr '\n\r' ' '
++ TAGs=
++ tee /var/lib/jenkins/workspace/CRW_CI/get-sources-rhpkg-container-build_2.x/build_desc.txt
+++ cat /var/lib/jenkins/workspace/CRW_CI/get-sources-rhpkg-container-build_2.x/get-sources-jenkins.log.txt
+++ grep -E -A2 '"(pull)": \['
+++ grep -E -v candidate
+++ grep -E -v @sha
+++ tr '\n\r' ' '
+++ grep -E registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-
+++ sed -r -e 's@.+"(.+)",*@\1@'
++ echo 'REPO_PATH=""'
+REPO_PATH=""
++ source /var/lib/jenkins/workspace/CRW_CI/get-sources-rhpkg-container-build_2.x/build_desc.txt
+++ REPO_PATH=
++ REPOS=
++ [[ -n '' ]]
++ [[ ! -n '' ]]
++ tee /var/lib/jenkins/workspace/CRW_CI/get-sources-rhpkg-container-build_2.x/build_desc.txt
+++ grep -E 'platform:- - atomic_reactor.plugins.tag_from_config - DEBUG - Using additional unique tag ' /var/lib/jenkins/workspace/CRW_CI/get-sources-rhpkg-container-build_2.x/get-sources-jenkins.log.txt
+++ sed -r -e 's@.+Using additional primary tag (.+)@registry-proxy.engineering.redhat.com/\1@'
+++ tr '\n\r' ' '
++ echo 'REPO_PATH=""'
+REPO_PATH=""
++ source /var/lib/jenkins/workspace/CRW_CI/get-sources-rhpkg-container-build_2.x/build_desc.txt
+++ REPO_PATH=
++ REPOS=
++ [[ -n '' ]]
++ [[ ! -n '' ]]
++ tee /var/lib/jenkins/workspace/CRW_CI/get-sources-rhpkg-container-build_2.x/build_desc.txt
+++ grep -E '^ADD Dockerfile-codeready-workspaces-' /var/lib/jenkins/workspace/CRW_CI/get-sources-rhpkg-container-build_2.x/get-sources-jenkins.log.txt
+++ sed -r -e 's@^ADD Dockerfile-codeready-workspaces-(.+) /root/.+@\1@'
+++ tr '\n\r' ' '
++ echo 'REPO_PATH=""'
+REPO_PATH=""
++ source /var/lib/jenkins/workspace/CRW_CI/get-sources-rhpkg-container-build_2.x/build_desc.txt
+++ REPO_PATH=
++ REPOS=
++ [[ -n '' ]]
++ [[ ! -n '' ]]
++ echo 'REPO_PATH="BREW:BUILD/STATUS:UNKNOWN"'
++ tee -a /var/lib/jenkins/workspace/CRW_CI/get-sources-rhpkg-container-build_2.x/build_desc.txt
+REPO_PATH="BREW:BUILD/STATUS:UNKNOWN"
+[Pipeline] }
+[Pipeline] // retry
+[Pipeline] sh
++ grep -E 'Brew build has failed|failed with exit code|Problem loading ID' /var/lib/jenkins/workspace/CRW_CI/get-sources-rhpkg-container-build_2.x/get-sources-jenkins.log.txt
++ true
+[Pipeline] sh
++ grep -E -A2 '"tags": \[' /var/lib/jenkins/workspace/CRW_CI/get-sources-rhpkg-container-build_2.x/get-sources-jenkins.log.txt
++ grep -E -v 'tags|\]|\[|--'
++ uniq
++ tr -d ' '
+[Pipeline] sh
++ grep 'Task info: https://brewweb.engineering.redhat.com/brew/taskinfo?taskID=' /var/lib/jenkins/workspace/CRW_CI/get-sources-rhpkg-container-build_2.x/get-sources-jenkins.log.txt
++ true
+[Pipeline] sh
++ cat /var/lib/jenkins/workspace/CRW_CI/get-sources-rhpkg-container-build_2.x/build_desc.txt
+[Pipeline] echo
+<a href=''>Failed in </a> : 
+BREW:BUILD/STATUS:UNKNOWN
+[Pipeline] }
+[Pipeline] // withCredentials
+[Pipeline] }
+[Pipeline] // wrap
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] }
+[Pipeline] // node
+[Pipeline] }
+[Pipeline] // timeout
+[Pipeline] node
+Running on cpt-ppc-006 in /var/lib/jenkins/workspace/CRW_CI/get-sources-rhpkg-container-build_2.x
+[Pipeline] {
+[Pipeline] stage
+[Pipeline] { (Copy OSBS container to Quay)
+[Pipeline] echo
+########################################################################################################
+[Pipeline] echo
+##  Copy latest configbump in OSBS to Quay
+[Pipeline] echo
+########################################################################################################
+[Pipeline] sh
++ curl -sSLO https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/crw-2-rhel-8/product/util.groovy
+[Pipeline] load
+[Pipeline] { (/var/lib/jenkins/workspace/CRW_CI/get-sources-rhpkg-container-build_2.x/util.groovy)
+[Pipeline] }
+[Pipeline] // load
+[Pipeline] echo
+currentBuild.result = FAILURE
+[Pipeline] echo
+No changes upstream, nothing to copy to quay!
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] }
+[Pipeline] // node
+[Pipeline] End of Pipeline
+Finished: FAILURE
