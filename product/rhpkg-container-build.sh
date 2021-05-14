@@ -13,7 +13,12 @@ usage () {
 VERBOSE=0
 CLEANUP=1
 doRhpkgContainerBuild=1
-LOGFILE=get-sources-jenkins.log.txt
+
+if [[ ! $WORKSPACE ]]; then
+  WORKSPACE=$(mktemp -d)
+fi
+LOGFILE=${WORKSPACE}/get-sources-jenkins.log.txt
+
 while [[ "$#" -gt 0 ]]; do
   case $1 in
   '-n'|'--nobuild') doRhpkgContainerBuild=0; shift 0;;
@@ -27,10 +32,6 @@ while [[ "$#" -gt 0 ]]; do
 done
 
 if [[ ! -d ${SOURCEDIR} ]] && [[ doRhpkgContainerBuild -eq 1 ]]; then usage; fi
-
-if [[ ! $WORKSPACE ]]; then
-  WORKSPACE=$(mktemp -d)
-fi
 
 if [[ ${doRhpkgContainerBuild} -eq 1 ]]; then
   # if not set, compute from current branch
