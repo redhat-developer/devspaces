@@ -110,6 +110,10 @@ editors:
       - name: che-machine-exec
         container:
           image: 'registry.redhat.io/codeready-workspaces/machineexec-rhel8:2.9'
+          memoryLimit: 128Mi
+          memoryRequest: 32Mi
+          cpuLimit: 500m
+          cpuRequest: 30m
           command:
             - /go/bin/che-machine-exec
             - '--url'
@@ -130,6 +134,10 @@ editors:
       - name: remote-runtime-injector
         container:
           image: 'registry.redhat.io/codeready-workspaces/theia-endpoint-rhel8:2.9'
+          memoryLimit: 128Mi
+          memoryRequest: 32Mi
+          cpuLimit: 500m
+          cpuRequest: 30m
           env:
             - name: PLUGIN_REMOTE_ENDPOINT_EXECUTABLE
               value: /remote-endpoint/plugin-remote-endpoint
@@ -249,6 +257,10 @@ editors:
       - name: che-machine-exec
         container:
           image: 'registry.redhat.io/codeready-workspaces/machineexec-rhel8:2.9'
+          memoryLimit: 128Mi
+          memoryRequest: 32Mi
+          cpuLimit: 500m
+          cpuRequest: 30m
           command:
             - /go/bin/che-machine-exec
             - '--url'
@@ -269,6 +281,10 @@ editors:
       - name: remote-runtime-injector
         container:
           image: "registry.redhat.io/codeready-workspaces/theia-endpoint-rhel8:2.9"
+          memoryLimit: 128Mi
+          memoryRequest: 32Mi
+          cpuLimit: 500m
+          cpuRequest: 30m
           env:
             - name: PLUGIN_REMOTE_ENDPOINT_EXECUTABLE
               value: /remote-endpoint/plugin-remote-endpoint
