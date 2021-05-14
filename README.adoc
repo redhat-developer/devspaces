@@ -10,7 +10,7 @@ For the latest stable release, see the **crw-2.y-rhel-8** branch with the larges
 
 ---
 
-This repository no longer hosts the CodeReady Workspaces Server assembly that mainly inherits Eclipse Che artifacts and repackages some of them. Server has moved to link:https://github.com/redhat-developer/codeready-workspaces-images/blob/crw-2-rhel-8/codeready-workspaces-server/README.adoc#how-to-build-locally[codeready-workspaces-images/codeready-workspaces-server].
+This repository no longer hosts the CodeReady Workspaces Server assembly that mainly inherits Eclipse Che artifacts and repackages some of them. Server has moved to link:https://github.com/redhat-developer/codeready-workspaces-images/blob/crw-2-rhel-8/codeready-workspaces/README.adoc#how-to-build-locally[codeready-workspaces-images/codeready-workspaces].
 
 ### How to Build CRW Containers Using casc Jenkins (REQUIRES VPN)
 
