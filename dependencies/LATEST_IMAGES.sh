@@ -77,4 +77,9 @@ for d in $(cat dependencies/LATEST_IMAGES); do
   ./product/getCommitSHAForTag.sh ${d} -b ${DWNSTM_BRANCH} | tee -a dependencies/LATEST_IMAGES_COMMITS
 done
 
+# add an extra \n to avoid linelint errors, ffs.
+echo "" >> dependencies/LATEST_IMAGES
+echo "" >> dependencies/LATEST_IMAGES_DIGESTS.json
+echo "" >> dependencies/LATEST_IMAGES_COMMITS
+
 # now commit changes
