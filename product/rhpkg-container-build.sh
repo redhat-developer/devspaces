@@ -4,18 +4,20 @@
 # 2. collect log information to report on build status
 
 usage () {
-  echo "Usage:   $0 JOB_BRANCH -s [SOURCEDIR] [--nobuild] [-l /path/to/log.txt] [-v (verbose) "
+  echo "Usage:   $0 JOB_BRANCH -s [SOURCEDIR] [--nobuild] [-l /path/to/log.txt] [-v (verbose)] [--noclean]"
   echo "Example (run build and parse log): $0 2.9 -s /path/to/sources"
-  echo "Example (parse an existing log):   $0 2.9 --nobuild -l /tmp/consoleText"
+  echo "Example (parse an existing log):   $0 2.9 -l /tmp/consoleText --nobuild --noclean -v"
   exit 1
 }
 
+VERBOSE=0
+CLEANUP=1
 doRhpkgContainerBuild=1
 LOGFILE=get-sources-jenkins.log.txt
-VERBOSE=0
 while [[ "$#" -gt 0 ]]; do
   case $1 in
-	'-n'|'--nobuild') doRhpkgContainerBuild=0; shift 0;;
+  '-n'|'--nobuild') doRhpkgContainerBuild=0; shift 0;;
+  '--noclean') CLEANUP=0; shift 0;;
   '-s') SOURCEDIR="$2"; SOURCEDIR="${SOURCEDIR%/}"; shift 1;;
   '-l') LOGFILE="$2"; shift 1;;
   '-v') VERBOSE=1; shift 0;;
@@ -165,6 +167,11 @@ else
 fi
 descriptString="${descriptString} ${TASK_ID}</a> : ${BUILD_DESC}"
 BUILD_DESC=${descriptString}
+
+# cleanup
+if [[ ${CLEANUP} -eq 1 ]]; then
+  rm -f "${LOGFILE}"
+fi
 
 # collect these with grep 'TASK_URL=' /tmp/rhpkg-container-build.txt | sed -r -e "s#TASK_URL=##"
 echo "TAGs=${TAGs}"
