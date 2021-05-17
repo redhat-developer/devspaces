@@ -16,7 +16,7 @@ CONTAINERS=""
 
 while IFS= read -r -d '' file; do
   CONTAINERS="${CONTAINERS} $(yq -r '..|.image?' "${file}" | grep -v "null" | sort | uniq)"
-done < <(find "$1" -name 'meta.yaml' -print0)
+done < <(find "$1" -maxdepth 1 -name 'che-*.yaml' -print0)
 
 CONTAINERS_UNIQ=()
 # shellcheck disable=SC2199
