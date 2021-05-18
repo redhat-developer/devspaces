@@ -38,7 +38,6 @@ else
 		fi
 	fi
 fi
-# echo "Using CRW_VERSION=${CRW_VERSION} and DWNSTM_BRANCH = ${DWNSTM_BRANCH}"
 
 if [[ ! -x /usr/bin/brew ]]; then 
 	echo "Brew is required. Please install brewkoji rpm from one of these repos:";
@@ -150,7 +149,6 @@ PUSHTOQUAY=0 # utility method to pull then push to quay
 PUSHTOQUAYTAGS="" # utility method to pull then push to quay (extra tags to push)
 SORTED=0 # if 0, use the order of containers in the CRW*_CONTAINERS_* strings above; if 1, sort alphabetically
 latestNightly="latest"
-if [[ ${CRW_VERSION} == "2.y" ]]; then latestNightly="nightly"; fi
 usage () {
 	echo "
 Usage: 
@@ -208,6 +206,8 @@ while [[ "$#" -gt 0 ]]; do
   shift 1
 done
 
+if [[ ${CRW_VERSION} == "2.y" ]]; then latestNightly="nightly"; fi
+
 # echo "DWNSTM_BRANCH = $DWNSTM_BRANCH"
 # tag to search for in quay
 if [[ -z ${BASETAG} ]] && [[ ${DWNSTM_BRANCH} ]]; then
@@ -226,9 +226,14 @@ else
 	usage; exit 1
 fi
 
-echo "BASETAG = $BASETAG"
-# echo "candidateTag = $candidateTag"
-# echo "containers = $CONTAINERS"
+if [[ $VERBOSE -eq 1 ]]; then 
+	echo "[DEBUG] CRW_VERSION=${CRW_VERSION}"
+	echo "[DEBUG] DWNSTM_BRANCH = ${DWNSTM_BRANCH}"
+	echo "[DEBUG] BASETAG = $BASETAG"
+	echo "[DEBUG] candidateTag = $candidateTag"
+	echo "[DEBUG] containers = $CONTAINERS"
+	echo "[DEBUG] latestNightly = $latestNightly"
+fi
 
 if [[ ${REGISTRY} != "" ]]; then 
 	REGISTRYSTRING="--registry ${REGISTRY}"
@@ -249,8 +254,8 @@ else
 	REGISTRYPRE=""
 fi
 if [[ $VERBOSE -eq 1 ]]; then 
-	echo REGISTRYSTRING = $REGISTRYSTRING
-	echo REGISTRYPRE = $REGISTRYPRE
+	echo "[DEBUG] REGISTRYSTRING = $REGISTRYSTRING"
+	echo "[DEBUG] REGISTRYPRE = $REGISTRYPRE"
 fi
 
 # see https://hub.docker.com/r/laniksj/dfimage
@@ -275,6 +280,7 @@ if [[ ${SHOWNVR} -eq 1 ]]; then
 		containername="${containername//\/operator/-rhel8-operator}"
 		containername="${containername//crw-2-/}"
 		if [[ ${VERBOSE} -eq 1 ]]; then
+			# shellcheck disable=SC2028
 			echo "brew list-tagged ${candidateTag} | grep \"${containername/\//-}-container\" | sort -V | tail -${NUMTAGS} | sed -e \"s#[\ \t]\+${candidateTag}.\+##\""
 		fi
 		if [[ ${SHOWLOG} -eq 1 ]]; then
@@ -291,7 +297,7 @@ fi
 
 for URLfrag in $CONTAINERS; do
 	URLfragtag=${URLfrag##*:}
-	if [[ ${URLfragtag} == ${URLfrag} ]]; then # tag appended on url
+	if [[ ${URLfragtag} == "${URLfrag}" ]]; then # tag appended on url
 		URL="https://access.redhat.com/containers/?tab=tags#/registry.access.redhat.com/${URLfrag}"
 		URLfragtag="^-"
 	else
@@ -304,16 +310,23 @@ for URLfrag in $CONTAINERS; do
 		ARCH_OVERRIDE="--override-arch s390x"
 	fi
 
+	if [[ $CRW_VERSION ]] && [[ $CRW_VERSION != "2.y" ]]; then
+		searchTag="${CRW_VERSION}"
+	elif [[ ! $CRW_VERSION ]] || [[ $BASETAG == "2" ]]; then
+		searchTag="nightly"
+	else
+		searchTag="${latestNightly}"
+	fi
 	# shellcheck disable=SC2001
-	QUERY="$(echo $URL | sed -e "s#.\+\(registry.redhat.io\|registry.access.redhat.com\)/#skopeo inspect ${ARCH_OVERRIDE} docker://${REGISTRYPRE}#g"):${latestNightly}"
+	QUERY="$(echo "$URL" | sed -e "s#.\+\(registry.redhat.io\|registry.access.redhat.com\)/#skopeo inspect ${ARCH_OVERRIDE} docker://${REGISTRYPRE}#g"):${searchTag}"
 	if [[ $VERBOSE -eq 1 ]]; then 
-		      echo ""; echo "# $QUERY | jq -r .RepoTags[] | grep -E -v '${EXCLUDES}' | grep -E '${BASETAG}' | sort -V | tail -5"
+		      echo ""; echo "[DEBUG] $QUERY | jq -r .RepoTags[] | grep -E -v '${EXCLUDES}' | grep -E '${BASETAG}' | sort -V | tail -5"
 	fi
 	LATESTTAGs=$(${QUERY} 2>/dev/null | jq -r .RepoTags[] | grep -E -v "${EXCLUDES}" | grep -E "${BASETAG}" | sort -V | tail -${NUMTAGS})
 	if [[ ! ${LATESTTAGs} ]]; then # try again with -container suffix
-		QUERY="$(echo ${URL}-container | sed -e "s#.\+\(registry.redhat.io\|registry.access.redhat.com\)/#skopeo inspect ${ARCH_OVERRIDE} docker://${REGISTRYPRE}#g"):${latestNightly}"
+		QUERY="$(echo "${URL}-container" | sed -e "s#.\+\(registry.redhat.io\|registry.access.redhat.com\)/#skopeo inspect ${ARCH_OVERRIDE} docker://${REGISTRYPRE}#g"):${searchTag}"
 		if [[ $VERBOSE -eq 1 ]]; then 
-			      echo ""; echo "# $QUERY | jq -r .RepoTags[] | grep -E -v '${EXCLUDES}' | grep -E '${BASETAG}' | sort -V | tail -5" 
+			      echo ""; echo "[DEBUG] $QUERY | jq -r .RepoTags[] | grep -E -v '${EXCLUDES}' | grep -E '${BASETAG}' | sort -V | tail -5" 
 		fi
 		LATESTTAGs=$(${QUERY} 2>/dev/null | jq -r .RepoTags[] | grep -E -v "${EXCLUDES}" | grep -E "${BASETAG}" | sort -V | tail -${NUMTAGS})
 	fi
