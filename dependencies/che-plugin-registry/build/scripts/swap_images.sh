@@ -12,7 +12,7 @@
 SCRIPT_DIR=$(cd "$(dirname "$0")" || exit; pwd)
 YAML_ROOT="$1"
 
-cheYamls=$("$SCRIPT_DIR"/list_yaml.sh "$YAML_ROOT")
+cheYamls=$("$SCRIPT_DIR"/list_che_yaml.sh "$YAML_ROOT")
 
 # Note: optional -f flag will force this transformation even on an incompatible architecture,
 # so we can call this script from crw-operator/build/scripts/insert-related-images-to-csv.sh
