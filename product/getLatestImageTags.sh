@@ -149,9 +149,9 @@ SHOWLOG=0 	# show URL of the console log
 PUSHTOQUAY=0 # utility method to pull then push to quay
 PUSHTOQUAYTAGS="" # utility method to pull then push to quay (extra tags to push)
 SORTED=0 # if 0, use the order of containers in the CRW*_CONTAINERS_* strings above; if 1, sort alphabetically
+latestNightly="latest"
+if [[ ${CRW_VERSION} == "2.y" ]]; then latestNightly="nightly"; fi
 usage () {
-	latestNightly=" latest"
-	if [[ ${CRW_VERSION} == "2.y" ]]; then latestNightly="nightly"; fi
 	echo "
 Usage: 
   $0 -b ${DWNSTM_BRANCH} --nvr --log                         | check images in brew; output NVRs can be copied to Errata; show Brew builds/logs
@@ -226,7 +226,7 @@ else
 	usage; exit 1
 fi
 
-# echo "BASETAG = $BASETAG"
+echo "BASETAG = $BASETAG"
 # echo "candidateTag = $candidateTag"
 # echo "containers = $CONTAINERS"
 
@@ -305,13 +305,13 @@ for URLfrag in $CONTAINERS; do
 	fi
 
 	# shellcheck disable=SC2001
-	QUERY="$(echo $URL | sed -e "s#.\+\(registry.redhat.io\|registry.access.redhat.com\)/#skopeo inspect ${ARCH_OVERRIDE} docker://${REGISTRYPRE}#g")"
+	QUERY="$(echo $URL | sed -e "s#.\+\(registry.redhat.io\|registry.access.redhat.com\)/#skopeo inspect ${ARCH_OVERRIDE} docker://${REGISTRYPRE}#g"):${latestNightly}"
 	if [[ $VERBOSE -eq 1 ]]; then 
 		      echo ""; echo "# $QUERY | jq -r .RepoTags[] | grep -E -v '${EXCLUDES}' | grep -E '${BASETAG}' | sort -V | tail -5"
 	fi
 	LATESTTAGs=$(${QUERY} 2>/dev/null | jq -r .RepoTags[] | grep -E -v "${EXCLUDES}" | grep -E "${BASETAG}" | sort -V | tail -${NUMTAGS})
 	if [[ ! ${LATESTTAGs} ]]; then # try again with -container suffix
-		QUERY="$(echo ${URL}-container | sed -e "s#.\+\(registry.redhat.io\|registry.access.redhat.com\)/#skopeo inspect ${ARCH_OVERRIDE} docker://${REGISTRYPRE}#g")"
+		QUERY="$(echo ${URL}-container | sed -e "s#.\+\(registry.redhat.io\|registry.access.redhat.com\)/#skopeo inspect ${ARCH_OVERRIDE} docker://${REGISTRYPRE}#g"):${latestNightly}"
 		if [[ $VERBOSE -eq 1 ]]; then 
 			      echo ""; echo "# $QUERY | jq -r .RepoTags[] | grep -E -v '${EXCLUDES}' | grep -E '${BASETAG}' | sort -V | tail -5" 
 		fi
