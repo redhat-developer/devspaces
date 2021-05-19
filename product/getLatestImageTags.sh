@@ -310,7 +310,8 @@ for URLfrag in $CONTAINERS; do
 		URLfragtag="^- ${URLfragtag}"
 	fi
 
-	ARCH_OVERRIDE="" # optional override so that an image without amd64 won't return a failure when searching on amd64 arch machines
+	ARCH_OVERRIDE="--override-arch amd64" 
+	# optional override so that an image without amd64 won't return a failure when searching on amd64 arch machines
 	if [[ ${URLfrag} == *"-openj9"* ]]; then
 		ARCH_OVERRIDE="--override-arch s390x"
 	fi
