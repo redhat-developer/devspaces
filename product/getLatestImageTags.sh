@@ -207,11 +207,11 @@ while [[ "$#" -gt 0 ]]; do
 done
 
 searchTag="" # default to searching for :latest (no tag)
-if [[ ${CRW_VERSION} == "2.y" ]] || [[ $DWNSTM_BRANCH = "crw-2-rhel-8" ]]; then searchTag=":nightly"; latestNightly="nightly"; fi
-if [[ $CRW_VERSION ]] && [[ $CRW_VERSION != "2.y" ]]; then
-	searchTag=":${CRW_VERSION}"
-fi
-if [[ $VERBOSE -eq 1 ]]; then echo "[DEBUG] searchTag = ${searchTag}"; fi
+# if [[ ${CRW_VERSION} == "2.y" ]] || [[ $DWNSTM_BRANCH = "crw-2-rhel-8" ]]; then searchTag=":nightly"; latestNightly="nightly"; fi
+# if [[ $CRW_VERSION ]] && [[ $CRW_VERSION != "2.y" ]]; then
+# 	searchTag=":${CRW_VERSION}"
+# fi
+# if [[ $VERBOSE -eq 1 ]]; then echo "[DEBUG] searchTag = ${searchTag}"; fi
 
 # echo "DWNSTM_BRANCH = $DWNSTM_BRANCH"
 # tag to search for in quay
