@@ -133,8 +133,8 @@ codeready-workspaces/theia-rhel8 \
 codeready-workspaces/traefik-rhel8 \
 "
 
-# regex pattern of container tags to exclude, eg., latest and -sources
-EXCLUDES="latest|\\-sources" 
+# regex pattern of container tags to exclude, eg., latest and -source
+EXCLUDES="latest|\\-source" 
 
 QUIET=1 	# less output - omit container tag URLs
 VERBOSE=0	# more output
@@ -152,13 +152,13 @@ latestNightly="latest"
 usage () {
 	echo "
 Usage: 
-  $0 -b ${DWNSTM_BRANCH} --nvr --log                         | check images in brew; output NVRs can be copied to Errata; show Brew builds/logs
+  $0 -b ${DWNSTM_BRANCH} --nvr --log                    | check images in brew; output NVRs can be copied to Errata; show Brew builds/logs
 
-  $0 -b ${DWNSTM_BRANCH} --quay --tag \"${CRW_VERSION}-\" --hide          | use default list of CRW images in quay.io/crw, for tag 2.y-; show nothing if tag umatched
-  $0 -b ${DWNSTM_BRANCH} --osbs                              | check images in OSBS ( registry-proxy.engineering.redhat.com/rh-osbs )
-  $0 -b ${DWNSTM_BRANCH} --osbs --pushtoquay='${CRW_VERSION} ${latestNightly}'   | pull images from OSBS, push ${CRW_VERSION}-z tag + 2 extras to quay
-  $0 -b ${DWNSTM_BRANCH} --stage --sort                      | use default list of CRW images in RHEC Stage, sorted alphabetically
-  $0 -b ${DWNSTM_BRANCH} --arches                            | use default list of CRW images in RHEC Prod; show arches
+  $0 -b ${DWNSTM_BRANCH} --quay --tag \"${CRW_VERSION}-\" --hide        | use default list of CRW images in quay.io/crw, for tag 2.y-; show nothing if tag umatched
+  $0 -b ${DWNSTM_BRANCH} --osbs                         | check images in OSBS ( registry-proxy.engineering.redhat.com/rh-osbs )
+  $0 -b ${DWNSTM_BRANCH} --osbs --pushtoquay='${CRW_VERSION} ${latestNightly}'  | pull images from OSBS, push ${CRW_VERSION}-z tag + 2 extras to quay
+  $0 -b ${DWNSTM_BRANCH} --stage --sort                 | use default list of CRW images in RHEC Stage, sorted alphabetically
+  $0 -b ${DWNSTM_BRANCH} --arches                       | use default list of CRW images in RHEC Prod; show arches
 
   $0 -c 'crw/theia-rhel8 crw/theia-endpoint-rhel8' --quay      | check latest tag for specific Quay images, with branch = ${DWNSTM_BRANCH}
   $0 -c crw/plugin-java11-openj9-rhel8 --quay                  | check a non-amd64 image
@@ -206,7 +206,12 @@ while [[ "$#" -gt 0 ]]; do
   shift 1
 done
 
-if [[ ${CRW_VERSION} == "2.y" ]]; then latestNightly="nightly"; fi
+searchTag="" # default to searching for :latest (no tag)
+if [[ ${CRW_VERSION} == "2.y" ]] || [[ $DWNSTM_BRANCH = "crw-2-rhel-8" ]]; then searchTag=":nightly"; latestNightly="nightly"; fi
+if [[ $CRW_VERSION ]] && [[ $CRW_VERSION != "2.y" ]]; then
+	searchTag=":${CRW_VERSION}"
+fi
+if [[ $VERBOSE -eq 1 ]]; then echo "[DEBUG] searchTag = ${searchTag}"; fi
 
 # echo "DWNSTM_BRANCH = $DWNSTM_BRANCH"
 # tag to search for in quay
@@ -310,21 +315,14 @@ for URLfrag in $CONTAINERS; do
 		ARCH_OVERRIDE="--override-arch s390x"
 	fi
 
-	if [[ $CRW_VERSION ]] && [[ $CRW_VERSION != "2.y" ]]; then
-		searchTag="${CRW_VERSION}"
-	elif [[ ! $CRW_VERSION ]] || [[ $BASETAG == "2" ]]; then
-		searchTag="nightly"
-	else
-		searchTag="${latestNightly}"
-	fi
 	# shellcheck disable=SC2001
-	QUERY="$(echo "$URL" | sed -e "s#.\+\(registry.redhat.io\|registry.access.redhat.com\)/#skopeo inspect ${ARCH_OVERRIDE} docker://${REGISTRYPRE}#g"):${searchTag}"
+	QUERY="$(echo "$URL" | sed -e "s#.\+\(registry.redhat.io\|registry.access.redhat.com\)/#skopeo inspect ${ARCH_OVERRIDE} docker://${REGISTRYPRE}#g")${searchTag}"
 	if [[ $VERBOSE -eq 1 ]]; then 
 		      echo ""; echo "[DEBUG] $QUERY | jq -r .RepoTags[] | grep -E -v '${EXCLUDES}' | grep -E '${BASETAG}' | sort -V | tail -5"
 	fi
 	LATESTTAGs=$(${QUERY} 2>/dev/null | jq -r .RepoTags[] | grep -E -v "${EXCLUDES}" | grep -E "${BASETAG}" | sort -V | tail -${NUMTAGS})
 	if [[ ! ${LATESTTAGs} ]]; then # try again with -container suffix
-		QUERY="$(echo "${URL}-container" | sed -e "s#.\+\(registry.redhat.io\|registry.access.redhat.com\)/#skopeo inspect ${ARCH_OVERRIDE} docker://${REGISTRYPRE}#g"):${searchTag}"
+		QUERY="$(echo "${URL}-container" | sed -e "s#.\+\(registry.redhat.io\|registry.access.redhat.com\)/#skopeo inspect ${ARCH_OVERRIDE} docker://${REGISTRYPRE}#g")${searchTag}"
 		if [[ $VERBOSE -eq 1 ]]; then 
 			      echo ""; echo "[DEBUG] $QUERY | jq -r .RepoTags[] | grep -E -v '${EXCLUDES}' | grep -E '${BASETAG}' | sort -V | tail -5" 
 		fi
