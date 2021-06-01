@@ -110,7 +110,7 @@ if [[ -x /usr/bin/7za ]]; then pushd ''' + nodeHome + ''' >/dev/null; sudo rm -f
 
   sh "echo USE_PUBLIC_NEXUS = ${USE_PUBLIC_NEXUS}"
   if (!USE_PUBLIC_NEXUS) {
-      sh '''#!/bin/bash -xe
+    sh '''#!/bin/bash -xe
 echo '
 registry=https://repository.engineering.redhat.com/nexus/repository/registry.npmjs.org/
 cafile=/etc/pki/ca-trust/source/anchors/RH-IT-Root-CA.crt
@@ -136,7 +136,7 @@ npm --version; yarn --version
   }
   else
   {
-        sh '''#!/bin/bash -xe
+    sh '''#!/bin/bash -xe
 rm -f ${HOME}/.npmrc ${HOME}/.yarnrc
 npm install --global yarn@''' + yarnVersion + '''
 node --version; npm --version; yarn --version
