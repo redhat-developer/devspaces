@@ -51,9 +51,9 @@ $CMD | tee dependencies/LATEST_IMAGES
 echo '{' > dependencies/LATEST_IMAGES_DIGESTS.json
 echo '    "Images": {' >> dependencies/LATEST_IMAGES_DIGESTS.json
 for d in $(cat dependencies/LATEST_IMAGES); do
-  archOverride=""
+  archOverride="--override-arch amd64"
   if [[ ${d} = *"-openj9-"* ]]; then 
-    archOverride="--override-arch s390x"
+    archOverride="--override-arch ppc64le"
   fi
   if [[ ${d} != *":???" ]]; then
     digest=$(skopeo inspect docker://${d} ${archOverride}| jq -r '.Digest' | sed -r -e "s/sha256://" 2>/dev/null)
