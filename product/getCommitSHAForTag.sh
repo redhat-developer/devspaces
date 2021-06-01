@@ -36,10 +36,10 @@ NUMTAGS=1 # by default show only the latest tag for each container; or show n la
 CONTAINERS=""
 while [[ "$#" -gt 0 ]]; do
   case $1 in
-    '-j') JOB_BRANCH="$2"; DWNSTM_BRANCH="crw-${JOB_BRANCH}-rhel-8"; shift 1;; 
-    '-b') DWNSTM_BRANCH="$2"; shift 1;; 
-    '--tag') BASETAG="$2"; shift 1;;
-    '--candidatetag') candidateTag="$2"; shift 1;;
+    '-j') JOB_BRANCH="$2"; DWNSTM_BRANCH="crw-${JOB_BRANCH}-rhel-8"; shift 2;; 
+    '-b') DWNSTM_BRANCH="$2"; shift 2;; 
+    '--tag') BASETAG="$2"; shift 2;;
+    '--candidatetag') candidateTag="$2"; shift 2;;
     '-n') NUMTAGS="$2"; shift 2;;
    *) CONTAINERS="${CONTAINERS} $1"; shift 1;;
   esac
