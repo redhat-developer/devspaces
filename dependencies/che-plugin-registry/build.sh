@@ -84,11 +84,9 @@ parse_arguments "$@"
 echo "Update yarn dependencies..."
 yarn
 echo "Build tooling..."
-pushd "${base_dir}"/tools/build > /dev/null
-yarn build
+yarn --cwd "$(pwd)/tools/build" build
 echo "Generate artifacts..."
-eval yarn node "${NODE_BUILD_OPTIONS}" lib/entrypoint.js --output-folder:"${base_dir}/output" "${BUILD_FLAGS_ARRAY[@]}"
-popd > /dev/null
+eval node "${NODE_BUILD_OPTIONS}" tools/build/lib/entrypoint.js --output-folder:"$(pwd)/output" "${BUILD_FLAGS_ARRAY[@]}"
 
 echo -e "\nTest entrypoint.sh"
 EMOJI_HEADER="-" EMOJI_PASS="[PASS]" EMOJI_FAIL="[FAIL]" "${base_dir}"/build/dockerfiles/test_entrypoint.sh

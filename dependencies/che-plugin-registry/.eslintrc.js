@@ -5,6 +5,7 @@ module.exports = {
     plugins: [
       '@typescript-eslint',
       'jest',
+      'import',
       "no-null",
       "header"        
     ],
@@ -12,7 +13,7 @@ module.exports = {
       'eslint:recommended',
       'plugin:@typescript-eslint/eslint-recommended',
       'plugin:@typescript-eslint/recommended',
-      'prettier',
+      'prettier/@typescript-eslint',
       'plugin:jest/recommended',
     ],
     "rules": {
@@ -52,6 +53,7 @@ module.exports = {
       "guard-for-in": "error",
       "id-blacklist": "off",
       "id-match": "off",
+      "import/no-deprecated": "error",
       "import/no-extraneous-dependencies": "off",
       "max-len": [
           "error",

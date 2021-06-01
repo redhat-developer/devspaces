@@ -27,8 +27,7 @@ describe('Test ContainerHelper', () => {
       metadata: {
         displayName: 'theia-ide',
         description: 'Eclipse Theia, get the latest release each day.',
-        icon:
-          'https://raw.githubusercontent.com/theia-ide/theia/master/logo/theia-logo-no-text-black.svg?sanitize=true',
+        icon: 'https://raw.githubusercontent.com/theia-ide/theia/master/logo/theia-logo-no-text-black.svg?sanitize=true',
         name: 'che-editor',
         attributes: {
           version: '5.7.0',

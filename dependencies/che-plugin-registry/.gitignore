@@ -29,15 +29,3 @@ node_modules/
 .eslintcache
 coverage
 output
-
-# https://yarnpkg.com/getting-started/qa#which-files-should-be-gitignored
-# zero-install mode
-.yarn/*
-!.yarn/cache
-!.yarn/patches
-!.yarn/releases
-!.yarn/plugins
-!.yarn/sdks
-!.yarn/versions
-# Needed because the repo root .gitignore includes all .zip files
-!.yarn/cache/*.zip
