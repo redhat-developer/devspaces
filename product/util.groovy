@@ -108,12 +108,6 @@ if [[ -x /usr/bin/7za ]]; then pushd ''' + nodeHome + ''' >/dev/null; sudo rm -f
 '''
   }
 
-  sh '''#!/bin/bash -xe
-rm -f ${HOME}/.npmrc ${HOME}/.yarnrc
-npm install --global yarn@''' + yarnVersion + '''
-node --version && npm --version; yarn --version
-'''
-
   sh "echo USE_PUBLIC_NEXUS = ${USE_PUBLIC_NEXUS}"
   if (!USE_PUBLIC_NEXUS) {
       sh '''#!/bin/bash -xe
