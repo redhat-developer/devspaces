@@ -106,7 +106,9 @@ if [[ -x /usr/bin/7za ]]; then pushd ''' + nodeHome + ''' >/dev/null; sudo rm -f
 
   sh '''#!/bin/bash -xe
 rm -f ${HOME}/.npmrc ${HOME}/.yarnrc
-npm install --global yarn@''' + yarnVersion + '''
+# install from rpm if possible
+curl -sSLO https://github.com/yarnpkg/yarn/releases/download/v''' + yarnVersion + '''/yarn-''' + yarnVersion + '''-1.noarch.rpm
+sudo yum -y yarn-''' + yarnVersion + '''-1.noarch.rpm || npm install --global yarn@''' + yarnVersion + '''
 node --version && npm --version; yarn --version
 '''
 
