@@ -238,7 +238,11 @@ crw-2-rhel-8
    Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1593311
   Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-traefik/commit?id=369c4fb9795a64d2ab2567006e08da0e8b1dc144
 
-quay.io/crw/theia-dev-rhel8:2.9-pr-builder-x86_64
+quay.io/crw/theia-dev-rhel8:2.9-5
+     NVR: codeready-workspaces-theia-dev-rhel8-container-2.9-5
+   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1593460
+  Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-theia-dev/commit?id=30357a701c9b0ba329afc84db7eaadef70642290
+
 crw-2-rhel-8
      NVR: codeready-workspaces-traefik-rhel8-container-2.9-3
    Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1593311
