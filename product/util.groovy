@@ -36,6 +36,13 @@ def String getJobBranch(String MIDSTM_BRANCH) {
 
 @Field boolean BOOTSTRAPPED_F = false
 
+// method to safely check if a global variable is defined, eg., 
+// inspired by https://gist.github.com/pradhyu/e50f75fe0f1924cacb7ebba3a09cf556
+def globalVar (varName) {
+  def optVar = binding.variables.get(varName)
+  optVar
+}
+
 def installMaven(String MAVEN_VERSION, String JAVA_VERSION){
   installRPMs("java-"+JAVA_VERSION+"-openjdk java-"+JAVA_VERSION+"-openjdk-devel")
   mURL="https://www.apache.org/dyn/mirrors/mirrors.cgi?action=download&filename=maven/maven-3/" + MAVEN_VERSION + "/binaries/apache-maven-" + MAVEN_VERSION + "-bin.tar.gz"
