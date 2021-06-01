@@ -36,11 +36,23 @@ def String getJobBranch(String MIDSTM_BRANCH) {
 
 @Field boolean BOOTSTRAPPED_F = false
 
-// method to safely check if a global variable is defined, eg., 
-// inspired by https://gist.github.com/pradhyu/e50f75fe0f1924cacb7ebba3a09cf556
-def globalVar (varName) {
-  def optVar = binding.variables.get(varName)
-  optVar
+// method to check for global var or job param; if not set, return nullstring and throw no MissingPropertyException
+// inspired by https://gist.github.com/pradhyu/e50f75fe0f1924cacb7ebba3a09cf556 and 
+// https://stackoverflow.com/questions/53594351/groovy-lang-binding-difference-between-property-and-variable
+def globalVar (name) {
+    if (binding.variables == null || !binding.variables.containsKey(name)) { 
+        return ""
+    }
+    Object result = ""
+    try {
+        result = binding.variables.get(name);
+    } catch (MissingPropertyException e) {
+        return ""
+    }
+    if (result == null) {
+        return "";
+    }
+    return result;
 }
 
 def installMaven(String MAVEN_VERSION, String JAVA_VERSION){
