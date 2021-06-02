@@ -332,8 +332,7 @@ echo "''' + CRW_BOT_PASSWORD + '''" | ${PODMAN} login -u="''' + CRW_BOT_USERNAME
   }
 }
 
-// NEW WAY >= CRW 2.6, uses RHEC containerized skopeo build
-// DOES NOT WORK on RHEL7: /lib64/libc.so.6: version `GLIBC_2.28' not found, so fall back to old way from CRW 2.5 Jenkins if Skopeo not installed on RHEL7 node
+// @since 2.6, uses RHEC containerized skopeo build
 def installSkopeoFromContainer(String container) {
   if (!container?.trim()) {
     container="registry.redhat.io/rhel8/skopeo"
@@ -414,25 +413,6 @@ def installSkopeoFromContainer(String container, String minimumVersion) {
   }
 }
 
-// OLD WAY <= CRW 2.5, uses version built in Jenkins from latest sources
-def installSkopeo(String CRW_VERSION) {
-  sh '''#!/bin/bash -xe
-pushd /tmp >/dev/null
-# remove any older versions
-sudo yum remove -y -q skopeo || true
-if [[ ! -x /usr/local/bin/skopeo ]]; then
-  sudo curl -sSLO "https://codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/crw-deprecated_''' + CRW_VERSION + '''/lastSuccessfulBuild/artifact/codeready-workspaces-deprecated/skopeo/target/skopeo-$(uname -m).tar.gz"
-fi
-if [[ -f /tmp/skopeo-$(uname -m).tar.gz ]]; then
-  sudo tar xzf /tmp/skopeo-$(uname -m).tar.gz --overwrite -C /usr/local/bin/
-  sudo chmod 755 /usr/local/bin/skopeo
-  sudo rm -f /tmp/skopeo-$(uname -m).tar.gz
-fi
-popd >/dev/null
-skopeo --version
-'''
-}
-
 // TODO CRW-1534 implement sparse checkout w/ excluded paths (to avoid unneeded respins of registries)
 // https://stackoverflow.com/questions/60559819/scm-polling-with-includedregions-in-jenkins-pipeline-job
 // or https://stackoverflow.com/questions/49812267/call-pathrestriction-in-a-dsl-in-the-sandbox-mode
@@ -447,8 +427,7 @@ def cloneRepoWithBootstrap(String URL, String REPO_PATH, String BRANCH, boolean 
   }
 }
 
-// TODO merge this into cloneRepo if it's working & safe
-// Must be run inside a withCredentials() block
+// Must be run inside a withCredentials() block, after running bootstrap() [see cloneRepoWithBootstrap()]
 def cloneRepoPoll(String URL, String REPO_PATH, String BRANCH, boolean withPolling=false, String excludeRegions='', String includeRegions='*') {
   if (URL.indexOf("pkgs.devel.redhat.com") == -1) {
     // remove http(s) prefix, then trim any token@ prefix too
@@ -506,7 +485,7 @@ git config --global push.default matching
 }
 
 // Must be run inside a withCredentials() block, after running bootstrap()
-// see also cloneRepoPoll
+// Deprecated @since 2.9; replaced by cloneRepoPoll() and cloneRepoWithBootstrap()
 def cloneRepo(String URL, String REPO_PATH, String BRANCH) {
   if (URL.indexOf("pkgs.devel.redhat.com") == -1) {
     // remove http(s) prefix, then trim any token@ prefix too
