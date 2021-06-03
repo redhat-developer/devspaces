@@ -167,9 +167,6 @@ plugins:
       cpuLimit: 500m
       cpuRequest: 30m
     extension: https://download.jboss.org/jbosstools/vscode/stable/vscode-camelk/vscode-camelk-0.0.24-198.vsix
-    metaYaml:
-      skipDependencies:
-        - redhat/vscode-commons
   - id: redhat/quarkus-java11
     repository:
       url: 'https://github.com/redhat-developer/vscode-quarkus'
@@ -447,3 +444,7 @@ plugins:
       url: 'https://github.com/microsoft/vscode-eslint'
       revision: 1e15d3495da89072d48cf583d48d92829f0c4b82
     extension: https://download.jboss.org/jbosstools/vscode/3rdparty/vscode-eslint/vscode-eslint-2.1.1-1e15d3.vsix
+  - repository:
+      url: https://github.com/redhat-developer/vscode-commons
+      revision: 021b0165bb5ba05e107ee7e31d1e59a7a73f473c
+    extension: https://github.com/redhat-developer/codeready-workspaces-vscode-extensions/releases/download/v608e3a2/redhat.vscode-commons-021b0165bb5ba05e107ee7e31d1e59a7a73f473c.vsix
