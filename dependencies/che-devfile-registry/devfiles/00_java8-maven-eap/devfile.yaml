@@ -6,9 +6,11 @@ projects:
   -
     name: kitchensink-example
     source:
-      location: "https://github.com/che-samples/kitchensink-example"
-      branch: master
+      location: "https://github.com/jboss-developer/jboss-eap-quickstarts.git"
+      branch: 7.3.x
+      commitId: 7ead7157d3264cbc948429ad1b19896d97ee91aa
       type: git
+      sparseCheckoutDir: kitchensink-jsp
 components:
   -
     type: chePlugin
@@ -30,6 +32,8 @@ components:
     endpoints:
       - name: 'eap'
         port: 8080
+        attributes:
+          path: /index.jsp
       - name: 'jgroups'
         port: 7600
         attributes:
@@ -42,7 +46,7 @@ commands:
   -
     name: 1. Build
     actions:
-      - workdir: '${CHE_PROJECTS_ROOT}/kitchensink-example'
+      - workdir: '${CHE_PROJECTS_ROOT}/kitchensink-example/kitchensink-jsp'
         type: exec
         command: scl enable rh-maven35 'mvn clean install'
         component: maven
@@ -64,7 +68,7 @@ commands:
         component: maven
         command: cp target/*.war /opt/eap/standalone/deployments/ROOT.war && 
           echo 'Archive was deployed, click on eap endpoint from Workspace view to open the application'
-        workdir: ${CHE_PROJECTS_ROOT}/kitchensink-example
+        workdir: ${CHE_PROJECTS_ROOT}/kitchensink-example/kitchensink-jsp
   -
     name: 4. Hot update
     actions:
@@ -72,7 +76,7 @@ commands:
         type: exec
         component: maven
         command: "scl enable rh-maven35 'mvn clean install' && sleep 2 && cp target/*.war /opt/eap/standalone/deployments/ROOT.war"
-        workdir: ${CHE_PROJECTS_ROOT}/kitchensink-example
+        workdir: ${CHE_PROJECTS_ROOT}/kitchensink-example/kitchensink-jsp
   -
     name: Debug (Attach)
     actions:
