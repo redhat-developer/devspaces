@@ -84,6 +84,7 @@ WORKDIR /var/www/html
 
 RUN mkdir -m 777 /var/www/html/v3
 COPY README.md .htaccess /var/www/html/
+COPY /v3/plugins/.htaccess /var/www/html/v3/plugins/
 COPY --from=builder /build/output/v3 /var/www/html/v3
 COPY ./build/dockerfiles/rhel.entrypoint.sh ./build/dockerfiles/entrypoint.sh /usr/local/bin/
 RUN chmod g+rwX /usr/local/bin/entrypoint.sh /usr/local/bin/rhel.entrypoint.sh && \
