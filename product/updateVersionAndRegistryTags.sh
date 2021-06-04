@@ -55,24 +55,6 @@ updateVersion() {
     echo "${CRW_VERSION}" > ${WORKDIR}/dependencies/VERSION
 }
 
-# update a pom property to a new value
-updatePomProperty() {
-    file=$1
-    propertyname=$2
-    newvalue=$3
-    sed -i $file -r -e "s#(<${propertyname}>)([^<>/]*)(</${propertyname}>)#\1${newvalue}\3#g"
-}
-
-# update poms to latest CSV version (x.y.z.GA)
-updatePomVersions () {
-    pushd ${WORKDIR} >/dev/null || exit
-    echo "Running 'mvn versions:set' with version = ${CSV_VERSION}.GA"
-    mvn versions:set -DgenerateBackupPoms=false -DnewVersion=${CSV_VERSION}.GA -q
-    updatePomProperty ${WORKDIR}/pom.xml crw.docs.version ${CRW_VERSION}
-    git diff -q || true
-    popd >/dev/null || exit
-}
-
 updateDevfileRegistry() {
     REG_ROOT="${WORKDIR}/dependencies/che-devfile-registry"
     SCRIPT_DIR="${REG_ROOT}/build/scripts"
@@ -93,11 +75,11 @@ updateDevfileRegistry() {
 updatePluginRegistry() {
     REG_ROOT="${WORKDIR}/dependencies/che-plugin-registry"
     SCRIPT_DIR="${REG_ROOT}/build/scripts"
-    YAML_ROOT="${REG_ROOT}/v3/plugins"
+    YAML_ROOT="${REG_ROOT}"
     TEMPLATE_FILE="${REG_ROOT}/deploy/openshift/crw-plugin-registry.yaml"
 
     declare -a latestPlugins
-    for plugin in $("$SCRIPT_DIR"/list_yaml.sh "$YAML_ROOT"); do
+    for plugin in $("$SCRIPT_DIR"/list_che_yaml.sh "$YAML_ROOT"); do
         #select only latest plugins
         var1=${plugin%/*}
         var2=${var1%/*}
@@ -157,7 +139,6 @@ if [[ -z ${CRW_VERSION} ]]; then
     exit 1
 fi
 
-updatePomVersions
 updateVersion
 updatePluginRegistry
 updateDevfileRegistry
