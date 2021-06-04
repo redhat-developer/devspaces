@@ -28,6 +28,7 @@ import { CheTheiaPluginsYamlWriter } from '../src/che-theia-plugin/che-theia-plu
 import { Container } from 'inversify';
 import { Deferred } from '../src/util/deferred';
 import { DigestImagesHelper } from '../src/meta-yaml/digest-images-helper';
+import { DevImagesHelper } from '../src/meta-yaml/dev-images-helper';
 import { ExternalImagesWriter } from '../src/meta-yaml/external-images-writer';
 import { FeaturedAnalyzer } from '../src/featured/featured-analyzer';
 import { FeaturedWriter } from '../src/featured/featured-writer';
@@ -92,6 +93,11 @@ describe('Test Build', () => {
   const digestImagesHelperUpdateImagesMock = jest.fn();
   const digestImagesHelper: any = {
     updateImages: digestImagesHelperUpdateImagesMock,
+  };
+
+  const devImagesHelperReplaceImagePrefixMock = jest.fn();
+  const devImagesHelper: any = {
+    replaceImagePrefix: devImagesHelperReplaceImagePrefixMock,
   };
 
   const recommendationsAnalyzerGenerateMock = jest.fn();
@@ -217,6 +223,7 @@ describe('Test Build', () => {
     container.bind('string').toConstantValue('/fake-root-directory').whenTargetNamed('PLUGIN_REGISTRY_ROOT_DIRECTORY');
     container.bind('string').toConstantValue('/fake-root-directory/output').whenTargetNamed('OUTPUT_ROOT_DIRECTORY');
     container.bind('boolean').toConstantValue(false).whenTargetNamed('SKIP_DIGEST_GENERATION');
+    container.bind('boolean').toConstantValue(false).whenTargetNamed('USE_DEV_IMAGES');
     container.bind('string[]').toConstantValue([]).whenTargetNamed('ARGUMENTS');
     container.bind(FeaturedAnalyzer).toConstantValue(featuredAnalyzer);
     container.bind(FeaturedWriter).toConstantValue(featuredWriter);
@@ -236,6 +243,7 @@ describe('Test Build', () => {
     container.bind(ExternalImagesWriter).toConstantValue(externalImagesWriter);
     container.bind(IndexWriter).toConstantValue(indexWriter);
     container.bind(DigestImagesHelper).toConstantValue(digestImagesHelper);
+    container.bind(DevImagesHelper).toConstantValue(devImagesHelper);
 
     container.bind(Build).toSelf().inSingletonScope();
     build = container.get(Build);
@@ -511,6 +519,7 @@ describe('Test Build', () => {
 
   test('basics with skip Digests', async () => {
     container.rebind('boolean').toConstantValue(true).whenTargetNamed('SKIP_DIGEST_GENERATION');
+    container.bind('boolean').toConstantValue(false).whenTargetNamed('USE_DEV_IMAGES');
     // force to refresh the singleton
     container.rebind(Build).toSelf().inSingletonScope();
     build = container.get(Build);

@@ -72,6 +72,10 @@ function parse_arguments() {
             BUILD_FLAGS_ARRAY+=("--skip-digest-generation:true")
             shift;
             ;;
+            --use-dev-images)
+            BUILD_FLAGS_ARRAY+=("--use-dev-images:true")
+            shift;
+            ;;
             *)
             print_usage
             exit 0

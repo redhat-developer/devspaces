@@ -20,6 +20,7 @@ import { CheTheiaPluginsAnalyzer } from '../src/che-theia-plugin/che-theia-plugi
 import { CheTheiaPluginsMetaYamlGenerator } from '../src/che-theia-plugin/che-theia-plugins-meta-yaml-generator';
 import { Container } from 'inversify';
 import { DigestImagesHelper } from '../src/meta-yaml/digest-images-helper';
+import { DevImagesHelper } from '../src/meta-yaml/dev-images-helper';
 import { ExternalImagesWriter } from '../src/meta-yaml/external-images-writer';
 import { FeaturedAnalyzer } from '../src/featured/featured-analyzer';
 import { FeaturedWriter } from '../src/featured/featured-writer';
@@ -76,6 +77,7 @@ describe('Test InversifyBinding', () => {
 
     // check meta module
     expect(container.get(DigestImagesHelper)).toBeDefined();
+    expect(container.get(DevImagesHelper)).toBeDefined();
     expect(container.get(IndexWriter)).toBeDefined();
     expect(container.get(MetaYamlWriter)).toBeDefined();
     expect(container.get(ExternalImagesWriter)).toBeDefined();
@@ -98,15 +100,18 @@ describe('Test InversifyBinding', () => {
     mockedArgv.push('--foo-arg:bar');
     mockedArgv.push('--embed-vsix:true');
     mockedArgv.push('--skip-digest-generation:true');
+    mockedArgv.push('--use-dev-images:true');
     const inversifyBinding = new InversifyBinding();
     const container: Container = await inversifyBinding.initBindings();
 
     const outputDir = container.getNamed('string', 'OUTPUT_ROOT_DIRECTORY');
     const embedded = container.getNamed('boolean', 'EMBED_VSIX');
     const skipDigests = container.getNamed('boolean', 'SKIP_DIGEST_GENERATION');
+    const useDevImage = container.getNamed('boolean', 'USE_DEV_IMAGES');
 
     expect(outputDir).toEqual(myCustomOutputDir);
     expect(embedded).toBeTruthy();
     expect(skipDigests).toBeTruthy();
+    expect(useDevImage).toBeTruthy();
   });
 });

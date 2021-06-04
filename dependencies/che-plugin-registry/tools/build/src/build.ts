@@ -30,6 +30,7 @@ import { CheTheiaPluginsYamlGenerator } from './che-theia-plugin/che-theia-plugi
 import { CheTheiaPluginsYamlWriter } from './che-theia-plugin/che-theia-plugins-yaml-writer';
 import { Deferred } from './util/deferred';
 import { DigestImagesHelper } from './meta-yaml/digest-images-helper';
+import { DevImagesHelper } from './meta-yaml/dev-images-helper';
 import { ExternalImagesWriter } from './meta-yaml/external-images-writer';
 import { FeaturedAnalyzer } from './featured/featured-analyzer';
 import { FeaturedWriter } from './featured/featured-writer';
@@ -72,6 +73,10 @@ export class Build {
   @named('SKIP_DIGEST_GENERATION')
   private skipDigests: boolean;
 
+  @inject('boolean')
+  @named('USE_DEV_IMAGES')
+  private useDevImages: boolean;
+
   @inject(FeaturedAnalyzer)
   private featuredAnalyzer: FeaturedAnalyzer;
 
@@ -101,6 +106,9 @@ export class Build {
 
   @inject(DigestImagesHelper)
   private digestImagesHelper: DigestImagesHelper;
+
+  @inject(DevImagesHelper)
+  private devImagesHelper: DevImagesHelper;
 
   @inject(FeaturedWriter)
   private featuredWriter: FeaturedWriter;
@@ -320,11 +328,19 @@ export class Build {
     const computedYamls = [...cheTheiaPluginsMetaYaml, ...cheEditorsMetaYaml, ...chePluginsMetaYaml];
 
     let allMetaYamls = computedYamls;
+    if (this.useDevImages) {
+        // use quay.io/crw instead of registry.redhat.io/codeready-workspaces in dev mode
+        allMetaYamls = await this.wrapIntoTask(
+        'Replace registry.redhat.io/codeready-workspaces images with quay.io/crw',
+        this.devImagesHelper.replaceImagePrefix(allMetaYamls, 'registry.redhat.io/codeready-workspaces', 'quay.io/crw')
+      );
+    }
+
     if (!this.skipDigests) {
       // update all images to use digest instead of tags
       allMetaYamls = await this.wrapIntoTask(
         'Update tags by digests for OCI images',
-        this.digestImagesHelper.updateImages(computedYamls)
+        this.digestImagesHelper.updateImages(allMetaYamls)
       );
     }
 

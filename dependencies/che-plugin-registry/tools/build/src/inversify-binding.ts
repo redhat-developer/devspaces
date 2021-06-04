@@ -39,6 +39,7 @@ export class InversifyBinding {
 
     let embedVsix = false;
     let skipDigestGeneration = false;
+    let useDevImages = false;
 
     const args = process.argv.slice(2);
     args.forEach(arg => {
@@ -50,6 +51,9 @@ export class InversifyBinding {
       }
       if (arg.startsWith('--skip-digest-generation:')) {
         skipDigestGeneration = 'true' === arg.substring('--skip-digest-generation:'.length);
+      }
+      if (arg.startsWith('--use-dev-images:')) {
+        useDevImages = 'true' === arg.substring('--use-dev-images:'.length);
       }
     });
     this.container = new Container();
@@ -80,6 +84,8 @@ export class InversifyBinding {
     this.container.bind('boolean').toConstantValue(embedVsix).whenTargetNamed('EMBED_VSIX');
 
     this.container.bind('boolean').toConstantValue(skipDigestGeneration).whenTargetNamed('SKIP_DIGEST_GENERATION');
+
+    this.container.bind('boolean').toConstantValue(useDevImages).whenTargetNamed('USE_DEV_IMAGES');
 
     await fs.mkdirs(unpackedDirectory);
     await fs.mkdirs(downloadDirectory);
