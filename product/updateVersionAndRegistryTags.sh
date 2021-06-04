@@ -78,26 +78,10 @@ updatePluginRegistry() {
     YAML_ROOT="${REG_ROOT}"
     TEMPLATE_FILE="${REG_ROOT}/deploy/openshift/crw-plugin-registry.yaml"
 
-    declare -a latestPlugins
-    for plugin in $("$SCRIPT_DIR"/list_che_yaml.sh "$YAML_ROOT"); do
-        #select only latest plugins
-        var1=${plugin%/*}
-        var2=${var1%/*}
-        latestVersion=$(cat "$var2/latest.txt")
-        latestPlugin="$var2/$latestVersion/meta.yaml"
-        if [[ "$plugin" == "$latestPlugin" ]]; then
-            latestPlugins+=($plugin)
-        fi
-        # also update next and nightly templates
-        for nn in "$var2/next/meta.yaml" "$var2/nightly/meta.yaml"; do
-            if [[ -f $nn ]]; then latestPlugins+=($nn); fi
-        done
-    done
-    # replace latest CRW plugins with current version tag
-    for latestPlugin in "${latestPlugins[@]}"; do
+    for yaml in $("$SCRIPT_DIR"/list_che_yaml.sh "$YAML_ROOT"); do
         sed -E -e "s|(.*image: \"registry.redhat.io/codeready-workspaces/.*:).+\"|\1${CRW_VERSION}\"|g" \
             -e "s|(.*image: registry.redhat.io/codeready-workspaces/.*:).+|\1${CRW_VERSION}|g" \
-            -i "${latestPlugin}"
+            -i "${yaml}"
     done
 
     "${SCRIPT_DIR}/update_template.sh" -rn plugin -s ${TEMPLATE_FILE} -t ${CRW_VERSION}
