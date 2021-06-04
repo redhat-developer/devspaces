@@ -79,8 +79,8 @@ updatePluginRegistry() {
     TEMPLATE_FILE="${REG_ROOT}/deploy/openshift/crw-plugin-registry.yaml"
 
     for yaml in $("$SCRIPT_DIR"/list_che_yaml.sh "$YAML_ROOT"); do
-        sed -E -e "s|(.*image: \"registry.redhat.io/codeready-workspaces/.*:).+\"|\1${CRW_VERSION}\"|g" \
-            -e "s|(.*image: registry.redhat.io/codeready-workspaces/.*:).+|\1${CRW_VERSION}|g" \
+        sed -E \
+            -e "s|(.*image: (['\"]*)registry.redhat.io/codeready-workspaces/.*:)[0-9.]+(['\"]*)|\1${CRW_VERSION}\2|g" \
             -i "${yaml}"
     done
 
