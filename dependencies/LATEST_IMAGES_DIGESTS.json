@@ -2,9 +2,9 @@
     "Images": {
         "quay.io/crw/configbump-rhel8:2.9-3": "74fdbcd959a92a64bc517542da1703443fbed0a98a3cf5245727fe38f3231350",
         "quay.io/crw/crw-2-rhel8-operator:2.9-17": "025c6b11e1efdf89be7a7833c469684fa2325fadeefd0d36a85c04bf6908d4dd",
-        "quay.io/crw/crw-2-rhel8-operator-metadata:2.9-28": "d2361515e265ebb777e5489a0864967cd77cd509e237f8634eac8b5894ce1318",
+        "quay.io/crw/crw-2-rhel8-operator-metadata:2.9-29": "17afad6b47d04f765740bd03e3f6d1d037a54e3e5577774f578460458dd700bc",
         "quay.io/crw/dashboard-rhel8:2.9-8": "2b184b02b8f657e5f5b4361d2f75efd1d881093edc611872104959165b82d692",
-        "quay.io/crw/devfileregistry-rhel8:2.9-83": "39ef885a8fec886665cc9955c441fbcfe765cbdd2d780efb6e718b3c598409bb",
+        "quay.io/crw/devfileregistry-rhel8:2.9-84": "fa81e84e114ec8448c87cea62704cf54c6706ffe3ddfb3da74a5175046553805",
         "quay.io/crw/devworkspace-controller-rhel8:2.9-3": "e32e540439414940e6327f0aa29910da647cfe8930c5c95b3d71cd05455305b4",
         "quay.io/crw/devworkspace-rhel8:2.9-2": "3147404d9bfe39c1f93d85860e36462604d9fdfc3be48fedcd3ea9a98d9f4471",
         "quay.io/crw/imagepuller-rhel8:2.9-7": "e2d9dcffab28f87b16eca0e2fdbdf33dfa52ff175f2933067dc3cc1e24f6ee7e",
@@ -12,9 +12,9 @@
         "quay.io/crw/machineexec-rhel8:2.9-21": "25ffd5d31bb7da8162172477f4087689ce72f60cc1aaf64664667558bf0f7d39",
         "quay.io/crw/pluginbroker-artifacts-rhel8:2.9-4": "28adca877e4df69df98f737a50371cc2977ee0a4fa96d2498f856425a24a24e3",
         "quay.io/crw/pluginbroker-metadata-rhel8:2.9-6": "e3a44186e1e4e50685673f9c8fcd74e7534078d461fe020258eeaccf5e752116",
-        "quay.io/crw/plugin-java11-openj9-rhel8:2.9-4": "b71ffd2411e2605481766fe19a84a8efd4cebb8888de43ab5126c4d056b2f621",
-        "quay.io/crw/plugin-java11-rhel8:2.9-4": "5bf661e4771087483f15c392e7b2e32608152f260d0c88476ae71f15ab69cc6b",
-        "quay.io/crw/plugin-java8-openj9-rhel8:2.9-3": "a02d909c4ca21ae2bc170723317136fb452a6fc4c2079524652f5dce6c1a9627",
+        "quay.io/crw/plugin-java11-openj9-rhel8:2.9-5": "b72cd9159d046ca49b2d677d14eb2de6ce0af060e8b6647da4372c8c0a83b15e",
+        "quay.io/crw/plugin-java11-rhel8:2.9-5": "b9cb4bda721ea5379efde9e45279308da597298833e0cda38e4dd26123db8edb",
+        "quay.io/crw/plugin-java8-openj9-rhel8:2.9-4": "9f2502338a31610e6273558dbe3185d13ce3feb632d4d1c64f0dd7e14773f282",
         "quay.io/crw/plugin-java8-rhel8:2.9-3": "9bdacaa7aa94aad8b185567bf63f1a14e1a6ba113e1b8e2bdc40738444c46ee4",
         "quay.io/crw/plugin-kubernetes-rhel8:2.9-3": "54798dd062622b3e808a64b35d5712d01cce998c127ec62f19ee33ada063dafa",
         "quay.io/crw/plugin-openshift-rhel8:2.9-4": "f42f82edf36c5076626967e3cf5adb0342c318a97a8438f5cafdd98fc501a4b8",
@@ -31,3 +31,4 @@
         "": ""
     }
 }
+
