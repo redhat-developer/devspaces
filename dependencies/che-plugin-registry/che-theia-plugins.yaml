@@ -284,10 +284,12 @@ plugins:
         - -c
         - ${PLUGIN_REMOTE_ENDPOINT_EXECUTABLE}
     extension: https://download.jboss.org/jbosstools/vscode/3rdparty/vscode-java-debug/vscode-java-debug-0.26.0.vsix
-  - id: redhat/java11
+  - id: redhat/java
     repository:
       url: 'https://github.com/redhat-developer/vscode-java'
       revision: v0.69.0
+    aliases:
+      - redhat/java11
     featured: true
     preferences:
       java.server.launchMode: Standard
@@ -313,12 +315,10 @@ plugins:
     metaYaml:
       extraDependencies:
         - vscjava/vscode-java-debug
-  - id: redhat/java
+  - id: redhat/java8
     repository:
       url: 'https://github.com/redhat-developer/vscode-java'
       revision: v0.63.0
-    aliases:
-      - redhat/java8
     preferences:
       java.server.launchMode: Standard
     sidecar:
