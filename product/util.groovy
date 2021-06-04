@@ -290,7 +290,7 @@ minrate=1
 retries=20
 timeout=60
 EOF
-sudo yum install -yq drpm dnf || exit 1 # enable delta rpms
+# sudo yum install -yq drpm dnf || exit 1 # enable delta rpms
 
 # mark repos with skip_if_unavailable=True so we don't die if built in repos (like epel) can't be resolved today
 for r in $(find /etc/yum.repos.d/ -name "*.repo"); do
