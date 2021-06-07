@@ -53,7 +53,6 @@ fi
 CMD="./product/getLatestImageTags.sh --quay -b ${DWNSTM_BRANCH} --tag ${VERSION}- --hide"
 echo $CMD
 $CMD | tee dependencies/LATEST_IMAGES
-echo -en "\n" >> dependencies/LATEST_IMAGES
 
 # STEP 2 :: # regenerate image set digests (not the per-arch digests) from list of LATEST_IMAGES
 # requires skopeo >= 1.1 for the --override-arch flag
@@ -86,7 +85,6 @@ rm -f dependencies/LATEST_IMAGES_COMMITS
 for d in $(cat dependencies/LATEST_IMAGES); do 
   ./product/getCommitSHAForTag.sh ${d} -b ${DWNSTM_BRANCH} | tee -a dependencies/LATEST_IMAGES_COMMITS
 done
-echo -en "\n" >> dependencies/LATEST_IMAGES_COMMITS
 
 if [[ ${COMMIT_CHANGES} -eq 1 ]]; then
   # CRW-1621 if any gz resources are larger than 10485760b, must use MaxFileSize to force dist-git to shut up and take my sources!
@@ -95,6 +93,8 @@ if [[ ${COMMIT_CHANGES} -eq 1 ]]; then
   else
     git status -s -b --ignored
     echo "[INFO] Push change:"
+    git config pull.rebase true
+    git config push.default matching
     git pull; git push
   fi
 fi
