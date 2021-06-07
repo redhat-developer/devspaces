@@ -17,6 +17,8 @@
 # https://registry.redhat.io is v2 and requires authentication to query, so login in first like this:
 # docker login registry.redhat.io -u=USERNAME -p=PASSWORD
 
+COMMIT_CHANGES=0
+
 command -v skopeo >/dev/null 2>&1 || { echo "skopeo is not installed. Aborting."; exit 1; }
 command -v jq >/dev/null 2>&1 || { echo "jq is not installed. Aborting."; exit 1; }
 command -v yq >/dev/null 2>&1 || { echo "yq is not installed. Aborting."; exit 1; }
@@ -30,6 +32,12 @@ checkVersion() {
   fi
 }
 checkVersion 1.1 "$(skopeo --version | sed -e "s/skopeo version //")" skopeo
+
+for key in "$@"; do
+  case $key in 
+      '--commit') COMMIT_CHANGES=1; shift 1;;
+  esac
+done
 
 if [[ -f dependencies/VERSION ]]; then
   VERSION=$(cat dependencies/VERSION)
@@ -45,6 +53,7 @@ fi
 CMD="./product/getLatestImageTags.sh --quay -b ${DWNSTM_BRANCH} --tag ${VERSION}- --hide"
 echo $CMD
 $CMD | tee dependencies/LATEST_IMAGES
+echo -n "\n" >> dependencies/LATEST_IMAGES
 
 # STEP 2 :: # regenerate image set digests (not the per-arch digests) from list of LATEST_IMAGES
 # requires skopeo >= 1.1 for the --override-arch flag
@@ -67,6 +76,7 @@ done
   echo '        "": ""';
   echo '    }';
   echo '}'; 
+  echo -n "\n"
 } >> dependencies/LATEST_IMAGES_DIGESTS.json
 # NOTE: can fetch the sha256sum digest for a given image set (not the per-arch digests) with this:
 # jq -r '.Images | to_entries[] | select (.key == "quay.io/crw/machineexec-rhel8:2.8-2") | .value' LATEST_IMAGES_DIGESTS.json
@@ -76,10 +86,15 @@ rm -f dependencies/LATEST_IMAGES_COMMITS
 for d in $(cat dependencies/LATEST_IMAGES); do 
   ./product/getCommitSHAForTag.sh ${d} -b ${DWNSTM_BRANCH} | tee -a dependencies/LATEST_IMAGES_COMMITS
 done
+echo -n "\n" >> dependencies/LATEST_IMAGES_COMMITS
 
-# add an extra \n to avoid linelint errors, ffs.
-echo "" >> dependencies/LATEST_IMAGES
-echo "" >> dependencies/LATEST_IMAGES_DIGESTS.json
-echo "" >> dependencies/LATEST_IMAGES_COMMITS
-
-# now commit changes
+if [[ ${COMMIT_CHANGES} -eq 1 ]]; then
+  # CRW-1621 if any gz resources are larger than 10485760b, must use MaxFileSize to force dist-git to shut up and take my sources!
+  if [[ $(git commit -a -s -m "chore: Update dependencies/LATEST_IMAGES, COMMITS, DIGESTS" dependencies/LATEST_IMAGES* || true) == *"nothing to commit, working tree clean"* ]]; then
+    echo "[INFO] No changes to commit."
+  else
+    git status -s -b --ignored
+    echo "[INFO] Push change:"
+    git pull; git push
+  fi
+fi
