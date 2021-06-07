@@ -72,10 +72,11 @@ for d in $(cat dependencies/LATEST_IMAGES); do
   fi
 done
 { 
-  echo '        "": ""';
-  echo '    }';
+  echo '        "": ""'
+  echo '    }'
   echo "}"
-  echo -en "}\n"
+  # add an extra \n to avoid linelint errors, ffs.
+  echo -en "\n"
 } >> dependencies/LATEST_IMAGES_DIGESTS.json
 # NOTE: can fetch the sha256sum digest for a given image set (not the per-arch digests) with this:
 # jq -r '.Images | to_entries[] | select (.key == "quay.io/crw/machineexec-rhel8:2.8-2") | .value' LATEST_IMAGES_DIGESTS.json
