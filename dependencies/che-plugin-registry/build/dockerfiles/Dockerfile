@@ -48,13 +48,14 @@ RUN /tmp/rhel.install.sh && rm -f /tmp/rhel.install.sh
 COPY ./build/scripts/*.sh /build/
 COPY che-*.yaml /build/
 COPY resources.tgz /build/
+COPY ./v3/plugins/.htaccess /build/v3/plugins/.htaccess
 WORKDIR /build/
 
 RUN tar -xvf resources.tgz -C ./
 RUN ./swap_images.sh ./
-RUN ./swap_plugins_memory.sh output/v3
-RUN if [[ ${USE_DIGESTS} == "true" ]]; then ./write_image_digests.sh output/v3; fi
-RUN ./list_referenced_images.sh ./ > /build/output/v3/external_images.txt
+RUN ./swap_plugins_memory.sh ./output/v3
+RUN if [[ ${USE_DIGESTS} == "true" ]]; then ./write_image_digests.sh ./output/v3; fi
+RUN ./list_referenced_images.sh ./output/v3 > /build/output/v3/external_images.txt && cat /build/output/v3/external_images.txt
 RUN chmod -R g+rwX /build
 
 # Build registry, copying meta.yamls and index.json from builder
@@ -84,8 +85,8 @@ WORKDIR /var/www/html
 
 RUN mkdir -m 777 /var/www/html/v3
 COPY README.md .htaccess /var/www/html/
-COPY /v3/plugins/.htaccess /var/www/html/v3/plugins/
 COPY --from=builder /build/output/v3 /var/www/html/v3
+COPY --from=builder /build/v3/plugins/.htaccess /var/www/html/v3/plugins/
 COPY ./build/dockerfiles/rhel.entrypoint.sh ./build/dockerfiles/entrypoint.sh /usr/local/bin/
 RUN chmod g+rwX /usr/local/bin/entrypoint.sh /usr/local/bin/rhel.entrypoint.sh && \
     chgrp -R 0 /var/www/html && chmod -R g+rw /var/www/html
