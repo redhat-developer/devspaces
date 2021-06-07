@@ -7,17 +7,16 @@
 # SPDX-License-Identifier: EPL-2.0
 #
 
-name: Overall project - PR check - shellcheck
-
+name: Plugin Registry - PR check - shellcheck
+# for now, this is enabled only for the plugin registry as numeous other scripts in /product/ folder fail shellcheck. 
+# TODO: enable this for the whole project once shellcheck complaints have been cleaned up
 on: 
   push:
     paths:
-    - '**'
-    # 'dependencies/che-plugin-registry/**'
+    - 'dependencies/che-plugin-registry/**'
   pull_request:
     paths:
-    - '**'
-    # 'dependencies/che-plugin-registry/**'
+    - 'dependencies/che-plugin-registry/**'
 
 jobs:
   check:
