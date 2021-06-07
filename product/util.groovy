@@ -461,7 +461,9 @@ export GITHUB_TOKEN=''' + GITHUB_TOKEN + ''' # echo "''' + GITHUB_TOKEN + '''"
 git config user.email "nickboldt+devstudio-release@gmail.com"
 git config user.name "Red Hat Devstudio Release Bot"
 git config --global push.default matching
-# SOLVED :: Fatal: Could not read Username for "https://github.com", No such device or address :: https://github.com/github/hub/issues/1644
+# fix for warning: Pulling without specifying how to reconcile divergent branches is discouraged
+git config --global pull.rebase true
+# Fix for Could not read Username / No such device or address :: https://github.com/github/hub/issues/1644
 git config --global hub.protocol https
 git remote set-url origin ''' + AUTH_URL_SHELL
     )
@@ -479,6 +481,8 @@ git checkout --track origin/''' + BRANCH + ''' || true
 git config user.email crw-build@REDHAT.COM
 git config user.name "CRW Build"
 git config --global push.default matching
+# fix for warning: Pulling without specifying how to reconcile divergent branches is discouraged
+git config --global pull.rebase true
 '''
     )
   }
