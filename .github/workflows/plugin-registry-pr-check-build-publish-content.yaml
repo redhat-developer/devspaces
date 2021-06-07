@@ -7,11 +7,11 @@
 # SPDX-License-Identifier: EPL-2.0
 #
 
-name: Publish Registry Content
+name: Plugin Registry - PR check - Publish Registry Content
 
 on:
   workflow_run:
-    workflows: ["Image Build PR check"]
+    workflows: ["Plugin Registry - PR check - Build"]
     types:
       - completed
 

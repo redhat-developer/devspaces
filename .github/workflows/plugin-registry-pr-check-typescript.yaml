@@ -7,19 +7,19 @@
 # SPDX-License-Identifier: EPL-2.0
 #
 
-name: typescript
+name: Plugin Registry - PR check - typescript
 
 on:
   pull_request:
     paths:
     - 'dependencies/che-plugin-registry/**/package.json'
     - 'dependencies/che-plugin-registry/tools/**/*.ts'
-    - '.github/workflows/typescript-pr-check.yml'
+    - '.github/workflows/plugin-registry-pr-check-typescript.yml'
   push:
     paths:
     - 'dependencies/che-plugin-registry/**/package.json'
     - 'dependencies/che-plugin-registry/tools/**/*.ts'
-    - '.github/workflows/typescript-pr-check.yml'
+    - '.github/workflows/plugin-registry-pr-check-typescript.yml'
 
 jobs:
   check:

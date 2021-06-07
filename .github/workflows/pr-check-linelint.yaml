@@ -7,7 +7,8 @@
 # SPDX-License-Identifier: EPL-2.0
 #
 
-name: PR Checks
+name: Overall project - PR check - Linelint
+# if this fails, see https://github.com/fernandrone/linelint#usage for how to debug the problem locally
 on:
   pull_request:
     branches: 
