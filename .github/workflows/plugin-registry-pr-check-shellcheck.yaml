@@ -21,9 +21,9 @@ on:
 jobs:
   check:
     runs-on: ubuntu-20.04
-    # defaults:
-      # run:
-      #   working-directory: dependencies/che-plugin-registry
+    defaults:
+      run:
+        working-directory: dependencies/che-plugin-registry
     steps:
     - name: Clone source code
       uses: actions/checkout@v2
