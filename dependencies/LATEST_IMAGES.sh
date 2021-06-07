@@ -53,7 +53,7 @@ fi
 CMD="./product/getLatestImageTags.sh --quay -b ${DWNSTM_BRANCH} --tag ${VERSION}- --hide"
 echo $CMD
 $CMD | tee dependencies/LATEST_IMAGES
-echo -n "\n" >> dependencies/LATEST_IMAGES
+echo -en "\n" >> dependencies/LATEST_IMAGES
 
 # STEP 2 :: # regenerate image set digests (not the per-arch digests) from list of LATEST_IMAGES
 # requires skopeo >= 1.1 for the --override-arch flag
@@ -75,8 +75,8 @@ done
 { 
   echo '        "": ""';
   echo '    }';
-  echo '}'; 
-  echo -n "\n"
+  echo "}"
+  echo -en "}\n"
 } >> dependencies/LATEST_IMAGES_DIGESTS.json
 # NOTE: can fetch the sha256sum digest for a given image set (not the per-arch digests) with this:
 # jq -r '.Images | to_entries[] | select (.key == "quay.io/crw/machineexec-rhel8:2.8-2") | .value' LATEST_IMAGES_DIGESTS.json
@@ -86,11 +86,11 @@ rm -f dependencies/LATEST_IMAGES_COMMITS
 for d in $(cat dependencies/LATEST_IMAGES); do 
   ./product/getCommitSHAForTag.sh ${d} -b ${DWNSTM_BRANCH} | tee -a dependencies/LATEST_IMAGES_COMMITS
 done
-echo -n "\n" >> dependencies/LATEST_IMAGES_COMMITS
+echo -en "\n" >> dependencies/LATEST_IMAGES_COMMITS
 
 if [[ ${COMMIT_CHANGES} -eq 1 ]]; then
   # CRW-1621 if any gz resources are larger than 10485760b, must use MaxFileSize to force dist-git to shut up and take my sources!
-  if [[ $(git commit -a -s -m "chore: Update dependencies/LATEST_IMAGES, COMMITS, DIGESTS" dependencies/LATEST_IMAGES* || true) == *"nothing to commit, working tree clean"* ]]; then
+  if [[ $(git commit -s -m "chore: Update dependencies/LATEST_IMAGES, COMMITS, DIGESTS" dependencies/LATEST_IMAGES* || true) == *"nothing to commit, working tree clean"* ]]; then
     echo "[INFO] No changes to commit."
   else
     git status -s -b --ignored
