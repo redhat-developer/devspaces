@@ -19,6 +19,8 @@ else
   CRW_VERSION=${DWNSTM_BRANCH/crw-/}; CRW_VERSION=${CRW_VERSION/-rhel-8/}
 fi
 
+SCRIPT=$(readlink -f "$0"); SCRIPTPATH=$(dirname "$SCRIPT")
+
 usage() {
   echo "
 Build a container in Brew with rhpkg container-build (not get-sources*.sh), 
@@ -65,5 +67,5 @@ if [[ $brewTaskID ]]; then
     grep -E "setting label" | \
     sed -r -e "s@.+(registry.access.redhat.com/codeready-workspaces/)(.+)/images/(${CRW_VERSION}-[0-9]+)\"@\2:\3@g" | \
     tr -d "'" | tail -1 && \
-  getLatestImageTags.sh -b ${DWNSTM_BRANCH} --osbs --pushtoquay="${CRW_VERSION} ${latestNightly}" -c $container
+  ${SCRIPTPATH}/getLatestImageTags.sh -b ${DWNSTM_BRANCH} --osbs --pushtoquay="${CRW_VERSION} ${latestNightly}" -c $container
 fi
