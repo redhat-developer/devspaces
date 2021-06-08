@@ -56,7 +56,7 @@ for image_url in $("$SCRIPT_DIR"/list_referenced_images.sh "$YAML_ROOT") ; do
     else
       # Rewrite image to use sha-256 digests
       digest_image="${image_url%:*}@${digest}"
-      sed -i -E 's|"?'"${image_url}"'"?|"'"${digest_image}"'" # tag: '"${image_url}"'|g' "$yaml_file"
+      sed -i -E 's|'\''?'"${image_url}"''\''?|'\'''"${digest_image}"''\'' # tag: '"${image_url}"'|g' "$yaml_file"
        echo "[INFO] Update $yaml_file with $digest_image"
     fi
   done
