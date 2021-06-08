@@ -17,7 +17,7 @@ doRhpkgContainerBuild=1
 if [[ ! $WORKSPACE ]]; then
   WORKSPACE=$(mktemp -d)
 fi
-LOGFILE=${WORKSPACE}/get-sources-jenkins.log.txt
+LOGFILE=${WORKSPACE}/get-sources.log.txt
 
 while [[ "$#" -gt 0 ]]; do
   case $1 in
@@ -42,7 +42,13 @@ if [[ ${doRhpkgContainerBuild} -eq 1 ]]; then
   pushd ${SOURCEDIR} >/dev/null
     # REQUIRE: rhpkg
     # get latest from Jenkins, then trigger a new OSBS build. Note: do not wrap JOB_BRANCH in quotes in case it includes trailing \n
-    ./get-sources-jenkins.sh --force-build ${JOB_BRANCH} | tee "${LOGFILE}"
+    if [[ -f get-sources.sh ]]; then 
+      ./get-sources.sh --force-build ${JOB_BRANCH} | tee "${LOGFILE}"
+    elif [[ -f get-sources-jenkins.sh ]]; then # old name
+      ./get-sources-jenkins.sh --force-build ${JOB_BRANCH} | tee "${LOGFILE}"
+    else 
+      echo "[ERROR] Could not run get-sources.sh or get-sources-jenkins.sh!"; exit 1
+    fi
     wait
     cd ..
   popd >/dev/null
@@ -64,7 +70,7 @@ fi
 
 # set -x
 
-# make sure these files exist, in case get-sources-jenkins.sh didn't produce useful output
+# make sure these files exist, in case get-sources*.sh didn't produce useful output
 touch "${LOGFILE}"
 
 # get list of reg-proxy repo:tag as '2.y-zz'
