@@ -98,7 +98,7 @@ metadata:
   categories:
     - Programming Languages
   repository: 'http://fake-repository'
-  icon: /v3/images/my-publisher-my-name-icon.png
+  icon: /images/my-publisher-my-name-icon.png
 sidecar:
   image: foo
 dependencies:
@@ -154,7 +154,7 @@ metadata:
   categories:
     - Programming Languages
   repository: 'http://fake-repository'
-  icon: /v3/images/eclipse-che-logo.png
+  icon: /images/default.png
 sidecar:
   image: foo
 dependencies:
@@ -231,7 +231,7 @@ metadata:
   categories:
     - Programming Languages
   repository: 'http://fake-repository'
-  icon: /v3/images/eclipse-che-logo.png
+  icon: /images/default.png
 sidecar:
   image: foo
 preferences:
