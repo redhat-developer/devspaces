@@ -17,8 +17,8 @@ replaceField()
   yamlFile="$1"
   updateName="$2"
   updateVal="$3"
-  # shellcheck disable=SC2086
-  yq -Y --arg updateName "${updateName}" --arg updateVal "${updateVal}" ${updateName}" = $updateVal" ${yamlFile} > ${yamlFile}.2
+  # shellcheck disable=SC2086,SC2016
+  yq -Y --arg updateName "${updateName}" --arg updateVal "${updateVal}" ${updateName}' = $updateVal' ${yamlFile} > ${yamlFile}.2
   mv "${yamlFile}".2 "${yamlFile}"
 }
 
