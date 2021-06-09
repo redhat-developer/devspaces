@@ -33,6 +33,6 @@ describe('Test ChePluginsAnalyzer', () => {
     const result = await chePluginsAnalyzer.analyze(testContentPath);
     expect(result).toBeDefined();
     expect(result.plugins).toBeDefined();
-    expect(result.plugins.length).toBeGreaterThan(1);
+    expect(result.plugins.length).toBe(1);
   });
 });
