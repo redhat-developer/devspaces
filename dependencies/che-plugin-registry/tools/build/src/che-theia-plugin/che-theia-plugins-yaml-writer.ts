@@ -26,7 +26,12 @@ export class CheTheiaPluginsYamlWriter {
   @named('EMBED_VSIX')
   private embedVsix: boolean;
 
-  public static readonly DEFAULT_ICON = '/v3/images/eclipse-che-logo.png';
+  // Path relative to plugin registry ROOT
+  //    https://plugin-registry-eclipse-che.apps-crc.testing/v3
+  //
+  // It must work also for single root deployments
+  //    https://che-eclipse-che.apps-crc.testing/plugin-registry/v3
+  public static readonly DEFAULT_ICON = '/images/default.png';
 
   convertIdToPublisherAndName(id: string): [string, string] {
     const values = id.split('/');
@@ -53,7 +58,7 @@ export class CheTheiaPluginsYamlWriter {
           const fileExtensionIcon = path.extname(path.basename(iconFile)).toLowerCase();
           const destIconFileName = `${data.metadata.publisher}-${data.metadata.name}-icon${fileExtensionIcon}`;
           await fs.copyFile(iconFile, path.resolve(imagesFolder, destIconFileName));
-          icon = `/v3/images/${destIconFileName}`;
+          icon = `/images/${destIconFileName}`;
         } else {
           icon = CheTheiaPluginsYamlWriter.DEFAULT_ICON;
         }
