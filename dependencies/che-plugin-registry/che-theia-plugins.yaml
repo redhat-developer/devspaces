@@ -170,10 +170,29 @@ plugins:
     metaYaml:
       skipDependencies:
         - redhat/vscode-commons
+  - repository:
+      url: redhat/vscode-microprofile
+      revision: 174c77f51a57bf1cfadba8f78ad7072ce63baa1d
+    sidecar:
+      image: "registry.redhat.io/codeready-workspaces/plugin-java11-rhel8:2.10"
+      name: vscode-microp
+      memoryLimit: 3500Mi
+      cpuLimit: 500m
+      cpuRequest: 30m
+      args:
+        - sh
+        - -c
+        - ${PLUGIN_REMOTE_ENDPOINT_EXECUTABLE}
+      volumeMounts:
+        - name: m2
+          path: /home/jboss/.m2
+        - name: gradle
+          path: /home/jboss/.gradle
+    extension: https://download.jboss.org/jbosstools/vscode/stable/vscode-microprofile/vscode-microprofile-0.1.1-48.vsix
   - id: redhat/quarkus-java11
     repository:
       url: 'https://github.com/redhat-developer/vscode-quarkus'
-      revision: v1.5.0
+      revision: v1.7.0
     preferences:
       java.server.launchMode: Standard
     sidecar:
@@ -191,7 +210,7 @@ plugins:
           path: /home/jboss/.m2
         - name: gradle
           path: /home/jboss/.gradle
-    extension: https://download.jboss.org/jbosstools/vscode/stable/vscode-quarkus/vscode-quarkus-1.5.0-324.vsix
+    extension: https://download.jboss.org/jbosstools/vscode/stable/vscode-quarkus/vscode-quarkus-1.7.0-437.vsix
     metaYaml:
       skipDependencies:
         - redhat/vscode-commons
@@ -287,7 +306,7 @@ plugins:
   - id: redhat/java
     repository:
       url: 'https://github.com/redhat-developer/vscode-java'
-      revision: v0.69.0
+      revision: v0.75.0
     aliases:
       - redhat/java11
     featured: true
@@ -311,7 +330,7 @@ plugins:
           path: /home/jboss/.m2
         - name: gradle
           path: /home/jboss/.gradle
-    extension: https://download.jboss.org/jbosstools/static/jdt.ls/stable/java-0.69.0-2547.vsix
+    extension: https://download.jboss.org/jbosstools/static/jdt.ls/stable/java-0.75.0-60.vsix
     metaYaml:
       extraDependencies:
         - vscjava/vscode-java-debug
