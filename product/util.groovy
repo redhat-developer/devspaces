@@ -126,7 +126,7 @@ strict-ssl false
 cat ${HOME}/.npmrc
 cat ${HOME}/.yarnrc
 
-npm install --global yarn@''' + yarnVersion + '''
+npm install --global --silent yarn@''' + yarnVersion + '''
 npm config get; yarn config get list
 npm --version; yarn --version
 '''
@@ -135,7 +135,7 @@ npm --version; yarn --version
   {
     sh '''#!/bin/bash -xe
 rm -f ${HOME}/.npmrc ${HOME}/.yarnrc
-npm install --global yarn@''' + yarnVersion + '''
+npm install --global --silent yarn@''' + yarnVersion + '''
 node --version; npm --version; yarn --version
 '''
   }
@@ -144,7 +144,8 @@ node --version; npm --version; yarn --version
   if (installNodeGyp) {
     installRPMs("make gcc-c++")
     sh '''#!/bin/bash -e
-yarn add node-gyp -s && node-gyp --version
+    npm install --global --silent node-gyp
+    node-gyp --version
 '''
   }
 
