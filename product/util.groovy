@@ -712,7 +712,8 @@ fi
 
 // ensure static Dockerfiles have the correct version encoded in them, then commit changes
 def updateDockerfileVersions(String dir="${WORKSPACE}/sources", String branch=MIDSTM_BRANCH, String CRW_VERSION=CRW_VERSION_F) {
-  sh('''#!/bin/bash -xe
+  sh('''#!/bin/bash -e
+echo "[INFO] Run util.updateDockerfileVersions('''+dir+''', '''+branch+''', '''+CRW_VERSION+''')"
 cd ''' + dir + ''' || exit 1
 for d in $(find . -name "*ockerfile*" -type f); do
   sed -i $d -r -e 's#version="[0-9.]+"#version="''' + CRW_VERSION + '''"#g' || true
