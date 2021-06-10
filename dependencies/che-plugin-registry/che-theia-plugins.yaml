@@ -171,7 +171,7 @@ plugins:
       skipDependencies:
         - redhat/vscode-commons
   - repository:
-      url: redhat/vscode-microprofile
+      url: 'https://github.com/redhat-developer/vscode-microprofile'
       revision: 174c77f51a57bf1cfadba8f78ad7072ce63baa1d
     sidecar:
       image: "registry.redhat.io/codeready-workspaces/plugin-java11-rhel8:2.10"
