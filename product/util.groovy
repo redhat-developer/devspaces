@@ -69,9 +69,6 @@ def installMaven(String MAVEN_VERSION, String JAVA_VERSION){
 }
 
 // TODO https://issues.redhat.com/browse/CRW-360 - eventually we should use RH npm mirror
-def installNPM(String nodeVersion, String yarnVersion) {
-  installNPM(nodeVersion, yarnVersion, false)
-}
 def installNPM(String nodeVersion, String yarnVersion, boolean installP7zip=false, boolean installNodeGyp=false) {
   USE_PUBLIC_NEXUS = true
 
