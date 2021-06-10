@@ -72,7 +72,7 @@ def installMaven(String MAVEN_VERSION, String JAVA_VERSION){
 def installNPM(String nodeVersion, String yarnVersion) {
   installNPM(nodeVersion, yarnVersion, false)
 }
-def installNPM(String nodeVersion, String yarnVersion, boolean installP7zip) {
+def installNPM(String nodeVersion, String yarnVersion, boolean installP7zip=false, boolean installNodeGyp=false) {
   USE_PUBLIC_NEXUS = true
 
   sh '''#!/bin/bash -e
@@ -142,6 +142,15 @@ npm install --global yarn@''' + yarnVersion + '''
 node --version; npm --version; yarn --version
 '''
   }
+
+  // used by theia-dev build
+  if (installNodeGyp) {
+    installRPMs("make gcc-c++")
+    sh '''#!/bin/bash -e
+yarn add node-gyp -s && node-gyp --version
+'''
+  }
+
 }
 
 def installYq() {
@@ -276,7 +285,7 @@ EOF
 
 // workaround for performance issues in CRW-1610
 def yumConf() {
-  sh '''#!/bin/bash -xe
+  sh '''#!/bin/bash -e
 cat <<EOF | sudo tee /etc/yum.conf
 [main]
 gpgcheck=0
@@ -294,6 +303,7 @@ sudo yum install -yq drpm dnf || exit 1 # enable delta rpms
 
 # mark repos with skip_if_unavailable=True so we don't die if built in repos (like epel) can't be resolved today
 for r in $(find /etc/yum.repos.d/ -name "*.repo"); do
+  echo "Skip if unavailable: $r"
   sudo sed -i ${r} -r -e "s#skip_if_unavailable=False#skip_if_unavailable=True#g" || true
   if [[ ! $(sudo grep "skip_if_unavailable=True" ${r} || true) ]]; then
     cat <<EOF | sudo tee -a ${r}
