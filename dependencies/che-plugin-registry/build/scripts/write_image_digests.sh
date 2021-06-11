@@ -45,12 +45,11 @@ function handle_error() {
     mv "$f" "$f.removed"
   done
 }
-
-for image_url in $("$SCRIPT_DIR"/list_referenced_images.sh "$YAML_ROOT") ; do
+for image_url in $("$SCRIPT_DIR"/list_referenced_images.sh "$YAML_ROOT" --use-generated-content) ; do
   digest=$("$SCRIPT_DIR"/find_image.sh "$image_url" $ARCH  2> "$LOG_FILE" | jq -r '.Digest')
   # shellcheck disable=SC2143
   for yaml_file in $("$SCRIPT_DIR"/list_yaml.sh "$YAML_ROOT") ; do
-    [[ -z "$("$SCRIPT_DIR"/list_referenced_images.sh "$yaml_file" | grep "$image_url")" ]] && continue 
+    [[ -z "$("$SCRIPT_DIR"/list_referenced_images.sh "$yaml_file" --use-generated-content | grep "$image_url")" ]] && continue
     if [[ -z "$digest" ]] ; then
       handle_error "$yaml_file" "$image_url"
     else
