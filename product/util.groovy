@@ -645,6 +645,7 @@ def bootstrap(String CRW_KEYTAB, boolean force=false) {
     // also install commonly needed tools
     installSkopeoFromContainer("")
     installYq()
+    loginToRegistries()
     sh('''#!/bin/bash -xe
 # bootstrapping: if keytab is lost, upload to
 # https://codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/credentials/store/system/domain/_/
