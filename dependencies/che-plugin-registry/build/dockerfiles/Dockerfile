@@ -53,10 +53,10 @@ COPY ./v3/images/default.png /build/v3/images/
 WORKDIR /build/
 
 RUN tar -xvf resources.tgz -C ./
-RUN ./swap_images.sh ./
+RUN ./swap_images.sh ./output/v3 --use-generated-content
 RUN ./swap_plugins_memory.sh ./output/v3
 RUN if [[ ${USE_DIGESTS} == "true" ]]; then ./write_image_digests.sh ./output/v3; fi
-RUN ./list_referenced_images.sh ./output/v3 > /build/output/v3/external_images.txt && cat /build/output/v3/external_images.txt
+RUN ./list_referenced_images.sh ./output/v3 --use-generated-content > /build/output/v3/external_images.txt && cat /build/output/v3/external_images.txt
 RUN chmod -R g+rwX /build
 
 # Build registry, copying meta.yamls and index.json from builder
