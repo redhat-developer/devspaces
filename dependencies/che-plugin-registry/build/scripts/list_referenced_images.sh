@@ -14,9 +14,15 @@ set -e
 
 CONTAINERS=""
 
-while IFS= read -r -d '' file; do
-  CONTAINERS="${CONTAINERS} $(yq -r '..|.image?' "${file}" | grep -v "null" | sort | uniq)"
-done < <(find "$1" -name 'meta.yaml' -print0)
+if [[ $2 == "--use-generated-content" ]]; then
+  while IFS= read -r -d '' file; do
+    CONTAINERS="${CONTAINERS} $(yq -r '..|.image?' "${file}" | grep -v "null" | sort | uniq)"
+  done < <(find "$1" -name meta.yaml -print0)
+else
+  while IFS= read -r -d '' file; do
+    CONTAINERS="${CONTAINERS} $(yq -r '..|.image?' "${file}" | grep -v "null" | sort | uniq)"
+  done < <(find "$1" -maxdepth 1 -name 'che-*.yaml' -print0)
+fi
 
 CONTAINERS_UNIQ=()
 # shellcheck disable=SC2199
