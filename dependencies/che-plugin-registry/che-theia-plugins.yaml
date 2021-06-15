@@ -327,6 +327,10 @@ plugins:
       memoryLimit: 1500Mi
       cpuLimit: 500m
       cpuRequest: 30m
+      args:
+        - sh
+        - -c
+        - ${PLUGIN_REMOTE_ENDPOINT_EXECUTABLE}
       volumeMounts:
         - name: m2
           path: /home/jboss/.m2
