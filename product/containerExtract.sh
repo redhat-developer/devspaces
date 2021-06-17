@@ -41,9 +41,16 @@ fi
 tmpcontainer="$(echo "$container" | tr "/:" "--")-$(date +%s)"
 unpackdir="/tmp/${tmpcontainer}"
 
-if [[ $(${PODMAN} images "$container" -q) ]] || [[ $(${PODMAN} images "localhost/$container:latest" -q) ]] || [[ $(${PODMAN} images "localhost/$container" -q) ]]; then
-  echo "[INFO] Using local $container ..."
-else
+container_alt=""
+for container_ref in "$container" "localhost/$container:latest" "localhost/$container"; do 
+  container_check="$(${PODMAN} images "$container_ref" -q)"
+  if [[ $container_check ]]; then
+    container_alt="$container_check"
+    echo "[INFO] Using local $container_ref ($container_alt)..."
+    break
+  fi
+done
+if [[ ! $container_alt ]]; then
   # get remote image
   echo "[INFO] Pulling $container ..."
   # shellcheck disable=SC2086
@@ -53,7 +60,11 @@ fi
 # create local container
 ${PODMAN} rm -f "${tmpcontainer}"  >/dev/null 2>&1 || true
 # use sh for regular containers or ls for scratch containers
-${PODMAN} create --name="${tmpcontainer}" "$container" sh >/dev/null  2>&1 || ${PODMAN} create --name="${tmpcontainer}" "$container" ls >/dev/null 2>&1
+if [[ $container_alt ]]; then 
+  ${PODMAN} create --name="${tmpcontainer}" "$container_alt" sh >/dev/null  2>&1 || ${PODMAN} create --name="${tmpcontainer}" "$container_alt" ls >/dev/null 2>&1
+else
+  ${PODMAN} create --name="${tmpcontainer}" "$container" sh >/dev/null  2>&1 || ${PODMAN} create --name="${tmpcontainer}" "$container" ls >/dev/null 2>&1
+fi
 
 # export and unpack
 ${PODMAN} export "${tmpcontainer}" > "/tmp/${tmpcontainer}.tar"
@@ -66,4 +77,8 @@ tar xf "/tmp/${tmpcontainer}.tar" --wildcards -C "$unpackdir" "${TAR_FLAGS}" || 
 ${PODMAN} rm -f "${tmpcontainer}" >/dev/null 2>&1 || true
 rm -fr "/tmp/${tmpcontainer}.tar" || true
 
-echo "[INFO] Container $container unpacked to $unpackdir"
+if [[ $container_alt ]]; then 
+  echo "[INFO] Container $container ($container_alt) unpacked to $unpackdir"
+else
+  echo "[INFO] Container $container unpacked to $unpackdir"
+fi
