@@ -48,7 +48,7 @@ RUN /tmp/rhel.install.sh && rm -f /tmp/rhel.install.sh
 COPY ./build/scripts/*.sh /build/
 COPY che-*.yaml /build/
 COPY resources.tgz /build/
-COPY ./v3/plugins/.htaccess /build/v3/plugins/
+COPY ./v3/plugins/.htaccess /build/v3/plugins/.htaccess
 COPY ./v3/images/default.png /build/v3/images/
 WORKDIR /build/
 
