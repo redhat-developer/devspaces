@@ -43,7 +43,7 @@ unpackdir="/tmp/${tmpcontainer}"
 
 if [[ ! $(${PODMAN} image exists "$container") ]] || [[ $(${PODMAN} images "localhost/$container:latest" -q) ]] || [[ $(${PODMAN} images "localhost/$container" -q) ]]; then
   echo "[INFO] Using local $container ..."
-else
+el
   # get remote image
   echo "[INFO] Pulling $container ..."
   # shellcheck disable=SC2086
