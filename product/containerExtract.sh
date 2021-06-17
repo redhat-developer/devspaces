@@ -55,6 +55,8 @@ if [[ ! $container_alt ]]; then
   echo "[INFO] Pulling $container ..."
   # shellcheck disable=SC2086
   ${PODMAN} pull ${ARCH_OVERRIDE} "$container" 2>&1
+  # throw the same error code that a failed pull throws, in case we're running this in a nested bash shell
+  ${PODMAN} image exists "$container" || exit 125
 fi
 
 # create local container
