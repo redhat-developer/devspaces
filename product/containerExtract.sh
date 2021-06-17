@@ -38,31 +38,49 @@ if [[ ${ARCH_OVERRIDE} == "" ]] && [[ ${container} == *"-openj9"* ]]; then
   ARCH_OVERRIDE="--override-arch s390x"
 fi
 
-tmpcontainer="$(echo $container | tr "/:" "--")-$(date +%s)"
+tmpcontainer="$(echo "$container" | tr "/:" "--")-$(date +%s)"
 unpackdir="/tmp/${tmpcontainer}"
 
-if [[ $(${PODMAN} images | grep $container) ]] || [[ $(${PODMAN} images localhost/$container:latest -q) ]] || [[ $(${PODMAN} images localhost/$container -q) ]]; then
-  echo "[INFO] Using local $container ..."
-else
+container_alt=""
+for container_ref in "$container" "localhost/$container:latest" "localhost/$container"; do 
+  container_check="$(${PODMAN} images "$container_ref" -q)"
+  if [[ $container_check ]]; then
+    container_alt="$container_check"
+    echo "[INFO] Using local $container_ref ($container_alt)..."
+    break
+  fi
+done
+if [[ ! $container_alt ]]; then
   # get remote image
   echo "[INFO] Pulling $container ..."
-  ${PODMAN} pull ${ARCH_OVERRIDE} $container 2>&1
+  # shellcheck disable=SC2086
+  ${PODMAN} pull ${ARCH_OVERRIDE} "$container" 2>&1
+  # throw the same error code that a failed pull throws, in case we're running this in a nested bash shell
+  ${PODMAN} image exists "$container" || exit 125
 fi
 
 # create local container
-${PODMAN} rm -f "${tmpcontainer}" 2>&1 >/dev/null || true
+${PODMAN} rm -f "${tmpcontainer}"  >/dev/null 2>&1 || true
 # use sh for regular containers or ls for scratch containers
-${PODMAN} create --name="${tmpcontainer}" $container sh 2>&1 >/dev/null || ${PODMAN} create --name="${tmpcontainer}" $container ls 2>&1 >/dev/null 
+if [[ $container_alt ]]; then 
+  ${PODMAN} create --name="${tmpcontainer}" "$container_alt" sh >/dev/null  2>&1 || ${PODMAN} create --name="${tmpcontainer}" "$container_alt" ls >/dev/null 2>&1
+else
+  ${PODMAN} create --name="${tmpcontainer}" "$container" sh >/dev/null  2>&1 || ${PODMAN} create --name="${tmpcontainer}" "$container" ls >/dev/null 2>&1
+fi
 
 # export and unpack
-${PODMAN} export "${tmpcontainer}" > /tmp/${tmpcontainer}.tar
+${PODMAN} export "${tmpcontainer}" > "/tmp/${tmpcontainer}.tar"
 rm -fr "$unpackdir" || true
 mkdir -p "$unpackdir"
 echo "[INFO] Extract from container ..."
-tar xf /tmp/${tmpcontainer}.tar --wildcards -C "$unpackdir" ${TAR_FLAGS} || true
+tar xf "/tmp/${tmpcontainer}.tar" --wildcards -C "$unpackdir" "${TAR_FLAGS}" || true
 
 # cleanup
-${PODMAN} rm -f "${tmpcontainer}" 2>&1 >/dev/null || true
-rm -fr /tmp/${tmpcontainer}.tar || true
+${PODMAN} rm -f "${tmpcontainer}" >/dev/null 2>&1 || true
+rm -fr "/tmp/${tmpcontainer}.tar" || true
 
-echo "[INFO] Container $container unpacked to $unpackdir"
+if [[ $container_alt ]]; then 
+  echo "[INFO] Container $container ($container_alt) unpacked to $unpackdir"
+else
+  echo "[INFO] Container $container unpacked to $unpackdir"
+fi
