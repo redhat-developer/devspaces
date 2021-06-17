@@ -41,13 +41,14 @@ fi
 tmpcontainer="$(echo "$container" | tr "/:" "--")-$(date +%s)"
 unpackdir="/tmp/${tmpcontainer}"
 
-if [[ ! $(${PODMAN} image exists "$container") ]] || [[ $(${PODMAN} images "localhost/$container:latest" -q) ]] || [[ $(${PODMAN} images "localhost/$container" -q) ]]; then
+if "${PODMAN}" image exists "$container" || [[ $(${PODMAN} images "localhost/$container:latest" -q) ]] || [[ $(${PODMAN} images "localhost/$container" -q) ]]; then
   echo "[INFO] Using local $container ..."
-el
+else
   # get remote image
   echo "[INFO] Pulling $container ..."
   # shellcheck disable=SC2086
   ${PODMAN} pull ${ARCH_OVERRIDE} "$container" 2>&1
+  ${PODMAN} image exists "$container" || exit 1
 fi
 
 # create local container
