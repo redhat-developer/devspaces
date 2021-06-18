@@ -15,6 +15,10 @@ for meta in "${metas[@]}"; do
     META_DIR=$(dirname "${meta}")
     # Workaround to include self-links, since it's not possible to
     # get filename in yq easily
-    echo -e "links:\n  self: /${META_DIR}/devfile.yaml" >> "${meta}"
+    # Extra links may already be there, so just update with self link
+
+    # Ignore double quotes warning for yq expression
+    # shellcheck disable=SC2016,SC2094
+    cat <<< "$(yq --arg metadir "${META_DIR}" '.links |= . + {self: "/\($metadir)/devfile.yaml" }' "${meta}")"  > "${meta}"
 done
 yq -s 'map(.)' "${metas[@]}"
