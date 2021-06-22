@@ -259,14 +259,14 @@ plugins:
     extension: https://github.com/che-incubator/che-theia-openshift-auth/releases/download/0.0.1/che-openshift-authentication-plugin-0.0.1.vsix
   - repository:
       url: 'https://github.com/redhat-developer/vscode-openshift-tools'
-      revision: v0.1.5
+      revision: v0.2.7
     sidecar:
       image: "registry.redhat.io/codeready-workspaces/plugin-openshift-rhel8:2.10"
       name: vscode-openshift-connector
       memoryLimit: 1500Mi
       cpuLimit: 500m
       cpuRequest: 30m
-    extension: https://download.jboss.org/jbosstools/vscode/3rdparty/vscode-openshift-tools/vscode-openshift-connector-0.1.5.vsix
+    extension: https://github.com/redhat-developer/codeready-workspaces-vscode-extensions/releases/download/v31f30bd/vscode-openshift-connector-v0.2.7.vsix
     metaYaml:
       extraDependencies:
         - ms-kubernetes-tools/vscode-kubernetes-tools
