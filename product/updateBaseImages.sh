@@ -261,7 +261,7 @@ for d in $(find ${WORKDIR}/ -maxdepth ${MAXDEPTH} -name ${DOCKERFILE} | sort -r)
 							# set -x
 							if [[ ${docommit} -eq 1 ]]; then 
 								git add ${DOCKERFILE} || true
-								git commit -s -m "[base] Update from ${URL} to ${FROMPREFIX}:${LATESTTAG}" ${DOCKERFILE}
+								git commit -s -m "chore: Update base from ${URL} to ${FROMPREFIX}:${LATESTTAG}" ${DOCKERFILE}
 								git pull origin "${BRANCHUSED}"
 								if [[ ${dopush} -eq 1 ]]; then
 									PUSH_TRY="$(git push origin "${BRANCHUSED}" 2>&1 || git push origin "${PR_BRANCH}" || true)"
