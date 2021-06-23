@@ -39,12 +39,6 @@ else
 	fi
 fi
 
-if [[ ! -x /usr/bin/brew ]]; then 
-	echo "Brew is required. Please install brewkoji rpm from one of these repos:";
-	echo " * http://download.devel.redhat.com/rel-eng/RCMTOOLS/latest-RCMTOOLS-2-F-27/compose/Everything/x86_64/os/"
-	echo " * http://download.devel.redhat.com/rel-eng/RCMTOOLS/latest-RCMTOOLS-2-RHEL-8/compose/BaseOS/\$basearch/os/"
-fi
-
 command -v skopeo >/dev/null 2>&1 || { echo "skopeo is not installed. Aborting."; exit 1; }
 command -v jq >/dev/null 2>&1 || { echo "jq is not installed. Aborting."; exit 1; }
 command -v yq >/dev/null 2>&1 || { echo "yq is not installed. Aborting."; exit 1; }
@@ -278,6 +272,13 @@ if [[ $SORTED -eq 1 ]]; then CONTAINERS=$(tr ' ' '\n' <<< "${CONTAINERS}" | sort
 
 # special case!
 if [[ ${SHOWNVR} -eq 1 ]]; then 
+	if [[ ! -x /usr/bin/brew ]]; then 
+		echo "Brew is required. Please install brewkoji rpm from one of these repos:";
+		echo " * http://download.devel.redhat.com/rel-eng/RCMTOOLS/latest-RCMTOOLS-2-F-27/compose/Everything/x86_64/os/"
+		echo " * http://download.devel.redhat.com/rel-eng/RCMTOOLS/latest-RCMTOOLS-2-RHEL-8/compose/BaseOS/\$basearch/os/"
+		exit 1
+	fi
+
 	for containername in ${CONTAINERS}; do
 		# codeready-workspaces/operator-metadata -> codeready-workspaces-rhel8-operator-metadata-container-2.y-9
 		# codeready-workspaces/operator -> codeready-workspaces-rhel8-operator-container-2.y-10
