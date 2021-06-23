@@ -32,8 +32,7 @@ function handle_error() {
     echo "[ERROR] Could not read image metadata through skopeo inspect --tls-verify=false; skip $image_url"
     echo -n "  Reason: "
     sed 's|^|    |g' $LOG_FILE
-    # CRW-1941 don't fail if can't resolve digest in the registry
-    # exit 1
+    exit 1
   fi
   for f in $(ls `dirname $yaml_file`/*.yaml) ; do
     mv "$f" "$f.removed"
