@@ -38,13 +38,12 @@ function handle_error() {
     # CRW-1941 don't fail if can't resolve digest in the registry
     # exit 1
   fi
-  # shellcheck disable=SC2045
-  # shellcheck disable=SC2046
-  # shellcheck disable=SC2006
-  # shellcheck disable=SC2086
-  for f in $(ls `dirname $yaml_file`/*.yaml) ; do
-    mv "$f" "$f.removed"
-  done
+  # CRW-1941 don't fail if can't resolve digest in the registry
+  # When uncommenting, the following shellcheck errors need to be ignored:
+  # SC2045, SC2046, SC2006, and SC2086
+  # for f in $(ls `dirname $yaml_file`/*.yaml) ; do
+  #   mv "$f" "$f.removed"
+  # done
 }
 for image_url in $("$SCRIPT_DIR"/list_referenced_images.sh "$YAML_ROOT" --use-generated-content) ; do
   digest=$("$SCRIPT_DIR"/find_image.sh "$image_url" $ARCH  2> "$LOG_FILE" | jq -r '.Digest')
