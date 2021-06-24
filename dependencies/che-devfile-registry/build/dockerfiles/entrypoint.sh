@@ -72,6 +72,10 @@ if [ -n "$PUBLIC_URL" ]; then
   echo "Updating devfiles to point at internal project zip files"
   PUBLIC_URL=${PUBLIC_URL%/}
   sed -i "s|{{ DEVFILE_REGISTRY_URL }}|${PUBLIC_URL}|" "${devfiles[@]}" "${metas[@]}" "$INDEX_JSON"
+
+  # Add PUBLIC_URL at the begining of 'icon' and 'self' fields
+  sed -i "s|\"icon\": \"/images/|\"icon\": \"${PUBLIC_URL}/images/|" "$INDEX_JSON"
+  sed -i "s|\"self\": \"/devfiles/|\"self\": \"${PUBLIC_URL}/devfiles/|" "$INDEX_JSON"
 else
   if grep -q '{{ DEVFILE_REGISTRY_URL }}' "${devfiles[@]}"; then
     echo "WARNING: environment variable 'CHE_DEVFILE_REGISTRY_URL' not configured" \
@@ -84,6 +88,10 @@ else
     SERVICE_PORT=$(env | grep DEVFILE_REGISTRY_SERVICE_PORT= | cut -d '=' -f 2)
     URL="http://${SERVICE_HOST}:${SERVICE_PORT}"
     sed -i "s|{{ DEVFILE_REGISTRY_URL }}|${URL}|" "${devfiles[@]}" "${metas[@]}" "$INDEX_JSON"
+
+    # Add URL at the begining of 'icon' and 'self' fields
+    sed -i "s|\"icon\": \"/images/|\"icon\": \"${URL}/images/|" "$INDEX_JSON"
+    sed -i "s|\"self\": \"/devfiles/|\"self\": \"${URL}/devfiles/|" "$INDEX_JSON"
   fi
 fi
 
