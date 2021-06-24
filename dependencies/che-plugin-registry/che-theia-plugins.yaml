@@ -375,7 +375,7 @@ plugins:
     extension: https://download.jboss.org/jbosstools/vscode/3rdparty/vscode-php-debug/php-debug-1.13.0.vsix
   - repository:
       url: 'https://github.com/camel-tooling/camel-lsp-client-vscode'
-      revision: 0.0.32
+      revision: 0.0.31
     sidecar:
       image: "registry.redhat.io/codeready-workspaces/plugin-java11-rhel8:2.10"
       name: vscode-apache-camel
@@ -386,7 +386,7 @@ plugins:
         - sh
         - -c
         - ${PLUGIN_REMOTE_ENDPOINT_EXECUTABLE}
-    extension: https://download.jboss.org/jbosstools/vscode/stable/vscode-apache-camel/vscode-apache-camel-0.0.32-205.vsix
+    extension: https://download.jboss.org/jbosstools/vscode/stable/vscode-apache-camel/vscode-apache-camel-0.0.31-143.vsix
   - repository:
       url: 'https://github.com/redhat-developer/vscode-xml'
       revision: 0.14.0
