@@ -453,7 +453,7 @@ plugins:
       url: 'https://github.com/SonarSource/sonarlint-vscode'
       revision: 1.20.1
     sidecar:
-      image: "registry.redhat.io/codeready-workspaces/plugin-java11-rhel8:2.10"
+      image: "registry.redhat.io/codeready-workspaces/plugin-java8-rhel8:2.10"
       name: vscode-sonarlint
       memoryLimit: 512Mi
       cpuLimit: 500m
