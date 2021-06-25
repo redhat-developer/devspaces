@@ -17,7 +17,7 @@ CONTAINERS=""
 if [[ $2 == "--use-generated-content" ]]; then
   while IFS= read -r -d '' file; do
     CONTAINERS="${CONTAINERS} $(yq -r '..|.image?' "${file}" | grep -v "null" | sort | uniq)"
-  done < <(find "$1" -name meta.yaml -print0)
+  done < <(find "$1" -name "*.yaml" -print0)
 else
   while IFS= read -r -d '' file; do
     CONTAINERS="${CONTAINERS} $(yq -r '..|.image?' "${file}" | grep -v "null" | sort | uniq)"
