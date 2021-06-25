@@ -52,7 +52,7 @@ rm -f ${MANIFEST_FILE}.2
 
 TMPDIR=$(mktemp -d)
 pushd $TMPDIR >/dev/null || exit
-	git clone git@github.com:eclipse/che-theia.git 
+	git clone git@github.com:eclipse-che/che-theia.git 
 	cd che-theia || exit
 		git fetch || true
 		git checkout --track origin/${CHE_THEIA_BRANCH}

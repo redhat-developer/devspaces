@@ -218,7 +218,7 @@ for n in $NVRs; do
             echo -n "https://${repo/\///cgit/}/commit/?id=${c_sha}"
             echo " ${l#${c_sha} }"
             if [[ "$l" == *" [sync] Update from "*" @ "* ]]; then
-                # https://github.com/eclipse/che-operator/commit/9ce11db452b4f62a730311b4108fe9ca6bc0b577
+                # https://github.com/eclipse-che/che-operator/commit/9ce11db452b4f62a730311b4108fe9ca6bc0b577
                 # https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces/commit/?id=8a13c2ce4dfdbae7c0ac29198339cc39b6881798
                 lrepo=${l##*Update from }; lrepo=${lrepo%% @ *}; # echo "   >> lrepo = https://github.com/$lrepo"
                 lsha=${l##* @ }
