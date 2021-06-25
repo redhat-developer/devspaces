@@ -368,6 +368,9 @@ plugins:
         - -c
         - ${PLUGIN_REMOTE_ENDPOINT_EXECUTABLE}
     extension: https://download.jboss.org/jbosstools/vscode/stable/vscode-apache-camel/vscode-apache-camel-0.0.31-143.vsix
+    metaYaml:
+      skipDependencies:
+        - redhat/vscode-commons
   - repository:
       url: 'https://github.com/redhat-developer/vscode-xml'
       revision: 0.14.0
