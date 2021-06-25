@@ -53,6 +53,7 @@ COPY ./v3/images/default.png /build/v3/images/
 WORKDIR /build/
 
 RUN tar -xvf resources.tgz -C ./
+RUN rm -rf ./output/v3/che-theia-plugins.yaml ./output/v3/che-editors.yaml ./output/v3/che-plugins.yaml
 RUN ./swap_images.sh ./output/v3 --use-generated-content
 RUN ./swap_plugins_memory.sh ./output/v3
 RUN if [[ ${USE_DIGESTS} == "true" ]]; then ./write_image_digests.sh ./output/v3; fi
