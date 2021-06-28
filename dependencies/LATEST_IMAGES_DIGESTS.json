@@ -1,12 +1,16 @@
 {
     "Images": {
         "quay.io/crw/configbump-rhel8:2.10-1": "aa91c4e3dc2c505d787f6058ba32d755d6aca0bedffd4e2506391a3b7486be9e",
-        "quay.io/crw/dashboard-rhel8:2.10-1": "ccbdc8f3be2de1a76494e2fc0929f0d04a37455747ade44e6f67f34d45e153c0",
+        "quay.io/crw/crw-2-rhel8-operator:2.10-4": "b746a4d36763be0d360b3cecebdff9818b6684c237aad41838d85fdd6ff20674",
+        "quay.io/crw/dashboard-rhel8:2.10-2": "9377ed46c0b3b3a85619576e97d0d2f627999a8cd23f05dbdee08f13c1cf320f",
         "quay.io/crw/devfileregistry-rhel8:2.10-11": "899716aec470ed401ac0dfcc71ab08576262758999c16c71d2abefdce2bae650",
         "quay.io/crw/devworkspace-controller-rhel8:2.10-1": "3dc0015bb01461a779deb0250c84ab4d4c40a8f2836560ae3555163c135e5619",
         "quay.io/crw/devworkspace-rhel8:2.10-2": "a96277e5bbd8b5972a518d7d290f3658df62192cbb34e4ea96ca91217774bcc6",
-        "quay.io/crw/imagepuller-rhel8:2.10-2": "61ac319d3574f9a337a6db8bad7cae35eaea23d6edaecf645733f48f06c266e2",
+        "quay.io/crw/imagepuller-rhel8:2.10-3": "92dfacc2d089dfc4cb3466ee5bfb592bb8159addf58586d17eabd62f798c30f1",
+        "quay.io/crw/jwtproxy-rhel8:2.10-4": "738ca81a15a7032fbd61cd8028e9b997698e8f879266cd7ad635f3510cc5c4ac",
         "quay.io/crw/machineexec-rhel8:2.10-1": "845489f946b3a372cd856c1cf62da28cc632b18b94f652fddce8176264f7af22",
+        "quay.io/crw/pluginbroker-artifacts-rhel8:2.10-3": "b2fa52f42fbc772dfca8a1af1a20e46f9a971d3371d1f4689d9dc3be414aafdb",
+        "quay.io/crw/pluginbroker-metadata-rhel8:2.10-2": "5ce62f6ce2a87d0670b8fcae1450c0b191b3998077d29602220792b99f3f8fb3",
         "quay.io/crw/plugin-java11-openj9-rhel8:2.10-1": "7bad930ba612251a9f3f287d584d93833de15cd100dbe7885e5af3e224fb450d",
         "quay.io/crw/plugin-java11-rhel8:2.10-1": "b7ec410704c72f8ad206201b634f4a85b9ee250a6fff37b2069d377149755c06",
         "quay.io/crw/plugin-java8-openj9-rhel8:2.10-2": "f09ef88f9bfbff23ccc23a892f6920cc87119de8127abb1b30cb9c611beaf8d7",
@@ -19,6 +23,7 @@
         "quay.io/crw/stacks-dotnet-rhel8:2.10-1": "7ebb10620c77acc83248e0db4a988dd060a7142b283c003665d94128d2fbfdc8",
         "quay.io/crw/stacks-golang-rhel8:2.10-1": "6a08a06eeab52fde62bc031174155d4f4854e5c3b5735dcc2978df2b0c31a8a7",
         "quay.io/crw/stacks-php-rhel8:2.10-1": "9aab6346ffac2e7ff00b8cb7107aa51ef3f2044ff382fe502e72c65eba940551",
+        "quay.io/crw/traefik-rhel8:2.10-1": "173c3a30012fa5ea066959d7a7e37174414eec24cb0a42ebd396b948180e3cc8",
         "": ""
     }
 }
