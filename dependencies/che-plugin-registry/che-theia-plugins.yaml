@@ -407,7 +407,7 @@ plugins:
     extension: https://github.com/redhat-developer/codeready-workspaces-vscode-extensions/releases/download/v356aec7/vscode-xml-0.14.0.vsix
   - repository:
       url: 'https://github.com/Azure/vscode-kubernetes-tools'
-      revision: 1.2.0
+      revision: 1.2.1
     sidecar:
       image: "registry.redhat.io/codeready-workspaces/plugin-kubernetes-rhel8:2.10"
       name: vscode-kubernetes-tools
