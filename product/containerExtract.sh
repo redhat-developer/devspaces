@@ -72,8 +72,11 @@ fi
 ${PODMAN} export "${tmpcontainer}" > "/tmp/${tmpcontainer}.tar"
 rm -fr "$unpackdir" || true
 mkdir -p "$unpackdir"
-echo "[INFO] Extract from container ..."
-tar xf "/tmp/${tmpcontainer}.tar" --wildcards -C "$unpackdir" "${TAR_FLAGS}" || true
+# shellcheck disable=SC2086 disable=SC2116
+TAR_FLAGS="$(echo $TAR_FLAGS)" # squash duplicate spaces
+echo "[INFO] Extract from container (${TAR_FLAGS}) ..."
+# shellcheck disable=SC2086
+tar xf "/tmp/${tmpcontainer}.tar" --wildcards -C "$unpackdir" ${TAR_FLAGS} || exit 1 # fail if we can't unpack the tar
 
 # cleanup
 ${PODMAN} rm -f "${tmpcontainer}" >/dev/null 2>&1 || true
