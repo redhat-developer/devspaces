@@ -117,8 +117,8 @@ sed -e "s#.\+<package id=\"\(.\+\)\" version=\"\(.\+\)\".\+#${prefix}\1:\2#g" | 
 
 function phpList() {
 	prefix="$1"
-	for dep in $(php composer.phar show -t | sed -e "s#|^# || ^#g" -e "s#\(.\+\) PHP .\+#\1#g" -e "s#[\`-├└─┬-]\+##g" -e "s#\^[\ \t]\+##" -e "s#[\ \t]*\([a-z/]\+\) \([0-9.]\+\)#\1:\2#g" | sort | uniq); do
-		echo "$prefix$dep" >> ${MANIFEST_FILE}
+	for dep in $(php composer.phar show -f json | jq -r '.installed[] | [.name,.version] | @csv' | tr -d "\""); do
+		echo "$prefix${dep/,/:}" >> ${MANIFEST_FILE}
 	done
 }
 
@@ -362,11 +362,9 @@ if [[ ${phases} == *"4"* ]]; then
 	log ""
 	php composer.phar require -d /tmp/php-deps-tmp felixfbecker/language-server:${PHP_LS_VERSION} | tee -a ${LOG_FILE}
 	# php composer.phar run-script --working-dir=vendor/felixfbecker/language-server parse-stubs # does not install new deps, so don't need to run this
-	php composer.phar show -t >> ${LOG_FILE}
-	log ""
 	php composer.phar show >> ${LOG_FILE}
 	mnf "codeready-workspaces-stacks-php-container:${CSV_VERSION}/jetbrains/phpstorm-stubs:dev-master"
-	mnf "codeready-workspaces-stacks-php-container:${CSV_VERSION}/felixfbecker/language-server:${PHP_LS_VERSION}"
+	mnf "codeready-workspaces-stacks-php-container:${CSV_VERSION}/felixfbecker/language-server:v${PHP_LS_VERSION}"
 	phpList "  codeready-workspaces-stacks-php-container:${CSV_VERSION}/"
 	mnf ""
 	cd /tmp
