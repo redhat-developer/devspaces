@@ -58,7 +58,7 @@ function clone_and_generate_dep_tree () {
 echo "Generate a list of MVN dependencies from upstream Che & CRW product repos (~2 mins to run):"
 clone_and_generate_dep_tree https://github.com/eclipse/che-dev 20 &
 clone_and_generate_dep_tree https://github.com/eclipse/che-parent ${CHE_PARENT_VERSION}
-clone_and_generate_dep_tree https://github.com/eclipse-che/che-server ${CHE_VERSION} & 
+clone_and_generate_dep_tree https://github.com/eclipse/che ${CHE_VERSION} & 
 clone_and_generate_dep_tree https://github.com/redhat-developer/codeready-workspaces-deprecated ${CRW_TAG_OR_BRANCH} & 
 clone_and_generate_dep_tree https://github.com/redhat-developer/codeready-workspaces-theia ${CRW_TAG_OR_BRANCH} & 
 clone_and_generate_dep_tree https://github.com/redhat-developer/codeready-workspaces-operator ${CRW_TAG_OR_BRANCH} & 
