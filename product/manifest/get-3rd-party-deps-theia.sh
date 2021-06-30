@@ -26,49 +26,50 @@ fi
 CRW_VERSION=$(curl -sSLo - https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/${MIDSTM_BRANCH}/dependencies/VERSION)
 
 EXCLUDE_FILES="e2e|kubernetes"
-EXCLUDE_LINES="api.github.com|GITHUB_LIMIT|GITHUB_TOKEN|THEIA_GITHUB_REPO|.git$|.asc|/debian$|/debian/$|APKINDEX.tar.gz|get-pip|=http"
+EXCLUDE_LINES="eclipse-che/che-theia|redhat-developer/codeready-workspaces/|redhat-developer/codeready-workspaces-theia|SHASUMS256.txt|CDN_PREFIX|cdn.stage.redhat.com|api.github.com|GITHUB_LIMIT|GITHUB_TOKEN|THEIA_GITHUB_REPO|.git$|.asc|/debian$|/debian/$|APKINDEX.tar.gz|get-pip|=http"
 EXCLUDE_LINES2="che:theia"
 
 cd /tmp || exit
-mkdir -p ${WORKSPACE}/${CSV_VERSION}/theia
+mkdir -p "${WORKSPACE}/${CSV_VERSION}/theia"
 MANIFEST_FILE="${WORKSPACE}/${CSV_VERSION}/theia/manifest-theia.txt"
 LOG_FILE="${WORKSPACE}/${CSV_VERSION}/theia/manifest-theia_log.txt"
 
 function log () {
-	echo "$1" | tee -a ${LOG_FILE}
+	echo "$1" | tee -a "${LOG_FILE}"
 }
 
-rm -f ${MANIFEST_FILE} ${MANIFEST_FILE}.2 ${LOG_FILE}
+rm -f "${MANIFEST_FILE}" "${MANIFEST_FILE}".2 "${LOG_FILE}"
 echo "Parsing ${JENKINS}/crw-theia-sources_${CRW_VERSION}/lastSuccessfulBuild/consoleText ..."
-curl -sSL -o ${MANIFEST_FILE} ${JENKINS}/crw-theia-sources_${CRW_VERSION}/lastSuccessfulBuild/consoleText
-CHE_THEIA_BRANCH=$(grep "build.include" ${MANIFEST_FILE} | sort -u | grep curl | sed -r -e "s#.+che-theia/(.+)/build.include#\1#") # 7.yy.x
-for d in $(cat ${MANIFEST_FILE} | grep -E "https://|http://"); do 
-	echo $d | grep -E "https://|http://" >> ${MANIFEST_FILE}.2
+curl -sSL -o "${MANIFEST_FILE}" "${JENKINS}/crw-theia-sources_${CRW_VERSION}/lastSuccessfulBuild/consoleText"
+CHE_THEIA_BRANCH=$(grep "build.include" "${MANIFEST_FILE}" | sort -u | grep curl | sed -r -e "s#.+che-theia/(.+)/build.include#\1#") # 7.yy.x
+
+# shellcheck disable=SC2013 disable=SC2002
+for d in $(cat "${MANIFEST_FILE}" | grep -E "https://|http://"); do 
+	echo "$d" | grep -E "https://|http://" | tr -d "\"'()" | sed -r -e "s#[.:]\$##" >> "${MANIFEST_FILE}".2
 	echo -n "."
 done
 echo ""
-cat ${MANIFEST_FILE}.2 | uniq | sort | grep -E -v "${EXCLUDE_LINES}" | uniq | sort > ${MANIFEST_FILE}
-rm -f ${MANIFEST_FILE}.2
+# shellcheck disable=SC2002
+cat "${MANIFEST_FILE}".2 | uniq | sort | grep -E -v "${EXCLUDE_LINES}" | uniq | sort > "${MANIFEST_FILE}".3
+echo "# URLs found in build log" > "${MANIFEST_FILE}".2
+cat "${MANIFEST_FILE}".2 "${MANIFEST_FILE}".3 > "${MANIFEST_FILE}"
+rm -f "${MANIFEST_FILE}".2 "${MANIFEST_FILE}".3
 
 TMPDIR=$(mktemp -d)
-pushd $TMPDIR >/dev/null || exit
-	git clone git@github.com:eclipse/che-theia.git 
+pushd "$TMPDIR" >/dev/null || exit
+	git clone git@github.com:eclipse-che/che-theia.git 
 	cd che-theia || exit
 		git fetch || true
-		git checkout --track origin/${CHE_THEIA_BRANCH}
-		git pull origin ${CHE_THEIA_BRANCH}
+		git checkout --track "origin/${CHE_THEIA_BRANCH}"
+		git pull origin "${CHE_THEIA_BRANCH}"
+		# shellcheck disable=SC2129
+		echo "" >> "${MANIFEST_FILE}"
+		# get yarn deps
+		echo "# yarn deps" >> "${MANIFEST_FILE}"
+		yarn list --depth=0 >> "${MANIFEST_FILE}"
 	cd ..
-
-	Dockerfiles="$(find che-theia -name Dockerfile | grep -E -v "${EXCLUDE_FILES}")"
-	for df in $Dockerfiles; do
-		echo "== $df ==" | tee -a ${LOG_FILE}
-		for line in $(cat ${MANIFEST_FILE}) openjdk " python" "Python-" "pip install"; do
-			grep "$line" $df | grep -E -v "${EXCLUDE_LINES2}" | tee -a ${LOG_FILE}
-		done
-		echo "" | tee -a ${LOG_FILE}
-	done
 popd >/dev/null || exit
-rm -fr $TMPDIR
+rm -fr "$TMPDIR"
 
 ##################################
 

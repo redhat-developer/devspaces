@@ -3,7 +3,7 @@
 # script to generate a manifest of all the rpms installed into the containers
 
 MIDSTM_BRANCH=""
-arches="x86_64" # TODO add s390x and ppc64le eventually
+arches="x86_64" # for s390x & ppc64le, just override when fetching openj9 containers
 allNVRs=""
 MATCH=""
 quiet=0
@@ -70,8 +70,8 @@ function loadNVRs() {
 	pushd /tmp >/dev/null || exit
 	curl -sSLO https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/${MIDSTM_BRANCH}/product/getLatestImageTags.sh
 	chmod +x getLatestImageTags.sh
-	mnf "Latest image list for ${MIDSTM_BRANCH}"
-	/tmp/getLatestImageTags.sh --${MIDSTM_BRANCH} --nvr | tee /tmp/getLatestImageTags.sh.nvrs.txt
+	mnf "[INFO] Latest image list for ${MIDSTM_BRANCH}"
+	/tmp/getLatestImageTags.sh -b ${MIDSTM_BRANCH} --nvr | tee /tmp/getLatestImageTags.sh.nvrs.txt
 	loadNVRs_return="$(cat /tmp/getLatestImageTags.sh.nvrs.txt)"
 	popd >/dev/null || exit
 }
@@ -114,11 +114,11 @@ function loadNVRlog() {
 }
 
 if [[ ${allNVRs} == "" ]]; then
-	log "Compute list of latest ${candidateTag} NVRs ... ";
+	log "[INFO] Compute list of latest ${candidateTag} NVRs ... ";
 	loadNVRs; allNVRs="${allNVRs} ${loadNVRs_return}"
 	log ""
 fi
-log "NVRs to query for installed rpms:"
+log "[INFO] NVRs to query for installed rpms:"
 for NVR in ${allNVRs}; do
 	log "   $NVR"
 done
@@ -126,18 +126,20 @@ done
 log ""
 
 # allNVRs=codeready-workspaces-stacks-python-container-2.0-6
-log "Brew logs:"
+log "[INFO] Brew logs:"
 for NVR in ${allNVRs}; do
 	MANIFEST_FILE2="${WORKSPACE}/${CSV_VERSION}/rpms/manifest-rpms-${NVR}.txt"
 	rm -fr ${MANIFEST_FILE2}
 	for arch in ${arches}; do
+		if [[ ${NVR} == *"openj9"* ]]; then arch="s390x"; fi # z and p only
+		if [[ ${NVR} == *"dotnet"* ]]; then arch="x86_64"; fi # x only
 		loadNVRlog $NVR ${MANIFEST_FILE2} ${arch}
 	done
 done
 
 if [[ $quiet -eq 0 ]]; then
 	log "" 
-	log "NVR build IDs:" 
+	log "[INFO] NVR build IDs:" 
 	for NVR in ${allNVRs}; do 
 		buildID=$(brew buildinfo $NVR | grep BUILD | sed -e "s#BUILD: $NVR \[\(.\+\)\]#\1#")
 		log "   $NVR [${buildID}] - https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=${buildID}"
@@ -152,11 +154,11 @@ cat ${WORKSPACE}/${CSV_VERSION}/rpms/manifest-rpms-codeready-workspaces-* | sed 
 ##################################
 
 echo "" | tee -a ${LOG_FILE}
-echo "Overall RPM manifest is in file: ${MANIFEST_FILE}" | tee -a ${LOG_FILE}
-echo "Unique RPM manifest is in file: ${MANIFEST_UNIQ_FILE}" | tee -a ${LOG_FILE}
-echo "Long RPM log is in file: ${LOG_FILE}" | tee -a ${LOG_FILE}
+echo "[INFO] Overall RPM manifest is in file: ${MANIFEST_FILE}" | tee -a ${LOG_FILE}
+echo "[INFO] Unique RPM manifest is in file: ${MANIFEST_UNIQ_FILE}" | tee -a ${LOG_FILE}
+echo "[INFO] Long RPM log is in file: ${LOG_FILE}" | tee -a ${LOG_FILE}
 echo "" | tee -a ${LOG_FILE}
-echo "Individual RPM manifests:" | tee -a ${LOG_FILE}
+echo "[INFO] Individual RPM manifests:" | tee -a ${LOG_FILE}
 for NVR in ${allNVRs}; do 
 	echo "* ${WORKSPACE}/${CSV_VERSION}/rpms/manifest-rpms-${NVR}.txt" | tee -a ${LOG_FILE}
 	if [[ ${MATCH} ]]; then
