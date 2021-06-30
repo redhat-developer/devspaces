@@ -141,8 +141,8 @@ if [[ ${phases} == *"2"* ]]; then
     pushd ../../dependencies/che-plugin-registry >/dev/null
         URLsAll=""
         URLs=""
-        for d in $(find . -name meta.yaml | sort); do 
-            URLsAll="${URLsAll} $(cat $d | egrep "\.vsix|\.theia" | grep github | grep releases | sed -e "s@- @@")"
+        for d in $(find . -name \*.yaml | sort); do 
+            URLsAll="${URLsAll} $(cat $d | grep -E "\.vsix|\.theia" | grep github | grep releases | sed -r -e "s@- @@" -e "s@extension: @@" | tr -d "'\"")"
         done
         if [[ $URLsAll ]]; then
             for u in $URLsAll; do 
