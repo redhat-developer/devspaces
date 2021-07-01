@@ -78,6 +78,9 @@ def getVarFromPropertiesFileURL(String property, String tURL) {
   def data = tURL.toURL().readLines()
   varVal=""
   data.each {
+    if (!varVal.equals("")) {
+      return true
+    }
     pair=it.toString().trim()
     if (pair.matches(property+"=.+")) {
       varVal=pair.replaceAll(property+"=","")
