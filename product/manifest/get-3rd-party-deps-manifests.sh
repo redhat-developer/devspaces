@@ -150,10 +150,12 @@ rm -f ${LOG_FILE} ${MANIFEST_FILE}
 if [[ ${phases} == *"1"* ]] || [[ ${phases} == *"2"* ]] || [[ ${phases} == *"3"* ]] || [[ ${phases} == *"4"* ]] || [[ ${phases} == *"5"* ]] || [[ ${phases} == *"6"* ]]; then
 	log "1a. Check out 3rd party language server dependencies builder repo (will collect variables later)" 
 	cd /tmp
-	if [[ ! -d codeready-workspaces-deprecated ]]; then 
-	git clone git@github.com:redhat-developer/codeready-workspaces-deprecated.git
+	if [[ ! -d codeready-workspaces-deprecated ]]; then
+		git clone https://$GITHUB_TOKEN:x-oauth-basic@github.com/redhat-developer/codeready-workspaces-deprecated.git
 	fi
 	pushd codeready-workspaces-deprecated >/dev/null
+		git config --global push.default matching
+		git config --global hub.protocol https
 		git checkout ${CRW_BRANCH_TAG} || { echo "Tag or branch ${CRW_BRANCH_TAG} does not exist! Create it before running this script."; exit 1; }
 	popd >/dev/null
 	log ""
