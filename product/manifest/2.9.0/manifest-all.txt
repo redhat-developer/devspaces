@@ -6271,12 +6271,7 @@ codeready-workspaces-traefik-rhel8-container:2.9-4/zlib-1.2.11-17.el8.x86_64
 
 codeready-workspaces-server-container:2.9/github.com/eclipse/che-dev:20
 codeready-workspaces-server-container:2.9/github.com/eclipse/che-parent:7.15.0
-codeready-workspaces-server-container:2.9/github.com/redhat-developer/codeready-workspaces-theia:crw-2.9-rhel-8
-codeready-workspaces-server-container:2.9/github.com/redhat-developer/codeready-workspaces-chectl:crw-2.9-rhel-8
-codeready-workspaces-server-container:2.9/github.com/redhat-developer/codeready-workspaces-operator:crw-2.9-rhel-8
-codeready-workspaces-server-container:2.9/github.com/redhat-developer/codeready-workspaces-deprecated:crw-2.9-rhel-8
-codeready-workspaces-server-container:2.9/github.com/redhat-developer/codeready-workspaces:crw-2.9-rhel-8
-codeready-workspaces-server-container:2.9/github.com/eclipse/che:7.30.2
+codeready-workspaces-server-container:2.9/github.com/eclipse-che/che-server:7.30.2
   codeready-workspaces-server-container:2.9/
   codeready-workspaces-server-container:2.9/antlr_antlr.jar:2.7.7
   codeready-workspaces-server-container:2.9/aopalliance_aopalliance.jar:1.0
@@ -8279,7 +8274,7 @@ yarn list v1.20.0
 ├─ yn@3.1.1
 ├─ zepto@1.2.0
 └─ zip-stream@1.2.0
-Done in 7.68s.
+Done in 6.88s.
 containers/codeready-workspaces-configbump-rhel8-container:2.9.0/ubi8-minimal:8.3-298.1618432845
 containers/codeready-workspaces-operator-rhel8-container:2.9.0/devtools/go-toolset-rhel7:1.13.15-4  as builder
 containers/codeready-workspaces-operator-rhel8-container:2.9.0/ubi8-minimal:8.4-200.1622548483

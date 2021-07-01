@@ -1,0 +1,40 @@
+[[1;34mINFO[m] Scanning for projects...
+[[1;34mINFO[m] [1m------------------------------------------------------------------------[m
+[[1;34mINFO[m] [1mReactor Build Order:[m
+[[1;34mINFO[m] 
+[[1;34mINFO[m] Development Resources for Eclipse Che projects                     [pom]
+[[1;34mINFO[m] Eclipse license codestyle                                          [jar]
+[[1;34mINFO[m] Che codestyle resources                                            [jar]
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m------------< [0;36morg.eclipse.che.dev:che-dev-resources-parent[0;1m >------------[m
+[[1;34mINFO[m] [1mBuilding Development Resources for Eclipse Che projects 20         [1/3][m
+[[1;34mINFO[m] [1m--------------------------------[ pom ]---------------------------------[m
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mmaven-dependency-plugin:2.8:tree[m [1m(default-cli)[m @ [36mche-dev-resources-parent[0;1m ---[m
+[[1;34mINFO[m] org.eclipse.che.dev:che-dev-resources-parent:pom:20
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m------< [0;36morg.eclipse.che.dev:che-eclipse-license-resource-bundle[0;1m >-------[m
+[[1;34mINFO[m] [1mBuilding Eclipse license codestyle 20                              [2/3][m
+[[1;34mINFO[m] [1m--------------------------------[ jar ]---------------------------------[m
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mmaven-dependency-plugin:2.8:tree[m [1m(default-cli)[m @ [36mche-eclipse-license-resource-bundle[0;1m ---[m
+[[1;34mINFO[m] org.eclipse.che.dev:che-eclipse-license-resource-bundle:jar:20
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m-----------------< [0;36morg.eclipse.che.dev:che-codestyle[0;1m >------------------[m
+[[1;34mINFO[m] [1mBuilding Che codestyle resources 20                                [3/3][m
+[[1;34mINFO[m] [1m--------------------------------[ jar ]---------------------------------[m
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mmaven-dependency-plugin:2.8:tree[m [1m(default-cli)[m @ [36mche-codestyle[0;1m ---[m
+[[1;34mINFO[m] org.eclipse.che.dev:che-codestyle:jar:20
+[[1;34mINFO[m] [1m------------------------------------------------------------------------[m
+[[1;34mINFO[m] [1mReactor Summary for Development Resources for Eclipse Che projects 20:[m
+[[1;34mINFO[m] 
+[[1;34mINFO[m] Development Resources for Eclipse Che projects ..... [1;32mSUCCESS[m [  0.625 s]
+[[1;34mINFO[m] Eclipse license codestyle .......................... [1;32mSUCCESS[m [  0.033 s]
+[[1;34mINFO[m] Che codestyle resources ............................ [1;32mSUCCESS[m [  0.005 s]
+[[1;34mINFO[m] [1m------------------------------------------------------------------------[m
+[[1;34mINFO[m] [1;32mBUILD SUCCESS[m
+[[1;34mINFO[m] [1m------------------------------------------------------------------------[m
+[[1;34mINFO[m] Total time:  0.936 s
+[[1;34mINFO[m] Finished at: 2021-07-01T01:18:41-04:00
+[[1;34mINFO[m] [1m------------------------------------------------------------------------[m

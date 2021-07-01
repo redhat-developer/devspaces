@@ -1,0 +1,15 @@
+[[1;34mINFO[m] Scanning for projects...
+[[1;33mWARNING[m] The project org.eclipse.che.parent:maven-parent-pom:pom:7.15.0 uses prerequisites which is only intended for maven-plugin projects but not for non maven-plugin projects. For such purposes you should use the maven-enforcer-plugin. See https://maven.apache.org/enforcer/enforcer-rules/requireMavenVersion.html
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--------------< [0;36morg.eclipse.che.parent:maven-parent-pom[0;1m >---------------[m
+[[1;34mINFO[m] [1mBuilding Che parent POM 7.15.0[m
+[[1;34mINFO[m] [1m--------------------------------[ pom ]---------------------------------[m
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mmaven-dependency-plugin:3.1.2:tree[m [1m(default-cli)[m @ [36mmaven-parent-pom[0;1m ---[m
+[[1;34mINFO[m] org.eclipse.che.parent:maven-parent-pom:pom:7.15.0
+[[1;34mINFO[m] [1m------------------------------------------------------------------------[m
+[[1;34mINFO[m] [1;32mBUILD SUCCESS[m
+[[1;34mINFO[m] [1m------------------------------------------------------------------------[m
+[[1;34mINFO[m] Total time:  1.017 s
+[[1;34mINFO[m] Finished at: 2021-07-01T01:18:49-04:00
+[[1;34mINFO[m] [1m------------------------------------------------------------------------[m
