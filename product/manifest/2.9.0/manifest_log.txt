@@ -437,7 +437,7 @@ Attention
     For more details goto: https://www.npmjs.com/package/console-stamp/v/next
 
 + go-language-server@0.1.7
-added 89 packages from 76 contributors and audited 89 packages in 8.929s
+added 89 packages from 76 contributors and audited 89 packages in 6.843s
 
 4 packages are looking for funding
   run `npm fund` for details
@@ -567,9 +567,9 @@ found 8 vulnerabilities (2 low, 6 high)
  * TYPERSCRIPT_VERSION = 3.4.5
  * TYPESCRIPT_LS_VERSION = 0.3.7
 
-+ typescript@3.4.5
 + typescript-language-server@0.3.7
-added 18 packages from 10 contributors and audited 18 packages in 2.646s
++ typescript@3.4.5
+added 18 packages from 10 contributors and audited 18 packages in 1.796s
 found 0 vulnerabilities
 
 
@@ -630,92 +630,31 @@ webmozart/path-util                   2.3.0              A robust cross-platform
  * PYTHON_IMAGE = registry.access.redhat.com/ubi8/python-38:1
  * PYTHON_LS_VERSION = 0.36.1
 
-Collecting python-language-server[all]==0.36.1
-  Downloading python_language_server-0.36.1-py2.py3-none-any.whl (51 kB)
-Collecting jedi<0.18.0,>=0.17.2
-  Downloading jedi-0.17.2-py2.py3-none-any.whl (1.4 MB)
-Collecting ujson>=3.0.0
-  Downloading ujson-4.0.2.tar.gz (7.1 MB)
-  Installing build dependencies: started
-  Installing build dependencies: finished with status 'done'
-  Getting requirements to build wheel: started
-  Getting requirements to build wheel: finished with status 'done'
-    Preparing wheel metadata: started
-    Preparing wheel metadata: finished with status 'done'
-Collecting python-jsonrpc-server>=0.4.0
-  Downloading python_jsonrpc_server-0.4.0-py3-none-any.whl (8.9 kB)
-Collecting pluggy
-  Downloading pluggy-0.13.1-py2.py3-none-any.whl (18 kB)
-Collecting pyflakes<2.3.0,>=2.2.0
-  Downloading pyflakes-2.2.0-py2.py3-none-any.whl (66 kB)
-Collecting rope>=0.10.5
-  Downloading rope-0.19.0.tar.gz (252 kB)
-Collecting pycodestyle<2.7.0,>=2.6.0
-  Downloading pycodestyle-2.6.0-py2.py3-none-any.whl (41 kB)
-Collecting pydocstyle>=2.0.0
-  Downloading pydocstyle-6.1.1-py3-none-any.whl (37 kB)
-Collecting yapf
-  Downloading yapf-0.31.0-py2.py3-none-any.whl (185 kB)
-Collecting autopep8
-  Downloading autopep8-1.5.7-py2.py3-none-any.whl (45 kB)
-Collecting pylint>=2.5.0
-  Downloading pylint-2.9.1-py3-none-any.whl (371 kB)
-Collecting flake8>=3.8.0
-  Downloading flake8-3.9.2-py2.py3-none-any.whl (73 kB)
-Collecting mccabe<0.7.0,>=0.6.0
-  Downloading mccabe-0.6.1-py2.py3-none-any.whl (8.6 kB)
+Requirement already satisfied: python-language-server[all]==0.36.1 in /usr/local/lib/python3.6/site-packages (0.36.1)
+Requirement already satisfied: pluggy in /usr/local/lib/python3.6/site-packages (from python-language-server[all]==0.36.1) (0.13.1)
+Requirement already satisfied: python-jsonrpc-server>=0.4.0 in /usr/local/lib/python3.6/site-packages (from python-language-server[all]==0.36.1) (0.4.0)
+Requirement already satisfied: jedi<0.18.0,>=0.17.2 in /usr/local/lib/python3.6/site-packages (from python-language-server[all]==0.36.1) (0.17.2)
+Requirement already satisfied: ujson>=3.0.0 in /usr/local/lib64/python3.6/site-packages (from python-language-server[all]==0.36.1) (4.0.2)
+Requirement already satisfied: mccabe<0.7.0,>=0.6.0 in /usr/local/lib/python3.6/site-packages (from python-language-server[all]==0.36.1) (0.6.1)
+Requirement already satisfied: pydocstyle>=2.0.0 in /usr/local/lib/python3.6/site-packages (from python-language-server[all]==0.36.1) (6.1.1)
+Requirement already satisfied: pycodestyle<2.7.0,>=2.6.0 in /usr/local/lib/python3.6/site-packages (from python-language-server[all]==0.36.1) (2.6.0)
+Requirement already satisfied: rope>=0.10.5 in /usr/local/lib/python3.6/site-packages (from python-language-server[all]==0.36.1) (0.19.0)
+Requirement already satisfied: pylint>=2.5.0 in /usr/local/lib/python3.6/site-packages (from python-language-server[all]==0.36.1) (2.9.1)
+Requirement already satisfied: autopep8 in /usr/local/lib/python3.6/site-packages (from python-language-server[all]==0.36.1) (1.5.5)
+Requirement already satisfied: pyflakes<2.3.0,>=2.2.0 in /usr/local/lib/python3.6/site-packages (from python-language-server[all]==0.36.1) (2.2.0)
+Requirement already satisfied: flake8>=3.8.0 in /usr/local/lib/python3.6/site-packages (from python-language-server[all]==0.36.1) (3.8.4)
+Requirement already satisfied: yapf in /usr/local/lib/python3.6/site-packages (from python-language-server[all]==0.36.1) (0.31.0)
 Requirement already satisfied: importlib-metadata in /usr/local/lib/python3.6/site-packages (from flake8>=3.8.0->python-language-server[all]==0.36.1) (3.3.0)
-Collecting flake8>=3.8.0
-  Downloading flake8-3.9.1-py2.py3-none-any.whl (73 kB)
-  Downloading flake8-3.9.0-py2.py3-none-any.whl (73 kB)
-  Downloading flake8-3.8.4-py2.py3-none-any.whl (72 kB)
-Collecting parso<0.8.0,>=0.7.0
-  Downloading parso-0.7.1-py2.py3-none-any.whl (109 kB)
-Collecting snowballstemmer
-  Downloading snowballstemmer-2.1.0-py2.py3-none-any.whl (93 kB)
+Requirement already satisfied: parso<0.8.0,>=0.7.0 in /usr/local/lib/python3.6/site-packages (from jedi<0.18.0,>=0.17.2->python-language-server[all]==0.36.1) (0.7.1)
+Requirement already satisfied: snowballstemmer in /usr/local/lib/python3.6/site-packages (from pydocstyle>=2.0.0->python-language-server[all]==0.36.1) (2.1.0)
 Requirement already satisfied: toml>=0.7.1 in /usr/local/lib/python3.6/site-packages (from pylint>=2.5.0->python-language-server[all]==0.36.1) (0.10.2)
-Collecting astroid<2.7,>=2.6.2
-  Downloading astroid-2.6.2-py3-none-any.whl (228 kB)
-Collecting isort<6,>=4.2.5
-  Downloading isort-5.9.1-py3-none-any.whl (105 kB)
-Collecting lazy-object-proxy>=1.4.0
-  Downloading lazy-object-proxy-1.6.0.tar.gz (44 kB)
-  Installing build dependencies: started
-  Installing build dependencies: finished with status 'done'
-  Getting requirements to build wheel: started
-  Getting requirements to build wheel: finished with status 'done'
-    Preparing wheel metadata: started
-    Preparing wheel metadata: finished with status 'done'
-Collecting typed-ast<1.5,>=1.4.0
-  Downloading typed_ast-1.4.3.tar.gz (210 kB)
+Requirement already satisfied: isort<6,>=4.2.5 in /usr/local/lib/python3.6/site-packages (from pylint>=2.5.0->python-language-server[all]==0.36.1) (5.9.1)
+Requirement already satisfied: astroid<2.7,>=2.6.2 in /usr/local/lib/python3.6/site-packages (from pylint>=2.5.0->python-language-server[all]==0.36.1) (2.6.2)
 Requirement already satisfied: typing-extensions>=3.7.4 in /usr/local/lib/python3.6/site-packages (from astroid<2.7,>=2.6.2->pylint>=2.5.0->python-language-server[all]==0.36.1) (3.7.4.3)
-Collecting wrapt<1.13,>=1.11
-  Downloading wrapt-1.12.1.tar.gz (27 kB)
-Collecting autopep8
-  Downloading autopep8-1.5.6-py2.py3-none-any.whl (44 kB)
-  Downloading autopep8-1.5.5-py2.py3-none-any.whl (44 kB)
+Requirement already satisfied: lazy-object-proxy>=1.4.0 in /usr/local/lib64/python3.6/site-packages (from astroid<2.7,>=2.6.2->pylint>=2.5.0->python-language-server[all]==0.36.1) (1.6.0)
+Requirement already satisfied: wrapt<1.13,>=1.11 in /usr/local/lib64/python3.6/site-packages (from astroid<2.7,>=2.6.2->pylint>=2.5.0->python-language-server[all]==0.36.1) (1.12.1)
+Requirement already satisfied: typed-ast<1.5,>=1.4.0 in /usr/local/lib64/python3.6/site-packages (from astroid<2.7,>=2.6.2->pylint>=2.5.0->python-language-server[all]==0.36.1) (1.4.3)
 Requirement already satisfied: zipp>=0.5 in /usr/local/lib/python3.6/site-packages (from importlib-metadata->flake8>=3.8.0->python-language-server[all]==0.36.1) (3.4.0)
-Using legacy 'setup.py install' for rope, since package 'wheel' is not installed.
-Using legacy 'setup.py install' for typed-ast, since package 'wheel' is not installed.
-Using legacy 'setup.py install' for wrapt, since package 'wheel' is not installed.
-Building wheels for collected packages: lazy-object-proxy, ujson
-  Building wheel for lazy-object-proxy (PEP 517): started
-  Building wheel for lazy-object-proxy (PEP 517): finished with status 'done'
-  Created wheel for lazy-object-proxy: filename=lazy_object_proxy-1.6.0-cp36-cp36m-linux_ppc64le.whl size=50334 sha256=f3546e7759c6fe079f0a2528e760ef3647c36aa120507201b40c0e28ddd2b99f
-  Stored in directory: /root/.cache/pip/wheels/30/1e/56/6b18188fd4d695f32d67ee8605a3e0c3e561305b7c88490014
-  Building wheel for ujson (PEP 517): started
-  Building wheel for ujson (PEP 517): finished with status 'done'
-  Created wheel for ujson: filename=ujson-4.0.2-cp36-cp36m-linux_ppc64le.whl size=229932 sha256=274e3de2663232892b14d7756ba7b54982a0939c429a47159bb5a1e34b1d9aa5
-  Stored in directory: /root/.cache/pip/wheels/e1/82/ad/1fb37661579e96fd877f0a052b26a8cc5318ff5f6a7d3075a2
-Successfully built lazy-object-proxy ujson
-Installing collected packages: wrapt, ujson, typed-ast, parso, lazy-object-proxy, snowballstemmer, python-jsonrpc-server, pyflakes, pycodestyle, pluggy, mccabe, jedi, isort, astroid, yapf, rope, python-language-server, pylint, pydocstyle, flake8, autopep8
-    Running setup.py install for wrapt: started
-    Running setup.py install for wrapt: finished with status 'done'
-    Running setup.py install for typed-ast: started
-    Running setup.py install for typed-ast: finished with status 'done'
-    Running setup.py install for rope: started
-    Running setup.py install for rope: finished with status 'done'
-Successfully installed astroid-2.6.2 autopep8-1.5.5 flake8-3.8.4 isort-5.9.1 jedi-0.17.2 lazy-object-proxy-1.6.0 mccabe-0.6.1 parso-0.7.1 pluggy-0.13.1 pycodestyle-2.6.0 pydocstyle-6.1.1 pyflakes-2.2.0 pylint-2.9.1 python-jsonrpc-server-0.4.0 python-language-server-0.36.1 rope-0.19.0 snowballstemmer-2.1.0 typed-ast-1.4.3 ujson-4.0.2 wrapt-1.12.1 yapf-0.31.0
 
 Package                Version
 ---------------------- -----------
