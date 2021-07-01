@@ -26,11 +26,23 @@ fi
 CRW_VERSION=$(curl -sSLo - https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/${MIDSTM_BRANCH}/dependencies/VERSION)
 CRW_TAG_OR_BRANCH=${MIDSTM_BRANCH}
 
-# use x.y.z version, eg., 7.16.3
-CHE_VERSION=$(curl -sSLo - https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/${MIDSTM_BRANCH}/pom.xml | grep "<che.version>" | sed -r -e "s#.*<che.version>(.+)</che.version>.*#\1#")
+# load SOURCE_BRANCH from theia BUILD_PARAMS
+for d in $(curl -sSLo - https://raw.githubusercontent.com/redhat-developer/codeready-workspaces-theia/${MIDSTM_BRANCH}/BUILD_PARAMS); do
+	export $d
+done
 
-# use x.y.z version, eg., 7.16.3
-CHE_PARENT_VERSION=$(curl -sSLo - https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/${MIDSTM_BRANCH}/pom.xml | \
+# use x.y.z version, eg., 7.30.2
+CHE_VERSION=$(curl -sSLo - https://raw.githubusercontent.com/eclipse-che/che-server/${SOURCE_BRANCH}/pom.xml | grep "<che.version>" | sed -r -e "s#.*<che.version>(.+)</che.version>.*#\1#")
+if [[ $CHE_VERSION =~ ^([0-9]+)\.([0-9]+)\.([0-9]+)-SNAPSHOT ]]; then # reduce the z digit, remove the snapshot suffix
+  XX=${BASH_REMATCH[1]}
+  YY=${BASH_REMATCH[2]}
+  ZZ=${BASH_REMATCH[3]}; (( ZZ=ZZ-1 )); if [[ ZZ -lt 0 ]]; then ZZ=0; fi
+  CHE_VERSION="${XX}.${YY}.${ZZ}"
+fi
+# echo "[DEBUG] CHE_VERSION = $CHE_VERSION"
+
+# use x.y.z version, eg., 7.15.0
+CHE_PARENT_VERSION=$(curl -sSLo - https://raw.githubusercontent.com/eclipse-che/che-server/${SOURCE_BRANCH}/pom.xml | \
    grep -A1 "<groupId>org.eclipse.che.parent</groupId>" | tail -1 | sed -r -e "s#.*<version>(.+)</version>.*#\1#")
 
 cd /tmp || exit
