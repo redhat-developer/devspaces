@@ -76,12 +76,18 @@ def getTheiaBuildParam(String property) {
 // https://github.com/redhat-developer/codeready-workspaces-theia/blob/crw-2-rhel-8/BUILD_PARAMS
 def getVarFromPropertiesFileURL(String property, String tURL) {
   def data = tURL.toURL().readLines()
+  varVal=""
   data.each {
-    if (it.contains(property+"=")) {
-      return it.replaceAll(property+"=","").toString()
+    if (!varVal.equals("")) {
+      return true
+    }
+    pair=it.toString().trim()
+    if (pair.matches(property+"=.+")) {
+      varVal=pair.replaceAll(property+"=","")
+      return true
     }
   }
-  return ""
+  return varVal
 }
 
 // TODO https://issues.redhat.com/browse/CRW-360 - eventually we should use RH npm mirror
