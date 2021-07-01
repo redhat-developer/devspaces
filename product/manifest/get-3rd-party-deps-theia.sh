@@ -57,8 +57,10 @@ rm -f "${MANIFEST_FILE}".2 "${MANIFEST_FILE}".3
 
 TMPDIR=$(mktemp -d)
 pushd "$TMPDIR" >/dev/null || exit
-	git clone git@github.com:eclipse-che/che-theia.git 
+	git clone https://$GITHUB_TOKEN:x-oauth-basic@github.com/eclipse-che/che-theia.git 
 	cd che-theia || exit
+		git config --global push.default matching
+		git config --global hub.protocol https
 		git fetch || true
 		git checkout --track "origin/${CHE_THEIA_BRANCH}"
 		git pull origin "${CHE_THEIA_BRANCH}"
