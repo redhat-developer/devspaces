@@ -61,21 +61,23 @@ function clone_and_generate_dep_tree () {
 	GITTAG=$2
 	rm -fr ${GITREPO##*/}
 	# echo "$1 :: $2 ... "
-	git clone -q ${GITREPO} ${GITREPO##*/} && cd ${GITREPO##*/} && git checkout -q ${GITTAG} && mvn dependency:tree > ${GITREPO##*/}_log.txt
-	cat ${GITREPO##*/}_log.txt | egrep "\+\-|\\\-" | sed -e "s#.\+\ \(.\+\)#\1#g" -e "s#:\(compile\|provided\|test\|system\|runtime\)\$##g" -e "s#^\(org.eclipse.che\|org.apache.maven\).\+##g" \
-		-e "s#\(.\+\):\(.\+\):jar:#\1_\2.jar:#g" -e "s#^#  codeready-workspaces-server-container:${CRW_VERSION}/#g" | sort | uniq >> ${MANIFEST_FILE/.txt/-raw-unsorted.txt}
+	git clone -q ${GITREPO} ${GITREPO##*/} && cd ${GITREPO##*/} && git checkout -q ${GITTAG} && \
+	mvn dependency:tree | tee ${WORKSPACE}/${CSV_VERSION}/mvn/${GITREPO##*/}_log.txt
+	cat ${WORKSPACE}/${CSV_VERSION}/mvn/${GITREPO##*/}_log.txt | grep -E "\+\-|\\\-" \
+		| sed \
+			-e "s#.\+\ \(.\+\)#\1#g" \
+			-e "s#:\(compile\|provided\|test\|system\|runtime\)\$##g" \
+			-e "s#^\(org.eclipse.che\|org.apache.maven\).\+##g" \
+			-e "s#\(.\+\):\(.\+\):jar:#\1_\2.jar:#g" \
+			-e "s#^#  codeready-workspaces-server-container:${CRW_VERSION}/#g" \
+		| sort | uniq >> ${MANIFEST_FILE/.txt/-raw-unsorted.txt}
 	cd .. && rm -fr ${GITREPO##*/}
 	mnf "codeready-workspaces-server-container:${CRW_VERSION}/${GITREPO##*//}:${GITTAG}"
 }
-echo "Generate a list of MVN dependencies from upstream Che & CRW product repos (~2 mins to run):"
+echo "Generate a list of MVN dependencies from upstream Che repos (~2 mins to run):"
 clone_and_generate_dep_tree https://github.com/eclipse/che-dev 20 &
 clone_and_generate_dep_tree https://github.com/eclipse/che-parent ${CHE_PARENT_VERSION}
 clone_and_generate_dep_tree https://github.com/eclipse-che/che-server ${CHE_VERSION} & 
-clone_and_generate_dep_tree https://github.com/redhat-developer/codeready-workspaces-deprecated ${CRW_TAG_OR_BRANCH} & 
-clone_and_generate_dep_tree https://github.com/redhat-developer/codeready-workspaces-theia ${CRW_TAG_OR_BRANCH} & 
-clone_and_generate_dep_tree https://github.com/redhat-developer/codeready-workspaces-operator ${CRW_TAG_OR_BRANCH} & 
-clone_and_generate_dep_tree https://github.com/redhat-developer/codeready-workspaces-chectl ${CRW_TAG_OR_BRANCH} & 
-clone_and_generate_dep_tree https://github.com/redhat-developer/codeready-workspaces ${CRW_TAG_OR_BRANCH} & 
 wait
 
 echo "Sort and dedupe deps across the repos:"
