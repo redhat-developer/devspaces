@@ -12,7 +12,7 @@ name: Overall project - PR check - Linelint
 on:
   pull_request:
     paths-ignore:
-      - 'product/manifest/**/*.txt'
+      - 'product/manifest/2*'
     branches: 
       - '**'
 jobs:
