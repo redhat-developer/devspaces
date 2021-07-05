@@ -9,6 +9,7 @@
 
 name: Overall project - PR check - Linelint
 # if this fails, see https://github.com/fernandrone/linelint#usage for how to debug the problem locally
+# or add paths to ignore in ../../.linelint.yml
 on:
   pull_request:
     paths:
