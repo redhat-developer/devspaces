@@ -11,6 +11,9 @@ name: Overall project - PR check - Linelint
 # if this fails, see https://github.com/fernandrone/linelint#usage for how to debug the problem locally
 on:
   pull_request:
+    paths:
+      - 'dependencies/che-devfile-registry/**'
+      - 'dependencies/che-plugin-registry/**'
     branches: 
       - '**'
 jobs:
@@ -24,5 +27,5 @@ jobs:
         with:
           fetch-depth: 0
       - name: Linelint
-        uses: fernandrone/linelint@0.0.5
+        uses: fernandrone/linelint@0.0.6
         id: linelint
