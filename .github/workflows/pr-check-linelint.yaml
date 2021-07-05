@@ -11,10 +11,6 @@ name: Overall project - PR check - Linelint
 # if this fails, see https://github.com/fernandrone/linelint#usage for how to debug the problem locally
 on:
   pull_request:
-    paths-ignore:
-      - 'product/manifest/2*/'
-      - 'product/manifest/2*/*.txt'
-      - 'product/manifest/2*/*/*.txt'
     branches: 
       - '**'
 jobs:
