@@ -832,21 +832,24 @@ def getLastFailedBuildId(String url) {
 
 // TODO: add a timeout?
 def waitForNewBuild(String jobURL, int oldId) {
-  // echo "Id baseline for " + jobURL + " :: " + oldId
+  echo "Id baseline for " + jobURL + "/lastBuild :: " + oldId
   while (true) {
       newId=getLastSuccessfulBuildId(jobURL)
       if (newId > oldId && getLastBuildResult(jobURL).equals("SUCCESS")) {
           println "Id rebuilt (SUCCESS): " + newId
+          return true
           break
       } else {
         if (newId > oldId && getLastFailedBuildId(jobURL).equals(newId)) {
           println "Id rebuilt (FAILURE): " + newId
           return false
+          break
         }
         newId=getLastBuildId(jobURL)
         if (newId > oldId && getLastBuildResult(jobURL).equals("FAILURE")) {
           println "Id rebuilt (FAILURE): " + newId
           return false
+          break
         }
       }
       nextId=oldId+1
