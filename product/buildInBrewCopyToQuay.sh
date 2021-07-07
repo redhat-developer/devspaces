@@ -55,6 +55,9 @@ if [[ ! ${IMG} ]]; then usage; fi
 if [[ ${CRW_VERSION} == "2.y" ]]; then echo "CRW version / tag cannot be 2.y; please set a real version like 2.7"; usage; fi
 
 set -x
+
+git fetch;git pull origin $DWNSTM_BRANCH || true
+
 brewTaskID=$(rhpkg container-build --nowait | sed -r -e "s#.+: ##" | head -1)
 if [[ $brewTaskID ]]; then 
   google-chrome "https://brewweb.engineering.redhat.com/brew/taskinfo?taskID=${brewTaskID}"
