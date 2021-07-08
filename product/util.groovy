@@ -161,7 +161,7 @@ node --version; npm --version; yarn --version
 
   // used by theia-dev build
   if (installNodeGyp) {
-    installRPMs("make gcc-c++")
+    installRPMs("libsecret-devel make gcc-c++")
     sh '''#!/bin/bash -e
     npm install --global --silent node-gyp
     node-gyp --version
