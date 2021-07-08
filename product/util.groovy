@@ -195,7 +195,7 @@ def updatePodman(boolean usePulpRepos=true) {
   if (usePulpRepos) { enablePulpRepos() }
   sh('''#!/bin/bash -xe
 echo "[INFO] Installing podman with docker emulation ..."
-sudo yum -y -q module install container-tools
+sudo yum -y -q module install container-tools || true
   ''')
   installRPMs("fuse3 podman podman-docker")
   sh('''#!/bin/bash -xe
@@ -359,16 +359,31 @@ echo "''' + CRW_BOT_PASSWORD + '''" | ${PODMAN} login -u="''' + CRW_BOT_USERNAME
   }
 }
 
-// @since 2.6, uses RHEC containerized skopeo build
-def installSkopeoFromContainer(String container) {
-  if (!container?.trim()) {
-    container="registry.redhat.io/rhel8/skopeo"
+// @since 2.10 - latest version of Skopeo in UBI 8.4 is 1.2.3
+def installSkopeo(String minimumVersion="1.1") {
+  installRPMs("skopeo")
+  versionOK=sh(script: '''#!/bin/bash
+checkVersion() {
+  if [[  "$1" = "$(echo -e "$1\n$2" | sort -V | head -n1)" ]]; then
+    echo "true"
+  else
+    echo "false"
+  fi
+}
+SKOPEO_VERSION=""
+if [ ! -z "$(which skopeo)" ] ; then
+  SKOPEO_VERSION="$(skopeo -v 2> /dev/null | awk '{ print $3 }')"
+fi
+checkVersion ''' + minimumVersion + ''' "${SKOPEO_VERSION}"
+  ''', returnStdout: true).trim()
+  if (!versionOK.equals("true")) {
+    installSkopeoFromContainer()
   }
-  installSkopeoFromContainer(container,"1.1")
 }
 
-// note that SElinux needs to be permissive or disabled to volume mount a container to extract file(s)
-def installSkopeoFromContainer(String container, String minimumVersion) {
+// @since 2.6, uses RHEC containerized skopeo build; deprecated as of 2.10, since latest version of Skopeo in UBI 8.4 is 1.2.3 (but we still have RHEL 8.2/8.4 containers from PSI)
+def installSkopeoFromContainer(String container="registry.redhat.io/rhel8/skopeo", String minimumVersion="1.1") {
+  // note that SElinux needs to be permissive or disabled to volume mount a container to extract file(s)
   // default container to use - should be multiarch
   if (!container?.trim()) {
     container="registry.redhat.io/rhel8/skopeo"
@@ -377,6 +392,7 @@ def installSkopeoFromContainer(String container, String minimumVersion) {
     minimumVersion="1.1"
   }
   withCredentials([usernamePassword(credentialsId: 'registry.redhat.io_crw_bot', usernameVariable: 'CRW_BOT_USERNAME', passwordVariable: 'CRW_BOT_PASSWORD')]){
+    installPodman2()
     sh('''#!/bin/bash -xe
 
       # NEW WAY >= CRW 2.6, uses RHEC containerized skopeo build, requires RHEL 8 worker node
@@ -662,7 +678,7 @@ def bootstrap(String CRW_KEYTAB, boolean force=false) {
     // install redhat internal certs (so we can connect to jenkins and brew registries)
     installRedHatInternalCerts()
     // also install commonly needed tools
-    installSkopeoFromContainer("")
+    installSkopeo()
     installYq()
     loginToRegistries()
     sh('''#!/bin/bash -xe
