@@ -41,7 +41,7 @@ if [[ ! -L /usr/bin/python ]]; then
     ln -s /usr/bin/"${PYTHON_BIN}" /usr/bin/python
 fi
 
-# install yq (depends on jq and pyyaml - if jq and pyyaml not already installed, this will try to compile it) and jsonschema
+# install yq (depends on jq and pyyaml - if jq and pyyaml not already installed, this will try to compile it)
 if [[ -f /tmp/root-local.tgz ]] || [[ ${BOOTSTRAP} == "true" ]]; then
     mkdir -p /opt/app-root/src/.local
     if [[ -f /tmp/root-local.tgz ]]; then
