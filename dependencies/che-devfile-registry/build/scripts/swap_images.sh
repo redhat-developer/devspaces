@@ -7,7 +7,7 @@
 #
 # SPDX-License-Identifier: EPL-2.0
 
-# script common across operator-metadata, devfileregistry, and pluginregistry
+# script common to devfileregistry and pluginregistry; see also crw-operator/build/scripts/swap_images.sh
 
 SCRIPT_DIR=$(cd "$(dirname "$0")" || exit; pwd)
 YAML_ROOT="$1"
@@ -20,4 +20,6 @@ if [[ "$(uname -m)" != "x86_64" ]] || [[ "$2" == "-f" ]]; then
     sed -E -i 's|plugin-java8-rhel8|plugin-java8-openj9-rhel8|g' $devfiles
     sed -E -i 's|plugin-java11-rhel8|plugin-java11-openj9-rhel8|g' $devfiles
     sed -E -i 's|eap-xp2-openjdk11-openshift-rhel8:.*|eap-xp2-openj9-11-openshift-rhel8:2.0|g' $devfiles
+else
+    echo "[INFO] nothing to do on $(uname -m); only swap openjdk for openj9 images on s390x and ppc64le arches"
 fi
