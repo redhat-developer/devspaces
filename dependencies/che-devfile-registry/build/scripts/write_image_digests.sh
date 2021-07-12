@@ -20,9 +20,11 @@ function handle_error() {
   local tag="$(echo "$image_url" | cut -d ':' -f 2)"
   if [[ ! -z "$($SCRIPT_DIR/find_image.sh "${image_url%:*}" x86_64 2> /dev/null | jq -r '.Digest')" ]] ; then
     if [[ "$ARCH" == "x86_64" ]] ; then
-      echo "[WARN] Image $image_url version not found: remove $yaml_file from registry."
+      # CRW-1994 FAIL build if missing images on x86_64
+      echo "[ERROR] Image $image_url not found for arch $ARCH: remove $yaml_file from registry."
+      exit 1
     else
-      echo "[WARN] Image $image_url not found for architecture $ARCH: remove $yaml_file from registry."
+      echo "[WARN] Image $image_url not found for arch $ARCH: remove $yaml_file from registry."
     fi
   elif [[ ! -z $(echo $image_url | grep 'openj9') ]] && (( $(echo "$tag" | awk '{ print ($1 < 2.4)}') )) ; then
     # special case for older plugins: https://issues.redhat.com/browse/CRW-1193
@@ -34,7 +36,7 @@ function handle_error() {
     sed 's|^|    |g' $LOG_FILE
     exit 1
   fi
-  for f in $(ls `dirname $yaml_file`/*.yaml) ; do
+  for f in $(ls $(dirname $yaml_file)/*.yaml) ; do
     mv "$f" "$f.removed"
   done
 }
