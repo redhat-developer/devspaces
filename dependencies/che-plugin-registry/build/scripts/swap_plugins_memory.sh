@@ -17,31 +17,24 @@ replaceField()
   yamlFile="$1"
   updateName="$2"
   updateVal="$3"
+  # echo -n "Before: "; yq -r ${updateName} "${yamlFile}"
   # shellcheck disable=SC2086,SC2016
   yq -Y --arg updateName "${updateName}" --arg updateVal "${updateVal}" ${updateName}' = $updateVal' ${yamlFile} > ${yamlFile}.2
-  mv "${yamlFile}".2 "${yamlFile}"
+  if [ -s "${yamlFile}".2 ]; then
+    mv "${yamlFile}".2 "${yamlFile}"
+    echo -n "[INFO] $1 updated: "; yq -r ${updateName} "${yamlFile}"
+  else
+    rm -f "${yamlFile}".2
+    echo -n "[ERROR] Could not change field $2 in $1: "
+    yq -r ${updateName} "${yamlFile}"
+    exit 1
+  fi
 }
 
 # Note: optional -f flag will force this transformation even on an incompatible architecture for testing purposes
 if [[ "$(uname -m)" == "ppc64le" ]] || [[ "$2" == "-f" ]]; then 
-
-   # CRW-1475
-   for metayaml in $("$SCRIPT_DIR"/list_yaml.sh "$YAML_ROOT"/plugins/eclipse/che-theia); do
-      replaceField "$metayaml" '.spec.containers[].memoryLimit' "2Gi"
-   done
-
-   # CRW-1633
-   for metayaml in $("$SCRIPT_DIR"/list_yaml.sh "$YAML_ROOT"/plugins/redhat/vscode-camelk); do
-      replaceField "$metayaml" '.spec.containers[].memoryLimit' "1.5Gi"
-   done
-
-   # CRW-1634
-   for metayaml in $("$SCRIPT_DIR"/list_yaml.sh "$YAML_ROOT"/plugins/redhat/vscode-openshift-connector); do
-      replaceField "$metayaml" '.spec.containers[].memoryLimit' "2.5Gi"
-   done
-
-   # CRW-1635
-   for metayaml in $("$SCRIPT_DIR"/list_yaml.sh "$YAML_ROOT"/plugins/ms-python/python); do
-      replaceField "$metayaml" '.spec.containers[].memoryLimit' "1Gi"
-   done
+   replaceField "$YAML_ROOT"/plugins/eclipse/che-theia/latest/meta.yaml '.spec.containers[].memoryLimit' "2Gi" # CRW-1475
+   replaceField "$YAML_ROOT"/plugins/redhat/vscode-camelk/latest/meta.yaml '.spec.containers[].memoryLimit' "1.5Gi" # CRW-1633
+   replaceField "$YAML_ROOT"/plugins/redhat/vscode-openshift-connector/latest/meta.yaml '.spec.containers[].memoryLimit' "2.5Gi" # CRW-1634
+   replaceField "$YAML_ROOT"/plugins/ms-python/python/latest/meta.yaml '.spec.containers[].memoryLimit' "1Gi" # CRW-1635
 fi
