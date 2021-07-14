@@ -48,6 +48,7 @@ PR_BRANCH="pr-update-base-images-$(date +%s)"
 OPENBROWSERFLAG="" # if a PR is generated, open it in a browser
 docommit=1 # by default DO commit the change
 dopush=1 # by default DO push the change
+dopronly=0 # by default DO NOT enforce pushing only through PR branches
 buildCommand="echo" # By default, no build will be triggered when a change occurs; use -c for a container-build (or -s for scratch).
 
 checkrecentupdates () {
@@ -82,6 +83,7 @@ $0 -b 7.yy.x -w \$(pwd)      -f Dockerfile        -maxdepth 1 --tag '1\.13|8\.[0
 	--no-commit, -n    do not commit to BRANCH
 	--no-push, -p      do not push to BRANCH
 	--tag              regex match to restrict results, eg., '1\.13|8\.[0-9]-' to find golang 1.13 (not 1.14) and any ubi 8-x- tag
+	-pr-only, -pr	   do not push directly to BRANCH, always generate PR instead
 	-prb               set a PR_BRANCH; default: pr-new-base-images-(timestamp)
 	-o                 open browser if PR generated
 	-q, -v             quiet, verbose output
@@ -109,6 +111,7 @@ while [[ "$#" -gt 0 ]]; do
     '-s') buildCommand="rhpkg container-build --scratch"; shift 0;;
     '-n'|'--nocommit'|'--no-commit') docommit=0; dopush=0; shift 0;;
     '-p'|'--nopush'|'--no-push') dopush=0; shift 0;;
+	'-pr'|'--pronly'|'--pr-only') dopronly=1; shift 0;;
     '-prb') PR_BRANCH="$2"; shift 1;;
     '-o') OPENBROWSERFLAG="-o"; shift 0;;
     '-q') QUIET=1; shift 0;;
@@ -168,16 +171,19 @@ testvercomp () {
     fi
 }
 
-cherrypickLastCommit() {
-	cherryPickBranch=$1
-	lastCommit="$(git rev-parse HEAD)"
-	git branch ${cherryPickBranch} || true
-	git checkout ${cherryPickBranch} || true
-	git pull origin ${cherryPickBranch} || true
-	git cherry-pick $lastCommit || git commit --allow-empty -sm "${lastCommitComment}"
-	git push origin ${cherryPickBranch}
-}
 
+createPr() {
+	git checkout -b $1 || true
+	git merge $2
+	lastCommitComment="$(git log -1 --pretty=%B)"
+	if [[ $(/usr/local/bin/hub version 2>/dev/null || true) ]] || [[ $(which hub 2>/dev/null || true) ]]; then
+		hub pull-request -f -m "${lastCommitComment} -b "${BRANCHUSED}" -h "${PR_BRANCH}" "${OPENBROWSERFLAG}" || true 
+	else
+		echo "# Warning: hub is required to generate pull requests. See https://hub.github.com/ to install it."
+		echo -n "# To manually create a pull request, go here: "
+		git config --get remote.origin.url | sed -r -e "s#:#/#" -e "s#git@#https://#" -e "s#\.git#/tree/${PR_BRANCH}/#"
+	fi
+}
 pushedIn=0
 for d in $(find ${WORKDIR}/ -maxdepth ${MAXDEPTH} -name ${DOCKERFILE} | sort -r); do
 	if [[ -f ${d} ]]; then
@@ -261,24 +267,19 @@ for d in $(find ${WORKDIR}/ -maxdepth ${MAXDEPTH} -name ${DOCKERFILE} | sort -r)
 							# set -x
 							if [[ ${docommit} -eq 1 ]]; then 
 								git add ${DOCKERFILE} || true
-								git commit -s -m "chore: Update base from ${URL} to ${FROMPREFIX}:${LATESTTAG}" ${DOCKERFILE}
-								git pull origin "${BRANCHUSED}"
-								if [[ ${dopush} -eq 1 ]]; then
-									PUSH_TRY="$(git push origin "${BRANCHUSED}" 2>&1 || git push origin "${PR_BRANCH}" || true)"
-
-									# shellcheck disable=SC2181
-									if [[ $? -gt 0 ]] || [[ $PUSH_TRY == *"protected branch hook declined"* ]]; then
-										# create pull request if target branch is restricted access
-										lastCommitComment="$(git log -1 --pretty=%B)"
-										cherrypickLastCommit "${PR_BRANCH}"
-										if [[ $(/usr/local/bin/hub version 2>/dev/null || true) ]] || [[ $(which hub 2>/dev/null || true) ]]; then
-											hub pull-request -f -m "${lastCommitComment}
-
-${lastCommitComment}" -b "${BRANCHUSED}" -h "${PR_BRANCH}" "${OPENBROWSERFLAG}" || true 
-										else
-											echo "# Warning: hub is required to generate pull requests. See https://hub.github.com/ to install it."
-											echo -n "# To manually create a pull request, go here: "
-											git config --get remote.origin.url | sed -r -e "s#:#/#" -e "s#git@#https://#" -e "s#\.git#/tree/${PR_BRANCH}/#"
+								git commit -s -m "chore: Update from ${URL} to ${FROMPREFIX}:${LATESTTAG}" ${DOCKERFILE}
+								if [[ ${dopronly} -eq 1]]; then
+									if [[ ${dopush} -eq 1 ]]; then
+										createPr ${PR_BRANCH} ${BRANCHUSED}
+									fi
+								else
+									git pull origin "${BRANCHUSED}"
+									if [[ ${dopush} -eq 1 ]]; then
+										PUSH_TRY="$(git push origin "${BRANCHUSED}" 2>&1 || true)"
+										# shellcheck disable=SC2181
+										if [[ $? -gt 0 ]] || [[ $PUSH_TRY == *"protected branch hook declined"* ]]; then
+											# create pull request if target branch is restricted access
+											createPr ${PR_BRANCH} ${BRANCHUSED}
 										fi
 									fi
 								fi
