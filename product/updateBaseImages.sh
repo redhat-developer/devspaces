@@ -83,7 +83,7 @@ $0 -b 7.yy.x -w \$(pwd)      -f Dockerfile        -maxdepth 1 --tag '1\.13|8\.[0
 	--no-commit, -n    do not commit to BRANCH
 	--no-push, -p      do not push to BRANCH
 	--tag              regex match to restrict results, eg., '1\.13|8\.[0-9]-' to find golang 1.13 (not 1.14) and any ubi 8-x- tag
-	--pr               always generate PR against BRANCH
+	--pr               do not attempt to push directly; generate PR against BRANCH
 	-prb               set a PR_BRANCH; default: pr-new-base-images-(timestamp)
 	-o                 open browser if PR generated
 	-q, -v             quiet, verbose output
