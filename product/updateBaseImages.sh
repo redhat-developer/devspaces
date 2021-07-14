@@ -177,7 +177,7 @@ createPr() {
 	git merge $2
 	lastCommitComment="$(git log -1 --pretty=%B)"
 	if [[ $(/usr/local/bin/hub version 2>/dev/null || true) ]] || [[ $(which hub 2>/dev/null || true) ]]; then
-		hub pull-request -f -m "${lastCommitComment} -b "${BRANCHUSED}" -h "${PR_BRANCH}" "${OPENBROWSERFLAG}" || true 
+		hub pull-request -f -m "${lastCommitComment}" -b "${BRANCHUSED}" -h "${PR_BRANCH}" "${OPENBROWSERFLAG}" || true 
 	else
 		echo "# Warning: hub is required to generate pull requests. See https://hub.github.com/ to install it."
 		echo -n "# To manually create a pull request, go here: "
