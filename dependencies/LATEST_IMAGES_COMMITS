@@ -23,7 +23,11 @@ quay.io/crw/devfileregistry-rhel8:2.10-50
    Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1660950
   Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-devfileregistry/commit?id=e0d5a496d68e6a72ebf55b67c270cd5c3092760a
 
-quay.io/crw/devworkspace-controller-rhel8:2.10-4
+quay.io/crw/devworkspace-controller-rhel8:2.10-5
+     NVR: codeready-workspaces-devworkspace-controller-rhel8-container-2.10-5
+   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1664520
+  Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-devworkspace-controller/commit?id=5db2ba46b2a6c63c150444d9cc40a704f79382dd
+
 quay.io/crw/devworkspace-rhel8:2.10-3
      NVR: codeready-workspaces-devworkspace-rhel8-container-2.10-3
    Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1655669
