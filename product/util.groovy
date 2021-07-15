@@ -6,6 +6,24 @@ def String getCSVVersion(String MIDSTM_BRANCH) {
     CSV_VERSION_F = sh(script: '''#!/bin/bash -xe
     curl -sSLo- https://raw.githubusercontent.com/redhat-developer/codeready-workspaces-operator/''' + MIDSTM_BRANCH + '''/manifests/codeready-workspaces.csv.yaml | yq -r .spec.version''', returnStdout: true).trim()
   }
+  // CRW-2039 check that CSV version is aligned to CRW version, and throw warning w/ call to action to avoid surprises
+  if (CRW_VERSION_F.equals("")) {
+    CRW_VERSION_F = getCrwVersion(MIDSTM_BRANCH)
+  }
+  CSV_VERSION_BASE=CSV_VERSION_F.replaceAll("([0-9]+\\.[0-9]+)\\.[0-9]+","\$1"); // extract 2.yy from 2.yy.z
+  if (!CSV_VERSION_BASE.equals(CRW_VERSION_F)) {
+    println "[WARNING] CSV version (from getCSVVersion() -> csv.yaml = " + CSV_VERSION_F + 
+      ") does not match CRW version (from getCrwVersion() -> VERSION = " + CRW_VERSION_F + ") !"
+    println "This could mean that your VERSION file or CSV file update processes have not run correctly."
+    println "Check these jobs:"
+    println "* https://main-jenkins-csb-crwqe.apps.ocp4.prod.psi.redhat.com/job/CRW_CI/job/Releng/job/update-version-and-registry-tags/ "
+    println "* https://main-jenkins-csb-crwqe.apps.ocp4.prod.psi.redhat.com/job/CRW_CI/job/crw-operator-metadata_" + getJobBranch(MIDSTM_BRANCH)
+    println "Check these files:"
+    println "https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/" + MIDSTM_BRANCH + "/dependencies/VERSION"
+    println "https://github.com/redhat-developer/codeready-workspaces-images/blob/" + MIDSTM_BRANCH + "/codeready-workspaces-operator-metadata/manifests/codeready-workspaces.csv.yaml"
+    println "https://github.com/redhat-developer/codeready-workspaces-images/blob/" + MIDSTM_BRANCH + "/codeready-workspaces-operator-metadata-generated/manifests/codeready-workspaces.csv.yaml"
+  }
+
   return CSV_VERSION_F
 }
 
