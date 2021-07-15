@@ -350,12 +350,11 @@ done
 }
 
 // sudo must already be installed and user must be a sudoer
-def installRPMs(String whichRPMs, boolean usePulpRepos=false) {
+def installRPMs(String whichRPMs, boolean usePulpRepos=false, boolean successOnError=false) {
   enableRcmToolsRepo()
   if (usePulpRepos) { enablePulpRepos() }
   sh '''#!/bin/bash -xe
-sudo yum install -y -q ''' + whichRPMs + '''
-'''
+sudo yum install -y -q ''' + whichRPMs + ''' || ''' + successOnError.toString()
 }
 
 // to log into dockerhub, quay and RHEC, use this method where needed
@@ -379,7 +378,7 @@ echo "''' + CRW_BOT_PASSWORD + '''" | ${PODMAN} login -u="''' + CRW_BOT_USERNAME
 
 // @since 2.10 - latest version of Skopeo in UBI 8.4 is 1.2.3
 def installSkopeo(String minimumVersion="1.1") {
-  installRPMs("skopeo")
+  installRPMs("skopeo",true,true)
   versionOK=sh(script: '''#!/bin/bash
 checkVersion() {
   if [[  "$1" = "$(echo -e "$1\n$2" | sort -V | head -n1)" ]]; then
