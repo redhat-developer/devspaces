@@ -1,12 +1,17 @@
-quay.io/crw/dashboard-rhel8:2.11-2
-     NVR: codeready-workspaces-dashboard-rhel8-container-2.11-2
-   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1661758
-  Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-dashboard/commit?id=3243f02a731d5080bf67ab79613b29be40c3e78e
+quay.io/crw/dashboard-rhel8:2.11-3
+     NVR: codeready-workspaces-dashboard-rhel8-container-2.11-3
+   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1664484
+  Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-dashboard/commit?id=51e237ac5c7305d58dedc71434ea9a52a724cb69
 
 quay.io/crw/devfileregistry-rhel8:2.11-6
      NVR: codeready-workspaces-devfileregistry-rhel8-container-2.11-6
    Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1660957
   Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-devfileregistry/commit?id=d833af9a23108b00d2a58062fac54743febdfc6f
+
+quay.io/crw/devworkspace-controller-rhel8:2.11-1
+     NVR: codeready-workspaces-devworkspace-controller-rhel8-container-2.11-1
+   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1664651
+  Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-devworkspace-controller/commit?id=ac39bfb1517f984516adede4460bde5dd4bdc751
 
 quay.io/crw/imagepuller-rhel8:2.11-1
      NVR: codeready-workspaces-imagepuller-rhel8-container-2.11-1
