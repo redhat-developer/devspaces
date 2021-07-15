@@ -13,6 +13,11 @@ quay.io/crw/devworkspace-controller-rhel8:2.11-1
    Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1664651
   Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-devworkspace-controller/commit?id=ac39bfb1517f984516adede4460bde5dd4bdc751
 
+quay.io/crw/devworkspace-rhel8:2.11-1
+     NVR: codeready-workspaces-devworkspace-rhel8-container-2.11-1
+   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1664689
+  Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-devworkspace/commit?id=bd909f23c2096df1ae2927b39eb6c0c1f7bb222e
+
 quay.io/crw/imagepuller-rhel8:2.11-1
      NVR: codeready-workspaces-imagepuller-rhel8-container-2.11-1
    Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1659746
