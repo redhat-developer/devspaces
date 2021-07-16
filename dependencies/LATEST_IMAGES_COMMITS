@@ -43,15 +43,35 @@ quay.io/crw/pluginbroker-metadata-rhel8:2.11-2
    Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1665422
   Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-pluginbroker-metadata/commit?id=73c0bf178f60b7a8f6435c952ebcda1656c4399c
 
-quay.io/crw/plugin-java11-openj9-rhel8:2.11-1
-     NVR: codeready-workspaces-plugin-java11-openj9-rhel8-container-2.11-1
-   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1663211
+quay.io/crw/plugin-java11-openj9-rhel8:2.11-2
+     NVR: codeready-workspaces-plugin-java11-openj9-rhel8-container-2.11-2
+   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1665557
   Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-plugin-java11-openj9/commit?id=3d3e232a50532741d0a872d956ebcf72847ca6f9
 
-quay.io/crw/plugin-java8-openj9-rhel8:2.11-1
-     NVR: codeready-workspaces-plugin-java8-openj9-rhel8-container-2.11-1
-   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1663274
-  Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-plugin-java8-openj9/commit?id=3583a12d15623164db290d9f50605fd1f7f37e93
+quay.io/crw/plugin-java11-rhel8:2.11-1
+     NVR: codeready-workspaces-plugin-java11-rhel8-container-2.11-1
+   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1665575
+  Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-plugin-java11/commit?id=a8083c86198988a92ec05762ee0f6384e4263a4f
+
+quay.io/crw/plugin-java8-openj9-rhel8:2.11-2
+     NVR: codeready-workspaces-plugin-java8-openj9-rhel8-container-2.11-2
+   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1665581
+  Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-plugin-java8-openj9/commit?id=1e56842855ca8665c87e4cbcaa59c09d44516bd9
+
+quay.io/crw/plugin-java8-rhel8:2.11-1
+     NVR: codeready-workspaces-plugin-java8-rhel8-container-2.11-1
+   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1665589
+  Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-plugin-java8/commit?id=56456bbef16dd0dbd297553b77bdce76fd42752b
+
+quay.io/crw/plugin-kubernetes-rhel8:2.11-1
+     NVR: codeready-workspaces-plugin-kubernetes-rhel8-container-2.11-1
+   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1665601
+  Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-plugin-kubernetes/commit?id=743e4c6fa4d6f800dd727d2280d91854f9be7448
+
+quay.io/crw/plugin-openshift-rhel8:2.11-1
+     NVR: codeready-workspaces-plugin-openshift-rhel8-container-2.11-1
+   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1665611
+  Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-plugin-openshift/commit?id=31a1cb90580c0ad0d9230921aa28449006d9f127
 
 quay.io/crw/pluginregistry-rhel8:2.11-2
      NVR: codeready-workspaces-pluginregistry-rhel8-container-2.11-2
@@ -62,6 +82,16 @@ quay.io/crw/server-rhel8:2.11-1
      NVR: codeready-workspaces-server-rhel8-container-2.11-1
    Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1664939
   Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces/commit?id=b860bc70084bf1594799f312697faaafa6a4ad0a
+
+quay.io/crw/stacks-cpp-rhel8:2.11-1
+     NVR: codeready-workspaces-stacks-cpp-rhel8-container-2.11-1
+   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1665643
+  Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-stacks-cpp/commit?id=922d90c519c1e4b78c6f8b652b29ebe19c645835
+
+quay.io/crw/stacks-dotnet-rhel8:2.11-1
+     NVR: codeready-workspaces-stacks-dotnet-rhel8-container-2.11-1
+   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1665663
+  Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-stacks-dotnet/commit?id=ef9201dc67965ebf21c1a7cd9efa5142091cecf9
 
 quay.io/crw/theia-dev-rhel8:2.11-1
      NVR: codeready-workspaces-theia-dev-rhel8-container-2.11-1
