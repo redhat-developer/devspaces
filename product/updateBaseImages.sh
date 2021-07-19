@@ -173,15 +173,19 @@ testvercomp () {
 
 
 createPr() {
-	git checkout -b $1 || true
-	git merge $2
+	headBranch=$1
+	baseBranch=$2
+	git branch ${headBranch} || true
+	git checkout ${headBranch}
+	git merge ${baseBranch}
+	git push origin ${headBranch}
 	lastCommitComment="$(git log -1 --pretty=%B)"
 	if [[ $(/usr/local/bin/hub version 2>/dev/null || true) ]] || [[ $(which hub 2>/dev/null || true) ]]; then
-		hub pull-request -f -m "${lastCommitComment}" -b "${BRANCHUSED}" -h "${PR_BRANCH}" "${OPENBROWSERFLAG}" || true 
+		hub pull-request -f -m "${lastCommitComment}" -b "${baseBranch}" -h "${headBranch}" "${OPENBROWSERFLAG}" || true 
 	else
 		echo "# Warning: hub is required to generate pull requests. See https://hub.github.com/ to install it."
 		echo -n "# To manually create a pull request, go here: "
-		git config --get remote.origin.url | sed -r -e "s#:#/#" -e "s#git@#https://#" -e "s#\.git#/tree/${PR_BRANCH}/#"
+		git config --get remote.origin.url | sed -r -e "s#:#/#" -e "s#git@#https://#" -e "s#\.git#/tree/${headBranch}/#"
 	fi
 }
 pushedIn=0
