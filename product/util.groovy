@@ -673,7 +673,7 @@ def bootstrap(String CRW_KEYTAB, boolean force=false) {
   if (!BOOTSTRAPPED_F || force) {
     yumConf()
     // rpm -qf $(which kinit ssh-keyscan chmod) ==> krb5-workstation openssh-clients coreutils
-    installRPMs("krb5-workstation openssh-clients coreutils git rhpkg jq python3-six python3-pip")
+    installRPMs("krb5-workstation openssh-clients coreutils git rhpkg jq python3-six python3-pip rsync")
     // install redhat internal certs (so we can connect to jenkins and brew registries)
     installRedHatInternalCerts()
     // also install commonly needed tools
