@@ -272,7 +272,7 @@ for d in $(find ${WORKDIR}/ -maxdepth ${MAXDEPTH} -name ${DOCKERFILE} | sort -r)
 							if [[ ${docommit} -eq 1 ]]; then 
 								git add ${DOCKERFILE} || true
 								git commit -s -m "chore: Update from ${URL} to ${FROMPREFIX}:${LATESTTAG}" ${DOCKERFILE}
-								if [[ ${dopronly} -eq 1]]; then
+								if [[ ${dopronly} -eq 1 ]]; then
 									createPr ${PR_BRANCH} ${BRANCHUSED}
 								else
 									if [[ ${dopush} -eq 1 ]]; then
