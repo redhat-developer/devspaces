@@ -167,9 +167,6 @@ plugins:
       cpuLimit: 500m
       cpuRequest: 30m
     extension: https://download.jboss.org/jbosstools/vscode/stable/vscode-camelk/vscode-camelk-0.0.24-198.vsix
-    metaYaml:
-      skipDependencies:
-        - redhat/vscode-commons
   - repository:
       url: 'https://github.com/redhat-developer/vscode-microprofile'
       revision: 174c77f51a57bf1cfadba8f78ad7072ce63baa1d
