@@ -51,6 +51,7 @@ fi
 
 # STEP 1 :: regenerate image tag list in LATEST_IMAGES
 CMD="./product/getLatestImageTags.sh --quay -b ${DWNSTM_BRANCH} --tag ${VERSION}- --hide"
+# shellcheck disable=SC2086
 echo $CMD
 $CMD | tee dependencies/LATEST_IMAGES
 
@@ -58,12 +59,14 @@ $CMD | tee dependencies/LATEST_IMAGES
 # requires skopeo >= 1.1 for the --override-arch flag
 echo '{' > dependencies/LATEST_IMAGES_DIGESTS.json
 echo '    "Images": {' >> dependencies/LATEST_IMAGES_DIGESTS.json
+# shellcheck disable=SC2013
 for d in $(cat dependencies/LATEST_IMAGES); do
   archOverride="--override-arch amd64"
   if [[ ${d} = *"-openj9-"* ]]; then 
     archOverride="--override-arch ppc64le"
   fi
   if [[ ${d} != *":???" ]]; then
+  # shellcheck disable=SC2086
     digest=$(skopeo inspect docker://${d} ${archOverride}| jq -r '.Digest' | sed -r -e "s/sha256://" 2>/dev/null)
     echo "${d} ==> ${digest}"
     echo "        \"${d}\": \"${digest}\"," >> dependencies/LATEST_IMAGES_DIGESTS.json
@@ -81,7 +84,9 @@ done
 
 # STEP 3 :: regenerate commit info in LATEST_IMAGES_COMMITS
 rm -f dependencies/LATEST_IMAGES_COMMITS
+# shellcheck disable=SC2013
 for d in $(cat dependencies/LATEST_IMAGES); do 
+  # shellcheck disable=SC2086
   ./product/getCommitSHAForTag.sh ${d} -b ${DWNSTM_BRANCH} | tee -a dependencies/LATEST_IMAGES_COMMITS
 done
 # add an extra line to avoid linelint errors, ffs.

@@ -9,7 +9,6 @@
 
 # increase memory allocation for theia pods for ppc64le only - https://issues.redhat.com/browse/CRW-1475
 
-SCRIPT_DIR=$(cd "$(dirname "$0")" || exit; pwd)
 YAML_ROOT="$1"
 
 replaceField()
@@ -22,10 +21,13 @@ replaceField()
   yq -Y --arg updateName "${updateName}" --arg updateVal "${updateVal}" ${updateName}' = $updateVal' ${yamlFile} > ${yamlFile}.2
   if [ -s "${yamlFile}".2 ]; then
     mv "${yamlFile}".2 "${yamlFile}"
-    echo -n "[INFO] $1 updated: "; yq -r ${updateName} "${yamlFile}"
+    echo -n "[INFO] $1 updated: "
+    # shellcheck disable=SC2086
+    yq -r ${updateName} "${yamlFile}"
   else
     rm -f "${yamlFile}".2
     echo -n "[ERROR] Could not change field $2 in $1: "
+    # shellcheck disable=SC2086
     yq -r ${updateName} "${yamlFile}"
     exit 1
   fi
