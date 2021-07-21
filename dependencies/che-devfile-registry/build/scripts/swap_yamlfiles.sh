@@ -11,8 +11,9 @@
 SCRIPT_DIR=$(cd "$(dirname "$0")" || exit; pwd)
 YAML_ROOT="$1"
 
-yamlfiles=$($SCRIPT_DIR/list_yaml.sh "$YAML_ROOT")
+yamlfiles=$("$SCRIPT_DIR"/list_yaml.sh "$YAML_ROOT")
 
+# shellcheck disable=SC2086
 for yamlfile in $yamlfiles ; do
   arch="$(uname -m)"
   if [[ -e ${yamlfile}.${arch} ]] ; then
