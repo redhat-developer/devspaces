@@ -159,17 +159,14 @@ plugins:
     extension: https://download.jboss.org/jbosstools/vscode/3rdparty/vscode-go/go-0.16.1.vsix
   - repository:
       url: 'https://github.com/camel-tooling/vscode-camelk'
-      revision: 0.0.24
+      revision: 0.0.26
     sidecar:
       image: "registry.redhat.io/codeready-workspaces/plugin-kubernetes-rhel8:2.11"
       name: vscode-camelk
       memoryLimit: 1Gi
       cpuLimit: 500m
       cpuRequest: 30m
-    extension: https://download.jboss.org/jbosstools/vscode/stable/vscode-camelk/vscode-camelk-0.0.24-198.vsix
-    metaYaml:
-      skipDependencies:
-        - redhat/vscode-commons
+    extension: https://download.jboss.org/jbosstools/vscode/stable/vscode-camelk/vscode-camelk-0.0.26-336.vsix
   - repository:
       url: 'https://github.com/redhat-developer/vscode-microprofile'
       revision: 174c77f51a57bf1cfadba8f78ad7072ce63baa1d
