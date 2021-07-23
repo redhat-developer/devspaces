@@ -212,7 +212,7 @@ for d in $(find "${WORKDIR}/" -maxdepth "${MAXDEPTH}" -name "${DOCKERFILE}" | so
 		FROMPREFIX=""
 		LATESTTAG=""
 		# shellcheck disable=SC2002
-		URLs=$(cat "$d" | grep FROM -B1);
+		URLs=$(grep "FROM" -B1 "$d" || true) # don't fail if no FROM found, eg., if parsing theia dockerfile fragments/template files
 		for URL in $URLs; do
 			URL=${URL#registry.access.redhat.com/}
 			URL=${URL#registry.redhat.io/}
