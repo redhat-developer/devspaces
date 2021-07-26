@@ -39,8 +39,9 @@ function log () {
 }
 
 rm -f "${MANIFEST_FILE}" "${MANIFEST_FILE}".2 "${LOG_FILE}"
-echo "Parsing ${JENKINS}/crw-theia-sources_${CRW_VERSION}/lastSuccessfulBuild/consoleText ..."
-curl -sSL -o "${MANIFEST_FILE}" "${JENKINS}/crw-theia-sources_${CRW_VERSION}/lastSuccessfulBuild/consoleText"
+[[ "${MIDSTM_BRANCH}" == "crw-2-rhel-8" ]] && JOB_BRANCH="2.x" || JOB_BRANCH="${CRW_VERSION}"
+echo "Parsing ${JENKINS}/crw-theia-sources_${JOB_BRANCH}/lastSuccessfulBuild/consoleText ..."
+curl -sSL -o "${MANIFEST_FILE}" "${JENKINS}/crw-theia-sources_${JOB_BRANCH}/lastSuccessfulBuild/consoleText"
 CHE_THEIA_BRANCH=$(grep "build.include" "${MANIFEST_FILE}" | sort -u | grep curl | sed -r -e "s#.+che-theia/(.+)/build.include#\1#") # 7.yy.x
 
 # shellcheck disable=SC2013 disable=SC2002
