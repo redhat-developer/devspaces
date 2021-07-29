@@ -1,0 +1,37 @@
+{
+    "crwctl": {"2.11":"7.34.x", "2.x":"main"},
+    "configbump": {"2.11":"7.34.x", "2.x":"main"},
+    "dashboard": {"2.11":"7.34.x", "2.x":"main"},
+    "devworkspace": {"2.11":"7.34.x", "2.x":"main"},
+    "imagepuller": {"2.11":"7.34.x", "2.x":"main"},
+    "jwtproxy": {"2.11":"7.34.x", "2.x":"main"},
+    "machineexec": {"2.11":"7.34.x", "2.x":"main"},
+    "operator": {"2.11":"7.34.x", "2.x":"main"},
+    "operator-metadata": {"2.11":"7.34.x", "2.x":"main"},
+    "server": {"2.11":"7.34.x", "2.x":"main"},
+    "theia-dev": {"2.11":"7.34.x", "2.x":"main"},
+    "theia": {"2.11":"7.34.x", "2.x":"main"},
+    "theia-endpoint": {"2.11":"7.34.x", "2.x":"main"},
+
+    "devfileregistry": {"2.11":"crw-2.11-rhel-8", "2.x":"crw-2-rhel-8"},
+    "pluginregistry": {"2.11":"crw-2.11-rhel-8", "2.x":"crw-2-rhel-8"},
+    "plugin-java11-openj9": {"2.11":"crw-2.11-rhel-8", "2.x":"crw-2-rhel-8"},
+    "plugin-java11": {"2.11":"crw-2.11-rhel-8", "2.x":"crw-2-rhel-8"},
+    "plugin-java8-openj9": {"2.11":"crw-2.11-rhel-8", "2.x":"crw-2-rhel-8"},
+    "plugin-java8": {"2.11":"crw-2.11-rhel-8", "2.x":"crw-2-rhel-8"},
+    "plugin-kubernetes": {"2.11":"crw-2.11-rhel-8", "2.x":"crw-2-rhel-8"},
+    "plugin-openshift": {"2.11":"crw-2.11-rhel-8", "2.x":"crw-2-rhel-8"},
+    "stacks-cpp": {"2.11":"crw-2.11-rhel-8", "2.x":"crw-2-rhel-8"},
+    "stacks-dotnet": {"2.11":"crw-2.11-rhel-8", "2.x":"crw-2-rhel-8"},
+    "stacks-golang": {"2.11":"crw-2.11-rhel-8", "2.x":"crw-2-rhel-8"},
+    "stacks-php": {"2.11":"crw-2.11-rhel-8", "2.x":"crw-2-rhel-8"},
+
+    "pluginbroker-artifacts": {"2.11":"v3.4.x", "2.x":"v3.4.x"},
+    "pluginbroker-metadata": {"2.11":"v3.4.x", "2.x":"v3.4.x"},
+
+    "devworkspace-controller": {"2.11":"0.7.x", "2.x":"main"},
+
+    "idea": {"2.11":"20210728", "2.x":"main"},
+
+    "traefik": {"2.11":"v2.3.2", "2.x":"v2.3.2"}
+}
