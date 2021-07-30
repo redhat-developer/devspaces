@@ -8,6 +8,7 @@
 #
 # Contributors:
 #   Red Hat, Inc. - initial API and implementation
+#   IBM Corporation - implementation
 #
 
 # Builder: check meta.yamls and create index.json
