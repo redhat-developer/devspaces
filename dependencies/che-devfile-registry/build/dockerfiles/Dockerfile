@@ -87,7 +87,6 @@ RUN \
     yum -y -q clean all && rm -rf /var/cache/yum && \
     echo "Installed Packages" && rpm -qa | sort -V && echo "End Of Installed Packages"
 
-# BEGIN these steps might not be required
 RUN echo "<FilesMatch "\""^\\.ht"\"">" >> /etc/httpd/conf/httpd.conf && \
     echo "Require all denied" >> /etc/httpd/conf/httpd.conf && \
     echo "</FilesMatch>" >> /etc/httpd/conf/httpd.conf
@@ -103,7 +102,6 @@ RUN sed -i /etc/httpd/conf/httpd.conf \
     -e "s,AllowOverride None,AllowOverride All," && \
     chmod a+rwX /etc/httpd/conf /run/httpd /etc/httpd/logs/
 STOPSIGNAL SIGWINCH
-# END these steps might not be required
 
 WORKDIR /var/www/html
 
