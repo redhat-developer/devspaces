@@ -87,6 +87,14 @@ RUN \
     echo "Installed Packages" && rpm -qa | sort -V && echo "End Of Installed Packages"
 
 # BEGIN these steps might not be required
+RUN echo "<FilesMatch "\""^\\.ht"\"">" >> /etc/httpd/conf/httpd.conf && \
+    echo "Require all denied" >> /etc/httpd/conf/httpd.conf && \
+    echo "</FilesMatch>" >> /etc/httpd/conf/httpd.conf
+
+RUN sed -i /etc/httpd/conf.d/ssl.conf \
+    -e "s,SSLProtocol all -SSLv2,SSLProtocol all -SSLv3," \
+    -e "s,SSLCipherSuite HIGH:MEDIUM:!aNULL:!MD5,SSLCipherSuite HIGH:!aNULL:!MD5,"
+
 RUN sed -i /etc/httpd/conf/httpd.conf \
     -e "s,Listen 80,Listen 8080," \
     -e "s,logs/error_log,/dev/stderr," \
