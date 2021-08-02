@@ -50,9 +50,40 @@ if [[ ! ${CRW_VERSION} ]]; then
   CRW_VERSION=${CSV_VERSION%.*} # given 2.y.0, want 2.y
 fi
 
+COPYRIGHT="#
+# Copyright (c) 2018-$(date +%Y) Red Hat, Inc.
+#    This program and the accompanying materials are made
+#    available under the terms of the Eclipse Public License 2.0
+#    which is available at https://www.eclipse.org/legal/epl-2.0/
+#
+#  SPDX-License-Identifier: EPL-2.0
+#
+#  Contributors:
+#    Red Hat, Inc. - initial API and implementation
+"
+
+replaceField()
+{
+  theFile="$1"
+  updateName="$2"
+  updateVal="$3"
+  # shellcheck disable=SC2016 disable=SC2002 disable=SC2086
+  if [[ ${theFile} == *".json" ]]; then
+    changed=$(cat "${theFile}" | jq --arg updateName "${updateName}" --arg updateVal "${updateVal}" ${updateName}' = $updateVal')
+    echo "${changed}" > "${theFile}"
+  elif [[ ${theFile} == *".yml" ]] || [[ ${theFile} == *".yaml" ]]; then
+    changed=$(cat "${theFile}" | yq -Y --arg updateName "${updateName}" --arg updateVal "${updateVal}" ${updateName}' = $updateVal')
+    echo "${COPYRIGHT}${changed}" > "${theFile}"
+  fi
+}
+
 # update VERSION file to product version (x.y)
 updateVersion() {
-    echo "${CRW_VERSION}" > ${WORKDIR}/dependencies/VERSION
+    # deprecated, @since 2.11
+    echo "${CRW_VERSION}" > "${WORKDIR}/dependencies/VERSION"
+    # @since 2.11
+    replaceField "${WORKDIR}/dependencies/VERSION.json" '.Version' "${CRW_VERSION}"
+    replaceField "${WORKDIR}/dependencies/VERSION.json" '.Copyright' "${COPYRIGHT}"
 }
 
 updateDevfileRegistry() {
@@ -67,11 +98,11 @@ updateDevfileRegistry() {
            -i "${devfile}"
     done
 
-    "${SCRIPT_DIR}/update_template.sh" -rn devfile -s ${TEMPLATE_FILE} -t ${CRW_VERSION}
-
-    git diff -q ${YAML_ROOT} ${TEMPLATE_FILE} || true
+    "${SCRIPT_DIR}/update_template.sh" -rn devfile -s "${TEMPLATE_FILE}" -t "${CRW_VERSION}"
+    git diff -q "${YAML_ROOT}" "${TEMPLATE_FILE}" || true
 }
 
+# '.parameters[]|select(.name=="IMAGE_TAG")|.value'
 updatePluginRegistry() {
     REG_ROOT="${WORKDIR}/dependencies/che-plugin-registry"
     SCRIPT_DIR="${REG_ROOT}/build/scripts"
@@ -84,9 +115,11 @@ updatePluginRegistry() {
             -i "${yaml}"
     done
 
-    "${SCRIPT_DIR}/update_template.sh" -rn plugin -s ${TEMPLATE_FILE} -t ${CRW_VERSION}
+    # update '.parameters[]|select(.name=="IMAGE_TAG")|.value' ==> 2.yy
+    yq -ryiY "(.parameters[] | select(.name == \"IMAGE_TAG\") | .value ) = \"${CRW_VERSION}\"" "${TEMPLATE_FILE}"
+    echo "${COPYRIGHT}$(cat "${TEMPLATE_FILE}")" > "${TEMPLATE_FILE}".2; mv "${TEMPLATE_FILE}".2 "${TEMPLATE_FILE}"
 
-    git diff -q ${YAML_ROOT} ${TEMPLATE_FILE} || true
+    git diff -q "${YAML_ROOT}" "${TEMPLATE_FILE}" || true
 }
 
 commitChanges() {
