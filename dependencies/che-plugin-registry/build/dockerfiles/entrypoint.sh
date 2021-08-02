@@ -56,14 +56,14 @@ function run_main() {
         for imageEnv in "${ENV_IMAGES[@]}"; do
             tagOrDigest=$(echo "${imageEnv}" | sed -e 's;.*registry_image_\(.*\)=.*;\1;' | tr _ = | base32 -d)
             if [[ ${tagOrDigest} == *"@"* ]]; then
-            # Well, image was "freezed", because it already has got digest, so do nothing.
-            continue
+                # Well, image was "freezed", because it already has got digest, so do nothing.
+                continue
             fi
-            imageWithDigest=${imageEnv#*=};
+                imageWithDigest=${imageEnv#*=};
             if [[ -n "${tagOrDigest}" ]]; then
-            imageToReplace="${imageWithDigest%@*}:${tagOrDigest}"
+                imageToReplace="${imageWithDigest%@*}:${tagOrDigest}"
             else
-            imageToReplace="${imageWithDigest%@*}"
+                imageToReplace="${imageWithDigest%@*}"
             fi
             digest="@${imageWithDigest#*@}"
             imageMap["${imageToReplace}"]="${digest}"
@@ -79,27 +79,27 @@ function run_main() {
         for meta in "${metas[@]}"; do
             readarray -t images < <(grep "image:" "${meta}" | sed -r "s;.*image:[[:space:]]*'?\"?([._:a-zA-Z0-9-]*/?[._a-zA-Z0-9-]*/[._a-zA-Z0-9-]*(@sha256)?:?[._a-zA-Z0-9-]*)'?\"?[[:space:]]*;\1;")
             for image in "${images[@]}"; do
-            separators="${image//[^\/]}"
-            # Warning, keep in mind: image without registry name is it possible case. It's mean, that image comes from private registry, where is we have organization name, but no registry name...
-            digest="${imageMap[${image}]}"
+                separators="${image//[^\/]}"
+                # Warning, keep in mind: image without registry name is it possible case. It's mean, that image comes from private registry, where is we have organization name, but no registry name...
+                digest="${imageMap[${image}]}"
 
-            if [[ -z "${digest}" ]] && [ "${#separators}" == "1" ]; then
-                imageWithDefaultRegistry="docker.io/${image}"
-                digest="${imageMap[${imageWithDefaultRegistry}]}"
-            fi
-
-            if [[ -n "${digest}" ]]; then
-                if [[ ${image} == *":"* ]]; then
-                imageWithoutTag="${image%:*}"
-                tag="${image#*:}"
-                else
-                imageWithoutTag=${image}
-                tag=""
+                if [[ -z "${digest}" ]] && [ "${#separators}" == "1" ]; then
+                    imageWithDefaultRegistry="docker.io/${image}"
+                    digest="${imageMap[${imageWithDefaultRegistry}]}"
                 fi
 
-                REGEX="([[:space:]]*\"?'?)(${imageWithoutTag}):?(${tag})(\"?'?)"
-                sed -i -E "s|image:${REGEX}|image:\1\2${digest}\4|" "$meta"
-            fi
+                if [[ -n "${digest}" ]]; then
+                    if [[ ${image} == *":"* ]]; then
+                        imageWithoutTag="${image%:*}"
+                        tag="${image#*:}"
+                    else
+                        imageWithoutTag=${image}
+                        tag=""
+                    fi
+
+                    REGEX="([[:space:]]*\"?'?)(${imageWithoutTag}):?(${tag})(\"?'?)"
+                    sed -i -E "s|image:${REGEX}|image:\1\2${digest}\4|" "$meta"
+                fi
             done
         done
     else
@@ -111,14 +111,14 @@ function run_main() {
         if [[ -n "${#images[@]}" ]]; then
             declare -A imageMap
             for image in "${images[@]}"; do
-            digest=${image#*@}	
-            imageName=${image%@*}
-            imageMap["${imageName}"]="${digest}"
+                digest=${image#*@}	
+                imageName=${image%@*}
+                imageMap["${imageName}"]="${digest}"
             done	
 
             echo "--------------------------Digest map--------------------------"
             for KEY in "${!imageMap[@]}"; do
-            echo "Key: $KEY Value: ${imageMap[${KEY}]}"
+                echo "Key: $KEY Value: ${imageMap[${KEY}]}"
             done
             echo "--------------------------------------------------------------"
 
@@ -131,11 +131,11 @@ function run_main() {
                     digest="${imageMap[${image%:*}]}"
                     if [[ -n "${digest}" ]]; then
                         if [[ ${image} == *":"* ]]; then
-                        imageWithoutTag="${image%:*}"
-                        tag="${image#*:}"
+                            imageWithoutTag="${image%:*}"
+                            tag="${image#*:}"
                         else
-                        imageWithoutTag=${image}
-                        tag=""
+                            imageWithoutTag=${image}
+                            tag=""
                         fi
 
                         REGEX="([[:space:]]*\"?'?)(${imageWithoutTag}):?(${tag})(\"?'?)"
