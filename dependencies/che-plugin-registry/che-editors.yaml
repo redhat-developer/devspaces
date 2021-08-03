@@ -47,7 +47,7 @@ editors:
               secure: true
               targetPort: 3100
               attributes:
-                type: ide
+                type: main
                 cookiesAuthEnabled: true
                 discoverable: false
               protocol: http

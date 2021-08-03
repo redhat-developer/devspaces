@@ -48,4 +48,19 @@ describe('Test EndpointsHelper', () => {
     expect(endpoint.exposure).toBeUndefined();
     expect(endpoint.secure).toBeUndefined();
   });
+
+  test('change endpoint type', async () => {
+    const endpointYaml: CommonEndpointYaml = {
+      name: 'endpoint-name',
+      attributes: {
+        type: 'main',
+      },
+    };
+    const volumes = new Map();
+    volumes.set('example', { ephemeral: true });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const endpoint: any = await endpointsHelper.resolve(endpointYaml);
+    expect(endpoint).toBeDefined();
+    expect(endpoint.attributes.type).toBe('ide');
+  });
 });
