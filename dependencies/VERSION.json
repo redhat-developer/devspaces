@@ -33,6 +33,10 @@
       "2.11": "7.34.x",
       "2.x": "main"
     },
+    "operator-bundle": {
+      "2.11": "7.34.x",
+      "2.x": "main"
+    },
     "operator-metadata": {
       "2.11": "7.34.x",
       "2.x": "main"
@@ -137,7 +141,7 @@
   "Other": {
     "DEV_HEADER_REWRITE_TRAEFIK_PLUGIN": {
       "2.11": "v0.1.2",
-      "2.x": "main"
+      "2.x": "v0.1.2"
     }
   },
   "Copyright": "#\n# Copyright (c) 2018-2021 Red Hat, Inc.\n#    This program and the accompanying materials are made\n#    available under the terms of the Eclipse Public License 2.0\n#    which is available at https://www.eclipse.org/legal/epl-2.0/\n#\n#  SPDX-License-Identifier: EPL-2.0\n#\n#  Contributors:\n#    Red Hat, Inc. - initial API and implementation\n"
