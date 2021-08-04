@@ -21,7 +21,7 @@ while [[ "$#" -gt 0 ]]; do
   '-r') RPM_PATTERN="$2"; shift 1;; # eg., openshift-clients or helm
   '-s') SOURCE_DIR="$2"; shift 1;; # dir to search for Dockerfiles
   '-a') ARCHES="$ARCHES $2"; shift 1;; # use space-separated list of arches, or use multiple -a flags
-  '-u') BASE_URL="$2"; shift 1;; # eg., http://rhsm-pulp.corp.redhat.com/content/dist/layered/rhel8/basearch/rhocp/4.7
+  '-u') BASE_URL="$2"; shift 1;; # eg., http://rhsm-pulp.corp.redhat.com/content/dist/layered/rhel8/basearch/rhocp/4.8
   '-q') QUIET=1; shift 0;;
   '-h') usage;;
   esac
@@ -33,8 +33,8 @@ usage () {
 Usage: 
   $0 -s SOURCE_DIR -r RPM_PATTERN  -u BASE_URL -a 'ARCH1 ... ARCHN' 
 Example: 
-  $0 -s /path/to/dockerfiles/ -r openshift-clients-4 -u http://rhsm-pulp.corp.redhat.com/content/dist/layered/rhel8/basearch/rhocp/4.7
-  $0 -s /path/to/dockerfiles/ -r helm-3              -u http://rhsm-pulp.corp.redhat.com/content/dist/layered/rhel8/basearch/ocp-tools/4.7
+  $0 -s /path/to/dockerfiles/ -r openshift-clients-4 -u http://rhsm-pulp.corp.redhat.com/content/dist/layered/rhel8/basearch/rhocp/4.8
+  $0 -s /path/to/dockerfiles/ -r helm-3              -u http://rhsm-pulp.corp.redhat.com/content/dist/layered/rhel8/basearch/ocp-tools/4.8
 Options:
   -q quieter output; only reports changed rpm version or 0 if failure
 "
@@ -82,12 +82,18 @@ for i in "${sorted[@]}"; do
 done
 
 # update Dockerfiles
+# compute suffix to change from BASE_URL
+repo_new=${BASE_URL##*basearch/}; repo_new=${repo_new//\//-}; # echo $repo_new # rhocp-4.8 or ocp-tools-4.8
+repo_prefix=${repo_new%-*}; # echo $repo_prefix # rhocp or ocp-tools
 for d in $dockerfiles; do
   # echo "[DEBUG] Checking $d ..."
   if [[ $(grep -E "${RPM_PATTERN}" $d) ]]; then
     # if [[ $QUIET -eq 0 ]]; then echo "[Debug] Dockerfile contains ${RPM_PATTERN} ..."; fi
     if [[ $QUIET -eq 0 ]]; then echo "[INFO] $RPM_PATTERN -> $newVersion in $d"; fi
-    sed -i $d -r -e "s#(/| )(${RPM_PATTERN}[^ ]+.el8)#\1$newVersion#g"
+    sed -i $d -r \
+      -e "s#(/| )(${RPM_PATTERN}[^ ]+.el8)#\1$newVersion#g" \
+      -e "s#${repo_prefix}-[0-9.]+#${repo_new}#g" \
+      -e "s#(http://rhsm-pulp.corp.redhat.com/content/dist/layered/rhel8/)([a-z0-9_]+)/${repo_prefix}/[0-9.]+/#\1\2/${repo_new//-/\/}/#g"
   fi
 done
 
