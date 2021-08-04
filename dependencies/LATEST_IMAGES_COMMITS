@@ -3,6 +3,16 @@ quay.io/crw/configbump-rhel8:2.11-3
    Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1673668
   Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-configbump/commit?id=7ed2853aba41acffa8c04c69916fa2144868ce26
 
+quay.io/crw/crw-2-rhel8-operator:2.11-2
+     NVR: codeready-workspaces-rhel8-operator-container-2.11-2
+   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1683873
+  Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-operator/commit?id=1921c568faff278cb134b0fef1ade77d17116ea8
+
+quay.io/crw/crw-2-rhel8-operator-metadata:2.11-2
+     NVR: codeready-workspaces-rhel8-operator-metadata-container-2.11-2
+   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1684428
+  Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-operator-metadata/commit?id=2af609273b5d7368db8283ef1a99ca814fb83fb7
+
 quay.io/crw/dashboard-rhel8:2.11-6
      NVR: codeready-workspaces-dashboard-rhel8-container-2.11-6
    Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1682391
@@ -108,10 +118,10 @@ quay.io/crw/stacks-php-rhel8:2.11-2
    Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1673718
   Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-stacks-php/commit?id=f056383c7d223e818e903f5726548e553669ff0d
 
-quay.io/crw/theia-dev-rhel8:2.11-26
-     NVR: codeready-workspaces-theia-dev-rhel8-container-2.11-26
-   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1683637
-  Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-theia-dev/commit?id=f00789c3a411aee30d1eb1a7099e64cdc0f4be68
+quay.io/crw/theia-dev-rhel8:2.11-29
+     NVR: codeready-workspaces-theia-dev-rhel8-container-2.11-29
+   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1684371
+  Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-theia-dev/commit?id=2a386b42ac4836b5c66fc0396dad97e0d4d2e03d
 
 quay.io/crw/theia-endpoint-rhel8:2.11-14
      NVR: codeready-workspaces-theia-endpoint-rhel8-container-2.11-14
