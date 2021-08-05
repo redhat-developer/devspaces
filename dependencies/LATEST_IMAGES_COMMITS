@@ -4,10 +4,10 @@ quay.io/crw/crw-2-rhel8-operator:2.11-3
    Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1684653
   Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-operator/commit?id=21806c854af8cc059285e82ba17c57e507491ce9
 
-quay.io/crw/crw-2-rhel8-operator-metadata:2.11-6
-     NVR: codeready-workspaces-rhel8-operator-metadata-container-2.11-6
-   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1685116
-  Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-operator-metadata/commit?id=9d5f251f77531ceb7e1eb318f9a71160398e3a3a
+quay.io/crw/crw-2-rhel8-operator-metadata:2.11-7
+     NVR: codeready-workspaces-rhel8-operator-metadata-container-2.11-7
+   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1685144
+  Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-operator-metadata/commit?id=92dc892b20da2c73957188dd6be33a0ddf8a75ac
 
 quay.io/crw/dashboard-rhel8:2.11-7
      NVR: codeready-workspaces-dashboard-rhel8-container-2.11-7
@@ -39,8 +39,16 @@ quay.io/crw/jwtproxy-rhel8:2.11-1
 quay.io/crw/machineexec-rhel8:2.11-4
 quay.io/crw/pluginbroker-artifacts-rhel8:2.11-3
 quay.io/crw/pluginbroker-metadata-rhel8:2.11-3
-quay.io/crw/plugin-java11-openj9-rhel8:2.11-4
-quay.io/crw/plugin-java11-rhel8:2.11-2
+quay.io/crw/plugin-java11-openj9-rhel8:2.11-5
+     NVR: codeready-workspaces-plugin-java11-openj9-rhel8-container-2.11-5
+   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1685115
+  Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-plugin-java11-openj9/commit?id=3e44e2ce1db23f4f2c5a3016d1912bdd7baa13ba
+
+quay.io/crw/plugin-java11-rhel8:2.11-3
+     NVR: codeready-workspaces-plugin-java11-rhel8-container-2.11-3
+   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1685129
+  Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-plugin-java11/commit?id=32876ef2bae7ee1e3ffb0202b7d93b25e9865e54
+
 quay.io/crw/plugin-java8-openj9-rhel8:2.11-3
 quay.io/crw/plugin-java8-rhel8:2.11-2
 quay.io/crw/plugin-kubernetes-rhel8:2.11-3
