@@ -314,7 +314,7 @@ if [[ ${SHOWNVR} -eq 1 ]]; then
 			echo "${containername/\//-}-container-???"
 		fi
 	done
-	if [[ $c -gt 4 ]]; then echo; echo "Found $n of $c containers"; fi
+	if [[ $c -gt 4 ]] && [[ $c -gt $n ]] && [[ $HIDE_MISSING -eq 0 ]]; then echo; echo "Found $n of $c containers"; fi
 	exit
 fi
 
@@ -451,4 +451,4 @@ for URLfrag in $CONTAINERS; do
 	done
 	if [[ $NUMTAGS -gt 1 ]] || [[ ${SHOWHISTORY} -eq 1 ]]; then echo ""; fi
 done
-if [[ $c -gt 4 ]]; then echo; echo "Found $n of $c containers"; fi
+if [[ $c -gt 4 ]] && [[ $c -gt $n ]] && [[ $HIDE_MISSING -eq 0 ]]; then echo; echo "Found $n of $c containers"; fi
