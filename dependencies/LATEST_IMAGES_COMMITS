@@ -8,10 +8,10 @@ quay.io/crw/crw-2-rhel8-operator:2.11-5
    Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1686703
   Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-operator/commit?id=2d9f46e056a33c067dec4657e09ab7b15509f74f
 
-quay.io/crw/crw-2-rhel8-operator-metadata:2.11-12
-     NVR: codeready-workspaces-rhel8-operator-metadata-container-2.11-12
-   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1686052
-  Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-operator-metadata/commit?id=755bf71614f2150892b8168f84681dfaa7e32d32
+quay.io/crw/crw-2-rhel8-operator-metadata:2.11-14
+     NVR: codeready-workspaces-rhel8-operator-metadata-container-2.11-14
+   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1687059
+  Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-operator-metadata/commit?id=2dd26a6e07feb6ef2ee8ead1156af9014a8ccedf
 
 quay.io/crw/dashboard-rhel8:2.11-7
      NVR: codeready-workspaces-dashboard-rhel8-container-2.11-7
@@ -128,7 +128,15 @@ quay.io/crw/theia-dev-rhel8:2.11-37
    Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1686805
   Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-theia-dev/commit?id=47a22eac544876d50620528af3974297875651bc
 
-quay.io/crw/theia-endpoint-rhel8:2.11-14
+quay.io/crw/theia-endpoint-rhel8:2.11-15
+     NVR: codeready-workspaces-theia-endpoint-rhel8-container-2.11-15
+   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1686842
+  Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-theia-endpoint/commit?id=0123aa43c6309d0c26392144eab108f4e7efcfd4
+
 quay.io/crw/theia-rhel8:2.11-17
-quay.io/crw/traefik-rhel8:2.11-3
+quay.io/crw/traefik-rhel8:2.11-5
+     NVR: codeready-workspaces-traefik-rhel8-container-2.11-5
+   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1686872
+  Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-traefik/commit?id=143078a8ed911748b87066ee530e1194f0d102bf
+
 .
