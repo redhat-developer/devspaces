@@ -13,7 +13,7 @@
 
 # Builder: check meta.yamls and create index.json
 # https://access.redhat.com/containers/?tab=tags#/registry.access.redhat.com/ubi8/python-38
-FROM registry.access.redhat.com/ubi8/python-38:1-54.1618436884 as builder
+FROM registry.access.redhat.com/ubi8/python-38:1-63.1626843762 as builder
 USER 0
 
 ################# 
@@ -76,7 +76,7 @@ RUN chmod -R g+rwX /build/devfiles
 
 # Build registry, copying meta.yamls and index.json from builder
 # https://access.redhat.com/containers/?tab=tags#/registry.access.redhat.com/ubi8/httpd-24
-FROM registry.access.redhat.com/ubi8/httpd-24:1-140 AS registry
+FROM registry.access.redhat.com/ubi8/httpd-24:1-143.1626836617 AS registry
 USER 0
 
 # latest httpd container doesn't include ssl cert, so generate one
@@ -102,6 +102,9 @@ RUN sed -i /etc/httpd/conf/httpd.conf \
     -e "s,AllowOverride None,AllowOverride All," && \
     chmod a+rwX /etc/httpd/conf /run/httpd /etc/httpd/logs/
 STOPSIGNAL SIGWINCH
+
+ARG CRW_BRANCH=crw-2-rhel-8
+ENV CRW_BRANCH=${CRW_BRANCH}
 
 WORKDIR /var/www/html
 
