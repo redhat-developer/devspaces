@@ -109,8 +109,11 @@ if env | grep -q ".*devfile_registry_image.*"; then
     done
   done
 else
-  # Workaround for local testing to read RELATED_IMAGES from codeready-workspaces.csv.yaml. This will not work in disconnected environment.
-  curl https://raw.githubusercontent.com/redhat-developer/codeready-workspaces-images/crw-2-rhel-8/codeready-workspaces-operator-metadata-generated/manifests/codeready-workspaces.csv.yaml -o csv.yaml -s
+  # Workaround in case if RELATED_IMAGES ENVs are not present in the container. 
+  # Try to read RELATED_IMAGES from codeready-workspaces.csv.yaml (this will not work in disconnected environment).
+  # CRW_BRANCH env descries the branch where related csv.yaml is located; 
+  # default value is crw-2-rhel-8 but should be overwritten when built from a stable branch like crw-2.11-rhel-8
+  curl -sSLo csv.yaml https://raw.githubusercontent.com/redhat-developer/codeready-workspaces-images/"${CRW_BRANCH}"/codeready-workspaces-operator-metadata-generated/manifests/codeready-workspaces.csv.yaml
   readarray -t images < <(grep "image:" csv.yaml | sed -r "s;.*image:[[:space:]]*'?\"?([._:a-zA-Z0-9-]*/?[._a-zA-Z0-9-]*/[._a-zA-Z0-9-]*(@sha256)?:?[._a-zA-Z0-9-]*)'?\"?[[:space:]]*;\1;")
 
   if [[ -n "${#images[@]}" ]]; then
