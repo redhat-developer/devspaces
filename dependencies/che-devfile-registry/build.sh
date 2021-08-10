@@ -115,23 +115,8 @@ else
 fi
 
 IMAGE="${REGISTRY}/${ORGANIZATION}/${CONTAINERNAME}:${TAG}"
-VERSION=$(head -n 1 VERSION)
-case $VERSION in
-  *SNAPSHOT)
-    echo "Snapshot version (${VERSION}) specified in $(find . -name VERSION): building nightly plugin registry."
-    ${BUILDER} ${BUILD_COMMAND} \
-        -t "${IMAGE}" \
-        -f ${DOCKERFILE} \
-        --build-arg "USE_DIGESTS=${USE_DIGESTS}" \
-        --target "${TARGET}" .
-    ;;
-  *)
-    echo "Release version specified in $(find . -name VERSION): Building plugin registry for release ${VERSION}."
-    ${BUILDER} ${BUILD_COMMAND} \
-        -t "${IMAGE}" \
-        -f "${DOCKERFILE}" \
-        --build-arg "PATCHED_IMAGES_TAG=${VERSION}" \
-        --build-arg "USE_DIGESTS=${USE_DIGESTS}" \
-        --target "${TARGET}" .
-    ;;
-esac
+${BUILDER} ${BUILD_COMMAND} \
+    -t "${IMAGE}" \
+    -f ${DOCKERFILE} \
+    --build-arg "USE_DIGESTS=${USE_DIGESTS}" \
+    --target "${TARGET}" .
