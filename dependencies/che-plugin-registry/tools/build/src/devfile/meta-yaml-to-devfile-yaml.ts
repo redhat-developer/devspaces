@@ -115,6 +115,11 @@ export class MetaYamlToDevfileYaml {
           devfileEndpoint.exposure = 'public';
         }
 
+        // ide type is moved to more generic main endpoint
+        if (endpoint.attributes && endpoint.attributes['type'] === 'ide') {
+          devfileEndpoint.attributes['type'] = 'main';
+        }
+
         // if it's secured, remove secure option for now but add extra s on the protocol
         if (devfileEndpoint.attributes && devfileEndpoint.attributes.secure === true) {
           devfileEndpoint.secure = false;

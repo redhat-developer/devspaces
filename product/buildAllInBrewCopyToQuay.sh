@@ -89,7 +89,8 @@ if [[ $PHASES == *"2"* ]]; then
 fi
 
 if [[ $PHASES == *"3"* ]]; then 
-    doBuild "codeready-workspaces-plugin-java11-openj9 \
+    doBuild "codeready-workspaces-idea \
+        codeready-workspaces-plugin-java11-openj9 \
         codeready-workspaces-plugin-java11 \
         codeready-workspaces-plugin-java8-openj9 \
         codeready-workspaces-plugin-java8 \
@@ -124,7 +125,8 @@ fi
 if [[ $PHASES == *"6"* ]]; then 
     doBuild "codeready-workspaces-devfileregistry \
             codeready-workspaces-pluginregistry"
-    doBuild codeready-workspaces-operator-metadata
+    doBuild "codeready-workspaces-operator-bundle \
+            codeready-workspaces-operator-metadata"
 fi
 
 # clean up checked out sources

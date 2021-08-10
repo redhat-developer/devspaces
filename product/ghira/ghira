@@ -1,0 +1,158 @@
+#!/usr/bin/env python3
+import sys
+import os
+import copy
+import re
+import json
+import logging
+
+from github import Github
+import jira
+import requests
+
+JIRA_PROJECT = "CRW"
+JIRA_URL = "https://issues.redhat.com"
+JIRA_USER = os.environ["JIRA_USER"]
+JIRA_PASSWORD = os.environ["JIRA_PASSWORD"]
+
+GITHUB_KEY = os.environ["GITHUB_KEY"]
+GITHUB_REPO = "eclipse/che"
+
+ISSUE_SYNC_COMMENT = "sync'd to redhat jira #"
+
+# LOG_LEVEL = logging.DEBUG
+LOG_LEVEL = logging.INFO
+class ExitOnErrorHandler(logging.StreamHandler):
+    def emit(self, record):
+        super().emit(record)
+        if record.levelno in (logging.ERROR, logging.CRITICAL):
+            raise SystemExit(-1)
+logging.basicConfig(handlers=[ExitOnErrorHandler()], format='%(levelname)s: %(message)s', level=LOG_LEVEL)
+
+DRY_RUN='--dryrun' in sys.argv
+if DRY_RUN:
+  logging.info("Dry run.  Nothing will be created.")
+
+j = jira.JIRA(JIRA_URL, basic_auth=(JIRA_USER, JIRA_PASSWORD))
+g = Github(GITHUB_KEY)
+r = g.get_repo(GITHUB_REPO)
+GITHUB_USER = g.get_user().login
+
+class IssueToJIRA:
+  def _map_labels(data):
+    ret = []
+    for l in data:
+      if l['name'] == 'new&noteworthy':
+        ret.append('noteworthy')
+    return ret
+  
+  def _map_fixVersions(data):
+    url = 'https://raw.githubusercontent.com/redhat-developer/codeready-workspaces-images/crw-2-rhel-8/crw-jenkins/jobs/CRW_CI/crw-theia-sources.groovy'
+    req = requests.get(url)
+    if req.status_code != 200:
+      logging.error("Unable to fetch fix version mapping from theia-sources.groovy in github")
+    txt = req.text
+
+    c = re.compile('.* JOB_BRANCHES = (\[.*\]).*')
+    m = c.search(txt)
+    try:
+      fix_version = m.group(1)
+      fix_version = fix_version.replace('[', '{')
+      fix_version = fix_version.replace(']', '}')
+      fix_version = json.loads(fix_version)
+    except:
+      logging.error("Unable to parse mapping from theia-sources.groovy in github")
+    
+    # modify CRW version to be JIRA friendly
+    for k,v in fix_version.copy().items():
+      if v in ('main', 'master'):
+        continue
+      if k.count('.') == 1:
+        fix_version[k + '.0.GA'] = v
+        del fix_version[k]
+      elif k.count('.') == 2:
+        fix_version[k + '.GA'] = v
+        del fix_version[k]
+      else:
+        logging.error("Unable to recognize formation in fix version mapping for: %s" % v)
+    
+    # swtich fix_version to hash on che version
+    fix_version = {y:x for x,y in fix_version.items()}
+
+    # now that we have mapping, convert milestone to fixVersions
+    if data and 'title' in data:
+      if data['title'] not in fix_version:
+        return ['2.x']   # KIRK
+        logging.error("Unable to add fixVersion, update %s" % url)
+      return [fix_version[data['title']]]
+    return []
+
+  # map github issue to jira issue
+  data_map = {
+    'body': 'description',
+    'title': 'summary',
+    'labels': ('labels', _map_labels),
+    'milestone': ('fixVersions', _map_fixVersions)
+  }
+  # default keys for creating jira issue
+  default_jira_data = {
+    'project': 'CRW',
+    'issuetype': {'name': 'Task'},
+    'customfield_12310211': 'To be written by team lead or assignee',
+    'customfield_12310213': 'Not Yet Documented',
+  }
+
+  # convert github issue to jira issue
+  #  - use raw data for both apis mapping keys with data_map.
+  #  - non-trial data_map can use (name, function) tuple instead of key name
+  def convert(issue):
+    gh_data = issue.raw_data
+    jira_data = copy.deepcopy(IssueToJIRA.default_jira_data)
+
+    for (gh_k, jira_k) in IssueToJIRA.data_map.items():
+      if gh_k in gh_data.keys():
+        if isinstance(jira_k, tuple) and callable(jira_k[1]):
+          jira_data[jira_k[0]] = jira_k[1](gh_data[gh_k])
+        elif isinstance(jira_k, str):
+          jira_data[jira_k] = gh_data[gh_k]
+        else:
+          logging.error("invalid mapping for github data %s" % gh_k)
+      else:
+        logging.error("expecting github key %s to exist in github issue data" % gh_k)
+    return jira_data
+
+
+
+# Retrieve Issues from github
+#   search term definitions: https://pygithub.readthedocs.io/en/latest/github_objects/Issue.html
+issue_search = {
+  'state': 'open',
+  'labels': ['new&noteworthy']
+}
+all_issues = r.get_issues(**issue_search)
+
+# filter out items already sync'd
+pending_issues = []
+for i in all_issues:
+  # search through comments for sync text
+  found = False
+  for c in i.get_comments():
+    if c.user.login == GITHUB_USER and c.body.find(ISSUE_SYNC_COMMENT) != -1:
+      found = True
+      logging.info("Issue %s already sync'd" % i.number)
+      break
+  if not found:
+    pending_issues.append(i)
+
+# convert issue to jira
+for i in pending_issues:
+  logging.info("Sync Issue %s to JIRA" % i.number)
+  new_jira = IssueToJIRA.convert(i)
+
+  logging.info("Create JIRA issue: \n" + json.dumps(new_jira, indent=2) + '\n')
+  if not DRY_RUN:
+    # docs example: https://jira.readthedocs.io/en/master/examples.html#issues
+    new_jira_issue = j.create_issue(fields=new_jira)  
+
+    # update github issue with comment
+    i.create_comment(ISSUE_SYNC_COMMENT + new_jira_issue.key)

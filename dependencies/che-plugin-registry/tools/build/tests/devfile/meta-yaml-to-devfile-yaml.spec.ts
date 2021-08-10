@@ -77,7 +77,7 @@ describe('Test MetaYamlToDevfileYaml', () => {
     expect(theiaIdeFirstEndpoint.name).toBe('theia');
     expect(theiaIdeFirstEndpoint.exposure).toBe('public');
     const theiaIdeFirstEndpointAttributes = theiaIdeFirstEndpoint.attributes;
-    expect(theiaIdeFirstEndpointAttributes.type).toBe('ide');
+    expect(theiaIdeFirstEndpointAttributes.type).toBe('main');
 
     expect(theiaIdeComponentContainer.env).toBeDefined();
     expect(theiaIdeComponentContainer.env?.length).toBe(4);

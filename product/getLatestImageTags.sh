@@ -57,34 +57,36 @@ checkVersion 1.1 "$(skopeo --version | sed -e "s/skopeo version //")" skopeo
 CRW_CONTAINERS_RHEC="\
 codeready-workspaces/configbump-rhel8 \
 codeready-workspaces/crw-2-rhel8-operator \
+codeready-workspaces/crw-2-rhel8-operator-bundle \
 codeready-workspaces/crw-2-rhel8-operator-metadata \
 codeready-workspaces/dashboard-rhel8 \
-codeready-workspaces/devfileregistry-rhel8 \
 \
+codeready-workspaces/devfileregistry-rhel8 \
 codeready-workspaces/devworkspace-controller-rhel8 \
 codeready-workspaces/devworkspace-rhel8 \
+codeready-workspaces/idea-rhel8 \
 codeready-workspaces/imagepuller-rhel8 \
+\
 codeready-workspaces/jwtproxy-rhel8 \
 codeready-workspaces/machineexec-rhel8 \
-\
 codeready-workspaces/pluginbroker-artifacts-rhel8 \
 codeready-workspaces/pluginbroker-metadata-rhel8 \
 codeready-workspaces/plugin-java11-openj9-rhel8 \
+\
 codeready-workspaces/plugin-java11-rhel8 \
 codeready-workspaces/plugin-java8-openj9-rhel8 \
-\
 codeready-workspaces/plugin-java8-rhel8 \
 codeready-workspaces/plugin-kubernetes-rhel8 \
 codeready-workspaces/plugin-openshift-rhel8 \
+\
 codeready-workspaces/pluginregistry-rhel8 \
 codeready-workspaces/server-rhel8 \
-\
 codeready-workspaces/stacks-cpp-rhel8 \
 codeready-workspaces/stacks-dotnet-rhel8 \
 codeready-workspaces/stacks-golang-rhel8 \
+\
 codeready-workspaces/stacks-php-rhel8 \
 codeready-workspaces/theia-dev-rhel8 \
-\
 codeready-workspaces/theia-endpoint-rhel8 \
 codeready-workspaces/theia-rhel8 \
 codeready-workspaces/traefik-rhel8 \
@@ -94,34 +96,36 @@ codeready-workspaces/traefik-rhel8 \
 CRW_CONTAINERS_OSBS="\
 codeready-workspaces/configbump-rhel8 \
 codeready-workspaces/operator \
+codeready-workspaces/operator-bundle \
 codeready-workspaces/operator-metadata \
 codeready-workspaces/dashboard-rhel8 \
-codeready-workspaces/devfileregistry-rhel8 \
 \
+codeready-workspaces/devfileregistry-rhel8 \
 codeready-workspaces/devworkspace-controller-rhel8 \
 codeready-workspaces/devworkspace-rhel8 \
+codeready-workspaces/idea-rhel8 \
 codeready-workspaces/imagepuller-rhel8 \
+\
 codeready-workspaces/jwtproxy-rhel8 \
 codeready-workspaces/machineexec-rhel8 \
-\
 codeready-workspaces/pluginbroker-artifacts-rhel8 \
 codeready-workspaces/pluginbroker-metadata-rhel8 \
 codeready-workspaces/plugin-java11-openj9-rhel8 \
+\
 codeready-workspaces/plugin-java11-rhel8  \
 codeready-workspaces/plugin-java8-openj9-rhel8 \
-\
 codeready-workspaces/plugin-java8-rhel8 \
 codeready-workspaces/plugin-kubernetes-rhel8 \
 codeready-workspaces/plugin-openshift-rhel8 \
+\
 codeready-workspaces/pluginregistry-rhel8 \
 codeready-workspaces/server-rhel8 \
-\
 codeready-workspaces/stacks-cpp-rhel8 \
 codeready-workspaces/stacks-dotnet-rhel8 \
 codeready-workspaces/stacks-golang-rhel8 \
+\
 codeready-workspaces/stacks-php-rhel8 \
 codeready-workspaces/theia-dev-rhel8 \
-\
 codeready-workspaces/theia-endpoint-rhel8 \
 codeready-workspaces/theia-rhel8 \
 codeready-workspaces/traefik-rhel8 \
@@ -157,7 +161,8 @@ Usage:
 
   $0 -c 'crw/theia-rhel8 crw/theia-endpoint-rhel8' --quay      | check latest tag for specific Quay images, with branch = ${DWNSTM_BRANCH}
   $0 -c crw/plugin-java11-openj9-rhel8 --quay                  | check a non-amd64 image
-  $0 -c codeready-workspaces-jwtproxy-rhel8 --osbs             | pull an image from OSBS
+  $0 -c codeready-workspaces-jwtproxy-rhel8 --osbs             | check an image from OSBS
+  $0 -c codeready-workspaces-jwtproxy-rhel8 --nvr              | check an NVR from OSBS
   $0 -c 'rhoar-nodejs/nodejs-10 jboss-eap-7/eap72-openshift'   | check latest tags for specific RHEC images
   $0 -c ubi7-minimal -c ubi8-minimal --osbs -n 3 --tag .       | check OSBS registry; show all tags; show 3 tags per container
   $0 -c 'devtools/go-toolset-rhel7 ubi7/go-toolset' --tag 1.1* | check RHEC prod registry; show 1.1* tags (exclude latest and -sources)
@@ -281,7 +286,10 @@ if [[ ${SHOWNVR} -eq 1 ]]; then
 		exit 1
 	fi
 
+	c=0 # containers total
+	n=0 # containers found
 	for containername in ${CONTAINERS}; do
+		(( c = c + 1 ))
 		# codeready-workspaces/operator-metadata -> codeready-workspaces-rhel8-operator-metadata-container-2.y-9
 		# codeready-workspaces/operator -> codeready-workspaces-rhel8-operator-container-2.y-10
 		containername="${containername//workspaces-operator/workspaces-rhel8-operator}"
@@ -292,18 +300,29 @@ if [[ ${SHOWNVR} -eq 1 ]]; then
 			echo "brew list-tagged ${candidateTag} | grep \"${containername/\//-}-container\" | sort -V | tail -${NUMTAGS} | sed -e \"s#[\ \t]\+${candidateTag}.\+##\""
 		fi
 		if [[ ${SHOWLOG} -eq 1 ]]; then
-			brew list-tagged ${candidateTag} | grep "${containername/\//-}-container" | sort -V | tail -${NUMTAGS} | sed -E -e "s#[\ \t]+${candidateTag}.+##" | \
-				sed -E -e "s#(.+)-container-([0-9.]+)-([0-9]+)#\0 - http://download.eng.bos.redhat.com/brewroot/packages/\1-container/\2/\3/data/logs/x86_64.log#"
+			result=$(brew list-tagged ${candidateTag} | grep "${containername/\//-}-container" | sort -V | tail -${NUMTAGS} | sed -E -e "s#[\ \t]+${candidateTag}.+##" | \
+				sed -E -e "s#(.+)-container-([0-9.]+)-([0-9]+)#\0 - http://download.eng.bos.redhat.com/brewroot/packages/\1-container/\2/\3/data/logs/x86_64.log#")
 		elif [[ ${TAGONLY} -eq 1 ]]; then
-			brew list-tagged ${candidateTag} | grep "${containername/\//-}-container" | sort -V | tail -${NUMTAGS} | sed -E -e "s#[\ \t]+${candidateTag}.+##" -e "s@.+-container-@@g"
+			result=$(brew list-tagged ${candidateTag} | grep "${containername/\//-}-container" | sort -V | tail -${NUMTAGS} | sed -E -e "s#[\ \t]+${candidateTag}.+##" -e "s@.+-container-@@g")
 		else
-			brew list-tagged ${candidateTag} | grep "${containername/\//-}-container" | sort -V | tail -${NUMTAGS} | sed -E -e "s#[\ \t]+${candidateTag}.+##"
+			result=$(brew list-tagged ${candidateTag} | grep "${containername/\//-}-container" | sort -V | tail -${NUMTAGS} | sed -E -e "s#[\ \t]+${candidateTag}.+##")
+		fi
+		if [[ $result ]]; then
+			echo $result
+			(( n = n + 1 ))
+		elif [[ $HIDE_MISSING -eq 0 ]]; then
+			echo "${containername/\//-}-container-???"
 		fi
 	done
+	if [[ $c -gt 4 ]] && [[ $c -gt $n ]] && [[ $HIDE_MISSING -eq 0 ]]; then echo; echo "Found $n of $c containers"; fi
 	exit
 fi
 
+c=0 # containers total
+n=0 # containers found
 for URLfrag in $CONTAINERS; do
+	(( c = c + 1 ))
+	(( n = n + 1 ))
 	URLfragtag=${URLfrag##*:}
 	if [[ ${URLfragtag} == "${URLfrag}" ]]; then # tag appended on url
 		URL="https://access.redhat.com/containers/?tab=tags#/registry.access.redhat.com/${URLfrag}"
@@ -334,7 +353,8 @@ for URLfrag in $CONTAINERS; do
 	fi
 
 	if [[ ! ${LATESTTAGs} ]]; then
-	  nocontainer=${QUERY##*docker://}; nocontainer=${nocontainer%%-container}
+		nocontainer=${QUERY##*docker://}; nocontainer=${nocontainer%%-container}
+		(( n = n - 1 ))
 		if [[ $QUIET -eq 0 ]] || [[ $VERBOSE -eq 1 ]]; then 
 			echo "[ERROR] No tags matching ${BASETAG} found for $nocontainer or ${nocontainer}-container. Is the container public and populated?"
 		elif [[ $HIDE_MISSING -eq 0 ]]; then
@@ -431,3 +451,4 @@ for URLfrag in $CONTAINERS; do
 	done
 	if [[ $NUMTAGS -gt 1 ]] || [[ ${SHOWHISTORY} -eq 1 ]]; then echo ""; fi
 done
+if [[ $c -gt 4 ]] && [[ $c -gt $n ]] && [[ $HIDE_MISSING -eq 0 ]]; then echo; echo "Found $n of $c containers"; fi
