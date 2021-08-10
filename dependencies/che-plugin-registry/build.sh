@@ -83,10 +83,8 @@ parse_arguments "$@"
 
 echo "Update yarn dependencies..."
 yarn
-echo "Build tooling..."
-yarn --cwd "$(pwd)/tools/build" build
 echo "Generate artifacts..."
-eval node "${NODE_BUILD_OPTIONS}" tools/build/lib/entrypoint.js --output-folder:"$(pwd)/output" "${BUILD_FLAGS_ARRAY[@]}"
+npx @eclipse-che/plugin-registry-generator@7.34.0-dev-170a33f --root-folder:"$(pwd)" --output-folder:"$(pwd)/output" "${BUILD_FLAGS_ARRAY[@]}"
 
 echo -e "\nTest entrypoint.sh"
 EMOJI_HEADER="-" EMOJI_PASS="[PASS]" EMOJI_FAIL="[FAIL]" "${base_dir}"/build/dockerfiles/test_entrypoint.sh
