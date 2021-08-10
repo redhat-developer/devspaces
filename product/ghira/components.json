@@ -1,0 +1,60 @@
+{
+    "Components" : 
+    {
+        "controller" : {
+            "Description" : "controller: dashboard, dev-workspace, factory/dashboard, plugin broker, ts-workspace-client, workspace-loader",
+            "Labels" : [ "team/controller", "area/dashboard", "area/plugin-broker", "area/factory/dashboard", "area/ts-workspace-client", "area/devworkspace-client", "area/devworkspace-operator" ],
+            "Lead" : "sleshche"
+        },
+        "deploy" : {
+            "Description": "deploy: cli, install, machine-exec, operator",
+            "Labels": [ "team/deploy", "area/chectl", "area/install", "area/operator", "area/machine-exec" ],
+            "Lead" : "tolusha"
+        },
+        "devex" : {
+            "Description": "devex: workshops, RHPDS",
+            "Labels": [ "team/devex", "area/dev-experience" ],
+            "Lead" : "mloriedo"
+        },
+        "docs" : {
+            "Description": "docs",
+            "Labels": [ "team/doc" ],
+            "Lead" : "rkratky"
+        },
+        "editors" : {
+            "Description": "editors: theia, idea",
+            "Labels": [ "team/editors", "area/editor/intellij", "area/editor/che-theia" ],
+            "Lead" : "azatsarynnyy"
+        },
+        "hosted che" : {
+            "Description": "hosted che: telemetry, kubernetes-image-puller, devsandbox",
+            "Labels": [ "team/hosted-che", "area/hosted-che", "area/image-puller" ],
+            "Lead" : "ibuziuk"
+        },
+        "languages" : {
+            "Description": "languages: debugger, devfiles, lsp, samples, stacks",
+            "Labels": [ "area/languages", "area/devfile/v2", "area/devfile/v1", "area/samples" ],
+            "Lead" : "vsvydenk"
+        },
+        "platform" : {
+            "Description": "platform: jwtproxy, wsmaster, devfile spec, teams, security, sharing, factory api, monitoring",
+            "Labels": [ "team/platform", "area/jwt-proxy", "area/che-server" ],
+            "Lead" : "skabashn"
+        },
+        "plugins" : {
+            "Description": "plugins: registries, factories, pull-request flow, git flow",
+            "Labels": [ "team/plugins", "area/plugins", "area/git", "area/devfile-registry", "area/plugin-registry" ],
+            "Lead" : "vsvydenk"
+        },
+        "productization" : {
+            "Description": "productization: build & internals",
+            "Labels": [ "area/ci-prod" ],
+            "Lead" : "nickboldt"
+        },
+        "testing" : {
+            "Description": "testing",
+            "Labels": [ "team/che-qe", "area/qe" ],
+            "Lead" : "dnochnevn"
+        }
+    }
+}
