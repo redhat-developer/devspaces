@@ -22,13 +22,7 @@ commands:
         component: registry-dev
         command: './build/scripts/check_mandatory_fields.sh devfiles'
         workdir: /projects/codeready-workspaces/dependencies/che-devfile-registry
-  - name: '2. write digests'
-    actions:
-      - type: exec
-        component: registry-dev
-        command: './build/scripts/write_image_digests.sh devfiles'
-        workdir: /projects/codeready-workspaces/dependencies/che-devfile-registry
-  - name: '3. list referenced images'
+  - name: '2. list referenced images'
     actions:
       - type: exec
         component: registry-dev
