@@ -126,8 +126,6 @@ if [ "${SKIP_OCI_IMAGE}" != "true" ]; then
     fi
     echo "Building with $BUILDER $BUILD_COMMAND"
     IMAGE="${REGISTRY}/${ORGANIZATION}/pluginregistry-rhel8:${TAG}"
-    VERSION=$(head -n 1 VERSION)
-    echo "Building che plugin registry ${VERSION}."
     # Copy to root directory to behave as if in Brew or codeready-workspaces-images
     cp "${DOCKERFILE}" ./builder.Dockerfile
     ${BUILDER} ${BUILD_COMMAND} -t "${IMAGE}" -f ./builder.Dockerfile .
