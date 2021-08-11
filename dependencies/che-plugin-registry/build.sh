@@ -84,7 +84,9 @@ parse_arguments "$@"
 echo "Update yarn dependencies..."
 yarn
 echo "Generate artifacts..."
-npx @eclipse-che/plugin-registry-generator@7.35.0-dev-01ff6be --root-folder:"$(pwd)" --output-folder:"$(pwd)/output" "${BUILD_FLAGS_ARRAY[@]}"
+ECPRG_VER=$(curl -sSLo- https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/crw-2-rhel-8/dependencies/VERSION.json | \
+jq -r '.Other["@eclipse-che/plugin-registry-generator"]["2.12"]');
+npx @eclipse-che/plugin-registry-generator@"${ECPRG_VER}" --root-folder:"$(pwd)" --output-folder:"$(pwd)/output" "${BUILD_FLAGS_ARRAY[@]}"
 
 echo -e "\nTest entrypoint.sh"
 EMOJI_HEADER="-" EMOJI_PASS="[PASS]" EMOJI_FAIL="[FAIL]" "${base_dir}"/build/dockerfiles/test_entrypoint.sh
