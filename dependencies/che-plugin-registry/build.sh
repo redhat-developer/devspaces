@@ -36,8 +36,6 @@ Options:
         cached in the registry; disabled by default.
     --skip-oci-image
         Build artifacts but do not create the image
-    --skip-digest-generation
-        Write image entries as is instead of re-writing with digests
 "
 
 function print_usage() {
@@ -66,10 +64,6 @@ function parse_arguments() {
             ;;
             --skip-oci-image)
             SKIP_OCI_IMAGE="true"
-            shift;
-            ;;
-            --skip-digest-generation)
-            BUILD_FLAGS_ARRAY+=("--skip-digest-generation:true")
             shift;
             ;;
             *)
