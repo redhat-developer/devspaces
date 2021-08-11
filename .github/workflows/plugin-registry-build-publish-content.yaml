@@ -28,6 +28,8 @@ jobs:
           docker pull quay.io/crw/pluginregistry-rhel8:nightly-gh-action
           docker create --name pluginRegistry quay.io/crw/pluginregistry-rhel8:nightly-gh-action sh
           mkdir -p /tmp/crw-plugin-registry/content
+          touch /tmp/crw-plugin-registry/content/.surgeignore
+          echo "*.vsix" >> /tmp/crw-plugin-registry/content/.surgeignore
           docker cp pluginRegistry:/var/www/html/v3 /tmp/crw-plugin-registry/content/v3
           ls -a /tmp/crw-plugin-registry/content/v3
           docker rm -f pluginRegistry
