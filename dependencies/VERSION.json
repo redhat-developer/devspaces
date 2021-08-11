@@ -2,128 +2,190 @@
   "Version": "2.11",
   "Jobs": {
     "crwctl": {
-      "2.11": "7.34.x",
-      "2.x": "main"
+      "2.11": [
+        "7.34.x",
+        "7.33.x"
+      ]
     },
     "configbump": {
-      "2.11": "7.34.x",
-      "2.x": "main"
+      "2.11": [
+        "7.34.x",
+        "7.33.x"
+      ]
     },
     "dashboard": {
-      "2.11": "7.34.x",
-      "2.x": "main"
+      "2.11": [
+        "7.34.x",
+        "7.33.x"
+      ]
     },
     "devworkspace": {
-      "2.11": "7.34.x",
-      "2.x": "main"
+      "2.11": [
+        "7.34.x",
+        "7.33.x"
+      ]
     },
     "imagepuller": {
-      "2.11": "7.34.x",
-      "2.x": "main"
+      "2.11": [
+        "7.34.x",
+        "7.33.x"
+      ]
     },
     "jwtproxy": {
-      "2.11": "7.34.x",
-      "2.x": "main"
+      "2.11": [
+        "7.34.x",
+        "7.33.x"
+      ]
     },
     "machineexec": {
-      "2.11": "7.34.x",
-      "2.x": "main"
+      "2.11": [
+        "7.34.x",
+        "7.33.x"
+      ]
     },
     "operator": {
-      "2.11": "7.34.x",
-      "2.x": "main"
+      "2.11": [
+        "7.34.x",
+        "7.33.x"
+      ]
     },
     "operator-bundle": {
-      "2.11": "7.34.x",
-      "2.x": "main"
+      "2.11": [
+        "7.34.x",
+        "7.33.x"
+      ]
     },
     "operator-metadata": {
-      "2.11": "7.34.x",
-      "2.x": "main"
+      "2.11": [
+        "7.34.x",
+        "7.33.x"
+      ]
     },
     "server": {
-      "2.11": "7.34.x",
-      "2.x": "main"
+      "2.11": [
+        "7.34.x",
+        "7.33.x"
+      ]
     },
     "theia-dev": {
-      "2.11": "7.34.x",
-      "2.x": "main"
+      "2.11": [
+        "7.34.x",
+        "7.33.x"
+      ]
     },
     "theia": {
-      "2.11": "7.34.x",
-      "2.x": "main"
+      "2.11": [
+        "7.34.x",
+        "7.33.x"
+      ]
     },
     "theia-endpoint": {
-      "2.11": "7.34.x",
-      "2.x": "main"
+      "2.11": [
+        "7.34.x",
+        "7.33.x"
+      ]
     },
     "devfileregistry": {
-      "2.11": "crw-2.11-rhel-8",
-      "2.x": "crw-2-rhel-8"
+      "2.11": [
+        "crw-2.11-rhel-8",
+        "crw-2.11-rhel-8"
+      ]
     },
     "pluginregistry": {
-      "2.11": "crw-2.11-rhel-8",
-      "2.x": "crw-2-rhel-8"
+      "2.11": [
+        "crw-2.11-rhel-8",
+        "crw-2.11-rhel-8"
+      ]
     },
     "plugin-java11-openj9": {
-      "2.11": "crw-2.11-rhel-8",
-      "2.x": "crw-2-rhel-8"
+      "2.11": [
+        "crw-2.11-rhel-8",
+        "crw-2.11-rhel-8"
+      ]
     },
     "plugin-java11": {
-      "2.11": "crw-2.11-rhel-8",
-      "2.x": "crw-2-rhel-8"
+      "2.11": [
+        "crw-2.11-rhel-8",
+        "crw-2.11-rhel-8"
+      ]
     },
     "plugin-java8-openj9": {
-      "2.11": "crw-2.11-rhel-8",
-      "2.x": "crw-2-rhel-8"
+      "2.11": [
+        "crw-2.11-rhel-8",
+        "crw-2.11-rhel-8"
+      ]
     },
     "plugin-java8": {
-      "2.11": "crw-2.11-rhel-8",
-      "2.x": "crw-2-rhel-8"
+      "2.11": [
+        "crw-2.11-rhel-8",
+        "crw-2.11-rhel-8"
+      ]
     },
     "plugin-kubernetes": {
-      "2.11": "crw-2.11-rhel-8",
-      "2.x": "crw-2-rhel-8"
+      "2.11": [
+        "crw-2.11-rhel-8",
+        "crw-2.11-rhel-8"
+      ]
     },
     "plugin-openshift": {
-      "2.11": "crw-2.11-rhel-8",
-      "2.x": "crw-2-rhel-8"
+      "2.11": [
+        "crw-2.11-rhel-8",
+        "crw-2.11-rhel-8"
+      ]
     },
     "stacks-cpp": {
-      "2.11": "crw-2.11-rhel-8",
-      "2.x": "crw-2-rhel-8"
+      "2.11": [
+        "crw-2.11-rhel-8",
+        "crw-2.11-rhel-8"
+      ]
     },
     "stacks-dotnet": {
-      "2.11": "crw-2.11-rhel-8",
-      "2.x": "crw-2-rhel-8"
+      "2.11": [
+        "crw-2.11-rhel-8",
+        "crw-2.11-rhel-8"
+      ]
     },
     "stacks-golang": {
-      "2.11": "crw-2.11-rhel-8",
-      "2.x": "crw-2-rhel-8"
+      "2.11": [
+        "crw-2.11-rhel-8",
+        "crw-2.11-rhel-8"
+      ]
     },
     "stacks-php": {
-      "2.11": "crw-2.11-rhel-8",
-      "2.x": "crw-2-rhel-8"
+      "2.11": [
+        "crw-2.11-rhel-8",
+        "crw-2.11-rhel-8"
+      ]
     },
     "pluginbroker-artifacts": {
-      "2.11": "v3.4.x",
-      "2.x": "v3.4.x"
+      "2.11": [
+        "v3.4.x",
+        "v3.4.x"
+      ]
     },
     "pluginbroker-metadata": {
-      "2.11": "v3.4.x",
-      "2.x": "v3.4.x"
+      "2.11": [
+        "v3.4.x",
+        "v3.4.x"
+      ]
     },
     "devworkspace-controller": {
-      "2.11": "0.8.x",
-      "2.x": "main"
+      "2.11": [
+        "0.8.x",
+        "0.7.x"
+      ]
     },
     "idea": {
-      "2.11": "20210728",
-      "2.x": "main"
+      "2.11": [
+        "20210728",
+        "20210728"
+      ]
     },
     "traefik": {
-      "2.11": "v2.3.2",
-      "2.x": "v2.3.2"
+      "2.11": [
+        "v2.3.2",
+        "v2.3.2"
+      ]
     }
   },
   "CSVs": {
@@ -131,17 +193,15 @@
       "2.11": {
         "CSV_VERSION": "2.11.0",
         "CSV_VERSION_PREV": "2.10.1"
-      },
-      "2.x": {
-        "CSV_VERSION": "2.12.0",
-        "CSV_VERSION_PREV": "2.11.0"
       }
     }
   },
   "Other": {
     "DEV_HEADER_REWRITE_TRAEFIK_PLUGIN": {
-      "2.11": "v0.1.2",
-      "2.x": "v0.1.2"
+      "2.11": "v0.1.2"
+    },
+    "@eclipse-che/plugin-registry-generator": {
+      "2.11": "7.34.0-dev-170a33f"
     }
   },
   "Copyright": "#\n# Copyright (c) 2018-2021 Red Hat, Inc.\n#    This program and the accompanying materials are made\n#    available under the terms of the Eclipse Public License 2.0\n#    which is available at https://www.eclipse.org/legal/epl-2.0/\n#\n#  SPDX-License-Identifier: EPL-2.0\n#\n#  Contributors:\n#    Red Hat, Inc. - initial API and implementation\n"
