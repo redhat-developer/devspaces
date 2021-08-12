@@ -77,11 +77,12 @@ parse_arguments "$@"
 
 echo "Update yarn dependencies..."
 yarn
-echo "Build tooling..."
-yarn --cwd "$(pwd)/tools/build" build
 echo "Generate artifacts..."
+REGISTRY_VERSION=$(jq -r '.Version' "${base_dir}"/../VERSION.json);
+REGISTRY_GENERATOR_VERSION=$(jq -r --arg REGISTRY_VERSION "${REGISTRY_VERSION}" '.Other["@eclipse-che/plugin-registry-generator"][$REGISTRY_VERSION]' "${base_dir}"/../VERSION.json);
+# echo "REGISTRY_VERSION=${REGISTRY_VERSION}; REGISTRY_GENERATOR_VERSION=${REGISTRY_GENERATOR_VERSION}"
 # do not generate digests as they'll be added at runtime from the operator (see CRW-1157)
-eval node "${NODE_BUILD_OPTIONS}" tools/build/lib/entrypoint.js --output-folder:"$(pwd)/output" --skip-digest-generation:true "${BUILD_FLAGS_ARRAY[@]}"
+npx @eclipse-che/plugin-registry-generator@"${REGISTRY_GENERATOR_VERSION}" --root-folder:"$(pwd)" --output-folder:"$(pwd)/output" "${BUILD_FLAGS_ARRAY[@]}" --skip-digest-generation:true
 
 echo -e "\nTest entrypoint.sh"
 EMOJI_HEADER="-" EMOJI_PASS="[PASS]" EMOJI_FAIL="[FAIL]" "${base_dir}"/build/dockerfiles/test_entrypoint.sh
