@@ -7,8 +7,8 @@ projects:
     name: kitchensink-example
     source:
       location: "https://github.com/jboss-developer/jboss-eap-quickstarts.git"
-      branch: 7.3.x
-      commitId: 7ead7157d3264cbc948429ad1b19896d97ee91aa
+      branch: 7.4.x
+      commitId: 0bdec06d9ce7131b3014745d7267ab788529e2ce
       type: git
       sparseCheckoutDir: kitchensink-jsp
 components:
@@ -22,7 +22,7 @@ components:
   -
     type: dockerimage
     alias: maven
-    image: registry.redhat.io/jboss-eap-7/eap73-openjdk8-openshift-rhel7:7.3.6
+    image: registry.redhat.io/jboss-eap-7/eap74-openjdk8-openshift-rhel7:7.4.0
     env:
       - name: MAVEN_OPTS
         value: "-Xmx200m -XX:+UseParallelGC -XX:MinHeapFreeRatio=10 -XX:MaxHeapFreeRatio=20 -XX:GCTimeRatio=4 -XX:AdaptiveSizePolicyWeight=90 -Dsun.zip.disableMemoryMapping=true -Xms20m -Djava.security.egd=file:/dev/./urandom -Duser.home=/home/jboss"
@@ -48,7 +48,7 @@ commands:
     actions:
       - workdir: '${CHE_PROJECTS_ROOT}/kitchensink-example/kitchensink-jsp'
         type: exec
-        command: scl enable rh-maven35 'mvn clean install'
+        command: scl enable rh-maven36 'mvn clean install'
         component: maven
   - name: 2. Configure web server
     actions:
@@ -75,7 +75,7 @@ commands:
       -
         type: exec
         component: maven
-        command: "scl enable rh-maven35 'mvn clean install' && sleep 2 && cp target/*.war /opt/eap/standalone/deployments/ROOT.war"
+        command: "scl enable rh-maven36 'mvn clean install' && sleep 2 && cp target/*.war /opt/eap/standalone/deployments/ROOT.war"
         workdir: ${CHE_PROJECTS_ROOT}/kitchensink-example/kitchensink-jsp
   -
     name: Debug (Attach)
