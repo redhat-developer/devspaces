@@ -250,10 +250,10 @@ plugins:
     extension: https://download.jboss.org/jbosstools/vscode/stable/vscode-project-initializer/project-initializer-0.0.10-582.vsix
   - repository:
       url: 'https://github.com/che-incubator/che-theia-openshift-auth'
-      revision: 0.0.1
+      revision: 0.0.2
     metaYaml:
       skipIndex: true
-    extension: https://github.com/che-incubator/che-theia-openshift-auth/releases/download/0.0.1/che-openshift-authentication-plugin-0.0.1.vsix
+    extension: https://github.com/che-incubator/che-theia-openshift-auth/releases/download/0.0.2/che-openshift-authentication-plugin-0.0.2.vsix
   - repository:
       url: 'https://github.com/redhat-developer/vscode-openshift-tools'
       revision: v0.1.5
