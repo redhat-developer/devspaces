@@ -77,10 +77,31 @@ parse_arguments "$@"
 
 echo "Update yarn dependencies..."
 yarn
-echo "Generate artifacts..."
-REGISTRY_VERSION=$(jq -r '.Version' "${base_dir}"/../VERSION.json);
-REGISTRY_GENERATOR_VERSION=$(jq -r --arg REGISTRY_VERSION "${REGISTRY_VERSION}" '.Other["@eclipse-che/plugin-registry-generator"][$REGISTRY_VERSION]' "${base_dir}"/../VERSION.json);
+
+# load VERSION.json file from ./ or  ../, or fall back to the internet if no local copy
+if [[ -f "${base_dir}/VERSION.json" ]]; then
+    versionjson="${base_dir}/VERSION.json"
+    echo "Load ${versionjson} [1]"
+elif [[ -f "${base_dir%/*}/VERSION.json" ]]; then
+    versionjson="${base_dir%/*}/VERSION.json"
+    echo "Load ${versionjson} [2]"
+else
+    # echo "[WARN] Could not find VERSION.json in ${base_dir} or ${base_dir%/*}!"
+    # try to compute branches from currently checked out branch; else fall back to hard coded value
+    # where to find redhat-developer/codeready-workspaces/${SCRIPTS_BRANCH}/product/getLatestImageTags.sh
+    SCRIPTS_BRANCH="$(git rev-parse --abbrev-ref HEAD 2>/dev/null || true)"
+    if [[ $SCRIPTS_BRANCH != "crw-2."*"-rhel-8" ]]; then
+        SCRIPTS_BRANCH="crw-2-rhel-8"
+    fi
+    echo "Load https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/${SCRIPTS_BRANCH}/dependencies/VERSION.json [3]"
+    curl -sSLo /tmp/VERSION.json https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/${SCRIPTS_BRANCH}/dependencies/VERSION.json
+    versionjson=/tmp/VERSION.json
+fi
+REGISTRY_VERSION=$(jq -r '.Version' "${versionjson}");
+REGISTRY_GENERATOR_VERSION=$(jq -r --arg REGISTRY_VERSION "${REGISTRY_VERSION}" '.Other["@eclipse-che/plugin-registry-generator"][$REGISTRY_VERSION]' "${versionjson}");
 # echo "REGISTRY_VERSION=${REGISTRY_VERSION}; REGISTRY_GENERATOR_VERSION=${REGISTRY_GENERATOR_VERSION}"
+
+echo "Generate artifacts"
 # do not generate digests as they'll be added at runtime from the operator (see CRW-1157)
 npx @eclipse-che/plugin-registry-generator@"${REGISTRY_GENERATOR_VERSION}" --root-folder:"$(pwd)" --output-folder:"$(pwd)/output" "${BUILD_FLAGS_ARRAY[@]}" --skip-digest-generation:true
 
@@ -120,7 +141,7 @@ if [ "${SKIP_OCI_IMAGE}" != "true" ]; then
             BUILD_COMMAND="bud"
         fi
     fi
-    echo "Building with $BUILDER $BUILD_COMMAND"
+    echo "Build with $BUILDER $BUILD_COMMAND"
     IMAGE="${REGISTRY}/${ORGANIZATION}/pluginregistry-rhel8:${TAG}"
     # Copy to root directory to behave as if in Brew or codeready-workspaces-images
     cp "${DOCKERFILE}" ./builder.Dockerfile
