@@ -83,7 +83,7 @@ jobs:
         name: plugin-registry-content-crw
         path: dependencies/che-plugin-registry/content-crw.tgz
   pull-request-info:
-    if: ${{ github.event_name == 'pull_request' }}
+    # if: ${{ github.event_name == 'pull_request' }}
     runs-on: ubuntu-20.04
     needs: [image-build]
     steps:
