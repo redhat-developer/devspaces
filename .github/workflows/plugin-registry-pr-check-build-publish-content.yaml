@@ -38,6 +38,9 @@ jobs:
           name: pull-request-number
       - name: Grab pull request number
         run: |
+          pwd
+          ls -a
+          ls -a ./dependencies/che-plugin-registry 
           pr_number=$(cat "PR_NUMBER")
           if ! [[ "$pr_number" =~ ^[0-9]+$ ]]; then
             echo "pr number invalid"
