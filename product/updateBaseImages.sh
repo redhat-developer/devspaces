@@ -274,7 +274,6 @@ for d in $(find "${WORKDIR}/" -maxdepth "${MAXDEPTH}" -name "${DOCKERFILE}" | so
 
 							# commit change and push it
 							if [[ -d ${d%%/${DOCKERFILE}} ]]; then pushd "${d%%/${DOCKERFILE}}" >/dev/null; pushedIn=1; fi
-							# set -x
 							if [[ ${docommit} -eq 1 ]]; then 
 								git add "${DOCKERFILE}" || true
 								git commit -s -m "chore: Update from ${URL} to ${FROMPREFIX}:${LATESTTAG}" "${DOCKERFILE}"
@@ -292,7 +291,6 @@ for d in $(find "${WORKDIR}/" -maxdepth "${MAXDEPTH}" -name "${DOCKERFILE}" | so
 									fi
 								fi
 							fi
-							set +x
 							if [[ ${buildCommand} != "echo" ]] || [[ $VERBOSE -eq 1 ]]; then echo "# ${buildCommand}"; fi
 							${buildCommand} &
 							echo
