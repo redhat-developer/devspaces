@@ -17,7 +17,7 @@ on:
 jobs:
   publish:
     # only if it's a pull request
-    if: github.event.workflow_run.event == 'pull_request'
+    # if: github.event.workflow_run.event == 'pull_request'
     name: publish
     runs-on: ubuntu-20.04
     defaults:

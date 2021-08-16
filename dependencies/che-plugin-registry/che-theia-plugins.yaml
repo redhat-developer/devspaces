@@ -2,7 +2,7 @@ version: 1.0.0
 plugins:
   - repository:
       url: 'https://github.com/microsoft/vscode-pull-request-github'
-      revision:     0.20.0
+      revision:      0.20.0
     aliases:
       - ms-vscode/vscode-github-pullrequest
     extension: https://github.com/redhat-developer/codeready-workspaces-vscode-extensions/releases/download/vdb8b64f/vscode-pull-request-github-0.20.0.vsix
