@@ -10,7 +10,7 @@
 name: Plugin Registry - PR check - Publish Registry Content
 
 on: 
-  pull_request:
+  push:
     paths:
     - 'dependencies/che-plugin-registry/**'
 
