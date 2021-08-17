@@ -86,6 +86,11 @@ updateVersion() {
     replaceField "${WORKDIR}/dependencies/VERSION.json" '.Copyright' "${COPYRIGHT}"
     # TODO CRW-2155 add ability to replace CRW:Che version mappings, eg., to associate 2.12 with ["7.36.x","7.35.x"]
     # TODO can use $BRANCH as the associated branch for CRW projects (plugin sidecars, stacks, registries), thus 2.12: ["crw-2.12-rhel-8","crw-2.12-rhel-8"]
+    CRW_Y_VALUE="${CRW_VERSION#*.}"
+    UPPER_CHE=$(( (${CRW_Y_VALUE} + 6) * 2 ))
+    LOWER_CHE=$(( ((${CRW_Y_VALUE} + 6) * 2) - 1 ))
+    # documentation says ..|.field is recursive in jq
+    replaceField "${WORKDIR}/dependencies/VERSION.json" "..|.${CRW_VERSION}" "[${UPPER_CHE},${LOWER_CHE}]"
 }
 
 updateDevfileRegistry() {
