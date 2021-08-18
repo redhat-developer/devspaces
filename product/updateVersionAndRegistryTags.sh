@@ -50,7 +50,7 @@ if [[ ! ${CRW_VERSION} ]]; then
   CRW_VERSION=${CSV_VERSION%.*} # given 2.y.0, want 2.y
 fi
 
-COPYRIGHT="#
+COPYRIGHT="[\"#
 # Copyright (c) 2018-$(date +%Y) Red Hat, Inc.
 #    This program and the accompanying materials are made
 #    available under the terms of the Eclipse Public License 2.0
@@ -60,7 +60,7 @@ COPYRIGHT="#
 #
 #  Contributors:
 #    Red Hat, Inc. - initial API and implementation
-"
+\"]"
 
 replaceField()
 {
@@ -69,7 +69,7 @@ replaceField()
   updateVal="$3"
   # shellcheck disable=SC2016 disable=SC2002 disable=SC2086
   if [[ ${theFile} == *".json" ]]; then
-    changed=$(cat "${theFile}" | jq --arg updateName "${updateName}" --arg updateVal "${updateVal}" ${updateName}' = $updateVal')
+    changed=$(cat "${theFile}" | jq ${updateName}' = '"$updateVal")
     echo "${changed}" > "${theFile}"
   elif [[ ${theFile} == *".yml" ]] || [[ ${theFile} == *".yaml" ]]; then
     changed=$(cat "${theFile}" | yq -Y --arg updateName "${updateName}" --arg updateVal "${updateVal}" ${updateName}' = $updateVal')
@@ -89,11 +89,8 @@ updateVersion() {
     CRW_Y_VALUE="${CRW_VERSION#*.}"
     UPPER_CHE=$(( (${CRW_Y_VALUE} + 6) * 2 ))
     LOWER_CHE=$(( ((${CRW_Y_VALUE} + 6) * 2) - 1 ))
-    #set up updateVal and updateName since it's going to be long
-    updateName="(.Jobs[][\"${CRW_VERSION}\"] | select(.[]==\"main\"))"
-    updateVal="[\"7.${UPPER_CHE}.x\", \"7.${LOWER_CHE}.x\"]"
 
-    replaceField "${WORKDIR}/dependencies/VERSION.json" ${updateName} ${updateVal}
+    replaceField "${WORKDIR}/dependencies/VERSION.json" "(.Jobs[][\"${CRW_VERSION}\"]|select(.[]==\"main\"))" "[\"7.${UPPER_CHE}.x\",\"7.${LOWER_CHE}.x\"]"
 }
 
 updateDevfileRegistry() {
