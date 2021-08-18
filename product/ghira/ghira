@@ -5,6 +5,9 @@ import copy
 import re
 import json
 import logging
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 
 from github import Github
 import jira
@@ -19,6 +22,11 @@ GITHUB_KEY = os.environ["GITHUB_KEY"]
 GITHUB_REPO = "eclipse/che"
 
 ISSUE_SYNC_COMMENT = "sync'd to redhat jira #"
+
+SMTP_HOST = "smtp.corp.redhat.com"
+SMTP_PORT = 25
+EMAIL_FROM = "nboldt@redhat.com"
+EMAIL_TO_DEFAULT = "nboldt@redhat.com"
 
 # LOG_LEVEL = logging.DEBUG
 LOG_LEVEL = logging.INFO
@@ -38,6 +46,31 @@ g = Github(GITHUB_KEY)
 r = g.get_repo(GITHUB_REPO)
 GITHUB_USER = g.get_user().login
 
+def send_email(msg_from, msg_to, subject, body):
+  if not msg_to:
+    msg_to = EMAIL_TO_DEFAULT
+  message = MIMEMultipart("alternative")
+  message["Subject"] = subject
+  message["From"] = msg_from
+  message["To"] = msg_to
+  part1 = MIMEText(body, "plain")
+  message.attach(part1)
+  if not DRY_RUN:
+    with smtplib.SMTP(SMTP_HOST, SMTP_PORT) as server:
+      server.sendmail(msg_from, msg_to, message.as_string())
+  else:
+    logging.info("Email to send: \n%s" % message.as_string())
+
+def get_area_lead_email(area):
+  try:
+    components = json.load(open('components.json', 'r'))
+    for k,v in components["Components"].items():
+      if area in v["Labels"]:
+        return v["Lead"] + "@redhat.com"
+  except:
+    logging.error("get_area_lead_email: Exception while processing components.json")
+  return ""
+
 class IssueToJIRA:
   def _map_labels(data):
     ret = []
@@ -47,44 +80,42 @@ class IssueToJIRA:
     return ret
   
   def _map_fixVersions(data):
-    url = 'https://raw.githubusercontent.com/redhat-developer/codeready-workspaces-images/crw-2-rhel-8/crw-jenkins/jobs/CRW_CI/crw-theia-sources.groovy'
-    req = requests.get(url)
-    if req.status_code != 200:
+    url = 'https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/crw-2-rhel-8/dependencies/VERSION.json'
+    resp = requests.get(url)
+    if resp.status_code != 200:
       logging.error("Unable to fetch fix version mapping from theia-sources.groovy in github")
-    txt = req.text
+    txt = resp.text
 
-    c = re.compile('.* JOB_BRANCHES = (\[.*\]).*')
-    m = c.search(txt)
+    version_map = json.loads(txt)
     try:
-      fix_version = m.group(1)
-      fix_version = fix_version.replace('[', '{')
-      fix_version = fix_version.replace(']', '}')
-      fix_version = json.loads(fix_version)
+      n = {}
+      version_map = version_map["Jobs"]["theia"]
+      for k, vs in version_map.items():
+        for v in vs:
+          n[v] = k
+      version_map = n
     except:
-      logging.error("Unable to parse mapping from theia-sources.groovy in github")
-    
-    # modify CRW version to be JIRA friendly
-    for k,v in fix_version.copy().items():
-      if v in ('main', 'master'):
-        continue
-      if k.count('.') == 1:
-        fix_version[k + '.0.GA'] = v
-        del fix_version[k]
-      elif k.count('.') == 2:
-        fix_version[k + '.GA'] = v
-        del fix_version[k]
-      else:
-        logging.error("Unable to recognize formation in fix version mapping for: %s" % v)
-    
-    # swtich fix_version to hash on che version
-    fix_version = {y:x for x,y in fix_version.items()}
+      logging.error("Unexpected fixVersions mapping")
 
+    # modify CRW version to be JIRA friendly
+    for k, v in version_map.items():
+      if v[-2:] == ".x":  # leave 2.x branch as-is
+        continue
+      if v.count('.') == 1:
+        version_map[k] = v + '.0.GA'
+      elif v.count('.') == 2:
+        version_map[k] = v + '.GA'
+      else:
+        logging.error("Unable to recognize formation in fix version mapping for: %s" % k)
+    
     # now that we have mapping, convert milestone to fixVersions
-    if data and 'title' in data:
-      if data['title'] not in fix_version:
-        return ['2.x']   # KIRK
-        logging.error("Unable to add fixVersion, update %s" % url)
-      return [fix_version[data['title']]]
+    if data and 'title' in data and data['title']:
+      if 'DevWorkspace' in data['title']:
+        return ['2.x']
+      elif data['title'] in version_map:
+        return [version_map[data['title']]]
+      elif data['title'] + '.x' in version_map:
+        return [version_map[data['title']]]
     return []
 
   # map github issue to jira issue
@@ -103,10 +134,11 @@ class IssueToJIRA:
   }
 
   # convert github issue to jira issue
-  #  - use raw data for both apis mapping keys with data_map.
-  #  - non-trial data_map can use (name, function) tuple instead of key name
+  #  - use raw data from both apis. map keys using data_map.
+  #  - non-trivial data_map can use (name, function) tuple instead of name
   def convert(issue):
     gh_data = issue.raw_data
+    logging.debug(json.dumps(gh_data, indent=2))
     jira_data = copy.deepcopy(IssueToJIRA.default_jira_data)
 
     for (gh_k, jira_k) in IssueToJIRA.data_map.items():
@@ -146,10 +178,27 @@ for i in all_issues:
 
 # convert issue to jira
 for i in pending_issues:
-  logging.info("Sync Issue %s to JIRA" % i.number)
   new_jira = IssueToJIRA.convert(i)
 
-  logging.info("Create JIRA issue: \n" + json.dumps(new_jira, indent=2) + '\n')
+  if not new_jira['fixVersions']:
+    d = i.raw_data
+    milestone = d['milestone']['title'] if d['milestone'] and 'title' in d['milestone'] else ""
+    logging.warning("Skipping Issue %s -- Invalid/Empty milestone (%s)" % (i.number, milestone))
+    for l in d["labels"]:
+      msg_to = get_area_lead_email(l["name"])
+      if msg_to:
+        break
+    subject = "repo " + GITHUB_REPO + " issue# " + str(i.number) + " has invalid milestone"
+    body = f"Issue URL: { d['html_url'] }\nTitle: { d['title'] }\nUpdated: { d['updated_at'] }\n\n" + \
+      f"Issue was not synced to JIRA becase the milestone field was invalid ({ milestone })"
+    send_email(EMAIL_FROM, msg_to, subject, body)
+    continue
+  elif '2.x' in new_jira['fixVersions']:
+    logging.info("Skipping Issue %s -- for future release" % i.number)
+    continue
+
+  logging.info("Sync Issue %s to JIRA" % i.number)
+  logging.debug("  - JIRA with raw data:\n" + json.dumps(new_jira, indent=2) + '\n')
   if not DRY_RUN:
     # docs example: https://jira.readthedocs.io/en/master/examples.html#issues
     new_jira_issue = j.create_issue(fields=new_jira)  
