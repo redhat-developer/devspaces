@@ -520,13 +520,16 @@ cd ''' + REPO_PATH + '''
 git checkout --track origin/''' + BRANCH + ''' || true
 export GITHUB_TOKEN=''' + GITHUB_TOKEN + ''' # echo "''' + GITHUB_TOKEN + '''"
 git config user.email "nickboldt+devstudio-release@gmail.com"
-git config user.name "Red Hat Devstudio Release Bot"
+git config user.name "devstudio-release"
 git config --global push.default matching
 # fix for warning: Pulling without specifying how to reconcile divergent branches is discouraged
 git config --global pull.rebase true
 # Fix for Could not read Username / No such device or address :: https://github.com/github/hub/issues/1644
 git config --global hub.protocol https
-git remote set-url origin ''' + AUTH_URL_SHELL
+git remote -v
+git remote set-url origin ''' + AUTH_URL_SHELL + '''
+git remote -v
+'''
     )
   } else {
     if (!fileExists(REPO_PATH)) {
@@ -544,55 +547,6 @@ git config user.name "CRW Build"
 git config --global push.default matching
 # fix for warning: Pulling without specifying how to reconcile divergent branches is discouraged
 git config --global pull.rebase true
-'''
-    )
-  }
-}
-
-// Must be run inside a withCredentials() block, after running bootstrap()
-// Deprecated @since 2.9; replaced by cloneRepoPoll() and cloneRepoWithBootstrap()
-def cloneRepo(String URL, String REPO_PATH, String BRANCH) {
-  if (URL.indexOf("pkgs.devel.redhat.com") == -1) {
-    // remove http(s) prefix, then trim any token@ prefix too
-    URL=URL - ~/http(s*):\/\// - ~/.*@/
-    def AUTH_URL_SHELL='https://\$GITHUB_TOKEN:x-oauth-basic@' + URL
-    def AUTH_URL_GROOVY='https://$GITHUB_TOKEN:x-oauth-basic@' + URL
-    if (!fileExists(REPO_PATH)) {
-      checkout([$class: 'GitSCM',
-        branches: [[name: BRANCH]],
-        doGenerateSubmoduleConfigurations: false,
-        extensions: [
-          [$class: 'RelativeTargetDirectory', relativeTargetDir: REPO_PATH],
-          [$class: 'DisableRemotePoll']
-        ],
-        submoduleCfg: [],
-        userRemoteConfigs: [[url: AUTH_URL_GROOVY]]])
-    }
-    sh('''#!/bin/bash -xe
-cd ''' + REPO_PATH + '''
-git checkout --track origin/''' + BRANCH + ''' || true
-export GITHUB_TOKEN=''' + GITHUB_TOKEN + ''' # echo "''' + GITHUB_TOKEN + '''"
-git config user.email "nickboldt+devstudio-release@gmail.com"
-git config user.name "Red Hat Devstudio Release Bot"
-git config --global push.default matching
-# SOLVED :: Fatal: Could not read Username for "https://github.com", No such device or address :: https://github.com/github/hub/issues/1644
-git config --global hub.protocol https
-git remote set-url origin ''' + AUTH_URL_SHELL
-    )
-  } else {
-    if (!fileExists(REPO_PATH)) {
-      sh('''#!/bin/bash -xe
-export KRB5CCNAME=/var/tmp/crw-build_ccache
-git clone ''' + URL + ''' ''' + REPO_PATH
-      )
-    }
-    sh('''#!/bin/bash -xe
-export KRB5CCNAME=/var/tmp/crw-build_ccache
-cd ''' + REPO_PATH + '''
-git checkout --track origin/''' + BRANCH + ''' || true
-git config user.email crw-build@REDHAT.COM
-git config user.name "CRW Build"
-git config --global push.default matching
 '''
     )
   }
