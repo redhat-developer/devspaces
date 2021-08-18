@@ -89,8 +89,11 @@ updateVersion() {
     CRW_Y_VALUE="${CRW_VERSION#*.}"
     UPPER_CHE=$(( (${CRW_Y_VALUE} + 6) * 2 ))
     LOWER_CHE=$(( ((${CRW_Y_VALUE} + 6) * 2) - 1 ))
-    # documentation says ..|.field is recursive in jq
-    replaceField "${WORKDIR}/dependencies/VERSION.json" "..|.${CRW_VERSION}" "[${UPPER_CHE},${LOWER_CHE}]"
+    #set up updateVal and updateName since it's going to be long
+    updateName="(.Jobs[][\"${CRW_VERSION}\"] | select(.[]==\"main\"))"
+    updateVal="[\"7.${UPPER_CHE}.x\", \"7.${LOWER_CHE}.x\"]"
+
+    replaceField "${WORKDIR}/dependencies/VERSION.json" ${updateName} ${updateVal}
 }
 
 updateDevfileRegistry() {
