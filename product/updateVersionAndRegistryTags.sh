@@ -50,7 +50,7 @@ if [[ ! ${CRW_VERSION} ]]; then
   CRW_VERSION=${CSV_VERSION%.*} # given 2.y.0, want 2.y
 fi
 
-COPYRIGHT="[\"#
+COPYRIGHT="#
 # Copyright (c) 2018-$(date +%Y) Red Hat, Inc.
 #    This program and the accompanying materials are made
 #    available under the terms of the Eclipse Public License 2.0
@@ -60,7 +60,7 @@ COPYRIGHT="[\"#
 #
 #  Contributors:
 #    Red Hat, Inc. - initial API and implementation
-\"]"
+"
 
 replaceField()
 {
@@ -83,7 +83,7 @@ updateVersion() {
     echo "${CRW_VERSION}" > "${WORKDIR}/dependencies/VERSION"
     # @since 2.11
     replaceField "${WORKDIR}/dependencies/VERSION.json" '.Version' "${CRW_VERSION}"
-    replaceField "${WORKDIR}/dependencies/VERSION.json" '.Copyright' "${COPYRIGHT}"
+    replaceField "${WORKDIR}/dependencies/VERSION.json" '.Copyright' "[\"${COPYRIGHT}\"]"
     # TODO CRW-2155 add ability to replace CRW:Che version mappings, eg., to associate 2.12 with ["7.36.x","7.35.x"]
     # TODO can use $BRANCH as the associated branch for CRW projects (plugin sidecars, stacks, registries), thus 2.12: ["crw-2.12-rhel-8","crw-2.12-rhel-8"]
     CRW_Y_VALUE="${CRW_VERSION#*.}"
