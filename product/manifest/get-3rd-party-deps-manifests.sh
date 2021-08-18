@@ -162,12 +162,14 @@ if [[ ${phases} == *"1"* ]] || [[ ${phases} == *"2"* ]] || [[ ${phases} == *"3"*
 	# NOTE: don't delete this checkout yet, we need it for later.
 fi
 
+# TODO https://issues.redhat.com/browse/CRW-2095
+# codeready-workspaces-operator-bundle \
 if [[ ${phases} == *"1"* ]]; then
 	log "1b. Define list of upstream containers & RPMs pulled into them from https://pkgs.devel.redhat.com/cgit/?q=codeready-workspaces "
 	for d in \
+	codeready-workspaces-backup \
 	codeready-workspaces-configbump \
 	codeready-workspaces-operator \
-	codeready-workspaces-operator-bundle \
 	codeready-workspaces-operator-metadata \
 	codeready-workspaces-dashboard \
 	\
