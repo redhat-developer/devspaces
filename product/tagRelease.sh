@@ -68,11 +68,13 @@ cd /tmp/tmp-checkouts
 set -ex
 
 # tag pkgs.devel repos only (branches are created by SPMM ticket, eg., https://projects.engineering.redhat.com/browse/SPMM-2517)
+# TODO https://issues.redhat.com/browse/CRW-2095
+# codeready-workspaces-operator-bundle \
 if [[ ${pkgs_devel_branch} ]] && [[ ${CSV_VERSION} ]]; then 
 	for d in \
+	codeready-workspaces-backup \
 	codeready-workspaces-configbump \
 	codeready-workspaces-operator \
-	codeready-workspaces-operator-bundle \
 	codeready-workspaces-operator-metadata \
 	codeready-workspaces-dashboard \
 	\

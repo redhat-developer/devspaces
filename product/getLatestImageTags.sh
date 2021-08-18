@@ -53,11 +53,12 @@ checkVersion() {
 }
 checkVersion 1.1 "$(skopeo --version | sed -e "s/skopeo version //")" skopeo
 
-# codeready-workspaces/plugin-intellij-rhel8 \
+# TODO https://issues.redhat.com/browse/CRW-2095
+# codeready-workspaces/crw-2-rhel8-operator-bundle \
 CRW_CONTAINERS_RHEC="\
+codeready-workspaces/backup-rhel8 \
 codeready-workspaces/configbump-rhel8 \
 codeready-workspaces/crw-2-rhel8-operator \
-codeready-workspaces/crw-2-rhel8-operator-bundle \
 codeready-workspaces/crw-2-rhel8-operator-metadata \
 codeready-workspaces/dashboard-rhel8 \
 \
@@ -92,11 +93,12 @@ codeready-workspaces/theia-rhel8 \
 codeready-workspaces/traefik-rhel8 \
 "
 
-# codeready-workspaces/plugin-intellij-rhel8 \
+# TODO https://issues.redhat.com/browse/CRW-2095
+# codeready-workspaces/operator-bundle \
 CRW_CONTAINERS_OSBS="\
+codeready-workspaces/backup-rhel8 \
 codeready-workspaces/configbump-rhel8 \
 codeready-workspaces/operator \
-codeready-workspaces/operator-bundle \
 codeready-workspaces/operator-metadata \
 codeready-workspaces/dashboard-rhel8 \
 \
