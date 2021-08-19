@@ -215,13 +215,14 @@ def updatePodman(boolean usePulpRepos=true) {
 echo "[INFO] Installing podman with docker emulation ..."
 sudo yum -y -q module install container-tools || true
   ''')
-  installRPMs("fuse3 podman podman-docker")
+  installRPMs("fuse3 fuse-overlayfs podman podman-docker")
   sh('''#!/bin/bash -xe
-sudo yum update -y -q fuse3 podman podman-docker || true
+sudo yum update -y -q fuse3 fuse-overlayfs podman podman-docker || true
 
 # suppress message re: docker emulation w/ podman
 sudo touch /etc/containers/nodocker
 podman --version
+rpm -qa fuse-overlayfs podman
   ''')
 }
 
