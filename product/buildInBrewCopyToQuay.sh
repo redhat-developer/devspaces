@@ -65,7 +65,7 @@ if [[ $pullAssets -eq 1 ]]; then
   if [[ -f "${BUILD_DIR}"/get-sources.sh ]]; then
     brewTaskID=$("${BUILD_DIR}"/get-sources.sh -f -p)
   elif [[ -f "${BUILD_DIR}"/get-sources-jenkins.sh ]]; then
-    brewTaskID=$("${BUILD_DIR}"/get-sources.sh -f -p)
+    brewTaskID=$("${BUILD_DIR}"/get-sources-jenkins.sh -f -p)
   else
     echo "Error: cannot find ${BUILD_DIR}/get-sources*.sh to run!"
     exit 1
