@@ -63,9 +63,9 @@ git fetch;git pull origin $DWNSTM_BRANCH || true
 
 if [[ $pullAssets -eq 1 ]]; then
   if [[ -f "${BUILD_DIR}"/get-sources.sh ]]; then
-    brewTaskID=$("${BUILD_DIR}"/get-sources.sh -f -p)
+    brewTaskID=$("${BUILD_DIR}"/get-sources.sh -f -p "$CRW_VERSION")
   elif [[ -f "${BUILD_DIR}"/get-sources-jenkins.sh ]]; then
-    brewTaskID=$("${BUILD_DIR}"/get-sources-jenkins.sh -f -p)
+    brewTaskID=$("${BUILD_DIR}"/get-sources-jenkins.sh -f -p "$CRW_VERSION")
   else
     echo "Error: cannot find ${BUILD_DIR}/get-sources*.sh to run!"
     exit 1
