@@ -18,7 +18,7 @@ if [[ $DWNSTM_BRANCH != "crw-2."*"-rhel-8" ]]; then
 else 
   CRW_VERSION=${DWNSTM_BRANCH/crw-/}; CRW_VERSION=${CRW_VERSION/-rhel-8/}
 fi
-
+BUILD_DIR=$(pwd)
 SCRIPT=$(readlink -f "$0"); SCRIPTPATH=$(dirname "$SCRIPT")
 
 usage() {
@@ -30,8 +30,9 @@ Usage: $0 image-name [-b ${DWNSTM_BRANCH}] [-t ${CRW_VERSION}] [--latest] [--nig
 Example: $0 configbump -t ${CRW_VERSION}
 
 Options: 
-    --nightly    in addition to the :${CRW_VERSION} tag, also update :nightly tag
-    --latest     in addition to the :${CRW_VERSION} tag, also update :latest tag
+    --nightly          in addition to the :${CRW_VERSION} tag, also update :nightly tag
+    --latest           in addition to the :${CRW_VERSION} tag, also update :latest tag
+    --pull-assets, -p  run get-sources.sh
 "
   exit
 }
@@ -39,12 +40,14 @@ Options:
 latestNightly="latest"
 if [[ ${DWNSTM_BRANCH} == "crw-2-rhel-8" ]]; then latestNightly="nightly"; fi
 
+pullAssets=0
 while [[ "$#" -gt 0 ]]; do
   case $1 in
     '-t') CRW_VERSION="$2"; shift 1;;
     '-b') DWNSTM_BRANCH="$2"; shift 1;;
     '--latest') latestNightly="latest";;
     '--nightly') latestNightly="nightly";;
+    '-p'|'--pull-assets') pullAssets=1; shift 0;;
     '-h') usage;;
     *) IMG=$1;;
   esac
@@ -58,7 +61,19 @@ set -x
 
 git fetch;git pull origin $DWNSTM_BRANCH || true
 
-brewTaskID=$(rhpkg container-build --nowait | sed -r -e "s#.+: ##" | head -1)
+if [[ $pullAssets -eq 1 ]]; then
+  if [[ -f "${BUILD_DIR}"/get-sources.sh ]]; then
+    brewTaskID=$("${BUILD_DIR}"/get-sources.sh -f -p)
+  elif [[ -f "${BUILD_DIR}"/get-sources-jenkins.sh ]]; then
+    brewTaskID=$("${BUILD_DIR}"/get-sources.sh -f -p)
+  else
+    echo "Error: cannot find ${BUILD_DIR}/get-sources*.sh to run!"
+    exit 1
+  fi
+else
+  brewTaskID=$(rhpkg container-build --nowait | sed -r -e "s#.+: ##" | head -1)
+fi
+
 if [[ $brewTaskID ]]; then 
   google-chrome "https://brewweb.engineering.redhat.com/brew/taskinfo?taskID=${brewTaskID}"
   brew watch-logs ${brewTaskID} | tee /tmp/${brewTaskID}.txt
