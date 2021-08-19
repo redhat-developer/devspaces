@@ -69,7 +69,7 @@ replaceField()
   updateVal="$3"
   # shellcheck disable=SC2016 disable=SC2002 disable=SC2086
   if [[ ${theFile} == *".json" ]]; then
-    changed=$(cat "${theFile}" | jq --arg updateName "${updateName}" --arg updateVal "${updateVal}" ${updateName}' = $updateVal')
+    changed=$(cat "${theFile}" | jq ${updateName}' = '"$updateVal")
     echo "${changed}" > "${theFile}"
   elif [[ ${theFile} == *".yml" ]] || [[ ${theFile} == *".yaml" ]]; then
     changed=$(cat "${theFile}" | yq -Y --arg updateName "${updateName}" --arg updateVal "${updateVal}" ${updateName}' = $updateVal')
@@ -83,9 +83,14 @@ updateVersion() {
     echo "${CRW_VERSION}" > "${WORKDIR}/dependencies/VERSION"
     # @since 2.11
     replaceField "${WORKDIR}/dependencies/VERSION.json" '.Version' "${CRW_VERSION}"
-    replaceField "${WORKDIR}/dependencies/VERSION.json" '.Copyright' "${COPYRIGHT}"
+    replaceField "${WORKDIR}/dependencies/VERSION.json" '.Copyright' "[\"${COPYRIGHT}\"]"
     # TODO CRW-2155 add ability to replace CRW:Che version mappings, eg., to associate 2.12 with ["7.36.x","7.35.x"]
     # TODO can use $BRANCH as the associated branch for CRW projects (plugin sidecars, stacks, registries), thus 2.12: ["crw-2.12-rhel-8","crw-2.12-rhel-8"]
+    CRW_Y_VALUE="${CRW_VERSION#*.}"
+    UPPER_CHE=$(( (${CRW_Y_VALUE} + 6) * 2 ))
+    LOWER_CHE=$(( ((${CRW_Y_VALUE} + 6) * 2) - 1 ))
+
+    replaceField "${WORKDIR}/dependencies/VERSION.json" "(.Jobs[][\"${CRW_VERSION}\"]|select(.[]==\"main\"))" "[\"7.${UPPER_CHE}.x\",\"7.${LOWER_CHE}.x\"]"
 }
 
 updateDevfileRegistry() {
