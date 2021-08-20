@@ -115,7 +115,7 @@ class IssueToJIRA:
       elif data['title'] in version_map:
         return [version_map[data['title']]]
       elif data['title'] + '.x' in version_map:
-        return [version_map[data['title']]]
+        return [version_map[data['title'] + '.x']]
     return []
 
   # map github issue to jira issue
