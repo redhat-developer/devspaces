@@ -36,6 +36,7 @@ while [[ "$#" -gt 0 ]]; do
     '-b') BRANCH="$2"; shift 1;;
     '-v') CSV_VERSION="$2"; shift 1;; # 2.y.0
     '-t') CRW_VERSION="$2"; shift 1;; # 2.y
+    '-a') NEW_CRW_VERSION="$2"; shift 1;; 
     '-n'|'--no-commit') docommit=0; dopush=0; shift 0;;
     '-p'|'--no-push') dopush=0; shift 0;;
     '-prb') PR_BRANCH="$2"; shift 1;;
@@ -69,7 +70,7 @@ replaceField()
   updateVal="$3"
   # shellcheck disable=SC2016 disable=SC2002 disable=SC2086
   if [[ ${theFile} == *".json" ]]; then
-    changed=$(cat "${theFile}" | jq --arg updateName "${updateName}" --arg updateVal "${updateVal}" ${updateName}' = $updateVal')
+    changed=$(cat "${theFile}" | jq ${updateName}' = '"$updateVal")
     echo "${changed}" > "${theFile}"
   elif [[ ${theFile} == *".yml" ]] || [[ ${theFile} == *".yaml" ]]; then
     changed=$(cat "${theFile}" | yq -Y --arg updateName "${updateName}" --arg updateVal "${updateVal}" ${updateName}' = $updateVal')
@@ -83,9 +84,15 @@ updateVersion() {
     echo "${CRW_VERSION}" > "${WORKDIR}/dependencies/VERSION"
     # @since 2.11
     replaceField "${WORKDIR}/dependencies/VERSION.json" '.Version' "${CRW_VERSION}"
-    replaceField "${WORKDIR}/dependencies/VERSION.json" '.Copyright' "${COPYRIGHT}"
+    replaceField "${WORKDIR}/dependencies/VERSION.json" '.Copyright' "[\"${COPYRIGHT}\"]"
     # TODO CRW-2155 add ability to replace CRW:Che version mappings, eg., to associate 2.12 with ["7.36.x","7.35.x"]
     # TODO can use $BRANCH as the associated branch for CRW projects (plugin sidecars, stacks, registries), thus 2.12: ["crw-2.12-rhel-8","crw-2.12-rhel-8"]
+    CRW_Y_VALUE="${CRW_VERSION#*.}"
+    UPPER_CHE=$(( (${CRW_Y_VALUE} + 6) * 2 ))
+    LOWER_CHE=$(( ((${CRW_Y_VALUE} + 6) * 2) - 1 ))
+
+    replaceField "${WORKDIR}/dependencies/VERSION.json" "(.Jobs[][\"${CRW_VERSION}\"]|select(.[]==\"main\"))" "[\"7.${UPPER_CHE}.x\",\"7.${LOWER_CHE}.x\"]"
+    replaceField "${WORKDIR}/dependencies/VERSION.json" "(.Jobs[][\"${CRW_VERSION}\"]|select(.[]==\"crw-2-rhel-8\"))" "[\"${BRANCH}\",\"${BRANCH}\"]"
 }
 
 updateDevfileRegistry() {
@@ -122,6 +129,11 @@ updatePluginRegistry() {
     echo "${COPYRIGHT}$(cat "${TEMPLATE_FILE}")" > "${TEMPLATE_FILE}".2; mv "${TEMPLATE_FILE}".2 "${TEMPLATE_FILE}"
 
     git diff -q "${YAML_ROOT}" "${TEMPLATE_FILE}" || true
+}
+
+addCRWVersion(){
+  # copy 2.x
+  #rename first 2.xx to NEW_CRW
 }
 
 commitChanges() {
