@@ -131,9 +131,10 @@ updatePluginRegistry() {
     git diff -q "${YAML_ROOT}" "${TEMPLATE_FILE}" || true
 }
 
-addCRWVersion(){
+addCRWVersion() {
   # copy 2.x
   #rename first 2.xx to NEW_CRW
+  return
 }
 
 commitChanges() {
