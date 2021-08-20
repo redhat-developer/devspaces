@@ -36,6 +36,7 @@ while [[ "$#" -gt 0 ]]; do
     '-b') BRANCH="$2"; shift 1;;
     '-v') CSV_VERSION="$2"; shift 1;; # 2.y.0
     '-t') CRW_VERSION="$2"; shift 1;; # 2.y
+    '-a') NEW_CRW_VERSION="$2"; shift 1;; 
     '-n'|'--no-commit') docommit=0; dopush=0; shift 0;;
     '-p'|'--no-push') dopush=0; shift 0;;
     '-prb') PR_BRANCH="$2"; shift 1;;
@@ -91,6 +92,7 @@ updateVersion() {
     LOWER_CHE=$(( ((${CRW_Y_VALUE} + 6) * 2) - 1 ))
 
     replaceField "${WORKDIR}/dependencies/VERSION.json" "(.Jobs[][\"${CRW_VERSION}\"]|select(.[]==\"main\"))" "[\"7.${UPPER_CHE}.x\",\"7.${LOWER_CHE}.x\"]"
+    replaceField "${WORKDIR}/dependencies/VERSION.json" "(.Jobs[][\"${CRW_VERSION}\"]|select(.[]==\"crw-2-rhel-8\"))" "[\"${BRANCH}\",\"${BRANCH}\"]"
 }
 
 updateDevfileRegistry() {
@@ -127,6 +129,11 @@ updatePluginRegistry() {
     echo "${COPYRIGHT}$(cat "${TEMPLATE_FILE}")" > "${TEMPLATE_FILE}".2; mv "${TEMPLATE_FILE}".2 "${TEMPLATE_FILE}"
 
     git diff -q "${YAML_ROOT}" "${TEMPLATE_FILE}" || true
+}
+
+addCRWVersion(){
+  # copy 2.x
+  #rename first 2.xx to NEW_CRW
 }
 
 commitChanges() {
