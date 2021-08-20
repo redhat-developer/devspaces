@@ -1,5 +1,6 @@
 {
     "Images": {
+        "quay.io/crw/backup-rhel8:2.12-3": "a4b1b0aa052e9ff191625b26d9ed64f2410dda0b5b4dd485690605cbb81295d0",
         "quay.io/crw/configbump-rhel8:2.12-2": "420055fcda2f2d1c5bc1fd6d4990730df5fbdcda0bb39105d5f85567ce2862c6",
         "quay.io/crw/crw-2-rhel8-operator:2.12-1": "4b9147217c9f304981674e6d0786a89a771aa3a921fed70a986ad5ca9d10ec55",
         "quay.io/crw/dashboard-rhel8:2.12-2": "253cbc8e52f192440464e2be5ce56a15d242cdba295b9d9c814a9882961f603d",
@@ -7,6 +8,7 @@
         "quay.io/crw/devworkspace-rhel8:2.12-2": "e67b767648452605670c68b38ca8a2798fa5d5813393e6f389e7e75e3d400a19",
         "quay.io/crw/idea-rhel8:2.12-2": "ceb5e899a68ff382bd1a6932b8362ba7f96293f94a57474977264ed48a97c07e",
         "quay.io/crw/imagepuller-rhel8:2.12-1": "1126149b3842310600111c9279cb97938b95d6e1f1c2df37625203d4c722d9f0",
+        "quay.io/crw/jwtproxy-rhel8:2.12-1": "b4dbdd94dc26e99bbf69f28a0a2b0d3ad2869d1e81a66e7093007eb2475a91f7",
         "quay.io/crw/machineexec-rhel8:2.12-2": "13cadd44659b454a62a32db2f97c28cb5c56915c87f5cd7d755d31f3360707a2",
         "quay.io/crw/pluginbroker-artifacts-rhel8:2.12-2": "bc57054d7f80ba7e4e18c4f615a807cdb74eae5bc732497fc0f851202009f4c4",
         "quay.io/crw/pluginbroker-metadata-rhel8:2.12-2": "7bec9edf0bcd516f855bf2777e5f0c4c12efc7e5857a18f833f17dbb9c142cbb",
@@ -22,9 +24,9 @@
         "quay.io/crw/stacks-dotnet-rhel8:2.12-2": "c0a117448823dac9bfedb2eef2d1d0867187d4196a4b6a1e54658ef0f5c1fd5f",
         "quay.io/crw/stacks-golang-rhel8:2.12-2": "baae67c8f30e3270e48b5509d55b00e615d292896a11efe3a1a70fe14d5efc3c",
         "quay.io/crw/stacks-php-rhel8:2.12-2": "078999ef1e65cd1969a5ac522d15e2b37e14b426f4b9d1b6a75fc26a35a4d0a7",
-        "quay.io/crw/theia-dev-rhel8:2.12-36": "0af4d216e51f4525e1b7970e460c1f97c0cd602aa4ba44ffe70519f3e86cacd9",
-        "quay.io/crw/theia-endpoint-rhel8:2.12-9": "1a85181f77978c089257b1ae0c66060899d6aa344043a52a3e34d567fc784ab1",
-        "quay.io/crw/theia-rhel8:2.12-10": "3c986e22dd55503736e831acea93d3708d6173a19d244532abeaa1d2cc20c2f3",
+        "quay.io/crw/theia-dev-rhel8:2.12-46": "ca8a962e28e749c2c10dce3db36c61eea211062efe1b4f9efe2882e5c61cbbb8",
+        "quay.io/crw/theia-endpoint-rhel8:2.12-15": "0136d4cc4b2cbf5fc386c4c5ef972f8613957496139bbe808408841d3ef54dff",
+        "quay.io/crw/theia-rhel8:2.12-16": "b4a341e810c163ba820e83fe1b6d98b86eda825fafe44d2e5af78057d0abcaae",
         "quay.io/crw/traefik-rhel8:2.12-2": "ed5a8bff2bd37af26ce3dabb160d6548ef546792e0ac7d13ab022d3e5720a770",
         "": ""
     }
