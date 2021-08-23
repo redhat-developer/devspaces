@@ -69,7 +69,7 @@ replaceField()
   updateVal="$3"
   # shellcheck disable=SC2016 disable=SC2002 disable=SC2086
   if [[ ${theFile} == *".json" ]]; then
-    changed=$(cat "${theFile}" | jq ${updateName}' = '"$updateVal")
+    changed=$(cat "${theFile}" | jq ${updateName}' |= '"$updateVal")
     echo "${changed}" > "${theFile}"
   elif [[ ${theFile} == *".yml" ]] || [[ ${theFile} == *".yaml" ]]; then
     changed=$(cat "${theFile}" | yq -Y --arg updateName "${updateName}" --arg updateVal "${updateVal}" ${updateName}' = $updateVal')
@@ -87,7 +87,7 @@ updateVersion() {
     
     # CRW-2155, if version is in the json update it for che and crw branches
     # otherwise inject new version.
-    check=$(cat ${WORKDIR}/dependencies/VERSION.json | grep "\"${CRW_VERSION}\"")
+    check=$(cat ${WORKDIR}/dependencies/VERSION.json | jq '.Jobs[] | keys' | grep "\"${CRW_VERSION}\"")
     if [[ ${check} ]]; then
       CRW_Y_VALUE="${CRW_VERSION#*.}"
       UPPER_CHE=$(( (${CRW_Y_VALUE} + 6) * 2 ))
