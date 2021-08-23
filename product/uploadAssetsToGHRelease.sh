@@ -44,7 +44,7 @@ while [[ "$#" -gt 0 ]]; do
   shift 1
 done
 
-curl -XPOST -H 'Authorization:token '"${GITHUB_TOKEN}" --data '{"tag_name": "'"${CSV_VERSION}"'", "target_commitish": "'"${MIDSTM_BRANCH}"'", "name": "'"${CSV_VERSION}"'-ci-assets", "body": "Container build asset files for '"${CSV_VERSION}"'", "draft": true, "prerelease": true}' https://api.github.com/repos/redhat-developer/codeready-workspaces-chectl/releases > "/tmp/${CSV_VERSION}"
+curl -XPOST -H 'Authorization:token '"${GITHUB_TOKEN}" --data '{"tag_name": "'"${CSV_VERSION}"'", "target_commitish": "'"${MIDSTM_BRANCH}"'", "name": "'"${CSV_VERSION}"'-ci-assets", "body": "Container build asset files for '"${CSV_VERSION}"'", "draft": true, "prerelease": true}' https://api.github.com/repos/redhat-developer/codeready-workspaces-images/releases > "/tmp/${CSV_VERSION}"
 # Extract the id of the release from the creation response
 RELEASE_ID="$(jq -r .id /tmp/${CSV_VERSION})"
 
