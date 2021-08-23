@@ -59,7 +59,8 @@ def send_email(msg_from, msg_to, subject, body):
     with smtplib.SMTP(SMTP_HOST, SMTP_PORT) as server:
       server.sendmail(msg_from, msg_to, message.as_string())
   else:
-    logging.info("Email to send: \n%s" % message.as_string())
+    logging.info(" - sent email to %s" % message["To"])
+    logging.debug("Email Content:\n%s" % message.as_string())
 
 def get_area_lead_email(area):
   try:
@@ -115,7 +116,7 @@ class IssueToJIRA:
       elif data['title'] in version_map:
         return [version_map[data['title']]]
       elif data['title'] + '.x' in version_map:
-        return [version_map[data['title']]]
+        return [version_map[data['title'] + '.x']]
     return []
 
   # map github issue to jira issue

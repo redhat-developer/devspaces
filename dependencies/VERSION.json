@@ -1,5 +1,5 @@
 {
-  "Version": "2.12",
+  "Version": 2.12,
   "Jobs": {
     "crwctl": {
       "2.11": [
@@ -7,8 +7,8 @@
         "7.33.x"
       ],
       "2.12": [
-        "main",
-        "main"
+        "7.36.x",
+        "7.35.x"
       ],
       "2.x": [
         "main",
@@ -21,8 +21,8 @@
         "7.33.x"
       ],
       "2.12": [
-        "main",
-        "main"
+        "7.36.x",
+        "7.35.x"
       ],
       "2.x": [
         "main",
@@ -35,8 +35,8 @@
         "7.33.x"
       ],
       "2.12": [
-        "main",
-        "main"
+        "7.36.x",
+        "7.35.x"
       ],
       "2.x": [
         "main",
@@ -49,8 +49,8 @@
         "7.33.x"
       ],
       "2.12": [
-        "main",
-        "main"
+        "7.36.x",
+        "7.35.x"
       ],
       "2.x": [
         "main",
@@ -63,8 +63,8 @@
         "7.33.x"
       ],
       "2.12": [
-        "main",
-        "main"
+        "7.36.x",
+        "7.35.x"
       ],
       "2.x": [
         "main",
@@ -77,8 +77,8 @@
         "7.33.x"
       ],
       "2.12": [
-        "main",
-        "main"
+        "7.36.x",
+        "7.35.x"
       ],
       "2.x": [
         "main",
@@ -91,8 +91,8 @@
         "7.33.x"
       ],
       "2.12": [
-        "main",
-        "main"
+        "7.36.x",
+        "7.35.x"
       ],
       "2.x": [
         "main",
@@ -105,8 +105,8 @@
         "7.33.x"
       ],
       "2.12": [
-        "main",
-        "main"
+        "7.36.x",
+        "7.35.x"
       ],
       "2.x": [
         "main",
@@ -119,8 +119,8 @@
         "7.33.x"
       ],
       "2.12": [
-        "main",
-        "main"
+        "7.36.x",
+        "7.35.x"
       ],
       "2.x": [
         "main",
@@ -133,8 +133,8 @@
         "7.33.x"
       ],
       "2.12": [
-        "main",
-        "main"
+        "7.36.x",
+        "7.35.x"
       ],
       "2.x": [
         "main",
@@ -147,8 +147,8 @@
         "7.33.x"
       ],
       "2.12": [
-        "main",
-        "main"
+        "7.36.x",
+        "7.35.x"
       ],
       "2.x": [
         "main",
@@ -161,8 +161,8 @@
         "7.33.x"
       ],
       "2.12": [
-        "main",
-        "main"
+        "7.36.x",
+        "7.35.x"
       ],
       "2.x": [
         "main",
@@ -175,8 +175,8 @@
         "7.33.x"
       ],
       "2.12": [
-        "main",
-        "main"
+        "7.36.x",
+        "7.35.x"
       ],
       "2.x": [
         "main",
@@ -189,8 +189,8 @@
         "7.33.x"
       ],
       "2.12": [
-        "main",
-        "main"
+        "7.36.x",
+        "7.35.x"
       ],
       "2.x": [
         "main",
@@ -203,8 +203,8 @@
         "7.33.x"
       ],
       "2.12": [
-        "main",
-        "main"
+        "7.36.x",
+        "7.35.x"
       ],
       "2.x": [
         "main",
@@ -413,8 +413,8 @@
         "0.7.x"
       ],
       "2.12": [
-        "main",
-        "main"
+        "7.36.x",
+        "7.35.x"
       ],
       "2.x": [
         "main",
@@ -427,8 +427,8 @@
         "20210728"
       ],
       "2.12": [
-        "main",
-        "main"
+        "7.36.x",
+        "7.35.x"
       ],
       "2.x": [
         "main",
@@ -441,12 +441,12 @@
         "v2.3.2"
       ],
       "2.12": [
-        "v2.3.2",
-        "v2.3.2"
+        "v2.5.0",
+        "v2.5.0"
       ],
       "2.x": [
-        "v2.3.2",
-        "v2.3.2"
+        "v2.5.0",
+        "v2.5.0"
       ]
     }
   },
@@ -483,5 +483,7 @@
       "2.x": "4.8"
     }
   },
-  "Copyright": "#\n# Copyright (c) 2018-2021 Red Hat, Inc.\n#    This program and the accompanying materials are made\n#    available under the terms of the Eclipse Public License 2.0\n#    which is available at https://www.eclipse.org/legal/epl-2.0/\n#\n#  SPDX-License-Identifier: EPL-2.0\n#\n#  Contributors:\n#    Red Hat, Inc. - initial API and implementation\n"
+  "Copyright": [
+    "#\n# Copyright (c) 2018-2021 Red Hat, Inc.\n#    This program and the accompanying materials are made\n#    available under the terms of the Eclipse Public License 2.0\n#    which is available at https://www.eclipse.org/legal/epl-2.0/\n#\n#  SPDX-License-Identifier: EPL-2.0\n#\n#  Contributors:\n#    Red Hat, Inc. - initial API and implementation\n"
+  ]
 }

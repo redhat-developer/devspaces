@@ -7,7 +7,6 @@ projects:
     name: jboss-eap-quickstart
     source:
       location: "https://github.com/crw-samples/microprofile-quickstart.git"
-      # TODO https://issues.redhat.com/browse/CRW-1580 update to xp3 after Aug 5
       branch: "xp-2.0.x"
       type: git
 components:

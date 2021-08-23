@@ -651,12 +651,15 @@ def bootstrap(String CRW_KEYTAB, boolean force=false) {
     // install redhat internal certs (so we can connect to jenkins and brew registries)
     installRedHatInternalCerts()
     // also install commonly needed tools
+    installPodman2()
     installSkopeo()
     installYq()
     loginToRegistries()
     sh('''#!/bin/bash -xe
-# bootstrapping: if keytab is lost, upload to
-# https://codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/credentials/store/system/domain/_/
+# disable selinux so we can do podman volume mounts to extract contents of containers (CRW-1919)
+sudo setenforce 0 || true
+
+# if keytab is lost, upload to https://gitlab.cee.redhat.com/codeready-workspaces/crw-jenkins/-/blob/master/secrets/crw_crw-build-keytab.base64
 # then set Use secret text above and set Bindings > Variable (path to the file) as ''' + CRW_KEYTAB + '''
 chmod 700 ''' + CRW_KEYTAB + ''' && chown ''' + USER + ''' ''' + CRW_KEYTAB + '''
 # create .k5login file
