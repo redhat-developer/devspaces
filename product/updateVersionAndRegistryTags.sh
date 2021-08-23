@@ -36,7 +36,6 @@ while [[ "$#" -gt 0 ]]; do
     '-b') BRANCH="$2"; shift 1;;
     '-v') CSV_VERSION="$2"; shift 1;; # 2.y.0
     '-t') CRW_VERSION="$2"; shift 1;; # 2.y
-    '-a') NEW_CRW_VERSION="$2"; shift 1;; 
     '-n'|'--no-commit') docommit=0; dopush=0; shift 0;;
     '-p'|'--no-push') dopush=0; shift 0;;
     '-prb') PR_BRANCH="$2"; shift 1;;
@@ -85,14 +84,45 @@ updateVersion() {
     # @since 2.11
     replaceField "${WORKDIR}/dependencies/VERSION.json" '.Version' "${CRW_VERSION}"
     replaceField "${WORKDIR}/dependencies/VERSION.json" '.Copyright' "[\"${COPYRIGHT}\"]"
-    # TODO CRW-2155 add ability to replace CRW:Che version mappings, eg., to associate 2.12 with ["7.36.x","7.35.x"]
-    # TODO can use $BRANCH as the associated branch for CRW projects (plugin sidecars, stacks, registries), thus 2.12: ["crw-2.12-rhel-8","crw-2.12-rhel-8"]
-    CRW_Y_VALUE="${CRW_VERSION#*.}"
-    UPPER_CHE=$(( (${CRW_Y_VALUE} + 6) * 2 ))
-    LOWER_CHE=$(( ((${CRW_Y_VALUE} + 6) * 2) - 1 ))
+    
+    # CRW-2155, if version is in the json update it for che and crw branches
+    # otherwise inject new version.
+    check=$(cat ${WORKDIR}/dependencies/VERSION.json | grep "\"${CRW_VERSION}\"")
+    if [[ ${check} ]]; then
+      CRW_Y_VALUE="${CRW_VERSION#*.}"
+      UPPER_CHE=$(( (${CRW_Y_VALUE} + 6) * 2 ))
+      LOWER_CHE=$(( ((${CRW_Y_VALUE} + 6) * 2) - 1 ))
 
-    replaceField "${WORKDIR}/dependencies/VERSION.json" "(.Jobs[][\"${CRW_VERSION}\"]|select(.[]==\"main\"))" "[\"7.${UPPER_CHE}.x\",\"7.${LOWER_CHE}.x\"]"
-    replaceField "${WORKDIR}/dependencies/VERSION.json" "(.Jobs[][\"${CRW_VERSION}\"]|select(.[]==\"crw-2-rhel-8\"))" "[\"${BRANCH}\",\"${BRANCH}\"]"
+      replaceField "${WORKDIR}/dependencies/VERSION.json" "(.Jobs[][\"${CRW_VERSION}\"]|select(.[]==\"main\"))" "[\"7.${UPPER_CHE}.x\",\"7.${LOWER_CHE}.x\"]"
+      replaceField "${WORKDIR}/dependencies/VERSION.json" "(.Jobs[][\"${CRW_VERSION}\"]|select(.[]==\"crw-2-rhel-8\"))" "[\"${BRANCH}\",\"${BRANCH}\"]"
+    else
+      # Get top level keys to start (Jobs, CSVs, Other, etc)
+      TOP_KEYS=$(cat ${WORKDIR}/dependencies/VERSION.json | jq 'keys')
+      TOP_KEYS=$(echo ${TOP_KEYS} | sed -e 's/\[//' -e 's/\]//' -e 's/\ //' -e 's/\,//g') #clean for array
+      TOP_KEYS=(${TOP_KEYS})
+
+      TOP_LENGTH=${#TOP_KEYS[@]}
+      for (( i=0; i<${TOP_LENGTH}; i++ ))
+      do
+        if [[ (${TOP_KEYS[i]} != "\"Version\"") && (${TOP_KEYS[i]} != "\"Copyright\"") ]]; then
+          # Get the sub-keys in Jobs so we can add a new object
+          KEYS=$(cat ${WORKDIR}/dependencies/VERSION.json | jq '.'${TOP_KEYS[i]}' | keys')
+          KEYS=$(echo ${KEYS} | sed -e 's/\[//' -e 's/\]//' -e 's/\ //' -e 's/\,//g')
+          KEYS=(${KEYS})
+
+          KEYS_LENGTH=${#KEYS[@]}
+          for (( j=0; j<${KEYS_LENGTH}; j++ ))
+          do
+            #save content of 2.x
+            content=$(cat ${WORKDIR}/dependencies/VERSION.json | jq ".${TOP_KEYS[i]}[${KEYS[j]}][\"2.x\"]")
+            #Add CRW_VERSION from 2.x then delete 2.x
+            #then append 2.x so the general order remains the same
+            replaceField "${WORKDIR}/dependencies/VERSION.json" ".${TOP_KEYS[i]}[${KEYS[j]}]" "(. + {\"${CRW_VERSION}\": .\"2.x\"} | del(.\"2.x\"))"
+            replaceField "${WORKDIR}/dependencies/VERSION.json" ".${TOP_KEYS[i]}[${KEYS[j]}]" ". + {\"2.x\": ${content}}"
+          done
+        fi
+      done
+    fi 
 }
 
 updateDevfileRegistry() {
@@ -129,11 +159,6 @@ updatePluginRegistry() {
     echo "${COPYRIGHT}$(cat "${TEMPLATE_FILE}")" > "${TEMPLATE_FILE}".2; mv "${TEMPLATE_FILE}".2 "${TEMPLATE_FILE}"
 
     git diff -q "${YAML_ROOT}" "${TEMPLATE_FILE}" || true
-}
-
-addCRWVersion(){
-  # copy 2.x
-  #rename first 2.xx to NEW_CRW
 }
 
 commitChanges() {
