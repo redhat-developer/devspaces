@@ -36,7 +36,7 @@ while [[ "$#" -gt 0 ]]; do
   case $1 in
     '-v') CSV_VERSION="$2"; shift 1;;
     '-b') MIDSTM_BRANCH="$2"; shift 1;;
-    '-ght') GITHUB_TOKEN="$2"; shift 1;;
+    '-ght') GITHUB_TOKEN="$2"; export GITHUB_TOKEN="${GITHUB_TOKEN}"; shift 1;;
     '--prefix') PREFIX="$2"; shift 1;;
     '--help'|'-h') usage;;
     *) fileList="${fileList} $1";;
@@ -79,15 +79,16 @@ fi
 
 # upload artifacts for each platform 
 for fileToPush in $fileList; do
-    echo "Uploading new asset $fileToPush"
     # attempt to upload a new file
-    # TODO: what do we do if the upload failed and instead of a valid asset we get Validation Failed because already_exists
+    echo "Uploading new asset $fileToPush"
+    # TODO: what do we do if the upload failed, and instead of a valid asset, we get "Validation Failed" because "already_exists"?
+    # should we delete the release and create fresh assets?
     if [[ $(curlWithTokenBinary @"${fileToPush}" -XPOST "https://uploads.github.com/repos/redhat-developer/codeready-workspaces-images/releases/${RELEASE_ID}/assets?name=${fileToPush}") != *"Failed"* ]]; then
         getId $RELEASE_ID $fileToPush
         echo "Uploaded new asset $ID to https://api.github.com/repos/redhat-developer/codeready-workspaces-images/releases/$RELEASE_ID/assets"
     else
         getId $RELEASE_ID $fileToPush
-        # TODO this doesn't work
+        # TODO this doesn't work -- PATCH doesn't seem to support POSTing a new binary
         if [[ $(curlWithTokenBinary @"${fileToPush}" -XPATCH "https://uploads.github.com/repos/redhat-developer/codeready-workspaces-images/releases/${RELEASE_ID}/assets/${ID}?name=${fileToPush}") ]]; then
                 getId $RELEASE_ID $fileToPush
                 echo "Updated asset $ID in https://api.github.com/repos/redhat-developer/codeready-workspaces-images/releases/$RELEASE_ID/assets/${ID}"
