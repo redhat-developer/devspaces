@@ -77,6 +77,8 @@ if [[ -z $RELEASE_ID ]]; then
     RELEASE_ID="$(jq -r .id "/tmp/${CSV_VERSION}")"
 fi
 
+# TODO: to avoid re-downloading and re-uploading files, can we store sha512sums and compare them to what's already in the pkgs.devel sources files?
+
 # upload artifacts for each platform 
 for fileToPush in $fileList; do
     # attempt to upload a new file
