@@ -493,9 +493,8 @@ def cloneRepoPoll(String URL, String REPO_PATH, String BRANCH, boolean withPolli
   if (URL.indexOf("pkgs.devel.redhat.com") == -1) {
     // remove http(s) prefix, then trim any token@ prefix too
     URL=URL - ~/http(s*):\/\// - ~/.*@/
-    // As of 2021-08-17, new personal access token (ghp_*) URL format requires https://user:token@ instead of https://token:x-oauth-basic@
-    def AUTH_URL_SHELL='https://devstudio-release:\$GITHUB_TOKEN@' + URL
-    def AUTH_URL_GROOVY='https://devstudio-release:$GITHUB_TOKEN@' + URL
+    def AUTH_URL_SHELL='https://\$GITHUB_TOKEN:x-oauth-basic@' + URL
+    def AUTH_URL_GROOVY='https://$GITHUB_TOKEN:x-oauth-basic@' + URL
     if (!fileExists(REPO_PATH) || withPolling) {
       // clean before checkout
       sh('''rm -fr ${WORKSPACE}/''' + REPO_PATH)
