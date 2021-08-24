@@ -24,13 +24,13 @@ if [[ ${MIDSTM_BRANCH} != "crw-"*"-rhel-"* ]]; then MIDSTM_BRANCH="crw-2-rhel-8"
 
 usage () {
     echo "
-Usage:   $0 -v [CRW CSV_VERSION] --prefix [unique prefix] file1.tar.gz file2.tar.gz
-Example: $0 -v 2.y.0 --prefix crw-theia
+Usage:   $0 -v [CRW CSV_VERSION] --prefix [subproject prefix] file1.tar.gz file2.tar.gz
+Example: $0 -v 2.y.0 --prefix traefik asset-*gz
 "
     exit
 }
 
-if [[ $# -lt 1 ]]; then usage; fi
+if [[ $# -lt 5 ]]; then usage; fi
 
 while [[ "$#" -gt 0 ]]; do
   case $1 in
@@ -70,28 +70,25 @@ getId()
 # check if existing release exists
 releases_URL="https://api.github.com/repos/redhat-developer/codeready-workspaces-images/releases"
 # shellcheck disable=2086
-RELEASE_ID=$(curlWithToken -H "Accept: application/vnd.github.v3+json" $releases_URL | jq -r --arg CSV_VERSION "${CSV_VERSION}" '.[] | select(.name=="Assets for the '$CSV_VERSION' release")|.url' || true); RELEASE_ID=${RELEASE_ID##*/}
+RELEASE_ID=$(curlWithToken -H "Accept: application/vnd.github.v3+json" $releases_URL | jq -r --arg PREFIX "${PREFIX}" --arg CSV_VERSION "${CSV_VERSION}" '.[] | select(.name=="Assets for the '$CSV_VERSION' '$PREFIX' release")|.url' || true); RELEASE_ID=${RELEASE_ID##*/}
 if [[ -z $RELEASE_ID ]]; then 
-    curlWithTokenPost --data '{"tag_name": "'"${CSV_VERSION}"'", "target_commitish": "'"${MIDSTM_BRANCH}"'", "name": "Assets for the '"${CSV_VERSION}"' release", "body": "Container build asset files for '"${CSV_VERSION}"'", "draft": false, "prerelease": true}' $releases_URL > "/tmp/${CSV_VERSION}"
+    curlWithTokenPost --data '{"tag_name": "'"${CSV_VERSION}-${PREFIX}-assets"'", "target_commitish": "'"${MIDSTM_BRANCH}"'", "name": "Assets for the '"${CSV_VERSION}"' '"${PREFIX}"' release", "body": "Container build asset files for '"${CSV_VERSION}"'", "draft": false, "prerelease": true}' $releases_URL > "/tmp/${CSV_VERSION}"
     # Extract the id of the release from the creation response
     RELEASE_ID="$(jq -r .id "/tmp/${CSV_VERSION}")"
 fi
 
 # upload artifacts for each platform 
-for fileName in $fileList; do
-    if [[ ${PREFIX} ]]; then 
-        fileToPush="${PREFIX}-${fileName}"
-    else 
-        fileToPush="${fileName}"
-    fi
+for fileToPush in $fileList; do
     echo "Uploading new asset $fileToPush"
     # attempt to upload a new file
-    if [[ $(curlWithTokenBinary @"${fileToPush}" -XPOST "https://uploads.github.com/repos/redhat-developer/codeready-workspaces-images/releases/${RELEASE_ID}/assets?name=${fileToPush}") ]]; then
+    # TODO: what do we do if the upload failed and instead of a valid asset we get Validation Failed because already_exists
+    if [[ $(curlWithTokenBinary @"${fileToPush}" -XPOST "https://uploads.github.com/repos/redhat-developer/codeready-workspaces-images/releases/${RELEASE_ID}/assets?name=${fileToPush}") != *"Failed"* ]]; then
         getId $RELEASE_ID $fileToPush
         echo "Uploaded new asset $ID to https://api.github.com/repos/redhat-developer/codeready-workspaces-images/releases/$RELEASE_ID/assets"
     else
         getId $RELEASE_ID $fileToPush
-        if [[ $(curlWithToken @"${fileToPush}" -XPATCH "https://uploads.github.com/repos/redhat-developer/codeready-workspaces-images/releases/${RELEASE_ID}/assets/${ID}?name=${fileToPush}") ]]; then
+        # TODO this doesn't work
+        if [[ $(curlWithTokenBinary @"${fileToPush}" -XPATCH "https://uploads.github.com/repos/redhat-developer/codeready-workspaces-images/releases/${RELEASE_ID}/assets/${ID}?name=${fileToPush}") ]]; then
                 getId $RELEASE_ID $fileToPush
                 echo "Updated asset $ID in https://api.github.com/repos/redhat-developer/codeready-workspaces-images/releases/$RELEASE_ID/assets/${ID}"
         else

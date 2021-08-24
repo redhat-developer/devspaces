@@ -4,7 +4,7 @@ import groovy.transform.Field
 def String getCSVVersion(String MIDSTM_BRANCH) {
   if (CSV_VERSION_F.equals("")) {
     CSV_VERSION_F = sh(script: '''#!/bin/bash -xe
-    curl -sSLo- https://raw.githubusercontent.com/redhat-developer/codeready-workspaces-operator/''' + MIDSTM_BRANCH + '''/manifests/codeready-workspaces.csv.yaml | yq -r .spec.version''', returnStdout: true).trim()
+    curl -sSLo- https://raw.githubusercontent.com/redhat-developer/codeready-workspaces-images/''' + MIDSTM_BRANCH + '''/codeready-workspaces-operator-metadata/manifests/codeready-workspaces.csv.yaml | yq -r .spec.version''', returnStdout: true).trim()
   }
   // CRW-2039 check that CSV version is aligned to CRW version, and throw warning w/ call to action to avoid surprises
   if (CRW_VERSION_F.equals("")) {
