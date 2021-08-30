@@ -82,31 +82,31 @@ updateVersion() {
     # deprecated, @since 2.11
     echo "${CRW_VERSION}" > "${WORKDIR}/dependencies/VERSION"
     # @since 2.11
-    replaceField "${WORKDIR}/dependencies/VERSION.json" '.Version' "${CRW_VERSION}"
-    replaceField "${WORKDIR}/dependencies/VERSION.json" '.Copyright' "[\"${COPYRIGHT}\"]"
+    replaceField "${WORKDIR}/dependencies/job-config.json" '.Version' "${CRW_VERSION}"
+    replaceField "${WORKDIR}/dependencies/job-config.json" '.Copyright' "[\"${COPYRIGHT}\"]"
     
     # CRW-2155, if version is in the json update it for che and crw branches
     # otherwise inject new version.
-    check=$(cat ${WORKDIR}/dependencies/VERSION.json | jq '.Jobs[] | keys' | grep "\"${CRW_VERSION}\"")
+    check=$(cat ${WORKDIR}/dependencies/job-config.json | jq '.Jobs[] | keys' | grep "\"${CRW_VERSION}\"")
     if [[ ${check} ]]; then
       CRW_Y_VALUE="${CRW_VERSION#*.}"
       UPPER_CHE=$(( (${CRW_Y_VALUE} + 6) * 2 ))
       LOWER_CHE=$(( ((${CRW_Y_VALUE} + 6) * 2) - 1 ))
 
-      replaceField "${WORKDIR}/dependencies/VERSION.json" "(.Jobs[][\"${CRW_VERSION}\"]|select(.[]==\"main\"))" "[\"7.${UPPER_CHE}.x\",\"7.${LOWER_CHE}.x\"]"
-      replaceField "${WORKDIR}/dependencies/VERSION.json" "(.Jobs[][\"${CRW_VERSION}\"]|select(.[]==\"crw-2-rhel-8\"))" "[\"${BRANCH}\",\"${BRANCH}\"]"
+      replaceField "${WORKDIR}/dependencies/job-config.json" "(.Jobs[][\"${CRW_VERSION}\"]|select(.[]?==\"main\"))" "[\"7.${UPPER_CHE}.x\",\"7.${LOWER_CHE}.x\"]"
+      replaceField "${WORKDIR}/dependencies/job-config.json" "(.Jobs[][\"${CRW_VERSION}\"]|select(.[]?==\"crw-2-rhel-8\"))" "[\"${BRANCH}\",\"${BRANCH}\"]"
     else
       # Get top level keys to start (Jobs, CSVs, Other, etc)
-      TOP_KEYS=$(cat ${WORKDIR}/dependencies/VERSION.json | jq 'keys')
+      TOP_KEYS=$(cat ${WORKDIR}/dependencies/job-config.json | jq 'keys')
       TOP_KEYS=$(echo ${TOP_KEYS} | sed -e 's/\[//' -e 's/\]//' -e 's/\ //' -e 's/\,//g') #clean for array
       TOP_KEYS=(${TOP_KEYS})
 
       TOP_LENGTH=${#TOP_KEYS[@]}
       for (( i=0; i<${TOP_LENGTH}; i++ ))
       do
-        if [[ (${TOP_KEYS[i]} != "\"Version\"") && (${TOP_KEYS[i]} != "\"Copyright\"") ]]; then
+        if [[ (${TOP_KEYS[i]} != "\"Version\"") && (${TOP_KEYS[i]} != "\"Copyright\"") && (${TOP_KEYS[i]} != "\"Purpose\"") ]]; then
           # Get the sub-keys in Jobs so we can add a new object
-          KEYS=$(cat ${WORKDIR}/dependencies/VERSION.json | jq '.'${TOP_KEYS[i]}' | keys')
+          KEYS=$(cat ${WORKDIR}/dependencies/job-config.json | jq '.'${TOP_KEYS[i]}' | keys')
           KEYS=$(echo ${KEYS} | sed -e 's/\[//' -e 's/\]//' -e 's/\ //' -e 's/\,//g')
           KEYS=(${KEYS})
 
@@ -114,11 +114,11 @@ updateVersion() {
           for (( j=0; j<${KEYS_LENGTH}; j++ ))
           do
             #save content of 2.x
-            content=$(cat ${WORKDIR}/dependencies/VERSION.json | jq ".${TOP_KEYS[i]}[${KEYS[j]}][\"2.x\"]")
+            content=$(cat ${WORKDIR}/dependencies/job-config.json | jq ".${TOP_KEYS[i]}[${KEYS[j]}][\"2.x\"]")
             #Add CRW_VERSION from 2.x then delete 2.x
             #then append 2.x so the general order remains the same
-            replaceField "${WORKDIR}/dependencies/VERSION.json" ".${TOP_KEYS[i]}[${KEYS[j]}]" "(. + {\"${CRW_VERSION}\": .\"2.x\"} | del(.\"2.x\"))"
-            replaceField "${WORKDIR}/dependencies/VERSION.json" ".${TOP_KEYS[i]}[${KEYS[j]}]" ". + {\"2.x\": ${content}}"
+            replaceField "${WORKDIR}/dependencies/job-config.json" ".${TOP_KEYS[i]}[${KEYS[j]}]" "(. + {\"${CRW_VERSION}\": .\"2.x\"} | del(.\"2.x\"))"
+            replaceField "${WORKDIR}/dependencies/job-config.json" ".${TOP_KEYS[i]}[${KEYS[j]}]" ". + {\"2.x\": ${content}}"
           done
         fi
       done
