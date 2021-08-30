@@ -1,30 +1,69 @@
 apiVersion: 1.0.0
 metadata:
-  name: crw-devfileregistry
+  generateName: crw-devfile-registry-
 projects:
   - name: codeready-workspaces
     source:
       type: git
-      location: 'https://github.com/redhat-developer/codeready-workspaces.git'
+      location: 'https://github.com/redhat-developer/codeready-workspaces'
+  - name: che-devfile-registry
+    source:
+      type: git
+      location: 'https://github.com/eclipse/che-devfile-registry'
 components:
-  - alias: vscode-yaml
-    type: chePlugin
-    id: redhat/vscode-yaml/latest
-  - alias: registry-dev
-    type: dockerimage
-    image: 'quay.io/crw/devfileregistry-dev:latest'
+  - alias: che-devfile-registry-prod
+    image: 'quay.io/eclipse/che-devfile-registry:nightly'
     mountSources: true
-    memoryLimit: 1Gi
+    endpoints:
+      - name: http
+        port: 8080
+    command:
+      - sleep
+      - infinity
+    memoryLimit: 512Mi
+    type: dockerimage
+    volumes:
+      - name: images
+        containerPath: /usr/local/apache2/htdocs/images
+  - alias: dev
+    image: 'quay.io/eclipse/che-plugin-registry-dev:latest'
+    mountSources: true
+    memoryLimit: 1G
+    type: dockerimage
+  - id: redhat/vscode-xml/latest
+    type: chePlugin
+  - id: redhat/vscode-yaml/latest
+    type: chePlugin
+  - id: eamodio/gitlens/latest
+    type: chePlugin
+    registryUrl: 'https://che-plugin-registry-main.surge.sh/v3'
+  - id: donjayamanne/githistory/latest
+    type: chePlugin
+    registryUrl: 'https://che-plugin-registry-main.surge.sh/v3'
+  - id: timonwong/shellcheck/latest
+    type: chePlugin
+    registryUrl: 'https://che-plugin-registry-main.surge.sh/v3'
+  - id: ms-vscode/vscode-github-pullrequest/latest
+    type: chePlugin
 commands:
-  - name: '1. Validate devfiles'
+  - name: 1. build CRW devfile-registry
     actions:
-      - type: exec
-        component: registry-dev
-        command: './build/scripts/check_mandatory_fields.sh devfiles'
-        workdir: /projects/codeready-workspaces/dependencies/che-devfile-registry
-  - name: '2. list referenced images'
+      - workdir: '${CHE_PROJECTS_ROOT}/che-devfile-registry'
+        type: exec
+        command: REPO_DIR=/projects/codeready-workspaces/dependencies/che-devfile-registry ./build/dev/build-devfile-registry.sh
+        component: dev
+  - name: 2. start CRW devfile-registry
+    previewUrl:
+      port: 8080
+      path: /devfiles/
     actions:
-      - type: exec
-        component: registry-dev
-        command: './build/scripts/list_referenced_images.sh devfiles'
-        workdir: /projects/codeready-workspaces/dependencies/che-devfile-registry
+      - workdir: '${CHE_PROJECTS_ROOT}/che-devfile-registry'
+        type: exec
+        command: REPO_DIR=/projects/codeready-workspaces/dependencies/che-devfile-registry ./build/dev/start-devfile-registry.sh
+        component: che-devfile-registry-prod
+  - name: 3. publish CRW devfile-registry to surge.sh
+    actions:
+      - workdir: '${CHE_PROJECTS_ROOT}/che-devfile-registry/'
+        type: exec
+        command: REPO_DIR=/projects/codeready-workspaces/dependencies/che-devfile-registry ./build/dev/publish-devfile-registry-to-surge.sh
+        component: dev
