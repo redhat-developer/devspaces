@@ -738,7 +738,7 @@
         "disabled": false
       }
     },
-    "crw-depreciated": {
+    "depreciated": {
       "2.11": {
         "disabled": true
       },
@@ -749,7 +749,7 @@
         "disabled": false
       }
     },
-    "crw-theia-akamai": {
+    "theia-akamai": {
       "2.11": {
         "disabled": true
       },
@@ -763,29 +763,29 @@
     "get-sources-rhpkg-container-build": {
       "2.11": {
         "disabled": false,
-        "tag": "2.11"
+        "FLOATING_QUAY_TAG": "2.11"
       },
       "2.12": {
         "disabled": true,
-        "tag": "latest"
+        "FLOATING_QUAY_TAG": "latest"
       },
       "2.x": {
         "disabled": false,
-        "tag": "nightly"
+        "FLOATING_QUAY_TAG": "nightly"
       }
     },
     "push-latest-container-to-quay": {
       "2.11": {
         "disabled": false,
-        "tag": "2.11"
+        "FLOATING_QUAY_TAG": "2.11"
       },
       "2.12": {
         "disabled": true,
-        "tag": "latest"
+        "FLOATING_QUAY_TAG": "latest"
       },
       "2.x": {
         "disabled": false,
-        "tag": "nightly"
+        "FLOATING_QUAY_TAG": "nightly"
       }
     },
     "sync-to-downstream": {
@@ -847,6 +847,16 @@
       "2.11": "1.15.3",
       "2.12": "1.16.2",
       "2.x": "1.16.2"
+    },
+    "NODE_VERSION": {
+      "2.11": "12.22.3",
+      "2.12": "12.22.3",
+      "2.x": "12.22.3"
+    },
+    "YARN_VERSION": {
+      "2.11": "1.22.5",
+      "2.12": "1.22.5",
+      "2.x": "1.22.5"
     }
   },
   "Copyright": [
