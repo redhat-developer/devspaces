@@ -711,7 +711,7 @@ Rebuild: ${env.BUILD_URL}/rebuild
 def commitChanges(String dir, String message, String branch) {
   sh('''#!/bin/bash -xe
 cd ''' + dir + ''' || exit 1
-if [[ \$(git diff --name-only) && \$(git diff | grep -v createdAt | egrep "^(-|\\+) " || true) ]]; then # file changed
+if [[ \$(git diff --name-only) ]]; then # file changed
   git add --all -f . || true
   git commit -s -m "''' + message + '''" || true
   git push origin ''' + branch + ''' || true
