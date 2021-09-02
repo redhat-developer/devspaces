@@ -79,11 +79,11 @@ echo "Update yarn dependencies..."
 yarn
 
 # load VERSION.json file from ./ or  ../, or fall back to the internet if no local copy
-if [[ -f "${base_dir}/VERSION.json" ]]; then
-    versionjson="${base_dir}/VERSION.json"
+if [[ -f "${base_dir}/job-config.json" ]]; then
+    versionjson="${base_dir}/job-config.json"
     echo "Load ${versionjson} [1]"
-elif [[ -f "${base_dir%/*}/VERSION.json" ]]; then
-    versionjson="${base_dir%/*}/VERSION.json"
+elif [[ -f "${base_dir%/*}/job-config.json" ]]; then
+    versionjson="${base_dir%/*}/job-config.json"
     echo "Load ${versionjson} [2]"
 else
     # echo "[WARN] Could not find VERSION.json in ${base_dir} or ${base_dir%/*}!"
@@ -93,8 +93,8 @@ else
     if [[ $SCRIPTS_BRANCH != "crw-2."*"-rhel-8" ]]; then
         SCRIPTS_BRANCH="crw-2-rhel-8"
     fi
-    echo "Load https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/${SCRIPTS_BRANCH}/dependencies/VERSION.json [3]"
-    curl -sSLo /tmp/VERSION.json https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/${SCRIPTS_BRANCH}/dependencies/VERSION.json
+    echo "Load https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/${SCRIPTS_BRANCH}/dependencies/job-config.json [3]"
+    curl -sSLo /tmp/VERSION.json https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/${SCRIPTS_BRANCH}/dependencies/job-config.json
     versionjson=/tmp/VERSION.json
 fi
 REGISTRY_VERSION=$(jq -r '.Version' "${versionjson}");
