@@ -112,8 +112,6 @@ if [[ $PHASES == *"5"* ]]; then
     doBuild "codeready-workspaces \
         codeready-workspaces-backup \
         codeready-workspaces-dashboard \
-        codeready-workspaces-devworkspace-controller \
-        codeready-workspaces-devworkspace \
         codeready-workspaces-configbump \
         codeready-workspaces-jwtproxy \
         codeready-workspaces-machineexec \
