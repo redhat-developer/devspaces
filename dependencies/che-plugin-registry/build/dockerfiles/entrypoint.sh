@@ -108,7 +108,7 @@ function extract_and_use_related_images_env_variables_with_image_digest_info() {
         done
         echo "--------------------------------------------------------------"
 
-        readarray -t metas < <(find "${METAS_DIR}" -name 'meta.yaml' -o -name 'devfile.yaml')
+        readarray -t metas < <(find "${METAS_DIR}" -name 'meta.yaml' -o -name 'devfile.yaml' -o -name 'che-theia-plugin.yaml')
         for meta in "${metas[@]}"; do
             readarray -t images < <(grep "image:" "${meta}" | sed -r "s;.*image:[[:space:]]*'?\"?([._:a-zA-Z0-9-]*/?[._a-zA-Z0-9-]*/[._a-zA-Z0-9-]*(@sha256)?:?[._a-zA-Z0-9-]*)'?\"?[[:space:]]*;\1;")
             for image in "${images[@]}"; do
