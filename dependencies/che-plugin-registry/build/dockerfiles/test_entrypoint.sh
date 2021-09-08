@@ -712,3 +712,67 @@ source "${script_dir}/entrypoint.sh"
 extract_and_use_related_images_env_variables_with_image_digest_info
 
 assertFileContentEquals "${METAS_DIR}/devfile.yaml" "${expected_devfileyaml}"
+
+#################################################################
+initTest "Should replace image references in che-theia-plugin.yaml with RELATED_IMAGE env vars "
+
+cheTheiaPluginYaml=$(cat <<-END
+schemaVersion: 1.0.0
+metadata:
+  id: redhat/java11
+  publisher: redhat
+  name: java11
+  version: latest
+  displayName: Language Support for Java(TM) by Red Hat
+  description: 'Java Linting, Intellisense, formatting, refactoring, Maven/Gradle support and more...'
+  repository: 'https://github.com/redhat-developer/vscode-java'
+  categories:
+    - Programming Languages
+    - Linters
+    - Formatters
+    - Snippets
+  icon: /images/redhat-java-icon.png
+sidecar:
+  image: 'registry.redhat.io/codeready-workspaces/plugin-java11-rhel8:2.11'
+  name: vscode-java
+  memoryLimit: 1500Mi
+  cpuLimit: 500m
+  cpuRequest: 30m
+extensions:
+  - 'relative:extension/resources/download_jboss_org/jbosstools/static/jdt_ls/stable/java-0.75.0-60.vsix'
+END
+)
+expected_cheTheiaPluginYaml=$(cat <<-END
+schemaVersion: 1.0.0
+metadata:
+  id: redhat/java11
+  publisher: redhat
+  name: java11
+  version: latest
+  displayName: Language Support for Java(TM) by Red Hat
+  description: 'Java Linting, Intellisense, formatting, refactoring, Maven/Gradle support and more...'
+  repository: 'https://github.com/redhat-developer/vscode-java'
+  categories:
+    - Programming Languages
+    - Linters
+    - Formatters
+    - Snippets
+  icon: /images/redhat-java-icon.png
+sidecar:
+  image: 'registry.redhat.io/codeready-workspaces/plugin-java11-rhel8@sha256:d0337762e71fd4badabcb38a582b2f35e7e7fc1c9c0f2e841e339d45b7bd34ed'
+  name: vscode-java
+  memoryLimit: 1500Mi
+  cpuLimit: 500m
+  cpuRequest: 30m
+extensions:
+  - 'relative:extension/resources/download_jboss_org/jbosstools/static/jdt_ls/stable/java-0.75.0-60.vsix'
+END
+)
+echo "$cheTheiaPluginYaml" > "${METAS_DIR}/che-theia-plugin.yaml"
+export RELATED_IMAGE_codeready_workspaces_plugin_java11_plugin_registry_image_GIXDCMIK='registry.redhat.io/codeready-workspaces/plugin-java11-rhel8@sha256:d0337762e71fd4badabcb38a582b2f35e7e7fc1c9c0f2e841e339d45b7bd34ed'
+# shellcheck disable=SC1090
+source "${script_dir}/entrypoint.sh"
+
+extract_and_use_related_images_env_variables_with_image_digest_info
+
+assertFileContentEquals "${METAS_DIR}/che-theia-plugin.yaml" "${expected_cheTheiaPluginYaml}"
