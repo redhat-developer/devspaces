@@ -15,6 +15,7 @@ OPENBROWSERFLAG="" # if a PR is generated, open it in a browser
 docommit=1 # by default DO commit the change
 dopush=1 # by default DO push the change
 WORKDIR="$(pwd)"
+REMOVE_BRANCH=""
 
 usage () {
 	echo "Usage:   $0 -b [BRANCH] -v [CRW CSV VERSION] -t [CRW TAG VERSION] [-w WORKDIR]"
@@ -24,6 +25,7 @@ usage () {
 	--no-push, -p      do not push to BRANCH
 	-prb               set a PR_BRANCH; default: pr-update-version-and-registry-tags-(timestamp)
 	-o                 open browser if PR generated
+  -u [CRW VERSION]   remove data for [CRW VERSION] from job-config.json
 	--help, -h         help
 	"
 }
@@ -40,6 +42,7 @@ while [[ "$#" -gt 0 ]]; do
     '-p'|'--no-push') dopush=0; shift 0;;
     '-prb') PR_BRANCH="$2"; shift 1;;
     '-o') OPENBROWSERFLAG="-o"; shift 0;;
+    '-u') REMOVE_BRANCH="$2"; shift 1;;
     '--help'|'-h') usage; exit;;
     *) OTHER="${OTHER} $1"; shift 0;;
   esac
@@ -123,6 +126,30 @@ updateVersion() {
         fi
       done
     fi 
+
+    #remove unwanted version, if any0
+    if [[ $REMOVE_BRANCH ]]; then
+      TOP_KEYS=$(cat ${WORKDIR}/dependencies/job-config.json | jq 'keys')
+      TOP_KEYS=$(echo ${TOP_KEYS} | sed -e 's/\[//' -e 's/\]//' -e 's/\ //' -e 's/\,//g') #clean for array
+      TOP_KEYS=(${TOP_KEYS})
+
+      TOP_LENGTH=${#TOP_KEYS[@]}
+      for (( i=0; i<${TOP_LENGTH}; i++ ))
+      do
+        if [[ (${TOP_KEYS[i]} != "\"Version\"") && (${TOP_KEYS[i]} != "\"Copyright\"") && (${TOP_KEYS[i]} != "\"Purpose\"") ]]; then
+          # Get the sub-keys
+          KEYS=$(cat ${WORKDIR}/dependencies/job-config.json | jq '.'${TOP_KEYS[i]}' | keys')
+          KEYS=$(echo ${KEYS} | sed -e 's/\[//' -e 's/\]//' -e 's/\ //' -e 's/\,//g')
+          KEYS=(${KEYS})
+
+          KEYS_LENGTH=${#KEYS[@]}
+          for (( j=0; j<${KEYS_LENGTH}; j++ ))
+          do
+            replaceField "${WORKDIR}/dependencies/job-config.json" ".${TOP_KEYS[i]}[${KEYS[j]}]" "del(.\"${REMOVE_BRANCH}\")"
+          done
+        fi
+      done
+    fi
 }
 
 updateDevfileRegistry() {
