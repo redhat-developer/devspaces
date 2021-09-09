@@ -178,21 +178,6 @@ updateVersion() {
       TOP_KEYS=$(echo ${TOP_KEYS} | sed -e 's/\[//' -e 's/\]//' -e 's/\ //' -e 's/\,//g') #clean for array
       TOP_KEYS=(${TOP_KEYS})
 
-            #while in here remove version if desired
-            if [[ $REMOVE_BRANCH ]]; then
-              replaceField "${WORKDIR}/dependencies/job-config.json" ".${TOP_KEYS[i]}[${KEYS[j]}]" "del(.\"${REMOVE_BRANCH}\")"
-            fi
-          done
-        fi
-      done
-    fi 
-
-    #remove unwanted version, if any0
-    if [[ $REMOVE_BRANCH ]]; then
-      TOP_KEYS=$(cat ${WORKDIR}/dependencies/job-config.json | jq 'keys')
-      TOP_KEYS=$(echo ${TOP_KEYS} | sed -e 's/\[//' -e 's/\]//' -e 's/\ //' -e 's/\,//g') #clean for array
-      TOP_KEYS=(${TOP_KEYS})
-
       TOP_LENGTH=${#TOP_KEYS[@]}
       for (( i=0; i<${TOP_LENGTH}; i++ ))
       do
