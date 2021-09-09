@@ -171,6 +171,30 @@ updateVersion() {
       replaceField "${WORKDIR}/dependencies/job-config.json" ".Other[\"FLOATING_QUAY_TAGS\"][${VERSION_KEYS[$OLD_VERSION]}]" ${VERSION_KEYS[$OLD_VERSION]}
 
     fi 
+
+    #remove unwanted version, if any0
+    if [[ $REMOVE_BRANCH ]]; then
+      TOP_KEYS=$(cat ${WORKDIR}/dependencies/job-config.json | jq 'keys')
+      TOP_KEYS=$(echo ${TOP_KEYS} | sed -e 's/\[//' -e 's/\]//' -e 's/\ //' -e 's/\,//g') #clean for array
+      TOP_KEYS=(${TOP_KEYS})
+
+      TOP_LENGTH=${#TOP_KEYS[@]}
+      for (( i=0; i<${TOP_LENGTH}; i++ ))
+      do
+        if [[ (${TOP_KEYS[i]} != "\"Version\"") && (${TOP_KEYS[i]} != "\"Copyright\"") && (${TOP_KEYS[i]} != "\"Purpose\"") ]]; then
+          # Get the sub-keys
+          KEYS=$(cat ${WORKDIR}/dependencies/job-config.json | jq '.'${TOP_KEYS[i]}' | keys')
+          KEYS=$(echo ${KEYS} | sed -e 's/\[//' -e 's/\]//' -e 's/\ //' -e 's/\,//g')
+          KEYS=(${KEYS})
+
+          KEYS_LENGTH=${#KEYS[@]}
+          for (( j=0; j<${KEYS_LENGTH}; j++ ))
+          do
+            replaceField "${WORKDIR}/dependencies/job-config.json" ".${TOP_KEYS[i]}[${KEYS[j]}]" "del(.\"${REMOVE_BRANCH}\")"
+          done
+        fi
+      done
+    fi
 }
 
 updateDevfileRegistry() {
