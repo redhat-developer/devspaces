@@ -59,7 +59,7 @@ def send_email(msg_from, msg_to, subject, body):
     with smtplib.SMTP(SMTP_HOST, SMTP_PORT) as server:
       server.sendmail(msg_from, msg_to, message.as_string())
   else:
-    logging.info(" - sent email to %s" % message["To"])
+    logging.info(" - send email to %s" % message["To"])
     logging.debug("Email Content:\n%s" % message.as_string())
 
 def get_area_lead_email(area):
@@ -81,7 +81,7 @@ class IssueToJIRA:
     return ret
   
   def _map_fixVersions(data):
-    url = 'https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/crw-2-rhel-8/dependencies/VERSION.json'
+    url = 'https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/crw-2-rhel-8/dependencies/job-config.json'
     resp = requests.get(url)
     if resp.status_code != 200:
       logging.error("Unable to fetch fix version mapping from theia-sources.groovy in github")
