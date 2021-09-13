@@ -38,23 +38,11 @@ function log () {
 	echo "$1" | tee -a "${LOG_FILE}"
 }
 
-rm -f "${MANIFEST_FILE}" "${MANIFEST_FILE}".2 "${LOG_FILE}"
+rm -f "${MANIFEST_FILE}" "${MANIFEST_FILE}".2 "${MANIFEST_FILE}".3 "${LOG_FILE}"
 [[ "${MIDSTM_BRANCH}" == "crw-2-rhel-8" ]] && JOB_BRANCH="2.x" || JOB_BRANCH="${CRW_VERSION}"
 echo "Parsing ${JENKINS}/crw-theia-sources_${JOB_BRANCH}/lastSuccessfulBuild/consoleText ..."
-curl -sSL -o "${MANIFEST_FILE}" "${JENKINS}/crw-theia-sources_${JOB_BRANCH}/lastSuccessfulBuild/consoleText"
-CHE_THEIA_BRANCH=$(grep "build.include" "${MANIFEST_FILE}" | sort -u | grep curl | sed -r -e "s#.+che-theia/(.+)/build.include#\1#") # 7.yy.x
-
-# shellcheck disable=SC2013 disable=SC2002
-for d in $(cat "${MANIFEST_FILE}" | grep -E "https://|http://"); do 
-	echo "$d" | grep -E "https://|http://" | tr -d "\"'()" | sed -r -e "s#[.:]\$##" >> "${MANIFEST_FILE}".2
-	echo -n "."
-done
-echo ""
-# shellcheck disable=SC2002
-cat "${MANIFEST_FILE}".2 | uniq | sort | grep -E -v "${EXCLUDE_LINES}" | uniq | sort > "${MANIFEST_FILE}".3
-echo "# URLs found in build log" > "${MANIFEST_FILE}".2
-cat "${MANIFEST_FILE}".2 "${MANIFEST_FILE}".3 > "${MANIFEST_FILE}"
-rm -f "${MANIFEST_FILE}".2 "${MANIFEST_FILE}".3
+curl -sSL -o "${MANIFEST_FILE}".2 "${JENKINS}/crw-theia-sources_${JOB_BRANCH}/lastSuccessfulBuild/consoleText"
+CHE_THEIA_BRANCH=$(grep "build.include" "${MANIFEST_FILE}".2 | sort -u | grep curl | sed -r -e "s#.+che-theia/(.+)/build.include#\1#") # 7.yy.x
 
 TMPDIR=$(mktemp -d)
 pushd "$TMPDIR" >/dev/null || exit
@@ -66,12 +54,20 @@ pushd "$TMPDIR" >/dev/null || exit
 		git checkout --track "origin/${CHE_THEIA_BRANCH}"
 		git pull origin "${CHE_THEIA_BRANCH}"
 		# shellcheck disable=SC2129
-		echo "" >> "${MANIFEST_FILE}"
-		# get yarn deps
-		echo "# yarn deps" >> "${MANIFEST_FILE}"
-		yarn list --depth=0 >> "${MANIFEST_FILE}"
+		yarn list --depth=0 > "${MANIFEST_FILE}".3
+	
+		cat "${MANIFEST_FILE}".3 | sed \
+				-e '/Done in/d' \
+				-e '/yarn list/d ' \
+				-e 's/[├──└│]//g' \
+				-e 's/^[ \t]*//' \
+				-e 's/^@//' \
+				-e "s/@/:/g" \
+				-e "s#^#  codeready-workspaces-theia-rhel8-container:${CRW_VERSION}/#g"	\
+		| sort | uniq > ${MANIFEST_FILE}
 	cd ..
 popd >/dev/null || exit
+rm -f "${MANIFEST_FILE}".2 "${MANIFEST_FILE}".3 
 rm -fr "$TMPDIR"
 
 ##################################
