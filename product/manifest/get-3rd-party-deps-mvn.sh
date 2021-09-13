@@ -69,10 +69,10 @@ function clone_and_generate_dep_tree () {
 			-e "s#:\(compile\|provided\|test\|system\|runtime\)\$##g" \
 			-e "s#^\(org.eclipse.che\|org.apache.maven\).\+##g" \
 			-e "s#\(.\+\):\(.\+\):jar:#\1_\2.jar:#g" \
+			-e 's/^[ \t]*//' \
 			-e "s#^#  codeready-workspaces-server-container:${CRW_VERSION}/#g" \
 		| sort | uniq >> ${MANIFEST_FILE/.txt/-raw-unsorted.txt}
 	cd .. && rm -fr ${GITREPO##*/}
-	mnf "codeready-workspaces-server-container:${CRW_VERSION}/${GITREPO##*//}:${GITTAG}"
 }
 echo "Generate a list of MVN dependencies from upstream Che repos (~2 mins to run):"
 clone_and_generate_dep_tree https://github.com/eclipse/che-dev 20 &
