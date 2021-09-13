@@ -452,6 +452,11 @@ fi
 
 ##################################
 
+# append theia and mvn logs to the short manifest
+for d in mvn theia; do
+	cat ${WORKSPACE}/${CSV_VERSION}/${d}/manifest-${d}.txt >> ${MANIFEST_FILE}
+done
+
 # merge logs
 touch ${MANIFEST_FILE/.txt/-all.txt}
 if [[ ${phases} == *"6"* ]] || [[ ${phases} == *"7"* ]] || [[ ${phases} == *"8"* ]]; then
