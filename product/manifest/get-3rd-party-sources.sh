@@ -1,5 +1,5 @@
 #!/bin/bash
-set +x
+set -x
 set -e
 
 # script to convert previously downloaded dist-git lookaside cached tarballs into format compatible with Legal requirements (NVR.tar.gz)
@@ -62,7 +62,7 @@ maketarball ()
     git pull origin ${MIDSTM_BRANCH} -q || true
 
     # pull tarballs
-    rhpkg sources
+    rhpkg sources || true
 
     # unpack 3rd party dep tarballs
     # shellcheck disable=SC2044
