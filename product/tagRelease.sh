@@ -67,6 +67,29 @@ cd /tmp/tmp-checkouts
 
 set -ex
 
+pushTagPD () 
+{
+	d="$1"
+	echo; echo "== $d =="
+	if [[ ! -d /tmp/tmp-checkouts/containers_${d} ]]; then
+		git clone -b ${pkgs_devel_branch} ssh://${pduser}@pkgs.devel.redhat.com/containers/${d} containers_${d}
+		pushd /tmp/tmp-checkouts/containers_${d} >/dev/null || exit 1
+			export KRB5CCNAME=/var/tmp/${pduser}_ccache
+			git config user.email ${pduser}@REDHAT.COM
+			git config user.name "CRW Build"
+			git config --global push.default matching
+
+			git checkout --track origin/${pkgs_devel_branch} -q || true
+			git pull -q
+		popd >/dev/null || exit 1
+	fi
+	pushd /tmp/tmp-checkouts/containers_${d} >/dev/null || exit 1
+		# push new tag (no op if already exists)
+		git tag -a ${CSV_VERSION} -m "${CSV_VERSION}" || true
+		git push origin ${CSV_VERSION} || true
+	popd >/dev/null || exit 1
+}
+
 # tag pkgs.devel repos only (branches are created by SPMM ticket, eg., https://projects.engineering.redhat.com/browse/SPMM-2517)
 # TODO https://issues.redhat.com/browse/CRW-2095
 # codeready-workspaces-operator-bundle \
@@ -108,39 +131,17 @@ if [[ ${pkgs_devel_branch} ]] && [[ ${CSV_VERSION} ]]; then
 	codeready-workspaces-theia \
 	codeready-workspaces-traefik \
 	; do
-		echo; echo "== $d =="
-		if [[ ! -d /tmp/tmp-checkouts/containers_${d} ]]; then
-			git clone -b ${pkgs_devel_branch} ssh://${pduser}@pkgs.devel.redhat.com/containers/${d} containers_${d}
-			pushd /tmp/tmp-checkouts/containers_${d} >/dev/null || exit 1
-				export KRB5CCNAME=/var/tmp/${pduser}_ccache
-				git config user.email ${pduser}@REDHAT.COM
-				git config user.name "CRW Build"
-				git config --global push.default matching
-
-				git checkout --track origin/${pkgs_devel_branch} -q || true
-				git pull -q
-			popd >/dev/null || exit 1
-		fi
-		pushd /tmp/tmp-checkouts/containers_${d} >/dev/null || exit 1
-			# push new tag (no op if already exists)
-			git tag -a ${CSV_VERSION} -m "${CSV_VERSION}" || true
-			git push origin ${CSV_VERSION} || true
-		popd >/dev/null || exit 1
+	  pushTagPD $d &
 	done
+	wait
 fi
 
-for d in \
-codeready-workspaces \
-codeready-workspaces-chectl \
-codeready-workspaces-deprecated \
-codeready-workspaces-images \
-codeready-workspaces-operator \
-codeready-workspaces-theia \
-; do
+pushTagGH () {
+	d="$1"
 	echo; echo "== $d =="
 	if [[ ${SOURCE_BRANCH} ]]; then clone_branch=${SOURCE_BRANCH}; else clone_branch=${crw_repos_branch}; fi
 	if [[ ! -d /tmp/tmp-checkouts/projects_${d} ]]; then
-		git clone --depth 1 -b ${clone_branch} git@github.com:redhat-developer/${d}.git projects_${d}
+		git clone --depth 1 -b ${clone_branch} https://github.com/redhat-developer/${d}.git projects_${d}
 		pushd /tmp/tmp-checkouts/projects_${d} >/dev/null || exit 1
 			export GITHUB_TOKEN="${GITHUB_TOKEN}"
 			git config user.email "nickboldt+devstudio-release@gmail.com"
@@ -163,7 +164,19 @@ codeready-workspaces-theia \
 		git push origin ${CSV_VERSION} || true
 	fi
 	popd >/dev/null || exit 1
+}
+
+for d in \
+codeready-workspaces \
+codeready-workspaces-chectl \
+codeready-workspaces-deprecated \
+codeready-workspaces-images \
+codeready-workspaces-operator \
+codeready-workspaces-theia \
+; do
+	pushTagGH $d &
 done
+wait
 
 # cleanup
 # cd /tmp
