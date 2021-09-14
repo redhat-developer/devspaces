@@ -30,6 +30,7 @@ EXCLUDE_LINES="eclipse-che/che-theia|redhat-developer/codeready-workspaces/|redh
 EXCLUDE_LINES2="che:theia"
 
 cd /tmp || exit
+if [[ ! ${WORKSPACE} ]]; then WORKSPACE=/tmp; fi
 mkdir -p "${WORKSPACE}/${CSV_VERSION}/theia"
 MANIFEST_FILE="${WORKSPACE}/${CSV_VERSION}/theia/manifest-theia.txt"
 LOG_FILE="${WORKSPACE}/${CSV_VERSION}/theia/manifest-theia_log.txt"
@@ -63,7 +64,7 @@ pushd "$TMPDIR" >/dev/null || exit
 				-e 's/^[ \t]*//' \
 				-e 's/^@//' \
 				-e "s/@/:/g" \
-				-e "s#^#  codeready-workspaces-theia-rhel8-container:${CRW_VERSION}/#g"	\
+				-e "s#^#codeready-workspaces-theia-rhel8-container:${CRW_VERSION}/#g"	\
 		| sort | uniq > ${MANIFEST_FILE}
 	cd ..
 popd >/dev/null || exit
