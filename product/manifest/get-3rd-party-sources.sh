@@ -7,6 +7,7 @@ set -e
 # TODO: make this script ALSO fetch the tarballs from Jenkins so we can do historical sources
 
 MIDSTM_BRANCH=""
+LOCAL_MODE=0
 PKGS_DEVEL_USER="crw-build"
 DEBUG=0
 phases=" 1 2 3 "
@@ -29,10 +30,15 @@ while [[ "$#" -gt 0 ]]; do
     '-b') MIDSTM_BRANCH="$2"; shift 1;;
     '--clean') cleanup;;
     '--debug') DEBUG=1;;
+    '-l') LOCAL_MODE=1; shift 0;;
     *) phases="${phases} $1 ";;
   esac
   shift 1
 done
+
+if [[ $LOCAL_MODE -eq 1 ]]; then
+	WORKSPACE=$(pwd)
+fi
 
 if [[ ! ${MIDSTM_BRANCH} ]]; then usage; fi
 if [[ ! ${phases} ]]; then phases=" 1 2 3 "; fi

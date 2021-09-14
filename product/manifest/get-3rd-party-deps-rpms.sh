@@ -3,6 +3,7 @@
 # script to generate a manifest of all the rpms installed into the containers
 
 MIDSTM_BRANCH=""
+LOCAL_MODE=0
 arches="x86_64" # for s390x & ppc64le, just override when fetching openj9 containers
 allNVRs=""
 MATCH=""
@@ -34,10 +35,15 @@ while [[ "$#" -gt 0 ]]; do
     '-a'|'--arches') arches="$2";  shift 2;; 
     '-g')          MATCH="$2";     shift 2;;
     '-q')          quiet=1;        shift 1;;
+	'-l') LOCAL_MODE=1; shift 1;;
     *)  allNVRs="${allNVRs} $1"; shift 1;;
   esac
 done
 if [[ ! ${MIDSTM_BRANCH} ]]; then usage; fi
+
+if [[ $LOCAL_MODE -eq 1 ]]; then
+	WORKSPACE=$(pwd)
+fi
 
 candidateTag="${MIDSTM_BRANCH}-container-candidate"
 

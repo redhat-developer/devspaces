@@ -2,6 +2,7 @@
 
 set -e
 MIDSTM_BRANCH=""
+LOCAL_MODE=0
 
 # script to generate a manifest of all the 3rd party deps not built in OSBS, but built in Jenkins or imported from upstream community.
 
@@ -54,11 +55,15 @@ while [[ "$#" -gt 0 ]]; do
     '-v') CSV_VERSION="$2"; shift 1;;
     '--check-dependencies') checkdependencies;;
     '-h') usage;;
+	'-l') LOCAL_MODE=1; shift 0;;
     *) phases="${phases} $1 ";;
   esac
   shift 1
 done
 
+if [[ $LOCAL_MODE -eq 1 ]]; then
+	WORKSPACE=$(pwd)
+fi
 cd /tmp || exit
 
 if [[ ! ${MIDSTM_BRANCH} ]]; then usage; fi
@@ -423,11 +428,17 @@ rm -fr /tmp/codeready-workspaces-deprecated
 
 ##################################
 
+if [[ $LOCAL_MODE -eq 1 ]]; then
+	LOCAL_PARAM="-l"
+else
+	LOCAL_PARAM=
+fi
+
 if [[ ${phases} == *"6"* ]]; then
 	log""
 	log "6. Collect RPM deps"
 	cd /tmp
-	${SCRIPTPATH}/${0/manifests/rpms} -v "${CSV_VERSION}" -b "${MIDSTM_BRANCH}"
+	${SCRIPTPATH}/${0/manifests/rpms} -v "${CSV_VERSION}" -b "${MIDSTM_BRANCH}" ${LOCAL_PARAM}
 fi
 
 ##################################
@@ -437,7 +448,7 @@ if [[ ${phases} == *"7"* ]]; then
 	log "7. Collect MVN deps"
 	log ""
 	cd /tmp
-	${SCRIPTPATH}/${0/manifests/mvn} -v "${CSV_VERSION}" -b "${MIDSTM_BRANCH}"
+	${SCRIPTPATH}/${0/manifests/mvn} -v "${CSV_VERSION}" -b "${MIDSTM_BRANCH}" ${LOCAL_PARAM}
 fi
 
 ##################################
@@ -447,7 +458,7 @@ if [[ ${phases} == *"8"* ]]; then
 	log "8. Collect Theia deps"
 	log ""
 	cd /tmp
-	${SCRIPTPATH}/${0/manifests/theia} -v "${CSV_VERSION}" -b "${MIDSTM_BRANCH}"
+	${SCRIPTPATH}/${0/manifests/theia} -v "${CSV_VERSION}" -b "${MIDSTM_BRANCH}" ${LOCAL_PARAM}
 fi
 
 ##################################

@@ -5,6 +5,7 @@
 JENKINS=https://main-jenkins-csb-crwqe.apps.ocp4.prod.psi.redhat.com/job/CRW_CI/job
 
 MIDSTM_BRANCH=""
+LOCAL_MODE=0
 usage () 
 {
     echo "Usage: $0 -b $(git rev-parse --abbrev-ref HEAD) -v 2.y.0"
@@ -15,9 +16,14 @@ while [[ "$#" -gt 0 ]]; do
   case $1 in
     '-b') MIDSTM_BRANCH="$2"; shift 1;;
     '-v') CSV_VERSION="$2"; shift 1;;
+	'-l') LOCAL_MODE=1; shift 0;;
   esac
   shift 1
 done
+
+if [[ $LOCAL_MODE -eq 1 ]]; then
+	WORKSPACE=$(pwd)
+fi
 
 if [[ ! ${MIDSTM_BRANCH} ]]; then usage; fi
 if [[ ! ${CSV_VERSION} ]]; then 
@@ -63,7 +69,7 @@ pushd "$TMPDIR" >/dev/null || exit
 				-e 's/^[ \t]*//' \
 				-e 's/^@//' \
 				-e "s/@/:/g" \
-				-e "s#^#  codeready-workspaces-theia-rhel8-container:${CRW_VERSION}/#g"	\
+				-e "s#^#codeready-workspaces-theia-rhel8-container:${CRW_VERSION}/#g"	\
 		| sort | uniq > ${MANIFEST_FILE}
 	cd ..
 popd >/dev/null || exit

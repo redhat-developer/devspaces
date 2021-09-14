@@ -3,6 +3,7 @@
 # script to generate a manifest of all the maven dependencies used to build upstream Che projects
 
 MIDSTM_BRANCH=""
+LOCAL_MODE=0
 usage () 
 {
     echo "Usage: $0 -b crw-2.y-rhel-8 -v 2.y.0"
@@ -13,9 +14,14 @@ while [[ "$#" -gt 0 ]]; do
   case $1 in
     '-b') MIDSTM_BRANCH="$2"; shift 1;;
     '-v') CSV_VERSION="$2"; shift 1;;
+	'-l') LOCAL_MODE=1; shift 0;;
   esac
   shift 1
 done
+
+if [[ $LOCAL_MODE -eq 1 ]]; then
+	WORKSPACE=$(pwd)
+fi
 
 if [[ ! ${MIDSTM_BRANCH} ]]; then usage; fi
 if [[ ! ${CSV_VERSION} ]]; then 
@@ -70,7 +76,7 @@ function clone_and_generate_dep_tree () {
 			-e "s#^\(org.eclipse.che\|org.apache.maven\).\+##g" \
 			-e "s#\(.\+\):\(.\+\):jar:#\1_\2.jar:#g" \
 			-e 's/^[ \t]*//' \
-			-e "s#^#  codeready-workspaces-server-container:${CRW_VERSION}/#g" \
+			-e "s#^#codeready-workspaces-server-container:${CRW_VERSION}/#g" \
 		| sort | uniq >> ${MANIFEST_FILE/.txt/-raw-unsorted.txt}
 	cd .. && rm -fr ${GITREPO##*/}
 }
