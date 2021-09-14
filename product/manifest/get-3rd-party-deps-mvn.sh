@@ -46,6 +46,7 @@ CHE_PARENT_VERSION=$(curl -sSLo - https://raw.githubusercontent.com/eclipse-che/
    grep -A1 "<groupId>org.eclipse.che.parent</groupId>" | tail -1 | sed -r -e "s#.*<version>(.+)</version>.*#\1#")
 
 cd /tmp || exit
+if [[ ! ${WORKSPACE} ]]; then WORKSPACE=/tmp; fi
 mkdir -p ${WORKSPACE}/${CSV_VERSION}/mvn
 MANIFEST_FILE="${WORKSPACE}/${CSV_VERSION}/mvn/manifest-mvn.txt"
 
@@ -70,7 +71,7 @@ function clone_and_generate_dep_tree () {
 			-e "s#^\(org.eclipse.che\|org.apache.maven\).\+##g" \
 			-e "s#\(.\+\):\(.\+\):jar:#\1_\2.jar:#g" \
 			-e 's/^[ \t]*//' \
-			-e "s#^#  codeready-workspaces-server-container:${CRW_VERSION}/#g" \
+			-e "s#^#codeready-workspaces-server-container:${CRW_VERSION}/#g" \
 		| sort | uniq >> ${MANIFEST_FILE/.txt/-raw-unsorted.txt}
 	cd .. && rm -fr ${GITREPO##*/}
 }
