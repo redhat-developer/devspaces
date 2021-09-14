@@ -57,9 +57,9 @@ maketarball ()
     pushd $SOURCES_DIR >/dev/null 
 
     # update to latest
-    # git clean -f
-    # git checkout ${MIDSTM_BRANCH} -q
-    git pull origin ${MIDSTM_BRANCH} -q
+    git clean -f || true
+    git checkout ${MIDSTM_BRANCH} -q || true
+    git pull origin ${MIDSTM_BRANCH} -q || true
 
     # pull tarballs
     rhpkg sources
