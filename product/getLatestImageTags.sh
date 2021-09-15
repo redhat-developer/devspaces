@@ -53,12 +53,11 @@ checkVersion() {
 }
 checkVersion 1.1 "$(skopeo --version | sed -e "s/skopeo version //")" skopeo
 
-# TODO https://issues.redhat.com/browse/CRW-2095
-# codeready-workspaces/crw-2-rhel8-operator-bundle \
 CRW_CONTAINERS_RHEC="\
 codeready-workspaces/backup-rhel8 \
 codeready-workspaces/configbump-rhel8 \
 codeready-workspaces/crw-2-rhel8-operator \
+codeready-workspaces/crw-2-rhel8-operator-bundle \
 codeready-workspaces/crw-2-rhel8-operator-metadata \
 codeready-workspaces/dashboard-rhel8 \
 \
@@ -91,12 +90,11 @@ codeready-workspaces/theia-rhel8 \
 codeready-workspaces/traefik-rhel8 \
 "
 
-# TODO https://issues.redhat.com/browse/CRW-2095
-# codeready-workspaces/operator-bundle \
 CRW_CONTAINERS_OSBS="\
 codeready-workspaces/backup-rhel8 \
 codeready-workspaces/configbump-rhel8 \
 codeready-workspaces/operator \
+codeready-workspaces/operator-bundle \
 codeready-workspaces/operator-metadata \
 codeready-workspaces/dashboard-rhel8 \
 \
@@ -405,7 +403,7 @@ for URLfrag in $CONTAINERS; do
 		if [[ ${PUSHTOQUAY} -eq 1 ]] && [[ ${REGISTRY} != *"quay.io"* ]]; then
 			QUAYDEST="${REGISTRYPRE}${URLfrag}"; QUAYDEST=${QUAYDEST##*codeready-workspaces-} # plugin-java8 or operator
 			# special case for the operator and metadata images, which don't follow the same pattern in osbs as quay
-			if [[ ${QUAYDEST} == "operator" ]] || [[ ${QUAYDEST} == "operator-metadata" ]]; then QUAYDEST="crw-2-rhel8-${QUAYDEST}"; fi
+			if [[ ${QUAYDEST} == "operator" ]] || [[ ${QUAYDEST} == "operator-"* ]]; then QUAYDEST="crw-2-rhel8-${QUAYDEST}"; fi
 			QUAYDEST="quay.io/crw/${QUAYDEST}"
 
 
