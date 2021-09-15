@@ -1,6 +1,6 @@
 {
   "Purpose": "To set configurations of jenkins jobs including upstream branches, dependencies and disabled status",
-  "Version": 2.12,
+  "Version": 2.13,
   "Jobs": {
     "crwctl": {
       "2.11": {
@@ -17,8 +17,15 @@
         ],
         "disabled": false
       },
+      "2.13": {
+        "upstream_branch": [
+          "main",
+          "main"
+        ],
+        "disabled": false
+      },
       "2.x": {
-      "upstream_branch": [
+        "upstream_branch": [
           "main",
           "main"
         ],
@@ -37,6 +44,13 @@
         "upstream_branch": [
           "7.36.x",
           "7.35.x"
+        ],
+        "disabled": false
+      },
+      "2.13": {
+        "upstream_branch": [
+          "main",
+          "main"
         ],
         "disabled": false
       },
@@ -63,6 +77,13 @@
         ],
         "disabled": false
       },
+      "2.13": {
+        "upstream_branch": [
+          "main",
+          "main"
+        ],
+        "disabled": false
+      },
       "2.x": {
         "upstream_branch": [
           "main",
@@ -86,6 +107,13 @@
         ],
         "disabled": false
       },
+      "2.13": {
+        "upstream_branch": [
+          "main",
+          "main"
+        ],
+        "disabled": false
+      },
       "2.x": {
         "upstream_branch": [
           "main",
@@ -103,6 +131,13 @@
         "disabled": false
       },
       "2.12": {
+        "upstream_branch": [
+          "main",
+          "main"
+        ],
+        "disabled": false
+      },
+      "2.13": {
         "upstream_branch": [
           "main",
           "main"
@@ -132,6 +167,13 @@
         ],
         "disabled": false
       },
+      "2.13": {
+        "upstream_branch": [
+          "main",
+          "main"
+        ],
+        "disabled": false
+      },
       "2.x": {
         "upstream_branch": [
           "main",
@@ -152,6 +194,13 @@
         "upstream_branch": [
           "7.36.x",
           "7.35.x"
+        ],
+        "disabled": false
+      },
+      "2.13": {
+        "upstream_branch": [
+          "main",
+          "main"
         ],
         "disabled": false
       },
@@ -178,6 +227,13 @@
         ],
         "disabled": false
       },
+      "2.13": {
+        "upstream_branch": [
+          "main",
+          "main"
+        ],
+        "disabled": false
+      },
       "2.x": {
         "upstream_branch": [
           "main",
@@ -198,6 +254,13 @@
         "upstream_branch": [
           "7.36.x",
           "7.35.x"
+        ],
+        "disabled": false
+      },
+      "2.13": {
+        "upstream_branch": [
+          "main",
+          "main"
         ],
         "disabled": false
       },
@@ -224,6 +287,13 @@
         ],
         "disabled": false
       },
+      "2.13": {
+        "upstream_branch": [
+          "main",
+          "main"
+        ],
+        "disabled": false
+      },
       "2.x": {
         "upstream_branch": [
           "main",
@@ -244,6 +314,13 @@
         "upstream_branch": [
           "7.36.x",
           "7.35.x"
+        ],
+        "disabled": false
+      },
+      "2.13": {
+        "upstream_branch": [
+          "main",
+          "main"
         ],
         "disabled": false
       },
@@ -270,6 +347,13 @@
         ],
         "disabled": false
       },
+      "2.13": {
+        "upstream_branch": [
+          "main",
+          "main"
+        ],
+        "disabled": false
+      },
       "2.x": {
         "upstream_branch": [
           "main",
@@ -290,6 +374,13 @@
         "upstream_branch": [
           "7.36.x",
           "7.35.x"
+        ],
+        "disabled": false
+      },
+      "2.13": {
+        "upstream_branch": [
+          "main",
+          "main"
         ],
         "disabled": false
       },
@@ -316,6 +407,13 @@
         ],
         "disabled": false
       },
+      "2.13": {
+        "upstream_branch": [
+          "main",
+          "main"
+        ],
+        "disabled": false
+      },
       "2.x": {
         "upstream_branch": [
           "main",
@@ -339,6 +437,13 @@
         ],
         "disabled": false
       },
+      "2.13": {
+        "upstream_branch": [
+          "main",
+          "main"
+        ],
+        "disabled": false
+      },
       "2.x": {
         "upstream_branch": [
           "main",
@@ -356,6 +461,13 @@
         "disabled": false
       },
       "2.12": {
+        "upstream_branch": [
+          "crw-2-rhel-8",
+          "crw-2-rhel-8"
+        ],
+        "disabled": false
+      },
+      "2.13": {
         "upstream_branch": [
           "crw-2-rhel-8",
           "crw-2-rhel-8"
@@ -385,6 +497,13 @@
         ],
         "disabled": false
       },
+      "2.13": {
+        "upstream_branch": [
+          "crw-2-rhel-8",
+          "crw-2-rhel-8"
+        ],
+        "disabled": false
+      },
       "2.x": {
         "upstream_branch": [
           "crw-2-rhel-8",
@@ -402,6 +521,13 @@
         "disabled": false
       },
       "2.12": {
+        "upstream_branch": [
+          "crw-2-rhel-8",
+          "crw-2-rhel-8"
+        ],
+        "disabled": false
+      },
+      "2.13": {
         "upstream_branch": [
           "crw-2-rhel-8",
           "crw-2-rhel-8"
@@ -431,6 +557,13 @@
         ],
         "disabled": false
       },
+      "2.13": {
+        "upstream_branch": [
+          "crw-2-rhel-8",
+          "crw-2-rhel-8"
+        ],
+        "disabled": false
+      },
       "2.x": {
         "upstream_branch": [
           "crw-2-rhel-8",
@@ -448,6 +581,13 @@
         "disabled": false
       },
       "2.12": {
+        "upstream_branch": [
+          "crw-2-rhel-8",
+          "crw-2-rhel-8"
+        ],
+        "disabled": false
+      },
+      "2.13": {
         "upstream_branch": [
           "crw-2-rhel-8",
           "crw-2-rhel-8"
@@ -477,6 +617,13 @@
         ],
         "disabled": false
       },
+      "2.13": {
+        "upstream_branch": [
+          "crw-2-rhel-8",
+          "crw-2-rhel-8"
+        ],
+        "disabled": false
+      },
       "2.x": {
         "upstream_branch": [
           "crw-2-rhel-8",
@@ -494,6 +641,13 @@
         "disabled": false
       },
       "2.12": {
+        "upstream_branch": [
+          "crw-2-rhel-8",
+          "crw-2-rhel-8"
+        ],
+        "disabled": false
+      },
+      "2.13": {
         "upstream_branch": [
           "crw-2-rhel-8",
           "crw-2-rhel-8"
@@ -523,6 +677,13 @@
         ],
         "disabled": false
       },
+      "2.13": {
+        "upstream_branch": [
+          "crw-2-rhel-8",
+          "crw-2-rhel-8"
+        ],
+        "disabled": false
+      },
       "2.x": {
         "upstream_branch": [
           "crw-2-rhel-8",
@@ -540,6 +701,13 @@
         "disabled": false
       },
       "2.12": {
+        "upstream_branch": [
+          "crw-2-rhel-8",
+          "crw-2-rhel-8"
+        ],
+        "disabled": false
+      },
+      "2.13": {
         "upstream_branch": [
           "crw-2-rhel-8",
           "crw-2-rhel-8"
@@ -569,6 +737,13 @@
         ],
         "disabled": false
       },
+      "2.13": {
+        "upstream_branch": [
+          "crw-2-rhel-8",
+          "crw-2-rhel-8"
+        ],
+        "disabled": false
+      },
       "2.x": {
         "upstream_branch": [
           "crw-2-rhel-8",
@@ -586,6 +761,13 @@
         "disabled": false
       },
       "2.12": {
+        "upstream_branch": [
+          "crw-2-rhel-8",
+          "crw-2-rhel-8"
+        ],
+        "disabled": false
+      },
+      "2.13": {
         "upstream_branch": [
           "crw-2-rhel-8",
           "crw-2-rhel-8"
@@ -615,13 +797,20 @@
         ],
         "disabled": false
       },
+      "2.13": {
+        "upstream_branch": [
+          "crw-2-rhel-8",
+          "crw-2-rhel-8"
+        ],
+        "disabled": false
+      },
       "2.x": {
         "upstream_branch": [
           "crw-2-rhel-8",
           "crw-2-rhel-8"
         ],
         "disabled": false
-      } 
+      }
     },
     "pluginbroker-artifacts": {
       "2.11": {
@@ -632,6 +821,13 @@
         "disabled": false
       },
       "2.12": {
+        "upstream_branch": [
+          "v3.4.x",
+          "v3.4.x"
+        ],
+        "disabled": false
+      },
+      "2.13": {
         "upstream_branch": [
           "v3.4.x",
           "v3.4.x"
@@ -661,6 +857,13 @@
         ],
         "disabled": false
       },
+      "2.13": {
+        "upstream_branch": [
+          "v3.4.x",
+          "v3.4.x"
+        ],
+        "disabled": false
+      },
       "2.x": {
         "upstream_branch": [
           "v3.4.x",
@@ -684,6 +887,13 @@
         ],
         "disabled": false
       },
+      "2.13": {
+        "upstream_branch": [
+          "main",
+          "main"
+        ],
+        "disabled": false
+      },
       "2.x": {
         "upstream_branch": [
           "main",
@@ -701,6 +911,13 @@
         "disabled": false
       },
       "2.12": {
+        "upstream_branch": [
+          "main",
+          "main"
+        ],
+        "disabled": false
+      },
+      "2.13": {
         "upstream_branch": [
           "main",
           "main"
@@ -730,6 +947,13 @@
         ],
         "disabled": false
       },
+      "2.13": {
+        "upstream_branch": [
+          "v2.5.0",
+          "v2.5.0"
+        ],
+        "disabled": false
+      },
       "2.x": {
         "upstream_branch": [
           "v2.5.0",
@@ -745,6 +969,9 @@
       "2.12": {
         "disabled": true
       },
+      "2.13": {
+        "disabled": false
+      },
       "2.x": {
         "disabled": false
       }
@@ -755,6 +982,9 @@
       },
       "2.12": {
         "disabled": true
+      },
+      "2.13": {
+        "disabled": false
       },
       "2.x": {
         "disabled": false
@@ -768,6 +998,10 @@
       "2.12": {
         "disabled": true,
         "FLOATING_QUAY_TAG": "latest"
+      },
+      "2.13": {
+        "disabled": false,
+        "FLOATING_QUAY_TAG": "nightly"
       },
       "2.x": {
         "disabled": false,
@@ -783,6 +1017,10 @@
         "disabled": true,
         "FLOATING_QUAY_TAG": "latest"
       },
+      "2.13": {
+        "disabled": false,
+        "FLOATING_QUAY_TAG": "nightly"
+      },
       "2.x": {
         "disabled": false,
         "FLOATING_QUAY_TAG": "nightly"
@@ -795,6 +1033,9 @@
       "2.12": {
         "disabled": true
       },
+      "2.13": {
+        "disabled": false
+      },
       "2.x": {
         "disabled": false
       }
@@ -805,6 +1046,9 @@
       },
       "2.12": {
         "disabled": true
+      },
+      "2.13": {
+        "disabled": false
       },
       "2.x": {
         "disabled": false
@@ -821,6 +1065,10 @@
         "CSV_VERSION": "2.12.0",
         "CSV_VERSION_PREV": "2.11.0"
       },
+      "2.13": {
+        "CSV_VERSION": "2.12.0",
+        "CSV_VERSION_PREV": "2.11.0"
+      },
       "2.x": {
         "CSV_VERSION": "2.12.0",
         "CSV_VERSION_PREV": "2.11.0"
@@ -831,31 +1079,37 @@
     "DEV_HEADER_REWRITE_TRAEFIK_PLUGIN": {
       "2.11": "v0.1.2",
       "2.12": "v0.1.2",
+      "2.13": "v0.1.2",
       "2.x": "v0.1.2"
     },
     "@eclipse-che/plugin-registry-generator": {
       "2.11": "7.34.2",
       "2.12": "7.35.1",
+      "2.13": "7.35.1",
       "2.x": "7.35.1"
     },
     "OPENSHIFT_CONTENT_SET_VERSION": {
       "2.11": "4.8",
       "2.12": "4.8",
+      "2.13": "4.8",
       "2.x": "4.8"
     },
     "GOLANG_VERSION": {
       "2.11": "1.15.3",
       "2.12": "1.16.2",
+      "2.13": "1.16.2",
       "2.x": "1.16.2"
     },
     "NODE_VERSION": {
       "2.11": "12.22.3",
       "2.12": "12.22.3",
+      "2.13": "12.22.3",
       "2.x": "12.22.3"
     },
     "YARN_VERSION": {
       "2.11": "1.22.5",
       "2.12": "1.22.5",
+      "2.13": "1.22.5",
       "2.x": "1.22.5"
     }
   },
