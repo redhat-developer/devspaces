@@ -123,10 +123,10 @@ fi
 
 if [[ $PHASES == *"6"* ]]; then 
     doBuild "codeready-workspaces-devfileregistry \
-            codeready-workspaces-pluginregistry"
-    # TODO https://issues.redhat.com/browse/CRW-2095
-    # doBuild "codeready-workspaces-operator-bundle codeready-workspaces-operator-metadata"
-    doBuild "codeready-workspaces-operator-metadata"
+        codeready-workspaces-pluginregistry"
+
+    doBuild "codeready-workspaces-operator-bundle \
+        codeready-workspaces-operator-metadata"
 fi
 
 # clean up checked out sources
