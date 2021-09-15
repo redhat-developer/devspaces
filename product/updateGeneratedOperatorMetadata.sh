@@ -21,10 +21,13 @@ usage ()
 
 SCRIPT=$(readlink -f "$0"); SCRIPTPATH=$(dirname "$SCRIPT")
 
+DEST_DIR=codeready-workspaces-operator-metadata-generated # or codeready-workspaces-operator-bundle-generated
+
 # commandline args
 while [[ "$#" -gt 0 ]]; do
   case $1 in
-    '-s') SOURCE_DIR="$2"; shift 1;; # dir to update
+    '-s') SOURCE_DIR="$2"; shift 1;; # dir to update from
+    '-d') DEST_DIR="$2"; shift 1;; # dir to update to
     '-b') MIDSTM_BRANCH="$2"; shift 1;;
     '-t') CRW_VERSION="$2"; shift 1;;
     '-h') usage;;
@@ -41,12 +44,12 @@ if [[ ! -x ${SCRIPTPATH}/containerExtract.sh ]]; then
 fi
 
 ${SCRIPTPATH}/containerExtract.sh quay.io/crw/crw-2-rhel8-operator-metadata:${CRW_VERSION} || true
-rm -fr ${SOURCE_DIR}/codeready-workspaces-operator-metadata-generated
+rm -fr ${SOURCE_DIR}/${DEST_DIR}
 rsync -zrlt /tmp/quay.io-crw-crw-2-rhel8-operator-metadata-${CRW_VERSION}-*/* \
-    ${SOURCE_DIR}/codeready-workspaces-operator-metadata-generated/
+    ${SOURCE_DIR}/${DEST_DIR}/
 pushd ${SOURCE_DIR}/ >/dev/null || exit 1
-    git add codeready-workspaces-operator-metadata-generated || true
-    git commit -m "[brew] Publish CSV with generated digests" codeready-workspaces-operator-metadata-generated || true
+    git add ${DEST_DIR} || true
+    git commit -m "[brew] Publish CSV with generated digests" ${DEST_DIR} || true
     git pull origin "${MIDSTM_BRANCH}" || true
     git push origin "${MIDSTM_BRANCH}"
 popd >/dev/null || true
