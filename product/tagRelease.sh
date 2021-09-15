@@ -26,7 +26,7 @@ CLEAN="false" #  if set true, delete existing folders and do fresh checkouts
 
 if [[ $# -lt 4 ]]; then
 	echo "
-To create tags (and push updated CSV content into operator-metadata repo):
+To create tags (and push updated CSV content into operator-metadata and operator-bundle repo):
   $0 -v CSV_VERSION -t CRW_VERSION -gh CRW_GH_BRANCH -ghtoken GITHUB_TOKEN -pd PKGS_DEVEL_BRANCH -pduser kerberos_user
 Example: 
   $0 -v 2.y.0 -t 2.y -gh ${crw_repos_branch} -ghtoken \$GITHUB_TOKEN -pd ${pkgs_devel_branch} -pduser crw-build
@@ -91,13 +91,12 @@ pushTagPD ()
 }
 
 # tag pkgs.devel repos only (branches are created by SPMM ticket, eg., https://projects.engineering.redhat.com/browse/SPMM-2517)
-# TODO https://issues.redhat.com/browse/CRW-2095
-# codeready-workspaces-operator-bundle \
 if [[ ${pkgs_devel_branch} ]] && [[ ${CSV_VERSION} ]]; then 
 	for d in \
 	codeready-workspaces-backup \
 	codeready-workspaces-configbump \
 	codeready-workspaces-operator \
+	codeready-workspaces-operator-bundle \
 	codeready-workspaces-operator-metadata \
 	codeready-workspaces-dashboard \
 	\
