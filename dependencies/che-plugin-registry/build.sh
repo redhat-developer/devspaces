@@ -14,7 +14,7 @@ base_dir=$(cd "$(dirname "$0")"; pwd)
 
 REGISTRY="quay.io"
 ORGANIZATION="crw"
-TAG="nightly"
+TAG="next"
 DOCKERFILE="./build/dockerfiles/Dockerfile"
 SKIP_OCI_IMAGE="false"
 NODE_BUILD_OPTIONS="${NODE_BUILD_OPTIONS:-}"
@@ -26,7 +26,7 @@ Options:
     --help
         Print this message.
     --tag, -t [TAG]
-        Docker image tag to be used for image; default: 'nightly'
+        Docker image tag to be used for image; default: 'next'
     --registry, -r [REGISTRY]
         Docker registry to be used for image; default 'quay.io'
     --organization, -o [ORGANIZATION]
