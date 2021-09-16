@@ -82,6 +82,23 @@ if env | grep -q ".*devfile_registry_image.*"; then
   done
   echo "--------------------------------------------------------------"
 
+  # Replacing tags with digests in external_images.txt
+  externalImages=$(find "${DEVFILES_DIR}" -name "external_images.txt")
+  if [ -n "${externalImages}" ]; then
+    readarray -t images < "${externalImages}"
+    for image in "${images[@]}"; do
+      digest="${imageMap[${image}]}"
+      if [[ -n "${digest}" ]]; then
+        if [[ ${image} == *":"* ]]; then
+          imageWithoutTag="${image%:*}"
+        else
+          imageWithoutTag=${image}
+        fi
+        sed -i -E "s|${image}|${imageWithoutTag}${digest}|" "$externalImages"
+      fi
+    done
+  fi
+
   readarray -t devfiles < <(find "${DEVFILES_DIR}" -name 'devfile.yaml')
   for devfile in "${devfiles[@]}"; do
     readarray -t images < <(grep "image:" "${devfile}" | sed -r "s;.*image:[[:space:]]*'?\"?([._:a-zA-Z0-9-]*/?[._a-zA-Z0-9-]*/[._a-zA-Z0-9-]*(@sha256)?:?[._a-zA-Z0-9-]*)'?\"?[[:space:]]*;\1;")
