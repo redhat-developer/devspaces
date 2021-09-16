@@ -5,6 +5,7 @@
 JENKINS=https://main-jenkins-csb-crwqe.apps.ocp4.prod.psi.redhat.com/job/CRW_CI/job
 
 MIDSTM_BRANCH=""
+SCRIPT_DIR=$(dirname $(readlink -f "${BASH_SOURCE[0]}"))
 usage () 
 {
     echo "Usage: $0 -b $(git rev-parse --abbrev-ref HEAD) -v 2.y.0"
@@ -30,7 +31,7 @@ EXCLUDE_LINES="eclipse-che/che-theia|redhat-developer/codeready-workspaces/|redh
 EXCLUDE_LINES2="che:theia"
 
 cd /tmp || exit
-if [[ ! ${WORKSPACE} ]]; then WORKSPACE=/tmp; fi
+if [[ ! ${WORKSPACE} ]]; then WORKSPACE=${SCRIPT_DIR}; fi
 mkdir -p "${WORKSPACE}/${CSV_VERSION}/theia"
 MANIFEST_FILE="${WORKSPACE}/${CSV_VERSION}/theia/manifest-theia.txt"
 LOG_FILE="${WORKSPACE}/${CSV_VERSION}/theia/manifest-theia_log.txt"
@@ -65,7 +66,15 @@ pushd "$TMPDIR" >/dev/null || exit
 				-e 's/^@//' \
 				-e "s/@/:/g" \
 				-e "s#^#codeready-workspaces-theia-rhel8-container:${CRW_VERSION}/#g"	\
-		| sort | uniq > ${MANIFEST_FILE}
+		| sort | uniq >> ${MANIFEST_FILE}
+
+		echo "\n" >> ${MANIFEST_FILE}
+
+		cat generator/src/templates/theiaPlugins.json | jq -r '. | to_entries[] | " \(.value)"' | sed \
+				-e 's/^[ \t]*//' \
+				-e 's#.*/##'  \
+				-e "s#^#codeready-workspaces-theia-rhel8-container:${CRW_VERSION}/#g"	\
+		| sort | uniq >> ${MANIFEST_FILE}
 	cd ..
 popd >/dev/null || exit
 rm -f "${MANIFEST_FILE}".2 "${MANIFEST_FILE}".3 
