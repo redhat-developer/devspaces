@@ -961,7 +961,9 @@
         ],
         "disabled": false
       }
-    },
+    }
+  },
+  "Management-Jobs": {
     "deprecated": {
       "2.11": {
         "disabled": true
@@ -992,38 +994,30 @@
     },
     "get-sources-rhpkg-container-build": {
       "2.11": {
-        "disabled": false,
-        "FLOATING_QUAY_TAG": "2.11"
+        "disabled": false
       },
       "2.12": {
-        "disabled": true,
-        "FLOATING_QUAY_TAG": "latest"
+        "disabled": true
       },
       "2.13": {
-        "disabled": false,
-        "FLOATING_QUAY_TAG": "nightly"
+        "disabled": false
       },
       "2.x": {
-        "disabled": false,
-        "FLOATING_QUAY_TAG": "nightly"
+        "disabled": false
       }
     },
     "push-latest-container-to-quay": {
       "2.11": {
-        "disabled": false,
-        "FLOATING_QUAY_TAG": "2.11"
+        "disabled": false
       },
       "2.12": {
-        "disabled": true,
-        "FLOATING_QUAY_TAG": "latest"
+        "disabled": true
       },
       "2.13": {
-        "disabled": false,
-        "FLOATING_QUAY_TAG": "nightly"
+        "disabled": false
       },
       "2.x": {
-        "disabled": false,
-        "FLOATING_QUAY_TAG": "nightly"
+        "disabled": false
       }
     },
     "sync-to-downstream": {
@@ -1053,23 +1047,37 @@
       "2.x": {
         "disabled": false
       }
+    },
+    "build-all-images": {
+      "2.11": {
+        "disabled": true
+      },
+      "2.12": {
+        "disabled": true
+      },
+      "2.13": {
+        "disabled": false
+      },
+      "2.x": {
+        "disabled": false
+      }
+    },
+    "send-email-qe-build-list": {
+      "2.11": {
+        "disabled": true
+      },
+      "2.12": {
+        "disabled": true
+      },
+      "2.13": {
+        "disabled": false
+      },
+      "2.x": {
+        "disabled": true
+      }
     }
   },
   "CSVs": {
-    "operator-bundle": {
-      "2.12": {
-        "CSV_VERSION": "2.12.0",
-        "CSV_VERSION_PREV": "2.11.0"
-      },
-      "2.13": {
-        "CSV_VERSION": "2.13.0",
-        "CSV_VERSION_PREV": "2.12.0"
-      },
-      "2.x": {
-        "CSV_VERSION": "2.13.0",
-        "CSV_VERSION_PREV": "2.12.0"
-      }
-    },
     "operator-metadata": {
       "2.11": {
         "CSV_VERSION": "2.11.0",
@@ -1090,6 +1098,11 @@
     }
   },
   "Other": {
+    "FLOATING_QUAY_TAGS": {
+      "2.11": "2.11",
+      "2.12": "latest",
+      "2.13": "next"
+    },
     "DEV_HEADER_REWRITE_TRAEFIK_PLUGIN": {
       "2.11": "v0.1.2",
       "2.12": "v0.1.2",
