@@ -11,7 +11,7 @@ Options:
     --help
         Print this message.
     --tag, -t [TAG]
-        Docker image tag to be used for image; default: 'nightly'
+        Docker image tag to be used for image; default: 'next'
     --registry, -r [REGISTRY]
         Docker registry to be used for image; default 'quay.io'
     --organization, -o [ORGANIZATION]
@@ -20,7 +20,7 @@ Options:
         Build offline version of registry, with all artifacts included
         cached in the registry; disabled by default.
 ```
-By default, the built registry will be tagged `quay.io/crw/devfileregistry-rhel8:nightly`, and will be built with offline mode disabled.
+By default, the built registry will be tagged `quay.io/crw/devfileregistry-rhel8:next`, and will be built with offline mode disabled.
 
 This script listens to the `BUILDER` variable, and will use the tool specified there to build the image. For example:
 ```sh
@@ -56,14 +56,14 @@ You can deploy the registry to Openshift as follows:
 ```bash
   oc new-app -f deploy/openshift/che-devfile-registry.yaml \
              -p IMAGE="quay.io/crw/devfileregistry-rhel8" \
-             -p IMAGE_TAG="nightly" \
+             -p IMAGE_TAG="next" \
              -p PULL_POLICY="Always"
 ```
 
 ## Run the registry
 
 ```bash
-docker run -it --rm -p 8080:8080 quay.io/crw/devfileregistry-rhel8:nightly
+docker run -it --rm -p 8080:8080 quay.io/crw/devfileregistry-rhel8:next
 ```
 
 ### License

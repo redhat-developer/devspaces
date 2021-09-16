@@ -32,8 +32,8 @@ Example: $0 -t ${CRW_VERSION} --sources /path/to/pkgs.devel/projects/
   exit
 }
 
-latestNightly="--latest"
-if [[ ${DWNSTM_BRANCH} == "crw-2-rhel-8" ]]; then latestNightly="--nightly"; fi
+latestNext="--latest"
+if [[ ${DWNSTM_BRANCH} == "crw-2-rhel-8" ]]; then latestNext="--next"; fi
 
 PHASES="1 2 3 4 5 6"
 while [[ "$#" -gt 0 ]]; do
@@ -70,7 +70,7 @@ doBuild () {
             git checkout ${DWNSTM_BRANCH} || exit 1
             git pull
             # build
-            "${SCRIPTPATH}"/buildInBrewCopyToQuay.sh ${projname} ${latestNightly} -t ${CRW_VERSION} &
+            "${SCRIPTPATH}"/buildInBrewCopyToQuay.sh ${projname} ${latestNext} -t ${CRW_VERSION} &
         popd >/dev/null || exit 1
     done
     wait

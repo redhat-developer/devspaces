@@ -10,7 +10,7 @@
 
 set -e
 
-DEFAULT_TAG="nightly"
+DEFAULT_TAG="next"
 DEFAULT_REGISTRY="quay.io"
 DEFAULT_ORGANIZATION="eclipse"
 
@@ -27,6 +27,6 @@ SCRIPT_DIR=$(cd "$(dirname "$0")"; pwd)
 readarray -d '' devfiles < <(find devfiles -name 'devfile.yaml' -print0)
 while read -r line; do
   image_name=$(echo "$line" | tr -s ' ' | cut -f 1 -d ' ')
-  echo "Updating devfiles using 'quay.io/eclipse/$image_name:nightly' to '$REGISTRY/$ORGANIZATION/$image_name:$TAG'"
-  sed -i "s|quay.io/eclipse/$image_name:nightly|$REGISTRY/$ORGANIZATION/$image_name:$TAG|g" "${devfiles[@]}"
+  echo "Updating devfiles using 'quay.io/eclipse/$image_name:next' to '$REGISTRY/$ORGANIZATION/$image_name:$TAG'"
+  sed -i "s|quay.io/eclipse/$image_name:next|$REGISTRY/$ORGANIZATION/$image_name:$TAG|g" "${devfiles[@]}"
 done <"${SCRIPT_DIR}"/base_images

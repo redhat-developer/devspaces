@@ -26,27 +26,27 @@ usage() {
 Build a container in Brew with rhpkg container-build (not get-sources*.sh), 
 watch the log, and if successful, copy that container to quay.
 
-Usage: $0 image-name [-b ${DWNSTM_BRANCH}] [-t ${CRW_VERSION}] [--latest] [--nightly]
+Usage: $0 image-name [-b ${DWNSTM_BRANCH}] [-t ${CRW_VERSION}] [--latest] [--next]
 Example: $0 configbump -t ${CRW_VERSION}
 
 Options: 
-    --nightly          in addition to the :${CRW_VERSION} tag, also update :nightly tag
+    --next             in addition to the :${CRW_VERSION} tag, also update :next tag
     --latest           in addition to the :${CRW_VERSION} tag, also update :latest tag
     --pull-assets, -p  run get-sources.sh
 "
   exit
 }
 
-latestNightly="latest"
-if [[ ${DWNSTM_BRANCH} == "crw-2-rhel-8" ]]; then latestNightly="nightly"; fi
+latestNext="latest"
+if [[ ${DWNSTM_BRANCH} == "crw-2-rhel-8" ]]; then latestNext="next"; fi
 
 pullAssets=0
 while [[ "$#" -gt 0 ]]; do
   case $1 in
     '-t') CRW_VERSION="$2"; shift 1;;
     '-b') DWNSTM_BRANCH="$2"; shift 1;;
-    '--latest') latestNightly="latest";;
-    '--nightly') latestNightly="nightly";;
+    '--latest') latestNext="latest";;
+    '--next') latestNext="next";;
     '-p'|'--pull-assets') pullAssets=1; shift 0;;
     '-h') usage;;
     *) IMG=$1;;
@@ -85,5 +85,5 @@ if [[ $brewTaskID ]]; then
     grep -E "setting label" | \
     sed -r -e "s@.+(registry.access.redhat.com/codeready-workspaces/)(.+)/images/(${CRW_VERSION}-[0-9]+)\"@\2:\3@g" | \
     tr -d "'" | tail -1 && \
-  ${SCRIPTPATH}/getLatestImageTags.sh -b ${DWNSTM_BRANCH} --osbs --pushtoquay="${CRW_VERSION} ${latestNightly}" -c $container
+  ${SCRIPTPATH}/getLatestImageTags.sh -b ${DWNSTM_BRANCH} --osbs --pushtoquay="${CRW_VERSION} ${latestNext}" -c $container
 fi
