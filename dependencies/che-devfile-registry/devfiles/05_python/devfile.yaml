@@ -21,6 +21,9 @@ components:
     image: registry.redhat.io/codeready-workspaces/plugin-java8-rhel8:2.12
     memoryLimit: 512Mi
     mountSources: true
+    volumes:
+      - name: venv
+        containerPath: /home/jboss/.venv
 commands:
   -
     name: 1. Run
@@ -28,7 +31,7 @@ commands:
       -
         type: exec
         component: python
-        command: "python hello-world.py"
+        command: python -m venv .venv && . .venv/bin/activate && python hello-world.py
         workdir: ${CHE_PROJECTS_ROOT}/python-hello-world
   -
     name: Debug current file

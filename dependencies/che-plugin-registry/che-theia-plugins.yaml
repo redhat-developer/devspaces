@@ -131,14 +131,17 @@ plugins:
     sidecar:
       image: "registry.redhat.io/codeready-workspaces/plugin-java8-rhel8:2.12"
       name: vscode-python
-      memoryLimit: 512Mi
+      memoryLimit: 1Gi
       cpuLimit: 500m
       cpuRequest: 30m
+      volumeMounts:
+        - name: venv
+          path: /home/jboss/.venv
       args:
-        - sh
+        - bash
         - -c
         - ${PLUGIN_REMOTE_ENDPOINT_EXECUTABLE}
-    extension: https://github.com/redhat-developer/codeready-workspaces-vscode-extensions/releases/download/vfa62888/vscode-python-2020.7.94776.vsix
+    extension: https://github.com/redhat-developer/codeready-workspaces-vscode-extensions/releases/download/v34b6b7e/vscode-python-2020.7.94776.vsix
   - repository:
       url: 'https://github.com/golang/vscode-go'
       revision: v0.16.1
