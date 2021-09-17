@@ -3,6 +3,7 @@
 # script to generate a manifest of all the maven dependencies used to build upstream Che projects
 
 MIDSTM_BRANCH=""
+SCRIPT_DIR=$(dirname $(readlink -f "${BASH_SOURCE[0]}"))
 usage () 
 {
     echo "Usage: $0 -b crw-2.y-rhel-8 -v 2.y.0"
@@ -46,7 +47,7 @@ CHE_PARENT_VERSION=$(curl -sSLo - https://raw.githubusercontent.com/eclipse-che/
    grep -A1 "<groupId>org.eclipse.che.parent</groupId>" | tail -1 | sed -r -e "s#.*<version>(.+)</version>.*#\1#")
 
 cd /tmp || exit
-if [[ ! ${WORKSPACE} ]]; then WORKSPACE=/tmp; fi
+if [[ ! ${WORKSPACE} ]]; then WORKSPACE=${SCRIPT_DIR}; fi
 mkdir -p ${WORKSPACE}/${CSV_VERSION}/mvn
 MANIFEST_FILE="${WORKSPACE}/${CSV_VERSION}/mvn/manifest-mvn.txt"
 
