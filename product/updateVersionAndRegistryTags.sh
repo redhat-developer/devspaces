@@ -80,22 +80,6 @@ replaceField()
   fi
 }
 
-updateBranchVersions()
-{
-  crwVersion="$1"
-  CRW_Y_VALUE="${crwVersion#*.}"
-  UPPER_CHE=$(( (${CRW_Y_VALUE} + 6) * 2 ))
-  LOWER_CHE=$(( ((${CRW_Y_VALUE} + 6) * 2) - 1 ))
-
-  UPPER_CHE_CHECK
-  if CHEEXISTS; then
-    replaceField "${WORKDIR}/dependencies/job-config.json" "(.Jobs[][\"${crwVersion}\"]|select(.[]?==\"main\"))" "[\"7.${UPPER_CHE}.x\",\"7.${LOWER_CHE}.x\"]"
-    replaceField "${WORKDIR}/dependencies/job-config.json" "(.Jobs[][\"${crwVersion}\"]|select(.[]?==\"crw-2-rhel-8\"))" "[\"${BRANCH}\",\"${BRANCH}\"]"
-  else
-
-  fi
-}
-
 # update job-config file to product version (x.y)
 updateVersion() {
     # deprecated, @since 2.11
@@ -103,15 +87,20 @@ updateVersion() {
     # @since 2.11
     replaceField "${WORKDIR}/dependencies/job-config.json" '.Version' "${CRW_VERSION}"
     replaceField "${WORKDIR}/dependencies/job-config.json" '.Copyright' "[\"${COPYRIGHT}\"]"
+
+    CRW_Y_VALUE="${crwVersion#*.}"
+    UPPER_CHE=$(( (${CRW_Y_VALUE} + 6) * 2 ))
+    LOWER_CHE=$(( ((${CRW_Y_VALUE} + 6) * 2) - 1 ))
     
     # CRW-2155, if version is in the json update it for che and crw branches
     # otherwise inject new version.
     check=$(cat ${WORKDIR}/dependencies/job-config.json | jq '.Jobs[] | keys' | grep "\"${CRW_VERSION}\"")
     if [[ ${check} ]]; then #just updating
-      updateBranchVersion "${CRW_VERSION}"
+      replaceField "${WORKDIR}/dependencies/job-config.json" "(.Jobs[][\"${crwVersion}\"]|select(.[]?==\"main\"))" "[\"7.${UPPER_CHE}.x\",\"7.${LOWER_CHE}.x\"]"
+      replaceField "${WORKDIR}/dependencies/job-config.json" "(.Jobs[][\"${crwVersion}\"]|select(.[]?==\"crw-2-rhel-8\"))" "[\"${BRANCH}\",\"${BRANCH}\"]"
       #make sure jobs are enabled
       replaceField "${WORKDIR}/dependencies/job-config.json" "(.Jobs[][\"${CRW_VERSION}\"][\"disabled\"]|select(.==true))" 'false'
-      replaceField "${WORKDIR}/dependencies/job-config.json" "(.\"Other-Jobs\"[][\"${CRW_VERSION}\"][\"disabled\"]|select(.==true))" 'false'
+      replaceField "${WORKDIR}/dependencies/job-config.json" "(.\"Management-Jobs\"[][\"${CRW_VERSION}\"][\"disabled\"]|select(.==true))" 'false'
     else
       # Get top level keys to start (Jobs, CSVs, Other, etc)
       TOP_KEYS=$(cat ${WORKDIR}/dependencies/job-config.json | jq 'keys')
@@ -144,31 +133,44 @@ updateVersion() {
           done
         fi
       done
+
+      #if che branches exist then update to those instead of main; check against https://github.com/eclipse-che/che-dashboard
+      UPPER_CHE_CHECK=$(git ls-remote --heads https://github.com/eclipse-che/che-dashboard.git ${UPPER_CHE})
+      LOWER_CHE_CHECK=$(git ls-remote --heads https://github.com/eclipse-che/che-dashboard.git ${LOWER_CHE})
+
+      if [ $UPPER_CHE_CHECK ] || [ $LOWER_CHE_CHECK ]; then
+        replaceField "${WORKDIR}/dependencies/job-config.json" "(.Jobs[][\"${crwVersion}\"]|select(.[]?==\"main\"))" "[\"7.${UPPER_CHE}.x\",\"7.${LOWER_CHE}.x\"]"
+      fi
+
+      #if crw-2.yy exists use that
+      CRW_CHECK=$(git ls-remote --heads https://github.com/redhat-developer/codeready-workspaces.git ${BRANCH})
+      if [[ $CRW_CHECK ]]; then
+        replaceField "${WORKDIR}/dependencies/job-config.json" "(.Jobs[][\"${crwVersion}\"]|select(.[]?==\"crw-2-rhel-8\"))" "[\"${BRANCH}\",\"${BRANCH}\"]"
+      fi
+
+      #make sure new builds are enabled
+      replaceField "${WORKDIR}/dependencies/job-config.json" "(.Jobs[][\"${CRW_VERSION}\"][\"disabled\"]|select(.==true))" 'false'
+      replaceField "${WORKDIR}/dependencies/job-config.json" "(.\"Management-Jobs\"[][\"${CRW_VERSION}\"][\"disabled\"]|select(.==true))" 'false'
+
+      #find and disable version-2
+      VERSION_KEYS=$(cat ${WORKDIR}/dependencies/job-config.json | jq '.Jobs'[\"dashboard\"]' | keys') #use dashboard as baseline since they should all be the same.
+      VERSION_KEYS=$(echo ${VERSION_KEYS} | sed -e 's/\[//' -e 's/\]//' -e 's/\ //' -e 's/\,//g')
+      VERSION_KEYS=($VERSION_KEYS)
+      OLD_VERSION=$(( ${#VERSION_KEYS[@]} - 4 )) 
+
+      if [[ ${VERSION_KEYS[$OLD_VERSION]} ]]; then
+         replaceField "${WORKDIR}/dependencies/job-config.json" "(.Jobs[][${VERSION_KEYS[$OLD_VERSION]}][\"disabled\"]|select(.==false))" 'true'
+         replaceField "${WORKDIR}/dependencies/job-config.json" "(.\"Management-Jobs\"[][${VERSION_KEYS[$OLD_VERSION]}][\"disabled\"]|select(.==false))" 'true'
+      fi
+
+      #update tags
+      replaceField "${WORKDIR}/dependencies/job-config.json" ".Other[\"FLOATING_QUAY_TAGS\"][\"${CRW_VERSION}\"]" "\"next\""
+
+      VERSION_LATEST=$(( ${#VERSION_KEYS[@]} - 3 )) 
+      replaceField "${WORKDIR}/dependencies/job-config.json" ".Other[\"FLOATING_QUAY_TAGS\"][${VERSION_KEYS[$VERSION_LATEST]}]" "\"latest\""
+      replaceField "${WORKDIR}/dependencies/job-config.json" ".Other[\"FLOATING_QUAY_TAGS\"][${VERSION_KEYS[$OLD_VERSION]}]" ${VERSION_KEYS[$OLD_VERSION]}
+
     fi 
-
-    #remove unwanted version, if any0
-    if [[ $REMOVE_BRANCH ]]; then
-      TOP_KEYS=$(cat ${WORKDIR}/dependencies/job-config.json | jq 'keys')
-      TOP_KEYS=$(echo ${TOP_KEYS} | sed -e 's/\[//' -e 's/\]//' -e 's/\ //' -e 's/\,//g') #clean for array
-      TOP_KEYS=(${TOP_KEYS})
-
-      TOP_LENGTH=${#TOP_KEYS[@]}
-      for (( i=0; i<${TOP_LENGTH}; i++ ))
-      do
-        if [[ (${TOP_KEYS[i]} != "\"Version\"") && (${TOP_KEYS[i]} != "\"Copyright\"") && (${TOP_KEYS[i]} != "\"Purpose\"") ]]; then
-          # Get the sub-keys
-          KEYS=$(cat ${WORKDIR}/dependencies/job-config.json | jq '.'${TOP_KEYS[i]}' | keys')
-          KEYS=$(echo ${KEYS} | sed -e 's/\[//' -e 's/\]//' -e 's/\ //' -e 's/\,//g')
-          KEYS=(${KEYS})
-
-          KEYS_LENGTH=${#KEYS[@]}
-          for (( j=0; j<${KEYS_LENGTH}; j++ ))
-          do
-            replaceField "${WORKDIR}/dependencies/job-config.json" ".${TOP_KEYS[i]}[${KEYS[j]}]" "del(.\"${REMOVE_BRANCH}\")"
-          done
-        fi
-      done
-    fi
 }
 
 updateDevfileRegistry() {
