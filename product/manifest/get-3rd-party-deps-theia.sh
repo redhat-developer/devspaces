@@ -68,7 +68,7 @@ pushd "$TMPDIR" >/dev/null || exit
 				-e "s#^#codeready-workspaces-theia-rhel8-container:${CRW_VERSION}/#g"	\
 		| sort | uniq >> ${MANIFEST_FILE}
 
-		echo "\n" >> ${MANIFEST_FILE}
+		echo >> ${MANIFEST_FILE}
 
 		cat generator/src/templates/theiaPlugins.json | jq -r '. | to_entries[] | " \(.value)"' | sed \
 				-e 's/^[ \t]*//' \
