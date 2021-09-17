@@ -171,44 +171,6 @@ updateVersion() {
       replaceField "${WORKDIR}/dependencies/job-config.json" ".Other[\"FLOATING_QUAY_TAGS\"][${VERSION_KEYS[$OLD_VERSION]}]" ${VERSION_KEYS[$OLD_VERSION]}
 
     fi 
-
-      #if che branches exist then update to those instead of main; check against https://github.com/eclipse-che/che-dashboard
-      UPPER_CHE_CHECK=$(git ls-remote --heads https://github.com/eclipse-che/che-dashboard.git ${UPPER_CHE})
-      LOWER_CHE_CHECK=$(git ls-remote --heads https://github.com/eclipse-che/che-dashboard.git ${LOWER_CHE})
-
-      if [ $UPPER_CHE_CHECK ] || [ $LOWER_CHE_CHECK ]; then
-        replaceField "${WORKDIR}/dependencies/job-config.json" "(.Jobs[][\"${crwVersion}\"]|select(.[]?==\"main\"))" "[\"7.${UPPER_CHE}.x\",\"7.${LOWER_CHE}.x\"]"
-      fi
-
-      #if crw-2.yy exists use that
-      CRW_CHECK=$(git ls-remote --heads https://github.com/redhat-developer/codeready-workspaces.git ${BRANCH})
-      if [[ $CRW_CHECK ]]; then
-        replaceField "${WORKDIR}/dependencies/job-config.json" "(.Jobs[][\"${crwVersion}\"]|select(.[]?==\"crw-2-rhel-8\"))" "[\"${BRANCH}\",\"${BRANCH}\"]"
-      fi
-
-      #make sure new builds are enabled
-      replaceField "${WORKDIR}/dependencies/job-config.json" "(.Jobs[][\"${CRW_VERSION}\"][\"disabled\"]|select(.==true))" 'false'
-      replaceField "${WORKDIR}/dependencies/job-config.json" "(.\"Management-Jobs\"[][\"${CRW_VERSION}\"][\"disabled\"]|select(.==true))" 'false'
-
-      #find and disable version-2
-      VERSION_KEYS=$(cat ${WORKDIR}/dependencies/job-config.json | jq '.Jobs'[\"dashboard\"]' | keys') #use dashboard as baseline since they should all be the same.
-      VERSION_KEYS=$(echo ${VERSION_KEYS} | sed -e 's/\[//' -e 's/\]//' -e 's/\ //' -e 's/\,//g')
-      VERSION_KEYS=($VERSION_KEYS)
-      OLD_VERSION=$(( ${#VERSION_KEYS[@]} - 4 )) 
-
-      if [[ ${VERSION_KEYS[$OLD_VERSION]} ]]; then
-         replaceField "${WORKDIR}/dependencies/job-config.json" "(.Jobs[][${VERSION_KEYS[$OLD_VERSION]}][\"disabled\"]|select(.==false))" 'true'
-         replaceField "${WORKDIR}/dependencies/job-config.json" "(.\"Management-Jobs\"[][${VERSION_KEYS[$OLD_VERSION]}][\"disabled\"]|select(.==false))" 'true'
-      fi
-
-      #update tags
-      replaceField "${WORKDIR}/dependencies/job-config.json" ".Other[\"FLOATING_QUAY_TAGS\"][\"${CRW_VERSION}\"]" "\"next\""
-
-      VERSION_LATEST=$(( ${#VERSION_KEYS[@]} - 3 )) 
-      replaceField "${WORKDIR}/dependencies/job-config.json" ".Other[\"FLOATING_QUAY_TAGS\"][${VERSION_KEYS[$VERSION_LATEST]}]" "\"latest\""
-      replaceField "${WORKDIR}/dependencies/job-config.json" ".Other[\"FLOATING_QUAY_TAGS\"][${VERSION_KEYS[$OLD_VERSION]}]" ${VERSION_KEYS[$OLD_VERSION]}
-
-    fi 
 }
 
 updateDevfileRegistry() {
