@@ -2,6 +2,7 @@
 
 set -e
 MIDSTM_BRANCH=""
+SCRIPT_DIR=$(dirname $(readlink -f "${BASH_SOURCE[0]}"))
 
 # script to generate a manifest of all the 3rd party deps not built in OSBS, but built in Jenkins or imported from upstream community.
 
@@ -70,7 +71,7 @@ fi
 
 CRW_BRANCH_TAG=${CSV_VERSION}
 
-if [[ ! ${WORKSPACE} ]]; then WORKSPACE=/tmp; fi
+if [[ ! ${WORKSPACE} ]]; then WORKSPACE=${SCRIPT_DIR}; fi
 mkdir -p "${WORKSPACE}/${CSV_VERSION}"
 
 MANIFEST_FILE="${WORKSPACE}/${CSV_VERSION}/manifest.txt"

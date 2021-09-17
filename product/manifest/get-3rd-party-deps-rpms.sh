@@ -3,6 +3,7 @@
 # script to generate a manifest of all the rpms installed into the containers
 
 MIDSTM_BRANCH=""
+SCRIPT_DIR=$(dirname $(readlink -f "${BASH_SOURCE[0]}"))
 arches="x86_64" # for s390x & ppc64le, just override when fetching openj9 containers
 allNVRs=""
 MATCH=""
@@ -47,6 +48,7 @@ fi
 CRW_VERSION=$(echo $CSV_VERSION | sed -r -e "s#([0-9]+\.[0-9]+)[^0-9]+.+#\1#") # trim the x.y part from the x.y.z
 
 cd /tmp || exit
+if [[ ! ${WORKSPACE} ]]; then WORKSPACE=${SCRIPT_DIR}; fi
 mkdir -p "${WORKSPACE}/${CSV_VERSION}/rpms"
 MANIFEST_FILE="${WORKSPACE}/${CSV_VERSION}/rpms/manifest-rpms.txt"
 MANIFEST_UNIQ_FILE="${WORKSPACE}/${CSV_VERSION}/rpms/manifest-rpms_uniq.txt"

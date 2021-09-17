@@ -7,6 +7,7 @@ set -e
 # TODO: make this script ALSO fetch the tarballs from Jenkins so we can do historical sources
 
 MIDSTM_BRANCH=""
+SCRIPT_DIR=$(dirname $(readlink -f "${BASH_SOURCE[0]}"))
 PKGS_DEVEL_USER="crw-build"
 DEBUG=0
 phases=" 1 2 3 "
