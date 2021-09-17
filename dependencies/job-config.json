@@ -994,13 +994,13 @@
     },
     "get-sources-rhpkg-container-build": {
       "2.11": {
-        "disabled": false
-      },
-      "2.12": {
         "disabled": true
       },
-      "2.13": {
+      "2.12": {
         "disabled": false
+      },
+      "2.13": {
+        "disabled": true
       },
       "2.x": {
         "disabled": false
@@ -1008,13 +1008,13 @@
     },
     "push-latest-container-to-quay": {
       "2.11": {
-        "disabled": false
-      },
-      "2.12": {
         "disabled": true
       },
-      "2.13": {
+      "2.12": {
         "disabled": false
+      },
+      "2.13": {
+        "disabled": true
       },
       "2.x": {
         "disabled": false
