@@ -25,7 +25,7 @@ usage () {
 	--no-push, -p           do not push to BRANCH
 	-prb                    set a PR_BRANCH; default: pr-update-version-and-registry-tags-(timestamp)
 	-o                      open browser if PR generated
-  --remove [CRW VERSION]  remove data for [CRW VERSION] from job-config.json
+	--remove [CRW VERSION]  remove data for [CRW VERSION] from job-config.json
 	--help, -h              help
 	"
 }
