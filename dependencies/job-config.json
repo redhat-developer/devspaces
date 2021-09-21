@@ -100,21 +100,21 @@
           "7.34.x",
           "7.33.x"
         ],
-        "disabled": false
+        "disabled": true
       },
       "2.12": {
         "upstream_branch": [
           "main",
           "main"
         ],
-        "disabled": false
+        "disabled": true
       },
       "2.x": {
         "upstream_branch": [
           "main",
           "main"
         ],
-        "disabled": false
+        "disabled": true
       }
     },
     "imagepuller": {
@@ -675,21 +675,21 @@
           "0.9.x",
           "0.9.x"
         ],
-        "disabled": false
+        "disabled": true
       },
       "2.12": {
         "upstream_branch": [
           "0.9.x",
           "0.9.x"
         ],
-        "disabled": false
+        "disabled": true
       },
       "2.x": {
         "upstream_branch": [
           "main",
           "main"
         ],
-        "disabled": false
+        "disabled": true
       }
     },
     "idea": {
