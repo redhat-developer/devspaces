@@ -135,7 +135,7 @@
           "main",
           "main"
         ],
-        "disabled": false
+        "disabled": true
       },
       "2.13": {
         "upstream_branch": [
@@ -149,7 +149,7 @@
           "main",
           "main"
         ],
-        "disabled": false
+        "disabled": true
       }
     },
     "imagepuller": {
@@ -885,7 +885,7 @@
           "0.9.x",
           "0.9.x"
         ],
-        "disabled": false
+        "disabled": true
       },
       "2.13": {
         "upstream_branch": [
@@ -899,7 +899,7 @@
           "main",
           "main"
         ],
-        "disabled": false
+        "disabled": true
       }
     },
     "idea": {
