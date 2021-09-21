@@ -24,7 +24,11 @@ quay.io/crw/crw-2-rhel8-operator-metadata:2.12-77
   Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-operator-metadata/commit?id=9845fa7aa661855a7f51b06753cb755db77edc96
 
 quay.io/crw/dashboard-rhel8:2.12-4
-quay.io/crw/devfileregistry-rhel8:2.12-61
+quay.io/crw/devfileregistry-rhel8:2.12-62
+     NVR: codeready-workspaces-devfileregistry-rhel8-container-2.12-62
+   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1737079
+  Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-devfileregistry/commit?id=0929339d968cb0022ae38c41ce74523c11508daf
+
 quay.io/crw/idea-rhel8:2.12-5
      NVR: codeready-workspaces-idea-rhel8-container-2.12-5
    Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1732656
