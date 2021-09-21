@@ -291,6 +291,8 @@ if [[ ${SHOWNVR} -eq 1 ]]; then
 		containername="${containername//workspaces-operator/workspaces-rhel8-operator}"
 		containername="${containername//\/operator/-rhel8-operator}"
 		containername="${containername//crw-2-/}"
+		# @since 2.12 operator-bundle doesn't have rhel- prefix, but operator-metadata DOES
+		containername="${containername/rhel8-operator-bundle/operator-bundle}" 
 		if [[ ${VERBOSE} -eq 1 ]]; then
 			# shellcheck disable=SC2028
 			echo "brew list-tagged ${candidateTag} | grep \"${containername/\//-}-container\" | sort -V | tail -${NUMTAGS} | sed -e \"s#[\ \t]\+${candidateTag}.\+##\""
