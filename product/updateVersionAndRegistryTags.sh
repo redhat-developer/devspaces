@@ -15,16 +15,18 @@ OPENBROWSERFLAG="" # if a PR is generated, open it in a browser
 docommit=1 # by default DO commit the change
 dopush=1 # by default DO push the change
 WORKDIR="$(pwd)"
+REMOVE_CRW_VERSION=""
 
 usage () {
 	echo "Usage:   $0 -b [BRANCH] -v [CRW CSV VERSION] -t [CRW TAG VERSION] [-w WORKDIR]"
 	echo "Example: $0 -b crw-2-rhel-8 -v 2.y+1.0 -t 2.y+1 -w $(pwd)"
 	echo "Options:
-	--no-commit, -n    do not commit to BRANCH
-	--no-push, -p      do not push to BRANCH
-	-prb               set a PR_BRANCH; default: pr-update-version-and-registry-tags-(timestamp)
-	-o                 open browser if PR generated
-	--help, -h         help
+	--no-commit, -n         do not commit to BRANCH
+	--no-push, -p           do not push to BRANCH
+	-prb                    set a PR_BRANCH; default: pr-update-version-and-registry-tags-(timestamp)
+	-o                      open browser if PR generated
+	--remove [CRW VERSION]  remove data for [CRW VERSION] from job-config.json
+	--help, -h              help
 	"
 }
 
@@ -40,6 +42,7 @@ while [[ "$#" -gt 0 ]]; do
     '-p'|'--no-push') dopush=0; shift 0;;
     '-prb') PR_BRANCH="$2"; shift 1;;
     '-o') OPENBROWSERFLAG="-o"; shift 0;;
+    '--remove') REMOVE_CRW_VERSION="$2"; shift 1;;
     '--help'|'-h') usage; exit;;
     *) OTHER="${OTHER} $1"; shift 0;;
   esac
@@ -77,51 +80,99 @@ replaceField()
   fi
 }
 
-# update VERSION file to product version (x.y)
+# update job-config file to product version (x.y)
 updateVersion() {
     # deprecated, @since 2.11
     echo "${CRW_VERSION}" > "${WORKDIR}/dependencies/VERSION"
     # @since 2.11
     replaceField "${WORKDIR}/dependencies/job-config.json" '.Version' "${CRW_VERSION}"
     replaceField "${WORKDIR}/dependencies/job-config.json" '.Copyright' "[\"${COPYRIGHT}\"]"
+
+    CRW_Y_VALUE="${CRW_VERSION#*.}"
+    UPPER_CHE_Y=$(( (${CRW_Y_VALUE} + 6) * 2 ))
+    LOWER_CHE_Y=$(( ((${CRW_Y_VALUE} + 6) * 2) - 1 ))
     
     # CRW-2155, if version is in the json update it for che and crw branches
     # otherwise inject new version.
     check=$(cat ${WORKDIR}/dependencies/job-config.json | jq '.Jobs[] | keys' | grep "\"${CRW_VERSION}\"")
-    if [[ ${check} ]]; then
-      CRW_Y_VALUE="${CRW_VERSION#*.}"
-      UPPER_CHE=$(( (${CRW_Y_VALUE} + 6) * 2 ))
-      LOWER_CHE=$(( ((${CRW_Y_VALUE} + 6) * 2) - 1 ))
-
-      replaceField "${WORKDIR}/dependencies/job-config.json" "(.Jobs[][\"${CRW_VERSION}\"]|select(.[]?==\"main\"))" "[\"7.${UPPER_CHE}.x\",\"7.${LOWER_CHE}.x\"]"
+    if [[ ${check} ]]; then #just updating
+      replaceField "${WORKDIR}/dependencies/job-config.json" "(.Jobs[][\"${CRW_VERSION}\"]|select(.[]?==\"main\"))" "[\"7.${UPPER_CHE_Y}.x\",\"7.${LOWER_CHE_Y}.x\"]"
       replaceField "${WORKDIR}/dependencies/job-config.json" "(.Jobs[][\"${CRW_VERSION}\"]|select(.[]?==\"crw-2-rhel-8\"))" "[\"${BRANCH}\",\"${BRANCH}\"]"
+      #make sure jobs are enabled
+      replaceField "${WORKDIR}/dependencies/job-config.json" "(.Jobs[][\"${CRW_VERSION}\"][\"disabled\"]|select(.==true))" 'false'
+      replaceField "${WORKDIR}/dependencies/job-config.json" "(.\"Management-Jobs\"[][\"${CRW_VERSION}\"][\"disabled\"]|select(.==true))" 'false'
+      #remove version if desired
+      if [[ $REMOVE_CRW_VERSION ]]; then
+        replaceField "${WORKDIR}/dependencies/job-config.json" "." "del(..|.[\"${REMOVE_CRW_VERSION}\"]?)"
+      fi
     else
       # Get top level keys to start (Jobs, CSVs, Other, etc)
-      TOP_KEYS=$(cat ${WORKDIR}/dependencies/job-config.json | jq 'keys')
-      TOP_KEYS=$(echo ${TOP_KEYS} | sed -e 's/\[//' -e 's/\]//' -e 's/\ //' -e 's/\,//g') #clean for array
-      TOP_KEYS=(${TOP_KEYS})
+      TOP_KEYS=($(cat ${WORKDIR}/dependencies/job-config.json | jq -r 'keys[]'))
 
-      TOP_LENGTH=${#TOP_KEYS[@]}
-      for (( i=0; i<${TOP_LENGTH}; i++ ))
+      for TOP_KEY in ${TOP_KEYS[@]}
       do
-        if [[ (${TOP_KEYS[i]} != "\"Version\"") && (${TOP_KEYS[i]} != "\"Copyright\"") && (${TOP_KEYS[i]} != "\"Purpose\"") ]]; then
+        if [[ (${TOP_KEY} != "Version") && (${TOP_KEY} != "Copyright") && (${TOP_KEY} != "Purpose") ]]; then
           # Get the sub-keys in Jobs so we can add a new object
-          KEYS=$(cat ${WORKDIR}/dependencies/job-config.json | jq '.'${TOP_KEYS[i]}' | keys')
-          KEYS=$(echo ${KEYS} | sed -e 's/\[//' -e 's/\]//' -e 's/\ //' -e 's/\,//g')
-          KEYS=(${KEYS})
+          KEYS=($(cat ${WORKDIR}/dependencies/job-config.json | jq -r ".\"${TOP_KEY}\" | keys[]"))
 
-          KEYS_LENGTH=${#KEYS[@]}
-          for (( j=0; j<${KEYS_LENGTH}; j++ ))
+          for KEY in ${KEYS[@]}
           do
             #save content of 2.x
-            content=$(cat ${WORKDIR}/dependencies/job-config.json | jq ".${TOP_KEYS[i]}[${KEYS[j]}][\"2.x\"]")
+            content=$(cat ${WORKDIR}/dependencies/job-config.json | jq ".\"${TOP_KEY}\"[\"${KEY}\"][\"2.x\"]")
             #Add CRW_VERSION from 2.x then delete 2.x
             #then append 2.x so the general order remains the same
-            replaceField "${WORKDIR}/dependencies/job-config.json" ".${TOP_KEYS[i]}[${KEYS[j]}]" "(. + {\"${CRW_VERSION}\": .\"2.x\"} | del(.\"2.x\"))"
-            replaceField "${WORKDIR}/dependencies/job-config.json" ".${TOP_KEYS[i]}[${KEYS[j]}]" ". + {\"2.x\": ${content}}"
+            replaceField "${WORKDIR}/dependencies/job-config.json" ".\"${TOP_KEY}\"[\"${KEY}\"]" "(. + {\"${CRW_VERSION}\": .\"2.x\"} | del(.\"2.x\"))"
+            replaceField "${WORKDIR}/dependencies/job-config.json" ".\"${TOP_KEY}\"[\"${KEY}\"]" ". + {\"2.x\": ${content}}"
+
+            #while in here remove version if desired
+            if [[ $REMOVE_CRW_VERSION ]]; then
+              replaceField "${WORKDIR}/dependencies/job-config.json" ".\"${TOP_KEY}\"[\"${KEY}\"]" "del(.\"${REMOVE_CRW_VERSION}\")"
+            fi
           done
         fi
       done
+
+      #if che branches exist then update to those instead of main; check against https://github.com/che-incubator/chectl
+      UPPER_CHE_CHECK=$(git ls-remote --heads https://github.com/che-incubator/chectl.git 7.${UPPER_CHE_Y}.x)
+      LOWER_CHE_CHECK=$(git ls-remote --heads https://github.com/che-incubator/chectl.git 7.${LOWER_CHE_Y}.x)
+      #if either one exists then update the new crw version to use the che versioned branches instead of main
+      if [ $UPPER_CHE_CHECK ] || [ $LOWER_CHE_CHECK ]; then
+        replaceField "${WORKDIR}/dependencies/job-config.json" "(.Jobs[][\"${CRW_VERSION}\"]|select(.[]?==\"main\"))" "[\"7.${UPPER_CHE_Y}.x\",\"7.${LOWER_CHE_Y}.x\"]"
+      fi
+
+      #if crw-2.yy exists use that instead of crw-2-rhel-8
+      CRW_CHECK=$(git ls-remote --heads https://github.com/redhat-developer/codeready-workspaces.git ${BRANCH})
+      if [[ $CRW_CHECK ]]; then
+        replaceField "${WORKDIR}/dependencies/job-config.json" "(.Jobs[][\"${CRW_VERSION}\"]|select(.[]?==\"crw-2-rhel-8\"))" "[\"${BRANCH}\",\"${BRANCH}\"]"
+      fi
+
+      #make sure new builds are enabled
+      replaceField "${WORKDIR}/dependencies/job-config.json" "(.Jobs[][\"${CRW_VERSION}\"][\"disabled\"]|select(.==true))" 'false'
+      replaceField "${WORKDIR}/dependencies/job-config.json" "(.\"Management-Jobs\"[][\"${CRW_VERSION}\"][\"disabled\"]|select(.==true))" 'false'
+
+      #find and disable version-2
+      #start by gathering all crw versions that have data in the json
+      VERSION_KEYS=($(cat ${WORKDIR}/dependencies/job-config.json | jq -r '.Jobs'[\"dashboard\"]' | keys[]'))
+      #get the array index of version -2. length -1 is 2.x, -2 is the version that was added, so the old version that needs to get disabled is length - 4
+      DISABLE_VERSION_INDEX=$(( ${#VERSION_KEYS[@]} - 4 )) 
+
+      #Disable version -2, and everything previous (if there)
+      while [[ $DISABLE_VERSION_INDEX -gt -1 ]]
+      do
+         replaceField "${WORKDIR}/dependencies/job-config.json" "(.Jobs[][\"${VERSION_KEYS[$DISABLE_VERSION_INDEX]}\"][\"disabled\"]|select(.==false))" 'true'
+         replaceField "${WORKDIR}/dependencies/job-config.json" "(.\"Management-Jobs\"[][\"${VERSION_KEYS[$DISABLE_VERSION_INDEX]}\"][\"disabled\"]|select(.==false))" 'true'
+         DISABLE_VERSION_INDEX=$(( $DISABLE_VERSION_INDEX -1 ))
+      done
+
+      #update tags
+      replaceField "${WORKDIR}/dependencies/job-config.json" ".Other[\"FLOATING_QUAY_TAGS\"][\"${CRW_VERSION}\"]" "\"next\""
+
+      #the 'latest' tag should go on the prevuous/stable version, which would be version -1, or the index 3 form the end of the VERSION_KEYS array
+      LATEST_INDEX=$(( ${#VERSION_KEYS[@]} - 3 )) 
+      replaceField "${WORKDIR}/dependencies/job-config.json" ".Other[\"FLOATING_QUAY_TAGS\"][\"${VERSION_KEYS[$LATEST_INDEX]}\"]" "\"latest\""
+      #set the previous 'latest' to be its own version
+      replaceField "${WORKDIR}/dependencies/job-config.json" ".Other[\"FLOATING_QUAY_TAGS\"][\"${VERSION_KEYS[$DISABLE_VERSION_INDEX]}\"]" "\"${VERSION_KEYS[$DISABLE_VERSION_INDEX]}\""
+
     fi 
 }
 
