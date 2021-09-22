@@ -96,8 +96,8 @@ updateVersion() {
     # otherwise inject new version.
     check=$(cat ${WORKDIR}/dependencies/job-config.json | jq '.Jobs[] | keys' | grep "\"${CRW_VERSION}\"")
     if [[ ${check} ]]; then #just updating
-      replaceField "${WORKDIR}/dependencies/job-config.json" "(.Jobs[][\"${CRW_VERSION}\"]|select(.[]?==\"main\"))" "[\"7.${UPPER_CHE_Y}.x\",\"7.${LOWER_CHE_Y}.x\"]"
-      replaceField "${WORKDIR}/dependencies/job-config.json" "(.Jobs[][\"${CRW_VERSION}\"]|select(.[]?==\"crw-2-rhel-8\"))" "[\"${BRANCH}\",\"${BRANCH}\"]"
+      replaceField "${WORKDIR}/dependencies/job-config.json" "(.Jobs[][\"${CRW_VERSION}\"][\"upstream_branch\"]|select(.[]?==\"main\"))" "[\"7.${UPPER_CHE_Y}.x\",\"7.${LOWER_CHE_Y}.x\"]"
+      replaceField "${WORKDIR}/dependencies/job-config.json" "(.Jobs[][\"${CRW_VERSION}\"][\"upstream_branch\"]|select(.[]?==\"crw-2-rhel-8\"))" "[\"crw-${CRW_VERSION}-rhel-8\",\"crw-${CRW_VERSION}-rhel-8\"]"
       #make sure jobs are enabled
       replaceField "${WORKDIR}/dependencies/job-config.json" "(.Jobs[][\"${CRW_VERSION}\"][\"disabled\"]|select(.==true))" 'false'
       replaceField "${WORKDIR}/dependencies/job-config.json" "(.\"Management-Jobs\"[][\"${CRW_VERSION}\"][\"disabled\"]|select(.==true))" 'false'
@@ -132,8 +132,8 @@ updateVersion() {
         fi
       done
 
-      replaceField "${WORKDIR}/dependencies/job-config.json" "(.Jobs[][\"${CRW_VERSION}\"]|select(.[]?==\"main\"))" "[\"7.${UPPER_CHE_Y}.x\",\"7.${LOWER_CHE_Y}.x\"]"
-      replaceField "${WORKDIR}/dependencies/job-config.json" "(.Jobs[][\"${CRW_VERSION}\"]|select(.[]?==\"crw-2-rhel-8\"))" "[\"${BRANCH}\",\"${BRANCH}\"]"
+      replaceField "${WORKDIR}/dependencies/job-config.json" "(.Jobs[][\"${CRW_VERSION}\"][\"upstream_branch\"]|select(.[]?==\"main\"))" "[\"7.${UPPER_CHE_Y}.x\",\"7.${LOWER_CHE_Y}.x\"]"
+      replaceField "${WORKDIR}/dependencies/job-config.json" "(.Jobs[][\"${CRW_VERSION}\"][\"upstream_branch\"]|select(.[]?==\"crw-2-rhel-8\"))" "[\"crw-${CRW_VERSION}-rhel-8\",\"crw-${CRW_VERSION}-rhel-8\"]"
 
       #make sure new builds are enabled
       replaceField "${WORKDIR}/dependencies/job-config.json" "(.Jobs[][\"${CRW_VERSION}\"][\"disabled\"]|select(.==true))" 'false'
