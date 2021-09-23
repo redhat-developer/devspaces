@@ -143,7 +143,7 @@ PUSHTOQUAY=0 # utility method to pull then push to quay
 PUSHTOQUAYTAGS="" # utility method to pull then push to quay (extra tags to push)
 PUSHTOQUAYFORCE=0 # normally, don't repush a tag if it's already in the registry (to avoid re-timestamping it and updating tag history)
 SORTED=0 # if 0, use the order of containers in the CRW*_CONTAINERS_* strings above; if 1, sort alphabetically
-latestNightly="latest"
+latestNext="latest"
 usage () {
 	echo "
 Usage: 
@@ -151,7 +151,7 @@ Usage:
 
   $0 -b ${DWNSTM_BRANCH} --quay --tag \"${CRW_VERSION}-\" --hide        | use default list of CRW images in quay.io/crw, for tag 2.y-; show nothing if tag umatched
   $0 -b ${DWNSTM_BRANCH} --osbs                         | check images in OSBS ( registry-proxy.engineering.redhat.com/rh-osbs )
-  $0 -b ${DWNSTM_BRANCH} --osbs --pushtoquay='${CRW_VERSION} ${latestNightly}'  | pull images from OSBS, push ${CRW_VERSION}-z tag + 2 extras to quay
+  $0 -b ${DWNSTM_BRANCH} --osbs --pushtoquay='${CRW_VERSION} ${latestNext}'  | pull images from OSBS, push ${CRW_VERSION}-z tag + 2 extras to quay
   $0 -b ${DWNSTM_BRANCH} --stage --sort                 | use default list of CRW images in RHEC Stage, sorted alphabetically
   $0 -b ${DWNSTM_BRANCH} --arches                       | use default list of CRW images in RHEC Prod; show arches
 
@@ -204,7 +204,7 @@ while [[ "$#" -gt 0 ]]; do
 done
 
 searchTag="" # default to searching for :latest (no tag)
-# if [[ ${CRW_VERSION} == "2.y" ]] || [[ $DWNSTM_BRANCH = "crw-2-rhel-8" ]]; then searchTag=":nightly"; latestNightly="nightly"; fi
+# if [[ ${CRW_VERSION} == "2.y" ]] || [[ $DWNSTM_BRANCH = "crw-2-rhel-8" ]]; then searchTag=":next"; latestNext="next"; fi
 # if [[ $CRW_VERSION ]] && [[ $CRW_VERSION != "2.y" ]]; then
 # 	searchTag=":${CRW_VERSION}"
 # fi
@@ -234,7 +234,7 @@ if [[ $VERBOSE -eq 1 ]]; then
 	echo "[DEBUG] BASETAG = $BASETAG"
 	echo "[DEBUG] candidateTag = $candidateTag"
 	echo "[DEBUG] containers = $CONTAINERS"
-	echo "[DEBUG] latestNightly = $latestNightly"
+	echo "[DEBUG] latestNext = $latestNext"
 fi
 
 if [[ ${REGISTRY} != "" ]]; then 
