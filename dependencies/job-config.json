@@ -879,6 +879,27 @@
           "0.9.x"
         ],
         "disabled": true
+      },
+      "2.12": {
+        "upstream_branch": [
+          "0.9.x",
+          "0.9.x"
+        ],
+        "disabled": true
+      },
+      "2.13": {
+        "upstream_branch": [
+          "0.9.x",
+          "0.9.x"
+        ],
+        "disabled": false
+      },
+      "2.x": {
+        "upstream_branch": [
+          "0.9.x",
+          "0.9.x"
+        ],
+        "disabled": true
       }
     },
     "idea": {
