@@ -13,15 +13,15 @@ quay.io/crw/crw-2-rhel8-operator:2.12-5
    Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1740469
   Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-operator/commit?id=f3760e8d1c02d6e0b89633738ba7bd2e1edc63d4
 
-quay.io/crw/crw-2-rhel8-operator-bundle:2.12-23
-     NVR: codeready-workspaces-operator-bundle-container-2.12-23
-   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1741524
-  Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-operator-bundle/commit?id=7713df96ef1a7bbaf6d8f6b71a69cb7116936f5d
+quay.io/crw/crw-2-rhel8-operator-bundle:2.12-24
+     NVR: codeready-workspaces-operator-bundle-container-2.12-24
+   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1741795
+  Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-operator-bundle/commit?id=481ee79c82eeb38e072ba2a8f8b09025a79f3a1f
 
-quay.io/crw/crw-2-rhel8-operator-metadata:2.12-87
-     NVR: codeready-workspaces-rhel8-operator-metadata-container-2.12-87
-   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1741525
-  Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-operator-metadata/commit?id=0f486e7eeed72744110ad5b7836bd3220b94f690
+quay.io/crw/crw-2-rhel8-operator-metadata:2.12-88
+     NVR: codeready-workspaces-rhel8-operator-metadata-container-2.12-88
+   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1741830
+  Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-operator-metadata/commit?id=52e1de095b96bd2849d95dcd2ecf3dbac74e05f9
 
 quay.io/crw/dashboard-rhel8:2.12-5
      NVR: codeready-workspaces-dashboard-rhel8-container-2.12-5
@@ -123,20 +123,20 @@ quay.io/crw/stacks-php-rhel8:2.12-5
    Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1736688
   Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-stacks-php/commit?id=716939fcfa86a29463ed0756f1a3e183b35767ee
 
-quay.io/crw/theia-dev-rhel8:2.12-169
-     NVR: codeready-workspaces-theia-dev-rhel8-container-2.12-169
-   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1741457
-  Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-theia-dev/commit?id=99655471b53b7020083fce94bffd66ae0f302a97
+quay.io/crw/theia-dev-rhel8:2.12-170
+     NVR: codeready-workspaces-theia-dev-rhel8-container-2.12-170
+   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1741646
+  Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-theia-dev/commit?id=ebbd3b3243d3f97275eb9ddd108db6b696058c15
 
-quay.io/crw/theia-endpoint-rhel8:2.12-49
-     NVR: codeready-workspaces-theia-endpoint-rhel8-container-2.12-49
-   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1741067
-  Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-theia-endpoint/commit?id=d128d3a153fd18504050a1bd12fe70105c5000ab
+quay.io/crw/theia-endpoint-rhel8:2.12-50
+     NVR: codeready-workspaces-theia-endpoint-rhel8-container-2.12-50
+   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1741745
+  Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-theia-endpoint/commit?id=aa163bffd6a8926f2bc943c6731af1e2a0f4f8de
 
-quay.io/crw/theia-rhel8:2.12-55
-     NVR: codeready-workspaces-theia-rhel8-container-2.12-55
-   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1741053
-  Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-theia/commit?id=c2bb87a74721058a778328e33f22b0cc4b16ab62
+quay.io/crw/theia-rhel8:2.12-56
+     NVR: codeready-workspaces-theia-rhel8-container-2.12-56
+   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1741516
+  Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-theia/commit?id=029420352eb7393e2b8732dffe2aad1663392698
 
 quay.io/crw/traefik-rhel8:2.12-5
      NVR: codeready-workspaces-traefik-rhel8-container-2.12-5
