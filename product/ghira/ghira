@@ -6,6 +6,7 @@ import re
 import json
 import logging
 import smtplib
+import datetime
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
@@ -159,15 +160,19 @@ class IssueToJIRA:
 # Retrieve Issues from github
 #   search term definitions: https://pygithub.readthedocs.io/en/latest/github_objects/Issue.html
 issue_search = {
-  'state': 'open',
+  'state': 'closed',
   'labels': ['new&noteworthy']
 }
 all_issues = r.get_issues(**issue_search)
 
-# filter out items already sync'd
+# filter out items
 pending_issues = []
 for i in all_issues:
-  # search through comments for sync text
+  # only look at issues closed in last 2 weeks
+  if datetime.datetime.strptime(i.raw_data['closed_at'], '%Y-%m-%dT%H:%M:%SZ') < datetime.datetime.now() - datetime.timedelta(weeks = 2):
+    continue
+
+  # search through comments for sync text of already sync'd issues
   found = False
   for c in i.get_comments():
     if c.user.login == GITHUB_USER and c.body.find(ISSUE_SYNC_COMMENT) != -1:
