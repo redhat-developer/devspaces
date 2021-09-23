@@ -25,8 +25,8 @@ jobs:
           node-version: '12'
       - name: extract content
         run: |
-          docker pull quay.io/crw/pluginregistry-rhel8:nightly-gh-action
-          docker create --name pluginRegistry quay.io/crw/pluginregistry-rhel8:nightly-gh-action sh
+          docker pull quay.io/crw/pluginregistry-rhel8:next-gh-action
+          docker create --name pluginRegistry quay.io/crw/pluginregistry-rhel8:next-gh-action sh
           mkdir -p /tmp/crw-plugin-registry/content
           touch /tmp/crw-plugin-registry/content/.surgeignore
           echo "*.vsix" >> /tmp/crw-plugin-registry/content/.surgeignore

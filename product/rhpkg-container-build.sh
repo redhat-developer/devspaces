@@ -159,7 +159,7 @@ TASK_ID="${TASK_URL##*=}"
 BUILD_DESC=$(echo $REPO_PATH | sed -r \
     -e 's#registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-#quay.io/crw/#g' \
     -e 's#(quay.io/crw/.+-rhel8:[0-9.-]+) *#<a href="https://\1">\1</a> #g' \
-    -e 's#(quay.io/crw)/(operator|operator-metadata):([0-9.-]+) *#<a href="https://\1/crw-2-rhel8-\2:\3">\1/crw-2-rhel8-\2:\3</a> #g'
+    -e 's#(quay.io/crw)/(operator|operator-metadata|operator-bundle):([0-9.-]+) *#<a href="https://\1/crw-2-rhel8-\2:\3">\1/crw-2-rhel8-\2:\3</a> #g'
 )
 BUILD_RESULT="SUCCESS"
 if [[ ${BUILD_DESC} == *"UNKNOWN"* ]]; then BUILD_RESULT="UNSTABLE"; fi

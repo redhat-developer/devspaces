@@ -13,7 +13,7 @@ set -e
 REGISTRY="quay.io"
 ORGANIZATION="crw"
 CONTAINERNAME="devfileregistry-rhel8"
-TAG="nightly"
+TAG="next"
 TARGET="registry" # or offline-registry
 DOCKERFILE="./build/dockerfiles/Dockerfile"
 
@@ -23,7 +23,7 @@ Options:
     --help
         Print this message.
     --tag, -t [TAG]
-        Docker image tag to be used for image; default: 'nightly'
+        Docker image tag to be used for image; default: 'next'
     --registry, -r [REGISTRY]
         Docker registry to be used for image; default 'quay.io'
     --organization, -o [ORGANIZATION]

@@ -776,3 +776,31 @@ source "${script_dir}/entrypoint.sh"
 extract_and_use_related_images_env_variables_with_image_digest_info
 
 assertFileContentEquals "${METAS_DIR}/che-theia-plugin.yaml" "${expected_cheTheiaPluginYaml}"
+
+#################################################################
+initTest "Should replace image references in external_images.txt with RELATED_IMAGE env vars"
+
+externalImagesTxt=$(cat <<-END
+registry.redhat.io/codeready-workspaces/machineexec-rhel8:2.11
+registry.redhat.io/codeready-workspaces/plugin-java11-rhel8:2.11
+registry.redhat.io/codeready-workspaces/stacks-golang-rhel8:2.11
+END
+)
+expected_externalImagesTxt=$(cat <<-END
+registry.redhat.io/codeready-workspaces/machineexec-rhel8@sha256:bfdd8cf61a6fad757f1e8334aa84dbf44baddf897ff8def7496bf6dbc066679d
+registry.redhat.io/codeready-workspaces/plugin-java11-rhel8@sha256:d0337762e71fd4badabcb38a582b2f35e7e7fc1c9c0f2e841e339d45b7bd34ed
+registry.redhat.io/codeready-workspaces/stacks-golang-rhel8@sha256:30e71577cb80ffaf1f67a292b4c96ab74108a2361347fc593cbb505784629db2
+
+END
+)
+
+echo "$externalImagesTxt" > "${METAS_DIR}/external_images.txt"
+
+export RELATED_IMAGE_codeready_workspaces_machineexec_plugin_registry_image_GIXDCMIK='registry.redhat.io/codeready-workspaces/machineexec-rhel8@sha256:bfdd8cf61a6fad757f1e8334aa84dbf44baddf897ff8def7496bf6dbc066679d'
+export RELATED_IMAGE_codeready_workspaces_plugin_java11_plugin_registry_image_GIXDCMIK='registry.redhat.io/codeready-workspaces/plugin-java11-rhel8@sha256:d0337762e71fd4badabcb38a582b2f35e7e7fc1c9c0f2e841e339d45b7bd34ed'
+export RELATED_IMAGE_codeready_workspaces_stacks_golang_plugin_registry_image_GIXDCMIK='registry.redhat.io/codeready-workspaces/stacks-golang-rhel8@sha256:30e71577cb80ffaf1f67a292b4c96ab74108a2361347fc593cbb505784629db2'
+
+# shellcheck disable=SC1090
+source "${script_dir}/entrypoint.sh"
+extract_and_use_related_images_env_variables_with_image_digest_info
+assertFileContentEquals "${METAS_DIR}/external_images.txt" "${expected_externalImagesTxt}"

@@ -67,7 +67,7 @@ jobs:
         export SKIP_FORMAT=true
         export SKIP_LINT=true
         export SKIP_TEST=true
-        docker pull quay.io/crw/pluginregistry-rhel8:nightly-gh-action
+        docker pull quay.io/crw/pluginregistry-rhel8:next-gh-action
         BUILDER=docker ./build.sh --tag pr-check --offline
         EXPORTED_FOLDER=/var/www/html/v3
         ls -la output/

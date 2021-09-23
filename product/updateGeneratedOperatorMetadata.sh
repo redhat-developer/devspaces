@@ -21,10 +21,14 @@ usage ()
 
 SCRIPT=$(readlink -f "$0"); SCRIPTPATH=$(dirname "$SCRIPT")
 
+DEST_DIR=codeready-workspaces-operator-bundle-generated # or codeready-workspaces-operator-metadata-generated (deprecated)
+SOURCE_CONTAINER=quay.io/crw/crw-2-rhel8-operator-bundle # or quay.io/crw/crw-2-rhel8-operator-metadata (deprecated)
 # commandline args
 while [[ "$#" -gt 0 ]]; do
   case $1 in
-    '-s') SOURCE_DIR="$2"; shift 1;; # dir to update
+    '-s') SOURCE_DIR="$2"; shift 1;; # dir to update from
+    '-d') DEST_DIR="$2"; shift 1;; # dir to update to
+    '-c') SOURCE_CONTAINER="$2"; shift 1;; # container from which to pull generated CSV data
     '-b') MIDSTM_BRANCH="$2"; shift 1;;
     '-t') CRW_VERSION="$2"; shift 1;;
     '-h') usage;;
@@ -40,16 +44,20 @@ if [[ ! -x ${SCRIPTPATH}/containerExtract.sh ]]; then
     chmod +x containerExtract.sh
 fi
 
-${SCRIPTPATH}/containerExtract.sh quay.io/crw/crw-2-rhel8-operator-metadata:${CRW_VERSION} || true
-rm -fr ${SOURCE_DIR}/codeready-workspaces-operator-metadata-generated
-rsync -zrlt /tmp/quay.io-crw-crw-2-rhel8-operator-metadata-${CRW_VERSION}-*/* \
-    ${SOURCE_DIR}/codeready-workspaces-operator-metadata-generated/
+${SCRIPTPATH}/containerExtract.sh ${SOURCE_CONTAINER}:${CRW_VERSION} || true
+rm -fr ${SOURCE_DIR}/${DEST_DIR}
+rsync -zrlt /tmp/${SOURCE_CONTAINER//\//-}-${CRW_VERSION}-*/* \
+    ${SOURCE_DIR}/${DEST_DIR}/
+
+# get container suffix number
+CRW_VERSION_SUFFIX=$(find /tmp/${SOURCE_CONTAINER//\//-}-${CRW_VERSION}-*/root/buildinfo/ -name "Dockerfile*" | sed -r -e "s#.+-##g")
+
 pushd ${SOURCE_DIR}/ >/dev/null || exit 1
-    git add codeready-workspaces-operator-metadata-generated || true
-    git commit -m "[brew] Publish CSV with generated digests" codeready-workspaces-operator-metadata-generated || true
+    git add ${DEST_DIR} || true
+    git commit -m "[brew] Publish CSV with generated digests from ${SOURCE_CONTAINER}:${CRW_VERSION_SUFFIX}" ${DEST_DIR} || true
     git pull origin "${MIDSTM_BRANCH}" || true
     git push origin "${MIDSTM_BRANCH}"
 popd >/dev/null || true
 
 # cleanup
-rm -fr /tmp/quay.io-crw-crw-2-rhel8-operator-metadata-${CRW_VERSION}-*
+rm -fr /tmp/${SOURCE_CONTAINER//\//-}-${CRW_VERSION}-*

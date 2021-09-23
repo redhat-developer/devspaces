@@ -634,7 +634,9 @@ def installRedHatInternalCerts() {
   sh('''#!/bin/bash -xe
   if [[ ! $(rpm -qa | grep redhat-internal-cert-install || true) ]]; then
     cd /tmp
-    rpm=$(curl -sSLo- "http://hdn.corp.redhat.com/rhel7-csb-stage/RPMS/noarch/?C=M;O=D" | grep cert-install | head -1 | sed -r -e 's#.+>(redhat-internal-cert-install-.+[^<])</a.+#\\1#')
+    # 403 access on http://hdn.corp.redhat.com/rhel7-csb-stage/RPMS/noarch/redhat-internal-cert-install-0.1-24.el7.noarch.rpm
+    # so use latest csb.noarch file instead 
+    rpm=$(curl -sSLo- "http://hdn.corp.redhat.com/rhel7-csb-stage/RPMS/noarch/?C=M;O=D" | grep cert-install | grep "csb.noarch" | head -1 | sed -r -e 's#.+>(redhat-internal-cert-install-.+[^<])</a.+#\\1#')
     curl -sSLkO http://hdn.corp.redhat.com/rhel7-csb-stage/RPMS/noarch/${rpm}
     sudo yum -y install ${rpm}
     rm -fr /tmp/${rpm}

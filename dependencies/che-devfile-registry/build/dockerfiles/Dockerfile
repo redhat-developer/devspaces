@@ -56,7 +56,7 @@ WORKDIR /build/
 # will be rewritten during build to use these values for base images.
 ARG PATCHED_IMAGES_REG="quay.io"
 ARG PATCHED_IMAGES_ORG="eclipse"
-ARG PATCHED_IMAGES_TAG="nightly"
+ARG PATCHED_IMAGES_TAG="next"
 RUN TAG=${PATCHED_IMAGES_TAG} \
     ORGANIZATION=${PATCHED_IMAGES_ORG} \
     REGISTRY=${PATCHED_IMAGES_REG} \

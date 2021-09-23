@@ -68,7 +68,7 @@ if [[ ! ${CRW_VERSION} ]]; then
   usage
 fi
 DEFAULT_TAG=${CRW_VERSION}
-[[ ${DEFAULT_TAG} == "2" ]] && DEFAULT_TAG="nightly"
+[[ ${DEFAULT_TAG} == "2" ]] && DEFAULT_TAG="next"
 
 set -e
 

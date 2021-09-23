@@ -2,6 +2,7 @@
 
 set -e
 MIDSTM_BRANCH=""
+SCRIPT_DIR=$(dirname $(readlink -f "${BASH_SOURCE[0]}"))
 
 # script to generate a manifest of all the 3rd party deps not built in OSBS, but built in Jenkins or imported from upstream community.
 
@@ -70,7 +71,7 @@ fi
 
 CRW_BRANCH_TAG=${CSV_VERSION}
 
-if [[ ! ${WORKSPACE} ]]; then WORKSPACE=/tmp; fi
+if [[ ! ${WORKSPACE} ]]; then WORKSPACE=${SCRIPT_DIR}; fi
 mkdir -p "${WORKSPACE}/${CSV_VERSION}"
 
 MANIFEST_FILE="${WORKSPACE}/${CSV_VERSION}/manifest.txt"
@@ -162,14 +163,13 @@ if [[ ${phases} == *"1"* ]] || [[ ${phases} == *"2"* ]] || [[ ${phases} == *"3"*
 	# NOTE: don't delete this checkout yet, we need it for later.
 fi
 
-# TODO https://issues.redhat.com/browse/CRW-2095
-# codeready-workspaces-operator-bundle \
 if [[ ${phases} == *"1"* ]]; then
 	log "1b. Define list of upstream containers & RPMs pulled into them from https://pkgs.devel.redhat.com/cgit/?q=codeready-workspaces "
 	for d in \
 	codeready-workspaces-backup \
 	codeready-workspaces-configbump \
 	codeready-workspaces-operator \
+	codeready-workspaces-operator-bundle \
 	codeready-workspaces-operator-metadata \
 	codeready-workspaces-dashboard \
 	\

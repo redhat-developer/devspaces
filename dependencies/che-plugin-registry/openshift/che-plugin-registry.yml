@@ -104,9 +104,9 @@ parameters:
   displayName: Eclipse Che plugin registry image
   description: Che plugin registry Docker image. Defaults to eclipse/che-plugin-registry
 - name: IMAGE_TAG
-  value: nightly
+  value: next
   displayName: Eclipse Che plugin registry version
-  description: Eclipse Che plugin registry version which defaults to nightly
+  description: Eclipse Che plugin registry version which defaults to next
 - name: MEMORY_LIMIT
   value: 256Mi
   displayName: Memory Limit

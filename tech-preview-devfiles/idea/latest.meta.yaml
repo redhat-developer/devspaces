@@ -1,0 +1,35 @@
+apiVersion: v2
+publisher: eclipse
+name: crw-idea
+version: latest
+type: Che Editor
+displayName: IntelliJ IDEA Community
+title: IntelliJ IDEA Community as Editor for CodeReady Workspaces
+description: IntelliJ IDEA Community running using Projector
+icon: https://resources.jetbrains.com/storage/products/intellij-idea/img/meta/intellij-idea_logo_300x300.png
+category: Editor
+repository: https://github.com/che-incubator/jetbrains-editor-images
+firstPublicationDate: "2021-06-29"
+spec:
+  endpoints:
+    - name: "intellij"
+      public: true
+      targetPort: 8887
+      attributes:
+        protocol: http
+        type: ide
+        secure: true
+        cookiesAuthEnabled: true
+        path: /?backgroundColor=434343&wss
+  containers:
+    - name: crw-idea
+      image: "registry.redhat.io/codeready-workspaces/idea-rhel8:latest"
+      mountSources: true
+      volumes:
+        - mountPath: "/home/projector-user"
+          name: projector-user
+      ports:
+        - exposedPort: 8887
+      memoryLimit: 4096M	
+      cpuLimit: 1500m	
+      cpuRequest: 600m
