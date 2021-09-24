@@ -140,8 +140,8 @@ updateTechPreviewDevfiles() {
     # replace CRW devfiles with image references to current version tag instead of crw-2-rhel-8 and :latest tag
     for devfile in $(find ${YAML_ROOT} -name "*.yaml" -o -name "*.yml"); do
        sed -r -i "${devfile}" \
-           -e "s|(.*image: *?.*quay.io/crw/.*:).+|\1${CRW_VERSION}|g" \
-           -e "s|(.*image: *?.*registry.redhat.io/codeready-workspaces/.*:).+|\1${CRW_VERSION}|g" \
+           -e "s|(.*image: \"*?.*quay.io/crw/.*:).+|\1${CRW_VERSION}\"|g" \
+           -e "s|(.*image: \"*?.*registry.redhat.io/codeready-workspaces/.*:).+|\1${CRW_VERSION}\"|g" \
            -e "s|codeready-workspaces/crw-2-rhel-8/|codeready-workspaces/crw-${CRW_VERSION}-rhel-8/|g"
     done
     git diff -q "${YAML_ROOT}" || true
