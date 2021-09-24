@@ -1,0 +1,8 @@
+---
+apiVersion: 1.0.0
+metadata:
+  name: crw-idea
+components:
+  - type: cheEditor
+    reference: 'https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/crw-2.11-rhel-8/tech-preview-devfiles/idea/latest.meta.yaml'
+    alias: crw-idea
