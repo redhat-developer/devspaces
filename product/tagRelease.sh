@@ -133,6 +133,21 @@ if [[ ${pkgs_devel_branch} ]] && [[ ${CSV_VERSION} ]]; then
 	wait
 fi
 
+# for the crw main repo, update tech preview devfiles to point to the correct tag/branch
+updateTechPreviewDevfiles() {
+    YAML_ROOT="tech-preview-devfiles"
+
+    # replace CRW devfiles with image references to current version tag instead of crw-2-rhel-8 and :latest tag
+    for devfile in $(find ${YAML_ROOT} -name "*.yaml" -o -name "*.yml"); do
+       sed -r -i "${devfile}" \
+           -e "s|(.*image: *?.*quay.io/crw/.*:).+|\1${CRW_VERSION}|g" \
+           -e "s|(.*image: *?.*registry.redhat.io/codeready-workspaces/.*:).+|\1${CRW_VERSION}|g" \
+           -e "s|codeready-workspaces/crw-2-rhel-8/|codeready-workspaces/crw-${CRW_VERSION}-rhel-8/|g"
+    done
+    git diff -q "${YAML_ROOT}" || true
+    git commit -a -s -m "chore(tech-preview-devfiles) update tag/branch to ${CRW_VERSION}"
+}
+
 pushTagGH () {
 	d="$1"
 	echo; echo "== $d =="
@@ -154,6 +169,10 @@ pushTagGH () {
 	pushd /tmp/tmp-checkouts/projects_${d} >/dev/null || exit 1
 	if [[ ${SOURCE_BRANCH} ]]; then # push a new branch (or no-op if exists)
 		git branch ${crw_repos_branch} || true
+
+		# for the crw main repo, update tech preview devfiles to point to the correct tag/branch
+		if [[ $d == "codeready-workspaces" ]]; then updateTechPreviewDevfiles; fi
+
 		git push origin ${crw_repos_branch} || true
 	fi
 	if [[ $CSV_VERSION ]]; then # push a new tag (or no-op if exists)

@@ -23,7 +23,7 @@ spec:
         path: /?backgroundColor=434343&wss
   containers:
     - name: crw-idea
-      image: "registry.redhat.io/codeready-workspaces/idea-rhel8:latest"
+      image: "quay.io/crw/idea-rhel8:latest
       mountSources: true
       volumes:
         - mountPath: "/home/projector-user"
