@@ -23,7 +23,7 @@ spec:
         path: /?backgroundColor=434343&wss
   containers:
     - name: crw-idea
-      image: "quay.io/crw/idea-rhel8:2.11
+      image: "quay.io/crw/idea-rhel8:2.11"
       mountSources: true
       volumes:
         - mountPath: "/home/projector-user"
