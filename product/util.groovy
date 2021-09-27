@@ -1,6 +1,7 @@
 import groovy.transform.Field
 
 @Field String CSV_VERSION_F = ""
+// Requires installYq()
 def String getCSVVersion(String MIDSTM_BRANCH) {
   if (CSV_VERSION_F.equals("")) {
     CSV_VERSION_F = sh(script: '''#!/bin/bash -xe
