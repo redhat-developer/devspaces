@@ -152,6 +152,8 @@ editors:
             - name: REMOTE_ENDPOINT_VOLUME_NAME
               value: remote-endpoint
           volumeMounts:
+            - name: plugins
+              path: /plugins
             - name: remote-endpoint
               path: /remote-endpoint
       - name: remote-endpoint
