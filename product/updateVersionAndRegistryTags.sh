@@ -155,6 +155,7 @@ updateVersion() {
 
       #update tags
       replaceField "${WORKDIR}/dependencies/job-config.json" ".Other[\"FLOATING_QUAY_TAGS\"][\"${CRW_VERSION}\"]" "\"next\""
+      replaceField "${WORKDIR}/dependencies/job-config.json" ".Other[\"FLOATING_QUAY_TAGS\"][\"2.x\"]" "\"next\""
 
       #the 'latest' tag should go on the prevuous/stable version, which would be version -1, or the index 3 form the end of the VERSION_KEYS array
       LATEST_INDEX=$(( ${#VERSION_KEYS[@]} - 3 )) 
