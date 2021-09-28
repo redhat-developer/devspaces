@@ -93,7 +93,7 @@ class IssueToJIRA:
       n = {}
       version_map = version_map["Jobs"]["theia"]
       for k, vs in version_map.items():
-        for v in vs:
+        for v in vs['upstream_branch']:
           n[v] = k
       version_map = n
     except:
