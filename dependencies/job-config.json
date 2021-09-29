@@ -2,36 +2,6 @@
   "Purpose": "To set configurations of jenkins jobs including upstream branches, dependencies and disabled status",
   "Version": 2.13,
   "Jobs": {
-    "crwctl": {
-      "2.11": {
-        "upstream_branch": [
-          "7.34.x",
-          "7.33.x"
-        ],
-        "disabled": true
-      },
-      "2.12": {
-        "upstream_branch": [
-          "7.36.x",
-          "7.35.x"
-        ],
-        "disabled": true
-      },
-      "2.13": {
-        "upstream_branch": [
-          "7.38.x",
-          "7.37.x"
-        ],
-        "disabled": true
-      },
-      "2.x": {
-        "upstream_branch": [
-          "main",
-          "main"
-        ],
-        "disabled": false
-      }
-    },
     "backup": {
       "2.11": {
         "upstream_branch": [
@@ -862,6 +832,36 @@
     }
   },
   "Management-Jobs": {
+    "crwctl": {
+      "2.11": {
+        "upstream_branch": [
+          "7.34.x",
+          "7.33.x"
+        ],
+        "disabled": true
+      },
+      "2.12": {
+        "upstream_branch": [
+          "7.36.x",
+          "7.35.x"
+        ],
+        "disabled": false
+      },
+      "2.13": {
+        "upstream_branch": [
+          "7.38.x",
+          "7.37.x"
+        ],
+        "disabled": false
+      },
+      "2.x": {
+        "upstream_branch": [
+          "main",
+          "main"
+        ],
+        "disabled": false
+      }
+    },
     "operator-bundle": {
       "2.11": {
         "upstream_branch": [
