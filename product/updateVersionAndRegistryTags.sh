@@ -16,7 +16,10 @@ docommit=1 # by default DO commit the change
 dopush=1 # by default DO push the change
 WORKDIR="$(pwd)"
 REMOVE_CRW_VERSION=""
-DISABLE_CRW_VERSION=""
+ENABLE_CRW_JOBS_VERSION=""
+ENABLE_CRW_MGMTJOBS_VERSION=""
+DISABLE_CRW_JOBS_VERSION=""
+DISABLE_CRW_MGMTJOBS_VERSION=""
 BRANCH="crw-2-rhel-8"
 
 usage () {
@@ -31,7 +34,10 @@ usage () {
 	-prb                    set a PR_BRANCH; default: pr-update-version-and-registry-tags-(timestamp)
 	-o                      open browser if PR generated
 	--remove [CRW VERSION]  remove data for [CRW VERSION] (latest version - 3)
-	--disable [CRW VERSION] disable [CRW VERSION] jobs in job-config.json (implement code freeze)
+	--enable-jobs [CRW VERSION] enable [CRW VERSION] jobs in job-config.json, but leave metadata/bundle + management jobs alone
+	--enable-management-jobs [CRW VERSION] enable ALL [CRW VERSION] jobs in job-config.json
+	--disable-jobs [CRW VERSION] disable [CRW VERSION] jobs in job-config.json, but leave metadata/bundle + management jobs alone
+	--disable-management-jobs [CRW VERSION] disable ALL [CRW VERSION] jobs in job-config.json (implement code freeze)
 	--help, -h              help
 	"
 }
@@ -49,7 +55,10 @@ while [[ "$#" -gt 0 ]]; do
     '-prb') PR_BRANCH="$2"; shift 1;;
     '-o') OPENBROWSERFLAG="-o"; shift 0;;
     '--remove') REMOVE_CRW_VERSION="$2"; shift 1;;
-    '--disable') DISABLE_CRW_VERSION="$2"; shift 1;;
+    '--enable-jobs') ENABLE_CRW_JOBS_VERSION="$2"; shift 1;;
+    '--enable-management-jobs') ENABLE_CRW_MGMTJOBS_VERSION="$2"; shift 1;;
+    '--disable-jobs') DISABLE_CRW_JOBS_VERSION="$2"; shift 1;;
+    '--disable-management-jobs') DISABLE_CRW_MGMTJOBS_VERSION="$2"; shift 1;;
     '--help'|'-h') usage; exit;;
     *) OTHER="${OTHER} $1"; shift 0;;
   esac
@@ -170,9 +179,18 @@ updateVersion() {
       replaceField "${WORKDIR}/dependencies/job-config.json" ".Other[\"FLOATING_QUAY_TAGS\"][\"${VERSION_KEYS[$DISABLE_VERSION_INDEX]}\"]" "\"${VERSION_KEYS[$DISABLE_VERSION_INDEX]}\""
     fi 
 
-    if [[ $DISABLE_CRW_VERSION ]]; then 
-        replaceField "${WORKDIR}/dependencies/job-config.json" "(.Jobs[][\"$DISABLE_CRW_VERSION\"][\"disabled\"]|select(.==false))" 'true'
-        replaceField "${WORKDIR}/dependencies/job-config.json" "(.\"Management-Jobs\"[][\"$DISABLE_CRW_VERSION\"][\"disabled\"]|select(.==false))" 'true'
+    # optionally, can enable/disable specific job sets for a given version
+    if [[ $ENABLE_CRW_MGMTJOBS_VERSION ]]; then 
+        replaceField "${WORKDIR}/dependencies/job-config.json" "(.\"Management-Jobs\"[][\"$ENABLE_CRW_MGMTJOBS_VERSION\"][\"disabled\"]|select(.==true))" 'false'
+    fi
+    if [[ $ENABLE_CRW_JOBS_VERSION ]]; then 
+        replaceField "${WORKDIR}/dependencies/job-config.json" "(.Jobs[][\"$ENABLE_CRW_JOBS_VERSION\"][\"disabled\"]|select(.==true))" 'false'
+    fi
+    if [[ $DISABLE_CRW_MGMTJOBS_VERSION ]]; then 
+        replaceField "${WORKDIR}/dependencies/job-config.json" "(.\"Management-Jobs\"[][\"$DISABLE_CRW_MGMTJOBS_VERSION\"][\"disabled\"]|select(.==false))" 'true'
+    fi
+    if [[ $DISABLE_CRW_JOBS_VERSION ]]; then 
+        replaceField "${WORKDIR}/dependencies/job-config.json" "(.Jobs[][\"$DISABLE_CRW_JOBS_VERSION\"][\"disabled\"]|select(.==false))" 'true'
     fi
 }
 
@@ -213,8 +231,8 @@ updatePluginRegistry() {
 }
 
 COMMIT_MSG="chore(tags) update VERSION and registry references to :${CRW_VERSION}"
-if [[ $DISABLE_CRW_VERSION ]]; then 
-  COMMIT_MSG="${COMMIT_MSG}; disable $DISABLE_CRW_VERSION jobs"
+if [[ $DISABLE_CRW_JOBS_VERSION ]]; then 
+  COMMIT_MSG="${COMMIT_MSG}; disable $DISABLE_CRW_JOBS_VERSION jobs"
 fi
 if [[ $REMOVE_CRW_VERSION ]]; then 
   COMMIT_MSG="${COMMIT_MSG}; remove $REMOVE_CRW_VERSION jobs"
