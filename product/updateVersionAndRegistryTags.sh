@@ -16,16 +16,22 @@ docommit=1 # by default DO commit the change
 dopush=1 # by default DO push the change
 WORKDIR="$(pwd)"
 REMOVE_CRW_VERSION=""
+DISABLE_CRW_VERSION=""
+BRANCH="crw-2-rhel-8"
 
 usage () {
-	echo "Usage:   $0 -b [BRANCH] -v [CRW CSV VERSION] -t [CRW TAG VERSION] [-w WORKDIR]"
-	echo "Example: $0 -b crw-2-rhel-8 -v 2.y+1.0 -t 2.y+1 -w $(pwd)"
+	echo "Usage:   $0 -v [CRW CSV VERSION]"
+	echo "Example: $0 -v 2.y.0"
 	echo "Options:
+  -w WORKDIR              work in a differnt dir than $(pwd)
+  -b BRANCH               commit to a different branch than $BRANCH
+  -t CRW_VERSION          use a specific tag; by default, compute from CSV VERSION
 	--no-commit, -n         do not commit to BRANCH
 	--no-push, -p           do not push to BRANCH
 	-prb                    set a PR_BRANCH; default: pr-update-version-and-registry-tags-(timestamp)
 	-o                      open browser if PR generated
-	--remove [CRW VERSION]  remove data for [CRW VERSION] from job-config.json
+	--remove [CRW VERSION]  remove data for [CRW VERSION] (latest version - 3)
+	--disable [CRW VERSION] disable [CRW VERSION] jobs in job-config.json (implement code freeze)
 	--help, -h              help
 	"
 }
@@ -43,6 +49,7 @@ while [[ "$#" -gt 0 ]]; do
     '-prb') PR_BRANCH="$2"; shift 1;;
     '-o') OPENBROWSERFLAG="-o"; shift 0;;
     '--remove') REMOVE_CRW_VERSION="$2"; shift 1;;
+    '--disable') DISABLE_CRW_VERSION="$2"; shift 1;;
     '--help'|'-h') usage; exit;;
     *) OTHER="${OTHER} $1"; shift 0;;
   esac
@@ -146,12 +153,15 @@ updateVersion() {
       DISABLE_VERSION_INDEX=$(( ${#VERSION_KEYS[@]} - 4 )) 
 
       #Disable version -2, and everything previous (if there)
-      while [[ $DISABLE_VERSION_INDEX -gt -1 ]]
-      do
+      while [[ $DISABLE_VERSION_INDEX -gt -1 ]]; do
          replaceField "${WORKDIR}/dependencies/job-config.json" "(.Jobs[][\"${VERSION_KEYS[$DISABLE_VERSION_INDEX]}\"][\"disabled\"]|select(.==false))" 'true'
          replaceField "${WORKDIR}/dependencies/job-config.json" "(.\"Management-Jobs\"[][\"${VERSION_KEYS[$DISABLE_VERSION_INDEX]}\"][\"disabled\"]|select(.==false))" 'true'
          DISABLE_VERSION_INDEX=$(( $DISABLE_VERSION_INDEX -1 ))
       done
+
+      if [[ $DISABLE_CRW_VERSION ]]; then 
+         replaceField "${WORKDIR}/dependencies/job-config.json" "(.\"Management-Jobs\"[][\"${VERSION_KEYS[$DISABLE_CRW_VERSION]}\"][\"disabled\"]|select(.==false))" 'true'
+      fi
 
       #update tags
       replaceField "${WORKDIR}/dependencies/job-config.json" ".Other[\"FLOATING_QUAY_TAGS\"][\"${CRW_VERSION}\"]" "\"next\""
