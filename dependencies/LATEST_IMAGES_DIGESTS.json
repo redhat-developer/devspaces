@@ -1,7 +1,8 @@
 {
     "Images": {
-        "quay.io/crw/crw-2-rhel8-operator:2.12-6": "71a60db7991f9603bbe4b89b0c6f53b9cd6492b9ba00b205661cc1c972322dd8",
-        "quay.io/crw/crw-2-rhel8-operator-bundle:2.12-47": "7ede668371a0c68e2f37d3784be39947a68633b797789cc9c41a34679811da84",
+        "quay.io/crw/backup-rhel8:2.12-6": "fcf0e843868889f9125b5bee63b6456d08095004ccacb4e5c63e7a0c020e7ca3",
+        "quay.io/crw/crw-2-rhel8-operator:2.12-6": "",
+        "quay.io/crw/crw-2-rhel8-operator-bundle:2.12-48": "8351b46288aa9ea4ec30998d0435186d84253a2c11b58f040839ecf580ceb116",
         "quay.io/crw/crw-2-rhel8-operator-metadata:2.12-112": "ccfaf43515e542a25f22812b7e2b3790b6de53bdf19856ac1033ff681d40173f",
         "quay.io/crw/dashboard-rhel8:2.12-8": "4a5a51764cb7f4eb3aab8f089826738d46ed40f6ec263d0697ae9f28107af06f",
         "quay.io/crw/idea-rhel8:2.12-6": "d766703b8888051bebf66b1e9a884187d55ac423999bbab2466200062da899a3",
@@ -13,9 +14,9 @@
         "quay.io/crw/plugin-java11-openj9-rhel8:2.12-6": "d2f71e0b4a146fcec16f463c1079fd07b20b49004dc218d3939d3d69d6cdd5fa",
         "quay.io/crw/plugin-java11-rhel8:2.12-6": "839b9f27316bb510abc09d557118204ca285cc708f1482a8d3124ac8f2e4b5d5",
         "quay.io/crw/plugin-java8-openj9-rhel8:2.12-6": "7f5fc6ee8b61bff9b1643b3ce94cb276d75d0d63ba2cf6aa7c9ab9e8738423bc",
-        "quay.io/crw/plugin-java8-rhel8:2.12-6": "eff4d7987d332b0b3baf22ba1e056b339063ce92d1e84f8c9027cb3c28e1aea6",
         "quay.io/crw/plugin-kubernetes-rhel8:2.12-9": "827cd9b9c30e14ec3958445dc3ef1a087794a1f0259601e868619af746daee89",
         "quay.io/crw/plugin-openshift-rhel8:2.12-8": "d794597b27e15e47560ce63596226932d498243ac4327dfe5514af1645e3c23a",
+        "quay.io/crw/pluginregistry-rhel8:2.12-5": "3a5fad55f612cb706d2bc1ccf9e88f2e517499d2fc87efa0332c655a1a40ffcc",
         "quay.io/crw/server-rhel8:2.12-5": "7d73e8c778becdff0a96303c501cc6260d27b2e1e77b55e200f944a3e7bdb86a",
         "quay.io/crw/stacks-cpp-rhel8:2.12-5": "871edac168ea6d670943cb7a7f3e51f2ad2aff5d3ccf1fc22e3b1872db60d8d7",
         "quay.io/crw/stacks-dotnet-rhel8:2.12-5": "60007e969d7e3dbc526f3be6b5ebb6aadac9018448c6f2d967ade8400d158531",
@@ -23,6 +24,7 @@
         "quay.io/crw/stacks-php-rhel8:2.12-5": "32d28aef989cadf8dda497dd3375de2c65fd0fde74935134cfc807a4c97e6631",
         "quay.io/crw/theia-dev-rhel8:2.12-184": "8454189fa1a78aac4cf2c437c9ad1e168bd63b1bd8de0f2905df069ca42e49d4",
         "quay.io/crw/theia-endpoint-rhel8:2.12-57": "2eb5fd69e08e3a1a8f557fe1d41170ee9dac89d15c5947aabc477d4e2107a9ea",
+        "quay.io/crw/theia-rhel8:2.12-67": "7c1fcf0a972e2905a0758d53e2155534643d0fbcbb688d57b54f05bafe323582",
         "quay.io/crw/traefik-rhel8:2.12-5": "012b6d04e2c3ed30e34d95f3566a7ccdaa2e696b33d77f7622405149c21d9a6f",
         "": ""
     }
