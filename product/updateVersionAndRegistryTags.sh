@@ -159,10 +159,6 @@ updateVersion() {
          DISABLE_VERSION_INDEX=$(( $DISABLE_VERSION_INDEX -1 ))
       done
 
-      if [[ $DISABLE_CRW_VERSION ]]; then 
-         replaceField "${WORKDIR}/dependencies/job-config.json" "(.\"Management-Jobs\"[][\"${VERSION_KEYS[$DISABLE_CRW_VERSION]}\"][\"disabled\"]|select(.==false))" 'true'
-      fi
-
       #update tags
       replaceField "${WORKDIR}/dependencies/job-config.json" ".Other[\"FLOATING_QUAY_TAGS\"][\"${CRW_VERSION}\"]" "\"next\""
       replaceField "${WORKDIR}/dependencies/job-config.json" ".Other[\"FLOATING_QUAY_TAGS\"][\"2.x\"]" "\"next\""
@@ -172,8 +168,12 @@ updateVersion() {
       replaceField "${WORKDIR}/dependencies/job-config.json" ".Other[\"FLOATING_QUAY_TAGS\"][\"${VERSION_KEYS[$LATEST_INDEX]}\"]" "\"latest\""
       #set the previous 'latest' to be its own version
       replaceField "${WORKDIR}/dependencies/job-config.json" ".Other[\"FLOATING_QUAY_TAGS\"][\"${VERSION_KEYS[$DISABLE_VERSION_INDEX]}\"]" "\"${VERSION_KEYS[$DISABLE_VERSION_INDEX]}\""
-
     fi 
+
+    if [[ $DISABLE_CRW_VERSION ]]; then 
+        replaceField "${WORKDIR}/dependencies/job-config.json" "(.Jobs[][\"$DISABLE_CRW_VERSION\"][\"disabled\"]|select(.==false))" 'true'
+        replaceField "${WORKDIR}/dependencies/job-config.json" "(.\"Management-Jobs\"[][\"$DISABLE_CRW_VERSION\"][\"disabled\"]|select(.==false))" 'true'
+    fi
 }
 
 updateDevfileRegistry() {
@@ -212,9 +212,17 @@ updatePluginRegistry() {
     git diff -q "${YAML_ROOT}" "${TEMPLATE_FILE}" || true
 }
 
+COMMIT_MSG="chore(tags) update VERSION and registry references to :${CRW_VERSION}"
+if [[ $DISABLE_CRW_VERSION ]]; then 
+  COMMIT_MSG="${COMMIT_MSG}; disable $DISABLE_CRW_VERSION jobs"
+fi
+if [[ $REMOVE_CRW_VERSION ]]; then 
+  COMMIT_MSG="${COMMIT_MSG}; remove $REMOVE_CRW_VERSION jobs"
+fi
+
 commitChanges() {
     if [[ ${docommit} -eq 1 ]]; then
-        git commit -a -s -m "chore(tags) update VERSION and registry references to :${CRW_VERSION}"
+        git commit -a -s -m "${COMMIT_MSG}"
         git pull origin "${BRANCH}"
         if [[ ${dopush} -eq 1 ]]; then
             PUSH_TRY="$(git push origin "${BRANCH}" 2>&1 || git push origin "${PR_BRANCH}" || true)"
