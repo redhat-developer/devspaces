@@ -23,23 +23,26 @@ DISABLE_CRW_MGMTJOBS_VERSION=""
 BRANCH="crw-2-rhel-8"
 
 usage () {
-	echo "Usage:   $0 -v [CRW CSV VERSION]"
-	echo "Example: $0 -v 2.y.0"
-	echo "Options:
+  echo "
+Usage:   $0 -v [CRW CSV_VERSION]
+Example: $0 -v 2.y.0
+
+Options:
+  --help, -h              help
   -w WORKDIR              work in a differnt dir than $(pwd)
   -b BRANCH               commit to a different branch than $BRANCH
-  -t CRW_VERSION          use a specific tag; by default, compute from CSV VERSION
-	--no-commit, -n         do not commit to BRANCH
-	--no-push, -p           do not push to BRANCH
-	-prb                    set a PR_BRANCH; default: pr-update-version-and-registry-tags-(timestamp)
-	-o                      open browser if PR generated
-	--remove [CRW VERSION]  remove data for [CRW VERSION] (latest version - 3)
-	--enable-jobs [CRW VERSION] enable [CRW VERSION] jobs in job-config.json, but leave metadata/bundle + management jobs alone
-	--enable-management-jobs [CRW VERSION] enable ALL [CRW VERSION] jobs in job-config.json
-	--disable-jobs [CRW VERSION] disable [CRW VERSION] jobs in job-config.json, but leave metadata/bundle + management jobs alone
-	--disable-management-jobs [CRW VERSION] disable ALL [CRW VERSION] jobs in job-config.json (implement code freeze)
-	--help, -h              help
-	"
+  -t CRW_VERSION          use a specific tag; by default, compute from CSV_VERSION
+  --no-commit, -n         do not commit to BRANCH
+  --no-push, -p           do not push to BRANCH
+  -prb                    set a PR_BRANCH; default: pr-update-version-and-registry-tags-(timestamp)
+  -o                      open browser if PR generated
+  
+  --remove [CRW_VERSION]                  remove data for [CRW_VERSION] (latest version - 3)
+  --enable-jobs [CRW_VERSION]             enable [CRW_VERSION] jobs in job-config.json, but leave metadata/bundle + management jobs alone
+  --enable-management-jobs [CRW_VERSION]  enable ALL [CRW_VERSION] jobs in job-config.json
+  --disable-jobs [CRW_VERSION]            disable [CRW_VERSION] jobs in job-config.json, but leave metadata/bundle + management jobs alone
+  --disable-management-jobs [CRW_VERSION] disable ALL [CRW_VERSION] jobs in job-config.json (implement code freeze)
+  "
 }
 
 if [[ $# -lt 1 ]]; then usage; exit; fi
@@ -156,7 +159,7 @@ updateVersion() {
       replaceField "${WORKDIR}/dependencies/job-config.json" "(.\"Management-Jobs\"[][\"${CRW_VERSION}\"][\"disabled\"]|select(.==true))" 'false'
 
       #find and disable version-2
-      #start by gathering all crw versions that have data in the json
+      #start by gathering all CRW_VERSIONs that have data in the json
       VERSION_KEYS=($(cat ${WORKDIR}/dependencies/job-config.json | jq -r '.Jobs'[\"dashboard\"]' | keys[]'))
       #get the array index of version -2. length -1 is 2.x, -2 is the version that was added, so the old version that needs to get disabled is length - 4
       DISABLE_VERSION_INDEX=$(( ${#VERSION_KEYS[@]} - 4 )) 
