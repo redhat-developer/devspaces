@@ -234,6 +234,15 @@ COMMIT_MSG="chore(tags) update VERSION and registry references to :${CRW_VERSION
 if [[ $DISABLE_CRW_JOBS_VERSION ]]; then 
   COMMIT_MSG="${COMMIT_MSG}; disable $DISABLE_CRW_JOBS_VERSION jobs"
 fi
+if [[ $DISABLE_CRW_MGMTJOBS_VERSION ]]; then 
+  COMMIT_MSG="${COMMIT_MSG}; disable $DISABLE_CRW_MGMTJOBS_VERSION mgmt jobs"
+fi
+if [[ $ENABLE_CRW_JOBS_VERSION ]]; then 
+  COMMIT_MSG="${COMMIT_MSG}; enable $ENABLE_CRW_JOBS_VERSION jobs"
+fi
+if [[ $ENABLE_CRW_MGMTJOBS_VERSION ]]; then 
+  COMMIT_MSG="${COMMIT_MSG}; enable $ENABLE_CRW_MGMTJOBS_VERSION mgmt jobs"
+fi
 if [[ $REMOVE_CRW_VERSION ]]; then 
   COMMIT_MSG="${COMMIT_MSG}; remove $REMOVE_CRW_VERSION jobs"
 fi
