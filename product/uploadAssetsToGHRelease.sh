@@ -44,13 +44,14 @@ while [[ "$#" -gt 0 ]]; do
   shift 1
 done
 
-if [[ $(which gh | grep 'no') ]]; then 
-  #no GH CLI installed, install it
-  brew install gh
-  gh auth login --with-token ${GITHUB_TOKEN}
-else
+if [[ $(which gh) ]]; then 
   #login again for safety
   gh auth login --with-token ${GITHUB_TOKEN}
+else
+#no GH CLI installed, install it
+  brew install gh
+  gh auth login --with-token ${GITHUB_TOKEN}
+
 fi
 
 # check if existing release exists
