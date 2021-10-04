@@ -44,29 +44,20 @@ while [[ "$#" -gt 0 ]]; do
   shift 1
 done
 
-if [[ $(which gh) ]]; then 
-  #login again for safety
-  gh auth login --with-token ${GITHUB_TOKEN}
-else
-#no GH CLI installed, install it
-  brew install gh
-  gh auth login --with-token ${GITHUB_TOKEN}
-
-fi
+#check for hub and die if not there?
+export GITHUB_TOKEN=${GITHUB_TOKEN}
 
 # check if existing release exists
 #RELEASE_ID=$(curlWithToken -H "Accept: application/vnd.github.v3+json" $releases_URL | jq -r --arg PREFIX "${PREFIX}" --arg CSV_VERSION "${CSV_VERSION}" '.[] | select(.name=="Assets for the '$CSV_VERSION' '$PREFIX' release")|.url' || true); RELEASE_ID=${RELEASE_ID##*/}
-if [[ $(gh release list | grep ${CSV_VERSION}) ]]; then
+if [[ $(hub release | grep ${CSV_VERSION}) ]]; then
   #no existing release, create it
-  gh release create "${CSV_VERSION}-${PREFIX}-assets" --target "${MIDSTM_BRANCH}" --title "Assets for the ${CSV_VERSION} ${PREFIX} release" --notes "Container build asset files for ${CSV_VERSION}" --prerelease
+  hub release create  -t "${MIDSTM_BRANCH}" -m "Assets for the ${CSV_VERSION} ${PREFIX} release" -m "Container build asset files for ${CSV_VERSION}" --prerelease "${CSV_VERSION}-${PREFIX}-assets"
 fi
 
 # upload artifacts for each platform 
 for fileToPush in $fileList; do
     # attempt to upload a new file
     echo "Uploading new asset $fileToPush"
-    gh release upload "${CSV_VERSION}-${PREFIX}-assets" ${fileToPush} --clobber
+    hub release edit -a ${fileToPush} "${CSV_VERSION}-${PREFIX}-assets"
 done
 
-#logout ¯\_(ツ)_/¯
-gh auth logout github.com 
