@@ -257,10 +257,10 @@ def installPodman(boolean usePulpRepos=false) {
 //compile and install github hub to push assets to release
 def installHub() {
   sh '''#!/bin/bash -xe
-   cd /tmp
-   curl -sSLo- https://github.com/github/hub/archive/refs/tags/v2.14.2.tar.gz | \
-   tar -xz && sudo make install -C /tmp/hub-2.14.2 && rm -rf hub-2.14.2
-   hub version
+    cd /tmp
+    curl -sSLo- https://github.com/github/hub/archive/refs/tags/v2.14.2.tar.gz | \
+    tar -xz && sudo make install -C /tmp/hub-2.14.2 && rm -rf hub-2.14.2
+    hub version
   '''
 }
 
