@@ -133,6 +133,7 @@ class IssueToJIRA:
   default_jira_data = {
     'project': 'CRW',
     'issuetype': {'name': 'Task'},
+    'components': [{"name": "docs"}],
     'customfield_12310211': 'To be written by team lead or assignee',
     'customfield_12310213': {'value': 'Not Yet Documented'}
   }
@@ -224,6 +225,6 @@ for i in pending_issues:
     new_jira_issue = j.create_issue(fields=new_jira)
     logging.info("JIRA issue %s created." % new_jira_issue.key)
     new_jira_issue.update(fields=customfields)
-
+    break
     # update github issue with comment
     i.create_comment(ISSUE_SYNC_COMMENT + new_jira_issue.key)
