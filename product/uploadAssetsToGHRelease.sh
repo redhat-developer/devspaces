@@ -44,14 +44,13 @@ while [[ "$#" -gt 0 ]]; do
   shift 1
 done
 
-#check for hub and die if not there?
 export GITHUB_TOKEN=${GITHUB_TOKEN}
 
 # check if existing release exists
 #RELEASE_ID=$(curlWithToken -H "Accept: application/vnd.github.v3+json" $releases_URL | jq -r --arg PREFIX "${PREFIX}" --arg CSV_VERSION "${CSV_VERSION}" '.[] | select(.name=="Assets for the '$CSV_VERSION' '$PREFIX' release")|.url' || true); RELEASE_ID=${RELEASE_ID##*/}
-if [[ $(hub release | grep ${CSV_VERSION}) ]]; then
+if [[ !$(hub release | grep ${CSV_VERSION}) ]]; then
   #no existing release, create it
-  hub release create  -t "${MIDSTM_BRANCH}" -m "Assets for the ${CSV_VERSION} ${PREFIX} release" -m "Container build asset files for ${CSV_VERSION}" --prerelease "${CSV_VERSION}-${PREFIX}-assets"
+  hub release create -t "${MIDSTM_BRANCH}" -m "Assets for the ${CSV_VERSION} ${PREFIX} release" -m "Container build asset files for ${CSV_VERSION}" --prerelease "${CSV_VERSION}-${PREFIX}-assets"
 fi
 
 # upload artifacts for each platform 
