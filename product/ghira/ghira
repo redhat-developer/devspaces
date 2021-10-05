@@ -24,7 +24,7 @@ JIRA_PASSWORD = os.environ["JIRA_PASSWORD"]
 GITHUB_KEY = os.environ["GITHUB_KEY"]
 GITHUB_REPO = "eclipse/che"
 
-ISSUE_SYNC_COMMENT = "sync'd to redhat jira #"
+ISSUE_SYNC_COMMENT = "sync'd to Red Hat JIRA https://issues.redhat.com/browse/"
 
 SMTP_HOST = "smtp.corp.redhat.com"
 SMTP_PORT = 25
@@ -214,13 +214,14 @@ for i in pending_issues:
     for v in new_jira['fixVersions']:
       fvs.append({'name': v})
     new_jira['fixVersions'] = fvs
+    new_jira['affectsVersions'] = fvs
     customfields = {}   # custom fields only allowed to be updated and not set on create?
     for k, v in new_jira.items():
       if k.startswith('customfield_'):
         customfields[k] = v
     for k in customfields.keys():
       del new_jira[k]
-    new_jira['description'] = mistletoe.markdown(new_jira['description'], JIRARenderer)
+    new_jira['description'] = mistletoe.markdown(new_jira['description'], JIRARenderer) + '\n\n' + 'Synced from Eclipse Che issue https://github.com/eclipse/che/issues/' + i.number
 
     new_jira_issue = j.create_issue(fields=new_jira)
     logging.info("JIRA issue %s created." % new_jira_issue.key)
