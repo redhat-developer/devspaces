@@ -57,6 +57,6 @@ fi
 for fileToPush in $fileList; do
     # attempt to upload a new file
     echo "Uploading new asset $fileToPush"
-    hub release edit -a ${fileToPush} "${CSV_VERSION}-${PREFIX}-assets"
+    hub release edit -a ${fileToPush} "${CSV_VERSION}-${PREFIX}-assets" -m "Assets for the ${CSV_VERSION} ${PREFIX} release" -m "Container build asset files for ${CSV_VERSION}"
 done
 
