@@ -15,6 +15,7 @@ import jira
 import requests
 import mistletoe
 from jira_renderer import JIRARenderer
+import warnings
 
 JIRA_PROJECT = "CRW"
 JIRA_URL = "https://issues.redhat.com"
@@ -147,7 +148,7 @@ class IssueToJIRA:
   #  - non-trivial data_map can use (name, function) tuple instead of name
   def convert(issue):
     gh_data = issue.raw_data
-    logging.debug(json.dumps(gh_data, indent=2))
+    # logging.debug(json.dumps(gh_data, indent=2))
     jira_data = copy.deepcopy(IssueToJIRA.default_jira_data)
 
     for (gh_k, jira_k) in IssueToJIRA.data_map.items():
@@ -182,7 +183,7 @@ for i in all_issues:
   for c in i.get_comments():
     if c.user.login == GITHUB_USER and c.body.find(ISSUE_SYNC_COMMENT) != -1:
       found = True
-      logging.info("Issue %s already sync'd" % i.number)
+      logging.info("Skip https://github.com/eclipse/che/issues/%s -- Already sync'd" % i.number)
       break
   if not found:
     pending_issues.append(i)
@@ -194,21 +195,21 @@ for i in pending_issues:
   if not new_jira['fixVersions']:
     d = i.raw_data
     milestone = d['milestone']['title'] if d['milestone'] and 'title' in d['milestone'] else ""
-    logging.warning("Skipping Issue %s -- Invalid/Empty milestone (%s)" % (i.number, milestone))
+    logging.warning("Skip https://github.com/eclipse/che/issues/%s -- Invalid/Empty milestone (%s)" % (i.number, milestone))
     for l in d["labels"]:
       msg_to = get_area_lead_email(l["name"])
       if msg_to:
         break
     subject = "repo " + GITHUB_REPO + " issue# " + str(i.number) + " has invalid milestone"
     body = f"Issue URL: { d['html_url'] }\nTitle: { d['title'] }\nUpdated: { d['updated_at'] }\n\n" + \
-      f"Issue was not synced to JIRA becase the milestone field was invalid ({ milestone })"
+      f"Issue not synced to JIRA because milestone field is invalid ({ milestone })"
     send_email(EMAIL_FROM, msg_to, subject, body)
     continue
   elif '2.x' in new_jira['fixVersions']:
-    logging.info("Skipping Issue %s -- for future release" % i.number)
+    logging.info("Skip https://github.com/eclipse/che/issues/%s -- for future release" % i.number)
     continue
 
-  logging.info("Sync Issue %s to JIRA" % i.number)
+  logging.info("Sync https://github.com/eclipse/che/issues/%s to JIRA" % i.number)
   logging.debug("  - JIRA with raw data:\n" + json.dumps(new_jira, indent=2) + '\n')
   if not DRY_RUN:
     # massage new_jira to be jira API friendly
@@ -219,10 +220,6 @@ for i in pending_issues:
     # affects version set to same default value as fixversion
     new_jira['versions'] = fvs 
 
-    # TODO add remote link to the upstream Che issue
-    # remotelink = []
-    # remotelink.append({"object": {"url": "https://github.com/eclipse/che/issues/" + str(i.number), "title": new_jira['summary'] + str(i.number)}})
-    # new_jira['issuelinks'] = remotelink
     customfields = {}   # custom fields only allowed to be updated and not set on create?
     for k, v in new_jira.items():
       if k.startswith('customfield_'):
@@ -232,8 +229,14 @@ for i in pending_issues:
     new_jira['description'] = '*Synced from Eclipse Che issue*\n\nhttps://github.com/eclipse/che/issues/' + str(i.number) + '\n\n' + mistletoe.markdown(new_jira['description'], JIRARenderer)
 
     new_jira_issue = j.create_issue(fields=new_jira)
-    logging.info("JIRA https://issues.redhat.com/browse/%s created." % new_jira_issue.key)
+    logging.info("JIRA https://issues.redhat.com/browse/%s created" % new_jira_issue.key)
     new_jira_issue.update(fields=customfields)
+
+    with warnings.catch_warnings():
+      warnings.simplefilter("ignore")
+      j.add_remote_link(new_jira_issue, {'url': "https://github.com/eclipse/che/issues/" + str(i.number), \
+        'title': new_jira['summary'] + " #" + str(i.number), \
+        "icon": {"url16x16": "https://github.com/favicon.ico"}})
 
     # update github issue with comment
     i.create_comment(ISSUE_SYNC_COMMENT + new_jira_issue.key)
