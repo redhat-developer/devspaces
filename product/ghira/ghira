@@ -31,8 +31,12 @@ SMTP_PORT = 25
 EMAIL_FROM = "nboldt@redhat.com"
 EMAIL_TO_DEFAULT = "nboldt@redhat.com"
 
-#LOG_LEVEL = logging.DEBUG
-LOG_LEVEL = logging.INFO
+DEBUG='--debug' in sys.argv
+if DEBUG:
+  LOG_LEVEL = logging.DEBUG
+else:
+  LOG_LEVEL = logging.INFO
+
 class ExitOnErrorHandler(logging.StreamHandler):
     def emit(self, record):
         super().emit(record)
@@ -158,8 +162,6 @@ class IssueToJIRA:
         logging.error("expecting github key %s to exist in github issue data" % gh_k)
     return jira_data
 
-
-
 # Retrieve Issues from github
 #   search term definitions: https://pygithub.readthedocs.io/en/latest/github_objects/Issue.html
 issue_search = {
@@ -214,18 +216,31 @@ for i in pending_issues:
     for v in new_jira['fixVersions']:
       fvs.append({'name': v})
     new_jira['fixVersions'] = fvs
-    new_jira['affectsVersions'] = fvs
+    # affects version set to same default value as fixversion
+    new_jira['versions'] = fvs 
+
+    # TODO add remote link to the upstream Che issue
+    # remotelink = []
+    # remotelink.append({"object": {"url": "https://github.com/eclipse/che/issues/" + str(i.number), "title": new_jira['summary'] + str(i.number)}})
+    # new_jira['issuelinks'] = remotelink
     customfields = {}   # custom fields only allowed to be updated and not set on create?
     for k, v in new_jira.items():
       if k.startswith('customfield_'):
         customfields[k] = v
     for k in customfields.keys():
       del new_jira[k]
-    new_jira['description'] = mistletoe.markdown(new_jira['description'], JIRARenderer) + '\n\n' + 'Synced from Eclipse Che issue https://github.com/eclipse/che/issues/' + i.number
+    new_jira['description'] = '*Synced from Eclipse Che issue*\n\nhttps://github.com/eclipse/che/issues/' + str(i.number) + '\n\n' + mistletoe.markdown(new_jira['description'], JIRARenderer)
 
     new_jira_issue = j.create_issue(fields=new_jira)
-    logging.info("JIRA issue %s created." % new_jira_issue.key)
+    logging.info("JIRA https://issues.redhat.com/browse/%s created." % new_jira_issue.key)
     new_jira_issue.update(fields=customfields)
 
     # update github issue with comment
     i.create_comment(ISSUE_SYNC_COMMENT + new_jira_issue.key)
+
+logging.info("%s JIRAs created." % len(pending_issues))
+
+# for debugging, dump json for a complete issue to figure out field names
+# j=jira.JIRA(JIRA_URL, basic_auth=(JIRA_USER,JIRA_PASSWORD))
+# i=j.issue("CRW-1684")
+# print(json.dumps(i.raw,indent=2))
