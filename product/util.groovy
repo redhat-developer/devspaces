@@ -272,8 +272,7 @@ def installHub(String hubVersion="2.14.2", String goVersion="1.17.1", String arc
         break; 
     }
     sh'''#!/bin/bash -xe
-      curl -sSLo- https://golang.org/dl/go''' + goVersion + '''.linux-''' + goArch + '''.tar.gz | \
-      sudo tar -C /usr/local -xz 
+      curl -sSLo- https://golang.org/dl/go''' + goVersion + '''.linux-''' + goArch + '''.tar.gz | sudo tar -C /usr/local -xz 
       export PATH=$PATH:/usr/local/go/bin
       go version
     '''
