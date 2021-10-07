@@ -255,7 +255,29 @@ def installPodman(boolean usePulpRepos=false) {
 }
 
 //compile and install github hub to push assets to release
-def installHub(String hubVersion="2.14.2") {
+def installHub(String hubVersion="2.14.2", String goVersion="1.17.1", String arch) {
+  //check for go
+  if("which go | grep 'no'".execute().text) { //install latest go
+    //rhel8', 's390x-rhel8', 'ppc64le-rhel8'
+    goArch = "amd64"
+    switch(arch) {
+      case "rhel8":
+        goArch = "amd64";
+        break; 
+      case "s390x-rhel8":
+        goArch = "s390x";
+        break; 
+      case "ppc64le-rhel8":
+        goArch = "ppc64le";
+        break; 
+    }
+    sh'''#!/bin/bash -xe
+      curl -sSLo- https://golang.org/dl/go''' + goVersion + '''.linux-''' + goArch + '''.tar.gz | \ 
+      sudo tar -C /usr/local -xz 
+      export PATH=$PATH:/usr/local/go/bin
+      go version
+    '''
+  }
   sh'''#!/bin/bash -xe
 cd /tmp
 curl -sSLo- https://github.com/github/hub/archive/refs/tags/v''' + hubVersion + '''.tar.gz | \
