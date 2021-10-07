@@ -258,10 +258,11 @@ def installPodman(boolean usePulpRepos=false) {
 def installHub(String hubVersion="2.14.2", String goVersion="1.17.1", String arch) {
   //check for go
   goNotFound = sh(script: '''#!/bin/bash -e
-    which go | grep ' no go ' 
+    which go
   ''', returnStdout: true).trim()
-  if(goNotFound?.trim()) { //install latest go
+  if(goNotFound.contains('no go')) { //install latest go
     //rhel8', 's390x-rhel8', 'ppc64le-rhel8'
+    println "did not find go"
     goArch = "amd64"
     switch(arch) {
       case "rhel8":
