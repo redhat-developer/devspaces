@@ -257,8 +257,8 @@ def installPodman(boolean usePulpRepos=false) {
 //compile and install github hub to push assets to release
 def installHub(String hubVersion="2.14.2", String goVersion="1.17.1", String arch) {
   //check for go
-  go = sh(script: ''' which go | grep ' no go ' ''', returnStdout: true).trim()
-  if(go?.trim()) { //install latest go
+  goNotFound = sh(script: ''' which go | grep ' no go ' ''', returnStdout: true).trim()
+  if(goNotFound?.trim()) { //install latest go
     //rhel8', 's390x-rhel8', 'ppc64le-rhel8'
     goArch = "amd64"
     switch(arch) {
