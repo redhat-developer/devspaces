@@ -259,7 +259,7 @@ def installHub(String hubVersion="2.14.2", String goVersion="1.17.1", String arc
   //check for go
   goNotFound = sh(script: '''#!/bin/bash -e
     which go
-  ''', returnStdout: true).trim()
+  ''', returnStdout: true).trim().text
   if(goNotFound.contains('no go')) { //install latest go
     //rhel8', 's390x-rhel8', 'ppc64le-rhel8'
     println "did not find go"
