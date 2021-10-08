@@ -257,36 +257,24 @@ def installPodman(boolean usePulpRepos=false) {
 //compile and install github hub to push assets to release
 def installHub(String hubVersion="2.14.2", String goVersion="1.17.1", String arch) {
   //check for go
-  goNotFound = sh(script: '''#!/bin/bash -e
-    which go
-  ''', returnStdout: true).trim().text
-  if(goNotFound.contains('no go')) { //install latest go
-    //rhel8', 's390x-rhel8', 'ppc64le-rhel8'
-    println "did not find go"
-    goArch = "amd64"
-    switch(arch) {
-      case "rhel8":
-        goArch = "amd64";
-        break; 
-      case "s390x-rhel8":
-        goArch = "s390x";
-        break; 
-      case "ppc64le-rhel8":
-        goArch = "ppc64le";
-        break; 
-    }
-    sh'''#!/bin/bash -xe
-      curl -sSLo- https://golang.org/dl/go''' + goVersion + '''.linux-''' + goArch + '''.tar.gz | sudo tar -C /usr/local -xz 
-      export PATH=$PATH:/usr/local/go/bin
+  sh '''#!/bin/bash -e
+    if [[ ! (-f /usr/local/go/bin/go) ]]; then
+      goArch=$(uname -m)
+      if [[ $goArch == "x86_64" ]]; then
+        goArch="amd64"
+      fi
+
+      curl -sSLo- https://golang.org/dl/go''' + goVersion + '''.linux-${goArch}.tar.gz | sudo tar -C /usr/local -xz 
+      #exporting go to the path didn't work since path changes didn't persist until the make install, trying symlink
+      sudo ln -sf /usr/local/go/bin/go /bin/go
       go version
-    '''
-  }
-  sh'''#!/bin/bash -xe
-cd /tmp
-curl -sSLo- https://github.com/github/hub/archive/refs/tags/v''' + hubVersion + '''.tar.gz | \
-tar -xz && sudo make install -C /tmp/hub-''' + hubVersion + ''' && rm -rf hub-''' + hubVersion + '''
-hub version
-'''
+    fi
+
+    cd /tmp
+    curl -sSLo- https://github.com/github/hub/archive/refs/tags/v''' + hubVersion + '''.tar.gz | \
+    tar -xz && sudo make install -C /tmp/hub-''' + hubVersion + ''' && rm -rf hub-''' + hubVersion + '''
+    hub version
+  '''
 }
 
 // rcmtools repo required for rhpkg and kinit
