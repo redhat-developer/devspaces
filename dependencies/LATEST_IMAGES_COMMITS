@@ -8,19 +8,19 @@ quay.io/crw/configbump-rhel8:2.12-4
    Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1734075
   Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-configbump/commit?id=6fdb00e91b5131c90d3ae260807ed47ebc2b1e5b
 
-quay.io/crw/crw-2-rhel8-operator:2.12-8
-     NVR: codeready-workspaces-rhel8-operator-container-2.12-8
-   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1749553
-  Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-operator/commit?id=b7dd1ffc507765c7e3ab49f05dc7e11eb9e83789
+quay.io/crw/crw-2-rhel8-operator:2.12-9
+     NVR: codeready-workspaces-rhel8-operator-container-2.12-9
+   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1757170
+  Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-operator/commit?id=12b1ba61a16843d841f57c963c010e2ff74454a4
 
-quay.io/crw/crw-2-rhel8-operator-bundle:2.12-56
-     NVR: codeready-workspaces-operator-bundle-container-2.12-56
-   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1755859
+quay.io/crw/crw-2-rhel8-operator-bundle:2.12-58
+     NVR: codeready-workspaces-operator-bundle-container-2.12-58
+   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1757484
   Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-operator-bundle/commit?id=eadcf73ecf40e68ab5bbaf529059dd0423fcc417
 
-quay.io/crw/crw-2-rhel8-operator-metadata:2.12-121
-     NVR: codeready-workspaces-rhel8-operator-metadata-container-2.12-121
-   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1755860
+quay.io/crw/crw-2-rhel8-operator-metadata:2.12-123
+     NVR: codeready-workspaces-rhel8-operator-metadata-container-2.12-123
+   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1757485
   Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-operator-metadata/commit?id=e58d2d78ab2d90e9b91e182430ae191e6dc37fa8
 
 quay.io/crw/dashboard-rhel8:2.12-8
