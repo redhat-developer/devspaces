@@ -266,7 +266,7 @@ def installHub(String hubVersion="2.14.2", String goVersion="1.17.1", String min
       fi
     }
 
-    if [[ $(checkversion ''' + minGoVersion + ''' "$(go version | sed -r -e "s/go version go//" -e "s/\\ .+//")") ]]; then 
+    if [[ $(checkVersion ''' + minGoVersion + ''' "$(go version | sed -r -e "s/go version go//" -e "s/\\ .+//")") ]]; then 
       goArch=$(uname -m)
       if [[ $goArch == "x86_64" ]]; then
         goArch="amd64"
