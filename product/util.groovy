@@ -254,6 +254,37 @@ def installPodman(boolean usePulpRepos=false) {
   }
 }
 
+//compile and install github hub to push assets to release
+def installHub(String hubVersion="2.14.2", String goVersion="1.17.1") {
+  //check for go
+  sh '''#!/bin/bash -e
+    checkVersion() {   
+      if [[  "$1" = "$(echo -e "$1\n$2" | sort -V | head -n1)" ]]; then 
+        echo ""
+      else
+        echo "[ERROR] Must install $3 version >= $1"
+      fi
+    }
+
+    if [[ $(checkVersion ''' + goVersion + ''' "$(go version | sed -r -e "s/go version go//" -e "s/\\ .+//")") ]]; then 
+      goArch=$(uname -m)
+      if [[ $goArch == "x86_64" ]]; then
+        goArch="amd64"
+      fi
+
+      curl -sSLo- https://golang.org/dl/go''' + goVersion + '''.linux-${goArch}.tar.gz | sudo tar -C /usr/local -xz 
+      #exporting go to the path didn't work since path changes didn't persist until the make install, trying symlink
+      sudo ln -sf /usr/local/go/bin/go /bin/go
+      go version
+    fi
+
+    cd /tmp
+    curl -sSLo- https://github.com/github/hub/archive/refs/tags/v''' + hubVersion + '''.tar.gz | \
+    tar -xz && sudo make install -C /tmp/hub-''' + hubVersion + ''' && sudo rm -rf hub-''' + hubVersion + '''
+    hub version
+  '''
+}
+
 // rcmtools repo required for rhpkg and kinit
 def enableRcmToolsRepo() {
   sh '''#!/bin/bash -xe
