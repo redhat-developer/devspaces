@@ -266,7 +266,7 @@ plugins:
       memoryLimit: 1500Mi
       cpuLimit: 500m
       cpuRequest: 30m
-    extension: https://github.com/redhat-developer/codeready-workspaces-vscode-extensions/releases/download/v31f30bd/vscode-openshift-connector-v0.2.7.vsix
+    extension: https://github.com/redhat-developer/codeready-workspaces-vscode-extensions/releases/download/v1cb50f5/vscode-openshift-connector-v0.2.9.vsix
     metaYaml:
       extraDependencies:
         - ms-kubernetes-tools/vscode-kubernetes-tools
