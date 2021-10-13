@@ -181,7 +181,7 @@ for i in all_issues:
   # search through comments for sync text of already sync'd issues
   found = False
   for c in i.get_comments():
-    if c.user.login == GITHUB_USER and c.body.find(ISSUE_SYNC_COMMENT) != -1:
+    if c.body.find(ISSUE_SYNC_COMMENT) != -1:    # and c.user.login == GITHUB_USER
       found = True
       logging.info("Skip https://github.com/eclipse/che/issues/%s -- Already sync'd" % i.number)
       break
