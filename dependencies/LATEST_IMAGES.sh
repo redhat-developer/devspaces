@@ -17,6 +17,19 @@
 # https://registry.redhat.io is v2 and requires authentication to query, so login in first like this:
 # docker login registry.redhat.io -u=USERNAME -p=PASSWORD
 
+getBrewImage () {
+  image=$(echo $1 | sed "s#quay.io/crw/##" | cut -d ":" -f1 )
+  echo $image
+  tag=${1##*:}
+  brewImage="registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces"
+  case $image in
+    'crw-2-rhel8-operator') brewImage=${brewImage}"-operator":${tag};;
+    'crw-2-rhel8-operator-bundle') brewImage=${brewImage}"-operator-bundle:${tag}";;
+    'crw-2-rhel8-operator-metadata') brewImage=${brewImage}"-operator-metadata:${tag}";;
+    *) brewImage=${brewImage}"-${image}:${tag}";;
+  esac
+}
+
 COMMIT_CHANGES=0
 
 command -v skopeo >/dev/null 2>&1 || { echo "skopeo is not installed. Aborting."; exit 1; }
@@ -74,6 +87,35 @@ for d in $(cat dependencies/LATEST_IMAGES); do
     echo "${d} ==> n/a"
   fi
 done
+{ 
+  echo '        "": ""'
+  echo '    },'
+} >> dependencies/LATEST_IMAGES_DIGESTS.json
+
+echo "Generating timestamps"
+echo '    "Timestamps": {' >> dependencies/LATEST_IMAGES_DIGESTS.json
+for d in $(cat dependencies/LATEST_IMAGES); do
+  archOverride="--override-arch amd64"
+  if [[ ${d} = *"-openj9-"* ]]; then 
+    archOverride="--override-arch ppc64le"
+  fi
+  if [[ ${d} != *":???" ]]; then
+  # shellcheck disable=SC2086
+    quayTime=$(skopeo inspect docker://${d} ${archOverride}| jq -r '.Created')
+    getBrewImage ${d}
+    brewTime=$(skopeo inspect docker://${brewImage} ${archOverride}| jq -r '.Created')
+    echo "Timestamp for digest ${d} ==> quay - ${quayTime}, brew - ${brewTime} "
+    echo "        \"${d}\": { \"quay\": \"${quayTime}\", \"brew\": \"${brewTime}\"} ," >> dependencies/LATEST_IMAGES_DIGESTS.json
+  else 
+    echo "Timestamp for ${d} ==> n/a"
+  fi
+done
+{
+echo '        "": ""'
+echo '    }'
+echo "}"
+} >> dependencies/LATEST_IMAGES_DIGESTS.json
+
 { 
   echo '        "": ""'
   echo '    }'
