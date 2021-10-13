@@ -13,6 +13,7 @@ plugins:
       image: "registry.redhat.io/codeready-workspaces/plugin-java8-rhel8:2.13"
       name: vscode-node-debug
       memoryLimit: 512Mi
+      memoryRequest: 20Mi
       cpuLimit: 500m
       cpuRequest: 30m
       args:
@@ -32,6 +33,7 @@ plugins:
       image: "registry.redhat.io/codeready-workspaces/plugin-java8-rhel8:2.13"
       name: vscode-node-debug
       memoryLimit: 1Gi
+      memoryRequest: 20Mi
       cpuLimit: 500m
       cpuRequest: 30m
       args:
@@ -47,6 +49,7 @@ plugins:
     sidecar:
       image: "registry.redhat.io/codeready-workspaces/plugin-java8-rhel8:2.13"
       memoryLimit: 512Mi
+      memoryRequest: 20Mi
       cpuLimit: 500m
       cpuRequest: 30m
       args:
@@ -63,6 +66,7 @@ plugins:
       image: "registry.redhat.io/codeready-workspaces/stacks-cpp-rhel8:2.13"
       name: cpp-plugins
       memoryLimit: 512Mi
+      memoryRequest: 20Mi
       cpuLimit: 500m
       cpuRequest: 30m
       args:
@@ -79,6 +83,7 @@ plugins:
       image: "registry.redhat.io/codeready-workspaces/stacks-cpp-rhel8:2.13"
       name: cpp-plugins
       memoryLimit: 512Mi
+      memoryRequest: 20Mi
       cpuLimit: 500m
       cpuRequest: 30m
       args:
@@ -100,6 +105,7 @@ plugins:
       image: "registry.redhat.io/codeready-workspaces/stacks-cpp-rhel8:2.13"
       name: cpp-plugins
       memoryLimit: 512Mi
+      memoryRequest: 20Mi
       cpuLimit: 500m
       cpuRequest: 30m
       args:
@@ -117,6 +123,7 @@ plugins:
       image: "registry.redhat.io/codeready-workspaces/stacks-php-rhel8:2.13"
       name: php-intelephense
       memoryLimit: 1Gi
+      memoryRequest: 20Mi
       cpuLimit: 500m
       cpuRequest: 30m
       args:
@@ -132,6 +139,7 @@ plugins:
       image: "registry.redhat.io/codeready-workspaces/plugin-java8-rhel8:2.13"
       name: vscode-python
       memoryLimit: 1Gi
+      memoryRequest: 20Mi
       cpuLimit: 500m
       cpuRequest: 30m
       volumeMounts:
@@ -150,6 +158,7 @@ plugins:
       image: "registry.redhat.io/codeready-workspaces/stacks-golang-rhel8:2.13"
       name: vscode-go
       memoryLimit: 512Mi
+      memoryRequest: 20Mi
       cpuLimit: 500m
       cpuRequest: 30m
       args:
@@ -167,6 +176,7 @@ plugins:
       image: "registry.redhat.io/codeready-workspaces/plugin-kubernetes-rhel8:2.13"
       name: vscode-camelk
       memoryLimit: 1Gi
+      memoryRequest: 20Mi
       cpuLimit: 500m
       cpuRequest: 30m
     extension: https://download.jboss.org/jbosstools/vscode/stable/vscode-camelk/vscode-camelk-0.0.26-336.vsix
@@ -177,6 +187,7 @@ plugins:
       image: "registry.redhat.io/codeready-workspaces/plugin-java11-rhel8:2.13"
       name: vscode-microp
       memoryLimit: 3500Mi
+      memoryRequest: 20Mi
       cpuLimit: 500m
       cpuRequest: 30m
       args:
@@ -199,6 +210,7 @@ plugins:
       image: "registry.redhat.io/codeready-workspaces/plugin-java11-rhel8:2.13"
       name: vscode-quarkus
       memoryLimit: 3500Mi
+      memoryRequest: 20Mi
       cpuLimit: 500m
       cpuRequest: 30m
       args:
@@ -222,6 +234,7 @@ plugins:
     sidecar:
       image: "registry.redhat.io/codeready-workspaces/plugin-java11-rhel8:2.13"
       memoryLimit: 256Mi
+      memoryRequest: 20Mi
       cpuLimit: 500m
       cpuRequest: 30m
       args:
@@ -238,6 +251,7 @@ plugins:
       image: "registry.redhat.io/codeready-workspaces/plugin-java8-rhel8:2.13"
       name: dependency-analytics
       memoryLimit: 1Gi
+      memoryRequest: 20Mi
       cpuLimit: 500m
       cpuRequest: 30m
       args:
@@ -264,6 +278,7 @@ plugins:
       image: "registry.redhat.io/codeready-workspaces/plugin-openshift-rhel8:2.13"
       name: vscode-openshift-connector
       memoryLimit: 1500Mi
+      memoryRequest: 20Mi
       cpuLimit: 500m
       cpuRequest: 30m
     extension: https://download.jboss.org/jbosstools/vscode/3rdparty/vscode-openshift-tools/vscode-openshift-connector-0.1.5.vsix
@@ -280,6 +295,7 @@ plugins:
       image: "registry.redhat.io/codeready-workspaces/plugin-java8-rhel8:2.13"
       name: vscode-yaml
       memoryLimit: 256Mi
+      memoryRequest: 20Mi
       cpuLimit: 500m
       cpuRequest: 30m
       args:
@@ -296,6 +312,7 @@ plugins:
       image: "registry.redhat.io/codeready-workspaces/plugin-java11-rhel8:2.13"
       name: vscode-java
       memoryLimit: 1500Mi
+      memoryRequest: 20Mi
       cpuLimit: 500m
       cpuRequest: 30m
       args:
@@ -316,6 +333,7 @@ plugins:
       image: "registry.redhat.io/codeready-workspaces/plugin-java11-rhel8:2.13"
       name: vscode-java
       memoryLimit: 1500Mi
+      memoryRequest: 20Mi
       cpuLimit: 500m
       cpuRequest: 30m
       env:
@@ -344,6 +362,7 @@ plugins:
       image: "registry.redhat.io/codeready-workspaces/plugin-java8-rhel8:2.13"
       name: vscode-java
       memoryLimit: 1500Mi
+      memoryRequest: 20Mi
       cpuLimit: 500m
       cpuRequest: 30m
       args:
@@ -366,6 +385,7 @@ plugins:
       image: "registry.redhat.io/codeready-workspaces/stacks-php-rhel8:2.13"
       name: php-debugger
       memoryLimit: 512Mi
+      memoryRequest: 20Mi
       cpuLimit: 500m
       cpuRequest: 30m
       args:
@@ -380,6 +400,7 @@ plugins:
       image: "registry.redhat.io/codeready-workspaces/plugin-java11-rhel8:2.13"
       name: vscode-apache-camel
       memoryLimit: 768Mi
+      memoryRequest: 20Mi
       cpuLimit: 500m
       cpuRequest: 30m
       args:
@@ -398,6 +419,7 @@ plugins:
       image: "registry.redhat.io/codeready-workspaces/plugin-java11-rhel8:2.13"
       name: vscode-xml
       memoryLimit: 768Mi
+      memoryRequest: 20Mi
       cpuLimit: 500m
       cpuRequest: 30m
       args:
@@ -412,6 +434,7 @@ plugins:
       image: "registry.redhat.io/codeready-workspaces/plugin-kubernetes-rhel8:2.13"
       name: vscode-kubernetes-tools
       memoryLimit: 1Gi
+      memoryRequest: 20Mi
       cpuLimit: 500m
       cpuRequest: 30m
     extension: https://download.jboss.org/jbosstools/vscode/3rdparty/vscode-kubernetes-tools/vscode-kubernetes-tools-1.2.1.vsix
@@ -423,6 +446,7 @@ plugins:
       image: "registry.redhat.io/codeready-workspaces/stacks-dotnet-rhel8:2.13"
       name: theia-netcoredbg
       memoryLimit: 512Mi
+      memoryRequest: 20Mi
       cpuLimit: 500m
       cpuRequest: 30m
       args:
@@ -438,6 +462,7 @@ plugins:
       image: "registry.redhat.io/codeready-workspaces/stacks-dotnet-rhel8:2.13"
       name: theia-omnisharp
       memoryLimit: 1Gi
+      memoryRequest: 20Mi
       cpuLimit: 500m
       cpuRequest: 30m
       args:
@@ -455,6 +480,7 @@ plugins:
       image: "registry.redhat.io/codeready-workspaces/plugin-java8-rhel8:2.13"
       name: vscode-sonarlint
       memoryLimit: 512Mi
+      memoryRequest: 20Mi
       cpuLimit: 500m
       cpuRequest: 30m
       args:
