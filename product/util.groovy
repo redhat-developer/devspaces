@@ -279,8 +279,11 @@ def installHub(String hubVersion="2.14.2", String goVersion="1.17.1") {
     fi
 
     cd /tmp
-    curl -sSLo- https://github.com/github/hub/archive/refs/tags/v''' + hubVersion + '''.tar.gz | \
-    tar -xz && export CC=gcc; sudo make install -C /tmp/hub-''' + hubVersion + ''' && sudo rm -rf hub-''' + hubVersion + '''
+    curl -sSLo- https://github.com/github/hub/archive/refs/tags/v''' + hubVersion + '''.tar.gz | tar -xz;
+    echo $PATH;
+    export CC=gcc;
+    whereis gcc || which gcc; gcc --version;
+    sudo make install -C /tmp/hub-''' + hubVersion + ''' && sudo rm -rf hub-''' + hubVersion + ''';
     hub version
   '''
 }
