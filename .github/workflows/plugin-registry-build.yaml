@@ -15,6 +15,9 @@ on:
       - crw-2-rhel-8
     paths:
       - 'dependencies/che-plugin-registry/**'
+  pull_request:
+    paths:
+    - '.github/**'
 
 jobs:
   next-build-publish:
@@ -65,7 +68,6 @@ jobs:
 
       - name: image-build
         run: |
-          docker pull quay.io/crw/pluginregistry-rhel8:next-gh-action
           BUILDER=docker SKIP_FORMAT=true SKIP_LINT=true SKIP_TEST=true ./build.sh --tag next-gh-action --offline
 
       - name: push plugin registry image
