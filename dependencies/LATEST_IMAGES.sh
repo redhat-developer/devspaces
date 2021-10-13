@@ -17,18 +17,11 @@
 # https://registry.redhat.io is v2 and requires authentication to query, so login in first like this:
 # docker login registry.redhat.io -u=USERNAME -p=PASSWORD
 
-getBrewImage () {
-  image=$(echo $1 | sed "s#quay.io/crw/##" | cut -d ":" -f1 )
-  echo $image
-  tag=${1##*:}
-  brewImage="registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces"
-  case $image in
-    'crw-2-rhel8-operator') brewImage=${brewImage}"-operator":${tag};;
-    'crw-2-rhel8-operator-bundle') brewImage=${brewImage}"-operator-bundle:${tag}";;
-    'crw-2-rhel8-operator-metadata') brewImage=${brewImage}"-operator-metadata:${tag}";;
-    *) brewImage=${brewImage}"-${image}:${tag}";;
-  esac
-}
+# access created date and digest with 
+# $➔ jq -r '.Images["quay.io/crw/pluginbroker-artifacts-rhel8:2.13-2"].Digest' dependencies/LATEST_IMAGES_DIGESTS.json 
+# 8b6063b116a78a6886e4e1afc836c5f7d03ce010d58af7b426dce4293d60cf25
+# $➔ jq -r '.Images["quay.io/crw/pluginbroker-artifacts-rhel8:2.13-2"].Created' dependencies/LATEST_IMAGES_DIGESTS.json 
+# 2021-10-09T01:49:17.048651536Z
 
 COMMIT_CHANGES=0
 
@@ -80,49 +73,20 @@ for d in $(cat dependencies/LATEST_IMAGES); do
   fi
   if [[ ${d} != *":???" ]]; then
   # shellcheck disable=SC2086
-    digest=$(skopeo inspect docker://${d} ${archOverride}| jq -r '.Digest' | sed -r -e "s/sha256://" 2>/dev/null)
-    echo "${d} ==> ${digest}"
-    echo "        \"${d}\": \"${digest}\"," >> dependencies/LATEST_IMAGES_DIGESTS.json
-  else 
-    echo "${d} ==> n/a"
+    digestAndCreatedTime=$(skopeo inspect docker://${d} ${archOverride}| jq -r '[.Digest, .Created] | @csv' | sed -r -e "s/sha256://" 2>/dev/null)
+    digest=${digestAndCreatedTime%%,*}
+    createdTime=${digestAndCreatedTime##*,}
+    echo "${d} ==> ${digest}, ${createdTime}"
+    echo "        \"${d}\": {\"Digest\": ${digest}, \"Created\": ${createdTime}}," >> dependencies/LATEST_IMAGES_DIGESTS.json
   fi
 done
-{ 
-  echo '        "": ""'
-  echo '    },'
-} >> dependencies/LATEST_IMAGES_DIGESTS.json
-
-echo "Generating timestamps"
-echo '    "Timestamps": {' >> dependencies/LATEST_IMAGES_DIGESTS.json
-for d in $(cat dependencies/LATEST_IMAGES); do
-  archOverride="--override-arch amd64"
-  if [[ ${d} = *"-openj9-"* ]]; then 
-    archOverride="--override-arch ppc64le"
-  fi
-  if [[ ${d} != *":???" ]]; then
-  # shellcheck disable=SC2086
-    quayTime=$(skopeo inspect docker://${d} ${archOverride}| jq -r '.Created')
-    getBrewImage ${d}
-    brewTime=$(skopeo inspect docker://${brewImage} ${archOverride}| jq -r '.Created')
-    echo "Timestamp for digest ${d} ==> quay - ${quayTime}, brew - ${brewTime} "
-    echo "        \"${d}\": { \"quay\": \"${quayTime}\", \"brew\": \"${brewTime}\"} ," >> dependencies/LATEST_IMAGES_DIGESTS.json
-  else 
-    echo "Timestamp for ${d} ==> n/a"
-  fi
-done
-{
-echo '        "": ""'
-echo '    }'
-echo "}"
-} >> dependencies/LATEST_IMAGES_DIGESTS.json
 
 { 
-  echo '        "": ""'
+  # empty array item to prevent json validation error for trailing comma
+  echo '        "": {"Digest":"", "Created":""}' 
   echo '    }'
-  echo "}"
+  echo '}'
 } >> dependencies/LATEST_IMAGES_DIGESTS.json
-# NOTE: can fetch the sha256sum digest for a given image set (not the per-arch digests) with this:
-# jq -r '.Images | to_entries[] | select (.key == "quay.io/crw/machineexec-rhel8:2.8-2") | .value' LATEST_IMAGES_DIGESTS.json
 
 # STEP 3 :: regenerate commit info in LATEST_IMAGES_COMMITS
 rm -f dependencies/LATEST_IMAGES_COMMITS
