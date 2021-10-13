@@ -17,6 +17,12 @@
 # https://registry.redhat.io is v2 and requires authentication to query, so login in first like this:
 # docker login registry.redhat.io -u=USERNAME -p=PASSWORD
 
+# access created date and digest with 
+# $➔ jq -r '.Images["quay.io/crw/pluginbroker-artifacts-rhel8:2.13-2"].Digest' dependencies/LATEST_IMAGES_DIGESTS.json 
+# 8b6063b116a78a6886e4e1afc836c5f7d03ce010d58af7b426dce4293d60cf25
+# $➔ jq -r '.Images["quay.io/crw/pluginbroker-artifacts-rhel8:2.13-2"].Created' dependencies/LATEST_IMAGES_DIGESTS.json 
+# 2021-10-09T01:49:17.048651536Z
+
 COMMIT_CHANGES=0
 
 command -v skopeo >/dev/null 2>&1 || { echo "skopeo is not installed. Aborting."; exit 1; }
@@ -67,20 +73,20 @@ for d in $(cat dependencies/LATEST_IMAGES); do
   fi
   if [[ ${d} != *":???" ]]; then
   # shellcheck disable=SC2086
-    digest=$(skopeo inspect docker://${d} ${archOverride}| jq -r '.Digest' | sed -r -e "s/sha256://" 2>/dev/null)
-    echo "${d} ==> ${digest}"
-    echo "        \"${d}\": \"${digest}\"," >> dependencies/LATEST_IMAGES_DIGESTS.json
-  else 
-    echo "${d} ==> n/a"
+    digestAndCreatedTime=$(skopeo inspect docker://${d} ${archOverride}| jq -r '[.Digest, .Created] | @csv' | sed -r -e "s/sha256://" 2>/dev/null)
+    digest=${digestAndCreatedTime%%,*}
+    createdTime=${digestAndCreatedTime##*,}
+    echo "${d} ==> ${digest}, ${createdTime}"
+    echo "        \"${d}\": {\"Digest\": ${digest}, \"Created\": ${createdTime}}," >> dependencies/LATEST_IMAGES_DIGESTS.json
   fi
 done
+
 { 
-  echo '        "": ""'
+  # empty array item to prevent json validation error for trailing comma
+  echo '        "": {"Digest":"", "Created":""}' 
   echo '    }'
-  echo "}"
+  echo '}'
 } >> dependencies/LATEST_IMAGES_DIGESTS.json
-# NOTE: can fetch the sha256sum digest for a given image set (not the per-arch digests) with this:
-# jq -r '.Images | to_entries[] | select (.key == "quay.io/crw/machineexec-rhel8:2.8-2") | .value' LATEST_IMAGES_DIGESTS.json
 
 # STEP 3 :: regenerate commit info in LATEST_IMAGES_COMMITS
 rm -f dependencies/LATEST_IMAGES_COMMITS
