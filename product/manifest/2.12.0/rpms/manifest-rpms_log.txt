@@ -1,0 +1,130 @@
+[INFO] Compute list of latest crw-2.12-rhel-8-container-candidate NVRs ... 
+
+[INFO] NVRs to query for installed rpms:
+   codeready-workspaces-backup-rhel8-container-2.12-6
+   codeready-workspaces-configbump-rhel8-container-2.12-4
+   codeready-workspaces-rhel8-operator-container-2.12-9.1634133535
+   codeready-workspaces-operator-bundle-container-2.12-60
+   codeready-workspaces-rhel8-operator-metadata-container-2.12-124
+   codeready-workspaces-dashboard-rhel8-container-2.12-8
+   codeready-workspaces-devfileregistry-rhel8-container-2.12-62.1634134070
+   codeready-workspaces-idea-rhel8-container-2.12-6
+   codeready-workspaces-imagepuller-rhel8-container-2.12-4
+   codeready-workspaces-jwtproxy-rhel8-container-2.12-5
+   codeready-workspaces-machineexec-rhel8-container-2.12-5
+   codeready-workspaces-pluginbroker-artifacts-rhel8-container-2.12-5
+   codeready-workspaces-pluginbroker-metadata-rhel8-container-2.12-5
+   codeready-workspaces-plugin-java11-openj9-rhel8-container-2.12-7
+   codeready-workspaces-plugin-java11-rhel8-container-2.12-7
+   codeready-workspaces-plugin-java8-openj9-rhel8-container-2.12-6
+   codeready-workspaces-plugin-java8-rhel8-container-2.12-6
+   codeready-workspaces-plugin-kubernetes-rhel8-container-2.12-9
+   codeready-workspaces-plugin-openshift-rhel8-container-2.12-8
+   codeready-workspaces-pluginregistry-rhel8-container-2.12-8.1634134066
+   codeready-workspaces-server-rhel8-container-2.12-5
+   codeready-workspaces-stacks-cpp-rhel8-container-2.12-5
+   codeready-workspaces-stacks-dotnet-rhel8-container-2.12-5
+   codeready-workspaces-stacks-golang-rhel8-container-2.12-5
+   codeready-workspaces-stacks-php-rhel8-container-2.12-5.1634134287
+   codeready-workspaces-theia-dev-rhel8-container-2.12-184
+   codeready-workspaces-theia-endpoint-rhel8-container-2.12-57
+   codeready-workspaces-theia-rhel8-container-2.12-67
+   codeready-workspaces-traefik-rhel8-container-2.12-5
+
+[INFO] Brew logs:
+   http://download.eng.bos.redhat.com/brewroot/packages/codeready-workspaces-backup-rhel8-container/2.12/6/data/logs/x86_64-build.log
+   http://download.eng.bos.redhat.com/brewroot/packages/codeready-workspaces-configbump-rhel8-container/2.12/4/data/logs/x86_64-build.log
+   http://download.eng.bos.redhat.com/brewroot/packages/codeready-workspaces-rhel8-operator-container/2.12/9.1634133535/data/logs/x86_64-build.log
+   http://download.eng.bos.redhat.com/brewroot/packages/codeready-workspaces-operator-bundle-container/2.12/60/data/logs/x86_64-build.log
+   http://download.eng.bos.redhat.com/brewroot/packages/codeready-workspaces-rhel8-operator-metadata-container/2.12/124/data/logs/x86_64-build.log
+   http://download.eng.bos.redhat.com/brewroot/packages/codeready-workspaces-dashboard-rhel8-container/2.12/8/data/logs/x86_64-build.log
+   http://download.eng.bos.redhat.com/brewroot/packages/codeready-workspaces-devfileregistry-rhel8-container/2.12/62.1634134070/data/logs/x86_64-build.log
+   http://download.eng.bos.redhat.com/brewroot/packages/codeready-workspaces-idea-rhel8-container/2.12/6/data/logs/x86_64-build.log
+   http://download.eng.bos.redhat.com/brewroot/packages/codeready-workspaces-imagepuller-rhel8-container/2.12/4/data/logs/x86_64-build.log
+   http://download.eng.bos.redhat.com/brewroot/packages/codeready-workspaces-jwtproxy-rhel8-container/2.12/5/data/logs/x86_64-build.log
+   http://download.eng.bos.redhat.com/brewroot/packages/codeready-workspaces-machineexec-rhel8-container/2.12/5/data/logs/x86_64-build.log
+   http://download.eng.bos.redhat.com/brewroot/packages/codeready-workspaces-pluginbroker-artifacts-rhel8-container/2.12/5/data/logs/x86_64-build.log
+   http://download.eng.bos.redhat.com/brewroot/packages/codeready-workspaces-pluginbroker-metadata-rhel8-container/2.12/5/data/logs/x86_64-build.log
+   http://download.eng.bos.redhat.com/brewroot/packages/codeready-workspaces-plugin-java11-openj9-rhel8-container/2.12/7/data/logs/s390x-build.log
+   http://download.eng.bos.redhat.com/brewroot/packages/codeready-workspaces-plugin-java11-rhel8-container/2.12/7/data/logs/x86_64-build.log
+   http://download.eng.bos.redhat.com/brewroot/packages/codeready-workspaces-plugin-java8-openj9-rhel8-container/2.12/6/data/logs/s390x-build.log
+   http://download.eng.bos.redhat.com/brewroot/packages/codeready-workspaces-plugin-java8-rhel8-container/2.12/6/data/logs/x86_64-build.log
+   http://download.eng.bos.redhat.com/brewroot/packages/codeready-workspaces-plugin-kubernetes-rhel8-container/2.12/9/data/logs/x86_64-build.log
+   http://download.eng.bos.redhat.com/brewroot/packages/codeready-workspaces-plugin-openshift-rhel8-container/2.12/8/data/logs/x86_64-build.log
+   http://download.eng.bos.redhat.com/brewroot/packages/codeready-workspaces-pluginregistry-rhel8-container/2.12/8.1634134066/data/logs/x86_64-build.log
+   http://download.eng.bos.redhat.com/brewroot/packages/codeready-workspaces-server-rhel8-container/2.12/5/data/logs/x86_64-build.log
+   http://download.eng.bos.redhat.com/brewroot/packages/codeready-workspaces-stacks-cpp-rhel8-container/2.12/5/data/logs/x86_64-build.log
+   http://download.eng.bos.redhat.com/brewroot/packages/codeready-workspaces-stacks-dotnet-rhel8-container/2.12/5/data/logs/x86_64-build.log
+   http://download.eng.bos.redhat.com/brewroot/packages/codeready-workspaces-stacks-golang-rhel8-container/2.12/5/data/logs/x86_64-build.log
+   http://download.eng.bos.redhat.com/brewroot/packages/codeready-workspaces-stacks-php-rhel8-container/2.12/5.1634134287/data/logs/x86_64-build.log
+   http://download.eng.bos.redhat.com/brewroot/packages/codeready-workspaces-theia-dev-rhel8-container/2.12/184/data/logs/x86_64-build.log
+   http://download.eng.bos.redhat.com/brewroot/packages/codeready-workspaces-theia-endpoint-rhel8-container/2.12/57/data/logs/x86_64-build.log
+   http://download.eng.bos.redhat.com/brewroot/packages/codeready-workspaces-theia-rhel8-container/2.12/67/data/logs/x86_64-build.log
+   http://download.eng.bos.redhat.com/brewroot/packages/codeready-workspaces-traefik-rhel8-container/2.12/5/data/logs/x86_64-build.log
+
+[INFO] NVR build IDs:
+   codeready-workspaces-backup-rhel8-container-2.12-6 [1743421] - https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1743421
+   codeready-workspaces-configbump-rhel8-container-2.12-4 [1734075] - https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1734075
+   codeready-workspaces-rhel8-operator-container-2.12-9.1634133535 [1760887] - https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1760887
+   codeready-workspaces-operator-bundle-container-2.12-60 [1758526] - https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1758526
+   codeready-workspaces-rhel8-operator-metadata-container-2.12-124 [1758494] - https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1758494
+   codeready-workspaces-dashboard-rhel8-container-2.12-8 [1744875] - https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1744875
+   codeready-workspaces-devfileregistry-rhel8-container-2.12-62.1634134070 [1760900] - https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1760900
+   codeready-workspaces-idea-rhel8-container-2.12-6 [1743430] - https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1743430
+   codeready-workspaces-imagepuller-rhel8-container-2.12-4 [1732660] - https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1732660
+   codeready-workspaces-jwtproxy-rhel8-container-2.12-5 [1743427] - https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1743427
+   codeready-workspaces-machineexec-rhel8-container-2.12-5 [1743426] - https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1743426
+   codeready-workspaces-pluginbroker-artifacts-rhel8-container-2.12-5 [1743424] - https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1743424
+   codeready-workspaces-pluginbroker-metadata-rhel8-container-2.12-5 [1743425] - https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1743425
+   codeready-workspaces-plugin-java11-openj9-rhel8-container-2.12-7 [1749576] - https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1749576
+   codeready-workspaces-plugin-java11-rhel8-container-2.12-7 [1755810] - https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1755810
+   codeready-workspaces-plugin-java8-openj9-rhel8-container-2.12-6 [1745975] - https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1745975
+   codeready-workspaces-plugin-java8-rhel8-container-2.12-6 [1745981] - https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1745981
+   codeready-workspaces-plugin-kubernetes-rhel8-container-2.12-9 [1740361] - https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1740361
+   codeready-workspaces-plugin-openshift-rhel8-container-2.12-8 [1734144] - https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1734144
+   codeready-workspaces-pluginregistry-rhel8-container-2.12-8.1634134066 [1760911] - https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1760911
+   codeready-workspaces-server-rhel8-container-2.12-5 [1734021] - https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1734021
+   codeready-workspaces-stacks-cpp-rhel8-container-2.12-5 [1734171] - https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1734171
+   codeready-workspaces-stacks-dotnet-rhel8-container-2.12-5 [1734192] - https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1734192
+   codeready-workspaces-stacks-golang-rhel8-container-2.12-5 [1736659] - https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1736659
+   codeready-workspaces-stacks-php-rhel8-container-2.12-5.1634134287 [1760906] - https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1760906
+   codeready-workspaces-theia-dev-rhel8-container-2.12-184 [1746154] - https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1746154
+   codeready-workspaces-theia-endpoint-rhel8-container-2.12-57 [1746206] - https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1746206
+   codeready-workspaces-theia-rhel8-container-2.12-67 [1746181] - https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1746181
+   codeready-workspaces-traefik-rhel8-container-2.12-5 [1736711] - https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1736711
+
+[INFO] Overall RPM manifest is in file: /var/lib/jenkins/workspace/CRW_CI/Releng/get-3rd-party-deps-manifests/2.12.0/rpms/manifest-rpms.txt
+[INFO] Unique RPM manifest is in file: /var/lib/jenkins/workspace/CRW_CI/Releng/get-3rd-party-deps-manifests/2.12.0/rpms/manifest-rpms_uniq.txt
+[INFO] Long RPM log is in file: /var/lib/jenkins/workspace/CRW_CI/Releng/get-3rd-party-deps-manifests/2.12.0/rpms/manifest-rpms_log.txt
+
+[INFO] Individual RPM manifests:
+* /var/lib/jenkins/workspace/CRW_CI/Releng/get-3rd-party-deps-manifests/2.12.0/rpms/manifest-rpms-codeready-workspaces-backup-rhel8-container-2.12-6.txt
+* /var/lib/jenkins/workspace/CRW_CI/Releng/get-3rd-party-deps-manifests/2.12.0/rpms/manifest-rpms-codeready-workspaces-configbump-rhel8-container-2.12-4.txt
+* /var/lib/jenkins/workspace/CRW_CI/Releng/get-3rd-party-deps-manifests/2.12.0/rpms/manifest-rpms-codeready-workspaces-rhel8-operator-container-2.12-9.1634133535.txt
+* /var/lib/jenkins/workspace/CRW_CI/Releng/get-3rd-party-deps-manifests/2.12.0/rpms/manifest-rpms-codeready-workspaces-operator-bundle-container-2.12-60.txt
+* /var/lib/jenkins/workspace/CRW_CI/Releng/get-3rd-party-deps-manifests/2.12.0/rpms/manifest-rpms-codeready-workspaces-rhel8-operator-metadata-container-2.12-124.txt
+* /var/lib/jenkins/workspace/CRW_CI/Releng/get-3rd-party-deps-manifests/2.12.0/rpms/manifest-rpms-codeready-workspaces-dashboard-rhel8-container-2.12-8.txt
+* /var/lib/jenkins/workspace/CRW_CI/Releng/get-3rd-party-deps-manifests/2.12.0/rpms/manifest-rpms-codeready-workspaces-devfileregistry-rhel8-container-2.12-62.1634134070.txt
+* /var/lib/jenkins/workspace/CRW_CI/Releng/get-3rd-party-deps-manifests/2.12.0/rpms/manifest-rpms-codeready-workspaces-idea-rhel8-container-2.12-6.txt
+* /var/lib/jenkins/workspace/CRW_CI/Releng/get-3rd-party-deps-manifests/2.12.0/rpms/manifest-rpms-codeready-workspaces-imagepuller-rhel8-container-2.12-4.txt
+* /var/lib/jenkins/workspace/CRW_CI/Releng/get-3rd-party-deps-manifests/2.12.0/rpms/manifest-rpms-codeready-workspaces-jwtproxy-rhel8-container-2.12-5.txt
+* /var/lib/jenkins/workspace/CRW_CI/Releng/get-3rd-party-deps-manifests/2.12.0/rpms/manifest-rpms-codeready-workspaces-machineexec-rhel8-container-2.12-5.txt
+* /var/lib/jenkins/workspace/CRW_CI/Releng/get-3rd-party-deps-manifests/2.12.0/rpms/manifest-rpms-codeready-workspaces-pluginbroker-artifacts-rhel8-container-2.12-5.txt
+* /var/lib/jenkins/workspace/CRW_CI/Releng/get-3rd-party-deps-manifests/2.12.0/rpms/manifest-rpms-codeready-workspaces-pluginbroker-metadata-rhel8-container-2.12-5.txt
+* /var/lib/jenkins/workspace/CRW_CI/Releng/get-3rd-party-deps-manifests/2.12.0/rpms/manifest-rpms-codeready-workspaces-plugin-java11-openj9-rhel8-container-2.12-7.txt
+* /var/lib/jenkins/workspace/CRW_CI/Releng/get-3rd-party-deps-manifests/2.12.0/rpms/manifest-rpms-codeready-workspaces-plugin-java11-rhel8-container-2.12-7.txt
+* /var/lib/jenkins/workspace/CRW_CI/Releng/get-3rd-party-deps-manifests/2.12.0/rpms/manifest-rpms-codeready-workspaces-plugin-java8-openj9-rhel8-container-2.12-6.txt
+* /var/lib/jenkins/workspace/CRW_CI/Releng/get-3rd-party-deps-manifests/2.12.0/rpms/manifest-rpms-codeready-workspaces-plugin-java8-rhel8-container-2.12-6.txt
+* /var/lib/jenkins/workspace/CRW_CI/Releng/get-3rd-party-deps-manifests/2.12.0/rpms/manifest-rpms-codeready-workspaces-plugin-kubernetes-rhel8-container-2.12-9.txt
+* /var/lib/jenkins/workspace/CRW_CI/Releng/get-3rd-party-deps-manifests/2.12.0/rpms/manifest-rpms-codeready-workspaces-plugin-openshift-rhel8-container-2.12-8.txt
+* /var/lib/jenkins/workspace/CRW_CI/Releng/get-3rd-party-deps-manifests/2.12.0/rpms/manifest-rpms-codeready-workspaces-pluginregistry-rhel8-container-2.12-8.1634134066.txt
+* /var/lib/jenkins/workspace/CRW_CI/Releng/get-3rd-party-deps-manifests/2.12.0/rpms/manifest-rpms-codeready-workspaces-server-rhel8-container-2.12-5.txt
+* /var/lib/jenkins/workspace/CRW_CI/Releng/get-3rd-party-deps-manifests/2.12.0/rpms/manifest-rpms-codeready-workspaces-stacks-cpp-rhel8-container-2.12-5.txt
+* /var/lib/jenkins/workspace/CRW_CI/Releng/get-3rd-party-deps-manifests/2.12.0/rpms/manifest-rpms-codeready-workspaces-stacks-dotnet-rhel8-container-2.12-5.txt
+* /var/lib/jenkins/workspace/CRW_CI/Releng/get-3rd-party-deps-manifests/2.12.0/rpms/manifest-rpms-codeready-workspaces-stacks-golang-rhel8-container-2.12-5.txt
+* /var/lib/jenkins/workspace/CRW_CI/Releng/get-3rd-party-deps-manifests/2.12.0/rpms/manifest-rpms-codeready-workspaces-stacks-php-rhel8-container-2.12-5.1634134287.txt
+* /var/lib/jenkins/workspace/CRW_CI/Releng/get-3rd-party-deps-manifests/2.12.0/rpms/manifest-rpms-codeready-workspaces-theia-dev-rhel8-container-2.12-184.txt
+* /var/lib/jenkins/workspace/CRW_CI/Releng/get-3rd-party-deps-manifests/2.12.0/rpms/manifest-rpms-codeready-workspaces-theia-endpoint-rhel8-container-2.12-57.txt
+* /var/lib/jenkins/workspace/CRW_CI/Releng/get-3rd-party-deps-manifests/2.12.0/rpms/manifest-rpms-codeready-workspaces-theia-rhel8-container-2.12-67.txt
+* /var/lib/jenkins/workspace/CRW_CI/Releng/get-3rd-party-deps-manifests/2.12.0/rpms/manifest-rpms-codeready-workspaces-traefik-rhel8-container-2.12-5.txt
+
