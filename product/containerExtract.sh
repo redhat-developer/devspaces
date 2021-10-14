@@ -38,7 +38,11 @@ if [[ ${ARCH_OVERRIDE} == "" ]] && [[ ${container} == *"-openj9"* ]]; then
   ARCH_OVERRIDE="--override-arch s390x"
 fi
 
-tmpcontainer="$(echo "$container" | tr "/:" "--")-$(date +%s)"
+if [[ $container == *"@"* ]]; then
+  tmpcontainer="$(echo "$container" | tr "/:@" "--")"
+else 
+  tmpcontainer="$(echo "$container" | tr "/:" "--")-$(date +%s)"
+fi
 unpackdir="/tmp/${tmpcontainer}"
 
 container_alt=""
