@@ -279,13 +279,7 @@ def installHub(String hubVersion="2.14.2", String goVersion="1.17.1") {
     fi
 
     cd /tmp
-    curl -sSLo- https://github.com/github/hub/archive/refs/tags/v''' + hubVersion + '''.tar.gz | tar -xz;
-    set -x;
-    echo $PATH;
-    export CC=gcc;
-    whereis gcc || which gcc; gcc --version;
-    whereis s390x-linux-gnu-gcc || which s390x-linux-gnu-gcc || echo "s390x-linux-gnu-gcc not installed";
-    sudo rpm -qa gcc c++ g++ gnu;
+    curl -sSLo- https://github.com/github/hub/archive/refs/tags/v''' + hubVersion + '''.tar.gz | tar -xz && \
     sudo bash -c 'export CC=gcc; make install -C /tmp/hub-''' + hubVersion + '''' && sudo rm -rf hub-''' + hubVersion + ''';
     hub version
   '''
