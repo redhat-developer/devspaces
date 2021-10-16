@@ -13,14 +13,14 @@ quay.io/crw/crw-2-rhel8-operator:2.12-9.1634133535
    Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1760887
   Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-operator/commit?id=12b1ba61a16843d841f57c963c010e2ff74454a4
 
-quay.io/crw/crw-2-rhel8-operator-bundle:2.12-62
-     NVR: codeready-workspaces-operator-bundle-container-2.12-62
-   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1764219
+quay.io/crw/crw-2-rhel8-operator-bundle:2.12-63
+     NVR: codeready-workspaces-operator-bundle-container-2.12-63
+   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1764250
   Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-operator-bundle/commit?id=eadcf73ecf40e68ab5bbaf529059dd0423fcc417
 
-quay.io/crw/crw-2-rhel8-operator-metadata:2.12-126
-     NVR: codeready-workspaces-rhel8-operator-metadata-container-2.12-126
-   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1764220
+quay.io/crw/crw-2-rhel8-operator-metadata:2.12-127
+     NVR: codeready-workspaces-rhel8-operator-metadata-container-2.12-127
+   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1764251
   Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-operator-metadata/commit?id=e58d2d78ab2d90e9b91e182430ae191e6dc37fa8
 
 quay.io/crw/dashboard-rhel8:2.12-8
@@ -113,15 +113,15 @@ quay.io/crw/stacks-dotnet-rhel8:2.12-6
    Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1764210
   Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-stacks-dotnet/commit?id=f6e3a8f520d9ae0c8adbe979ffe4aa3a7434cb34
 
-quay.io/crw/stacks-golang-rhel8:2.12-5
-     NVR: codeready-workspaces-stacks-golang-rhel8-container-2.12-5
-   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1736659
-  Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-stacks-golang/commit?id=428f8eefa26ce5f840542911db2bd6fef39fdde0
+quay.io/crw/stacks-golang-rhel8:2.12-6
+     NVR: codeready-workspaces-stacks-golang-rhel8-container-2.12-6
+   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1764221
+  Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-stacks-golang/commit?id=4fc3a7a5eaab2951c456f31512c283e0125f70bf
 
-quay.io/crw/stacks-php-rhel8:2.12-5.1634134287
-     NVR: codeready-workspaces-stacks-php-rhel8-container-2.12-5.1634134287
-   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1760906
-  Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-stacks-php/commit?id=716939fcfa86a29463ed0756f1a3e183b35767ee
+quay.io/crw/stacks-php-rhel8:2.12-6
+     NVR: codeready-workspaces-stacks-php-rhel8-container-2.12-6
+   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1764233
+  Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-stacks-php/commit?id=de0730a3b6a9e60c63b95f9af495426389ad3ff7
 
 quay.io/crw/theia-dev-rhel8:2.12-184
      NVR: codeready-workspaces-theia-dev-rhel8-container-2.12-184
