@@ -47,10 +47,15 @@ done
 export GITHUB_TOKEN=${GITHUB_TOKEN}
 
 # check if existing release exists
-#RELEASE_ID=$(curlWithToken -H "Accept: application/vnd.github.v3+json" $releases_URL | jq -r --arg PREFIX "${PREFIX}" --arg CSV_VERSION "${CSV_VERSION}" '.[] | select(.name=="Assets for the '$CSV_VERSION' '$PREFIX' release")|.url' || true); RELEASE_ID=${RELEASE_ID##*/}
 if [[ $(hub release | grep ${CSV_VERSION}-${PREFIX}-assets) == "" ]]; then
   #no existing release, create it
   hub release create -t "${MIDSTM_BRANCH}" -m "Assets for the ${CSV_VERSION} ${PREFIX} release" -m "Container build asset files for ${CSV_VERSION}" --prerelease "${CSV_VERSION}-${PREFIX}-assets"
+fi
+
+if [[ $(hub release download -i asset_manifest.txt | grep 'pattern did not match') == "" ]]; then #Manifest exists
+  hub release download -i asset_manifest.txt
+else
+  touch asset_manifest.txt
 fi
 
 # upload artifacts for each platform 
@@ -58,5 +63,14 @@ for fileToPush in $fileList; do
     # attempt to upload a new file
     echo "Uploading new asset $fileToPush"
     hub release edit -a ${fileToPush} "${CSV_VERSION}-${PREFIX}-assets" -m "Assets for the ${CSV_VERSION} ${PREFIX} release" -m "Container build asset files for ${CSV_VERSION}"
+
+    if [[ $(grep ${fileToPush} asset_manifest.txt) ]]; then
+      sed -i "s/${fileToPush}.*/${fileToPush} : `date`/" asset_manifest.txt
+    else
+      echo "${fileToPush} : `date`" >> asset_manifest.txt
+    fi
+
 done
 
+#push asset_manifest to releases and delete local copy
+hub release edit -a asset_manifest.txt "${CSV_VERSION}-${PREFIX}-assets" -m "Assets for the ${CSV_VERSION} ${PREFIX} release" -m "Container build asset files for ${CSV_VERSION}"
