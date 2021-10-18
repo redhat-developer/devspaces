@@ -56,9 +56,10 @@ pushd "$TMPDIR" >/dev/null || exit
 		git checkout --track "origin/${CHE_THEIA_BRANCH}"
 		git pull origin "${CHE_THEIA_BRANCH}"
 		# shellcheck disable=SC2129
-		yarn list --depth=0 > "${MANIFEST_FILE}".3
+		yarn list --depth=0 > "${MANIFEST_FILE}".yarn
 	
-		cat "${MANIFEST_FILE}".3 | sed \
+		# collect dependencies from theia project yarn.lock
+		cat "${MANIFEST_FILE}".yarn | sed \
 				-e '/Done in/d' \
 				-e '/yarn list/d ' \
 				-e 's/[├──└│]//g' \
@@ -66,8 +67,27 @@ pushd "$TMPDIR" >/dev/null || exit
 				-e 's/^@//' \
 				-e "s/@/:/g" \
 				-e "s#^#codeready-workspaces-theia-rhel8-container:${CRW_VERSION}/#g"	\
-		| sort | uniq >> ${MANIFEST_FILE}
+		| sort | uniq > ${MANIFEST_FILE}.yarn
 
+		# collect global yarn dependencies, obtained from yarn.lock file in the theia-container yarn installation
+		podman pull quay.io/crw/theia-rhel8:${CRW_VERSION}
+
+		GLOBAL_YARN_LOCK=global.yarn.lock
+		podman run --rm  --entrypoint /bin/sh "quay.io/crw/theia-rhel8:${CRW_VERSION}" -c "cat /usr/local/share/.config/yarn/global/yarn.lock" > ${GLOBAL_YARN_LOCK}
+
+		grep -e 'version "' ${GLOBAL_YARN_LOCK} -B1 | sed \
+		-e '/^--$/d' \
+		-e 's/^"@//' > ${MANIFEST_FILE}.globalyarn
+
+		while IFS= read -r dependency
+		do
+			read -r version
+			dependency=$(echo ${dependency} | tr -d '"' | cut -f1 -d"@")
+			version=$(echo ${version} | cut -f2 -d" " | tr -d '"')
+			echo "codeready-workspaces-theia-rhel8-container:${CRW_VERSION}/${dependency}:${version}" >> ${MANIFEST_FILE}.yarn
+		done < ${MANIFEST_FILE}.globalyarn
+		
+		cat ${MANIFEST_FILE}.yarn | sort | uniq > ${MANIFEST_FILE}
 		echo >> ${MANIFEST_FILE}
 
 		cat generator/src/templates/theiaPlugins.json | jq -r '. | to_entries[] | " \(.value)"' | sed \
@@ -77,7 +97,7 @@ pushd "$TMPDIR" >/dev/null || exit
 		| sort | uniq >> ${MANIFEST_FILE}
 	cd ..
 popd >/dev/null || exit
-rm -f "${MANIFEST_FILE}".2 "${MANIFEST_FILE}".3 
+rm -f "${MANIFEST_FILE}".2 "${MANIFEST_FILE}".yarn "${MANIFEST_FILE}".globalyarn
 rm -fr "$TMPDIR"
 
 ##################################
