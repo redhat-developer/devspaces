@@ -44,7 +44,12 @@ rm -f "${MANIFEST_FILE}" "${MANIFEST_FILE}".2 "${MANIFEST_FILE}".3 "${LOG_FILE}"
 [[ "${MIDSTM_BRANCH}" == "crw-2-rhel-8" ]] && JOB_BRANCH="2.x" || JOB_BRANCH="${CRW_VERSION}"
 echo "Parsing ${JENKINS}/crw-theia-sources_${JOB_BRANCH}/lastSuccessfulBuild/consoleText ..."
 curl -sSL -o "${MANIFEST_FILE}".2 "${JENKINS}/crw-theia-sources_${JOB_BRANCH}/lastSuccessfulBuild/consoleText"
-CHE_THEIA_BRANCH=$(grep "build.include" "${MANIFEST_FILE}".2 | sort -u | grep curl | sed -r -e "s#.+che-theia/(.+)/build.include#\1#") # 7.yy.x
+CHE_THEIA_BRANCH=$(grep "echo SOURCE_BRANCH=" "${MANIFEST_FILE}".2 | sed -r -e "s#.+echo SOURCE_BRANCH=(.+)#\1#") # 7.yy.x
+
+if [[ -z $CHE_THEIA_BRANCH ]]; then 
+	echo "[ERROR] Could not compute CHE_THEIA_BRANCH from ${JENKINS}/crw-theia-sources_${JOB_BRANCH}/lastSuccessfulBuild/consoleText"
+	exit 1
+fi
 
 TMPDIR=$(mktemp -d)
 pushd "$TMPDIR" >/dev/null || exit
