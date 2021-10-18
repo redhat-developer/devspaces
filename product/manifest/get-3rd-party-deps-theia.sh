@@ -55,11 +55,9 @@ pushd "$TMPDIR" >/dev/null || exit
 		git fetch || true
 		git checkout --track "origin/${CHE_THEIA_BRANCH}"
 		git pull origin "${CHE_THEIA_BRANCH}"
-		# shellcheck disable=SC2129
-		yarn list --depth=0 > "${MANIFEST_FILE}".yarn
-	
 		# collect dependencies from theia project yarn.lock
-		cat "${MANIFEST_FILE}".yarn | sed \
+		# shellcheck disable=SC2129
+		yarn list --depth=0 | sed \
 				-e '/Done in/d' \
 				-e '/yarn list/d ' \
 				-e 's/[├──└│]//g' \
@@ -67,7 +65,7 @@ pushd "$TMPDIR" >/dev/null || exit
 				-e 's/^@//' \
 				-e "s/@/:/g" \
 				-e "s#^#codeready-workspaces-theia-rhel8-container:${CRW_VERSION}/#g"	\
-		| sort | uniq > ${MANIFEST_FILE}.yarn
+		| sort -uV > ${MANIFEST_FILE}.yarn
 
 		# collect global yarn dependencies, obtained from yarn.lock file in the theia-container yarn installation
 		podman pull quay.io/crw/theia-rhel8:${CRW_VERSION}
@@ -87,7 +85,7 @@ pushd "$TMPDIR" >/dev/null || exit
 			echo "codeready-workspaces-theia-rhel8-container:${CRW_VERSION}/${dependency}:${version}" >> ${MANIFEST_FILE}.yarn
 		done < ${MANIFEST_FILE}.globalyarn
 		
-		cat ${MANIFEST_FILE}.yarn | sort | uniq > ${MANIFEST_FILE}
+		cat ${MANIFEST_FILE}.yarn | sort -uV > ${MANIFEST_FILE}
 		echo >> ${MANIFEST_FILE}
 
 		cat generator/src/templates/theiaPlugins.json | jq -r '. | to_entries[] | " \(.value)"' | sed \
@@ -97,7 +95,7 @@ pushd "$TMPDIR" >/dev/null || exit
 		| sort | uniq >> ${MANIFEST_FILE}
 	cd ..
 popd >/dev/null || exit
-rm -f "${MANIFEST_FILE}".2 "${MANIFEST_FILE}".yarn "${MANIFEST_FILE}".globalyarn
+rm -f "${MANIFEST_FILE}".2 "${GLOBAL_YARN_LOCK}" "${MANIFEST_FILE}".yarn "${MANIFEST_FILE}".globalyarn
 rm -fr "$TMPDIR"
 
 ##################################
