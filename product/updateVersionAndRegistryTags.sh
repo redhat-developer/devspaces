@@ -188,12 +188,16 @@ updateVersion() {
     fi
     if [[ $ENABLE_CRW_JOBS_VERSION ]]; then 
         replaceField "${WORKDIR}/dependencies/job-config.json" "(.Jobs[][\"$ENABLE_CRW_JOBS_VERSION\"][\"disabled\"]|select(.==true))" 'false'
+        # also enable the build-all-images job to get weekly respins
+        replaceField "${WORKDIR}/dependencies/job-config.json" "(.\"Management-Jobs\"[\"build-all-images\"][\"$ENABLE_CRW_JOBS_VERSION\"][\"disabled\"]|select(.==true))" 'false'
     fi
     if [[ $DISABLE_CRW_MGMTJOBS_VERSION ]]; then 
         replaceField "${WORKDIR}/dependencies/job-config.json" "(.\"Management-Jobs\"[][\"$DISABLE_CRW_MGMTJOBS_VERSION\"][\"disabled\"]|select(.==false))" 'true'
     fi
     if [[ $DISABLE_CRW_JOBS_VERSION ]]; then 
         replaceField "${WORKDIR}/dependencies/job-config.json" "(.Jobs[][\"$DISABLE_CRW_JOBS_VERSION\"][\"disabled\"]|select(.==false))" 'true'
+        # also disable the build-all-images job to avoid unneeded weekly respins
+        replaceField "${WORKDIR}/dependencies/job-config.json" "(.\"Management-Jobs\"[\"build-all-images\"][\"$DISABLE_CRW_JOBS_VERSION\"][\"disabled\"]|select(.==false))" 'true'
     fi
 }
 
