@@ -622,6 +622,39 @@
         ],
         "disabled": false
       }
+    },
+    "deprecated": {
+      "2.12": {
+        "disabled": true
+      },
+      "2.13": {
+        "disabled": false
+      },
+      "2.x": {
+        "disabled": false
+      }
+    },
+    "theia-akamai": {
+      "2.12": {
+        "disabled": true
+      },
+      "2.13": {
+        "disabled": false
+      },
+      "2.x": {
+        "disabled": false
+      }
+    },
+    "build-all-images": {
+      "2.12": {
+        "disabled": true
+      },
+      "2.13": {
+        "disabled": false
+      },
+      "2.x": {
+        "disabled": false
+      }
     }
   },
   "Management-Jobs": {
@@ -694,28 +727,6 @@
         "disabled": false
       }
     },
-    "deprecated": {
-      "2.12": {
-        "disabled": false
-      },
-      "2.13": {
-        "disabled": false
-      },
-      "2.x": {
-        "disabled": false
-      }
-    },
-    "theia-akamai": {
-      "2.12": {
-        "disabled": false
-      },
-      "2.13": {
-        "disabled": false
-      },
-      "2.x": {
-        "disabled": false
-      }
-    },
     "get-sources-rhpkg-container-build": {
       "2.12": {
         "disabled": false
@@ -752,17 +763,6 @@
     "update-digests-in-metadata": {
       "2.12": {
         "disabled": false
-      },
-      "2.13": {
-        "disabled": false
-      },
-      "2.x": {
-        "disabled": false
-      }
-    },
-    "build-all-images": {
-      "2.12": {
-        "disabled": true
       },
       "2.13": {
         "disabled": false
