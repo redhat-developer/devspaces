@@ -18,6 +18,9 @@ set -e
 CSV_VERSION=2.y.0 # csv 2.y.0
 PREFIX=""
 fileList=""
+DELETE_RELEASE=0
+PUSH_ASSETS=0
+
 
 MIDSTM_BRANCH=$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "crw-2-rhel-8")
 if [[ ${MIDSTM_BRANCH} != "crw-"*"-rhel-"* ]]; then MIDSTM_BRANCH="crw-2-rhel-8"; fi
@@ -38,6 +41,8 @@ while [[ "$#" -gt 0 ]]; do
     '-b') MIDSTM_BRANCH="$2"; shift 1;;
     '-ght') GITHUB_TOKEN="$2"; export GITHUB_TOKEN="${GITHUB_TOKEN}"; shift 1;;
     '--prefix') PREFIX="$2"; shift 1;;
+    '-d'|'--delete') DELETE_RELEASE=1; shift 1;;
+    '-p'|'--push-assets') PUSH_ASSETS=1; shift 1;;
     '--help'|'-h') usage;;
     *) fileList="${fileList} $1";;
   esac
@@ -46,16 +51,25 @@ done
 
 export GITHUB_TOKEN=${GITHUB_TOKEN}
 
-# check if existing release exists
-if [[ $(hub release | grep ${CSV_VERSION}-${PREFIX}-assets) == "" ]]; then
-  #no existing release, create it
-  hub release create -t "${MIDSTM_BRANCH}" -m "Assets for the ${CSV_VERSION} ${PREFIX} release" -m "Container build asset files for ${CSV_VERSION}" --prerelease "${CSV_VERSION}-${PREFIX}-assets"
+if [[ ${DELETE_RELEASE} -eq 1 ]]; then
+  #check of release exists
+  if [[ $(hub release | grep ${CSV_VERSION}-${PREFIX}-assets) -neq "" ]]; then
+    echo "Deleting release ${CSV_VERSION}-${PREFIX}-assets"
+    hub release delete "${CSV_VERSION}-${PREFIX}-assets"
+  fi
 fi
 
-# upload artifacts for each platform 
-for fileToPush in $fileList; do
+if [[ ${PUSH_ASSETS} -eq 1 ]]; then
+  # check if existing release exists
+  if [[ $(hub release | grep ${CSV_VERSION}-${PREFIX}-assets) == "" ]]; then
+    #no existing release, create it
+    hub release create -t "${MIDSTM_BRANCH}" -m "Assets for the ${CSV_VERSION} ${PREFIX} release" -m "Container build asset files for ${CSV_VERSION}" --prerelease "${CSV_VERSION}-${PREFIX}-assets"
+  fi
+
+  # upload artifacts for each platform 
+  for fileToPush in $fileList; do
     # attempt to upload a new file
     echo "Uploading new asset $fileToPush"
     hub release edit -a ${fileToPush} "${CSV_VERSION}-${PREFIX}-assets" -m "Assets for the ${CSV_VERSION} ${PREFIX} release" -m "Container build asset files for ${CSV_VERSION}"
-
-done
+  done
+fi
