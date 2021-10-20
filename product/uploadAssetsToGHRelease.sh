@@ -55,7 +55,7 @@ export GITHUB_TOKEN=${GITHUB_TOKEN}
 
 if [[ ${DELETE_RELEASE} -eq 1 ]]; then
   #check of release exists
-  if [[ $(hub release | grep ${CSV_VERSION}-${PREFIX}-assets) != "" ]]; then
+  if [[ $(hub release | grep ${CSV_VERSION}-${PREFIX}-assets) = "" ]]; then
     echo "Deleting release ${CSV_VERSION}-${PREFIX}-assets"
     hub release delete "${CSV_VERSION}-${PREFIX}-assets"
   fi
@@ -63,7 +63,7 @@ fi
 
 if [[ ${PUSH_ASSETS} -eq 1 ]]; then
   # check if existing release exists
-  if [[ $(hub release | grep ${CSV_VERSION}-${PREFIX}-assets) == "" ]]; then
+  if [[ $(hub release | grep ${CSV_VERSION}-${PREFIX}-assets) ]]; then
     #no existing release, create it
     hub release create -t "${MIDSTM_BRANCH}" -m "Assets for the ${CSV_VERSION} ${PREFIX} release" -m "Container build asset files for ${CSV_VERSION}" --prerelease "${CSV_VERSION}-${PREFIX}-assets"
   fi
