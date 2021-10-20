@@ -20,6 +20,7 @@ PREFIX=""
 fileList=""
 DELETE_RELEASE=0
 PUSH_ASSETS=0
+FETCH_ASSETS=0
 
 
 MIDSTM_BRANCH=$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "crw-2-rhel-8")
@@ -43,6 +44,7 @@ while [[ "$#" -gt 0 ]]; do
     '--prefix') PREFIX="$2"; shift 1;;
     '-d'|'--delete') DELETE_RELEASE=1; shift 1;;
     '-p'|'--push-assets') PUSH_ASSETS=1; shift 1;;
+    '-f'|'--fetch-assets') FETCH_ASSETS=1; shift 1;;
     '--help'|'-h') usage;;
     *) fileList="${fileList} $1";;
   esac
@@ -53,7 +55,7 @@ export GITHUB_TOKEN=${GITHUB_TOKEN}
 
 if [[ ${DELETE_RELEASE} -eq 1 ]]; then
   #check of release exists
-  if [[ $(hub release | grep ${CSV_VERSION}-${PREFIX}-assets) -ne "" ]]; then
+  if [[ $(hub release | grep ${CSV_VERSION}-${PREFIX}-assets) != "" ]]; then
     echo "Deleting release ${CSV_VERSION}-${PREFIX}-assets"
     hub release delete "${CSV_VERSION}-${PREFIX}-assets"
   fi
@@ -71,5 +73,13 @@ if [[ ${PUSH_ASSETS} -eq 1 ]]; then
     # attempt to upload a new file
     echo "Uploading new asset $fileToPush"
     hub release edit -a ${fileToPush} "${CSV_VERSION}-${PREFIX}-assets" -m "Assets for the ${CSV_VERSION} ${PREFIX} release" -m "Container build asset files for ${CSV_VERSION}"
+  done
+fi
+
+if [[ ${FETCH_ASSETS} -eq 1 ]]; then
+  #attempt to download asset
+  for fileToFetch in $fileList; do
+    echo "Downloading new asset $fileToFetch"
+    hub release download "${CSV_VERSION}-${PREFIX}-assets" -i ${fileToFetch}
   done
 fi
