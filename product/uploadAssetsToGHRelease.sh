@@ -42,9 +42,9 @@ while [[ "$#" -gt 0 ]]; do
     '-b') MIDSTM_BRANCH="$2"; shift 1;;
     '-ght') GITHUB_TOKEN="$2"; export GITHUB_TOKEN="${GITHUB_TOKEN}"; shift 1;;
     '--prefix') PREFIX="$2"; shift 1;;
-    '-d'|'--delete') DELETE_RELEASE=1; shift 1;;
-    '-p'|'--push-assets') PUSH_ASSETS=1; shift 1;;
-    '-f'|'--fetch-assets') FETCH_ASSETS=1; shift 1;;
+    '-d'|'--delete') DELETE_RELEASE=1; shift 0;;
+    '-p'|'--push-assets') PUSH_ASSETS=1; shift 0;;
+    '-f'|'--fetch-assets') FETCH_ASSETS=1; shift 0;;
     '--help'|'-h') usage;;
     *) fileList="${fileList} $1";;
   esac
