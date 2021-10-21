@@ -53,7 +53,17 @@ done
 
 export GITHUB_TOKEN=${GITHUB_TOKEN}
 
+if [[ $DELETE_RELEASE == 1 ]]; then
+  #check of release exists
+  if [[ $(hub release | grep ${CSV_VERSION}-${PREFIX}-assets) ]]; then
+    echo "Deleting release ${CSV_VERSION}-${PREFIX}-assets"
+    hub release delete "${CSV_VERSION}-${PREFIX}-assets"
+  else
+    echo "No release with tag ${CSV_VERSION}-${PREFIX}-assets"
+  fi
+fi
 
+if [[ $PUSH_ASSETS -eq 1 ]]; then
   # check if existing release exists
   if [[ $(hub release | grep ${CSV_VERSION}-${PREFIX}-assets) == "" ]]; then
     #no existing release, create it
@@ -66,4 +76,12 @@ export GITHUB_TOKEN=${GITHUB_TOKEN}
     echo "Uploading new asset $fileToPush"
     hub release edit -a ${fileToPush} "${CSV_VERSION}-${PREFIX}-assets" -m "Assets for the ${CSV_VERSION} ${PREFIX} release" -m "Container build asset files for ${CSV_VERSION}"
   done
+fi
 
+if [[ $FETCH_ASSETS -eq 1 ]]; then
+  #attempt to download asset
+  for fileToFetch in $fileList; do
+    echo "Downloading new asset $fileToFetch"
+    hub release download "${CSV_VERSION}-${PREFIX}-assets" -i ${fileToFetch}
+  done
+fi
