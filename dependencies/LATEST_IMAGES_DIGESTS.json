@@ -3,8 +3,8 @@
         "quay.io/crw/backup-rhel8:2.13-6": {"Digest": "2e6ed15598c72cca83c2ed5c5f54e267e5c15b6c22f5d612e5da575b80c5ba80", "Created": "2021-10-23T02:55:12.085800585Z"},
         "quay.io/crw/configbump-rhel8:2.13-4": {"Digest": "4dd32e32dbdb1d36d076508babb9e7c58b3743adac38fe4443ed4fd865ffc4b3", "Created": "2021-10-14T03:49:46.656788774Z"},
         "quay.io/crw/crw-2-rhel8-operator:2.13-6": {"Digest": "9ec1921045324a7f4c9c630cfbc9267ccb80ec52bd5ec209d31ed674df86fbff", "Created": "2021-10-23T03:17:41.402463784Z"},
-        "quay.io/crw/crw-2-rhel8-operator-bundle:2.13-91": {"Digest": "ef4cc7167c1e0797d6259fa9c8178419237c4ebc1c512ed2ace659a1c97626c0", "Created": "2021-10-25T16:55:39.834166426Z"},
-        "quay.io/crw/crw-2-rhel8-operator-metadata:2.13-89": {"Digest": "3e6a5e4be98b47f7aeb4afe7c4947bcaeba2b5fdfbff6c675f431b385a259200", "Created": "2021-10-25T17:01:58.62487425Z"},
+        "quay.io/crw/crw-2-rhel8-operator-bundle:2.13-92": {"Digest": "8cb78b5ba5bba9a23995bf37f3107f04184150b4941f1b5c976ec84f8f5febd1", "Created": "2021-10-25T21:13:48.299452695Z"},
+        "quay.io/crw/crw-2-rhel8-operator-metadata:2.13-90": {"Digest": "bae33d8ad8206a01cf5b202fdde9cfcc961622f0eed3ac93a6646c3b0058bb7e", "Created": "2021-10-25T21:20:28.936262423Z"},
         "quay.io/crw/dashboard-rhel8:2.13-4": {"Digest": "abf5dcc9a57f26cba27ed472d67f6b0eea3fe259a2aff062dad3d3f0911de144", "Created": "2021-10-23T03:17:24.096860395Z"},
         "quay.io/crw/devfileregistry-rhel8:2.13-6": {"Digest": "025b2953de3802f2f1fadbd86ae3751b5fa78fc3a8ccf2891d9d660c2d085775", "Created": "2021-10-23T03:28:19.0152102Z"},
         "quay.io/crw/idea-rhel8:2.13-6": {"Digest": "5d837e4caf6cdeba1823c0d603570e374ffc39d09e00e17fe2857e9c970ef8bc", "Created": "2021-10-23T03:09:49.824284566Z"},
@@ -25,9 +25,9 @@
         "quay.io/crw/stacks-dotnet-rhel8:2.13-5": {"Digest": "1660508670cef89a5e056f10021ee005ab1e6a5208697aed90be6d2a5d1313ef", "Created": "2021-10-23T05:05:38.703966675Z"},
         "quay.io/crw/stacks-golang-rhel8:2.13-5": {"Digest": "0e2fed3d0cba013d257b0b2c95b17ffc14b9d4162d5899a7d9d0ae6c1961c682", "Created": "2021-10-23T05:25:42.899098884Z"},
         "quay.io/crw/stacks-php-rhel8:2.13-4": {"Digest": "477066a0dd29e041cc1935a645371cf700e29fb559f041da35ff53e309720823", "Created": "2021-10-16T05:04:21.529883465Z"},
-        "quay.io/crw/theia-dev-rhel8:2.13-140": {"Digest": "58435b36edd9bad6ba249baa21a2b5cc17c1fa3bbc0767597b71b2f1a4f22812", "Created": "2021-10-25T13:47:40.559052572Z"},
-        "quay.io/crw/theia-endpoint-rhel8:2.13-75": {"Digest": "3e9499ee6db0b9a58db9d4059f614e38ebc1d8d9b62bcd0cb1aa97fb1a297e6b", "Created": "2021-10-25T15:36:13.64344635Z"},
-        "quay.io/crw/theia-rhel8:2.13-84": {"Digest": "c88ee9bf1b8716269b9b9d5b09004b47b38436171022152fe7bfff7c85f8a397", "Created": "2021-10-25T15:09:18.929067315Z"},
+        "quay.io/crw/theia-dev-rhel8:2.13-141": {"Digest": "93d09cf63124db5b1f5e9d630715e87a9099767f0af5d5c62d2471c9f1072ad0", "Created": "2021-10-25T18:11:14.568797476Z"},
+        "quay.io/crw/theia-endpoint-rhel8:2.13-76": {"Digest": "a2bc208e968e303808e56901f87bb908742fc55761e527e3db9c9d1f24123020", "Created": "2021-10-25T20:00:26.076945715Z"},
+        "quay.io/crw/theia-rhel8:2.13-85": {"Digest": "90569cb2b2dfccbb3e5f6f00b40b86ceb37bffc01429066fbc796b2b5376cecc", "Created": "2021-10-25T19:32:33.564030418Z"},
         "quay.io/crw/traefik-rhel8:2.13-5": {"Digest": "6dc98c75b847618ddc287ac4cb87e6a3b1dd6cba58a4333d87798f87da8c91af", "Created": "2021-10-23T03:54:13.060483837Z"},
         "": {"Digest":"", "Created":""}
     }
