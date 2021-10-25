@@ -45,6 +45,7 @@ rm -f "${MANIFEST_FILE}" "${MANIFEST_FILE}".2 "${MANIFEST_FILE}".3 "${LOG_FILE}"
 echo "Parsing ${JENKINS}/crw-theia-sources_${JOB_BRANCH}/lastSuccessfulBuild/consoleText ..."
 curl -sSL -o "${MANIFEST_FILE}".2 "${JENKINS}/crw-theia-sources_${JOB_BRANCH}/lastSuccessfulBuild/consoleText"
 CHE_THEIA_BRANCH=$(grep "echo SOURCE_BRANCH=" "${MANIFEST_FILE}".2 | sed -r -e "s#.+echo SOURCE_BRANCH=(.+)#\1#") # 7.yy.x
+rm -f "${MANIFEST_FILE}.2"
 
 if [[ -z $CHE_THEIA_BRANCH ]]; then 
 	echo "[ERROR] Could not compute CHE_THEIA_BRANCH from ${JENKINS}/crw-theia-sources_${JOB_BRANCH}/lastSuccessfulBuild/consoleText"
@@ -72,7 +73,6 @@ pushd "$TMPDIR" >/dev/null || exit
 				-e "s#^#codeready-workspaces-theia-rhel8-container:${CRW_VERSION}/#g"	\
 		| sort -uV > ${MANIFEST_FILE}.yarn
 
-		
 		podman pull quay.io/crw/theia-rhel8:${CRW_VERSION}
 
 		# copy plugin directories into the filesystem, in order to execute yarn commands to obtain yarn.lock file, and list dependencies from it
@@ -93,16 +93,17 @@ pushd "$TMPDIR" >/dev/null || exit
 		echo >> ${MANIFEST_FILE}
 
 		# collect global yarn dependencies, obtained from yarn.lock file in the theia-container yarn installation
-		podman run --rm  --entrypoint /bin/sh "quay.io/crw/theia-rhel8:${CRW_VERSION}" -c "cat /usr/local/share/.config/yarn/global/yarn.lock" | grep -e 'version "' ${GLOBAL_YARN_LOCK} -B1 | sed \
-			-e '/^--$/d' \
-			-e 's/^"@//' > ${MANIFEST_FILE}.globalyarn
+		podman run --rm  --entrypoint /bin/sh "quay.io/crw/theia-rhel8:${CRW_VERSION}" \
+			-c "cat /usr/local/share/.config/yarn/global/yarn.lock" | grep -e 'version "' -B1 | \
+			sed -r -e '/^--$/d' \
+			-e 's/^"@//' > "${MANIFEST_FILE}.globalyarn"
 		while IFS= read -r dependency
 		do
 			read -r version
 			dependency=$(echo ${dependency} | tr -d '"' | cut -f1 -d"@")
 			version=$(echo ${version} | cut -f2 -d" " | tr -d '"')
-			echo "codeready-workspaces-theia-rhel8-container:${CRW_VERSION}/${dependency}:${version}" >> ${MANIFEST_FILE}.yarn
-		done < ${MANIFEST_FILE}.globalyarn
+			echo "codeready-workspaces-theia-rhel8-container:${CRW_VERSION}/${dependency}:${version}" >> "${MANIFEST_FILE}.yarn"
+		done < "${MANIFEST_FILE}.globalyarn"
 		
 		cat ${MANIFEST_FILE}.yarn | sort -uV >> ${MANIFEST_FILE}
 		echo >> ${MANIFEST_FILE}
@@ -111,10 +112,13 @@ pushd "$TMPDIR" >/dev/null || exit
 				-e 's/^[ \t]*//' \
 				-e 's#.*/##'  \
 				-e "s#^#codeready-workspaces-theia-rhel8-container:${CRW_VERSION}/#g"	\
-		| sort | uniq >> ${MANIFEST_FILE}
+		| sort -uV >> ${MANIFEST_FILE}
+
+		# re-sort uniquely after adding more content
+		cat ${MANIFEST_FILE} | sort -uV > "${MANIFEST_FILE}".2; mv "${MANIFEST_FILE}".2 "${MANIFEST_FILE}"
 	cd ..
 popd >/dev/null || exit
-#rm -f "${MANIFEST_FILE}".2 "${GLOBAL_YARN_LOCK}" "${MANIFEST_FILE}".yarn
+rm -f "${MANIFEST_FILE}.yarn" "${MANIFEST_FILE}.globalyarn" "${MANIFEST_FILE}.plugin-extensions"
 rm -fr "$TMPDIR"
 
 ##################################
