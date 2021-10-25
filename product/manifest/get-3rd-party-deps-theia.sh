@@ -83,8 +83,8 @@ pushd "$TMPDIR" >/dev/null || exit
 		podman pull quay.io/crw/theia-rhel8:${CRW_VERSION}
 
 		# copy plugin directories into the filesystem, in order to execute yarn commands to obtain yarn.lock file, and list dependencies from it
-		"${TMPDIR}/containerExtract.sh" quay.io/crw/theia-rhel8:2.12 --tar-flags home/theia/plugins/**
-		find /tmp/quay.io-crw-theia-rhel8-* -path '*extension/node_modules' -exec sh -c "cd {}/.. && yarn --silent && yarn list --depth=0" \; >> ${MANIFEST_FILE}.plugin-extensions
+		"${TMPDIR}/containerExtract.sh" quay.io/crw/theia-rhel8:${CRW_VERSION} --tar-flags home/theia/plugins/**
+		find /tmp/quay.io-crw-theia-rhel8-${CRW_VERSION}-* -path '*extension/node_modules' -exec sh -c "cd {}/.. && yarn --silent && yarn list --depth=0" \; >> ${MANIFEST_FILE}.plugin-extensions
 		sed \
 				-e '/Done in/d' \
 				-e '/yarn list/d ' \
@@ -124,7 +124,7 @@ pushd "$TMPDIR" >/dev/null || exit
 	cd ..
 popd >/dev/null || exit
 rm -f "${MANIFEST_FILE}.yarn" "${MANIFEST_FILE}.globalyarn" "${MANIFEST_FILE}.plugin-extensions"
-rm -fr "$TMPDIR"
+rm -fr "$TMPDIR" /tmp/quay.io-crw-theia-rhel8-${CRW_VERSION}-*
 
 ##################################
 
