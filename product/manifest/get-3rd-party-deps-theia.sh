@@ -44,10 +44,23 @@ rm -f "${MANIFEST_FILE}" "${MANIFEST_FILE}".2 "${MANIFEST_FILE}".3 "${LOG_FILE}"
 [[ "${MIDSTM_BRANCH}" == "crw-2-rhel-8" ]] && JOB_BRANCH="2.x" || JOB_BRANCH="${CRW_VERSION}"
 echo "Parsing ${JENKINS}/crw-theia-sources_${JOB_BRANCH}/lastSuccessfulBuild/consoleText ..."
 curl -sSL -o "${MANIFEST_FILE}".2 "${JENKINS}/crw-theia-sources_${JOB_BRANCH}/lastSuccessfulBuild/consoleText"
-CHE_THEIA_BRANCH=$(grep "build.include" "${MANIFEST_FILE}".2 | sort -u | grep curl | sed -r -e "s#.+che-theia/(.+)/build.include#\1#") # 7.yy.x
+CHE_THEIA_BRANCH=$(grep "echo SOURCE_BRANCH=" "${MANIFEST_FILE}".2 | sed -r -e "s#.+echo SOURCE_BRANCH=(.+)#\1#") # 7.yy.x
+rm -f "${MANIFEST_FILE}.2"
+
+if [[ -z $CHE_THEIA_BRANCH ]]; then 
+	echo "[ERROR] Could not compute CHE_THEIA_BRANCH from ${JENKINS}/crw-theia-sources_${JOB_BRANCH}/lastSuccessfulBuild/consoleText"
+	exit 1
+fi
 
 TMPDIR=$(mktemp -d)
 pushd "$TMPDIR" >/dev/null || exit
+	if [[ -x ${SCRIPT_DIR}/../containerExtract.sh ]]; then
+		cp ${SCRIPT_DIR}/../containerExtract.sh $TMPDIR/containerExtract.sh
+	else
+		curl -sSLO https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/${MIDSTM_BRANCH}/product/containerExtract.sh
+	fi
+	chmod +x containerExtract.sh
+
 	git clone https://$GITHUB_TOKEN:x-oauth-basic@github.com/eclipse-che/che-theia.git 
 	cd che-theia || exit
 		git config --global push.default matching
@@ -55,10 +68,9 @@ pushd "$TMPDIR" >/dev/null || exit
 		git fetch || true
 		git checkout --track "origin/${CHE_THEIA_BRANCH}"
 		git pull origin "${CHE_THEIA_BRANCH}"
+		# collect dependencies from theia project yarn.lock
 		# shellcheck disable=SC2129
-		yarn list --depth=0 > "${MANIFEST_FILE}".3
-	
-		cat "${MANIFEST_FILE}".3 | sed \
+		yarn list --depth=0 | sed \
 				-e '/Done in/d' \
 				-e '/yarn list/d ' \
 				-e 's/[├──└│]//g' \
@@ -66,19 +78,53 @@ pushd "$TMPDIR" >/dev/null || exit
 				-e 's/^@//' \
 				-e "s/@/:/g" \
 				-e "s#^#codeready-workspaces-theia-rhel8-container:${CRW_VERSION}/#g"	\
-		| sort | uniq >> ${MANIFEST_FILE}
+		| sort -uV > ${MANIFEST_FILE}.yarn
 
+		podman pull quay.io/crw/theia-rhel8:${CRW_VERSION}
+
+		# copy plugin directories into the filesystem, in order to execute yarn commands to obtain yarn.lock file, and list dependencies from it
+		"${TMPDIR}/containerExtract.sh" quay.io/crw/theia-rhel8:${CRW_VERSION} --tar-flags home/theia/plugins/**
+		find /tmp/quay.io-crw-theia-rhel8-${CRW_VERSION}-* -path '*extension/node_modules' -exec sh -c "cd {}/.. && yarn --silent && yarn list --depth=0" \; >> ${MANIFEST_FILE}.plugin-extensions
+		sed \
+				-e '/Done in/d' \
+				-e '/yarn list/d ' \
+				-e 's/[├──└│]//g' \
+				-e 's/^[ \t]*//' \
+				-e 's/^@//' \
+				-e "s/@/:/g" \
+				-e "s#^#codeready-workspaces-theia-rhel8-container:${CRW_VERSION}/#g"	\
+		${MANIFEST_FILE}.plugin-extensions | sort -uV >> ${MANIFEST_FILE}
+		
+		echo >> ${MANIFEST_FILE}
+
+		# collect global yarn dependencies, obtained from yarn.lock file in the theia-container yarn installation
+		podman run --rm  --entrypoint /bin/sh "quay.io/crw/theia-rhel8:${CRW_VERSION}" \
+			-c "cat /usr/local/share/.config/yarn/global/yarn.lock" | grep -e 'version "' -B1 | \
+			sed -r -e '/^--$/d' \
+			-e 's/^"@//' > "${MANIFEST_FILE}.globalyarn"
+		while IFS= read -r dependency
+		do
+			read -r version
+			dependency=$(echo ${dependency} | tr -d '"' | cut -f1 -d"@")
+			version=$(echo ${version} | cut -f2 -d" " | tr -d '"')
+			echo "codeready-workspaces-theia-rhel8-container:${CRW_VERSION}/${dependency}:${version}" >> "${MANIFEST_FILE}.yarn"
+		done < "${MANIFEST_FILE}.globalyarn"
+		
+		cat ${MANIFEST_FILE}.yarn | sort -uV >> ${MANIFEST_FILE}
 		echo >> ${MANIFEST_FILE}
 
 		cat generator/src/templates/theiaPlugins.json | jq -r '. | to_entries[] | " \(.value)"' | sed \
 				-e 's/^[ \t]*//' \
 				-e 's#.*/##'  \
 				-e "s#^#codeready-workspaces-theia-rhel8-container:${CRW_VERSION}/#g"	\
-		| sort | uniq >> ${MANIFEST_FILE}
+		| sort -uV >> ${MANIFEST_FILE}
+
+		# re-sort uniquely after adding more content
+		cat ${MANIFEST_FILE} | sort -uV > "${MANIFEST_FILE}".2; mv "${MANIFEST_FILE}".2 "${MANIFEST_FILE}"
 	cd ..
 popd >/dev/null || exit
-rm -f "${MANIFEST_FILE}".2 "${MANIFEST_FILE}".3 
-rm -fr "$TMPDIR"
+rm -f "${MANIFEST_FILE}.yarn" "${MANIFEST_FILE}.globalyarn" "${MANIFEST_FILE}.plugin-extensions"
+rm -fr "$TMPDIR" /tmp/quay.io-crw-theia-rhel8-${CRW_VERSION}-*
 
 ##################################
 
