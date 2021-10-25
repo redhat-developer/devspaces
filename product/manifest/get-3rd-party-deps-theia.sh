@@ -54,6 +54,13 @@ fi
 
 TMPDIR=$(mktemp -d)
 pushd "$TMPDIR" >/dev/null || exit
+	if [[ -x ${SCRIPT_DIR}/../containerExtract.sh ]]; then
+		cp ${SCRIPT_DIR}/../containerExtract.sh $TMPDIR/containerExtract.sh
+	else
+		curl -sSLO https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/${MIDSTM_BRANCH}/product/containerExtract.sh
+	fi
+	chmod +x containerExtract.sh
+
 	git clone https://$GITHUB_TOKEN:x-oauth-basic@github.com/eclipse-che/che-theia.git 
 	cd che-theia || exit
 		git config --global push.default matching
@@ -76,9 +83,7 @@ pushd "$TMPDIR" >/dev/null || exit
 		podman pull quay.io/crw/theia-rhel8:${CRW_VERSION}
 
 		# copy plugin directories into the filesystem, in order to execute yarn commands to obtain yarn.lock file, and list dependencies from it
-		curl -sSLO https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/${MIDSTM_BRANCH}/product/containerExtract.sh
-		chmod +x  containerExtract.sh
-		./containerExtract.sh quay.io/crw/theia-rhel8:2.12 --tar-flags home/theia/plugins/**
+		"${TMPDIR}/containerExtract.sh" quay.io/crw/theia-rhel8:2.12 --tar-flags home/theia/plugins/**
 		find /tmp/quay.io-crw-theia-rhel8-* -path '*extension/node_modules' -exec sh -c "cd {}/.. && yarn --silent && yarn list --depth=0" \; >> ${MANIFEST_FILE}.plugin-extensions
 		sed \
 				-e '/Done in/d' \
