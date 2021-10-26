@@ -53,7 +53,7 @@ done
 
 export GITHUB_TOKEN=${GITHUB_TOKEN}
 
-if [[ $DELETE_RELEASE == 1 ]]; then
+if [[ $DELETE_RELEASE -eq 1 ]]; then
   #check of release exists
   if [[ $(hub release | grep ${CSV_VERSION}-${PREFIX}-assets) ]]; then
     echo "Deleting release ${CSV_VERSION}-${PREFIX}-assets"
