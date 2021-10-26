@@ -128,9 +128,8 @@ if [[ ${pkgs_devel_branch} ]] && [[ ${CSV_VERSION} ]]; then
 	codeready-workspaces-theia \
 	codeready-workspaces-traefik \
 	; do
-	  pushTagPD $d &
+	  pushTagPD $d
 	done
-	wait
 fi
 
 # for the crw main repo, update tech preview devfiles to point to the correct tag/branch
@@ -190,11 +189,10 @@ codeready-workspaces-images \
 codeready-workspaces-operator \
 codeready-workspaces-theia \
 ; do
-	pushTagGH $d &
+	pushTagGH $d
 done
-wait
 
 # cleanup
 # cd /tmp
 echo "Temporary checkouts are in /tmp/tmp-checkouts"
-# rm -fr /tmp/tmp-checkouts
+rm -fr /tmp/tmp-checkouts
