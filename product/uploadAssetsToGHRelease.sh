@@ -15,73 +15,110 @@
 set -e
 
 # defaults
-CSV_VERSION=2.y.0 # csv 2.y.0
-PREFIX=""
+CSV_VERSION="2.y.0" # csv 2.y.0
+ASSET_NAME=""
 fileList=""
-DELETE_RELEASE=0
-PUSH_ASSETS=0
-FETCH_ASSETS=0
-
+DELETE_ASSETS=0 # this also deletes the release in which the assets are stored
+PUBLISH_ASSETS=0 # publish asset(s) to GH
+PULL_ASSETS=0 # pull asset(s) from GH
 
 MIDSTM_BRANCH=$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "crw-2-rhel-8")
 if [[ ${MIDSTM_BRANCH} != "crw-"*"-rhel-"* ]]; then MIDSTM_BRANCH="crw-2-rhel-8"; fi
 
 usage () {
     echo "
-Usage:   $0 -v [CRW CSV_VERSION] --prefix [subproject prefix] file1.tar.gz file2.tar.gz
-Example: $0 -v 2.y.0 --prefix traefik asset-*gz
+Setup:
+
+If pushing to Github, export your GITHUB_TOKEN:
+
+  export GITHUB_TOKEN="...github-token..."
+
+Usage:
+
+  $0 -v CRW_CSV_VERSION -n ASSET_NAME file1.tar.gz [file2.tar.gz ...]
+
+Options:
+  -b MIDSTM_BRANCH        defaults to $MIDSTM_BRANCH
+  -d, --delete-assets     delete release + asset file(s) defined by CSV_VERSION and ASSET_NAME
+  -a, --publish-assets    publish asset file(s) to release defined by CSV_VERSION and ASSET_NAME
+  -p, --pull-assets       fetch asset file(s) from release defined by CSV_VERSION and ASSET_NAME
+  -h, --help              show this help
+
+Examples:
+
+  $0 --delete-assets -v 2.y.0 -n traefik
+  $0 --publish-assets -v 2.y.0 -n traefik asset-*gz
+  $0 --pull-assets -v 2.y.0 -n traefik asset-*gz    # specific assets
+  $0 --pull-assets -v 2.y.0 -n traefik              # all assets
 "
     exit
 }
-
-if [[ $# -lt 5 ]]; then usage; fi
 
 while [[ "$#" -gt 0 ]]; do
   case $1 in
     '-v') CSV_VERSION="$2"; shift 1;;
     '-b') MIDSTM_BRANCH="$2"; shift 1;;
     '-ght') GITHUB_TOKEN="$2"; export GITHUB_TOKEN="${GITHUB_TOKEN}"; shift 1;;
-    '--prefix') PREFIX="$2"; shift 1;;
-    '-d'|'--delete') DELETE_RELEASE=1; shift 0;;
-    '-p'|'--push-assets') PUSH_ASSETS=1; shift 0;;
-    '-f'|'--fetch-assets') FETCH_ASSETS=1; shift 0;;
-    '--help'|'-h') usage;;
+    '-n'|'--asset-name')       ASSET_NAME="$2"; shift 1;;
+    '-d'|'--delete-assets')    DELETE_ASSETS=1; shift 0;;
+    '-a'|'--publish-assets')   PUBLISH_ASSETS=1; shift 0;;
+    '-p'|'--pull-assets')      PULL_ASSETS=1; shift 0;;
+    '-h'|'--help') usage;;
     *) fileList="${fileList} $1";;
   esac
   shift 1
 done
 
+if [[ $CSV_VERSION == "2.y.0" ]]; then echo "Error: must specify CSV_VERSION with -v flag.";echo; usage; fi
+if [[ $ASSET_NAME == "" ]]; then echo "Error: must specify ASSET_NAME with -n flag.";echo; usage; fi
+if [[ $DELETE_ASSETS -eq 0 ]] && [[ $PUBLISH_ASSETS -eq 0 ]] && [[ $PULL_ASSETS -eq 0 ]]; then 
+  echo "Error: must specify which operation to run:
+  --delete-assets
+  --publish-assets
+  --pull-assets"; echo; usage
+fi
+
 export GITHUB_TOKEN=${GITHUB_TOKEN}
 
-if [[ $DELETE_RELEASE -eq 1 ]]; then
-  #check of release exists
-  if [[ $(hub release | grep ${CSV_VERSION}-${PREFIX}-assets) ]]; then
-    echo "Deleting release ${CSV_VERSION}-${PREFIX}-assets"
-    hub release delete "${CSV_VERSION}-${PREFIX}-assets"
+# this also deletes the release in which the assets are stored
+if [[ $DELETE_ASSETS -eq 1 ]]; then
+  #check if release exists
+  if [[ $(hub release | grep ${CSV_VERSION}-${ASSET_NAME}-assets) ]]; then
+    echo "Delete release ${CSV_VERSION}-${ASSET_NAME}-assets"
+    hub release delete "${CSV_VERSION}-${ASSET_NAME}-assets"
   else
-    echo "No release with tag ${CSV_VERSION}-${PREFIX}-assets"
+    echo "No release with tag ${CSV_VERSION}-${ASSET_NAME}-assets"
   fi
 fi
 
-if [[ $PUSH_ASSETS -eq 1 ]]; then
-  # check if existing release exists
-  if [[ $(hub release | grep ${CSV_VERSION}-${PREFIX}-assets) == "" ]]; then
+if [[ $PUBLISH_ASSETS -eq 1 ]]; then
+  if [[ -z $fileList ]]; then echo "Error: no files specified to publish!"; usage; fi
+  # check if release exists
+  if [[ ! $(hub release | grep ${CSV_VERSION}-${ASSET_NAME}-assets) ]]; then
     #no existing release, create it
-    hub release create -t "${MIDSTM_BRANCH}" -m "Assets for the ${CSV_VERSION} ${PREFIX} release" -m "Container build asset files for ${CSV_VERSION}" --prerelease "${CSV_VERSION}-${PREFIX}-assets"
+    hub release create -t "${MIDSTM_BRANCH}" \
+      -m "Assets for the ${CSV_VERSION} ${ASSET_NAME} release" -m "Container build asset files for ${CSV_VERSION}" \
+      --prerelease "${CSV_VERSION}-${ASSET_NAME}-assets"
   fi
 
   # upload artifacts for each platform 
   for fileToPush in $fileList; do
     # attempt to upload a new file
-    echo "Uploading new asset $fileToPush"
-    hub release edit -a ${fileToPush} "${CSV_VERSION}-${PREFIX}-assets" -m "Assets for the ${CSV_VERSION} ${PREFIX} release" -m "Container build asset files for ${CSV_VERSION}"
+    echo "Upload new asset $fileToPush"
+    hub release edit -a ${fileToPush} "${CSV_VERSION}-${ASSET_NAME}-assets" \
+      -m "Assets for the ${CSV_VERSION} ${ASSET_NAME} release" -m "Container build asset files for ${CSV_VERSION}"
   done
 fi
 
-if [[ $FETCH_ASSETS -eq 1 ]]; then
-  #attempt to download asset
-  for fileToFetch in $fileList; do
-    echo "Downloading new asset $fileToFetch"
-    hub release download "${CSV_VERSION}-${PREFIX}-assets" -i ${fileToFetch}
-  done
+if [[ $PULL_ASSETS -eq 1 ]]; then
+  if [[ -z $fileList ]]; then 
+    echo "Download all assets"
+    hub release download "${CSV_VERSION}-${ASSET_NAME}-assets"
+  else 
+    #attempt to download asset(s)
+    for fileToFetch in $fileList; do
+      echo "Download asset $fileToFetch"
+      hub release download "${CSV_VERSION}-${ASSET_NAME}-assets" -i ${fileToFetch}
+    done
+  fi
 fi
