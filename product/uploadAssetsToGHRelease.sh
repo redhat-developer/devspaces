@@ -21,7 +21,7 @@ fileList=""
 DELETE_ASSETS=0 # this also deletes the release in which the assets are stored
 PUBLISH_ASSETS=0 # publish asset(s) to GH
 PULL_ASSETS=0 # pull asset(s) from GH
-
+PRE_RELEASE="--prerelease" # by default create pre-releases
 MIDSTM_BRANCH=$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "crw-2-rhel-8")
 if [[ ${MIDSTM_BRANCH} != "crw-"*"-rhel-"* ]]; then MIDSTM_BRANCH="crw-2-rhel-8"; fi
 
@@ -44,6 +44,7 @@ Options:
   -d, --delete-assets     delete release + asset file(s) defined by CSV_VERSION and ASSET_NAME
   -a, --publish-assets    publish asset file(s) to release defined by CSV_VERSION and ASSET_NAME
   -p, --pull-assets       fetch asset file(s) from release defined by CSV_VERSION and ASSET_NAME
+  --release               by default, do a pre-release; use this flag to create a full release (for GA only)
   -h, --help              show this help
 
 Examples:
@@ -62,9 +63,11 @@ while [[ "$#" -gt 0 ]]; do
     '-b') MIDSTM_BRANCH="$2"; shift 1;;
     '-ght') GITHUB_TOKEN="$2"; export GITHUB_TOKEN="${GITHUB_TOKEN}"; shift 1;;
     '-n'|'--asset-name')       ASSET_NAME="$2"; shift 1;;
-    '-d'|'--delete-assets')    DELETE_ASSETS=1; shift 0;;
-    '-a'|'--publish-assets')   PUBLISH_ASSETS=1; shift 0;;
-    '-p'|'--pull-assets')      PULL_ASSETS=1; shift 0;;
+
+    '-d'|'--delete-assets')    DELETE_ASSETS=1;;
+    '-a'|'--publish-assets')   PUBLISH_ASSETS=1;;
+    '-p'|'--pull-assets')      PULL_ASSETS=1;;
+    '--release')               PRE_RELEASE="";; # not a --prerelease
     '-h'|'--help') usageGHT;;
     *) fileList="${fileList} $1";;
   esac
@@ -102,7 +105,7 @@ if [[ $PUBLISH_ASSETS -eq 1 ]]; then
     #no existing release, create it
     hub release create -t "${MIDSTM_BRANCH}" \
       -m "Assets for the ${CSV_VERSION} ${ASSET_NAME} release" -m "Container build asset files for ${CSV_VERSION}" \
-      --prerelease "${CSV_VERSION}-${ASSET_NAME}-assets"
+      ${PRE_RELEASE} "${CSV_VERSION}-${ASSET_NAME}-assets"
   fi
 
   # upload artifacts for each platform 
