@@ -25,20 +25,22 @@ PULL_ASSETS=0 # pull asset(s) from GH
 MIDSTM_BRANCH=$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "crw-2-rhel-8")
 if [[ ${MIDSTM_BRANCH} != "crw-"*"-rhel-"* ]]; then MIDSTM_BRANCH="crw-2-rhel-8"; fi
 
-usage () {
-    echo "
-Setup:
+usageGHT() {
+    echo 'Setup:
 
-If pushing to Github, export your GITHUB_TOKEN:
+First, export your GITHUB_TOKEN:
 
   export GITHUB_TOKEN="...github-token..."
-
-Usage:
+'
+  usage
+}
+usage () {
+    echo "Usage:
 
   $0 -v CRW_CSV_VERSION -n ASSET_NAME file1.tar.gz [file2.tar.gz ...]
 
 Options:
-  -b MIDSTM_BRANCH        defaults to $MIDSTM_BRANCH
+  -b branch               branch from which to create tag + release; defaults to $MIDSTM_BRANCH
   -d, --delete-assets     delete release + asset file(s) defined by CSV_VERSION and ASSET_NAME
   -a, --publish-assets    publish asset file(s) to release defined by CSV_VERSION and ASSET_NAME
   -p, --pull-assets       fetch asset file(s) from release defined by CSV_VERSION and ASSET_NAME
@@ -46,10 +48,10 @@ Options:
 
 Examples:
 
-  $0 --delete-assets -v 2.y.0 -n traefik
-  $0 --publish-assets -v 2.y.0 -n traefik asset-*gz
-  $0 --pull-assets -v 2.y.0 -n traefik asset-*gz    # specific assets
-  $0 --pull-assets -v 2.y.0 -n traefik              # all assets
+  $0 --delete-assets -v 2.y.0 -n traefik              # delete release, tag, and asset(s)
+  $0 --publish-assets -v 2.y.0 -n traefik asset-*gz   # publish specific asset(s)
+  $0 --pull-assets -v 2.y.0 -n traefik asset-*gz      # pull specific asset(s)
+  $0 --pull-assets -v 2.y.0 -n traefik                # pull all assets
 "
     exit
 }
@@ -63,12 +65,13 @@ while [[ "$#" -gt 0 ]]; do
     '-d'|'--delete-assets')    DELETE_ASSETS=1; shift 0;;
     '-a'|'--publish-assets')   PUBLISH_ASSETS=1; shift 0;;
     '-p'|'--pull-assets')      PULL_ASSETS=1; shift 0;;
-    '-h'|'--help') usage;;
+    '-h'|'--help') usageGHT;;
     *) fileList="${fileList} $1";;
   esac
   shift 1
 done
 
+if [[ ! "${GITHUB_TOKEN}" ]]; then usageGHT; fi
 if [[ $CSV_VERSION == "2.y.0" ]]; then echo "Error: must specify CSV_VERSION with -v flag.";echo; usage; fi
 if [[ $ASSET_NAME == "" ]]; then echo "Error: must specify ASSET_NAME with -n flag.";echo; usage; fi
 if [[ $DELETE_ASSETS -eq 0 ]] && [[ $PUBLISH_ASSETS -eq 0 ]] && [[ $PULL_ASSETS -eq 0 ]]; then 
