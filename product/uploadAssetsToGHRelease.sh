@@ -67,7 +67,8 @@ while [[ "$#" -gt 0 ]]; do
     '-d'|'--delete-assets')    DELETE_ASSETS=1;;
     '-a'|'--publish-assets')   PUBLISH_ASSETS=1;;
     '-p'|'--pull-assets')      PULL_ASSETS=1;;
-    '--release')               PRE_RELEASE="";; # not a --prerelease
+    '--prerelease')            PRE_RELEASE="$1";; # --prerelease
+    '--release')               PRE_RELEASE="";;   # not a prerelease
     '-h'|'--help') usageGHT;;
     *) fileList="${fileList} $1";;
   esac
