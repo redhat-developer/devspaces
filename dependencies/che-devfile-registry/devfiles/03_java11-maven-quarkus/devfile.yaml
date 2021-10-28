@@ -17,7 +17,7 @@ components:
   -
     type: dockerimage
     alias: maven
-    image: registry.redhat.io/codeready-workspaces/plugin-java11-rhel8:2.13
+    image: registry.redhat.io/codeready-workspaces/plugin-java11-rhel8:2.14
     env:
       - name: JAVA_OPTS
         value: "-XX:MaxRAMPercentage=50.0 -XX:+UseParallelGC -XX:MinHeapFreeRatio=10
