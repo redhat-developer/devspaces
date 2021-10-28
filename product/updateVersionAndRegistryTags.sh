@@ -24,8 +24,9 @@ BRANCH="crw-2-rhel-8"
 
 usage () {
   echo "
-Usage:   $0 -v [CRW CSV_VERSION]
-Example: $0 -v 2.y.0
+Usage:   $0 -v [CRW CSV_VERSION] [-t CRW_VERSION]
+Example: $0 -v 2.yy.0 # use CSV version
+Example: $0 -t 2.yy   # use tag version
 
 Options:
   --help, -h              help
