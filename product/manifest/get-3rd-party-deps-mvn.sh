@@ -37,7 +37,7 @@ CHE_VERSION=$(curl -sSLo - https://raw.githubusercontent.com/eclipse-che/che-ser
 if [[ $CHE_VERSION =~ ^([0-9]+)\.([0-9]+)\.([0-9]+)-SNAPSHOT ]]; then # reduce the z digit, remove the snapshot suffix
   XX=${BASH_REMATCH[1]}
   YY=${BASH_REMATCH[2]}
-  ZZ=${BASH_REMATCH[3]}; (( ZZ=ZZ-1 )); if [[ ZZ -lt 0 ]]; then ZZ=0; fi
+  ZZ=${BASH_REMATCH[3]}; (( ZZ=ZZ-1 )); if [[ $ZZ -lt 0 ]]; then ZZ=0; fi
   CHE_VERSION="${XX}.${YY}.${ZZ}"
 fi
 # echo "[DEBUG] CHE_VERSION = $CHE_VERSION"
