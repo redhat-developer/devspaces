@@ -37,7 +37,7 @@ Options:
   -prb                    set a PR_BRANCH; default: pr-update-version-and-registry-tags-(timestamp)
   -o                      open browser if PR generated
   
-  --remove [CRW_VERSION]                  remove data for [CRW_VERSION] (latest version - 3)
+  --remove [CRW_VERSION]                  remove data for [CRW_VERSION] (Example: for .Version = 2.yy, delete 2.yy-2)
   --enable-jobs [CRW_VERSION]             enable [CRW_VERSION] jobs in job-config.json, but leave metadata/bundle + management jobs alone
   --enable-management-jobs [CRW_VERSION]  enable ALL [CRW_VERSION] jobs in job-config.json
   --disable-jobs [CRW_VERSION]            disable [CRW_VERSION] jobs in job-config.json, but leave metadata/bundle + management jobs alone
@@ -117,6 +117,10 @@ updateVersion() {
     if [[ ${check} ]]; then #just updating
       replaceField "${WORKDIR}/dependencies/job-config.json" "(.Jobs[][\"${CRW_VERSION}\"][\"upstream_branch\"]|select(.[]?==\"main\"))" "[\"7.${UPPER_CHE_Y}.x\",\"7.${LOWER_CHE_Y}.x\"]"
       replaceField "${WORKDIR}/dependencies/job-config.json" "(.Jobs[][\"${CRW_VERSION}\"][\"upstream_branch\"]|select(.[]?==\"crw-2-rhel-8\"))" "[\"crw-${CRW_VERSION}-rhel-8\",\"crw-${CRW_VERSION}-rhel-8\"]"
+
+      replaceField "${WORKDIR}/dependencies/job-config.json" "(.\"Management-Jobs\"[][\"${CRW_VERSION}\"][\"upstream_branch\"]|select(.[]?==\"main\"))" "[\"7.${UPPER_CHE_Y}.x\",\"7.${LOWER_CHE_Y}.x\"]"
+      replaceField "${WORKDIR}/dependencies/job-config.json" "(.\"Management-Jobs\"[][\"${CRW_VERSION}\"][\"upstream_branch\"]|select(.[]?==\"crw-2-rhel-8\"))" "[\"crw-${CRW_VERSION}-rhel-8\",\"crw-${CRW_VERSION}-rhel-8\"]"
+
       #make sure jobs are enabled
       replaceField "${WORKDIR}/dependencies/job-config.json" "(.Jobs[][\"${CRW_VERSION}\"][\"disabled\"]|select(.==true))" 'false'
       replaceField "${WORKDIR}/dependencies/job-config.json" "(.\"Management-Jobs\"[][\"${CRW_VERSION}\"][\"disabled\"]|select(.==true))" 'false'
@@ -153,6 +157,9 @@ updateVersion() {
 
       replaceField "${WORKDIR}/dependencies/job-config.json" "(.Jobs[][\"${CRW_VERSION}\"][\"upstream_branch\"]|select(.[]?==\"main\"))" "[\"7.${UPPER_CHE_Y}.x\",\"7.${LOWER_CHE_Y}.x\"]"
       replaceField "${WORKDIR}/dependencies/job-config.json" "(.Jobs[][\"${CRW_VERSION}\"][\"upstream_branch\"]|select(.[]?==\"crw-2-rhel-8\"))" "[\"crw-${CRW_VERSION}-rhel-8\",\"crw-${CRW_VERSION}-rhel-8\"]"
+
+      replaceField "${WORKDIR}/dependencies/job-config.json" "(.\"Management-Jobs\"[][\"${CRW_VERSION}\"][\"upstream_branch\"]|select(.[]?==\"main\"))" "[\"7.${UPPER_CHE_Y}.x\",\"7.${LOWER_CHE_Y}.x\"]"
+      replaceField "${WORKDIR}/dependencies/job-config.json" "(.\"Management-Jobs\"[][\"${CRW_VERSION}\"][\"upstream_branch\"]|select(.[]?==\"crw-2-rhel-8\"))" "[\"crw-${CRW_VERSION}-rhel-8\",\"crw-${CRW_VERSION}-rhel-8\"]"
 
       #make sure new builds are enabled
       replaceField "${WORKDIR}/dependencies/job-config.json" "(.Jobs[][\"${CRW_VERSION}\"][\"disabled\"]|select(.==true))" 'false'
