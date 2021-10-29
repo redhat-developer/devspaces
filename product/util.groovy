@@ -854,6 +854,8 @@ def getLastSuccessfulBuildId(String url) {
 def getLastFailedBuildId(String url) {
   return (getBuildJSON(url, "lastFailedBuild", ".number") as int)
 }
+def getLastUnsuccessfulBuildId(String url) {
+  return (getBuildJSON(url, "lastUnsuccessfulBuild", ".number") as int)
 
 // TODO: add a timeout?
 def waitForNewBuild(String jobURL, int oldId) {
@@ -869,10 +871,18 @@ def waitForNewBuild(String jobURL, int oldId) {
           println "Id rebuilt (FAILURE): " + newId
           return false
           break
+        } else if (newId > oldId && getLastUnsuccessfulBuildId(jobURL).equals(newId)) {
+          println "Id rebuilt (ABORTED): " + newId
+          return false
+          break
         }
         newId=getLastBuildId(jobURL)
         if (newId > oldId && getLastBuildResult(jobURL).equals("FAILURE")) {
           println "Id rebuilt (FAILURE): " + newId
+          return false
+          break
+        } else if (newId > oldId && getLastBuildResult(jobURL).equals("ABORTED")) {
+          println "Id rebuilt (ABORTED): " + newId
           return false
           break
         }
