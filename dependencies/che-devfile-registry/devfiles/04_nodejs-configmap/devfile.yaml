@@ -21,6 +21,9 @@ components:
     endpoints:
       - name: "nodejs"
         port: 8080
+    env:
+      - name: NODE_CONFIGMAP_PATH
+        value: /projects/nodejs-configmap/app-config.yml
   - id: redhat/vscode-openshift-connector/latest
     type: chePlugin
     alias: openshift-connector
