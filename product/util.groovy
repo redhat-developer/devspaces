@@ -856,6 +856,7 @@ def getLastFailedBuildId(String url) {
 }
 def getLastUnsuccessfulBuildId(String url) {
   return (getBuildJSON(url, "lastUnsuccessfulBuild", ".number") as int)
+}
 
 // TODO: add a timeout?
 def waitForNewBuild(String jobURL, int oldId) {
