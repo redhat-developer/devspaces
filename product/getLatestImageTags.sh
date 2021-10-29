@@ -132,6 +132,7 @@ EXCLUDES="latest|\\-source|-pr-|-tmp-|-ci-|-gh-"
 
 QUIET=1 	# less output - omit container tag URLs
 VERBOSE=0	# more output
+ERRATA_NUM=""  # if set, update errata with latest NVRs
 HIDE_MISSING=0 # if 0, show repo/org/image:??? for missing tags; if 1, don't show anything if tag missing
 ARCHES=0	# show architectures
 NUMTAGS=1 	# by default show only the latest tag for each container; or show n latest ones
@@ -147,13 +148,14 @@ latestNext="latest"
 usage () {
 	echo "
 Usage: 
-  $0 -b ${DWNSTM_BRANCH} --nvr --log                    | check images in brew; output NVRs can be copied to Errata; show Brew builds/logs
+  $0 -b ${DWNSTM_BRANCH} --nvr --log                        | check images in brew; output NVRs can be copied to Errata; show Brew builds/logs
+  $0 -b ${DWNSTM_BRANCH} --errata 82818                     | check images in brew; output NVRs and update builds in specified Errata (implies --nvr --hide)
 
   $0 -b ${DWNSTM_BRANCH} --quay --tag \"${CRW_VERSION}-\" --hide        | use default list of CRW images in quay.io/crw, for tag 2.y-; show nothing if tag umatched
-  $0 -b ${DWNSTM_BRANCH} --osbs                         | check images in OSBS ( registry-proxy.engineering.redhat.com/rh-osbs )
+  $0 -b ${DWNSTM_BRANCH} --osbs                             | check images in OSBS ( registry-proxy.engineering.redhat.com/rh-osbs )
   $0 -b ${DWNSTM_BRANCH} --osbs --pushtoquay='${CRW_VERSION} ${latestNext}'  | pull images from OSBS, push ${CRW_VERSION}-z tag + 2 extras to quay
-  $0 -b ${DWNSTM_BRANCH} --stage --sort                 | use default list of CRW images in RHEC Stage, sorted alphabetically
-  $0 -b ${DWNSTM_BRANCH} --arches                       | use default list of CRW images in RHEC Prod; show arches
+  $0 -b ${DWNSTM_BRANCH} --stage --sort                     | use default list of CRW images in RHEC Stage, sorted alphabetically
+  $0 -b ${DWNSTM_BRANCH} --arches                           | use default list of CRW images in RHEC Prod; show arches
 
   $0 -c 'crw/theia-rhel8 crw/theia-endpoint-rhel8' --quay      | check latest tag for specific Quay images, with branch = ${DWNSTM_BRANCH}
   $0 -c crw/plugin-java11-openj9-rhel8 --quay                  | check a non-amd64 image
@@ -194,7 +196,8 @@ while [[ "$#" -gt 0 ]]; do
     '--dockerfile') SHOWHISTORY=1;;
     '--tag') BASETAG="$2"; shift 1;; 
     '--candidatetag') candidateTag="$2"; shift 1;; 
-    '--nvr') if [[ ! $CONTAINERS ]]; then CONTAINERS="${CRW_CONTAINERS_OSBS}"; fi; SHOWNVR=1;;
+    '--nvr')    if [[ ! $CONTAINERS ]]; then CONTAINERS="${CRW_CONTAINERS_OSBS}"; fi; SHOWNVR=1;;
+	'--errata') if [[ ! $CONTAINERS ]]; then CONTAINERS="${CRW_CONTAINERS_OSBS}"; fi; SHOWNVR=1; ERRATA_NUM="$2"; HIDE_MISSING=1; shift 1;;
     '--tagonly') TAGONLY=1;;
     '--log') SHOWLOG=1;;
     '--sort') SORTED=1;;
@@ -275,6 +278,10 @@ if [[ $SORTED -eq 1 ]]; then CONTAINERS=$(tr ' ' '\n' <<< "${CONTAINERS}" | sort
 
 # special case!
 if [[ ${SHOWNVR} -eq 1 ]]; then 
+	# install errata-tool python lib
+	if [[ $ERRATA_NUM ]]; then
+		pip install errata-tool -q || true
+	fi
 	if [[ ! -x /usr/bin/brew ]]; then 
 		echo "Brew is required. Please install brewkoji rpm from one of these repos:";
 		echo " * http://download.devel.redhat.com/rel-eng/RCMTOOLS/latest-RCMTOOLS-2-F-27/compose/Everything/x86_64/os/"
@@ -308,6 +315,17 @@ if [[ ${SHOWNVR} -eq 1 ]]; then
 		if [[ $result ]]; then
 			echo $result
 			(( n = n + 1 ))
+			if [[ $ERRATA_NUM ]]; then
+				cat <<EOT >> /tmp/errata-container-update-$result
+from errata_tool import Erratum
+e = Erratum(errata_id=$ERRATA_NUM)
+e.setState('NEW_FILES')
+e.commit()
+e.addBuilds('$result', release='CRW-2.0-RHEL-8', file_types={'$result': ['tar']})
+EOT
+				python /tmp/errata-container-update-$result
+				rm -f /tmp/errata-container-update-$result
+			fi
 		elif [[ $HIDE_MISSING -eq 0 ]]; then
 			echo "${containername/\//-}-container-???"
 		fi
