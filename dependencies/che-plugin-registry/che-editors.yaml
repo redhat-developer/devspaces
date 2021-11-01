@@ -125,6 +125,8 @@ editors:
             - /go/bin/che-machine-exec
             - '--url'
             - '127.0.0.1:3333'
+            - '--idle-timeout'
+            - '15m'
           endpoints:
             - name: terminal
               targetPort: 3333
