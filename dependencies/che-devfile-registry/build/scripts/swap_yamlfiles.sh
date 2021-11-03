@@ -11,23 +11,25 @@
 SCRIPT_DIR=$(cd "$(dirname "$0")" || exit; pwd)
 YAML_ROOT="$1"
 
+# for testing, support passing in uname as a 2nd param, eg., s390x or ppc64le
+if [[ $2 ]]; then arch="$2"; else arch="$(uname -m)"; fi
+
 yamlfiles=$("$SCRIPT_DIR"/list_yaml.sh "$YAML_ROOT")
 
 # shellcheck disable=SC2086
 for yamlfile in $yamlfiles ; do
-  arch="$(uname -m)"
   if [[ -e ${yamlfile}.${arch} ]] ; then
-      echo "[INFO] swapped to $arch version of ${yamlfile}.${arch}"
       mv ${yamlfile} ${yamlfile}.orig
       mv ${yamlfile}.${arch} ${yamlfile}
+      echo "[INFO] swapped to $arch version of ${yamlfile}.${arch}"
   fi
 
   # remove empty
   if [[ ! -s ${yamlfile} ]] ; then
-    echo "[INFO] removing empty yamlfile ${yamlfile}"
     mv ${yamlfile} ${yamlfile}.removed
     if [[ -e "$(dirname $yamlfile)/meta.yaml" ]] ; then
       mv "$(dirname $yamlfile)/meta.yaml" "$(dirname $yamlfile)/meta.yaml.removed"
     fi
+    echo "[INFO] removed empty yamlfile ${yamlfile}"
   fi
 done

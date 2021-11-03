@@ -13,7 +13,8 @@ image_urls[0]="$1"
 
 # for other build methods or for falling back to other registries when not found, can apply transforms here
 if [[ -x "${SCRIPT_DIR}/find_image_alternate_urls.sh" ]]; then
-  readarray -t -O 1 image_urls < <("$SCRIPT_DIR"/find_image_alternate_urls.sh "${image_urls[0]}" | sort | uniq)
+  # shellcheck disable=SC2086
+  readarray -t -O 1 image_urls < <("$SCRIPT_DIR"/find_image_alternate_urls.sh ${image_urls[0]} | sort | uniq)
 fi
 
 for url in "${image_urls[@]}" ; do
