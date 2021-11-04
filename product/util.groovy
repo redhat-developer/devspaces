@@ -858,10 +858,11 @@ def getLastUnsuccessfulBuildId(String url) {
   return (getBuildJSON(url, "lastUnsuccessfulBuild", ".number") as int)
 }
 
-// default timeout = 7200min = 2h
+// default timeout = 7200s = 2h
 def waitForNewBuild(String jobURL, int oldId, int checkInterval=120, int timeout=7200) {
   echo "Id baseline for " + jobURL + "/lastBuild :: " + oldId
   elapsed=0
+  nextId=oldId+1
   while (true) {
       newId=getLastSuccessfulBuildId(jobURL)
       if (newId > oldId && getLastBuildResult(jobURL).equals("SUCCESS")) {
@@ -869,6 +870,7 @@ def waitForNewBuild(String jobURL, int oldId, int checkInterval=120, int timeout
           return true
           break
       } else {
+        newId=getLastBuildId(jobURL)
         if (newId > oldId && getLastFailedBuildId(jobURL).equals(newId)) {
           println "Id rebuilt (FAILURE): " + newId
           return false
@@ -878,7 +880,6 @@ def waitForNewBuild(String jobURL, int oldId, int checkInterval=120, int timeout
           return false
           break
         }
-        newId=getLastBuildId(jobURL)
         if (newId > oldId && getLastBuildResult(jobURL).equals("FAILURE")) {
           println "Id rebuilt (FAILURE): " + newId
           return false
@@ -889,14 +890,14 @@ def waitForNewBuild(String jobURL, int oldId, int checkInterval=120, int timeout
           break
         }
       }
-      nextId=oldId+1
-      println "Waiting " + checkInterval + "s for " + jobURL + "/" + nextId + " to complete"
       sleep(time:checkInterval,unit:"SECONDS")
       elapsed += checkInterval
       if (elapsed >= timeout) {
-            println "ERROR: No new build #" + newId + " > #" + oldId + " found after " + timeout + " elapsed seconds!"
-            return false
-            break
+        println "ERROR: No new build #" + newId + " > #" + oldId + " found after " + timeout + " elapsed seconds!"
+        return false
+        break
+      } else {
+        println "Waiting " + checkInterval + "s for " + jobURL + "/" + nextId + " to complete"
       }
   }
   return true
@@ -919,7 +920,7 @@ fi
 
 // requires brew, skopeo, jq, yq
 // check for latest image tags in quay for a given image
-// default timeout = 7200min = 2h
+// default timeout = 7200s = 2h
 def waitForNewQuayImage(String orgAndImage, String oldImage, int checkInterval=120, int timeout=7200) {
   echo "Image baseline: " + oldImage
   elapsed=0
@@ -936,6 +937,8 @@ def waitForNewQuayImage(String orgAndImage, String oldImage, int checkInterval=1
             println "ERROR: No new build #" + newImage + " > #" + oldImage + " found after " + timeout + " elapsed seconds!"
             return false
             break
+      } else {
+        println "Waiting " + checkInterval + "s for new build of " + oldImage
       }
   }
   return true
