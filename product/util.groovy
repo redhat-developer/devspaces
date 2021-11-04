@@ -858,9 +858,10 @@ def getLastUnsuccessfulBuildId(String url) {
   return (getBuildJSON(url, "lastUnsuccessfulBuild", ".number") as int)
 }
 
-// TODO: add a timeout?
-def waitForNewBuild(String jobURL, int oldId) {
+// default timeout = 7200min = 2h
+def waitForNewBuild(String jobURL, int oldId, int checkInterval=120, int timeout=7200) {
   echo "Id baseline for " + jobURL + "/lastBuild :: " + oldId
+  elapsed=0
   while (true) {
       newId=getLastSuccessfulBuildId(jobURL)
       if (newId > oldId && getLastBuildResult(jobURL).equals("SUCCESS")) {
@@ -889,9 +890,14 @@ def waitForNewBuild(String jobURL, int oldId) {
         }
       }
       nextId=oldId+1
-      checkInterval=120
       println "Waiting " + checkInterval + "s for " + jobURL + "/" + nextId + " to complete"
       sleep(time:checkInterval,unit:"SECONDS")
+      elapsed += checkInterval
+      if (elapsed >= timeout) {
+            println "ERROR: No new build #" + newId + " > #" + oldId + " found after " + timeout + " elapsed seconds!"
+            return false
+            break
+      }
   }
   return true
 }
@@ -913,16 +919,26 @@ fi
 
 // requires brew, skopeo, jq, yq
 // check for latest image tags in quay for a given image
-def waitForNewQuayImage(String orgAndImage, String oldImage) {
+// default timeout = 7200min = 2h
+def waitForNewQuayImage(String orgAndImage, String oldImage, int checkInterval=120, int timeout=7200) {
   echo "Image baseline: " + oldImage
+  elapsed=0
   while (true) {
       def newImage = getLatestImageAndTag(orgAndImage, "quay")
       if (newImage!=oldImage) {
           echo "Image rebuilt: " + newImage
+            return true
           break
       }
-      sleep(time:90,unit:"SECONDS")
+      sleep(time:checkInterval,unit:"SECONDS")
+      elapsed += checkInterval
+      if (elapsed >= timeout) {
+            println "ERROR: No new build #" + newImage + " > #" + oldImage + " found after " + timeout + " elapsed seconds!"
+            return false
+            break
+      }
   }
+  return true
 }
 
 // depends on rpm perl-Digest-SHA for 'shasum -a ZZZ', or rpm coreutils for 'shaZZZsum'
