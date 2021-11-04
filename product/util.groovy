@@ -776,13 +776,13 @@ fi
   ''').trim()
 }
 
-// ./getLatestRPM.sh -r "openshift-clients-4" -u http://rhsm-pulp.corp.redhat.com/content/dist/layered/rhel8/basearch/rhocp/4.8 -s ...
-def updateOCRpms(String rpmRepoVersion="4.8", String dir="${WORKSPACE}/sources", String branch=MIDSTM_BRANCH, String ARCHES="x86_64 s390x ppc64le") {
+// ./getLatestRPM.sh -r "openshift-clients-4" -u http://rhsm-pulp.corp.redhat.com/content/dist/layered/rhel8/basearch/rhocp/4.9 -s ...
+def updateOCRpms(String rpmRepoVersion="4.9", String dir="${WORKSPACE}/sources", String branch=MIDSTM_BRANCH, String ARCHES="x86_64 s390x ppc64le") {
   updatedVersion=updateRpms("openshift-clients-4", pulpRepoURL + "/content/dist/layered/rhel8/basearch/rhocp/" + rpmRepoVersion, dir, branch, ARCHES)
   commitChanges(dir, "[rpms] Update to " + updatedVersion, branch)
 }
-// ./getLatestRPM.sh -r "helm-3"             -u http://rhsm-pulp.corp.redhat.com/content/dist/layered/rhel8/basearch/ocp-tools/4.8 -s ...
-def updateHelmRpms(String rpmRepoVersion="4.8", String dir="${WORKSPACE}/sources", String branch=MIDSTM_BRANCH, String ARCHES="x86_64 s390x ppc64le") {
+// ./getLatestRPM.sh -r "helm-3"             -u http://rhsm-pulp.corp.redhat.com/content/dist/layered/rhel8/basearch/ocp-tools/4.9 -s ...
+def updateHelmRpms(String rpmRepoVersion="4.9", String dir="${WORKSPACE}/sources", String branch=MIDSTM_BRANCH, String ARCHES="x86_64 s390x ppc64le") {
   updatedVersion=updateRpms("helm-3", pulpRepoURL + "/content/dist/layered/rhel8/basearch/ocp-tools/" + rpmRepoVersion, dir, branch, ARCHES)
   commitChanges(dir, "[rpms] Update to " + updatedVersion, branch)
 }
