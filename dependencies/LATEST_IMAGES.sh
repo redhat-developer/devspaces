@@ -77,16 +77,18 @@ for d in $(cat dependencies/LATEST_IMAGES); do
     digest=${digestAndCreatedTime%%,*}
     createdTime=${digestAndCreatedTime##*,}
     echo "${d} ==> ${digest}, ${createdTime}"
-    echo "        \"${d}\": {\"Digest\": ${digest}, \"Created\": ${createdTime}}," >> dependencies/LATEST_IMAGES_DIGESTS.json
+    echo "        \"${d}\": {\"Created\": ${createdTime}, \"Digest\": ${digest}, \"Image\": \"${d}\"}," >> dependencies/LATEST_IMAGES_DIGESTS.json
   fi
 done
 
 { 
   # empty array item to prevent json validation error for trailing comma
-  echo '        "": {"Digest":"", "Created":""}' 
+  echo '        "": {"Created":"", "Digest":"", "Image":""}' 
   echo '    }'
   echo '}'
 } >> dependencies/LATEST_IMAGES_DIGESTS.json
+# collect latest timestamps by build with
+# $➔ cat dependencies/LATEST_IMAGES_DIGESTS.json | jq -r '.Images[] | select(.Created != "") | (.Created +"\t"+ .Image)'|sort -uV
 
 # STEP 3 :: regenerate commit info in LATEST_IMAGES_COMMITS
 rm -f dependencies/LATEST_IMAGES_COMMITS
