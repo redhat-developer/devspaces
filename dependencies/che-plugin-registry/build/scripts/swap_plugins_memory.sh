@@ -9,7 +9,17 @@
 
 # increase memory allocation for theia pods for ppc64le only - https://issues.redhat.com/browse/CRW-1475
 
-YAML_ROOT="$1"
+FORCE_SWAP=0
+arch="$(uname -m)"
+
+while [[ "$#" -gt 0 ]]; do
+  case $1 in
+  '-f') FORCE_SWAP=1;; # force transformation even on an incompatible architecture for testing purposes
+  '-a') arch="$2"; shift 1;;
+  *) YAML_ROOT="$1";;
+  esac
+  shift 1
+done
 
 replaceField()
 {
@@ -33,10 +43,14 @@ replaceField()
   fi
 }
 
-# Note: optional -f flag will force this transformation even on an incompatible architecture for testing purposes
-if [[ "$(uname -m)" == "ppc64le" ]] || [[ "$2" == "-f" ]]; then 
+if [[ "$arch" == "ppc64le" ]] || [[ $FORCE_SWAP -eq 1 ]]; then
+    echo -n "[INFO] swap plugins memory requirements on $arch"
+    if [[ $FORCE_SWAP -eq 1 ]]; then echo -n " (forced)"; fi
+    echo
    replaceField "$YAML_ROOT"/plugins/eclipse/che-theia/latest/meta.yaml '.spec.containers[].memoryLimit' "2Gi" # CRW-1475
    replaceField "$YAML_ROOT"/plugins/redhat/vscode-camelk/latest/meta.yaml '.spec.containers[].memoryLimit' "1.5Gi" # CRW-1633
    replaceField "$YAML_ROOT"/plugins/redhat/vscode-openshift-connector/latest/meta.yaml '.spec.containers[].memoryLimit' "2.5Gi" # CRW-1634
    replaceField "$YAML_ROOT"/plugins/ms-python/python/latest/meta.yaml '.spec.containers[].memoryLimit' "1Gi" # CRW-1635
+else
+    echo "[INFO] nothing to do on $arch; only swap plugins memory requirements on ppc64le arch"
 fi
