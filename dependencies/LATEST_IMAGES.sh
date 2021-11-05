@@ -76,6 +76,8 @@ for d in $(cat dependencies/LATEST_IMAGES); do
     digestAndCreatedTime=$(skopeo inspect docker://${d} ${archOverride}| jq -r '[.Digest, .Created] | @csv' | sed -r -e "s/sha256://" 2>/dev/null)
     digest=${digestAndCreatedTime%%,*}
     createdTime=${digestAndCreatedTime##*,}
+    if [[ ! $digest ]]; then digest='""'; fi
+    if [[ ! $createdTime ]]; then createdTime='""'; fi
     echo "${d} ==> ${digest}, ${createdTime}"
     echo "        \"${d}\": {\"Created\": ${createdTime}, \"Digest\": ${digest}, \"Image\": \"${d}\"}," >> dependencies/LATEST_IMAGES_DIGESTS.json
   fi
