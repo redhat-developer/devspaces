@@ -176,7 +176,7 @@ editors:
       components:
         - name: intellij
           container:
-            image: 'quay.io/crw/idea-rhel8:2.13'
+            image: 'quay.io/crw/idea-rhel8:2.14'
             volumeMounts:
               - name: projector-user
                 path: /home/projector-user
