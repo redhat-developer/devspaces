@@ -112,7 +112,7 @@ computeLatestPackageVersion() {
         # echo "curl -sSI https://www.npmjs.com/package/${packageName}/v/7.${y}.${z}"
         if [[ $(curl -sSI "https://www.npmjs.com/package/${packageName}/v/7.${y}.${z}" | grep 404) != *"404"* ]]; then
         change="plugin-registry-generator[$BASE_VERSION] = 7.${y}.${z}"
-        COMMIT_MSG="; update $change"
+        COMMIT_MSG="${COMMIT_MSG}; update $change"
           echo "Update $change"
           replaceField "${WORKDIR}/dependencies/job-config.json" ".Other[\"${packageName}\"][\"${BASE_VERSION}\"]" "\"7.${y}.${z}\""
           found=1
