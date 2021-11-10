@@ -197,7 +197,7 @@ updateVersion() {
     replaceField "${WORKDIR}/dependencies/job-config.json" ".Other[\"FLOATING_QUAY_TAGS\"][\"2.x\"]" "\"next\""
 
     #the 'latest' tag should go on the previous/stable version, which would be version -1, or the index 3 form the end of the VERSION_KEYS array
-    LATEST_INDEX=$(( ${#VERSION_KEYS[@]} - 3 )); LATEST_VERSION="${VERSION_KEYS[$LATEST_INDEX]}"; echo "LATEST_VERSION = $LATEST_VERSION"
+    LATEST_INDEX=$(( ${#VERSION_KEYS[@]} - 3 )); LATEST_VERSION="${VERSION_KEYS[$LATEST_INDEX]}"; # echo "LATEST_VERSION = $LATEST_VERSION"
     replaceField "${WORKDIR}/dependencies/job-config.json" ".Other[\"FLOATING_QUAY_TAGS\"][\"${LATEST_VERSION}\"]" "\"latest\""
     # update @eclipse-che/plugin-registry-generator n-1 to latest
     replaceField "${WORKDIR}/dependencies/job-config.json" ".Other[\"@eclipse-che/plugin-registry-generator\"][\"${LATEST_VERSION}\"]" "\"latest\""
