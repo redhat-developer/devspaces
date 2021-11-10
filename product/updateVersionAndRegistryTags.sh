@@ -100,6 +100,31 @@ replaceField()
   fi
 }
 
+# for a given CRW version, compute the equivalent Che versions that could be compatible 
+computeLatestPackageVersion() {
+    found=0
+    BASE_VERSION="$1" # CRW version to use for computations
+    packageName="$2"
+    THIS_Y_VALUE="${BASE_VERSION#*.}"; THIS_CHE_Y=$(( (${THIS_Y_VALUE} + 6) * 2 )); THIS_CHE_Y_LOWER=$(( ((${THIS_Y_VALUE} + 6) * 2) - 1 ))
+    # check if .2, .1, .0 version exists in npmjs.com
+    for y in $THIS_CHE_Y $THIS_CHE_Y_LOWER; do 
+      for z in 2 1 0; do 
+        # echo "curl -sSI https://www.npmjs.com/package/${packageName}/v/7.${y}.${z}"
+        if [[ $(curl -sSI "https://www.npmjs.com/package/${packageName}/v/7.${y}.${z}" | grep 404) != *"404"* ]]; then
+        change="plugin-registry-generator[$BASE_VERSION] = 7.${y}.${z}"
+        COMMIT_MSG="; update $change"
+          echo "Update $change"
+          replaceField "${WORKDIR}/dependencies/job-config.json" ".Other[\"${packageName}\"][\"${BASE_VERSION}\"]" "\"7.${y}.${z}\""
+          found=1
+          break 2
+        fi
+      done
+    done
+    if [[ $found -eq 0 ]]; then
+      replaceField "${WORKDIR}/dependencies/job-config.json" ".Other[\"${packageName}\"][\"${BASE_VERSION}\"]" "\"latest\""
+    fi
+}
+
 # update job-config file to product version (x.y)
 COMMIT_MSG=""
 updateVersion() {
@@ -186,8 +211,7 @@ updateVersion() {
         replaceField "${WORKDIR}/dependencies/job-config.json" ".Other[\"FLOATING_QUAY_TAGS\"][\"${VERSION_DISABLE}\"]" "\"${VERSION_DISABLE}\""
         # set .2 version of @eclipse-che/plugin-registry-generator if currently set to latest
         if [[ $(jq -r ".Other[\"@eclipse-che/plugin-registry-generator\"][\"${VERSION_DISABLE}\"]" "${WORKDIR}/dependencies/job-config.json") == "latest" ]]; then
-          DISABLE_Y_VALUE="${VERSION_DISABLE#*.}"; DISABLE_CHE_Y=$(( (${DISABLE_Y_VALUE} + 6) * 2 ))
-          replaceField "${WORKDIR}/dependencies/job-config.json" ".Other[\"@eclipse-che/plugin-registry-generator\"][\"${VERSION_DISABLE}\"]" "\"7.${DISABLE_CHE_Y}.2\""
+          computeLatestPackageVersion $VERSION_DISABLE "@eclipse-che/plugin-registry-generator"
         fi
         DISABLE_VERSION_INDEX=$(( $DISABLE_VERSION_INDEX -1 ))
     done
@@ -199,10 +223,10 @@ updateVersion() {
     #the 'latest' tag should go on the previous/stable version, which would be version -1, or the index 3 form the end of the VERSION_KEYS array
     LATEST_INDEX=$(( ${#VERSION_KEYS[@]} - 3 )); LATEST_VERSION="${VERSION_KEYS[$LATEST_INDEX]}"; # echo "LATEST_VERSION = $LATEST_VERSION"
     replaceField "${WORKDIR}/dependencies/job-config.json" ".Other[\"FLOATING_QUAY_TAGS\"][\"${LATEST_VERSION}\"]" "\"latest\""
-    # update @eclipse-che/plugin-registry-generator n-1 to latest
-    replaceField "${WORKDIR}/dependencies/job-config.json" ".Other[\"@eclipse-che/plugin-registry-generator\"][\"${LATEST_VERSION}\"]" "\"latest\""
-    # debugging 
-    # cat "${WORKDIR}/dependencies/job-config.json" | grep -E -A5 "FLOATING_QUAY_TAGS|plugin-registry-gen"
+    # search for latest released tag to use for stable builds
+    computeLatestPackageVersion $LATEST_VERSION "@eclipse-che/plugin-registry-generator"
+    # or use "latest" release with replaceField "${WORKDIR}/dependencies/job-config.json" ".Other[\"@eclipse-che/plugin-registry-generator\"][\"${LATEST_VERSION}\"]" "\"latest\""
+    # debug: # cat "${WORKDIR}/dependencies/job-config.json" | grep -E -A5 "FLOATING_QUAY_TAGS|plugin-registry-gen"; exit
 
     # update CSV versions for 2.yy latest and 2.x too
     for op in "operator-bundle" "operator-metadata"; do
