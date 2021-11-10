@@ -101,6 +101,7 @@ replaceField()
 }
 
 # update job-config file to product version (x.y)
+COMMIT_MSG=""
 updateVersion() {
     # deprecated, @since 2.11
     echo "${CRW_VERSION}" > "${WORKDIR}/dependencies/VERSION"
@@ -116,6 +117,7 @@ updateVersion() {
     # otherwise inject new version.
     check=$(cat ${WORKDIR}/dependencies/job-config.json | jq '.Jobs[] | keys' | grep "\"${CRW_VERSION}\"")
     if [[ ${check} ]]; then #just updating
+      COMMIT_MSG="ci: update ${CRW_VERSION}"
       replaceField "${WORKDIR}/dependencies/job-config.json" "(.Jobs[][\"${CRW_VERSION}\"][\"upstream_branch\"]|select(.[]?==\"main\"))" "[\"7.${UPPER_CHE_Y}.x\",\"7.${LOWER_CHE_Y}.x\"]"
       replaceField "${WORKDIR}/dependencies/job-config.json" "(.Jobs[][\"${CRW_VERSION}\"][\"upstream_branch\"]|select(.[]?==\"crw-2-rhel-8\"))" "[\"crw-${CRW_VERSION}-rhel-8\",\"crw-${CRW_VERSION}-rhel-8\"]"
 
@@ -130,6 +132,7 @@ updateVersion() {
         replaceField "${WORKDIR}/dependencies/job-config.json" "." "del(..|.[\"${REMOVE_CRW_VERSION}\"]?)"
       fi
     else
+      COMMIT_MSG="ci: add new ${CRW_VERSION}"
       # Get top level keys to start (Jobs, CSVs, Other, etc)
       TOP_KEYS=($(cat ${WORKDIR}/dependencies/job-config.json | jq -r 'keys[]'))
 
@@ -188,7 +191,12 @@ updateVersion() {
       replaceField "${WORKDIR}/dependencies/job-config.json" ".Other[\"FLOATING_QUAY_TAGS\"][\"${VERSION_KEYS[$LATEST_INDEX]}\"]" "\"latest\""
       #set the previous 'latest' to be its own version
       replaceField "${WORKDIR}/dependencies/job-config.json" ".Other[\"FLOATING_QUAY_TAGS\"][\"${VERSION_KEYS[$DISABLE_VERSION_INDEX]}\"]" "\"${VERSION_KEYS[$DISABLE_VERSION_INDEX]}\""
+
     fi 
+
+    #update CSV versions for 2.yy latest and 2.x too
+    replaceField "${WORKDIR}/dependencies/job-config.json" ".CSVs[\"operator-bundle\"][\"${CRW_VERSION}\"][\"CSV_VERSION\"]" "\"${CRW_VERSION}.0\""
+    replaceField "${WORKDIR}/dependencies/job-config.json" ".CSVs[\"operator-bundle\"][\"2.x\"][\"CSV_VERSION\"]" "\"${CRW_VERSION}.0\""
 
     # optionally, can enable/disable specific job sets for a given version
     if [[ $ENABLE_CRW_MGMTJOBS_VERSION ]]; then 
@@ -241,7 +249,6 @@ updatePluginRegistry() {
     git diff -q "${YAML_ROOT}" "${TEMPLATE_FILE}" || true
 }
 
-COMMIT_MSG="chore(tags) update VERSION and registry references to :${CRW_VERSION}"
 if [[ $DISABLE_CRW_JOBS_VERSION ]]; then 
   COMMIT_MSG="${COMMIT_MSG}; disable $DISABLE_CRW_JOBS_VERSION jobs"
 fi
