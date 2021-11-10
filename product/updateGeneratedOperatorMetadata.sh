@@ -44,7 +44,7 @@ if [[ ! -x ${SCRIPTPATH}/containerExtract.sh ]]; then
     chmod +x containerExtract.sh
 fi
 
-${SCRIPTPATH}/containerExtract.sh ${SOURCE_CONTAINER}:${CRW_VERSION} || true
+${SCRIPTPATH}/containerExtract.sh ${SOURCE_CONTAINER}:${CRW_VERSION} --delete-before --delete-after || true
 rm -fr ${SOURCE_DIR}/${DEST_DIR}
 rsync -zrlt /tmp/${SOURCE_CONTAINER//\//-}-${CRW_VERSION}-*/* \
     ${SOURCE_DIR}/${DEST_DIR}/
