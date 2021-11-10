@@ -249,24 +249,23 @@ updatePluginRegistry() {
     git diff -q "${YAML_ROOT}" "${TEMPLATE_FILE}" || true
 }
 
-if [[ $DISABLE_CRW_JOBS_VERSION ]]; then 
-  COMMIT_MSG="${COMMIT_MSG}; disable $DISABLE_CRW_JOBS_VERSION jobs"
-fi
-if [[ $DISABLE_CRW_MGMTJOBS_VERSION ]]; then 
-  COMMIT_MSG="${COMMIT_MSG}; disable $DISABLE_CRW_MGMTJOBS_VERSION mgmt jobs"
-fi
-if [[ $ENABLE_CRW_JOBS_VERSION ]]; then 
-  COMMIT_MSG="${COMMIT_MSG}; enable $ENABLE_CRW_JOBS_VERSION jobs"
-fi
-if [[ $ENABLE_CRW_MGMTJOBS_VERSION ]]; then 
-  COMMIT_MSG="${COMMIT_MSG}; enable $ENABLE_CRW_MGMTJOBS_VERSION mgmt jobs"
-fi
-if [[ $REMOVE_CRW_VERSION ]]; then 
-  COMMIT_MSG="${COMMIT_MSG}; remove $REMOVE_CRW_VERSION jobs"
-fi
-
 commitChanges() {
     if [[ ${docommit} -eq 1 ]]; then
+        if [[ $DISABLE_CRW_JOBS_VERSION ]]; then 
+          COMMIT_MSG="${COMMIT_MSG}; disable $DISABLE_CRW_JOBS_VERSION jobs"
+        fi
+        if [[ $DISABLE_CRW_MGMTJOBS_VERSION ]]; then 
+          COMMIT_MSG="${COMMIT_MSG}; disable $DISABLE_CRW_MGMTJOBS_VERSION mgmt jobs"
+        fi
+        if [[ $ENABLE_CRW_JOBS_VERSION ]]; then 
+          COMMIT_MSG="${COMMIT_MSG}; enable $ENABLE_CRW_JOBS_VERSION jobs"
+        fi
+        if [[ $ENABLE_CRW_MGMTJOBS_VERSION ]]; then 
+          COMMIT_MSG="${COMMIT_MSG}; enable $ENABLE_CRW_MGMTJOBS_VERSION mgmt jobs"
+        fi
+        if [[ $REMOVE_CRW_VERSION ]]; then 
+          COMMIT_MSG="${COMMIT_MSG}; remove $REMOVE_CRW_VERSION jobs"
+        fi
         git commit -a -s -m "${COMMIT_MSG}"
         git pull origin "${BRANCH}"
         if [[ ${dopush} -eq 1 ]]; then
