@@ -49,12 +49,21 @@ rm -fr ${SOURCE_DIR}/${DEST_DIR}
 rsync -zrlt /tmp/${SOURCE_CONTAINER//\//-}-${CRW_VERSION}-*/* \
     ${SOURCE_DIR}/${DEST_DIR}/
 
+# CRW-2077 generate a json file with the latest CRW version and CSV versions too
+CSV_VERSION_BUNDLE="$(yq -r '.spec.version' ${SOURCE_DIR}/codeready-workspaces-operator-bundle-generated/manifests/codeready-workspaces.csv.yaml)"
+CSV_VERSION_METADATA="$(yq -r '.spec.version' ${SOURCE_DIR}/codeready-workspaces-operator-metadata-generated/manifests/codeready-workspaces.csv.yaml)"
+echo '{' > ${SOURCE_DIR}/VERSION.json
+echo '    "CRW_VERSION": "'${CRW_VERSION}'",'                   >> ${SOURCE_DIR}/VERSION.json
+echo '    "CSV_VERSION_BUNDLE": "'${CSV_VERSION_BUNDLE}'",' >> ${SOURCE_DIR}/VERSION.json
+echo '    "CSV_VERSION_METADATA": "'${CSV_VERSION_METADATA}'"' >> ${SOURCE_DIR}/VERSION.json
+echo '}' >> ${SOURCE_DIR}/VERSION.json
+
 # get container suffix number
 CRW_VERSION_SUFFIX=$(find /tmp/${SOURCE_CONTAINER//\//-}-${CRW_VERSION}-*/root/buildinfo/ -name "Dockerfile*" | sed -r -e "s#.+-##g")
 
 pushd ${SOURCE_DIR}/ >/dev/null || exit 1
-    git add ${DEST_DIR} || true
-    git commit -m "[brew] Publish CSV with generated digests from ${SOURCE_CONTAINER}:${CRW_VERSION_SUFFIX}" ${DEST_DIR} || true
+    git add ${DEST_DIR} VERSION.json || true
+    git commit -m "[brew] Publish CSV with generated digests from ${SOURCE_CONTAINER}:${CRW_VERSION_SUFFIX}" ${DEST_DIR} VERSION.json || true
     git pull origin "${MIDSTM_BRANCH}" || true
     git push origin "${MIDSTM_BRANCH}"
 popd >/dev/null || true
