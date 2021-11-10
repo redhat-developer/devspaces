@@ -168,35 +168,48 @@ updateVersion() {
       #make sure new builds are enabled
       replaceField "${WORKDIR}/dependencies/job-config.json" "(.Jobs[][\"${CRW_VERSION}\"][\"disabled\"]|select(.==true))" 'false'
       replaceField "${WORKDIR}/dependencies/job-config.json" "(.\"Management-Jobs\"[][\"${CRW_VERSION}\"][\"disabled\"]|select(.==true))" 'false'
-
-      #find and disable version-2
-      #start by gathering all CRW_VERSIONs that have data in the json
-      VERSION_KEYS=($(cat ${WORKDIR}/dependencies/job-config.json | jq -r '.Jobs'[\"dashboard\"]' | keys[]'))
-      #get the array index of version -2. length -1 is 2.x, -2 is the version that was added, so the old version that needs to get disabled is length - 4
-      DISABLE_VERSION_INDEX=$(( ${#VERSION_KEYS[@]} - 4 )) 
-
-      #Disable version -2, and everything previous (if there)
-      while [[ $DISABLE_VERSION_INDEX -gt -1 ]]; do
-         replaceField "${WORKDIR}/dependencies/job-config.json" "(.Jobs[][\"${VERSION_KEYS[$DISABLE_VERSION_INDEX]}\"][\"disabled\"]|select(.==false))" 'true'
-         replaceField "${WORKDIR}/dependencies/job-config.json" "(.\"Management-Jobs\"[][\"${VERSION_KEYS[$DISABLE_VERSION_INDEX]}\"][\"disabled\"]|select(.==false))" 'true'
-         DISABLE_VERSION_INDEX=$(( $DISABLE_VERSION_INDEX -1 ))
-      done
-
-      #update tags
-      replaceField "${WORKDIR}/dependencies/job-config.json" ".Other[\"FLOATING_QUAY_TAGS\"][\"${CRW_VERSION}\"]" "\"next\""
-      replaceField "${WORKDIR}/dependencies/job-config.json" ".Other[\"FLOATING_QUAY_TAGS\"][\"2.x\"]" "\"next\""
-
-      #the 'latest' tag should go on the prevuous/stable version, which would be version -1, or the index 3 form the end of the VERSION_KEYS array
-      LATEST_INDEX=$(( ${#VERSION_KEYS[@]} - 3 )) 
-      replaceField "${WORKDIR}/dependencies/job-config.json" ".Other[\"FLOATING_QUAY_TAGS\"][\"${VERSION_KEYS[$LATEST_INDEX]}\"]" "\"latest\""
-      #set the previous 'latest' to be its own version
-      replaceField "${WORKDIR}/dependencies/job-config.json" ".Other[\"FLOATING_QUAY_TAGS\"][\"${VERSION_KEYS[$DISABLE_VERSION_INDEX]}\"]" "\"${VERSION_KEYS[$DISABLE_VERSION_INDEX]}\""
-
     fi 
 
-    #update CSV versions for 2.yy latest and 2.x too
-    replaceField "${WORKDIR}/dependencies/job-config.json" ".CSVs[\"operator-bundle\"][\"${CRW_VERSION}\"][\"CSV_VERSION\"]" "\"${CRW_VERSION}.0\""
-    replaceField "${WORKDIR}/dependencies/job-config.json" ".CSVs[\"operator-bundle\"][\"2.x\"][\"CSV_VERSION\"]" "\"${CRW_VERSION}.0\""
+    #find and disable version-2
+    #start by gathering all CRW_VERSIONs that have data in the json
+    VERSION_KEYS=($(cat ${WORKDIR}/dependencies/job-config.json | jq -r '.Jobs'[\"dashboard\"]' | keys[]'))
+    #get the array index of version -2. length -1 is 2.x, -2 is the version that was added, so the old version that needs to get disabled is length - 4
+    DISABLE_VERSION_INDEX=$(( ${#VERSION_KEYS[@]} - 4 )) 
+
+    #Disable version -2, and everything previous (if there)
+    while [[ $DISABLE_VERSION_INDEX -gt -1 ]]; do
+        VERSION_DISABLE="${VERSION_KEYS[$DISABLE_VERSION_INDEX]}"
+        # echo "Disable index = $DISABLE_VERSION_INDEX / $VERSION_DISABLE"
+        replaceField "${WORKDIR}/dependencies/job-config.json" "(.Jobs[][\"${VERSION_DISABLE}\"][\"disabled\"]|select(.==false))" 'true'
+        replaceField "${WORKDIR}/dependencies/job-config.json" "(.\"Management-Jobs\"[][\"${VERSION_DISABLE}\"][\"disabled\"]|select(.==false))" 'true'
+        #set the previous 'latest' to be its own version
+        replaceField "${WORKDIR}/dependencies/job-config.json" ".Other[\"FLOATING_QUAY_TAGS\"][\"${VERSION_DISABLE}\"]" "\"${VERSION_DISABLE}\""
+        # set .2 version of @eclipse-che/plugin-registry-generator if currently set to latest
+        if [[ $(jq -r ".Other[\"@eclipse-che/plugin-registry-generator\"][\"${VERSION_DISABLE}\"]" "${WORKDIR}/dependencies/job-config.json") == "latest" ]]; then
+          DISABLE_Y_VALUE="${VERSION_DISABLE#*.}"; DISABLE_CHE_Y=$(( (${DISABLE_Y_VALUE} + 6) * 2 ))
+          replaceField "${WORKDIR}/dependencies/job-config.json" ".Other[\"@eclipse-che/plugin-registry-generator\"][\"${VERSION_DISABLE}\"]" "\"7.${DISABLE_CHE_Y}.2\""
+        fi
+        DISABLE_VERSION_INDEX=$(( $DISABLE_VERSION_INDEX -1 ))
+    done
+
+    #update tags
+    replaceField "${WORKDIR}/dependencies/job-config.json" ".Other[\"FLOATING_QUAY_TAGS\"][\"${CRW_VERSION}\"]" "\"next\""
+    replaceField "${WORKDIR}/dependencies/job-config.json" ".Other[\"FLOATING_QUAY_TAGS\"][\"2.x\"]" "\"next\""
+
+    #the 'latest' tag should go on the previous/stable version, which would be version -1, or the index 3 form the end of the VERSION_KEYS array
+    LATEST_INDEX=$(( ${#VERSION_KEYS[@]} - 3 )); LATEST_VERSION="${VERSION_KEYS[$LATEST_INDEX]}"; echo "LATEST_VERSION = $LATEST_VERSION"
+    replaceField "${WORKDIR}/dependencies/job-config.json" ".Other[\"FLOATING_QUAY_TAGS\"][\"${LATEST_VERSION}\"]" "\"latest\""
+    # update @eclipse-che/plugin-registry-generator n-1 to latest
+    replaceField "${WORKDIR}/dependencies/job-config.json" ".Other[\"@eclipse-che/plugin-registry-generator\"][\"${LATEST_VERSION}\"]" "\"latest\""
+    # debugging 
+    # cat "${WORKDIR}/dependencies/job-config.json" | grep -E -A5 "FLOATING_QUAY_TAGS|plugin-registry-gen"
+
+    # update CSV versions for 2.yy latest and 2.x too
+    for op in "operator-bundle" "operator-metadata"; do
+      for ver in "${CRW_VERSION}" "2.x"; do
+        replaceField "${WORKDIR}/dependencies/job-config.json" ".CSVs[\"${op}\"][\"${ver}\"][\"CSV_VERSION\"]" "\"${CRW_VERSION}.0\""
+      done
+    done
 
     # optionally, can enable/disable specific job sets for a given version
     if [[ $ENABLE_CRW_MGMTJOBS_VERSION ]]; then 
