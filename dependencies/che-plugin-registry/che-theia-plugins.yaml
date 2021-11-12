@@ -267,10 +267,10 @@ plugins:
     extension: https://download.jboss.org/jbosstools/vscode/stable/vscode-project-initializer/project-initializer-0.0.10-582.vsix
   - repository:
       url: 'https://github.com/che-incubator/che-theia-openshift-auth'
-      revision: 0.0.2
+      revision: 0.0.3
     metaYaml:
       skipIndex: true
-    extension: https://github.com/che-incubator/che-theia-openshift-auth/releases/download/0.0.2/che-openshift-authentication-plugin-0.0.2.vsix
+    extension: https://github.com/che-incubator/che-theia-openshift-auth/releases/download/0.0.3/che-openshift-authentication-plugin-0.0.3.vsix
   - repository:
       url: 'https://github.com/redhat-developer/vscode-openshift-tools'
       revision: v0.2.11
@@ -279,7 +279,7 @@ plugins:
       name: vscode-openshift-connector
       memoryLimit: 1500Mi
       memoryRequest: 20Mi
-      cpuLimit: 500m
+      cpuLimit: 800m
       cpuRequest: 30m
     extension: https://github.com/redhat-developer/codeready-workspaces-vscode-extensions/releases/download/va21efef/vscode-openshift-connector-v0.2.11.vsix
     metaYaml:
