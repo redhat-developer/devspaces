@@ -162,43 +162,43 @@ editors:
         volume:
           ephemeral: true
   - schemaVersion: 2.1.0
-      metadata:
-        name: che-incubator/intellij-community/2020.3.3
-        displayName: IntelliJ IDEA Community Edition
-        description: IntelliJ IDEA Community running using Projector
-        icon: https://resources.jetbrains.com/storage/products/intellij-idea/img/meta/intellij-idea_logo_300x300.png
+    metadata:
+      name: che-incubator/intellij-community/2020.3.3
+      displayName: IntelliJ IDEA Community Edition
+      description: IntelliJ IDEA Community running using Projector
+      icon: https://resources.jetbrains.com/storage/products/intellij-idea/img/meta/intellij-idea_logo_300x300.png
+      attributes:
+        publisher: che-incubator
+        version: 2020.3.3
+        title: IntelliJ IDEA Community as Editor for Eclipse Che
+        repository: 'https://github.com/che-incubator/jetbrains-editor-images'
+        firstPublicationDate: '2020-09-29'
+    components:
+      - name: intellij
+        container:
+          image: 'registry.redhat.io/codeready-workspaces/idea-rhel8:2.14'
+          volumeMounts:
+            - name: projector-user
+              path: /home/projector-user
+          mountSources: true
+          memoryRequest: 32Mi
+          memoryLimit: 2048M
+          cpuLimit: 1500m
+          cpuRequest: 100m
+          endpoints:
+            - name: intellij
+              targetPort: 8887
+              exposure: public
+              protocol: http
+              secure: true
+              attributes:
+                type: main
+                cookiesAuthEnabled: true
+                urlRewriteSupported: true
+                discoverable: false
+                path: /?backgroundColor=434343&wss
         attributes:
-          publisher: che-incubator
-          version: 2020.3.3
-          title: IntelliJ IDEA Community as Editor for Eclipse Che
-          repository: 'https://github.com/che-incubator/jetbrains-editor-images'
-          firstPublicationDate: '2020-09-29'
-      components:
-        - name: intellij
-          container:
-            image: 'registry.redhat.io/codeready-workspaces/idea-rhel8:2.14'
-            volumeMounts:
-              - name: projector-user
-                path: /home/projector-user
-            mountSources: true
-            memoryRequest: 32Mi
-            memoryLimit: 2048M
-            cpuLimit: 1500m
-            cpuRequest: 100m
-            endpoints:
-              - name: intellij
-                targetPort: 8887
-                exposure: public
-                protocol: http
-                secure: true
-                attributes:
-                  type: main
-                  cookiesAuthEnabled: true
-                  urlRewriteSupported: true
-                  discoverable: false
-                  path: /?backgroundColor=434343&wss
-          attributes:
-            ports:
-              - exposedPort: 8887
-        - name: projector-user
-          volume: { }
+          ports:
+            - exposedPort: 8887
+      - name: projector-user
+        volume: { }

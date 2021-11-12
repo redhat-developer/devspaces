@@ -1,12 +1,18 @@
 #!/bin/bash -e
 
+DELETE_LOCAL_IMAGE=""
+
 usage ()
 {
-  echo "Usage: $0 CONTAINER [--override-arch s390x] [--tar-flags tar-extraction-flags]"
+  echo "Usage: $0 CONTAINER [--override-arch s390x] [--tar-flags tar-extraction-flags] [--delete-before] [--delete-after]"
   echo "Usage: $0 quay.io/crw/operator-metadata:latest"
   echo "Usage: $0 quay.io/crw/plugin-java8-openj9-rhel8:2.4 --override-arch s390x"
   echo "Usage: $0 quay.io/crw/pluginregistry-rhel8:latest --tar-flags var/www/html/*/external_images.txt"
   echo "Usage: $0 quay.io/crw/devfileregistry-rhel8:latest --tar-flags var/www/html/*/external_images.txt --override-arch ppc64le"
+  echo "
+Options:
+  --delete-before    remove any local images before attempting to pull and extract a new copy
+  --delete-after     remove any local images after attempting to pull and extract the container"
   exit
 }
 
@@ -15,9 +21,11 @@ if [[ $# -lt 1 ]]; then usage; fi
 while [[ "$#" -gt 0 ]]; do
   case $1 in
     '--override-arch') ARCH_OVERRIDE="--override-arch $2"; shift 1;;
+    '--delete-after') DELETE_LOCAL_IMAGE="${DELETE_LOCAL_IMAGE} after";;
+    '--delete-before') DELETE_LOCAL_IMAGE="${DELETE_LOCAL_IMAGE} before";;
     '--tar-flags'   ) TAR_FLAGS="$2"; shift 1;;
-    '-h') usage; shift 0;;
-    *) container="$1"; shift 0;;
+    '-h') usage;;
+    *) container="$1";;
   esac
   shift 1
 done
@@ -47,6 +55,9 @@ unpackdir="/tmp/${tmpcontainer}"
 
 container_alt=""
 for container_ref in "$container" "localhost/$container:latest" "localhost/$container"; do 
+  if [[ $DELETE_LOCAL_IMAGE == *"before"* ]]; then
+    ${PODMAN} rmi $container_ref 2>/dev/null >/dev/null || true
+  fi
   container_check="$(${PODMAN} images "$container_ref" -q)"
   if [[ $container_check ]]; then
     container_alt="$container_check"
@@ -90,4 +101,12 @@ if [[ $container_alt ]]; then
   echo "[INFO] Container $container ($container_alt) unpacked to $unpackdir"
 else
   echo "[INFO] Container $container unpacked to $unpackdir"
+fi
+
+if [[ $DELETE_LOCAL_IMAGE == *"after"* ]]; then
+  if [[ $container_alt ]]; then 
+    ${PODMAN} rmi $container_alt || true
+  else
+    ${PODMAN} rmi $container || true
+  fi
 fi
