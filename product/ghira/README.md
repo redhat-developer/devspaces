@@ -31,16 +31,19 @@ pip install -r requirements.txt
 Secrets are injected through environment variables.  
 
 ```
-export JIRA_USER="jirauser"
-export JIRA_PASSWORD='jirauser_password'
-export GITHUB_KEY="github_api_key"
+export JIRA_EMAIL="jirauser@email.address"
+export JIRA_TOKEN='jirauser_personal_access_token'
+export GITHUB_TOKEN="github_api_token"
 ```
+
+To create a new token, go to https://id.atlassian.com/manage-profile/security/api-tokens and log in as the above user (with password)
 
 Use these flags to control output:
 
 ```
---debug   Enable verbose mode 
---dryrun  Query for issues to create, but do not create JIRAs or update GH issues
+--debug     Enable verbose mode 
+--dryrun    Query for issues to create, but do not create JIRAs or update GH issues
+--weeks n   Limit query to the last n weeks (default: 2)
 ```
 
 Run as follows:
