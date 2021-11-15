@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import sys
+import getopt
 import os
 import copy
 import re
@@ -19,10 +20,10 @@ import warnings
 
 JIRA_PROJECT = "CRW"
 JIRA_URL = "https://issues.redhat.com"
-JIRA_USER = os.environ["JIRA_USER"]
-JIRA_PASSWORD = os.environ["JIRA_PASSWORD"]
+JIRA_EMAIL = os.environ["JIRA_EMAIL"]
+JIRA_TOKEN = os.environ["JIRA_TOKEN"]
 
-GITHUB_KEY = os.environ["GITHUB_KEY"]
+GITHUB_TOKEN = os.environ["GITHUB_TOKEN"]
 GITHUB_REPO = "eclipse/che"
 
 ISSUE_SYNC_COMMENT = "sync'd to Red Hat JIRA https://issues.redhat.com/browse/"
@@ -32,11 +33,25 @@ SMTP_PORT = 25
 EMAIL_FROM = "nboldt@redhat.com"
 EMAIL_TO_DEFAULT = "nboldt@redhat.com"
 
-DEBUG='--debug' in sys.argv
-if DEBUG:
-  LOG_LEVEL = logging.DEBUG
-else:
-  LOG_LEVEL = logging.INFO
+# defaults
+LOG_LEVEL = logging.INFO
+NUM_WEEKS = 2
+DRY_RUN=False
+
+# parse option flags
+options, remainder = getopt.gnu_getopt(
+  sys.argv[1:], 'o:v', ['weeks=', 'debug', 'dryrun', 'dry-run',])
+for opt, arg in options:
+  if opt in ('--dryrun', '--dry-run'):
+    DRY_RUN=True
+  elif opt in ('--debug'):
+    LOG_LEVEL = logging.DEBUG
+  elif opt == '--weeks':
+    NUM_WEEKS = int(arg)
+  
+print("Check for new&noteworthy issues closed in the last " + str(NUM_WEEKS) + " weeks")
+if DRY_RUN:
+  print("Dry run. Nothing will be created.")
 
 class ExitOnErrorHandler(logging.StreamHandler):
     def emit(self, record):
@@ -45,12 +60,11 @@ class ExitOnErrorHandler(logging.StreamHandler):
             raise SystemExit(-1)
 logging.basicConfig(handlers=[ExitOnErrorHandler()], format='%(levelname)s: %(message)s', level=LOG_LEVEL)
 
-DRY_RUN='--dryrun' in sys.argv
-if DRY_RUN:
-  logging.info("Dry run.  Nothing will be created.")
+headers = jira.JIRA.DEFAULT_OPTIONS["headers"].copy()
+headers["Authorization"] = f"Bearer {JIRA_TOKEN}"
+j=jira.JIRA(server=JIRA_URL, options={"headers": headers})
 
-j = jira.JIRA(JIRA_URL, basic_auth=(JIRA_USER, JIRA_PASSWORD))
-g = Github(GITHUB_KEY)
+g = Github(GITHUB_TOKEN)
 r = g.get_repo(GITHUB_REPO)
 GITHUB_USER = g.get_user().login
 
@@ -169,13 +183,18 @@ issue_search = {
   'state': 'closed',
   'labels': ['new&noteworthy']
 }
-all_issues = r.get_issues(**issue_search)
+all_issues = []
+try:
+  all_issues = r.get_issues(**issue_search)
+except BaseException as err:
+  logging.error("No closed new&noteworthy issues found: https://github.com/eclipse/che/issues?q=is%3Aissue+is%3Aclosed+label%3Anew%26noteworthy")
+  logging.error(f"Unexpected {err}, {type(err)}")
 
 # filter out items
 pending_issues = []
 for i in all_issues:
-  # only look at issues closed in last 2 weeks
-  if datetime.datetime.strptime(i.raw_data['closed_at'], '%Y-%m-%dT%H:%M:%SZ') < datetime.datetime.now() - datetime.timedelta(weeks = 2):
+  # only look at issues closed in last NUM_WEEKS weeks
+  if datetime.datetime.strptime(i.raw_data['closed_at'], '%Y-%m-%dT%H:%M:%SZ') < datetime.datetime.now() - datetime.timedelta(weeks=NUM_WEEKS):
     continue
 
   # search through comments for sync text of already sync'd issues
@@ -244,6 +263,5 @@ for i in pending_issues:
 logging.info("%s JIRAs created." % len(pending_issues))
 
 # for debugging, dump json for a complete issue to figure out field names
-# j=jira.JIRA(JIRA_URL, basic_auth=(JIRA_USER,JIRA_PASSWORD))
 # i=j.issue("CRW-1684")
 # print(json.dumps(i.raw,indent=2))
