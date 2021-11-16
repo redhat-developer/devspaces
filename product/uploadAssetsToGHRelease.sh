@@ -14,10 +14,10 @@
 
 set -e
 
-TARGETDIR=$(cd "$(dirname "$0")"; pwd)
+TARGETDIR=$(pwd)
 
 # defaults
-GITHUB_REPO="redhat-developer/codeready-workspaces-images" # or redhat-developer/codeready-workspaces-chectl
+GITHUB_REPO_DEFAULT="redhat-developer/codeready-workspaces-images" # or redhat-developer/codeready-workspaces-chectl
 CSV_VERSION="2.y.0" # csv 2.y.0
 ASSET_NAME=""
 fileList=""
@@ -38,19 +38,27 @@ First, export your GITHUB_TOKEN:
   usage
 }
 usage () {
-    echo "Usage:
+    echo "
+Usage:
 
   $0 -v CRW_CSV_VERSION -n ASSET_NAME file1.tar.gz [file2.tar.gz ...]
 
 Options:
-  -b branch               branch from which to create tag + release; defaults to $MIDSTM_BRANCH
-  -d, --delete-assets     delete release + asset file(s) defined by CSV_VERSION and ASSET_NAME
+
+  -d, --delete-assets     delete release + asset file(s) defined by CSV_VERSION and ASSET_NAME; 
+                            used to prepare for creating a new release with fresh timestamp + assets
+
   -a, --publish-assets    publish asset file(s) to release defined by CSV_VERSION and ASSET_NAME
+    -b branch             branch from which to create tag + release; defaults to $MIDSTM_BRANCH
+    --release             by default, do a pre-release; use this flag to create a full release (for GA only)
+
   -p, --pull-assets       fetch asset file(s) from release defined by CSV_VERSION and ASSET_NAME
-    --repo org/reponame   if not checked out, specify from which GH repo to find the release files; default: $GITHUB_REPO
-    --repo-path /path/gh  if checked out, specify which GH folder to use to pull for release files
-    --target   /some/dir  after using the GH repo to fetch assets, copy them to this specified folder; default: $TARGETDIR
-  --release               by default, do a pre-release; use this flag to create a full release (for GA only)
+    --repo-path /path/gh  if already checked out, specify which GH folder to use to pull for release files
+    --repo org/reponame   if not checked out, specify from which GH repo to find the release files; 
+                            default: $GITHUB_REPO_DEFAULT (unless run from within a GH repo folder)
+    --target   /some/dir  after using the GH repo to fetch assets, copy them to this specified folder; 
+                            default: $TARGETDIR
+
   -h, --help              show this help
 
 Examples:
@@ -128,30 +136,40 @@ if [[ $PUBLISH_ASSETS -eq 1 ]]; then
 fi
 
 if [[ $PULL_ASSETS -eq 1 ]]; then
+  TMP=$(mktemp -d)
   if [[ -d $GITHUB_REPO_PATH ]]; then # use the specified GH checkout folder
     pushd $GITHUB_REPO_PATH >/dev/null
     if [[ $(git rev-parse --abbrev-ref HEAD 2>&1 | grep "not a git repo") ]] || [[ ! $(git remote -v 2>&1 | grep github) ]]; then
       echo "Error: $GITHUB_REPO_PATH is not inside a github checkout folder!"
-      echo "Error: use --repo, --repo-path, and --target flags."
+      echo "Error: use --repo, --repo-path, and/or --target flags."
       usage; exit 1
     fi
   # if not a github checkout folder
-  elif [[ $(git rev-parse --abbrev-ref HEAD 2>&1 | grep "not a git repo") ]] || [[ ! $(git remote -v 2>&1 | grep github) ]]; then
+  elif [[ $(git rev-parse --abbrev-ref HEAD 2>&1 | grep "not a git repo") ]] || [[ ! $(git remote -v 2>&1 | grep github) ]] || [[ $GITHUB_REPO ]]; then
     if [[ ! -d $GITHUB_REPO_PATH ]]; then # clone the specified GH repo and use that to fetch assets
-      TMP=$(mktemp -d)
       pushd $TMP >/dev/null
-      git clone --depth 1 https://github.com/$GITHUB_REPO --branch crw-2-rhel-8 --single-branch sources
+      if [[ $GITHUB_REPO ]]; then
+        git clone --depth 1 https://github.com/$GITHUB_REPO --branch crw-2-rhel-8 --single-branch sources
+      else 
+        git clone --depth 1 https://github.com/$GITHUB_REPO_DEFAULT --branch crw-2-rhel-8 --single-branch sources
+      fi
       cd sources
     else
       echo "Error: $TARGETDIR is not inside a github checkout folder!"
+      echo "Error: use --repo, --repo-path, and/or --target flags."
       usage; exit 1
     fi
   else
-    TARGETDIR=$(pwd)
     pushd $TARGETDIR >/dev/null
   fi
 
-  all_assets=$(hub release download "${CSV_VERSION}-${ASSET_NAME}-assets" -i LIST 2>&1| grep -v "pattern did not match")
+  all_assets="$(hub release download "${CSV_VERSION}-${ASSET_NAME}-assets" -i LIST 2>&1 | grep -v "pattern did not match" || true)"
+  if [[ -n $(echo $all_assets | grep "Unable to find release") ]]; then
+      echo "Error: could not find release ${CSV_VERSION}-${ASSET_NAME}-assets in this repo!"
+      echo "Error: use --repo, --repo-path, and/or --target flags."
+      usage; exit 1
+  fi
+
   if [[ -z $fileList ]]; then 
     echo "Download all assets"
     hub release download "${CSV_VERSION}-${ASSET_NAME}-assets"
@@ -163,14 +181,19 @@ if [[ $PULL_ASSETS -eq 1 ]]; then
     done
   fi
 
-  if [[ "$(pwd)" != "$TARGETDIR" ]]; then 
+  # if we downloaded assets to the GH folder but want them in the TARGETDIR, move them now
     for d in $all_assets; do 
-      if [[ -f $d ]]; then mv -f $d $TARGETDIR/; fi
+      if [[ -f $d ]]; then
+        if [[ -f $TARGETDIR/$d ]]; then 
+          echo "[WARN] Overwrite $TARGETDIR/$d"
+        fi
+        mv -f $d $TARGETDIR/
+      fi
     done
-  fi
+  echo "[INFO] Assets written to $TARGETDIR"
+
   popd >/dev/null || true
 
   # cleanup
-  if [[ -d $TMP ]]; then rm -fr $TMP; fi
-  echo "[INFO] Assets written to $TARGETDIR"
+  rm -fr $TMP
 fi
