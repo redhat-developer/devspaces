@@ -14,7 +14,10 @@
 
 set -e
 
+TARGETDIR=$(cd "$(dirname "$0")"; pwd)
+
 # defaults
+GITHUB_REPO="redhat-developer/codeready-workspaces-images" # or redhat-developer/codeready-workspaces-chectl
 CSV_VERSION="2.y.0" # csv 2.y.0
 ASSET_NAME=""
 fileList=""
@@ -44,6 +47,9 @@ Options:
   -d, --delete-assets     delete release + asset file(s) defined by CSV_VERSION and ASSET_NAME
   -a, --publish-assets    publish asset file(s) to release defined by CSV_VERSION and ASSET_NAME
   -p, --pull-assets       fetch asset file(s) from release defined by CSV_VERSION and ASSET_NAME
+    --repo org/reponame   if not checked out, specify from which GH repo to find the release files; default: $GITHUB_REPO
+    --repo-path /path/gh  if checked out, specify which GH folder to use to pull for release files
+    --target   /some/dir  after using the GH repo to fetch assets, copy them to this specified folder; default: $TARGETDIR
   --release               by default, do a pre-release; use this flag to create a full release (for GA only)
   -h, --help              show this help
 
@@ -54,7 +60,6 @@ Examples:
   $0 --pull-assets -v 2.y.0 -n traefik asset-*gz      # pull specific asset(s)
   $0 --pull-assets -v 2.y.0 -n traefik                # pull all assets
 "
-    exit
 }
 
 while [[ "$#" -gt 0 ]]; do
@@ -67,22 +72,26 @@ while [[ "$#" -gt 0 ]]; do
     '-d'|'--delete-assets')    DELETE_ASSETS=1;;
     '-a'|'--publish-assets')   PUBLISH_ASSETS=1;;
     '-p'|'--pull-assets')      PULL_ASSETS=1;;
+    '--repo')                  PULL_ASSETS=1; GITHUB_REPO="$2"; shift 1;;      # if not checked out, specify from which GH repo to find the release files
+    '--repo-path')             PULL_ASSETS=1; GITHUB_REPO_PATH="$2"; shift 1;; # if checked out, specify which GH folder to use to pull release files
+    '--target')                PULL_ASSETS=1; TARGETDIR="$2"; shift 1;;
+
     '--prerelease')            PRE_RELEASE="$1";; # --prerelease
     '--release')               PRE_RELEASE="";;   # not a prerelease
-    '-h'|'--help') usageGHT;;
+    '-h'|'--help') usageGHT; exit 0;;
     *) fileList="${fileList} $1";;
   esac
   shift 1
 done
 
-if [[ ! "${GITHUB_TOKEN}" ]]; then usageGHT; fi
-if [[ $CSV_VERSION == "2.y.0" ]]; then echo "Error: must specify CSV_VERSION with -v flag.";echo; usage; fi
-if [[ $ASSET_NAME == "" ]]; then echo "Error: must specify ASSET_NAME with -n flag.";echo; usage; fi
+if [[ ! "${GITHUB_TOKEN}" ]]; then usageGHT; exit 1; fi
+if [[ $CSV_VERSION == "2.y.0" ]]; then echo "Error: must specify CSV_VERSION with -v flag.";echo; usage; exit 1; fi
+if [[ $ASSET_NAME == "" ]]; then echo "Error: must specify ASSET_NAME with -n flag.";echo; usage; exit 1; fi
 if [[ $DELETE_ASSETS -eq 0 ]] && [[ $PUBLISH_ASSETS -eq 0 ]] && [[ $PULL_ASSETS -eq 0 ]]; then 
-  echo "Error: must specify which operation to run:
+  echo "Error: Must specify which operation to run:
   --delete-assets
   --publish-assets
-  --pull-assets"; echo; usage
+  --pull-assets"; echo; usage; exit 1
 fi
 
 export GITHUB_TOKEN=${GITHUB_TOKEN}
@@ -100,7 +109,7 @@ if [[ $DELETE_ASSETS -eq 1 ]]; then
 fi
 
 if [[ $PUBLISH_ASSETS -eq 1 ]]; then
-  if [[ -z $fileList ]]; then echo "Error: no files specified to publish!"; usage; fi
+  if [[ -z $fileList ]]; then echo "Error: no files specified to publish!"; usage; exit 1; fi
   # check if release exists
   if [[ ! $(hub release | grep ${CSV_VERSION}-${ASSET_NAME}-assets) ]]; then
     #no existing release, create it
@@ -119,6 +128,30 @@ if [[ $PUBLISH_ASSETS -eq 1 ]]; then
 fi
 
 if [[ $PULL_ASSETS -eq 1 ]]; then
+  if [[ -d $GITHUB_REPO_PATH ]]; then # use the specified GH checkout folder
+    pushd $GITHUB_REPO_PATH >/dev/null
+    if [[ $(git rev-parse --abbrev-ref HEAD 2>&1 | grep "not a git repo") ]] || [[ ! $(git remote -v 2>&1 | grep github) ]]; then
+      echo "Error: $GITHUB_REPO_PATH is not inside a github checkout folder!"
+      echo "Error: use --repo, --repo-path, and --target flags."
+      usage; exit 1
+    fi
+  # if not a github checkout folder
+  elif [[ $(git rev-parse --abbrev-ref HEAD 2>&1 | grep "not a git repo") ]] || [[ ! $(git remote -v 2>&1 | grep github) ]]; then
+    if [[ ! -d $GITHUB_REPO_PATH ]]; then # clone the specified GH repo and use that to fetch assets
+      TMP=$(mktemp -d)
+      pushd $TMP >/dev/null
+      git clone --depth 1 https://github.com/$GITHUB_REPO --branch crw-2-rhel-8 --single-branch sources
+      cd sources
+    else
+      echo "Error: $TARGETDIR is not inside a github checkout folder!"
+      usage; exit 1
+    fi
+  else
+    TARGETDIR=$(pwd)
+    pushd $TARGETDIR >/dev/null
+  fi
+
+  all_assets=$(hub release download "${CSV_VERSION}-${ASSET_NAME}-assets" -i LIST 2>&1| grep -v "pattern did not match")
   if [[ -z $fileList ]]; then 
     echo "Download all assets"
     hub release download "${CSV_VERSION}-${ASSET_NAME}-assets"
@@ -129,4 +162,15 @@ if [[ $PULL_ASSETS -eq 1 ]]; then
       hub release download "${CSV_VERSION}-${ASSET_NAME}-assets" -i ${fileToFetch}
     done
   fi
+
+  if [[ "$(pwd)" != "$TARGETDIR" ]]; then 
+    for d in $all_assets; do 
+      if [[ -f $d ]]; then mv -f $d $TARGETDIR/; fi
+    done
+  fi
+  popd >/dev/null || true
+
+  # cleanup
+  if [[ -d $TMP ]]; then rm -fr $TMP; fi
+  echo "[INFO] Assets written to $TARGETDIR"
 fi
