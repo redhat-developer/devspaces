@@ -161,6 +161,10 @@ if [[ $PULL_ASSETS -eq 1 ]]; then
     fi
   else
     pushd $TARGETDIR >/dev/null
+    if [[ $(git rev-parse --abbrev-ref HEAD 2>&1 | grep "not a git repo") ]] || [[ ! $(git remote -v 2>&1 | grep github) ]]; then
+      echo "Error: $TARGETDIR is not inside a github checkout folder. Must also use --repo and/or --repo-path flags."
+      usage; exit 1
+    fi
   fi
 
   all_assets="$(hub release download "${CSV_VERSION}-${ASSET_NAME}-assets" -i LIST 2>&1 | grep -v "pattern did not match" || true)"
