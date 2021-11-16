@@ -511,9 +511,9 @@ def installSkopeoFromContainer(String container="registry.redhat.io/rhel8/skopeo
 // or https://stackoverflow.com/questions/49812267/call-pathrestriction-in-a-dsl-in-the-sandbox-mode
 
 // to clone a repo for scmpolling only (eg., che-theia); simplifies jenkinsfiles
-def cloneRepoWithBootstrap(String URL, String REPO_PATH, String BRANCH, boolean withPolling=false, String excludeRegions='', String includeRegions='*') {
+def cloneRepoWithBootstrap(String URL, String REPO_PATH, String BRANCH, boolean withPolling=false, String excludeRegions='', String includeRegions='*', boolean forceBootstrap=false) {
   withCredentials([string(credentialsId:'crw_devstudio-release-token', variable: 'GITHUB_TOKEN'), file(credentialsId: 'crw_crw-build-keytab', variable: 'CRW_KEYTAB')]) {
-    if (!BOOTSTRAPPED_F) {
+    if (!BOOTSTRAPPED_F || forceBootstrap) {
       BOOTSTRAPPED_F = bootstrap(CRW_KEYTAB)
     }
     cloneRepoPoll(URL, REPO_PATH, BRANCH, withPolling, excludeRegions, includeRegions)
@@ -558,9 +558,7 @@ git config --global push.default matching
 git config --global pull.rebase true
 # Fix for Could not read Username / No such device or address :: https://github.com/github/hub/issues/1644
 git config --global hub.protocol https
-git remote -v
 git remote set-url origin ''' + AUTH_URL_SHELL + '''
-git remote -v
 '''
     )
   } else {
