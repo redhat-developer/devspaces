@@ -3,24 +3,24 @@ quay.io/crw/backup-rhel8:2.14-1
    Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1777380
   Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-backup/commit?id=b47fdf70715f07abc5a4b30575c203b8101901c6
 
-quay.io/crw/configbump-rhel8:2.14-2
-     NVR: codeready-workspaces-configbump-rhel8-container-2.14-2
-   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1797293
-  Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-configbump/commit?id=f5148d5b874ee04706b4c8c246e2335ca73dad87
+quay.io/crw/configbump-rhel8:2.14-3
+     NVR: codeready-workspaces-configbump-rhel8-container-2.14-3
+   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1797403
+  Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-configbump/commit?id=ec9fd1e46c3b6ede4f30df151a83b09fbab00aab
 
 quay.io/crw/crw-2-rhel8-operator:2.14-1
      NVR: codeready-workspaces-rhel8-operator-container-2.14-1
    Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1777386
   Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-operator/commit?id=f4d25f17a006f6a6e49afff6463ada012c055b4c
 
-quay.io/crw/crw-2-rhel8-operator-bundle:2.14-6
-     NVR: codeready-workspaces-operator-bundle-container-2.14-6
-   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1797378
+quay.io/crw/crw-2-rhel8-operator-bundle:2.14-7
+     NVR: codeready-workspaces-operator-bundle-container-2.14-7
+   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1797444
   Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-operator-bundle/commit?id=6aa45e789f7c6ae925450d1553f39269717f3a46
 
-quay.io/crw/crw-2-rhel8-operator-metadata:2.14-4
-     NVR: codeready-workspaces-rhel8-operator-metadata-container-2.14-4
-   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1797230
+quay.io/crw/crw-2-rhel8-operator-metadata:2.14-5
+     NVR: codeready-workspaces-rhel8-operator-metadata-container-2.14-5
+   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1797380
   Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-operator-metadata/commit?id=685d3a4d3b70305949bb121b155635a925633681
 
 quay.io/crw/dashboard-rhel8:2.14-1
@@ -73,15 +73,15 @@ quay.io/crw/plugin-java11-rhel8:2.14-1
    Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1777424
   Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-plugin-java11/commit?id=443a93ab0044dde3731d56e39e836083f02d3808
 
-quay.io/crw/plugin-java8-openj9-rhel8:2.14-3
-     NVR: codeready-workspaces-plugin-java8-openj9-rhel8-container-2.14-3
-   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1797306
-  Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-plugin-java8-openj9/commit?id=5afdcadd3e07c4afe2d31ea655c067099d148f00
+quay.io/crw/plugin-java8-openj9-rhel8:2.14-4
+     NVR: codeready-workspaces-plugin-java8-openj9-rhel8-container-2.14-4
+   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1797416
+  Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-plugin-java8-openj9/commit?id=c1e9f61af9ddbb93f38d1c49403fa16fc097e419
 
-quay.io/crw/plugin-java8-rhel8:2.14-2
-     NVR: codeready-workspaces-plugin-java8-rhel8-container-2.14-2
-   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1797320
-  Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-plugin-java8/commit?id=920c9d7960c5cfc3d443ba3105aebb619d6f7424
+quay.io/crw/plugin-java8-rhel8:2.14-3
+     NVR: codeready-workspaces-plugin-java8-rhel8-container-2.14-3
+   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1797423
+  Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-plugin-java8/commit?id=2d1efa1ade3fc834a166c4125d0f80e73165d326
 
 quay.io/crw/plugin-kubernetes-rhel8:2.14-1
      NVR: codeready-workspaces-plugin-kubernetes-rhel8-container-2.14-1
