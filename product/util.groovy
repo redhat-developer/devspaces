@@ -788,8 +788,8 @@ def updateHelmRpms(String rpmRepoVersion="4.9", String dir="${WORKSPACE}/sources
 // run a job with default token, FORCE_BUILD=true, and SCRATCH=false
 // use jobPath = /job/folder/job/jobname so we can both invoke a job, and then use json API in getLastSuccessfulBuildId()
 def runJob(String jobPath, boolean doWait=false, boolean doPropagateStatus=true, String jenkinsURL=JENKINS_URL) {
-  prevSuccesfulBuildId = getLastSuccessfulBuildId(jenkinsURL + jobPath) // eg., #5
-  println ("runJob(" + jobPath + ") :: prevSuccesfulBuildId = " + prevSuccesfulBuildId)
+  def int prevSuccessBuildId = getLastSuccessfulBuildId(jenkinsURL + jobPath) // eg., #5
+  println ("runJob(" + jobPath + ") :: prevSuccessBuildId = " + prevSuccessBuildId)
   build(
     // convert jobPath /job/folder/job/jobname (used in json API in getLastSuccessfulBuildId() to /folder/jobname (used in build())
     job: jobPath.replaceAll("/job/","/"),
@@ -815,11 +815,13 @@ def runJob(String jobPath, boolean doWait=false, boolean doPropagateStatus=true,
   )
   // wait until #5 -> #6
   if (doWait) { 
-    if (!waitForNewBuild(jenkinsURL + jobPath, prevSuccesfulBuildId)) { 
+    println("waiting for runJob(" + jobPath + ") :: prevSuccessBuildId = " + prevSuccessBuildId)
+    if (!waitForNewBuild(jenkinsURL + jobPath, prevSuccessBuildId)) { 
       currentBuild.result = 'FAILED'
       notifyBuildFailed()
     }
   }
+
   return getLastSuccessfulBuildId(jenkinsURL + jobPath)
 }
 
