@@ -866,26 +866,26 @@ def waitForNewBuild(String jobURL, int oldId, int checkInterval=120, int timeout
   while (true) {
       newId=getLastSuccessfulBuildId(jobURL)
       if (newId > oldId && getLastBuildResult(jobURL).equals("SUCCESS")) {
-          println "Id rebuilt (SUCCESS): " + newId
+          println "Id rebuilt (SUCCESS): " + jobURL + "/" + newId
           return true
           break
       } else {
         newId=getLastBuildId(jobURL)
         if (newId > oldId && getLastFailedBuildId(jobURL).equals(newId)) {
-          println "Id rebuilt (FAILURE): " + newId
+          println "Id rebuilt (FAILURE): " + jobURL + "/" + newId
           return false
           break
         } else if (newId > oldId && getLastUnsuccessfulBuildId(jobURL).equals(newId)) {
-          println "Id rebuilt (ABORTED): " + newId
+          println "Id rebuilt (ABORTED): " + jobURL + "/" + newId
           return false
           break
         }
         if (newId > oldId && getLastBuildResult(jobURL).equals("FAILURE")) {
-          println "Id rebuilt (FAILURE): " + newId
+          println "Id rebuilt (FAILURE): " + jobURL + "/" + newId
           return false
           break
         } else if (newId > oldId && getLastBuildResult(jobURL).equals("ABORTED")) {
-          println "Id rebuilt (ABORTED): " + newId
+          println "Id rebuilt (ABORTED): " + jobURL + "/" + newId
           return false
           break
         }
