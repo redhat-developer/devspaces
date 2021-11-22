@@ -926,7 +926,10 @@ def waitForNewQuayImage(String orgAndImage, String oldImage, int checkInterval=1
   elapsed=0
   while (true) {
       def newImage = getLatestImageAndTag(orgAndImage, "quay")
-      if (newImage!=oldImage) {
+      // use bash version sort to put largest imageAndTag on top, then select that imageAndTag
+      def newestImage = sh(script: 'echo -e "' + oldImage + '\n' + newImage + '" | sort -uVr | head -1', returnStdout: true).trim()
+      // if the new image is different from the old one, and the newest image is not the old one, then we have a newer image
+      if (newImage!=oldImage && !newestImage.equals(oldImage)) {
           echo "Image rebuilt: " + newImage
             return true
           break
@@ -938,7 +941,7 @@ def waitForNewQuayImage(String orgAndImage, String oldImage, int checkInterval=1
             return false
             break
       } else {
-        println "Waiting " + checkInterval + "s for new build of " + oldImage
+        println "Waiting " + checkInterval + "s for newer build than " + oldImage
       }
   }
   return true
