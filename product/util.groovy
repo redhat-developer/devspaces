@@ -825,6 +825,49 @@ def runJob(String jobPath, boolean doWait=false, boolean doPropagateStatus=true,
   return getLastSuccessfulBuildId(jenkinsURL + jobPath)
 }
 
+def runJobSyncToDownstream(String jobPath, String REPOS, boolean doWait=false, boolean doPropagateStatus=true, String jenkinsURL=JENKINS_URL) {
+  def int prevSuccessBuildId = getLastSuccessfulBuildId(jenkinsURL + jobPath) // eg., #5
+  println ("runJob(" + jobPath + "["+REPOS+"]) :: prevSuccessBuildId = " + prevSuccessBuildId)
+  build(
+    // convert jobPath /job/folder/job/jobname (used in json API in getLastSuccessfulBuildId() to /folder/jobname (used in build())
+    job: jobPath.replaceAll("/job/","/"),
+    wait: doWait,
+    propagate: doPropagateStatus,
+    parameters: [
+      [
+        $class: 'StringParameterValue',
+        name: 'token',
+        value: "CI_BUILD"
+      ],
+      [
+        $class: 'StringParameterValue',
+        name: 'REPOS',
+        value: REPOS
+      ],
+      [
+        $class: 'BooleanParameterValue',
+        name: 'FORCE_BUILD',
+        value: true
+      ],
+      [
+        $class: 'BooleanParameterValue',
+        name: 'SCRATCH',
+        value: false
+      ]
+    ]
+  )
+  // wait until #5 -> #6
+  if (doWait) { 
+    println("waiting for runJob(" + jobPath + "["+REPOS+"]) :: prevSuccessBuildId = " + prevSuccessBuildId)
+    if (!waitForNewBuild(jenkinsURL + jobPath, prevSuccessBuildId)) { 
+      currentBuild.result = 'FAILED'
+      notifyBuildFailed()
+    }
+  }
+
+  return getLastSuccessfulBuildId(jenkinsURL + jobPath)
+}
+
 /* 
 lastBuild: build in progress -- if running, .result = null; else "FAILURE", "SUCCESS", etc
 lastSuccessfulBuild
