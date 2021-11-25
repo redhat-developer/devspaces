@@ -1091,6 +1091,28 @@
       "2.14": "next",
       "2.x": "next"
     },
+    "THEIA_BUILD_PARAMS": {
+      "2.12": {
+        "THEIA_BRANCH":"crw-2.12.0",
+        "THEIA_GITHUB_REPO":"",
+        "THEIA_COMMIT_SHA":"56eaa6d0e08f15089b4c09f282579a852b75f182"
+      },
+      "2.13": {
+        "THEIA_BRANCH":"crw-2.13.0",
+        "THEIA_GITHUB_REPO":"redhat-developer/eclipse-theia",
+        "THEIA_COMMIT_SHA":"cd50236f058843ec6ca53bad7eee89de1cda4460"
+      },
+      "2.14": {
+        "THEIA_BRANCH":"crw-2.14.0",
+        "THEIA_GITHUB_REPO":"redhat-developer/eclipse-theia",
+        "THEIA_COMMIT_SHA":"cd50236f058843ec6ca53bad7eee89de1cda4460"
+      },
+      "2.x": {
+        "THEIA_BRANCH":"master",
+        "THEIA_GITHUB_REPO":"eclipse-theia/theia",
+        "THEIA_COMMIT_SHA":""
+      }
+    },
     "OPENSHIFT_CONTENT_SET_VERSION": {
       "2.12": "4.8",
       "2.13": "4.9",
