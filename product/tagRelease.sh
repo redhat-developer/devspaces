@@ -184,9 +184,7 @@ pushTagGH () {
 for d in \
 codeready-workspaces \
 codeready-workspaces-chectl \
-codeready-workspaces-deprecated \
 codeready-workspaces-images \
-codeready-workspaces-operator \
 codeready-workspaces-theia \
 ; do
 	pushTagGH $d
