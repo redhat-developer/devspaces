@@ -689,27 +689,34 @@ def installRedHatInternalCerts() {
   ''')
 }
 
-def bootstrap(String CRW_KEYTAB, boolean force=false) {
-  if (!BOOTSTRAPPED_F || force) {
-    yumConf()
-    // rpm -qf $(which kinit ssh-keyscan chmod) ==> krb5-workstation openssh-clients coreutils
-    installRPMs("krb5-workstation openssh-clients coreutils git rhpkg jq python3-six python3-pip rsync")
-    // install redhat internal certs (so we can connect to jenkins and brew registries)
-    installRedHatInternalCerts()
-    // also install commonly needed tools
-    installPodman2()
-    installSkopeo()
-    installYq()
-    loginToRegistries()
-    sh('''#!/bin/bash -xe
-# disable selinux so we can do podman volume mounts to extract contents of containers (CRW-1919)
-sudo setenforce 0 || true
+def sshMountRcmGuest() {
+  DESTHOST="crw-build/codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com@rcm-guest.app.eng.bos.redhat.com"
+  sh('''#!/bin/bash -xe
+# accept host key
+echo "rcm-guest.app.eng.bos.redhat.com,10.16.101.129 ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEApd6cnyFVRnS2EFf4qeNvav0o+xwd7g7AYeR9dxzJmCR3nSoVHA4Q/kV0qvWkyuslvdA41wziMgSpwq6H/DPLt41RPGDgJ5iGB5/EDo3HAKfnFmVAXzYUrJSrYd25A1eUDYHLeObtcL/sC/5bGPp/0deohUxLtgyLya4NjZoYPQY8vZE6fW56/CTyTdCEWohDRUqX76sgKlVBkYVbZ3uj92GZ9M88NgdlZk74lOsy5QiMJsFQ6cpNw+IPW3MBCd5NHVYFv/nbA3cTJHy25akvAwzk8Oi3o9Vo0Z4PSs2SsD9K9+UvCfP1TUTI4PXS8WpJV6cxknprk0PSIkDdNODzjw==
+" >> ~/.ssh/known_hosts
 
+# set up sshfs mount
+RCMG="''' + DESTHOST + ''':/mnt/rcm-guest/staging/crw"
+sshfs --version
+for mnt in RCMG; do 
+  mkdir -p ${WORKSPACE}/${mnt}-ssh; 
+  if [[ $(file ${WORKSPACE}/${mnt}-ssh 2>&1) == *"Transport endpoint is not connected"* ]]; then fusermount -uz ${WORKSPACE}/${mnt}-ssh; fi
+  if [[ ! -d ${WORKSPACE}/${mnt}-ssh/crw ]]; then  sshfs ${!mnt} ${WORKSPACE}/${mnt}-ssh; fi
+done
+''')
+  return DESTHOST
+}
+
+def kinit(boolean verbose=false, String KERBEROS_USER="crw-build/codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com@REDHAT.COM") {
+  installRedHatInternalCerts()
+  installRPMs("krb5-workstation openssh-clients")
+  sh('''#!/bin/bash -xe
 # if keytab is lost, upload to https://gitlab.cee.redhat.com/codeready-workspaces/crw-jenkins/-/blob/master/secrets/crw_crw-build-keytab.base64
 # then set Use secret text above and set Bindings > Variable (path to the file) as ''' + CRW_KEYTAB + '''
 chmod 700 ''' + CRW_KEYTAB + ''' && chown ''' + USER + ''' ''' + CRW_KEYTAB + '''
 # create .k5login file
-echo "crw-build/codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com@REDHAT.COM" > ~/.k5login
+echo "''' + KERBEROS_USER + '''" > ~/.k5login
 chmod 644 ~/.k5login && chown ''' + USER + ''' ~/.k5login
 echo "pkgs.devel.redhat.com,10.19.208.80 ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAplqWKs26qsoaTxvWn3DFcdbiBxqRLhFngGiMYhbudnAj4li9/VwAJqLm1M6YfjOoJrj9dlmuXhNzkSzvyoQODaRgsjCG5FaRjuN8CSM/y+glgCYsWX1HFZSnAasLDuW0ifNLPR2RBkmWx61QKq+TxFDjASBbBywtupJcCsA5ktkjLILS+1eWndPJeSUJiOtzhoN8KIigkYveHSetnxauxv1abqwQTk5PmxRgRt20kZEFSRqZOJUlcl85sZYzNC/G7mneptJtHlcNrPgImuOdus5CW+7W49Z/1xqqWI/iRjwipgEMGusPMlSzdxDX4JzIx6R53pDpAwSAQVGDz4F9eQ==
 " >> ~/.ssh/known_hosts
@@ -720,16 +727,42 @@ echo "
 GSSAPIAuthentication yes
 GSSAPIDelegateCredentials yes
 Host pkgs.devel.redhat.com
-User crw-build/codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com@REDHAT.COM
+User ''' + KERBEROS_USER + '''
 " > ~/.ssh/config
 chmod 600 ~/.ssh/config
 # initialize kerberos
 export KRB5CCNAME=/var/tmp/crw-build_ccache
-# verify keytab is a valid file
-# sudo klist -k ''' + CRW_KEYTAB + '''
-kinit "crw-build/codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com@REDHAT.COM" -kt ''' + CRW_KEYTAB + '''
-# verify keytab loaded
-# klist
+
+# if no kerb ticket for crw-build user, attempt to create one
+if [[ ! $(klist | grep crw-build) ]]; then
+  cat /etc/redhat-release
+  if [[ -f ''' + CRW_KEYTAB + ''' ]]; then 
+    keytab="''' + CRW_KEYTAB + '''"
+  else
+    keytab=$(find /mnt/hudson_workspace/ $HOME $WORKSPACE -name "*crw-build*keytab*" 2>/dev/null | head -1)
+  fi
+  kinit "''' + KERBEROS_USER + '''" -kt $keytab
+  klist
+fi
+''')
+  if (verbose) { sh('''klist''') }
+
+}
+def bootstrap(String CRW_KEYTAB, boolean force=false) {
+  if (!BOOTSTRAPPED_F || force) {
+    yumConf()
+    // rpm -qf $(which kinit ssh-keyscan chmod) ==> krb5-workstation openssh-clients coreutils
+    installRPMs("coreutils git rhpkg jq python3-six python3-pip rsync")
+    // initialize kerberos ticket; includes installing RH certs, krb5 and ssh
+    kinit() 
+    // also install commonly needed tools
+    installPodman2()
+    installSkopeo()
+    installYq()
+    loginToRegistries()
+    sh('''#!/bin/bash -xe
+# disable selinux so we can do podman volume mounts to extract contents of containers (CRW-1919)
+sudo setenforce 0 || true
 ''')
   }
   return true
