@@ -690,6 +690,7 @@ def installRedHatInternalCerts() {
 }
 
 def sshMountRcmGuest() {
+  installSshfs()
   DESTHOST="crw-build/codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com@rcm-guest.app.eng.bos.redhat.com"
   sh('''#!/bin/bash -xe
 # accept host key
