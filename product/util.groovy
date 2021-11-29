@@ -409,6 +409,21 @@ echo "''' + CRW_BOT_PASSWORD + '''" | ${PODMAN} login -u="''' + CRW_BOT_USERNAME
   }
 }
 
+// special case for pull/push of images from reg.stage.r.io
+def loginToStageRegistry() {
+    withCredentials([[$class: 'UsernamePasswordMultiBinding',
+                      credentialsId: "stage-registry",
+                      usernameVariable: 'stage_username',
+                      passwordVariable: 'stage_password']]) {
+    return sh(script: '''#!/bin/bash -xe
+PODMAN=$(command -v podman || true)
+if [[ ! -x $PODMAN ]]; then echo "[WARNING] podman is not installed."; PODMAN=$(command -v docker || true); fi
+if [[ ! -x $PODMAN ]]; then echo "[ERROR] docker is not installed. Aborting."; exit 1; fi
+echo "''' + stage_password + '''" | ${PODMAN} login -u="''' + stage_username + '''" --password-stdin registry.stage.redhat.io
+    ''', returnStatus:true)
+  }
+}
+
 // @since 2.10 - latest version of Skopeo in UBI 8.4 is 1.2.3
 def installSkopeo(String minimumVersion="1.1") {
   installRPMs("skopeo",true,true)
