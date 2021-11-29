@@ -243,7 +243,7 @@ if [[ ${phases} == *"2"* ]]; then
 	log ""
 	cd /tmp
 	export GOPATH=/tmp/go-deps-tmp/
-	rm -fr /tmp/go-deps-tmp
+	sudo rm -fr /tmp/go-deps-tmp
 	mkdir -p go-deps-tmp && cd go-deps-tmp
 
 	# run the same set of go get -v commands in the build.sh script:
@@ -269,7 +269,7 @@ if [[ ${phases} == *"2"* ]]; then
 		popd >/dev/null
 	done
 	mnf ""
-	rm -fr /tmp/go-deps-tmp /tmp/go-build*
+	sudo rm -fr /tmp/go-deps-tmp /tmp/go-build*
 
 	log ""
 	log "2b. Install golang npm deps: go-language-server@${GOLANG_LS_VERSION}"
