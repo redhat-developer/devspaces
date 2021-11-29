@@ -731,8 +731,9 @@ Host pkgs.devel.redhat.com
 User ''' + KERBEROS_USER + '''
 " > ~/.ssh/config
 chmod 600 ~/.ssh/config
-# initialize kerberos
-export KRB5CCNAME=/var/tmp/crw-build_ccache
+
+# don't use specific file; use whatever default keyring is present
+# export KRB5CCNAME=/var/tmp/crw-build_ccache
 
 # if no kerb ticket for crw-build user, attempt to create one
 if [[ ! $(klist | grep crw-build) ]]; then
