@@ -51,8 +51,10 @@ Release      : 1.el8
 Architecture : x86_64
 ...
 ```
++ 
 or
-````
++
+```
 # for arch in ppc64le s390x x86_64; do \
 dnf info libsecret libsecret-devel libxkbfile libxkbfile-devel chromium --forcearch $arch | \
 grep -E "Name|Arch" | sort -uV; echo; done
