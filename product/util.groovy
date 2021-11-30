@@ -924,26 +924,26 @@ def waitForNewBuild(String jobURL, int oldId, int checkInterval=120, int timeout
   while (true) {
       newId=getLastSuccessfulBuildId(jobURL)
       if (newId > oldId && getLastBuildResult(jobURL).equals("SUCCESS")) {
-          println "Id rebuilt (SUCCESS): " + jobURL + "/" + newId
+          println "Id rebuilt in " + elapsed + "s (SUCCESS): " + jobURL + "/" + newId
           return true
           break
       } else {
         newId=getLastBuildId(jobURL)
         if (newId > oldId && getLastFailedBuildId(jobURL).equals(newId)) {
-          println "Id rebuilt (FAILURE): " + jobURL + "/" + newId
+          println "Id rebuilt in " + elapsed + "s (FAILURE): " + jobURL + "/" + newId
           return false
           break
         } else if (newId > oldId && getLastUnsuccessfulBuildId(jobURL).equals(newId)) {
-          println "Id rebuilt (ABORTED): " + jobURL + "/" + newId
+          println "Id rebuilt in " + elapsed + "s (ABORTED): " + jobURL + "/" + newId
           return false
           break
         }
         if (newId > oldId && getLastBuildResult(jobURL).equals("FAILURE")) {
-          println "Id rebuilt (FAILURE): " + jobURL + "/" + newId
+          println "Id rebuilt in " + elapsed + "s (FAILURE): " + jobURL + "/" + newId
           return false
           break
         } else if (newId > oldId && getLastBuildResult(jobURL).equals("ABORTED")) {
-          println "Id rebuilt (ABORTED): " + jobURL + "/" + newId
+          println "Id rebuilt in " + elapsed + "s (ABORTED): " + jobURL + "/" + newId
           return false
           break
         }
@@ -951,7 +951,7 @@ def waitForNewBuild(String jobURL, int oldId, int checkInterval=120, int timeout
       sleep(time:checkInterval,unit:"SECONDS")
       elapsed += checkInterval
       if (elapsed >= timeout) {
-        println "ERROR: No new build #" + newId + " > #" + oldId + " found after " + timeout + " elapsed seconds!"
+        println "ERROR: No new build #" + newId + " > #" + oldId + " found after " + elapsed + " elapsed seconds!"
         return false
         break
       } else {
@@ -988,14 +988,14 @@ def waitForNewQuayImage(String orgAndImage, String oldImage, int checkInterval=1
       def newestImage = sh(script: 'echo -e "' + oldImage + '\n' + newImage + '" | sort -uVr | head -1', returnStdout: true).trim()
       // if the new image is different from the old one, and the newest image is not the old one, then we have a newer image
       if (newImage!=oldImage && !newestImage.equals(oldImage)) {
-          echo "Image rebuilt: " + newImage
+          echo "Image rebuilt in " + elapsed + "s (SUCCESS): " + newImage
             return true
           break
       }
       sleep(time:checkInterval,unit:"SECONDS")
       elapsed += checkInterval
       if (elapsed >= timeout) {
-            println "ERROR: No new build #" + newImage + " > #" + oldImage + " found after " + timeout + " elapsed seconds!"
+            println "ERROR: No new build #" + newImage + " > #" + oldImage + " found after " + elapsed + " elapsed seconds!"
             return false
             break
       } else {
