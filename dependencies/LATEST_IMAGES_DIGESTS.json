@@ -3,8 +3,8 @@
         "quay.io/crw/backup-rhel8:2.14-4": {"Created": "2021-11-28T07:45:56.6923044Z", "Digest": "ff8f0fec33210dcc314c5ca74af1cc7804acf15646710f2c986a0022ec9f0c3d", "Image": "quay.io/crw/backup-rhel8:2.14-4"},
         "quay.io/crw/configbump-rhel8:2.14-8": {"Created": "2021-11-28T07:56:13.957892237Z", "Digest": "1feab679ac97868237d1c713529e37e2cbde5e8ee515b39dde6dc04160b5c6b1", "Image": "quay.io/crw/configbump-rhel8:2.14-8"},
         "quay.io/crw/crw-2-rhel8-operator:2.14-3": {"Created": "2021-11-28T07:37:16.398172638Z", "Digest": "b55384184ec5d41a18fc3e0786d881358707e9a2ba5f5942f9a7e2d04633d0b7", "Image": "quay.io/crw/crw-2-rhel8-operator:2.14-3"},
-        "quay.io/crw/crw-2-rhel8-operator-bundle:2.14-24": {"Created": "2021-11-30T01:49:27.322730688Z", "Digest": "bd2b6a3a10385803eede021a34b5b92c99f5acee151602c68374cc44d7140832", "Image": "quay.io/crw/crw-2-rhel8-operator-bundle:2.14-24"},
-        "quay.io/crw/crw-2-rhel8-operator-metadata:2.14-22": {"Created": "2021-11-30T01:41:25.587766059Z", "Digest": "b9afd21a68f0a4c42c125f7787558d54f4599e558cd05970c3dedbe95c37e73d", "Image": "quay.io/crw/crw-2-rhel8-operator-metadata:2.14-22"},
+        "quay.io/crw/crw-2-rhel8-operator-bundle:2.14-25": {"Created": "2021-11-30T05:44:10.451270327Z", "Digest": "3ba5954b97b10f42d533181d75c58c99a8cb4c81e2a535243daf72a98df17b02", "Image": "quay.io/crw/crw-2-rhel8-operator-bundle:2.14-25"},
+        "quay.io/crw/crw-2-rhel8-operator-metadata:2.14-23": {"Created": "2021-11-30T05:44:12.429398281Z", "Digest": "d114627962319dd51605db3aaf3fe7d87eb816099c02bb4043bb1b9574ab6e79", "Image": "quay.io/crw/crw-2-rhel8-operator-metadata:2.14-23"},
         "quay.io/crw/dashboard-rhel8:2.14-5": {"Created": "2021-11-28T07:52:32.802358325Z", "Digest": "7d17152995d8b75103a96646a5d5a809b870fcd9d625ec5d1c0b265b12c20f74", "Image": "quay.io/crw/dashboard-rhel8:2.14-5"},
         "quay.io/crw/devfileregistry-rhel8:2.14-5": {"Created": "2021-11-28T08:27:08.387428669Z", "Digest": "bce986c4eaa0515d1365630cfa55003c4b56865ccaf6934838b97017b84604ee", "Image": "quay.io/crw/devfileregistry-rhel8:2.14-5"},
         "quay.io/crw/idea-rhel8:2.14-5": {"Created": "2021-11-28T07:36:22.146586931Z", "Digest": "848f1b60413d6e838f2db613ca867aa4c369b05d7d2955191a971f45db0eb3b6", "Image": "quay.io/crw/idea-rhel8:2.14-5"},
@@ -26,8 +26,8 @@
         "quay.io/crw/stacks-golang-rhel8:2.14-3": {"Created": "2021-11-28T06:38:42.330010249Z", "Digest": "4650b6cf9abf84acf42664f40289a0e0a6ee64a8506717c092758de70f590877", "Image": "quay.io/crw/stacks-golang-rhel8:2.14-3"},
         "quay.io/crw/stacks-php-rhel8:2.14-3": {"Created": "2021-11-28T06:30:08.918872604Z", "Digest": "c9b823b9ac907f2d30f268902151e6c19448c3a8594e2f56ecf5c125683cea9f", "Image": "quay.io/crw/stacks-php-rhel8:2.14-3"},
         "quay.io/crw/theia-dev-rhel8:2.14-15": {"Created": "2021-11-30T00:24:41.666672882Z", "Digest": "f475de82e4314e47df0000b2a44805851366e294e06c4c1158f46f8395ced19d", "Image": "quay.io/crw/theia-dev-rhel8:2.14-15"},
-        "quay.io/crw/theia-endpoint-rhel8:2.14-2": {"Created": "2021-11-29T18:48:25.423689626Z", "Digest": "1645cd4626b8ecd309ed769fc9b9cd6e26c101c997284be91399a0fe02368b2a", "Image": "quay.io/crw/theia-endpoint-rhel8:2.14-2"},
-        "quay.io/crw/theia-rhel8:2.14-5": {"Created": "2021-11-28T19:05:46.96167152Z", "Digest": "bae49d532d4607c216dd21470dbffc50c7a3cfe326203e99684d4f73562fe6dd", "Image": "quay.io/crw/theia-rhel8:2.14-5"},
+        "quay.io/crw/theia-endpoint-rhel8:2.14-3": {"Created": "2021-11-30T02:16:34.75573452Z", "Digest": "5c511201b42538a21c350da9a19811b94496a4fd1e6b5869644531e1900d4fa3", "Image": "quay.io/crw/theia-endpoint-rhel8:2.14-3"},
+        "quay.io/crw/theia-rhel8:2.14-6": {"Created": "2021-11-30T01:48:26.156202966Z", "Digest": "35c47bbb10adb3c57b76f60f73e8ec946861fe827477e734609439e3a88686d6", "Image": "quay.io/crw/theia-rhel8:2.14-6"},
         "quay.io/crw/traefik-rhel8:2.14-6": {"Created": "2021-11-28T08:40:03.257509022Z", "Digest": "75cdeb7549b6c268be2f0be0f2f22196e85bcb1e6ca6f432ae1322e786dd556d", "Image": "quay.io/crw/traefik-rhel8:2.14-6"},
         "": {"Created":"", "Digest":"", "Image":""}
     }
