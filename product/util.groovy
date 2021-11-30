@@ -732,7 +732,7 @@ User ''' + KERBEROS_USER + '''
 " > ~/.ssh/config
 chmod 600 ~/.ssh/config
 
-# don't use specific file; use whatever default keyring is present
+# CRW-1919 DON'T use specific cache file; use whatever default keyring is present so we don't have to export an env var with every single shell
 # export KRB5CCNAME=/var/tmp/crw-build_ccache
 
 # if no kerb ticket for crw-build user, attempt to create one
@@ -744,9 +744,9 @@ if [[ ! $(klist | grep crw-build) ]]; then
     keytab=$(find /mnt/hudson_workspace/ $HOME $WORKSPACE -name "*crw-build*keytab*" 2>/dev/null | head -1)
   fi
   kinit "''' + KERBEROS_USER + '''" -kt $keytab
-  klist
 fi
 ''')
+  // default shell, not specifically bash
   if (verbose) { sh('''klist''') }
 
 }
