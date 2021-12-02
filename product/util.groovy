@@ -641,7 +641,7 @@ cd ''' + REPO_PATH + '''
 cd ''' + REPO_PATH + '''; git remote -v | grep pkgs.devel.redhat.com || true''', returnStdout: true).trim()
   if (is_pkgsdevel?.trim()) {
     sh('''#!/bin/bash -xe
-export KRB5CCNAME="/var/tmp/crw-build_ccache"
+export KRB5CCNAME=/var/tmp/crw-build_ccache
 ''' + updateBaseImages_cmd
     )
   } else {
@@ -732,8 +732,9 @@ User ''' + KERBEROS_USER + '''
 " > ~/.ssh/config
 chmod 600 ~/.ssh/config
 
-# CRW-1919 DON'T use specific cache file; use whatever default keyring is present so we don't have to export an env var with every single shell
-# export KRB5CCNAME=/var/tmp/crw-build_ccache
+# TODO: CRW-1919 probably don't need to use a specific cache file - can use whatever default keyring is present
+# however in a lot of the current CRW build jobs, this value is hardcoded so we should stick with it until we can remove it everywhere
+export KRB5CCNAME=/var/tmp/crw-build_ccache
 
 # if no kerb ticket for crw-build user, attempt to create one
 if [[ ! $(klist | grep crw-build) ]]; then
