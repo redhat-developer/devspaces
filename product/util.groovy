@@ -190,7 +190,7 @@ node --version; npm --version; yarn --version
 }
 
 def installYq() {
-  installRPMs("python38-six python38 python38-pyyaml jq")
+  installRPMs("python38 python38-pip jq")
   sh('''#!/bin/bash -xe
 sudo /usr/bin/python3 -m pip install -q --upgrade pip yq jsonschema; jq --version; yq --version
   ''')
