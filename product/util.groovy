@@ -190,7 +190,7 @@ node --version; npm --version; yarn --version
 }
 
 def installYq() {
-  installRPMs("jq python3-six python3-pip")
+  installRPMs("python38-six python38 python38-pyyaml jq")
   sh('''#!/bin/bash -xe
 sudo /usr/bin/python3 -m pip install -q --upgrade pip yq jsonschema; jq --version; yq --version
   ''')
@@ -387,7 +387,7 @@ def installRPMs(String whichRPMs, boolean usePulpRepos=false, boolean successOnE
   enableRcmToolsRepo()
   if (usePulpRepos) { enablePulpRepos() }
   sh '''#!/bin/bash -xe
-sudo yum install -y -q ''' + whichRPMs + ''' || ''' + successOnError.toString()
+sudo yum install -y -q ''' + whichRPMs + ''' || sudo yum upgrade -y ''' + whichRPMs + ''' || ''' + successOnError.toString()
 }
 
 // to log into dockerhub, quay and RHEC, use this method where needed
