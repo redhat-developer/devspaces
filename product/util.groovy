@@ -192,7 +192,7 @@ node --version; npm --version; yarn --version
 def installYq() {
   installRPMs("python38 python38-pip jq")
   sh('''#!/bin/bash -xe
-sudo /usr/bin/python3 -m pip install -q --upgrade pip yq jsonschema; jq --version; yq --version
+pip3 install --upgrade pip yq jsonschema; jq --version; yq --version
   ''')
 }
 def installBrewKoji() {
