@@ -750,7 +750,10 @@ if [[ ! $(klist | grep crw-build) ]]; then
 fi
 ''')
   // default shell, not specifically bash
-  if (verbose) { sh('''klist''') }
+  if (verbose) { sh('''
+export KRB5CCNAME=/var/tmp/crw-build_ccache
+klist
+''') }
 
 }
 def bootstrap(String CRW_KEYTAB, boolean force=false) {
