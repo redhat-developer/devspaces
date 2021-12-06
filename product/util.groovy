@@ -875,7 +875,7 @@ def runJob(String jobPath, boolean doWait=false, boolean doPropagateStatus=true,
       notifyBuildFailed()
     }
   }
-  println("Job " + jobPath.replaceAll("/job/","/") + " #" +  jobResult.number + " completed."
+  println("Job " + jobPath.replaceAll("/job/","/") + " #" +  jobResult.number + " completed.")
   return getLastSuccessfulBuildId(jenkinsURL + jobPath)
 }
 
@@ -919,7 +919,7 @@ def runJobSyncToDownstream(String jobPath, String REPOS, boolean doWait=false, b
     }
   }
 
-  println("Job " + jobPath.replaceAll("/job/","/") + " #" +  jobResult.number + " completed."
+  println("Job " + jobPath.replaceAll("/job/","/") + " #" +  jobResult.number + " completed.")
   // rather than latest success, return the number of THIS build so we get the actual build (not just the latest one)
   // return getLastSuccessfulBuildId(jenkinsURL + jobPath)
   return (jobResult.number as int)
