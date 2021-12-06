@@ -738,16 +738,14 @@ chmod 600 ~/.ssh/config
 # however in a lot of the current CRW build jobs, this value is hardcoded so we should stick with it until we can remove it everywhere
 export KRB5CCNAME=/var/tmp/crw-build_ccache
 
-# if no kerb ticket for crw-build user, attempt to create one
-if [[ ! $(klist | grep crw-build) ]]; then
-  cat /etc/redhat-release
-  if [[ -f ''' + CRW_KEYTAB + ''' ]]; then 
-    keytab="''' + CRW_KEYTAB + '''"
-  else
-    keytab=$(find /mnt/hudson_workspace/ $HOME $WORKSPACE -name "*crw-build*keytab*" 2>/dev/null | head -1)
-  fi
-  kinit "''' + KERBEROS_USER + '''" -kt $keytab
+# create new / refresh existing kerberos ticket for crw-build user
+cat /etc/redhat-release
+if [[ -f ''' + CRW_KEYTAB + ''' ]]; then 
+  keytab="''' + CRW_KEYTAB + '''"
+else
+  keytab=$(find /mnt/hudson_workspace/ $HOME $WORKSPACE -name "*crw-build*keytab*" 2>/dev/null | head -1)
 fi
+kinit "''' + KERBEROS_USER + '''" -kt $keytab
 ''')
   // default shell, not specifically bash
   if (verbose) { sh('''
