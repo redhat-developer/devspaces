@@ -844,7 +844,7 @@ def updateHelmRpms(String rpmRepoVersion="4.9", String dir="${WORKSPACE}/sources
 def runJob(String jobPath, boolean doWait=false, boolean doPropagateStatus=true, String jenkinsURL=JENKINS_URL) {
   def int prevSuccessBuildId = getLastSuccessfulBuildId(jenkinsURL + jobPath) // eg., #5
   println ("runJob(" + jobPath + ") :: prevSuccessBuildId = " + prevSuccessBuildId)
-  build(
+  final jobResult = build(
     // convert jobPath /job/folder/job/jobname (used in json API in getLastSuccessfulBuildId() to /folder/jobname (used in build())
     job: jobPath.replaceAll("/job/","/"),
     wait: doWait,
@@ -875,14 +875,14 @@ def runJob(String jobPath, boolean doWait=false, boolean doPropagateStatus=true,
       notifyBuildFailed()
     }
   }
-
+  println("Job " + jobPath.replaceAll("/job/","/") + " #" +  jobResult.number + " completed."
   return getLastSuccessfulBuildId(jenkinsURL + jobPath)
 }
 
 def runJobSyncToDownstream(String jobPath, String REPOS, boolean doWait=false, boolean doPropagateStatus=true, String jenkinsURL=JENKINS_URL) {
   def int prevSuccessBuildId = getLastSuccessfulBuildId(jenkinsURL + jobPath) // eg., #5
   println ("runJob(" + jobPath + "["+REPOS+"]) :: prevSuccessBuildId = " + prevSuccessBuildId)
-  build(
+  final jobResult = build(
     // convert jobPath /job/folder/job/jobname (used in json API in getLastSuccessfulBuildId() to /folder/jobname (used in build())
     job: jobPath.replaceAll("/job/","/"),
     wait: doWait,
@@ -919,7 +919,10 @@ def runJobSyncToDownstream(String jobPath, String REPOS, boolean doWait=false, b
     }
   }
 
-  return getLastSuccessfulBuildId(jenkinsURL + jobPath)
+  println("Job " + jobPath.replaceAll("/job/","/") + " #" +  jobResult.number + " completed."
+  // rather than latest success, return the number of THIS build so we get the actual build (not just the latest one)
+  // return getLastSuccessfulBuildId(jenkinsURL + jobPath)
+  return (jobResult.number as int)
 }
 
 /* 
