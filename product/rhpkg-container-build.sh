@@ -33,6 +33,10 @@ done
 
 if [[ ! -d ${SOURCEDIR} ]] && [[ doRhpkgContainerBuild -eq 1 ]]; then usage; fi
 
+# TODO: CRW-1919 probably don't need to use a specific cache file - can use whatever default keyring is present
+# however in a lot of the current CRW build jobs, this value is hardcoded so we should stick with it until we can remove it everywhere
+export KRB5CCNAME=/var/tmp/crw-build_ccache
+
 if [[ ${doRhpkgContainerBuild} -eq 1 ]]; then
   # if not set, compute from current branch
   if [[ ! ${JOB_BRANCH} ]]; then 
