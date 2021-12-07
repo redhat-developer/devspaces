@@ -874,8 +874,10 @@ def runJob(String jobPath, boolean doWait=false, boolean doPropagateStatus=true,
       currentBuild.result = 'FAILED'
       notifyBuildFailed()
     }
+    println("Job " + jobPath.replaceAll("/job/","/") + " #" +  jobResult.number.toString() + " completed.")
+  } else {
+    println("Job " + jobPath.replaceAll("/job/","/") + " #" +  (prevSuccessBuildId + 1).toString() + " launched.")
   }
-  println("Job " + jobPath.replaceAll("/job/","/") + " #" +  jobResult.number.toString() + " completed.")
   return getLastSuccessfulBuildId(jenkinsURL + jobPath)
 }
 
@@ -917,9 +919,11 @@ def runJobSyncToDownstream(String jobPath, String REPOS, boolean doWait=false, b
       currentBuild.result = 'FAILED'
       notifyBuildFailed()
     }
+    println("Job " + jobPath.replaceAll("/job/","/") + " #" +  jobResult.number.toString() + " completed.")
+  } else {
+    println("Job " + jobPath.replaceAll("/job/","/") + " #" +  (prevSuccessBuildId + 1).toString() + " launched.")
   }
 
-  println("Job " + jobPath.replaceAll("/job/","/") + " #" +  jobResult.number.toString() + " completed.")
   // rather than latest success, return the number of THIS build so we get the actual build (not just the latest one)
   // return getLastSuccessfulBuildId(jenkinsURL + jobPath)
   return (jobResult.number as int)
