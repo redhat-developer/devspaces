@@ -136,16 +136,14 @@ else # new way, ansible-based RHEL 8.5+ (nvm already installed, so just configur
   NODE_PATH="${NVM_VERSION_PATH}/crw_${CRW_VER}"
   TARGET_NODE_PATH="${NVM_VERSION_PATH}/v${NODE_VERSION}"
 
-  if [[ ! -e "$NODE_PATH" ]] ; then
+  if [[ ! -e "$NODE_PATH" ]]; then
     echo "ERROR: Invalid CRW version ${CRW_VER} or not installed with nvm"
     exit 1
   fi
-  if [[ -e "$TARGET_NODE_PATH" ]] ; then
+  if [[ -e "$TARGET_NODE_PATH" ]]; then
     rm "$TARGET_NODE_PATH"
   fi
   ln -s $NODE_PATH $TARGET_NODE_PATH
-  echo '
-  export NVM_DIR="$HOME/.nvm"
   [ -s "$HOME/.nvm/nvm.sh" ] && . "$HOME/.nvm/nvm.sh"
   nvm use ${NODE_VERSION}
   dirname $(nvm which ${NODE_VERSION})
