@@ -737,15 +737,22 @@ chmod 600 ~/.ssh/config
 # TODO: CRW-1919 probably don't need to use a specific cache file - can use whatever default keyring is present
 # however in a lot of the current CRW build jobs, this value is hardcoded so we should stick with it until we can remove it everywhere
 export KRB5CCNAME=/var/tmp/crw-build_ccache
+if [[ ! -f /var/tmp/crw-build_ccache ]]; then sudo touch /var/tmp/crw-build_ccache; fi
+sudo chmod 600 /var/tmp/crw-build_ccache
+sudo chown $(whoami):$(whoami) /var/tmp/crw-build_ccache
 
 # create new / refresh existing kerberos ticket for crw-build user
 cat /etc/redhat-release
 if [[ -f ''' + CRW_KEYTAB + ''' ]]; then 
   keytab="''' + CRW_KEYTAB + '''"
-else
+  if [[ $(kinit -k -t $keytab "''' + KERBEROS_USER + '''"; echo $?) -gt 0 ]]; then 
+    keytab=$(find /mnt/hudson_workspace/ $HOME $WORKSPACE -name "*crw-build*keytab*" 2>/dev/null | head -1)
+    kinit -k -t $keytab "''' + KERBEROS_USER + '''"
+  fi
+else 
   keytab=$(find /mnt/hudson_workspace/ $HOME $WORKSPACE -name "*crw-build*keytab*" 2>/dev/null | head -1)
+  kinit -k -t $keytab "''' + KERBEROS_USER + '''"
 fi
-kinit "''' + KERBEROS_USER + '''" -kt $keytab
 ''')
   // default shell, not specifically bash
   if (verbose) { sh('''
