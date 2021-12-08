@@ -60,9 +60,7 @@ class ExitOnErrorHandler(logging.StreamHandler):
             raise SystemExit(-1)
 logging.basicConfig(handlers=[ExitOnErrorHandler()], format='%(levelname)s: %(message)s', level=LOG_LEVEL)
 
-headers = jira.JIRA.DEFAULT_OPTIONS["headers"].copy()
-headers["Authorization"] = f"Bearer {JIRA_TOKEN}"
-j=jira.JIRA(server=JIRA_URL, options={"headers": headers})
+j = jira.JIRA(server=JIRA_URL, token_auth=JIRA_TOKEN)
 
 g = Github(GITHUB_TOKEN)
 r = g.get_repo(GITHUB_REPO)
