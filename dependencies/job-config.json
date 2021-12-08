@@ -790,12 +790,12 @@
         "CSV_VERSION_PREV": "2.12.0"
       },
       "2.13": {
-        "CSV_VERSION": "2.13.0",
-        "CSV_VERSION_PREV": "2.12.1"
+        "CSV_VERSION": "2.13.1",
+        "CSV_VERSION_PREV": "2.13.0"
       },
       "2.x": {
-        "CSV_VERSION": "2.13.0",
-        "CSV_VERSION_PREV": "2.12.1"
+        "CSV_VERSION": "2.13.1",
+        "CSV_VERSION_PREV": "2.13.0"
       }
     },
     "operator-metadata": {
@@ -804,24 +804,24 @@
         "CSV_VERSION_PREV": "2.12.0"
       },
       "2.13": {
-        "CSV_VERSION": "2.13.0",
-        "CSV_VERSION_PREV": "2.12.1"
+        "CSV_VERSION": "2.13.1",
+        "CSV_VERSION_PREV": "2.13.0"
       },
       "2.x": {
-        "CSV_VERSION": "2.13.0",
-        "CSV_VERSION_PREV": "2.12.1"
+        "CSV_VERSION": "2.13.1",
+        "CSV_VERSION_PREV": "2.13.0"
       }
     }
   },
   "Other": {
     "Errata": {
       "2.12": "81387",
-      "2.13": "82818",
+      "2.13": "85517",
       "2.x": ""
     },
     "Epic": {
       "2.12": "CRW-2102",
-      "2.13": "CRW-2243",
+      "2.13": "CRW-2543",
       "2.x": ""
     },
     "FLOATING_QUAY_TAGS": {
@@ -840,8 +840,25 @@
     },
     "@eclipse-che/plugin-registry-generator": {
       "2.12": "7.36.2-b",
-      "2.13": "latest",
+      "2.13": "7.38.2",
       "2.x": "next"
+    },
+    "THEIA_BUILD_PARAMS": {
+      "2.12": {
+        "THEIA_BRANCH":"crw-2.12.0",
+        "THEIA_GITHUB_REPO":"",
+        "THEIA_COMMIT_SHA":"56eaa6d0e08f15089b4c09f282579a852b75f182"
+      },
+      "2.13": {
+        "THEIA_BRANCH":"crw-2.13.0",
+        "THEIA_GITHUB_REPO":"redhat-developer/eclipse-theia",
+        "THEIA_COMMIT_SHA":"cd50236f058843ec6ca53bad7eee89de1cda4460"
+      },
+      "2.x": {
+        "THEIA_BRANCH":"crw-2.14.0",
+        "THEIA_GITHUB_REPO":"redhat-developer/eclipse-theia",
+        "THEIA_COMMIT_SHA":"cd50236f058843ec6ca53bad7eee89de1cda4460"
+      }
     },
     "OPENSHIFT_CONTENT_SET_VERSION": {
       "2.12": "4.8",
