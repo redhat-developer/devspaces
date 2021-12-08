@@ -21,7 +21,7 @@ components:
   -
     type: dockerimage
     alias: dotnet
-    image: registry.redhat.io/codeready-workspaces/stacks-dotnet-rhel8:2.14
+    image: registry.redhat.io/codeready-workspaces/stacks-dotnet-rhel8:2.15
     memoryLimit: 512Mi
     endpoints:
       - name: 'hello-endpoint'

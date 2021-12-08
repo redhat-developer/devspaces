@@ -19,7 +19,7 @@ plugins:
           cookiesAuthEnabled: true
     containers:
       - name: che-machine-exec
-        image: 'registry.redhat.io/codeready-workspaces/machineexec-rhel8:2.14'
+        image: 'registry.redhat.io/codeready-workspaces/machineexec-rhel8:2.15'
         memoryLimit: 128Mi
         memoryRequest: 32Mi
         cpuLimit: 500m
