@@ -190,9 +190,9 @@ node --version; npm --version; yarn --version
 }
 
 def installYq() {
-  installRPMs("jq python3-six python3-pip")
+  installRPMs("python38 python38-pip jq")
   sh('''#!/bin/bash -xe
-sudo /usr/bin/python3 -m pip install -q --upgrade pip yq jsonschema; jq --version; yq --version
+pip3 install --upgrade pip yq jsonschema; jq --version; yq --version
   ''')
 }
 def installBrewKoji() {
@@ -387,7 +387,7 @@ def installRPMs(String whichRPMs, boolean usePulpRepos=false, boolean successOnE
   enableRcmToolsRepo()
   if (usePulpRepos) { enablePulpRepos() }
   sh '''#!/bin/bash -xe
-sudo yum install -y -q ''' + whichRPMs + ''' || ''' + successOnError.toString()
+sudo yum install -y -q ''' + whichRPMs + ''' || sudo yum upgrade -y ''' + whichRPMs + ''' || ''' + successOnError.toString()
 }
 
 // to log into dockerhub, quay and RHEC, use this method where needed
@@ -573,9 +573,7 @@ git config --global push.default matching
 git config --global pull.rebase true
 # Fix for Could not read Username / No such device or address :: https://github.com/github/hub/issues/1644
 git config --global hub.protocol https
-git remote -v
 git remote set-url origin ''' + AUTH_URL_SHELL + '''
-git remote -v
 '''
     )
   } else {
@@ -849,7 +847,7 @@ def getBuildJSON(String url, String buildType, String field) {
   return sh(returnStdout: true, script: '''
 URL="''' + url + '''/''' + buildType + '''/api/json"
 # check for 404 and return 0 if can't load, or the actual value if loaded
-header404="$(curl -sSLI ${URL} | grep -E -v "id: |^x-" | grep -E "404|Not Found" || true)"
+header404="$(curl -sSLI ${URL} | grep -E -v "id: |^x-" | grep -v "content-length" | grep -E "404|Not Found" || true)"
 if [[ $header404 ]]; then # echo "[WARNING] Can not resolve ${URL} : $header404 "
   echo 0
 else
