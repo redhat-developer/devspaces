@@ -229,6 +229,9 @@ plugins:
       memoryRequest: 20Mi
       cpuLimit: 800m
       cpuRequest: 30m
+      volumeMounts:
+        - name: kube
+          path: /home/theia/.kube
     extension: https://github.com/redhat-developer/codeready-workspaces-vscode-extensions/releases/download/va21efef/vscode-openshift-connector-v0.2.11.vsix
     metaYaml:
       extraDependencies:
