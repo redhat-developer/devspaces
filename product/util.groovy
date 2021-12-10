@@ -953,7 +953,7 @@ def runJobSyncToDownstream(String jobPath, String REPOS, boolean doWait=false, b
 
   // rather than latest success, return the number of THIS build so we get the actual build (not just the latest one)
   // return getLastSuccessfulBuildId(jenkinsURL + jobPath)
-  return (jobResult?.number? as int)
+  return (jobResult?.number?.toInteger() as int)
 }
 
 /* 
