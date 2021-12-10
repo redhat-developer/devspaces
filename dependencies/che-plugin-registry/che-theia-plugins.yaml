@@ -216,6 +216,13 @@ plugins:
   - repository:
       url: 'https://github.com/che-incubator/che-theia-openshift-auth'
       revision: 0.0.3
+    sidecar:
+      image: "registry.redhat.io/codeready-workspaces/plugin-openshift-rhel8:2.15"
+      name: vscode-openshift-connector
+      memoryLimit: 1500Mi
+      memoryRequest: 20Mi
+      cpuLimit: 800m
+      cpuRequest: 30m
     metaYaml:
       skipIndex: true
     extension: https://github.com/che-incubator/che-theia-openshift-auth/releases/download/0.0.3/che-openshift-authentication-plugin-0.0.3.vsix
