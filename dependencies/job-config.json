@@ -1,6 +1,6 @@
 {
   "Purpose": "To set configurations of jenkins jobs including upstream branches, dependencies and disabled status",
-  "Version": 2.15,
+  "Version": 2.14,
   "Jobs": {
     "backup": {
       "2.13": {
@@ -1032,7 +1032,7 @@
         "CSV_VERSION_PREV": "2.13.0"
       },
       "2.x": {
-        "CSV_VERSION": "2.15.0",
+        "CSV_VERSION": "2.14.0",
         "CSV_VERSION_PREV": "2.13.0"
       }
     },
@@ -1050,7 +1050,7 @@
         "CSV_VERSION_PREV": "2.13.0"
       },
       "2.x": {
-        "CSV_VERSION": "2.15.0",
+        "CSV_VERSION": "2.14.0",
         "CSV_VERSION_PREV": "2.13.0"
       }
     }

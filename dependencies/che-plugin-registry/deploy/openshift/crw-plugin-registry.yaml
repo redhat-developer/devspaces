@@ -117,7 +117,7 @@ parameters:
     description: CodeReady Workspaces plugin registry container image. Defaults to
       registry.redhat.io/codeready-workspaces/pluginregistry-rhel8
   - name: IMAGE_TAG
-    value: '2.15'
+    value: '2.14'
     displayName: CodeReady Workspaces plugin registry version
     description: CodeReady Workspaces plugin registry version
   - name: MEMORY_LIMIT
