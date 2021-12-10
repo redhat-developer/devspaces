@@ -110,12 +110,15 @@ def getVarFromPropertiesFileURL(String property, String tURL) {
 def installNPM(String nodeVersion, String yarnVersion, boolean installP7zip=false, boolean installNodeGyp=false) {
   USE_PUBLIC_NEXUS = true
 
-  CRW_VERSION=getCrwVersion(MIDSTM_BRANCH?.trim() && MIDSTM_BRANCH != null ? MIDSTM_BRANCH : "crw-2-rhel-8")
+  JOB_BRANCH = getJobBranch(MIDSTM_BRANCH?.trim() ? MIDSTM_BRANCH : "crw-2-rhel-8")
 
   def nodeHome = sh(script:'''#!/bin/bash -e
 export NODE_VERSION=''' + nodeVersion + '''
-# old way, RHEL 8.3 boxes
-if [[ ! -f $HOME/.nvm/nvm.sh ]]; then 
+# new way, ansible-based RHEL 8.5+ (nvm already installed, so just configure it)
+if [[ -e ~/crw_env ]]; then
+  # TODO should be able to pass in a version of node, not just a version of CRW
+  . ~/crw_env $JOB_BRANCH
+else # fall back to the old way until we've moved over completely
   export LATEST_NVM="$(git ls-remote --refs --tags https://github.com/nvm-sh/nvm.git \
     | cut --delimiter='/' --fields=3 | tr '-' '~'| sort --version-sort| tail --lines=1)"
   export METHOD=script
@@ -129,24 +132,6 @@ if [[ ! -f $HOME/.nvm/nvm.sh ]]; then
   [ -s "$HOME/.nvm/nvm.sh" ] && . "$HOME/.nvm/nvm.sh"
   nvm use ${NODE_VERSION} || nvm install ${NODE_VERSION}
   dirname $(nvm which node) || dirname $(nvm which ${NODE_VERSION})
-else # new way, ansible-based RHEL 8.5+ (nvm already installed, so just configure it)
-  CRW_VER="''' + CRW_VERSION + '''"
-  NVM_DIR="$HOME/.nvm"
-  NVM_VERSION_PATH="$HOME/.nvm/versions/node"
-  NODE_PATH="${NVM_VERSION_PATH}/crw_${CRW_VER}"
-  TARGET_NODE_PATH="${NVM_VERSION_PATH}/v${NODE_VERSION}"
-
-  if [[ ! -e "$NODE_PATH" ]]; then
-    echo "ERROR: Invalid CRW version ${CRW_VER} or not installed with nvm"
-    exit 1
-  fi
-  if [[ -e "$TARGET_NODE_PATH" ]]; then
-    rm "$TARGET_NODE_PATH"
-  fi
-  ln -s $NODE_PATH $TARGET_NODE_PATH
-  [ -s "$HOME/.nvm/nvm.sh" ] && . "$HOME/.nvm/nvm.sh"
-  nvm use ${NODE_VERSION}
-  dirname $(nvm which ${NODE_VERSION})
 fi
 ''' , returnStdout: true).trim()
   env.PATH="${nodeHome}:${env.PATH}"
