@@ -1096,4 +1096,16 @@ done
 '''
 }
 
+def checkURL(String theURL) {
+  final URL url = new URL(theURL);
+  HttpURLConnection huc = (HttpURLConnection) url.openConnection();
+  huc.setRequestMethod("HEAD");
+  int responseCode = huc.getResponseCode();
+
+  if (responseCode == 200 || responseCode == 302) {
+    return true
+  }
+  return false
+}
+
 return this
