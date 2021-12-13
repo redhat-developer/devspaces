@@ -624,7 +624,7 @@ def updateBaseImages(String REPO_PATH, String SOURCES_BRANCH, String FLAGS="", S
     sh('''#!/bin/bash -xe
 URL="https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/''' + SCRIPTS_BRANCH + '''/product/updateBaseImages.sh"
 # check for 404 and fail if can't load the file
-header404="$(curl -sSLI $URL | grep -E -v "id: |^x-" | grep -E "404|Not Found" || true)"
+header404="$(curl -sSLI $URL | grep -E -v "id: |^x-" | grep -v "content-length" | grep -E "404|Not Found" || true)"
 if [[ $header404 ]]; then
   echo "[ERROR] Can not resolved $URL : $header404 "
   echo "[ERROR] Please check the value of SCRIPTS_BRANCH = ''' + SCRIPTS_BRANCH + ''' to confirm it's a valid branch."
@@ -1096,16 +1096,20 @@ done
 '''
 }
 
-def checkURL(String theURL) {
-  final URL url = new URL(theURL);
-  HttpURLConnection huc = (HttpURLConnection) url.openConnection();
-  huc.setRequestMethod("HEAD");
-  int responseCode = huc.getResponseCode();
 
-  if (responseCode == 200 || responseCode == 302) {
-    return true
-  }
-  return false
+// return false if URL is 404'd
+def checkURL(String URL) {
+  def statusCode = sh(script: '''#!/bin/bash -xe
+# check for 404 and fail if can't load the file
+header404="$(curl -sSLI ${URL} | grep -E -v "id: |^x-" | grep -v "content-length" | grep -E "404|Not Found" || true)"
+if [[ $header404 ]]; then
+  echo "[ERROR] Can not resolve $URL : $header404 "
+  exit 1
+fi
+exit 0
+  ''', returnStatus: true)
+  return statusCode > 1 ? false : true
 }
 
+// return this file's contents when loaded
 return this
