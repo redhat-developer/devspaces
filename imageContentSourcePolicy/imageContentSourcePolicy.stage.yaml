@@ -73,3 +73,6 @@ spec:
   - mirrors:
     - registry.stage.redhat.io/codeready-workspaces/imagepuller-rhel8
     source: registry.redhat.io/codeready-workspaces/imagepuller-rhel8
+  - mirrors:
+    - registry.stage.redhat.io/codeready-workspaces/async-storage-server-rhel8
+    source: registry.redhat.io/codeready-workspaces/async-storage-server-rhel8

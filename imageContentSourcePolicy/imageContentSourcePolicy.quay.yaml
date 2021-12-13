@@ -73,3 +73,6 @@ spec:
   - mirrors:
     - quay.io/crw/imagepuller-rhel8
     source: registry.redhat.io/codeready-workspaces/imagepuller-rhel8
+  - mirrors:
+  - quay.io/crw/async-storage-server-rhel8
+    source: registry.redhat.io/codeready-workspaces/async-storage-server-rhel8

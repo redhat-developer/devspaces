@@ -110,6 +110,7 @@ fi
 
 if [[ $PHASES == *"5"* ]]; then 
     doBuild "codeready-workspaces \
+        codeready-workspaces-async-storage-server \
         codeready-workspaces-backup \
         codeready-workspaces-dashboard \
         codeready-workspaces-configbump \
