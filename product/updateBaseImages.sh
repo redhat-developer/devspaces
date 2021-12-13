@@ -270,7 +270,9 @@ for d in $(find "${WORKDIR}/" -maxdepth "${MAXDEPTH}" -name "${DOCKERFILE}" | so
 						testvercomp "${LATE_TAGver}" ">" "${CURR_TAGver}"
 						if [[ "${testvercomp_return}" == "true" ]] || [[ ${LATE_TAGrevsuf} -ge ${CURR_TAGrevsuf} ]] || [[ ${LATE_TAGrevbase} -gt ${CURR_TAGrevbase} ]]; then # fix the ${DOCKERFILE}
 							echo "++ $d "
-							sed -i -e "s#${URL}#${FROMPREFIX}:${LATESTTAG}#g" "$d"
+							# only replace the URL if padded with a prefix space or slash, and ending with a space or newline; this avoids doing the same replacement twice in the same file
+							# which would result in ubi8/nodejs-12:1-102.1638363923.1638363923 instead of ubi8/nodejs-12:1-102.1638363923
+							sed -r -i -e "s#( |/)${URL}( |$)#\1${FROMPREFIX}:${LATESTTAG}\2#g" "$d"
 
 							# commit change and push it
 							if [[ -d ${d%%/${DOCKERFILE}} ]]; then pushd "${d%%/${DOCKERFILE}}" >/dev/null; pushedIn=1; fi
