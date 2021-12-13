@@ -112,12 +112,15 @@ def installNPM(String nodeVersion, String yarnVersion, boolean installP7zip=fals
 
   JOB_BRANCH = getJobBranch(MIDSTM_BRANCH?.trim() ? MIDSTM_BRANCH : "crw-2-rhel-8")
 
-  def nodeHome = sh(script:'''#!/bin/bash -e
+  def nodeHome = sh(script:'''#!/bin/bash -xe
 export NODE_VERSION=''' + nodeVersion + '''
 # new way, ansible-based RHEL 8.5+ (nvm already installed, so just configure it)
 if [[ -e ~/crw_env ]]; then
   # TODO should be able to pass in a version of node, not just a version of CRW
-  . ~/crw_env $JOB_BRANCH
+  JOB_BRANCH="''' + JOB_BRANCH + '''"
+  echo "Run . ~/crw_env ${JOB_BRANCH}" 
+  . ~/crw_env ${JOB_BRANCH}
+  dirname $(nvm which ${NODE_VERSION})
 else # fall back to the old way until we've moved over completely
   export LATEST_NVM="$(git ls-remote --refs --tags https://github.com/nvm-sh/nvm.git \
     | cut --delimiter='/' --fields=3 | tr '-' '~'| sort --version-sort| tail --lines=1)"
@@ -134,6 +137,7 @@ else # fall back to the old way until we've moved over completely
   dirname $(nvm which node) || dirname $(nvm which ${NODE_VERSION})
 fi
 ''' , returnStdout: true).trim()
+  println("Got nodeHome = " + nodeHome)
   env.PATH="${nodeHome}:${env.PATH}"
 
   // used by crwctl build
