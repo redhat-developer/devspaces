@@ -1,41 +1,46 @@
-quay.io/crw/backup-rhel8:2.15-1
-     NVR: codeready-workspaces-backup-rhel8-container-2.15-1
-   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1822688
-  Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-backup/commit?id=012b89ec44c82b837a36b50927db62ccc7514e9e
+quay.io/crw/backup-rhel8:2.15-2
+     NVR: codeready-workspaces-backup-rhel8-container-2.15-2
+   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1824649
+  Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-backup/commit?id=a18760e2dd3a5ae04af89cbacaa8bbb056f66b59
 
-quay.io/crw/configbump-rhel8:2.15-1
-     NVR: codeready-workspaces-configbump-rhel8-container-2.15-1
-   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1822706
-  Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-configbump/commit?id=fcb8eeeb789308a695f673eabc4ab7d3d7cbc90b
+quay.io/crw/configbump-rhel8:2.15-2
+     NVR: codeready-workspaces-configbump-rhel8-container-2.15-2
+   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1824683
+  Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-configbump/commit?id=a30f6ab83320fcc02287d7934fc54f5cf60f4634
 
-quay.io/crw/idea-rhel8:2.15-1
-     NVR: codeready-workspaces-idea-rhel8-container-2.15-1
-   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1822708
-  Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-idea/commit?id=36af40b902bb2f4477794489e05defd69ae82264
+quay.io/crw/devfileregistry-rhel8:2.15-2
+     NVR: codeready-workspaces-devfileregistry-rhel8-container-2.15-2
+   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1824720
+  Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-devfileregistry/commit?id=52791aaa3f003867184258c076bac2ceaed40f8b
 
-quay.io/crw/imagepuller-rhel8:2.15-1
-     NVR: codeready-workspaces-imagepuller-rhel8-container-2.15-1
-   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1822707
-  Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-imagepuller/commit?id=7a6da7e3a3887977731d29f8f6b9dcc58de1d8b9
+quay.io/crw/idea-rhel8:2.15-2
+     NVR: codeready-workspaces-idea-rhel8-container-2.15-2
+   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1824661
+  Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-idea/commit?id=de8943b8aaa09c93a8072f73fe42ede6bb574ea5
 
-quay.io/crw/jwtproxy-rhel8:2.15-1
-     NVR: codeready-workspaces-jwtproxy-rhel8-container-2.15-1
-   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1822704
-  Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-jwtproxy/commit?id=754c422d3cc338eb3ec87dc6e91e0f06aa41c04d
+quay.io/crw/imagepuller-rhel8:2.15-2
+     NVR: codeready-workspaces-imagepuller-rhel8-container-2.15-2
+   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1824663
+  Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-imagepuller/commit?id=32cf43aec31636b27d5335e55b324566e0b15f64
 
-quay.io/crw/machineexec-rhel8:2.15-2
-     NVR: codeready-workspaces-machineexec-rhel8-container-2.15-2
-   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1822703
+quay.io/crw/jwtproxy-rhel8:2.15-2
+     NVR: codeready-workspaces-jwtproxy-rhel8-container-2.15-2
+   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1824644
+  Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-jwtproxy/commit?id=898dec7e159efcbeaa6190127ac1a2f9c5680837
+
+quay.io/crw/machineexec-rhel8:2.15-3
+     NVR: codeready-workspaces-machineexec-rhel8-container-2.15-3
+   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1824654
   Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-machineexec/commit?id=a5b5a15ca29c2b56e67d1fd3eb882b5affb7253b
 
-quay.io/crw/pluginbroker-artifacts-rhel8:2.15-1
-     NVR: codeready-workspaces-pluginbroker-artifacts-rhel8-container-2.15-1
-   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1822699
+quay.io/crw/pluginbroker-artifacts-rhel8:2.15-2
+     NVR: codeready-workspaces-pluginbroker-artifacts-rhel8-container-2.15-2
+   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1824659
   Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-pluginbroker-artifacts/commit?id=7c2983720fd762e08e281b517925bccb492e0725
 
-quay.io/crw/pluginbroker-metadata-rhel8:2.15-1
-     NVR: codeready-workspaces-pluginbroker-metadata-rhel8-container-2.15-1
-   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1822700
+quay.io/crw/pluginbroker-metadata-rhel8:2.15-2
+     NVR: codeready-workspaces-pluginbroker-metadata-rhel8-container-2.15-2
+   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1824653
   Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-pluginbroker-metadata/commit?id=085501dc12bb368452727c588cc0646db78c4147
 
 quay.io/crw/plugin-java11-openj9-rhel8:2.15-2
@@ -98,9 +103,9 @@ quay.io/crw/stacks-php-rhel8:2.15-2
    Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1824065
   Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-stacks-php/commit?id=14717320be5753e0f04ceb477ec7c1a287743939
 
-quay.io/crw/traefik-rhel8:2.15-1
-     NVR: codeready-workspaces-traefik-rhel8-container-2.15-1
-   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1822737
-  Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-traefik/commit?id=a336fa474b365ed61f2fa65b9f3fa3dc281e4dd7
+quay.io/crw/traefik-rhel8:2.15-2
+     NVR: codeready-workspaces-traefik-rhel8-container-2.15-2
+   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1824680
+  Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-traefik/commit?id=636f9d0a0536e22a4889e484d1f000fc6a8041fd
 
 .

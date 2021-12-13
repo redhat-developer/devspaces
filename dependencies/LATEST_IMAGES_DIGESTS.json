@@ -1,13 +1,14 @@
 {
     "Images": {
-        "quay.io/crw/backup-rhel8:2.15-1": {"Created": "2021-12-10T15:58:51.617814946Z", "Digest": "1d068e2cb5d29695e15119aec5926ba5f15a99647f7dec4baf2edd3a40f9fdd7", "Image": "quay.io/crw/backup-rhel8:2.15-1"},
-        "quay.io/crw/configbump-rhel8:2.15-1": {"Created": "2021-12-10T16:12:59.131302075Z", "Digest": "39e62e24c071d4eea429928333351a071d0d66b1266b19cb38d7a9a565582539", "Image": "quay.io/crw/configbump-rhel8:2.15-1"},
-        "quay.io/crw/idea-rhel8:2.15-1": {"Created": "2021-12-10T16:17:26.10696789Z", "Digest": "8eece216b1ea5b1c9dbedfed587014cb1ae1b87e989619ff469b7dc447ce964e", "Image": "quay.io/crw/idea-rhel8:2.15-1"},
-        "quay.io/crw/imagepuller-rhel8:2.15-1": {"Created": "2021-12-10T16:15:02.521025724Z", "Digest": "0a499471efc2b0f11351faa1f7a1238300ddd26b4a0b90ae114b394f724087e3", "Image": "quay.io/crw/imagepuller-rhel8:2.15-1"},
-        "quay.io/crw/jwtproxy-rhel8:2.15-1": {"Created": "2021-12-10T16:11:28.51330493Z", "Digest": "b2faca3759c077d2b3aa90538a3b30d87dc881b527ca30883384c7fdde5ceb6c", "Image": "quay.io/crw/jwtproxy-rhel8:2.15-1"},
-        "quay.io/crw/machineexec-rhel8:2.15-2": {"Created": "2021-12-10T16:11:34.360572581Z", "Digest": "8f7c4bf77175a8b1ebd2c16bb725a4bee3ad0eea535fde7e47e6b9e4264eafc9", "Image": "quay.io/crw/machineexec-rhel8:2.15-2"},
-        "quay.io/crw/pluginbroker-artifacts-rhel8:2.15-1": {"Created": "2021-12-10T16:05:36.631582284Z", "Digest": "d20b134d22678ee162e6866e9adf877fcfb7aeb9165b632336047100036607ab", "Image": "quay.io/crw/pluginbroker-artifacts-rhel8:2.15-1"},
-        "quay.io/crw/pluginbroker-metadata-rhel8:2.15-1": {"Created": "2021-12-10T16:06:48.570206347Z", "Digest": "5f051fbf5f22c221c88aaeb3daed1961d940100b4ddda68db9d2b2eefef22e65", "Image": "quay.io/crw/pluginbroker-metadata-rhel8:2.15-1"},
+        "quay.io/crw/backup-rhel8:2.15-2": {"Created": "2021-12-13T14:16:55.165529177Z", "Digest": "270c395bd9784ffa88f802fbecad5f9088450e4ae9656cebaffc6d4dcc2fe790", "Image": "quay.io/crw/backup-rhel8:2.15-2"},
+        "quay.io/crw/configbump-rhel8:2.15-2": {"Created": "2021-12-13T14:42:48.964683846Z", "Digest": "d3c5ca2b7161c76e15018fe31ac6de14a26459bbedfc18811050bba8385cdc45", "Image": "quay.io/crw/configbump-rhel8:2.15-2"},
+        "quay.io/crw/devfileregistry-rhel8:2.15-2": {"Created": "2021-12-13T15:07:41.81764005Z", "Digest": "ed2cc16e7e1b8817840c1609892a173a677c779061cd295a15a52212fc995708", "Image": "quay.io/crw/devfileregistry-rhel8:2.15-2"},
+        "quay.io/crw/idea-rhel8:2.15-2": {"Created": "2021-12-13T14:24:52.31403664Z", "Digest": "c40ad92149f167fe86e6d92a3d3efa505a0ef3a59fd5e032e4904b87b3f2752b", "Image": "quay.io/crw/idea-rhel8:2.15-2"},
+        "quay.io/crw/imagepuller-rhel8:2.15-2": {"Created": "2021-12-13T14:24:51.269822609Z", "Digest": "ad6e0947ec36017123aa0de78906addfcf0f9691d15c553c00610f4ce349e31b", "Image": "quay.io/crw/imagepuller-rhel8:2.15-2"},
+        "quay.io/crw/jwtproxy-rhel8:2.15-2": {"Created": "2021-12-13T14:15:05.8992767Z", "Digest": "08f9c60bd58ec7cef6ae3dc726f953f4144f34163dd38f21ad58f3bb5ccc1c46", "Image": "quay.io/crw/jwtproxy-rhel8:2.15-2"},
+        "quay.io/crw/machineexec-rhel8:2.15-3": {"Created": "2021-12-13T14:18:07.604975951Z", "Digest": "18e28402dcf9027261b44f219c9296687f1a19dbda57323066742b8064da8258", "Image": "quay.io/crw/machineexec-rhel8:2.15-3"},
+        "quay.io/crw/pluginbroker-artifacts-rhel8:2.15-2": {"Created": "2021-12-13T14:19:00.884488554Z", "Digest": "c0c2302be5ac0907f9f52806e884387fbbff452a39103af5f30ed865b21fe524", "Image": "quay.io/crw/pluginbroker-artifacts-rhel8:2.15-2"},
+        "quay.io/crw/pluginbroker-metadata-rhel8:2.15-2": {"Created": "2021-12-13T14:18:50.150343665Z", "Digest": "e75549b5798b21eda814b18de0403e57fa0e2e2e5e1e6e06ebc28b9fec625dc6", "Image": "quay.io/crw/pluginbroker-metadata-rhel8:2.15-2"},
         "quay.io/crw/plugin-java11-openj9-rhel8:2.15-2": {"Created": "2021-12-12T18:02:07.657850361Z", "Digest": "56fa15b37531c2bc4d1d816e51c3b6fb085357bdd9c92e39da2015d2d424b0de", "Image": "quay.io/crw/plugin-java11-openj9-rhel8:2.15-2"},
         "quay.io/crw/plugin-java11-rhel8:2.15-2": {"Created": "2021-12-12T17:30:53.04202113Z", "Digest": "ef9e1661fe853b53e217496126ea231646cb1fa8537d498c9bfafe5c0bff7be1", "Image": "quay.io/crw/plugin-java11-rhel8:2.15-2"},
         "quay.io/crw/plugin-java8-openj9-rhel8:2.15-2": {"Created": "2021-12-12T18:24:56.925899101Z", "Digest": "a6d0d446da20de76601178b5a732e4b5716cd677ce5f1bb35616ff5a3c2eeb99", "Image": "quay.io/crw/plugin-java8-openj9-rhel8:2.15-2"},
@@ -20,7 +21,7 @@
         "quay.io/crw/stacks-dotnet-rhel8:2.15-2": {"Created": "2021-12-12T17:43:30.889608307Z", "Digest": "aed06cc0212127c0fd45bf759783b6f38c7198a23577bb60d1f5b3f5868eb106", "Image": "quay.io/crw/stacks-dotnet-rhel8:2.15-2"},
         "quay.io/crw/stacks-golang-rhel8:2.15-2": {"Created": "2021-12-12T18:22:19.992188332Z", "Digest": "22b5d47aada3be8d42a26f8974229279f02f2e3e07b617dedc67bd142a204564", "Image": "quay.io/crw/stacks-golang-rhel8:2.15-2"},
         "quay.io/crw/stacks-php-rhel8:2.15-2": {"Created": "2021-12-12T18:07:44.589305041Z", "Digest": "47b9a8857322d307e4135477aae1c622889fab46f4725ab0ac8840e1b3fe730f", "Image": "quay.io/crw/stacks-php-rhel8:2.15-2"},
-        "quay.io/crw/traefik-rhel8:2.15-1": {"Created": "2021-12-10T16:44:30.180717973Z", "Digest": "0d20ddf07d146fb2f3694d159272e31ce41a73240ead00810a22c4d6f761264d", "Image": "quay.io/crw/traefik-rhel8:2.15-1"},
+        "quay.io/crw/traefik-rhel8:2.15-2": {"Created": "2021-12-13T14:40:17.075797379Z", "Digest": "be7b6012016b49adedbc967cab46bea3e13650225751dc02ce23fd0358a58ca1", "Image": "quay.io/crw/traefik-rhel8:2.15-2"},
         "": {"Created":"", "Digest":"", "Image":""}
     }
 }
