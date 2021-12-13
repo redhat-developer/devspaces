@@ -10,6 +10,36 @@
         ],
         "disabled": false
       },
+      "2.15": {
+        "upstream_branch": [
+          "7.42.x",
+          "7.41.x"
+        ],
+        "disabled": false
+      },
+      "2.x": {
+        "upstream_branch": [
+          "main",
+          "main"
+        ],
+        "disabled": false
+      }
+    },
+    "async-storage-server": {
+      "2.14": {
+        "upstream_branch": [
+          "7.40.x",
+          "7.39.x"
+        ],
+        "disabled": false
+      },
+      "2.15": {
+        "upstream_branch": [
+          "7.42.x",
+          "7.41.x"
+        ],
+        "disabled": false
+      },
       "2.x": {
         "upstream_branch": [
           "main",
