@@ -171,7 +171,7 @@ plugins:
       name: vscode-quarkus
       memoryLimit: 3500Mi
       memoryRequest: 20Mi
-      cpuLimit: 500m
+      cpuLimit: 800m
       cpuRequest: 30m
       volumeMounts:
         - name: m2
@@ -260,7 +260,7 @@ plugins:
       name: vscode-java
       memoryLimit: 1500Mi
       memoryRequest: 20Mi
-      cpuLimit: 500m
+      cpuLimit: 800m
       cpuRequest: 30m
     extension: https://download.jboss.org/jbosstools/vscode/3rdparty/vscode-java-debug/vscode-java-debug-0.26.0.vsix
   - id: redhat/java
@@ -277,7 +277,7 @@ plugins:
       name: vscode-java
       memoryLimit: 1500Mi
       memoryRequest: 20Mi
-      cpuLimit: 500m
+      cpuLimit: 800m
       cpuRequest: 30m
       env:
         - name: GRADLE_HOME
@@ -302,7 +302,7 @@ plugins:
       name: vscode-java
       memoryLimit: 1500Mi
       memoryRequest: 20Mi
-      cpuLimit: 500m
+      cpuLimit: 800m
       cpuRequest: 30m
       volumeMounts:
         - name: m2
