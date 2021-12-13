@@ -136,7 +136,7 @@ else # fall back to the old way until we've moved over completely
   nvm use ${NODE_VERSION} || nvm install ${NODE_VERSION}
   dirname $(nvm which node) || dirname $(nvm which ${NODE_VERSION})
 fi
-''' , returnStdout: true).trim()
+''' , returnStdout: true).trim().split('\n').last().trim()
   println("Got nodeHome = " + nodeHome)
   env.PATH="${nodeHome}:${env.PATH}"
 
