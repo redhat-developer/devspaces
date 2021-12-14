@@ -123,7 +123,11 @@ quay.io/crw/stacks-php-rhel8:2.14-6
    Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1824892
   Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-stacks-php/commit?id=ff60a30ed1d5f95ab68e7186664929ebadd0d71e
 
-quay.io/crw/theia-dev-rhel8:2.14-16
+quay.io/crw/theia-dev-rhel8:2.14-17
+     NVR: codeready-workspaces-theia-dev-rhel8-container-2.14-17
+   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1825338
+  Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-theia-dev/commit?id=4c72d18e8178ebd3228a5511e6abfb7f5330d4de
+
 quay.io/crw/theia-endpoint-rhel8:2.14-4
 quay.io/crw/theia-rhel8:2.14-7
 quay.io/crw/traefik-rhel8:2.14-7
