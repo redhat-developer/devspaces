@@ -35,7 +35,7 @@ Example: $0 -t ${CRW_VERSION} --sources /path/to/pkgs.devel/projects/
 latestNext="--latest"
 if [[ ${DWNSTM_BRANCH} == "crw-2-rhel-8" ]]; then latestNext="--next"; fi
 
-PHASES="1 2 3 4 5 6"
+PHASES="1 2 3 4"
 while [[ "$#" -gt 0 ]]; do
   case $1 in
     '-t') CRW_VERSION="$2"; shift 1;;
@@ -79,18 +79,9 @@ doBuild () {
     echo "--------------------------"
     echo
 }
-if [[ $PHASES == *"1"* ]]; then 
-    doBuild codeready-workspaces-imagepuller
-fi
 
-# TODO implement offline build of crw-deprecated assets :(
-if [[ $PHASES == *"2"* ]]; then 
-    echo "TODO implement offline build of crw-deprecated assets :("
-fi
-
-if [[ $PHASES == *"3"* ]]; then 
-    doBuild "codeready-workspaces-idea \
-        codeready-workspaces-plugin-java11-openj9 \
+if [[ $PHASES == *"1"* ]]; then # 10 images
+    doBuild "codeready-workspaces-plugin-java11-openj9 \
         codeready-workspaces-plugin-java11 \
         codeready-workspaces-plugin-java8-openj9 \
         codeready-workspaces-plugin-java8 \
@@ -102,29 +93,33 @@ if [[ $PHASES == *"3"* ]]; then
         codeready-workspaces-stacks-php"
 fi
 
-if [[ $PHASES == *"4"* ]]; then 
+if [[ $PHASES == *"2"* ]]; then # 3 images
     doBuild codeready-workspaces-theia-dev
     doBuild codeready-workspaces-theia
     doBuild codeready-workspaces-theia-endpoint
 fi
 
-if [[ $PHASES == *"5"* ]]; then 
+if [[ $PHASES == *"3"* ]]; then # 16 images
     doBuild "codeready-workspaces \
         codeready-workspaces-async-storage-server \
+        codeready-workspaces-async-storage-sidecar \
         codeready-workspaces-backup \
-        codeready-workspaces-dashboard \
         codeready-workspaces-configbump \
+        codeready-workspaces-dashboard \
+        codeready-workspaces-devfileregistry \
+        codeready-workspaces-idea \
+        codeready-workspaces-imagepuller \
         codeready-workspaces-jwtproxy \
         codeready-workspaces-machineexec \
         codeready-workspaces-operator \
         codeready-workspaces-pluginbroker-artifacts \
         codeready-workspaces-pluginbroker-metadata \
+        codeready-workspaces-pluginregistry \
         codeready-workspaces-traefik"
 fi
 
-if [[ $PHASES == *"6"* ]]; then 
-    doBuild "codeready-workspaces-devfileregistry \
-        codeready-workspaces-pluginregistry"
+if [[ $PHASES == *"4"* ]]; then # 2 images
+    doBuild ""
 
     doBuild "codeready-workspaces-operator-bundle \
         codeready-workspaces-operator-metadata"
