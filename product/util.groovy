@@ -110,25 +110,34 @@ def getVarFromPropertiesFileURL(String property, String tURL) {
 def installNPM(String nodeVersion, String yarnVersion, boolean installP7zip=false, boolean installNodeGyp=false) {
   USE_PUBLIC_NEXUS = true
 
-  sh '''#!/bin/bash -e
-export LATEST_NVM="$(git ls-remote --refs --tags https://github.com/nvm-sh/nvm.git \
-  | cut --delimiter='/' --fields=3 | tr '-' '~'| sort --version-sort| tail --lines=1)"
+  JOB_BRANCH = getJobBranch(MIDSTM_BRANCH?.trim() ? MIDSTM_BRANCH : "crw-2-rhel-8")
 
+  def nodeHome = sh(script:'''#!/bin/bash -xe
 export NODE_VERSION=''' + nodeVersion + '''
-export METHOD=script
-export PROFILE=/dev/null
-curl -sSLo- https://raw.githubusercontent.com/nvm-sh/nvm/${LATEST_NVM}/install.sh | bash
-
-# nvm post-install recommendation
-echo '
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \\. "$NVM_DIR/nvm.sh"  # This loads nvm
-' >> ${HOME}/.bashrc
-'''
-  def nodeHome = sh(script: '''#!/bin/bash -e
-source $HOME/.nvm/nvm.sh
-nvm use --silent ''' + nodeVersion + '''
-dirname $(nvm which node)''' , returnStdout: true).trim()
+# new way, ansible-based RHEL 8.5+ (nvm already installed, so just configure it)
+if [[ -e ~/crw_env ]]; then
+  # TODO should be able to pass in a version of node, not just a version of CRW
+  JOB_BRANCH="''' + JOB_BRANCH + '''"
+  echo "Run . ~/crw_env ${JOB_BRANCH}" 
+  . ~/crw_env ${JOB_BRANCH}
+  dirname $(nvm which ${NODE_VERSION})
+else # fall back to the old way until we've moved over completely
+  export LATEST_NVM="$(git ls-remote --refs --tags https://github.com/nvm-sh/nvm.git \
+    | cut --delimiter='/' --fields=3 | tr '-' '~'| sort --version-sort| tail --lines=1)"
+  export METHOD=script
+  export PROFILE=/dev/null
+  curl -sSLo- https://raw.githubusercontent.com/nvm-sh/nvm/${LATEST_NVM}/install.sh | bash
+  # nvm post-install recommendation
+  echo '
+  export NVM_DIR="$HOME/.nvm"
+  [ -s "$NVM_DIR/nvm.sh" ] && \\. "$NVM_DIR/nvm.sh"  # This loads nvm
+  ' >> ${HOME}/.bashrc
+  [ -s "$HOME/.nvm/nvm.sh" ] && . "$HOME/.nvm/nvm.sh"
+  nvm use ${NODE_VERSION} || nvm install ${NODE_VERSION}
+  dirname $(nvm which node) || dirname $(nvm which ${NODE_VERSION})
+fi
+''' , returnStdout: true).trim().split('\n').last().trim()
+  println("Got nodeHome = " + nodeHome)
   env.PATH="${nodeHome}:${env.PATH}"
 
   // used by crwctl build
@@ -526,9 +535,9 @@ def installSkopeoFromContainer(String container="registry.redhat.io/rhel8/skopeo
 // or https://stackoverflow.com/questions/49812267/call-pathrestriction-in-a-dsl-in-the-sandbox-mode
 
 // to clone a repo for scmpolling only (eg., che-theia); simplifies jenkinsfiles
-def cloneRepoWithBootstrap(String URL, String REPO_PATH, String BRANCH, boolean withPolling=false, String excludeRegions='', String includeRegions='*') {
+def cloneRepoWithBootstrap(String URL, String REPO_PATH, String BRANCH, boolean withPolling=false, String excludeRegions='', String includeRegions='*', boolean forceBootstrap=false) {
   withCredentials([string(credentialsId:'crw_devstudio-release-token', variable: 'GITHUB_TOKEN'), file(credentialsId: 'crw_crw-build-keytab', variable: 'CRW_KEYTAB')]) {
-    if (!BOOTSTRAPPED_F) {
+    if (!BOOTSTRAPPED_F || forceBootstrap) {
       BOOTSTRAPPED_F = bootstrap(CRW_KEYTAB)
     }
     cloneRepoPoll(URL, REPO_PATH, BRANCH, withPolling, excludeRegions, includeRegions)
@@ -619,7 +628,7 @@ def updateBaseImages(String REPO_PATH, String SOURCES_BRANCH, String FLAGS="", S
     sh('''#!/bin/bash -xe
 URL="https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/''' + SCRIPTS_BRANCH + '''/product/updateBaseImages.sh"
 # check for 404 and fail if can't load the file
-header404="$(curl -sSLI $URL | grep -E -v "id: |^x-" | grep -E "404|Not Found" || true)"
+header404="$(curl -sSLI $URL | grep -E -v "id: |^x-" | grep -v "content-length" | grep -E "404|Not Found" || true)"
 if [[ $header404 ]]; then
   echo "[ERROR] Can not resolved $URL : $header404 "
   echo "[ERROR] Please check the value of SCRIPTS_BRANCH = ''' + SCRIPTS_BRANCH + ''' to confirm it's a valid branch."
@@ -641,7 +650,7 @@ cd ''' + REPO_PATH + '''
 cd ''' + REPO_PATH + '''; git remote -v | grep pkgs.devel.redhat.com || true''', returnStdout: true).trim()
   if (is_pkgsdevel?.trim()) {
     sh('''#!/bin/bash -xe
-export KRB5CCNAME="/var/tmp/crw-build_ccache"
+export KRB5CCNAME=/var/tmp/crw-build_ccache
 ''' + updateBaseImages_cmd
     )
   } else {
@@ -689,27 +698,37 @@ def installRedHatInternalCerts() {
   ''')
 }
 
-def bootstrap(String CRW_KEYTAB, boolean force=false) {
-  if (!BOOTSTRAPPED_F || force) {
-    yumConf()
-    // rpm -qf $(which kinit ssh-keyscan chmod) ==> krb5-workstation openssh-clients coreutils
-    installRPMs("krb5-workstation openssh-clients coreutils git rhpkg jq python3-six python3-pip rsync")
-    // install redhat internal certs (so we can connect to jenkins and brew registries)
-    installRedHatInternalCerts()
-    // also install commonly needed tools
-    installPodman2()
-    installSkopeo()
-    installYq()
-    loginToRegistries()
-    sh('''#!/bin/bash -xe
-# disable selinux so we can do podman volume mounts to extract contents of containers (CRW-1919)
-sudo setenforce 0 || true
+def sshMountRcmGuest() {
+  installSshfs()
+  DESTHOST="crw-build/codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com@rcm-guest.app.eng.bos.redhat.com"
+  sh('''#!/bin/bash -xe
+export KRB5CCNAME=/var/tmp/crw-build_ccache
 
+# accept host key
+echo "rcm-guest.app.eng.bos.redhat.com,10.16.101.129 ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEApd6cnyFVRnS2EFf4qeNvav0o+xwd7g7AYeR9dxzJmCR3nSoVHA4Q/kV0qvWkyuslvdA41wziMgSpwq6H/DPLt41RPGDgJ5iGB5/EDo3HAKfnFmVAXzYUrJSrYd25A1eUDYHLeObtcL/sC/5bGPp/0deohUxLtgyLya4NjZoYPQY8vZE6fW56/CTyTdCEWohDRUqX76sgKlVBkYVbZ3uj92GZ9M88NgdlZk74lOsy5QiMJsFQ6cpNw+IPW3MBCd5NHVYFv/nbA3cTJHy25akvAwzk8Oi3o9Vo0Z4PSs2SsD9K9+UvCfP1TUTI4PXS8WpJV6cxknprk0PSIkDdNODzjw==
+" >> ~/.ssh/known_hosts
+
+# set up sshfs mount
+RCMG="''' + DESTHOST + ''':/mnt/rcm-guest/staging/crw"
+sshfs --version
+for mnt in RCMG; do 
+  mkdir -p ${WORKSPACE}/${mnt}-ssh; 
+  if [[ $(file ${WORKSPACE}/${mnt}-ssh 2>&1) == *"Transport endpoint is not connected"* ]]; then fusermount -uz ${WORKSPACE}/${mnt}-ssh; fi
+  if [[ ! -d ${WORKSPACE}/${mnt}-ssh/crw ]]; then  sshfs ${!mnt} ${WORKSPACE}/${mnt}-ssh; fi
+done
+''')
+  return DESTHOST
+}
+
+def kinit(boolean verbose=false, String KERBEROS_USER="crw-build/codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com@REDHAT.COM") {
+  installRedHatInternalCerts()
+  installRPMs("krb5-workstation openssh-clients")
+  sh('''#!/bin/bash -xe
 # if keytab is lost, upload to https://gitlab.cee.redhat.com/codeready-workspaces/crw-jenkins/-/blob/master/secrets/crw_crw-build-keytab.base64
 # then set Use secret text above and set Bindings > Variable (path to the file) as ''' + CRW_KEYTAB + '''
 chmod 700 ''' + CRW_KEYTAB + ''' && chown ''' + USER + ''' ''' + CRW_KEYTAB + '''
 # create .k5login file
-echo "crw-build/codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com@REDHAT.COM" > ~/.k5login
+echo "''' + KERBEROS_USER + '''" > ~/.k5login
 chmod 644 ~/.k5login && chown ''' + USER + ''' ~/.k5login
 echo "pkgs.devel.redhat.com,10.19.208.80 ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAplqWKs26qsoaTxvWn3DFcdbiBxqRLhFngGiMYhbudnAj4li9/VwAJqLm1M6YfjOoJrj9dlmuXhNzkSzvyoQODaRgsjCG5FaRjuN8CSM/y+glgCYsWX1HFZSnAasLDuW0ifNLPR2RBkmWx61QKq+TxFDjASBbBywtupJcCsA5ktkjLILS+1eWndPJeSUJiOtzhoN8KIigkYveHSetnxauxv1abqwQTk5PmxRgRt20kZEFSRqZOJUlcl85sZYzNC/G7mneptJtHlcNrPgImuOdus5CW+7W49Z/1xqqWI/iRjwipgEMGusPMlSzdxDX4JzIx6R53pDpAwSAQVGDz4F9eQ==
 " >> ~/.ssh/known_hosts
@@ -720,16 +739,52 @@ echo "
 GSSAPIAuthentication yes
 GSSAPIDelegateCredentials yes
 Host pkgs.devel.redhat.com
-User crw-build/codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com@REDHAT.COM
+User ''' + KERBEROS_USER + '''
 " > ~/.ssh/config
 chmod 600 ~/.ssh/config
-# initialize kerberos
+
+# TODO: CRW-1919 probably don't need to use a specific cache file - can use whatever default keyring is present
+# however in a lot of the current CRW build jobs, this value is hardcoded so we should stick with it until we can remove it everywhere
 export KRB5CCNAME=/var/tmp/crw-build_ccache
-# verify keytab is a valid file
-# sudo klist -k ''' + CRW_KEYTAB + '''
-kinit "crw-build/codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com@REDHAT.COM" -kt ''' + CRW_KEYTAB + '''
-# verify keytab loaded
-# klist
+if [[ ! -f /var/tmp/crw-build_ccache ]]; then sudo touch /var/tmp/crw-build_ccache; fi
+sudo chmod 600 /var/tmp/crw-build_ccache
+sudo chown $(whoami):$(whoami) /var/tmp/crw-build_ccache
+
+# create new / refresh existing kerberos ticket for crw-build user
+cat /etc/redhat-release
+if [[ -f ''' + CRW_KEYTAB + ''' ]]; then 
+  keytab="''' + CRW_KEYTAB + '''"
+  if [[ $(kinit -k -t $keytab "''' + KERBEROS_USER + '''"; echo $?) -gt 0 ]]; then 
+    keytab=$(find /mnt/hudson_workspace/ $HOME $WORKSPACE -name "*crw-build*keytab*" 2>/dev/null | head -1)
+    kinit -k -t $keytab "''' + KERBEROS_USER + '''"
+  fi
+else 
+  keytab=$(find /mnt/hudson_workspace/ $HOME $WORKSPACE -name "*crw-build*keytab*" 2>/dev/null | head -1)
+  kinit -k -t $keytab "''' + KERBEROS_USER + '''"
+fi
+''')
+  // default shell, not specifically bash
+  if (verbose) { sh('''
+export KRB5CCNAME=/var/tmp/crw-build_ccache
+klist
+''') }
+
+}
+def bootstrap(String CRW_KEYTAB, boolean force=false) {
+  if (!BOOTSTRAPPED_F || force) {
+    yumConf()
+    // rpm -qf $(which kinit ssh-keyscan chmod) ==> krb5-workstation openssh-clients coreutils
+    installRPMs("coreutils git rhpkg jq python3-six python3-pip rsync")
+    // initialize kerberos ticket; includes installing RH certs, krb5 and ssh
+    kinit() 
+    // also install commonly needed tools
+    installPodman2()
+    installSkopeo()
+    installYq()
+    loginToRegistries()
+    sh('''#!/bin/bash -xe
+# disable selinux so we can do podman volume mounts to extract contents of containers (CRW-1919)
+sudo setenforce 0 || true
 ''')
   }
   return true
@@ -990,4 +1045,20 @@ done
 '''
 }
 
+// return false if URL is 404'd
+def checkURL(String URL) {
+  def statusCode = sh(script: '''#!/bin/bash -xe
+# check for 404 and fail if can't load the file
+URL="''' + URL + '''"
+header404="$(curl -sSLI "${URL}" | grep -E -v "id: |^x-" | grep -v "content-length" | grep -E "404|Not Found" || true)"
+if [[ $header404 ]]; then
+  echo "[ERROR] Can not resolve $URL : $header404 "
+  exit 1
+fi
+exit 0
+  ''', returnStatus: true)
+  return statusCode > 1 ? false : true
+}
+
+// return this file's contents when loaded
 return this
