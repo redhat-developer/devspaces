@@ -1100,12 +1100,12 @@ done
 '''
 }
 
-
 // return false if URL is 404'd
 def checkURL(String URL) {
   def statusCode = sh(script: '''#!/bin/bash -xe
 # check for 404 and fail if can't load the file
-header404="$(curl -sSLI ${URL} | grep -E -v "id: |^x-" | grep -v "content-length" | grep -E "404|Not Found" || true)"
+URL="''' + URL + '''"
+header404="$(curl -sSLI "${URL}" | grep -E -v "id: |^x-" | grep -v "content-length" | grep -E "404|Not Found" || true)"
 if [[ $header404 ]]; then
   echo "[ERROR] Can not resolve $URL : $header404 "
   exit 1
