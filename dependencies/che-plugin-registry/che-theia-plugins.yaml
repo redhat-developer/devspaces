@@ -333,7 +333,7 @@ plugins:
     extension: https://download.jboss.org/jbosstools/vscode/3rdparty/vscode-php-debug/php-debug-1.13.0.vsix
   - repository:
       url: 'https://github.com/camel-tooling/camel-lsp-client-vscode'
-      revision: 0.0.31
+      revision: 0.1.3
     sidecar:
       image: "registry.redhat.io/codeready-workspaces/plugin-java11-rhel8:2.15"
       name: vscode-apache-camel
@@ -341,7 +341,7 @@ plugins:
       memoryRequest: 20Mi
       cpuLimit: 500m
       cpuRequest: 30m
-    extension: https://download.jboss.org/jbosstools/vscode/stable/vscode-apache-camel/vscode-apache-camel-0.0.31-143.vsix
+    extension: https://download.jboss.org/jbosstools/vscode/stable/vscode-apache-camel/vscode-apache-camel-0.1.3-1315.vsix
     metaYaml:
       skipDependencies:
         - redhat/vscode-commons
