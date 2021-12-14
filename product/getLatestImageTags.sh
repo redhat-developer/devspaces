@@ -150,7 +150,7 @@ usage () {
 	echo "
 Usage: 
   $0 -b ${DWNSTM_BRANCH} --nvr --log                        | check images in brew; output NVRs can be copied to Errata; show Brew builds/logs
-  $0 -b ${DWNSTM_BRANCH} --errata 82818                     | check images in brew; output NVRs and update builds in specified Errata (implies --nvr --hide)
+  $0 -b ${DWNSTM_BRANCH} --errata 85526                     | check images in brew; output NVRs and update builds in specified Errata (implies --nvr --hide)
 
   $0 -b ${DWNSTM_BRANCH} --quay --tag \"${CRW_VERSION}-\" --hide        | use default list of CRW images in quay.io/crw, for tag 2.y-; show nothing if tag umatched
   $0 -b ${DWNSTM_BRANCH} --osbs                             | check images in OSBS ( registry-proxy.engineering.redhat.com/rh-osbs )
