@@ -101,8 +101,6 @@ fi
 
 if [[ $PHASES == *"3"* ]]; then # 16 images
     doBuild "codeready-workspaces \
-        codeready-workspaces-async-storage-server \
-        codeready-workspaces-async-storage-sidecar \
         codeready-workspaces-backup \
         codeready-workspaces-configbump \
         codeready-workspaces-dashboard \

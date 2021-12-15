@@ -54,8 +54,6 @@ checkVersion() {
 checkVersion 1.1 "$(skopeo --version | sed -e "s/skopeo version //")" skopeo
 
 CRW_CONTAINERS_RHEC="\
-codeready-workspaces/async-storage-server-rhel8 \
-codeready-workspaces/async-storage-sidecar-rhel8 \
 codeready-workspaces/backup-rhel8 \
 codeready-workspaces/configbump-rhel8 \
 codeready-workspaces/crw-2-rhel8-operator \
@@ -94,8 +92,6 @@ codeready-workspaces/traefik-rhel8 \
 "
 
 CRW_CONTAINERS_OSBS="\
-codeready-workspaces/async-storage-server-rhel8 \
-codeready-workspaces/async-storage-sidecar-rhel8 \
 codeready-workspaces/backup-rhel8 \
 codeready-workspaces/configbump-rhel8 \
 codeready-workspaces/operator \

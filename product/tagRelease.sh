@@ -93,8 +93,6 @@ pushTagPD ()
 # tag pkgs.devel repos only (branches are created by SPMM ticket, eg., https://projects.engineering.redhat.com/browse/SPMM-2517)
 if [[ ${pkgs_devel_branch} ]] && [[ ${CSV_VERSION} ]]; then 
 	for d in \
-	codeready-workspaces-async-storage-server \
-	codeready-workspaces-async-storage-sidecar \
 	codeready-workspaces-backup \
 	codeready-workspaces-configbump \
 	codeready-workspaces-operator \
