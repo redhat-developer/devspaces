@@ -818,16 +818,16 @@
   "CSVs": {
     "operator-bundle": {
       "2.13": {
-        "CSV_VERSION": "2.13.1-0.1639048036.p",
-        "CSV_VERSION_PREV": "2.13.1"
+        "CSV_VERSION": "2.13.101+0.1639048038.p",
+        "CSV_VERSION_PREV": "2.13.100"
       },
       "2.14": {
-        "CSV_VERSION": "2.14.0",
-        "CSV_VERSION_PREV": "2.13.1-0.1639048036.p"
+        "CSV_VERSION": "2.14.100",
+        "CSV_VERSION_PREV": "2.13.101+0.1639048038.p"
       },
       "2.x": {
         "CSV_VERSION": "2.15.0",
-        "CSV_VERSION_PREV": "2.13.1-0.1639048036.p0"
+        "CSV_VERSION_PREV": "2.13.101+0.1639048038.p"
       }
     },
     "operator-metadata": {
@@ -857,8 +857,8 @@
       "2.x": ""
     },
     "FLOATING_QUAY_TAGS": {
-      "2.13": "latest",
-      "2.14": "next",
+      "2.13": "2.13",
+      "2.14": "latest",
       "2.x": "next"
     },
     "DEV_WORKSPACE_CONTROLLER_VERSION": {
@@ -873,7 +873,7 @@
     },
     "@eclipse-che/plugin-registry-generator": {
       "2.13": "7.38.2",
-      "2.14": "7.40.1",
+      "2.14": "7.40.2",
       "2.x": "next"
     },
     "THEIA_BUILD_PARAMS": {
