@@ -10,6 +10,7 @@ MIDSTM_BRANCH=""
 SCRIPT_DIR=$(dirname $(readlink -f "${BASH_SOURCE[0]}"))
 PKGS_DEVEL_USER="crw-build"
 DEBUG=0
+CLEAN=1 # by default delete intermediate assets to save disk space
 phases=" 1 2 3 "
 
 usage () 
@@ -28,6 +29,7 @@ cleanup () {
 while [[ "$#" -gt 0 ]]; do
   case $1 in
     '-b') MIDSTM_BRANCH="$2"; shift 1;;
+    '--keep-temp') CLEAN=0;;
     '--clean') cleanup;;
     '--debug') DEBUG=1;;
     *) phases="${phases} $1 ";;
@@ -89,6 +91,8 @@ maketarball ()
         mkdir -p ${WORKSPACE}/sources/containers/
         pushd ${WORKSPACE}/nvr-sources/${NVR} >/dev/null && tar czf ${WORKSPACE}/sources/containers/${NVR}.tar.gz ./* && popd >/dev/null 
         mnf "" 
+        if [[ $CLEAN -eq 1 ]]; then df -h ${WORKSPACE}; rm -fr ${WORKSPACE}/nvr-sources/${NVR}; df -h ${WORKSPACE}; fi
+
     fi
     popd >/dev/null 
 }
@@ -122,6 +126,7 @@ if [[ ${phases} == *"1"* ]]; then
             cd ${SOURCES_DIR} && git checkout ${MIDSTM_BRANCH} -q && cd ..
             if [[ -d ${SOURCES_DIR} ]]; then
                 maketarball ${SOURCES_DIR} ${NVR}
+                if [[ $CLEAN -eq 1 ]]; then df -h ${WORKSPACE}; rm -fr ${WORKSPACE}/NVR_CHECKOUTS/${SOURCES_DIR}; df -h ${WORKSPACE}; fi
             else
                 echo "FAIL! could not find sources in ${SOURCES_DIR}!"
                 exit 1
