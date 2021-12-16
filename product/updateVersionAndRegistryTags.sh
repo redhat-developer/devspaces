@@ -10,6 +10,8 @@
 
 # set newer version across the CRW repository in dependencies/VERSION file and registry image tags
 
+SCRIPT=$(readlink -f "$0"); SCRIPTPATH=$(dirname "$SCRIPT")
+
 PR_BRANCH="pr-update-version-and-registry-tags-$(date +%s)"
 OPENBROWSERFLAG="" # if a PR is generated, open it in a browser
 docommit=1 # by default DO commit the change
@@ -98,6 +100,28 @@ replaceField()
     changed=$(cat "${theFile}" | yq -Y --arg updateName "${updateName}" --arg updateVal "${updateVal}" ${updateName}' = $updateVal')
     echo "${COPYRIGHT}${changed}" > "${theFile}"
   fi
+}
+
+computeLatestCSV() {
+  image=$1 # operator-bundle or operator-metadata
+  SOURCE_CONTAINER=registry.redhat.io/codeready-workspaces/crw-2-rhel8-${image}
+  containerTag=$(skopeo inspect docker://${SOURCE_CONTAINER} | jq -r '.Labels.url' | sed -r -e "s#.+/images/##")
+  echo "Found containerTag = ${containerTag}"
+
+  # extract the CSV version from the container as with CVE respins, the CSV version != the nominal container tag or JIRA version 2.13.1
+  if [[ ! -x ${SCRIPTPATH}/containerExtract.sh ]]; then
+      curl -sSLO https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/crw-2-rhel-8/product/containerExtract.sh
+      chmod +x containerExtract.sh
+  fi
+  rm -fr /tmp/${SOURCE_CONTAINER//\//-}-${containerTag}-*/
+  ${SCRIPTPATH}/containerExtract.sh ${SOURCE_CONTAINER}:${containerTag} --delete-before --delete-after 2>&1 >/dev/null || true
+  grep -E "crwoperator|replaces:" /tmp/${SOURCE_CONTAINER//\//-}-${containerTag}-*/manifests/codeready-workspaces.csv.yaml 
+  CSV_VERSION_PREV=$(yq -r '.spec.version' /tmp/${SOURCE_CONTAINER//\//-}-${containerTag}-*/manifests/codeready-workspaces.csv.yaml 2>/dev/null)
+  rm -fr /tmp/${SOURCE_CONTAINER//\//-}-${containerTag}-*/
+  echo "Found CSV_VERSION_PREV = ${CSV_VERSION_PREV}"
+
+  # update CSVs["${image}"].$version.CSV_VERSION_PREV
+  replaceField "${WORKDIR}/dependencies/job-config.json" "(.CSVs[\"${image}\"][\"${CRW_VERSION}\"].CSV_VERSION_PREV)" "\"${CSV_VERSION_PREV}\""
 }
 
 # for a given CRW version, compute the equivalent Che versions that could be compatible 
@@ -229,11 +253,27 @@ updateVersion() {
     # debug: # cat "${WORKDIR}/dependencies/job-config.json" | grep -E -A5 "FLOATING_QUAY_TAGS|plugin-registry-gen"; exit
 
     # update CSV versions for 2.yy latest and 2.x too
-    for op in "operator-bundle" "operator-metadata"; do
+    for op in "operator-bundle"; do
       for ver in "${CRW_VERSION}" "2.x"; do
         replaceField "${WORKDIR}/dependencies/job-config.json" ".CSVs[\"${op}\"][\"${ver}\"][\"CSV_VERSION\"]" "\"${CRW_VERSION}.0\""
       done
     done
+
+    # update CSV_VERSION_PREV values
+    computeLatestCSV operator-bundle
+
+    # TODO remove this block when we're officially done with 2.14.z
+    if [[ $CRW_VERSION == "2.14" ]]; then
+      # set operator-bundle CSV_VERSION = 2.14.100
+      replaceField "${WORKDIR}/dependencies/job-config.json" \
+        ".CSVs[\"operator-bundle\"][\"${CRW_VERSION}\"][\"CSV_VERSION\"]" \
+        "\"${CRW_VERSION}.100\""
+      replaceField "${WORKDIR}/dependencies/job-config.json" \
+        ".CSVs[\"operator-metadata\"][\"${CRW_VERSION}\"][\"CSV_VERSION\"]" \
+        "\"${CRW_VERSION}.0\""
+      computeLatestCSV operator-metadata
+    fi
+    # TODO remove this block when we're officially done with 2.14.z
 
     # optionally, can enable/disable specific job sets for a given version
     if [[ $ENABLE_CRW_MGMTJOBS_VERSION ]]; then 
