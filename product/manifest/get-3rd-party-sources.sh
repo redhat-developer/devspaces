@@ -22,7 +22,7 @@ usage ()
 # a more extensive clean than the usual
 cleanup () {
     sudo rm -fr ${WORKSPACE}/NVR_CHECKOUTS
-    rm -f ${WORKSPACE}/NVRs.txt
+    sudo rm -f ${WORKSPACE}/NVRs.txt
 }
 
 # commandline args
@@ -91,7 +91,7 @@ maketarball ()
         mkdir -p ${WORKSPACE}/sources/containers/
         pushd ${WORKSPACE}/nvr-sources/${NVR} >/dev/null && tar czf ${WORKSPACE}/sources/containers/${NVR}.tar.gz ./* && popd >/dev/null 
         mnf "" 
-        if [[ $CLEAN -eq 1 ]]; then df -h ${WORKSPACE}; rm -fr ${WORKSPACE}/nvr-sources/${NVR}; df -h ${WORKSPACE}; fi
+        if [[ $CLEAN -eq 1 ]]; then df -h ${WORKSPACE}; sudo rm -fr ${WORKSPACE}/nvr-sources/${NVR}; df -h ${WORKSPACE}; fi
 
     fi
     popd >/dev/null 
@@ -126,7 +126,7 @@ if [[ ${phases} == *"1"* ]]; then
             cd ${SOURCES_DIR} && git checkout ${MIDSTM_BRANCH} -q && cd ..
             if [[ -d ${SOURCES_DIR} ]]; then
                 maketarball ${SOURCES_DIR} ${NVR}
-                if [[ $CLEAN -eq 1 ]]; then df -h ${WORKSPACE}; rm -fr ${WORKSPACE}/NVR_CHECKOUTS/${SOURCES_DIR}; df -h ${WORKSPACE}; fi
+                if [[ $CLEAN -eq 1 ]]; then df -h ${WORKSPACE}; sudo rm -fr ${WORKSPACE}/NVR_CHECKOUTS/${SOURCES_DIR}; df -h ${WORKSPACE}; fi
             else
                 echo "FAIL! could not find sources in ${SOURCES_DIR}!"
                 exit 1
@@ -226,7 +226,7 @@ if [[ ${phases} == *"3"* ]]; then
                             fi
                         done
                     fi
-                    rm -f index.html robots.txt
+                    sudo rm -f index.html robots.txt
                 popd >/dev/null
             done
         fi
