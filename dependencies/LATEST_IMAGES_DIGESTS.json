@@ -3,8 +3,8 @@
         "quay.io/crw/backup-rhel8:2.14-6": {"Created": "2021-12-13T19:13:58.311101235Z", "Digest": "17f18cd7c43dd102a6774a537eca0c991450ef84135e04dc8797727e498ea918", "Image": "quay.io/crw/backup-rhel8:2.14-6"},
         "quay.io/crw/configbump-rhel8:2.14-9": {"Created": "2021-12-13T20:03:51.544574126Z", "Digest": "4cab451c8868cc3d64a70db273cf364333b22a0050803dc436d0f8309b37bbf3", "Image": "quay.io/crw/configbump-rhel8:2.14-9"},
         "quay.io/crw/crw-2-rhel8-operator:2.14-6": {"Created": "2021-12-15T22:38:00.159350881Z", "Digest": "f22113de4b3d39e34be045810ee51239508655f3bc85e798cae252c7025c9612", "Image": "quay.io/crw/crw-2-rhel8-operator:2.14-6"},
-        "quay.io/crw/crw-2-rhel8-operator-bundle:2.14-39": {"Created": "2021-12-16T22:29:11.154255828Z", "Digest": "ab3acb7ec30ed3fdc084d3bd4cc0480bc27b62ccd4e15678150312f7f7ff0b49", "Image": "quay.io/crw/crw-2-rhel8-operator-bundle:2.14-39"},
-        "quay.io/crw/crw-2-rhel8-operator-metadata:2.14-36": {"Created": "2021-12-16T22:30:31.322826124Z", "Digest": "c9c4b501a2851cc0fa8267aa38160c0a577a650011dbed6b862e95f15d720e6b", "Image": "quay.io/crw/crw-2-rhel8-operator-metadata:2.14-36"},
+        "quay.io/crw/crw-2-rhel8-operator-bundle:2.14-40": {"Created": "2021-12-17T02:01:33.146341021Z", "Digest": "36eb647c2962d6b833161f4c67bce0a5f743c51e37118147662bc4d68fa3d6ca", "Image": "quay.io/crw/crw-2-rhel8-operator-bundle:2.14-40"},
+        "quay.io/crw/crw-2-rhel8-operator-metadata:2.14-37": {"Created": "2021-12-17T02:01:43.551617412Z", "Digest": "f213c6b77cd630a043b4e660e719769ef550ef66d0db84304af33a200f753e3a", "Image": "quay.io/crw/crw-2-rhel8-operator-metadata:2.14-37"},
         "quay.io/crw/dashboard-rhel8:2.14-7": {"Created": "2021-12-13T19:26:59.534784678Z", "Digest": "bdc8bd8a3a1dd12076d4ca3f9e6c74ca4cbc5356a216661e8a3bba53ad18a879", "Image": "quay.io/crw/dashboard-rhel8:2.14-7"},
         "quay.io/crw/devfileregistry-rhel8:2.14-8": {"Created": "2021-12-15T03:33:51.394392947Z", "Digest": "ab3e8d4d93e43ec6045cd1e0281770f725e003de479856b09394118f19526910", "Image": "quay.io/crw/devfileregistry-rhel8:2.14-8"},
         "quay.io/crw/idea-rhel8:2.14-6": {"Created": "2021-12-13T19:12:21.941976289Z", "Digest": "47f5417fc786e461734b43273fbe5f3351a49ca524aec4966cb77f340c258a18", "Image": "quay.io/crw/idea-rhel8:2.14-6"},
@@ -26,8 +26,8 @@
         "quay.io/crw/stacks-golang-rhel8:2.14-5": {"Created": "2021-12-13T17:44:36.710223242Z", "Digest": "79a9761a0c8abad657664fb7df43e4139e4276f9794e559080a3f2cf3c308bca", "Image": "quay.io/crw/stacks-golang-rhel8:2.14-5"},
         "quay.io/crw/stacks-php-rhel8:2.14-6": {"Created": "2021-12-13T17:44:14.743017071Z", "Digest": "79f0527530bde3364669e2e31bdc9836b201fd20e54f35c7c88b0ec252a5773a", "Image": "quay.io/crw/stacks-php-rhel8:2.14-6"},
         "quay.io/crw/theia-dev-rhel8:2.14-18": {"Created": "2021-12-16T20:30:18.986619793Z", "Digest": "fa9a205f022d4bc92a32880ce60726d03516f37bded6e05736c3564cf579eaf4", "Image": "quay.io/crw/theia-dev-rhel8:2.14-18"},
-        "quay.io/crw/theia-endpoint-rhel8:2.14-5": {"Created": "2021-12-15T22:16:37.123692895Z", "Digest": "7da4351f9f657c431d8ad345bd8081b1bd03c68df991096fc62a1e673c47f865", "Image": "quay.io/crw/theia-endpoint-rhel8:2.14-5"},
-        "quay.io/crw/theia-rhel8:2.14-8": {"Created": "2021-12-15T05:10:36.416861328Z", "Digest": "d77ad676b175a54251dc5144421c2df7f04fa00d32fa236c6556fc1029da50f7", "Image": "quay.io/crw/theia-rhel8:2.14-8"},
+        "quay.io/crw/theia-endpoint-rhel8:2.14-6": {"Created": "2021-12-16T23:53:24.814414185Z", "Digest": "128e281bceaccfcb3f9c3aebdd218b6bb6381f9c41cff2259eba47dd49d95c4d", "Image": "quay.io/crw/theia-endpoint-rhel8:2.14-6"},
+        "quay.io/crw/theia-rhel8:2.14-9": {"Created": "2021-12-16T23:01:50.354304119Z", "Digest": "928f5792cc39e6b7785f4f92ec0d6a5b9cd36fb285c1f72d12239beb05d8696e", "Image": "quay.io/crw/theia-rhel8:2.14-9"},
         "quay.io/crw/traefik-rhel8:2.14-7": {"Created": "2021-12-13T19:59:13.822802711Z", "Digest": "8dbdadda342b032df9e8d27138ff27121e06ea185b55dbb54157e257d920589f", "Image": "quay.io/crw/traefik-rhel8:2.14-7"},
         "": {"Created":"", "Digest":"", "Image":""}
     }
