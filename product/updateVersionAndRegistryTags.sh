@@ -116,12 +116,13 @@ computeLatestCSV() {
   rm -fr /tmp/${SOURCE_CONTAINER//\//-}-${containerTag}-*/
   ${SCRIPTPATH}/containerExtract.sh ${SOURCE_CONTAINER}:${containerTag} --delete-before --delete-after 2>&1 >/dev/null || true
   grep -E "crwoperator|replaces:" /tmp/${SOURCE_CONTAINER//\//-}-${containerTag}-*/manifests/codeready-workspaces.csv.yaml 
-  CSV_VERSION_PREV=$(yq -r '.spec.version' /tmp/${SOURCE_CONTAINER//\//-}-${containerTag}-*/manifests/codeready-workspaces.csv.yaml 2>/dev/null)
+  CSV_VERSION_PREV=$(yq -r '.spec.version' /tmp/${SOURCE_CONTAINER//\//-}-${containerTag}-*/manifests/codeready-workspaces.csv.yaml 2>/dev/null | tr "+" "-")
   rm -fr /tmp/${SOURCE_CONTAINER//\//-}-${containerTag}-*/
   echo "Found CSV_VERSION_PREV = ${CSV_VERSION_PREV}"
 
   # update CSVs["${image}"].$version.CSV_VERSION_PREV
   replaceField "${WORKDIR}/dependencies/job-config.json" "(.CSVs[\"${image}\"][\"${CRW_VERSION}\"].CSV_VERSION_PREV)" "\"${CSV_VERSION_PREV}\""
+  replaceField "${WORKDIR}/dependencies/job-config.json" "(.CSVs[\"${image}\"][\"2.x\"].CSV_VERSION_PREV)" "\"${CSV_VERSION_PREV}\""
 }
 
 # for a given CRW version, compute the equivalent Che versions that could be compatible 
