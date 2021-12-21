@@ -12,7 +12,7 @@ projects:
 components:
   -
     type: chePlugin
-    id: redhat/java8/latest
+    id: redhat/java11/latest
   -
     type: chePlugin
     id: redhat/vscode-apache-camel/latest
@@ -23,7 +23,7 @@ components:
   -
     type: dockerimage
     alias: maven
-    image: registry.redhat.io/codeready-workspaces/plugin-java8-rhel8:2.15
+    image: registry.redhat.io/codeready-workspaces/plugin-java11-rhel8:2.15
     env:
       - name: JAVA_OPTS
         value: "-XX:MaxRAMPercentage=50.0 -XX:+UseParallelGC -XX:MinHeapFreeRatio=10
