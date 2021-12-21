@@ -57,36 +57,37 @@ CRW_CONTAINERS_RHEC="\
 codeready-workspaces/backup-rhel8 \
 codeready-workspaces/configbump-rhel8 \
 codeready-workspaces/crw-2-rhel8-operator \
+\
 codeready-workspaces/crw-2-rhel8-operator-bundle \
 codeready-workspaces/crw-2-rhel8-operator-metadata \
 codeready-workspaces/dashboard-rhel8 \
-\
 codeready-workspaces/devfileregistry-rhel8 \
 codeready-workspaces/idea-rhel8 \
+\
 codeready-workspaces/imagepuller-rhel8 \
 codeready-workspaces/jwtproxy-rhel8 \
 codeready-workspaces/machineexec-rhel8 \
-\
 codeready-workspaces/pluginbroker-artifacts-rhel8 \
 codeready-workspaces/pluginbroker-metadata-rhel8 \
+\
 codeready-workspaces/plugin-java11-openj9-rhel8 \
 codeready-workspaces/plugin-java11-rhel8 \
 codeready-workspaces/plugin-java8-openj9-rhel8 \
-\
 codeready-workspaces/plugin-java8-rhel8 \
 codeready-workspaces/plugin-kubernetes-rhel8 \
+\
 codeready-workspaces/plugin-openshift-rhel8 \
 codeready-workspaces/pluginregistry-rhel8 \
 codeready-workspaces/server-rhel8 \
-\
 codeready-workspaces/stacks-cpp-rhel8 \
 codeready-workspaces/stacks-dotnet-rhel8 \
+\
 codeready-workspaces/stacks-golang-rhel8 \
 codeready-workspaces/stacks-php-rhel8 \
 codeready-workspaces/theia-dev-rhel8 \
-\
 codeready-workspaces/theia-endpoint-rhel8 \
 codeready-workspaces/theia-rhel8 \
+\
 codeready-workspaces/traefik-rhel8 \
 "
 
@@ -94,36 +95,37 @@ CRW_CONTAINERS_OSBS="\
 codeready-workspaces/backup-rhel8 \
 codeready-workspaces/configbump-rhel8 \
 codeready-workspaces/operator \
+\
 codeready-workspaces/operator-bundle \
 codeready-workspaces/operator-metadata \
 codeready-workspaces/dashboard-rhel8 \
-\
 codeready-workspaces/devfileregistry-rhel8 \
 codeready-workspaces/idea-rhel8 \
+\
 codeready-workspaces/imagepuller-rhel8 \
 codeready-workspaces/jwtproxy-rhel8 \
 codeready-workspaces/machineexec-rhel8 \
-\
 codeready-workspaces/pluginbroker-artifacts-rhel8 \
 codeready-workspaces/pluginbroker-metadata-rhel8 \
+\
 codeready-workspaces/plugin-java11-openj9-rhel8 \
 codeready-workspaces/plugin-java11-rhel8  \
 codeready-workspaces/plugin-java8-openj9-rhel8 \
-\
 codeready-workspaces/plugin-java8-rhel8 \
 codeready-workspaces/plugin-kubernetes-rhel8 \
+\
 codeready-workspaces/plugin-openshift-rhel8 \
 codeready-workspaces/pluginregistry-rhel8 \
 codeready-workspaces/server-rhel8 \
-\
 codeready-workspaces/stacks-cpp-rhel8 \
 codeready-workspaces/stacks-dotnet-rhel8 \
+\
 codeready-workspaces/stacks-golang-rhel8 \
 codeready-workspaces/stacks-php-rhel8 \
 codeready-workspaces/theia-dev-rhel8 \
-\
 codeready-workspaces/theia-endpoint-rhel8 \
 codeready-workspaces/theia-rhel8 \
+\
 codeready-workspaces/traefik-rhel8 \
 "
 
@@ -150,7 +152,7 @@ usage () {
 	echo "
 Usage: 
   $0 -b ${DWNSTM_BRANCH} --nvr --log                        | check images in brew; output NVRs can be copied to Errata; show Brew builds/logs
-  $0 -b ${DWNSTM_BRANCH} --errata 82818                     | check images in brew; output NVRs and update builds in specified Errata (implies --nvr --hide)
+  $0 -b ${DWNSTM_BRANCH} --errata 85526                     | check images in brew; output NVRs and update builds in specified Errata (implies --nvr --hide)
 
   $0 -b ${DWNSTM_BRANCH} --quay --tag \"${CRW_VERSION}-\" --hide        | use default list of CRW images in quay.io/crw, for tag 2.y-; show nothing if tag umatched
   $0 -b ${DWNSTM_BRANCH} --osbs                             | check images in OSBS ( registry-proxy.engineering.redhat.com/rh-osbs )

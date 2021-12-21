@@ -118,10 +118,12 @@ fi
 # OPTION 3/3: unknown
 if [[ ! ${REPOS} ]] || [[ ${REPOS} == " " ]]; then
   echo "REPO_PATH=\"BREW:BUILD/STATUS:UNKNOWN\"" | tee -a "${WORKSPACE}"/build_desc.txt
+  source "${WORKSPACE}"/build_desc.txt
+  REPOS="${REPO_PATH}" # used for build description
 fi
 
 # scrub dupe lines out of error log
-ERRORS_FOUND=$(grep -E --text -B2 "Brew build has failed|failed with exit code|Problem loading ID|Finished: FAILURE" "${LOGFILE}" | \
+ERRORS_FOUND=$(grep -E --text -B2 "Max retries exceeded with url: /brewhub|Failed to establish a new connection|Brew build has failed|failed with exit code|Problem loading ID|Finished: FAILURE" "${LOGFILE}" | \
   grep -v "grep" | \
   sed -r -e "s#[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2},[0-9]{3} -*##g" \
     -e "s# \(rc=1\)##g" \
@@ -152,7 +154,7 @@ ERRORS_FOUND=$(grep -E --text -B2 "Brew build has failed|failed with exit code|P
     `# remove short lines` \
     -e '/^.{,9}$/d' \
     | sort -u || true)
-if [[ ${VERBOSE} -eq 1 ]]; then 
+if [[ ${VERBOSE} -eq 1 ]] || [[ ${ERRORS_FOUND} ]]; then 
 echo "[DEBUG] ERRORS_FOUND=
 --------------------
 ${ERRORS_FOUND}
@@ -168,6 +170,7 @@ BUILD_DESC=$(echo $REPO_PATH | sed -r \
 BUILD_RESULT="SUCCESS"
 if [[ ${BUILD_DESC} == *"UNKNOWN"* ]]; then BUILD_RESULT="UNSTABLE"; fi
 if [[ ${BUILD_DESC} == *"ERROR"* ]] || [[ ${BUILD_DESC} == *"FAILURE"* ]] || [[ ${ERRORS_FOUND} ]] || [[ ! ${TASK_URL} ]]; then BUILD_RESULT="FAILURE: ${ERRORS_FOUND}"; fi
+if [[ ${REPOS} == "BREW:BUILD/STATUS:UNKNOWN" ]]; then BUILD_RESULT="FAILURE: ${ERRORS_FOUND}"; fi
 
 # TODO using BUILD_DESC, TASK_URL, BUILD_RESULT, return string like this
 descriptString="<a href='${TASK_URL}'>"
