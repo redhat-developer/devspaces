@@ -329,6 +329,7 @@ def runJob(String jobPath, boolean doWait=false, boolean doPropagateStatus=true,
     job: jobPath.replaceAll("/job/","/"),
     wait: doWait,
     propagate: doPropagateStatus,
+    quietPeriod: 0,
     parameters: [
       [
         $class: 'StringParameterValue',
@@ -369,6 +370,7 @@ def runJobSyncToDownstream(String jobPath, String REPOS, boolean doWait=false, b
     job: jobPath.replaceAll("/job/","/"),
     wait: doWait,
     propagate: doPropagateStatus,
+    quietPeriod: 0,
     parameters: [
       [
         $class: 'StringParameterValue',
