@@ -886,14 +886,18 @@ def runJob(String jobPath, boolean doWait=false, boolean doPropagateStatus=true,
   )
   // wait until #5 -> #6
   if (doWait) { 
+    jobLink=jobPath + "/" +  jobResult?.number?.toString()
     println("waiting for runJob(" + jobPath + ") :: prevSuccessBuildId = " + prevSuccessBuildId)
     if (!waitForNewBuild(jenkinsURL + jobPath, prevSuccessBuildId)) { 
+      println("<b style='color:red'>Job <a href=${jobLink}/console>" + (jobLink.replaceAll("/job/","/")) + "</a> failed</b>.")
+      currentBuild.description+="<br/>* <b style='color:red'>FAILED: <a href=${jobLink}/console>" + (jobLink.replaceAll("/job/","/")) + "</a></b>"
       currentBuild.result = 'FAILED'
       notifyBuildFailed()
     }
-    println("Job " + jobPath.replaceAll("/job/","/") + " #" +  jobResult?.number?.toString() + " completed.")
+    println("<b style='color:green'>Job <a href=${jobLink}/console>" + (jobLink.replaceAll("/job/","/")) + "</a> completed</b>.")
   } else {
-    println("Job " + jobPath.replaceAll("/job/","/") + " #" +  (prevSuccessBuildId + 1).toString() + " launched.")
+    jobLink=jobPath + "/" +  (prevSuccessBuildId + 1).toString() + "/"
+    println("<b style='color:blue'>Job <a href=${jobLink}/>" + (jobLink.replaceAll("/job/","/")) + "</a> launched</b>.")
   }
   return getLastSuccessfulBuildId(jenkinsURL + jobPath)
 }
@@ -932,14 +936,18 @@ def runJobSyncToDownstream(String jobPath, String REPOS, boolean doWait=false, b
   )
   // wait until #5 -> #6
   if (doWait) { 
+    jobLink=jobPath + "/" +  jobResult?.number?.toString()
     println("waiting for runJob(" + jobPath + "["+REPOS+"]) :: prevSuccessBuildId = " + prevSuccessBuildId)
     if (!waitForNewBuild(jenkinsURL + jobPath, prevSuccessBuildId)) { 
+      println("<b style='color:red'>Job <a href=${jobLink}/console>" + (jobLink.replaceAll("/job/","/")) + " ["+REPOS+"]</a> failed</b>.")
+      currentBuild.description+="<br/>* <b style='color:red'>FAILED: <a href=${jobLink}/console>" + (jobLink.replaceAll("/job/","/")) + " ["+REPOS+"]</a></b>"
       currentBuild.result = 'FAILED'
       notifyBuildFailed()
     }
-    println("Job " + jobPath.replaceAll("/job/","/") + " #" +  jobResult?.number?.toString() + " completed.")
+    println("<b style='color:green'>Job <a href=${jobLink}/console>" + (jobLink.replaceAll("/job/","/")) + " ["+REPOS+"]</a> completed</b>.")
   } else {
-    println("Job " + jobPath.replaceAll("/job/","/") + " #" +  (prevSuccessBuildId + 1).toString() + " launched.")
+    jobLink=jobPath + "/" +  (prevSuccessBuildId + 1).toString() + "/"
+    println("<b style='color:blue'>Job <a href=${jobLink}/>" + (jobLink.replaceAll("/job/","/")) + " ["+REPOS+"]</a> launched</b>.")
   }
 
   // rather than latest success, return the number of THIS build so we get the actual build (not just the latest one)
