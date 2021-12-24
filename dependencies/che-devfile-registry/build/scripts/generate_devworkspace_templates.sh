@@ -27,7 +27,8 @@ do
 
     npm_config_yes=true npx @eclipse-che/che-theia-devworkspace-handler --devfile-url:"${devfile_url}" \
     --editor:eclipse/che-theia/latest \
-    --output-file:"${dir}"/devworkspace-che-theia-latest.yaml \
+    --plugin-registry-url:https://crw-plugin-registry-main.surge.sh/v3/ \
+    --output-file:"${dir}"devworkspace-che-theia-latest.yaml \
     "--project.${name}={{ DEVFILE_REGISTRY_URL }}/resources/v2/${name}.zip"
     clone_and_zip "${devfile_repo}" "${devfile_url##*/}" "/build/resources/v2/$name.zip"
   fi
