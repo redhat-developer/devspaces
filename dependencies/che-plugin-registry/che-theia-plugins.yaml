@@ -273,7 +273,7 @@ plugins:
   - id: redhat/java
     repository:
       url: 'https://github.com/redhat-developer/vscode-java'
-      revision: v0.75.0
+      revision: v0.82.0
     aliases:
       - redhat/java11
     featured: true
@@ -294,7 +294,7 @@ plugins:
           path: /home/jboss/.m2
         - name: gradle
           path: /home/jboss/.gradle
-    extension: https://download.jboss.org/jbosstools/static/jdt.ls/stable/java-0.75.0-60.vsix
+    extension: https://download.jboss.org/jbosstools/static/jdt.ls/stable/java-0.82.0-369.vsix
     metaYaml:
       extraDependencies:
         - vscjava/vscode-java-debug
