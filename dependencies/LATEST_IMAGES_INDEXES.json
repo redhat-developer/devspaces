@@ -1,0 +1,50 @@
+{
+    "Indexes": {
+        "operator-metadata": {
+            "2.14": {
+                "v4.6": {
+                    "iibURL": "registry-proxy.engineering.redhat.com/rh-osbs/iib:151508",
+                    "iibTag": "151508"
+                },
+                "v4.7": {
+                    "iibURL": "registry-proxy.engineering.redhat.com/rh-osbs/iib:151510",
+                    "iibTag": "151510"
+                },
+                "v4.8": {
+                    "iibURL": "registry-proxy.engineering.redhat.com/rh-osbs/iib:151512",
+                    "iibTag": "151512"
+                },
+                "v4.9": {
+                    "iibURL": "registry-proxy.engineering.redhat.com/rh-osbs/iib:151514",
+                    "iibTag": "151514"
+                },
+                "v4.10": {
+                    "iibURL": "registry-proxy.engineering.redhat.com/rh-osbs/iib:151516",
+                    "iibTag": "151516"
+                },
+                "OSBSImage": "registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-operator-metadata:2.14-49",
+                "quayImage": "quay.io/crw/crw-2-rhel8-operator-metadata:2.14-49",
+                "tag": "2.14-49"
+            }
+        },
+        "operator-bundle": {
+            "2.14": {
+                "v4.8": {
+                    "iibURL": "registry-proxy.engineering.redhat.com/rh-osbs/iib:151511",
+                    "iibTag": "151511"
+                },
+                "v4.9": {
+                    "iibURL": "registry-proxy.engineering.redhat.com/rh-osbs/iib:151513",
+                    "iibTag": "151513"
+                },
+                "v4.10": {
+                    "iibURL": "registry-proxy.engineering.redhat.com/rh-osbs/iib:151515",
+                    "iibTag": "151515"
+                },
+                "OSBSImage": "registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-operator-bundle:2.14-51",
+                "quayImage": "quay.io/crw/crw-2-rhel8-operator-bundle:2.14-51",
+                "tag": "2.14-51"
+            }
+        }
+    }
+}
