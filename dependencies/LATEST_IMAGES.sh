@@ -108,6 +108,7 @@ done
 # $➔ jq -r '.Indexes["operator-bundle"]["2.15"]["v4.9"].iibTag' dependencies/LATEST_IMAGES_INDEXES.json
 # collect all iibTags
 # $➔ jq -r '.Indexes["operator-bundle"]["2.15"][] | select (.|objects) | .iibTag' dependencies/LATEST_IMAGES_INDEXES.json
+exit
 
 # STEP 3 :: # regenerate image set digests (not the per-arch digests) from list of LATEST_IMAGES
 # requires skopeo >= 1.1 for the --override-arch flag
