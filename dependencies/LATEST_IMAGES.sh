@@ -61,7 +61,55 @@ CMD="./product/getLatestImageTags.sh --quay -b ${DWNSTM_BRANCH} --tag ${VERSION}
 echo $CMD
 $CMD | tee dependencies/LATEST_IMAGES
 
-# STEP 2 :: # regenerate image set digests (not the per-arch digests) from list of LATEST_IMAGES
+# STEP 2 :: regenerate IIB listings into LATEST_IMAGES_INDEXES.json
+echo '{' > dependencies/LATEST_IMAGES_INDEXES.json
+echo '    "Indexes": {' >> dependencies/LATEST_IMAGES_INDEXES.json
+
+for opmetbun in  operator-metadata operator-bundle; do 
+  for d in $(cat dependencies/LATEST_IMAGES | grep -E "${opmetbun}"); do
+    BUNDLE_TAG=${d##*:} # quay.io/crw/crw-2-rhel8-operator-bundle:2.15-153 ==> 2.15-153
+    # compute internal OSBS image path, eg. registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-operator-bundle:2.15-153
+    BUNDLE_OSBS=${d##quay.io/crw/crw-2-rhel8-}
+    # echo "BUNDLE_TAG  = $BUNDLE_TAG"
+    # echo "BUNDLE_OSBS = $BUNDLE_OSBS"
+
+    # NOTE because datagrepper for 2.14 needs to look into the past, we're using 100 rows per page and page 4 here
+    results=$(curl -sSLk "https://datagrepper.engineering.redhat.com/raw?topic=/topic/VirtualTopic.eng.ci.redhat-container-image.index.built&delta=1728000&rows_per_page=100&contains=codeready-workspaces&page=4" | \
+    jq ".raw_messages[].msg.index | [.added_bundle_images[0], .index_image, .ocp_version] | @csv" -r | sort -uV | \
+    grep "${BUNDLE_OSBS}" | sed -r -e "s#registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-##" | tr -d "\"")
+    echo '        "'${opmetbun}'": {' >> dependencies/LATEST_IMAGES_INDEXES.json
+    echo '            "'${VERSION}'": {' >> dependencies/LATEST_IMAGES_INDEXES.json # crw version
+    for row in $results; do
+      IFS=',' read -r -a cols <<< "$row"
+      # echo "operator-bundle[$VERSION][${cols[2]}] = { ${cols[0]}, ${cols[1]} }"
+      iibTag=${cols[1]};iibTag=${iibTag##*:}
+      echo '                "'${cols[2]}'": {' >> dependencies/LATEST_IMAGES_INDEXES.json # ocp version
+      echo '                    "iibURL": "'${cols[1]}'",' >> dependencies/LATEST_IMAGES_INDEXES.json # ocp version
+      echo '                    "iibTag": "'${iibTag}'"' >> dependencies/LATEST_IMAGES_INDEXES.json # ocp version
+      echo '                },' >> dependencies/LATEST_IMAGES_INDEXES.json # ocp version
+    done
+    echo '                "OSBSImage": "'registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-${BUNDLE_OSBS}'",' >> dependencies/LATEST_IMAGES_INDEXES.json # ocp version
+    echo '                "quayImage": "'${d}'",' >> dependencies/LATEST_IMAGES_INDEXES.json # ocp version
+    echo '                "tag": "'${BUNDLE_TAG}'"' >> dependencies/LATEST_IMAGES_INDEXES.json # ocp version
+    echo '            }' >> dependencies/LATEST_IMAGES_INDEXES.json # crw version
+    if [[ $opmetbun == "operator-metadata" ]]; then 
+      echo '        },' >> dependencies/LATEST_IMAGES_INDEXES.json # operator-bundle
+    else
+      echo '        }' >> dependencies/LATEST_IMAGES_INDEXES.json # operator-bundle
+    fi
+  done
+done
+{ 
+  # empty array item to prevent json validation error for trailing comma
+  echo '    }' # Indexes
+  echo '}'
+} >> dependencies/LATEST_IMAGES_INDEXES.json
+# collect iib tag for OCP 4.9 index
+# $➔ jq -r '.Indexes["operator-bundle"]["2.15"]["v4.9"].iibTag' dependencies/LATEST_IMAGES_INDEXES.json
+# collect all iibTags
+# $➔ jq -r '.Indexes["operator-bundle"]["2.15"][] | select (.|objects) | .iibTag' dependencies/LATEST_IMAGES_INDEXES.json
+
+# STEP 3 :: # regenerate image set digests (not the per-arch digests) from list of LATEST_IMAGES
 # requires skopeo >= 1.1 for the --override-arch flag
 echo '{' > dependencies/LATEST_IMAGES_DIGESTS.json
 echo '    "Images": {' >> dependencies/LATEST_IMAGES_DIGESTS.json
@@ -92,7 +140,7 @@ done
 # collect latest timestamps by build with
 # $➔ cat dependencies/LATEST_IMAGES_DIGESTS.json | jq -r '.Images[] | select(.Created != "") | (.Created +"\t"+ .Image)'|sort -uV
 
-# STEP 3 :: regenerate commit info in LATEST_IMAGES_COMMITS
+# STEP 4 :: regenerate commit info in LATEST_IMAGES_COMMITS
 rm -f dependencies/LATEST_IMAGES_COMMITS
 # shellcheck disable=SC2013
 for d in $(cat dependencies/LATEST_IMAGES); do 
@@ -104,7 +152,7 @@ echo "." >> dependencies/LATEST_IMAGES_COMMITS
 
 if [[ ${COMMIT_CHANGES} -eq 1 ]]; then
   # CRW-1621 if any gz resources are larger than 10485760b, must use MaxFileSize to force dist-git to shut up and take my sources!
-  if [[ $(git commit -s -m "chore: Update dependencies/LATEST_IMAGES, COMMITS, DIGESTS" dependencies/LATEST_IMAGES* || true) == *"nothing to commit, working tree clean"* ]]; then
+  if [[ $(git commit -a -s -m "chore: Update dependencies/LATEST_IMAGES, COMMITS, DIGESTS, INDEXES" dependencies/LATEST_IMAGES* || true) == *"nothing to commit, working tree clean"* ]]; then
     echo "[INFO] No changes to commit."
   else
     git status -s -b --ignored
