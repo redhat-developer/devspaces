@@ -108,7 +108,6 @@ done
 # $➔ jq -r '.Indexes["operator-bundle"]["2.15"]["v4.9"].iibTag' dependencies/LATEST_IMAGES_INDEXES.json
 # collect all iibTags
 # $➔ jq -r '.Indexes["operator-bundle"]["2.15"][] | select (.|objects) | .iibTag' dependencies/LATEST_IMAGES_INDEXES.json
-exit
 
 # STEP 3 :: # regenerate image set digests (not the per-arch digests) from list of LATEST_IMAGES
 # requires skopeo >= 1.1 for the --override-arch flag
@@ -153,7 +152,7 @@ echo "." >> dependencies/LATEST_IMAGES_COMMITS
 
 if [[ ${COMMIT_CHANGES} -eq 1 ]]; then
   # CRW-1621 if any gz resources are larger than 10485760b, must use MaxFileSize to force dist-git to shut up and take my sources!
-  if [[ $(git commit -a -s -m "chore: Update dependencies/LATEST_IMAGES, COMMITS, DIGESTS, INDEXES" dependencies/LATEST_IMAGES* || true) == *"nothing to commit, working tree clean"* ]]; then
+  if [[ $(git commit -s -m "chore: Update dependencies/LATEST_IMAGES, COMMITS, DIGESTS, INDEXES" dependencies/LATEST_IMAGES* || true) == *"nothing to commit, working tree clean"* ]]; then
     echo "[INFO] No changes to commit."
   else
     git status -s -b --ignored
