@@ -112,7 +112,7 @@ def installNPM(String nodeVersion, String yarnVersion, boolean installP7zip=fals
 
   JOB_BRANCH = getJobBranch(MIDSTM_BRANCH?.trim() ? MIDSTM_BRANCH : "crw-2-rhel-8")
 
-  def nodeHome = sh(script:'''#!/bin/bash -xe
+  def nodeHome = sh(script:'''#!/bin/bash -e
 export NODE_VERSION=''' + nodeVersion + '''
 # new way, ansible-based RHEL 8.5+ (nvm already installed, so just configure it)
 if [[ -e ~/crw_env ]]; then
