@@ -121,6 +121,9 @@ if [[ -e ~/crw_env ]]; then
   echo "Run . ~/crw_env ${JOB_BRANCH}" 
   . ~/crw_env ${JOB_BRANCH}
   dirname $(nvm which ${NODE_VERSION})
+  . $HOME/.nvm/nvm.sh; nvm use ${NODE_VERSION}
+  echo "Node: $(node --version) ( $(which node) )"
+  echo "Yarn: $(yarn --version) ( $(which yarn) )"
 else # fall back to the old way until we've moved over completely
   export LATEST_NVM="$(git ls-remote --refs --tags https://github.com/nvm-sh/nvm.git \
     | cut --delimiter='/' --fields=3 | tr '-' '~'| sort --version-sort| tail --lines=1)"
