@@ -2,36 +2,28 @@
     "Indexes": {
         "operator-metadata": {
             "2.15": {
-                "v4.6": {
-                    "iibURL": "registry-proxy.engineering.redhat.com/rh-osbs/iib:159067",
-                    "iibTag": "159067"
-                },
-                "v4.7": {
-                    "iibURL": "registry-proxy.engineering.redhat.com/rh-osbs/iib:159070",
-                    "iibTag": "159070"
-                },
-                "v4.8": {
-                    "iibURL": "registry-proxy.engineering.redhat.com/rh-osbs/iib:159075",
-                    "iibTag": "159075"
-                },
-                "v4.9": {
-                    "iibURL": "registry-proxy.engineering.redhat.com/rh-osbs/iib:159079",
-                    "iibTag": "159079"
-                },
-                "v4.10": {
-                    "iibURL": "registry-proxy.engineering.redhat.com/rh-osbs/iib:159083",
-                    "iibTag": "159083"
-                },
-                "OSBSImage": "registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-operator-metadata:2.15-3",
-                "quayImage": "quay.io/crw/crw-2-rhel8-operator-metadata:2.15-3",
-                "tag": "2.15-3"
+                "OSBSImage": "registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-operator-metadata:2.15-4",
+                "quayImage": "quay.io/crw/crw-2-rhel8-operator-metadata:2.15-4",
+                "tag": "2.15-4"
             }
         },
         "operator-bundle": {
             "2.15": {
-                "OSBSImage": "registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-operator-bundle:2.15-203",
-                "quayImage": "quay.io/crw/crw-2-rhel8-operator-bundle:2.15-203",
-                "tag": "2.15-203"
+                "v4.8": {
+                    "iibURL": "registry-proxy.engineering.redhat.com/rh-osbs/iib:159090",
+                    "iibTag": "159090"
+                },
+                "v4.9": {
+                    "iibURL": "registry-proxy.engineering.redhat.com/rh-osbs/iib:159091",
+                    "iibTag": "159091"
+                },
+                "v4.10": {
+                    "iibURL": "registry-proxy.engineering.redhat.com/rh-osbs/iib:159092",
+                    "iibTag": "159092"
+                },
+                "OSBSImage": "registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-operator-bundle:2.15-204",
+                "quayImage": "quay.io/crw/crw-2-rhel8-operator-bundle:2.15-204",
+                "tag": "2.15-204"
             }
         }
     }
