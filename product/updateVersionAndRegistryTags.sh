@@ -264,7 +264,8 @@ updateVersion() {
     computeLatestCSV operator-bundle
 
     # TODO CRW-2637 remove this block when we're officially done with 2.14.z
-    if [[ $CRW_VERSION == "2.14" ]] || [[ $CRW_VERSION == "2.15" ]]; then
+    # TODO after we branch for 2.16, remove the 2.x value here
+    if [[ $CRW_VERSION == "2.14" ]] || [[ $CRW_VERSION == "2.15" ]] || [[ $CRW_VERSION == "2.x" ]]; then
       # set operator-bundle CSV_VERSION = 2.15.100
       replaceField "${WORKDIR}/dependencies/job-config.json" \
         ".CSVs[\"operator-bundle\"][\"${CRW_VERSION}\"][\"CSV_VERSION\"]" \
