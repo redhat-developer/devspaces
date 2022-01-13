@@ -9,9 +9,21 @@
         },
         "operator-bundle": {
             "2.15": {
-                "OSBSImage": "registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-operator-bundle:2.15-200",
-                "quayImage": "quay.io/crw/crw-2-rhel8-operator-bundle:2.15-200",
-                "tag": "2.15-200"
+                "v4.8": {
+                    "iibURL": "registry-proxy.engineering.redhat.com/rh-osbs/iib:159020",
+                    "iibTag": "159020"
+                },
+                "v4.9": {
+                    "iibURL": "registry-proxy.engineering.redhat.com/rh-osbs/iib:159025",
+                    "iibTag": "159025"
+                },
+                "v4.10": {
+                    "iibURL": "registry-proxy.engineering.redhat.com/rh-osbs/iib:159030",
+                    "iibTag": "159030"
+                },
+                "OSBSImage": "registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-operator-bundle:2.15-201",
+                "quayImage": "quay.io/crw/crw-2-rhel8-operator-bundle:2.15-201",
+                "tag": "2.15-201"
             }
         }
     }
