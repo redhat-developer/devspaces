@@ -263,9 +263,9 @@ updateVersion() {
     # update CSV_VERSION_PREV values
     computeLatestCSV operator-bundle
 
-    # TODO remove this block when we're officially done with 2.14.z
-    if [[ $CRW_VERSION == "2.14" ]]; then
-      # set operator-bundle CSV_VERSION = 2.14.100
+    # TODO CRW-2637 remove this block when we're officially done with 2.14.z
+    if [[ $CRW_VERSION == "2.14" ]] || [[ $CRW_VERSION == "2.15" ]]; then
+      # set operator-bundle CSV_VERSION = 2.15.100
       replaceField "${WORKDIR}/dependencies/job-config.json" \
         ".CSVs[\"operator-bundle\"][\"${CRW_VERSION}\"][\"CSV_VERSION\"]" \
         "\"${CRW_VERSION}.100\""
@@ -274,7 +274,7 @@ updateVersion() {
         "\"${CRW_VERSION}.0\""
       computeLatestCSV operator-metadata
     fi
-    # TODO remove this block when we're officially done with 2.14.z
+    # TODO CRW-2637 remove this block when we're officially done with 2.15.z
 
     # optionally, can enable/disable specific job sets for a given version
     if [[ $ENABLE_CRW_MGMTJOBS_VERSION ]]; then 
