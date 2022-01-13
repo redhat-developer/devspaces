@@ -254,11 +254,10 @@ updateVersion() {
     # debug: # cat "${WORKDIR}/dependencies/job-config.json" | grep -E -A5 "FLOATING_QUAY_TAGS|plugin-registry-gen"; exit
 
     # update CSV versions for 2.yy latest and 2.x too
-    set -x
     echo "CRW_VERSION = $CRW_VERSION"
     for op in "operator-bundle"; do
       for ver in "${CRW_VERSION}" "2.x"; do
-        # TODO after we branch for 2.16, remove the 2.x value here
+        # TODO CRW-2637 after we branch for 2.16, remove the .100 option
         if [[ "${CRW_VERSION}" == "2.16" ]]; then 
           replaceField "${WORKDIR}/dependencies/job-config.json" ".CSVs[\"${op}\"][\"${ver}\"][\"CSV_VERSION\"]" "\"${CRW_VERSION}.0\""
         else
@@ -266,13 +265,11 @@ updateVersion() {
         fi
       done
     done
-    set +x
 
     # update CSV_VERSION_PREV values
     computeLatestCSV operator-bundle
 
     # TODO CRW-2637 remove this block when we're officially done with 2.14.z
-    set -x
     if [[ $CRW_VERSION == "2.14" ]] || [[ $CRW_VERSION == "2.15" ]] || [[ $CRW_VERSION == "2.x" ]]; then
       # set operator-bundle CSV_VERSION = 2.15.100
       replaceField "${WORKDIR}/dependencies/job-config.json" \
@@ -283,7 +280,6 @@ updateVersion() {
         "\"${CRW_VERSION}.0\""
       computeLatestCSV operator-metadata
     fi
-    set +x
     # TODO CRW-2637 remove this block when we're officially done with 2.15.z
 
     # optionally, can enable/disable specific job sets for a given version
