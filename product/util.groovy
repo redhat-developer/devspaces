@@ -2,6 +2,7 @@ import groovy.transform.Field
 
 @Field String CSV_VERSION_F = ""
 // Requires installYq()
+// TODO CRW-2637 for 2.16, change these to use operator-bundle as metadata won't exist
 def String getCSVVersion(String MIDSTM_BRANCH) {
   if (CSV_VERSION_F.equals("")) {
     CSV_VERSION_F = sh(script: '''#!/bin/bash -xe
