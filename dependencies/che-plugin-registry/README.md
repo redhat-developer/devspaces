@@ -2,6 +2,7 @@
 
 This repository holds ready-to-use plugins for different languages and technologies.
 
+
 ## Building and Publishing .vsix Files
 
 Any .vsix file used in CRW needs to be built from source and have sources published alongside it. This is a non-negotiable requirement, and means that .vsix files hosted on OpenVSX or elsewhere are not fit for use in CRW.
