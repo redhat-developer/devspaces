@@ -2,28 +2,28 @@
     "Indexes": {
         "operator-metadata": {
             "2.15": {
-                "OSBSImage": "registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-operator-metadata:2.15-8",
-                "quayImage": "quay.io/crw/crw-2-rhel8-operator-metadata:2.15-8",
-                "tag": "2.15-8"
+                "OSBSImage": "registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-operator-metadata:2.15-9",
+                "quayImage": "quay.io/crw/crw-2-rhel8-operator-metadata:2.15-9",
+                "tag": "2.15-9"
             }
         },
         "operator-bundle": {
             "2.15": {
                 "v4.8": {
-                    "iibURL": "registry-proxy.engineering.redhat.com/rh-osbs/iib:159475",
-                    "iibTag": "159475"
+                    "iibURL": "registry-proxy.engineering.redhat.com/rh-osbs/iib:159908",
+                    "iibTag": "159908"
                 },
                 "v4.9": {
-                    "iibURL": "registry-proxy.engineering.redhat.com/rh-osbs/iib:159477",
-                    "iibTag": "159477"
+                    "iibURL": "registry-proxy.engineering.redhat.com/rh-osbs/iib:159909",
+                    "iibTag": "159909"
                 },
                 "v4.10": {
-                    "iibURL": "registry-proxy.engineering.redhat.com/rh-osbs/iib:159483",
-                    "iibTag": "159483"
+                    "iibURL": "registry-proxy.engineering.redhat.com/rh-osbs/iib:159910",
+                    "iibTag": "159910"
                 },
-                "OSBSImage": "registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-operator-bundle:2.15-207",
-                "quayImage": "quay.io/crw/crw-2-rhel8-operator-bundle:2.15-207",
-                "tag": "2.15-207"
+                "OSBSImage": "registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-operator-bundle:2.15-208",
+                "quayImage": "quay.io/crw/crw-2-rhel8-operator-bundle:2.15-208",
+                "tag": "2.15-208"
             }
         }
     }
