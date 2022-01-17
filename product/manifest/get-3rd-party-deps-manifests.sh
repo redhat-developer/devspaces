@@ -92,9 +92,10 @@ function bth () {
 
 function getBashVars () {
 	dir="$1" # script dir
+	buildsh="${2:-build.sh}" #the build.sh
 	# parse the specific file and export the correct variables
 	pushd /tmp/codeready-workspaces-images >/dev/null || exit 1
-		for p in ${dir}/build/build.sh; do 
+		for p in ${dir}/build/${buildsh}; do 
 			grep -E "export " $p | grep -E -v "SCRIPT_DIR|PATH=" | sed -r -e "s@#.+@@g" > "${p}.tmp"
 			# shellcheck disable=SC1090
 			. "${p}.tmp" && rm -f ${p}.tmp
@@ -292,7 +293,7 @@ if [[ ${phases} == *"2"* ]]; then
 	log " == kamel =="
 	log ""
 	log "2c. kamel is built from go sources with no additional requirements"
-	getBashVars kamel
+	getBashVars codeready-workspaces-plugin-kubernetes
 	for d in \
 		"GOLANG_IMAGE" \
 		"KAMEL_VERSION" \
@@ -300,39 +301,6 @@ if [[ ${phases} == *"2"* ]]; then
 		log " * $d = ${!d}"
 	done
 	log ""
-fi
-
-##################################
-
-if [[ ${phases} == *"3"* ]]; then
-	cd /tmp
-	log ""
-	log " == node10 (plugin-java8 container) =="
-	log""
-	log "3. Install node10 deps: typescript@${TYPERSCRIPT_VERSION} typescript-language-server@${TYPESCRIPT_LS_VERSION}"
-	if [[ ! $(which npm) ]]; then sudo yum -y -q install nodejs npm || true; fi
-	if [[ ! $(which npm) ]]; then echo "Error: install nodejs and npm to run this script: sudo yum -y install nodejs npm"; exit 1; fi
-	getBashVars node10
-	for d in \
-		"NODEJS_IMAGE" \
-		"NODEMON_VERSION" \
-		"TYPERSCRIPT_VERSION" \
-		"TYPESCRIPT_LS_VERSION" \
-		; do
-		log " * $d = ${!d}"
-	done
-	log ""
-	cd /tmp
-	rm -fr /tmp/npm-deps-tmp
-	mkdir -p npm-deps-tmp && cd npm-deps-tmp
-	{ npm install --prefix /tmp/npm-deps-tmp/ typescript@${TYPERSCRIPT_VERSION} typescript-language-server@${TYPESCRIPT_LS_VERSION} | tee -a ${LOG_FILE}; } || true
-	log ""
-	{ npm list >> ${LOG_FILE}; } || true
-	mnf "codeready-workspaces-plugin-java8-container:${CSV_VERSION}/typescript:${TYPERSCRIPT_VERSION}"
-	mnf "codeready-workspaces-plugin-java8-container:${CSV_VERSION}/typescript-language-server:${TYPESCRIPT_LS_VERSION}"
-	npmList "  codeready-workspaces-plugin-java8-container:${CSV_VERSION}/"
-	mnf ""
-	rm -fr /tmp/npm-deps-tmp
 fi
 
 ##################################
@@ -345,7 +313,7 @@ if [[ ${phases} == *"4"* ]]; then
 	log "4. Install php deps: "
 	if [[ ! $(which php) ]]; then sudo yum -y -q install php-devel php-json || true; fi
 	if [[ ! $(which php) ]]; then echo "Error: install php to run this script: sudo yum -y install php-devel php-json"; exit 1; fi
-	getBashVars php
+	getBashVars codeready-workspaces-stacks-php
 	for d in \
 		"PHP_LS_VERSION" \
 		"PHP_LS_IMAGE" \
@@ -386,7 +354,7 @@ if [[ ${phases} == *"5"* ]]; then
 	pyrpms="python3-six python3-pip python3-virtualenv"
 	if [[ ! $(which python3) ]] || [[ ! $(pydoc3 modules | grep virtualenv) ]]; then sudo yum install -y -q $pyrpms || true; fi
 	if [[ ! $(which python3) ]] || [[ ! $(pydoc3 modules | grep virtualenv) ]]; then echo "Error: install $pyrpms to run this script: sudo yum -y install $pyrpms"; exit 1; fi
-	getBashVars python
+	getBashVars codeready-workspaces-plugin-java8 build_python.sh
 	for d in \
 		"PYTHON_IMAGE" \
 		"PYTHON_LS_VERSION" \
