@@ -93,8 +93,8 @@ function bth () {
 function getBashVars () {
 	dir="$1" # script dir
 	# parse the specific file and export the correct variables
-	pushd /tmp/codeready-workspaces-deprecated >/dev/null || exit 1
-		for p in ${dir}/build.sh; do 
+	pushd /tmp/codeready-workspaces-images >/dev/null || exit 1
+		for p in ${dir}/build/build.sh; do 
 			grep -E "export " $p | grep -E -v "SCRIPT_DIR|PATH=" | sed -r -e "s@#.+@@g" > "${p}.tmp"
 			# shellcheck disable=SC1090
 			. "${p}.tmp" && rm -f ${p}.tmp
@@ -151,10 +151,10 @@ rm -f ${LOG_FILE} ${MANIFEST_FILE}
 if [[ ${phases} == *"1"* ]] || [[ ${phases} == *"2"* ]] || [[ ${phases} == *"3"* ]] || [[ ${phases} == *"4"* ]] || [[ ${phases} == *"5"* ]] || [[ ${phases} == *"6"* ]]; then
 	log "1a. Check out 3rd party language server dependencies builder repo (will collect variables later)" 
 	cd /tmp
-	if [[ ! -d codeready-workspaces-deprecated ]]; then
-		git clone https://$GITHUB_TOKEN:x-oauth-basic@github.com/redhat-developer/codeready-workspaces-deprecated.git
+	if [[ ! -d codeready-workspaces-images ]]; then
+		git clone https://$GITHUB_TOKEN:x-oauth-basic@github.com/redhat-developer/codeready-workspaces-images.git
 	fi
-	pushd codeready-workspaces-deprecated >/dev/null
+	pushd codeready-workspaces-images>/dev/null
 		git config --global push.default matching
 		git config --global hub.protocol https
 		git checkout ${CRW_BRANCH_TAG} || { echo "Tag or branch ${CRW_BRANCH_TAG} does not exist! Create it before running this script."; exit 1; }
@@ -231,7 +231,7 @@ if [[ ${phases} == *"2"* ]]; then
 	log "2a. Install golang go deps: go-language-server@${GOLANG_LS_VERSION}"
 	if [[ ! -x /usr/bin/go ]]; then sudo yum -y -q install golang || true; fi
 	if [[ ! -x /usr/bin/go ]]; then echo "Error: install golang to run this script: sudo yum -y install golang"; exit 1; fi
-	getBashVars golang
+	getBashVars codeready-workspaces-stacks-golang
 	for d in \
 		"GOLANG_IMAGE" \
 		"GOLANG_LINT_VERSION" \
@@ -247,7 +247,7 @@ if [[ ${phases} == *"2"* ]]; then
 	mkdir -p go-deps-tmp && cd go-deps-tmp
 
 	# run the same set of go get -v commands in the build.sh script:
-	grep -E "go get -v|go build -o" /tmp/codeready-workspaces-deprecated/golang/build.sh > todos.txt
+	grep -E "go get -v|go build -o" /tmp/codeready-workspaces-images/codeready-workspaces-stacks-golang/build/build.sh > todos.txt
 	while read p; do
 		# if you want more detailed output and logging, comment the next 1 line and uncomment the following 4 lines
 		log "  ${p%%;*}"; ${p%%;*} || true
@@ -256,7 +256,7 @@ if [[ ${phases} == *"2"* ]]; then
 		#log "<== ${p%%;*} =="
 		#log ""
 	done <todos.txt
-	grep -E "GOLANG_LINT_VERSION" /tmp/codeready-workspaces-deprecated/golang/build.sh > todos.txt
+	grep -E "GOLANG_LINT_VERSION" /tmp/codeready-workspaces-images/codeready-workspaces-stacks-golang/build/build.sh > todos.txt
 	. todos.txt
 	rm -f todos.txt
 
@@ -410,8 +410,8 @@ if [[ ${phases} == *"5"* ]]; then
 	rm -fr /tmp/python-deps-tmp
 fi
 
-# now we can delete the codeready-workspaces-deprecated checkout folder as we don't need its contents anymore
-rm -fr /tmp/codeready-workspaces-deprecated
+# now we can delete the codeready-workspaces-images checkout folder as we don't need its contents anymore
+rm -fr /tmp/codeready-workspaces-images
 
 
 ##################################
