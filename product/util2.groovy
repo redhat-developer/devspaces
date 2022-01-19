@@ -590,5 +590,40 @@ exit 0
   return statusCode > 1 ? false : true
 }
 
+// Enable generic webhook trigger, that contains default configuration
+// for triggering jobs builds on pushing to its respective repository's branch
+def enableDefaultPipelineWebhookTrigger(def context, String sourceBranch, String sourceRepo ) {
+    context.pipelineTriggers {
+        triggers{
+            genericTrigger {
+                genericVariables {
+                    genericVariable {
+                        key("ref")
+                        value('\$.ref')
+                        expressionType("JSONPath")
+                        regexpFilter("")
+                        defaultValue("")
+                    }
+                    genericVariable {
+                        key("name")
+                        value('\$.repository.full_name')
+                        expressionType("JSONPath")
+                        regexpFilter("")
+                        defaultValue("")
+                    }
+                }
+                token('')
+                tokenCredentialId('')
+                printContributedVariables(true)
+                printPostContent(true)
+                causeString("Generic Webhook Trigger for changes to https://github.com/" + sourceRepo)
+                silentResponse(false)
+                regexpFilterText('$ref $name')
+                regexpFilterExpression('refs/heads/' + sourceBranch + ' ' + sourceRepo)
+            }
+        }
+    }
+}
+
 // return this file's contents when loaded
 return this
