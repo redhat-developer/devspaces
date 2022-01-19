@@ -27,7 +27,7 @@ plugins:
       debug.node.useV3: false
     sidecar:
       image: "registry.redhat.io/codeready-workspaces/plugin-java8-rhel8:2.15"
-      name: vscode-node-debug
+      name: vscode-node
       memoryLimit: 1Gi
       memoryRequest: 20Mi
       cpuLimit: 500m
@@ -41,6 +41,7 @@ plugins:
     sidecar:
       image: "registry.redhat.io/codeready-workspaces/plugin-java8-rhel8:2.15"
       memoryLimit: 512Mi
+      name: vscode-node
       memoryRequest: 20Mi
       cpuLimit: 500m
       cpuRequest: 30m
@@ -190,6 +191,7 @@ plugins:
     sidecar:
       image: "registry.redhat.io/codeready-workspaces/plugin-java11-rhel8:2.15"
       memoryLimit: 256Mi
+      name: vscode-wsdl2rest
       memoryRequest: 20Mi
       cpuLimit: 500m
       cpuRequest: 30m
