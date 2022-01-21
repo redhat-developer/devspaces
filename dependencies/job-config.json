@@ -974,33 +974,38 @@
   "Other": {
     "Errata": {
       "2.14": "85526",
-      "2.15": "",
+      "2.15": "87201",
+      "2.16": "",
       "2.x": ""
     },
     "Epic": {
       "2.14": "CRW-2244",
-      "2.15": "",
+      "2.15": "CRW-2474",
+      "2.16": "",
       "2.x": ""
     },
     "FLOATING_QUAY_TAGS": {
       "2.14": "2.14",
       "2.15": "latest",
-      "2.x": "next",
-      "2.16": "next"
+      "2.16": "next",
+      "2.x": "next"
     },
     "DEV_WORKSPACE_CONTROLLER_VERSION": {
       "2.14": "v0.9.0",
       "2.15": "v0.11.0",
+      "2.16": "v0.11.0",
       "2.x": "v0.11.0"
     },
     "DEV_HEADER_REWRITE_TRAEFIK_PLUGIN": {
       "2.14": "v0.1.2",
       "2.15": "v0.1.2",
+      "2.16": "v0.1.2",
       "2.x": "v0.1.2"
     },
     "@eclipse-che/plugin-registry-generator": {
       "2.14": "7.40.2",
       "2.15": "7.42.0",
+      "2.16": "next",
       "2.x": "next"
     },
     "THEIA_BUILD_PARAMS": {
@@ -1014,6 +1019,11 @@
         "THEIA_GITHUB_REPO": "eclipse-theia/theia",
         "THEIA_COMMIT_SHA": ""
       },
+      "2.16": {
+        "THEIA_BRANCH": "master",
+        "THEIA_GITHUB_REPO": "eclipse-theia/theia",
+        "THEIA_COMMIT_SHA": ""
+      },
       "2.x": {
         "THEIA_BRANCH": "master",
         "THEIA_GITHUB_REPO": "eclipse-theia/theia",
@@ -1023,21 +1033,25 @@
     "OPENSHIFT_CONTENT_SET_VERSION": {
       "2.14": "4.9",
       "2.15": "4.9",
+      "2.16": "4.9",
       "2.x": "4.9"
     },
     "GOLANG_VERSION": {
       "2.14": "1.16.2",
       "2.15": "1.16.2",
+      "2.16": "1.16.2",
       "2.x": "1.16.2"
     },
     "NODE_VERSION": {
       "2.14": "12.22.3",
       "2.15": "12.22.5",
+      "2.16": "12.22.5",
       "2.x": "12.22.5"
     },
     "YARN_VERSION": {
       "2.14": "1.22.5",
       "2.15": "1.22.17",
+      "2.16": "1.22.17",
       "2.x": "1.22.17"
     }
   },
