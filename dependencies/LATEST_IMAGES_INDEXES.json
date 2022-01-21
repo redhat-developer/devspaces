@@ -2,28 +2,28 @@
     "Indexes": {
         "operator-metadata": {
             "2.15": {
-                "OSBSImage": "registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-operator-metadata:2.15-24",
-                "quayImage": "quay.io/crw/crw-2-rhel8-operator-metadata:2.15-24",
-                "tag": "2.15-24"
+                "OSBSImage": "registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-operator-metadata:2.15-25",
+                "quayImage": "quay.io/crw/crw-2-rhel8-operator-metadata:2.15-25",
+                "tag": "2.15-25"
             }
         },
         "operator-bundle": {
             "2.15": {
                 "v4.8": {
-                    "iibURL": "registry-proxy.engineering.redhat.com/rh-osbs/iib:163141",
-                    "iibTag": "163141"
+                    "iibURL": "registry-proxy.engineering.redhat.com/rh-osbs/iib:163276",
+                    "iibTag": "163276"
                 },
                 "v4.9": {
-                    "iibURL": "registry-proxy.engineering.redhat.com/rh-osbs/iib:163142",
-                    "iibTag": "163142"
+                    "iibURL": "registry-proxy.engineering.redhat.com/rh-osbs/iib:163277",
+                    "iibTag": "163277"
                 },
                 "v4.10": {
-                    "iibURL": "registry-proxy.engineering.redhat.com/rh-osbs/iib:163149",
-                    "iibTag": "163149"
+                    "iibURL": "registry-proxy.engineering.redhat.com/rh-osbs/iib:163278",
+                    "iibTag": "163278"
                 },
-                "OSBSImage": "registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-operator-bundle:2.15-224",
-                "quayImage": "quay.io/crw/crw-2-rhel8-operator-bundle:2.15-224",
-                "tag": "2.15-224"
+                "OSBSImage": "registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-operator-bundle:2.15-225",
+                "quayImage": "quay.io/crw/crw-2-rhel8-operator-bundle:2.15-225",
+                "tag": "2.15-225"
             }
         }
     }
