@@ -252,7 +252,7 @@ plugins:
       revision: 0.14.0
     featured: true
     sidecar:
-      image: "registry.redhat.io/codeready-workspaces/plugin-java8-rhel8:2.15"
+      image: "registry.redhat.io/codeready-workspaces/plugin-kubernetes-rhel8:2.15"
       name: vscode-yaml
       memoryLimit: 256Mi
       memoryRequest: 20Mi
