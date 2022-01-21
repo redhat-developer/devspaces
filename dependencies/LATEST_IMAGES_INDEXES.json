@@ -2,28 +2,28 @@
     "Indexes": {
         "operator-metadata": {
             "2.15": {
-                "OSBSImage": "registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-operator-metadata:2.15-27",
-                "quayImage": "quay.io/crw/crw-2-rhel8-operator-metadata:2.15-27",
-                "tag": "2.15-27"
+                "OSBSImage": "registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-operator-metadata:2.15-31",
+                "quayImage": "quay.io/crw/crw-2-rhel8-operator-metadata:2.15-31",
+                "tag": "2.15-31"
             }
         },
         "operator-bundle": {
             "2.15": {
                 "v4.8": {
-                    "iibURL": "registry-proxy.engineering.redhat.com/rh-osbs/iib:163406",
-                    "iibTag": "163406"
+                    "iibURL": "registry-proxy.engineering.redhat.com/rh-osbs/iib:163686",
+                    "iibTag": "163686"
                 },
                 "v4.9": {
-                    "iibURL": "registry-proxy.engineering.redhat.com/rh-osbs/iib:163407",
-                    "iibTag": "163407"
+                    "iibURL": "registry-proxy.engineering.redhat.com/rh-osbs/iib:163688",
+                    "iibTag": "163688"
                 },
                 "v4.10": {
-                    "iibURL": "registry-proxy.engineering.redhat.com/rh-osbs/iib:163408",
-                    "iibTag": "163408"
+                    "iibURL": "registry-proxy.engineering.redhat.com/rh-osbs/iib:163690",
+                    "iibTag": "163690"
                 },
-                "OSBSImage": "registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-operator-bundle:2.15-227",
-                "quayImage": "quay.io/crw/crw-2-rhel8-operator-bundle:2.15-227",
-                "tag": "2.15-227"
+                "OSBSImage": "registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-operator-bundle:2.15-230",
+                "quayImage": "quay.io/crw/crw-2-rhel8-operator-bundle:2.15-230",
+                "tag": "2.15-230"
             }
         }
     }
