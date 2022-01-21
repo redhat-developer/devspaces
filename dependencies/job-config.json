@@ -623,17 +623,6 @@
         "disabled": false
       }
     },
-    "deprecated": {
-      "2.14": {
-        "disabled": true
-      },
-      "2.15": {
-        "disabled": false
-      },
-      "2.x": {
-        "disabled": false
-      }
-    },
     "theia-akamai": {
       "2.14": {
         "disabled": true
@@ -653,6 +642,38 @@
         "disabled": false
       },
       "2.x": {
+        "disabled": false
+      }
+    },
+    "udi": {
+      "2.15": {
+        "upstream_branch": [
+          "crw-2.15-rhel-8",
+          "crw-2.15-rhel-8"
+        ],
+        "disabled": false
+      },
+      "2.x": {
+        "upstream_branch": [
+          "crw-2-rhel-8",
+          "crw-2-rhel-8"
+        ],
+        "disabled": false
+      }
+    },
+    "udi-openj9": {
+      "2.15": {
+        "upstream_branch": [
+          "crw-2.15-rhel-8",
+          "crw-2.15-rhel-8"
+        ],
+        "disabled": false
+      },
+      "2.x": {
+        "upstream_branch": [
+          "crw-2-rhel-8",
+          "crw-2-rhel-8"
+        ],
         "disabled": false
       }
     }
