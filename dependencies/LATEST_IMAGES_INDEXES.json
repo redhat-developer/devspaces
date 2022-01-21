@@ -2,28 +2,28 @@
     "Indexes": {
         "operator-metadata": {
             "2.15": {
-                "OSBSImage": "registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-operator-metadata:2.15-22",
-                "quayImage": "quay.io/crw/crw-2-rhel8-operator-metadata:2.15-22",
-                "tag": "2.15-22"
+                "OSBSImage": "registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-operator-metadata:2.15-23",
+                "quayImage": "quay.io/crw/crw-2-rhel8-operator-metadata:2.15-23",
+                "tag": "2.15-23"
             }
         },
         "operator-bundle": {
             "2.15": {
                 "v4.8": {
-                    "iibURL": "registry-proxy.engineering.redhat.com/rh-osbs/iib:162980",
-                    "iibTag": "162980"
+                    "iibURL": "registry-proxy.engineering.redhat.com/rh-osbs/iib:163082",
+                    "iibTag": "163082"
                 },
                 "v4.9": {
-                    "iibURL": "registry-proxy.engineering.redhat.com/rh-osbs/iib:162989",
-                    "iibTag": "162989"
+                    "iibURL": "registry-proxy.engineering.redhat.com/rh-osbs/iib:163085",
+                    "iibTag": "163085"
                 },
                 "v4.10": {
-                    "iibURL": "registry-proxy.engineering.redhat.com/rh-osbs/iib:162990",
-                    "iibTag": "162990"
+                    "iibURL": "registry-proxy.engineering.redhat.com/rh-osbs/iib:163086",
+                    "iibTag": "163086"
                 },
-                "OSBSImage": "registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-operator-bundle:2.15-222",
-                "quayImage": "quay.io/crw/crw-2-rhel8-operator-bundle:2.15-222",
-                "tag": "2.15-222"
+                "OSBSImage": "registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-operator-bundle:2.15-223",
+                "quayImage": "quay.io/crw/crw-2-rhel8-operator-bundle:2.15-223",
+                "tag": "2.15-223"
             }
         }
     }
