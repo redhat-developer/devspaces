@@ -1,0 +1,82 @@
+#
+# Copyright (c) 2022 Red Hat, Inc.
+# This program and the accompanying materials are made
+# available under the terms of the Eclipse Public License 2.0
+# which is available at https://www.eclipse.org/legal/epl-2.0/
+#
+# SPDX-License-Identifier: EPL-2.0
+#
+
+name: Plugin Registry - Publish Registry Content to GH Pages
+
+on:
+  push:
+    branches:
+      - 'crw-[0-9].[0-9]+-rhel-8'
+    paths:
+      - 'dependencies/che-plugin-registry/**'
+
+jobs:
+  publish:
+    name: publish
+    runs-on: ubuntu-20.04
+    env:
+      BUILD_DIR: /tmp/crw-plugin-registry/content
+    steps:
+      - name: extract content
+        run: |
+          mkdir -p /tmp/crw-plugin-registry
+          touch /tmp/crw-plugin-registry/architectures.json
+          docker manifest inspect quay.io/crw/pluginregistry-rhel8:latest | jq -r '.manifests[] | .platform.architecture' \
+          > /tmp/crw-plugin-registry/architectures.json
+          for arch in $(cat /tmp/crw-plugin-registry/architectures.json); do
+            version="${GITHUB_REF_NAME:4:4}"
+            docker pull quay.io/crw/pluginregistry-rhel8:"$version" --platform="$arch"
+            docker create --name pluginRegistry quay.io/crw/pluginregistry-rhel8:"$version" sh
+            mkdir -p "$BUILD_DIR"/"$arch"/v3
+            docker cp pluginRegistry:/var/www/html/v3 "$BUILD_DIR"/"$arch"
+            docker rm -f pluginRegistry
+            cp "$BUILD_DIR"/"$arch"/v3/plugins/index.json "$BUILD_DIR"/"$arch"/index.json
+          done
+      - name: Publish to gh-pages
+        run: |
+          GH_PAGES_DIR="$PWD/gh-pages"
+          GITHUB_REPO_NAME="codeready-workspaces"
+          VERSION_DIR="che-plugin-registry"/"$GITHUB_REF_NAME"
+          LATEST_VERSION_DIR="che-plugin-registry/latest"
+
+          rm "$GH_PAGES_DIR" -rf;
+          mkdir "$GH_PAGES_DIR"
+          cd "$GH_PAGES_DIR"
+          rm -rf che-plugin-registry
+          git clone -b gh-pages "https://github.com/$GITHUB_REPOSITORY.git"
+          cd "$GITHUB_REPO_NAME"
+          for arch in $(cat /tmp/crw-plugin-registry/architectures.json); do
+            TARGET_DIR="$VERSION_DIR"/"$arch"
+            [ -d "$TARGET_DIR" ] && git rm -r "$TARGET_DIR"
+            [ ! -d "$VERSION_DIR" ] && mkdir -p "$VERSION_DIR"
+            rm -rf "$BUILD_DIR"/"$arch"/v3/resources
+            cp -r "$BUILD_DIR"/"$arch" "$TARGET_DIR"
+          done
+          # Check if the branch is latest.
+          if ! [[ $(git ls-remote origin crw-2.$(( ${GITHUB_REF_NAME:6:2} + 1 ))-rhel-8) ]]; then
+            [ -d "$LATEST_VERSION_DIR" ] && git rm -r "$LATEST_VERSION_DIR"
+            mkdir -p "$LATEST_VERSION_DIR"
+            cp -r "$BUILD_DIR"/. "$LATEST_VERSION_DIR"
+          fi
+          # Make meta.yaml as index
+          while IFS= read -r -d '' file
+          do
+            PARENT_DIR=$(dirname "$file");
+            cp "${PARENT_DIR}"/meta.yaml "${PARENT_DIR}"/index.json;
+          done <   <(find . -name 'meta.yaml' -type f -print0)
+          git add "$VERSION_DIR"
+          git add "$LATEST_VERSION_DIR"
+          git config user.email "crw-build@redhat.com"
+          git config user.name "CRW Build"
+          git diff-index --quiet HEAD || git commit -m "publish registry $VERSION - $(date)" -s
+          git push "https://$GITHUB_ACTOR:${{ secrets.GITHUB_TOKEN }}@github.com/$GITHUB_REPOSITORY.git" gh-pages
+          for arch in $(cat /tmp/crw-plugin-registry/architectures.json); do
+            echo "Checkout the published plugin registry at https://$GITHUB_ACTOR.github.io/$GITHUB_REPO_NAME/$VERSION_DIR/$arch/v3/plugins/"
+            echo "Checkout the published plugin registry at https://$GITHUB_ACTOR.github.io/$GITHUB_REPO_NAME/$LATEST_VERSION_DIR/$arch/v3/plugins/"
+          done
