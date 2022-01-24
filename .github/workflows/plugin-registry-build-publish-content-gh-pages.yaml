@@ -27,12 +27,12 @@ jobs:
         run: |
           mkdir -p /tmp/crw-plugin-registry
           touch /tmp/crw-plugin-registry/architectures.json
-          docker manifest inspect quay.io/crw/pluginregistry-rhel8:latest | jq -r '.manifests[] | .platform.architecture' \
+          version="${GITHUB_REF_NAME:4:4}"
+          docker manifest inspect quay.io/crw/pluginregistry-rhel8:"$version" | jq -r '.manifests[] | .platform.architecture' \
           > /tmp/crw-plugin-registry/architectures.json
           for arch in $(cat /tmp/crw-plugin-registry/architectures.json); do
-            version="${GITHUB_REF_NAME:4:4}"
             docker pull quay.io/crw/pluginregistry-rhel8:"$version" --platform="$arch"
-            docker create --name pluginRegistry quay.io/crw/pluginregistry-rhel8:"$version" sh
+            docker create --platform linux/"$arch" --name pluginRegistry quay.io/crw/pluginregistry-rhel8:"$version" sh
             mkdir -p "$BUILD_DIR"/"$arch"/v3
             docker cp pluginRegistry:/var/www/html/v3 "$BUILD_DIR"/"$arch"
             docker rm -f pluginRegistry
