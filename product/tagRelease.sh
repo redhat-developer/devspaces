@@ -109,25 +109,20 @@ if [[ ${pkgs_devel_branch} ]] && [[ ${CSV_VERSION} ]]; then
 	codeready-workspaces-pluginbroker-artifacts \
 	codeready-workspaces-pluginbroker-metadata \
 	\
-	codeready-workspaces-plugin-java11-openj9 \
-	codeready-workspaces-plugin-java11 \
-	codeready-workspaces-plugin-java8-openj9 \
-	codeready-workspaces-plugin-java8 \
-	codeready-workspaces-plugin-kubernetes \
-	\
-	codeready-workspaces-plugin-openshift \
 	codeready-workspaces-pluginregistry \
 	codeready-workspaces \
 	codeready-workspaces-stacks-cpp \
 	codeready-workspaces-stacks-dotnet \
-	\
 	codeready-workspaces-stacks-golang \
+	\
 	codeready-workspaces-stacks-php \
 	codeready-workspaces-theia-dev \
 	codeready-workspaces-theia-endpoint \
 	codeready-workspaces-theia \
-	\
 	codeready-workspaces-traefik \
+	\
+	codeready-workspaces-udi-openj9 \
+	codeready-workspaces-udi \
 	; do
 	  pushTagPD $d
 	done

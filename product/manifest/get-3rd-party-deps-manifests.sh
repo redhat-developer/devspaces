@@ -182,25 +182,20 @@ if [[ ${phases} == *"1"* ]]; then
 	\
 	codeready-workspaces-pluginbroker-artifacts \
 	codeready-workspaces-pluginbroker-metadata \
-	codeready-workspaces-plugin-java11-openj9 \
-	codeready-workspaces-plugin-java11 \
-	codeready-workspaces-plugin-java8-openj9 \
-	\
-	codeready-workspaces-plugin-java8 \
-	codeready-workspaces-plugin-kubernetes \
-	codeready-workspaces-plugin-openshift \
 	codeready-workspaces-pluginregistry \
 	codeready-workspaces \
-	\
 	codeready-workspaces-stacks-cpp \
+	\
 	codeready-workspaces-stacks-dotnet \
 	codeready-workspaces-stacks-golang \
 	codeready-workspaces-stacks-php \
 	codeready-workspaces-theia-dev \
-	\
 	codeready-workspaces-theia-endpoint \
+	\
 	codeready-workspaces-theia \
 	codeready-workspaces-traefik \
+	codeready-workspaces-udi-openj9 \
+	codeready-workspaces-udi \
 	; do
 		if [[ $d == "codeready-workspaces" ]]; then
 			containerName=${d##containers/}-server-rhel8-container
@@ -293,7 +288,7 @@ if [[ ${phases} == *"2"* ]]; then
 	log " == kamel =="
 	log ""
 	log "2c. kamel is built from go sources with no additional requirements"
-	getBashVars codeready-workspaces-plugin-kubernetes
+	getBashVars codeready-workspaces-udi build_kamel.sh
 	for d in \
 		"GOLANG_IMAGE" \
 		"KAMEL_VERSION" \
@@ -348,13 +343,13 @@ fi
 if [[ ${phases} == *"5"* ]]; then
 	cd /tmp
 	log ""
-	log " == python (plugin-java8 container) =="
+	log " == python =="
 	log ""
 	log "5. Install python deps (including python3-virtualenv): pip install python-language-server[all]==${PYTHON_LS_VERSION}"
 	pyrpms="python3-six python3-pip python3-virtualenv"
 	if [[ ! $(which python3) ]] || [[ ! $(pydoc3 modules | grep virtualenv) ]]; then sudo yum install -y -q $pyrpms || true; fi
 	if [[ ! $(which python3) ]] || [[ ! $(pydoc3 modules | grep virtualenv) ]]; then echo "Error: install $pyrpms to run this script: sudo yum -y install $pyrpms"; exit 1; fi
-	getBashVars codeready-workspaces-plugin-java8 build_python.sh
+	getBashVars codeready-workspaces-udi build_python.sh
 	for d in \
 		"PYTHON_IMAGE" \
 		"PYTHON_LS_VERSION" \
@@ -372,8 +367,8 @@ if [[ ${phases} == *"5"* ]]; then
 	{ /usr/bin/python3 -m pip install python-language-server[all]==${PYTHON_LS_VERSION} | tee -a ${LOG_FILE}; } || true
 	log ""
 	{ /usr/bin/python3 -m pip list >> ${LOG_FILE}; } || true
-	mnf "codeready-workspaces-plugin-java8-container:${CSV_VERSION}/python-language-server[all]:${PYTHON_LS_VERSION}"
-	pythonList "  codeready-workspaces-plugin-java8-container:${CSV_VERSION}/"
+	mnf "codeready-workspaces-udi-container:${CSV_VERSION}/python-language-server[all]:${PYTHON_LS_VERSION}"
+	pythonList "  codeready-workspaces-udi-container:${CSV_VERSION}/"
 	deactivate
 	rm -fr /tmp/python-deps-tmp
 fi
