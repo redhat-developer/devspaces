@@ -39,6 +39,17 @@ else
 	fi
 fi
 
+# compute default errata num for use with --errata flag
+DEFAULT_ERRATA_NUM=""
+if [[ -f dependencies/job-config.json ]]; then
+	DEFAULT_ERRATA_NUM=$(jq -r --arg VERSION "${VERSION}" '.Other.Errata[$VERSION]' dependencies/job-config.json)
+fi
+if [[ $DEFAULT_ERRATA_NUM == "" ]] || [[ $DEFAULT_ERRATA_NUM == "null" ]]; then 
+	DEFAULT_ERRATA_NUM=$(curl -sSLo- https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/crw-2-rhel-8/dependencies/job-config.json | jq -r --arg VERSION "${VERSION}" '.Other.Errata[$VERSION]')
+fi
+if [[ $DEFAULT_ERRATA_NUM == "" ]] || [[ $DEFAULT_ERRATA_NUM == "null" ]]; then DEFAULT_ERRATA_NUM="54321"; fi
+
+
 command -v skopeo >/dev/null 2>&1 || { echo "skopeo is not installed. Aborting."; exit 1; }
 command -v jq >/dev/null 2>&1 || { echo "jq is not installed. Aborting."; exit 1; }
 command -v yq >/dev/null 2>&1 || { echo "yq is not installed. Aborting."; exit 1; }
@@ -152,7 +163,7 @@ usage () {
 	echo "
 Usage: 
   $0 -b ${DWNSTM_BRANCH} --nvr --log                        | check images in brew; output NVRs can be copied to Errata; show Brew builds/logs
-  $0 -b ${DWNSTM_BRANCH} --errata 85526                     | check images in brew; output NVRs and update builds in specified Errata (implies --nvr --hide)
+  $0 -b ${DWNSTM_BRANCH} --errata $DEFAULT_ERRATA_NUM                     | check images in brew; output NVRs and update builds in specified Errata (implies --nvr --hide)
 
   $0 -b ${DWNSTM_BRANCH} --quay --tag \"${CRW_VERSION}-\" --hide        | use default list of CRW images in quay.io/crw, for tag 2.y-; show nothing if tag umatched
   $0 -b ${DWNSTM_BRANCH} --osbs                             | check images in OSBS ( registry-proxy.engineering.redhat.com/rh-osbs )
