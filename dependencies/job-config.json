@@ -385,186 +385,6 @@
         "disabled": false
       }
     },
-    "plugin-java11-openj9": {
-      "2.14": {
-        "upstream_branch": [
-          "crw-2.14-rhel-8",
-          "crw-2.14-rhel-8"
-        ],
-        "disabled": true
-      },
-      "2.15": {
-        "upstream_branch": [
-          "crw-2.15-rhel-8",
-          "crw-2.15-rhel-8"
-        ],
-        "disabled": false
-      },
-      "2.16": {
-        "upstream_branch": [
-          "crw-2.16-rhel-8",
-          "crw-2.16-rhel-8"
-        ],
-        "disabled": false
-      },
-      "2.x": {
-        "upstream_branch": [
-          "crw-2-rhel-8",
-          "crw-2-rhel-8"
-        ],
-        "disabled": false
-      }
-    },
-    "plugin-java11": {
-      "2.14": {
-        "upstream_branch": [
-          "crw-2.14-rhel-8",
-          "crw-2.14-rhel-8"
-        ],
-        "disabled": true
-      },
-      "2.15": {
-        "upstream_branch": [
-          "crw-2.15-rhel-8",
-          "crw-2.15-rhel-8"
-        ],
-        "disabled": false
-      },
-      "2.16": {
-        "upstream_branch": [
-          "crw-2.16-rhel-8",
-          "crw-2.16-rhel-8"
-        ],
-        "disabled": false
-      },
-      "2.x": {
-        "upstream_branch": [
-          "crw-2-rhel-8",
-          "crw-2-rhel-8"
-        ],
-        "disabled": false
-      }
-    },
-    "plugin-java8-openj9": {
-      "2.14": {
-        "upstream_branch": [
-          "crw-2.14-rhel-8",
-          "crw-2.14-rhel-8"
-        ],
-        "disabled": true
-      },
-      "2.15": {
-        "upstream_branch": [
-          "crw-2.15-rhel-8",
-          "crw-2.15-rhel-8"
-        ],
-        "disabled": false
-      },
-      "2.16": {
-        "upstream_branch": [
-          "crw-2.16-rhel-8",
-          "crw-2.16-rhel-8"
-        ],
-        "disabled": false
-      },
-      "2.x": {
-        "upstream_branch": [
-          "crw-2-rhel-8",
-          "crw-2-rhel-8"
-        ],
-        "disabled": false
-      }
-    },
-    "plugin-java8": {
-      "2.14": {
-        "upstream_branch": [
-          "crw-2.14-rhel-8",
-          "crw-2.14-rhel-8"
-        ],
-        "disabled": true
-      },
-      "2.15": {
-        "upstream_branch": [
-          "crw-2.15-rhel-8",
-          "crw-2.15-rhel-8"
-        ],
-        "disabled": false
-      },
-      "2.16": {
-        "upstream_branch": [
-          "crw-2.16-rhel-8",
-          "crw-2.16-rhel-8"
-        ],
-        "disabled": false
-      },
-      "2.x": {
-        "upstream_branch": [
-          "crw-2-rhel-8",
-          "crw-2-rhel-8"
-        ],
-        "disabled": false
-      }
-    },
-    "plugin-kubernetes": {
-      "2.14": {
-        "upstream_branch": [
-          "crw-2.14-rhel-8",
-          "crw-2.14-rhel-8"
-        ],
-        "disabled": true
-      },
-      "2.15": {
-        "upstream_branch": [
-          "crw-2.15-rhel-8",
-          "crw-2.15-rhel-8"
-        ],
-        "disabled": false
-      },
-      "2.16": {
-        "upstream_branch": [
-          "crw-2.16-rhel-8",
-          "crw-2.16-rhel-8"
-        ],
-        "disabled": false
-      },
-      "2.x": {
-        "upstream_branch": [
-          "crw-2-rhel-8",
-          "crw-2-rhel-8"
-        ],
-        "disabled": false
-      }
-    },
-    "plugin-openshift": {
-      "2.14": {
-        "upstream_branch": [
-          "crw-2.14-rhel-8",
-          "crw-2.14-rhel-8"
-        ],
-        "disabled": true
-      },
-      "2.15": {
-        "upstream_branch": [
-          "crw-2.15-rhel-8",
-          "crw-2.15-rhel-8"
-        ],
-        "disabled": false
-      },
-      "2.16": {
-        "upstream_branch": [
-          "crw-2.16-rhel-8",
-          "crw-2.16-rhel-8"
-        ],
-        "disabled": false
-      },
-      "2.x": {
-        "upstream_branch": [
-          "crw-2-rhel-8",
-          "crw-2-rhel-8"
-        ],
-        "disabled": false
-      }
-    },
     "stacks-cpp": {
       "2.14": {
         "upstream_branch": [
@@ -803,6 +623,13 @@
         ],
         "disabled": false
       },
+      "2.16": {
+        "upstream_branch": [
+          "crw-2.16-rhel-8",
+          "crw-2.16-rhel-8"
+        ],
+        "disabled": false
+      },
       "2.x": {
         "upstream_branch": [
           "crw-2-rhel-8",
@@ -816,6 +643,13 @@
         "upstream_branch": [
           "crw-2.15-rhel-8",
           "crw-2.15-rhel-8"
+        ],
+        "disabled": false
+      },
+      "2.16": {
+        "upstream_branch": [
+          "crw-2.16-rhel-8",
+          "crw-2.16-rhel-8"
         ],
         "disabled": false
       },
