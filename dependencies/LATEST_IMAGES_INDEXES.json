@@ -1,4 +1,50 @@
 {
     "Indexes": {
+        "operator-metadata": {
+            "2.15": {
+                "v4.6": {
+                    "iibURL": "registry-proxy.engineering.redhat.com/rh-osbs/iib:165533",
+                    "iibTag": "165533"
+                },
+                "v4.7": {
+                    "iibURL": "registry-proxy.engineering.redhat.com/rh-osbs/iib:165538",
+                    "iibTag": "165538"
+                },
+                "v4.8": {
+                    "iibURL": "registry-proxy.engineering.redhat.com/rh-osbs/iib:165540",
+                    "iibTag": "165540"
+                },
+                "v4.9": {
+                    "iibURL": "registry-proxy.engineering.redhat.com/rh-osbs/iib:165545",
+                    "iibTag": "165545"
+                },
+                "v4.10": {
+                    "iibURL": "registry-proxy.engineering.redhat.com/rh-osbs/iib:165548",
+                    "iibTag": "165548"
+                },
+                "OSBSImage": "registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-operator-metadata:2.15-42",
+                "quayImage": "quay.io/crw/crw-2-rhel8-operator-metadata:2.15-42",
+                "tag": "2.15-42"
+            }
+        },
+        "operator-bundle": {
+            "2.15": {
+                "v4.8": {
+                    "iibURL": "registry-proxy.engineering.redhat.com/rh-osbs/iib:165579",
+                    "iibTag": "165579"
+                },
+                "v4.9": {
+                    "iibURL": "registry-proxy.engineering.redhat.com/rh-osbs/iib:165581",
+                    "iibTag": "165581"
+                },
+                "v4.10": {
+                    "iibURL": "registry-proxy.engineering.redhat.com/rh-osbs/iib:165583",
+                    "iibTag": "165583"
+                },
+                "OSBSImage": "registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-operator-bundle:2.15-244",
+                "quayImage": "quay.io/crw/crw-2-rhel8-operator-bundle:2.15-244",
+                "tag": "2.15-244"
+            }
+        }
     }
 }
