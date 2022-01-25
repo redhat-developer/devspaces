@@ -18,8 +18,8 @@ def String getCSVVersion(String MIDSTM_BRANCH) {
       ") does not match CRW version (from getCrwVersion() -> VERSION = " + CRW_VERSION_F + ") !"
     println "This could mean that your VERSION file or CSV file update processes have not run correctly."
     println "Check these jobs:"
-    println "* https://main-jenkins-csb-crwqe.apps.ocp4.prod.psi.redhat.com/job/CRW_CI/job/Releng/job/update-version-and-registry-tags/ "
-    println "* https://main-jenkins-csb-crwqe.apps.ocp4.prod.psi.redhat.com/job/CRW_CI/job/crw-operator-metadata_" + getJobBranch(MIDSTM_BRANCH)
+    println "* https://main-jenkins-csb-crwqe.apps.ocp-c1.prod.psi.redhat.com/job/CRW_CI/job/Releng/job/update-version-and-registry-tags/ "
+    println "* https://main-jenkins-csb-crwqe.apps.ocp-c1.prod.psi.redhat.com/job/CRW_CI/job/crw-operator-metadata_" + getJobBranch(MIDSTM_BRANCH)
     println "Check these files:"
     println "https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/" + MIDSTM_BRANCH + "/dependencies/VERSION"
     println "https://github.com/redhat-developer/codeready-workspaces-images/blob/" + MIDSTM_BRANCH + "/codeready-workspaces-operator-metadata/manifests/codeready-workspaces.csv.yaml"

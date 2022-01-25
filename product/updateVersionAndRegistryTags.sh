@@ -391,7 +391,7 @@ echo "
 VERSION job-config.json, and registries updated.
 
 Remember to run job-configurator to regenerate jobs:
-https://main-jenkins-csb-crwqe.apps.ocp4.prod.psi.redhat.com/job/job-configurator/buildWithParameters?FAIL_ON_CASC_CHANGES=false&JOBDSL_INCLUDE=.*CRW_CI.*
-https://main-jenkins-csb-crwqe.apps.ocp4.prod.psi.redhat.com/job/job-configurator/lastBuild/parameters/
-https://main-jenkins-csb-crwqe.apps.ocp4.prod.psi.redhat.com/job/job-configurator/lastBuild/console
+https://main-jenkins-csb-crwqe.apps.ocp-c1.prod.psi.redhat.com/job/job-configurator/buildWithParameters?FAIL_ON_CASC_CHANGES=false&JOBDSL_INCLUDE=.*CRW_CI.*
+https://main-jenkins-csb-crwqe.apps.ocp-c1.prod.psi.redhat.com/job/job-configurator/lastBuild/parameters/
+https://main-jenkins-csb-crwqe.apps.ocp-c1.prod.psi.redhat.com/job/job-configurator/lastBuild/console
 "
