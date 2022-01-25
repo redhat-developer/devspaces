@@ -13,6 +13,7 @@ on:
   push:
     branches:
       - 'crw-[0-9].[0-9]+-rhel-8'
+      - crw-2-rhel-8
     paths:
       - 'dependencies/che-plugin-registry/**'
 
@@ -23,11 +24,19 @@ jobs:
     env:
       BUILD_DIR: /tmp/crw-plugin-registry/content
     steps:
+      - name: Clone source code
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
       - name: extract content
         run: |
           mkdir -p /tmp/crw-plugin-registry
           touch /tmp/crw-plugin-registry/architectures.json
-          version="${GITHUB_REF_NAME:4:4}"
+          if [[ "$GITHUB_REF_NAME" == "crw-2-rhel-8" ]]; then
+             version="latest"
+          else
+             version=$(cat dependencies/VERSION)
+          fi
           docker manifest inspect quay.io/crw/pluginregistry-rhel8:"$version" | jq -r '.manifests[] | .platform.architecture' \
           > /tmp/crw-plugin-registry/architectures.json
           for arch in $(cat /tmp/crw-plugin-registry/architectures.json); do
@@ -42,8 +51,14 @@ jobs:
         run: |
           GH_PAGES_DIR="$PWD/gh-pages"
           GITHUB_REPO_NAME="codeready-workspaces"
-          VERSION_DIR="che-plugin-registry"/"$GITHUB_REF_NAME"
-          LATEST_VERSION_DIR="che-plugin-registry/latest"
+          VERSION=$(cat dependencies/VERSION)
+          if [[ "$GITHUB_REF_NAME" == "crw-2-rhel-8" ]]; then
+            VERSION_DIR="che-plugin-registry/next"
+            LATEST_VERSION_DIR="$VERSION_DIR"
+          else
+            VERSION_DIR="che-plugin-registry"/"$VERSION"
+            LATEST_VERSION_DIR="che-plugin-registry/latest"
+          fi
 
           rm "$GH_PAGES_DIR" -rf;
           mkdir "$GH_PAGES_DIR"
@@ -59,7 +74,7 @@ jobs:
             cp -r "$BUILD_DIR"/"$arch" "$TARGET_DIR"
           done
           # Check if the branch is latest.
-          if ! [[ $(git ls-remote origin crw-2.$(( ${GITHUB_REF_NAME:6:2} + 1 ))-rhel-8) ]]; then
+          if [[ "$GITHUB_REF_NAME" != "crw-2-rhel-8" ]] && ! [[ $(git ls-remote origin crw-$(echo $VERSION + 0.01 | bc -l)-rhel-8) ]]; then
             [ -d "$LATEST_VERSION_DIR" ] && git rm -r "$LATEST_VERSION_DIR"
             mkdir -p "$LATEST_VERSION_DIR"
             cp -r "$BUILD_DIR"/. "$LATEST_VERSION_DIR"
@@ -71,12 +86,12 @@ jobs:
             cp "${PARENT_DIR}"/meta.yaml "${PARENT_DIR}"/index.json;
           done <   <(find . -name 'meta.yaml' -type f -print0)
           git add "$VERSION_DIR"
-          git add "$LATEST_VERSION_DIR"
+          [ -d "$LATEST_VERSION_DIR" ] && git add "$LATEST_VERSION_DIR"
           git config user.email "crw-build@redhat.com"
           git config user.name "CRW Build"
           git diff-index --quiet HEAD || git commit -m "publish registry $VERSION - $(date)" -s
           git push "https://$GITHUB_ACTOR:${{ secrets.GITHUB_TOKEN }}@github.com/$GITHUB_REPOSITORY.git" gh-pages
           for arch in $(cat /tmp/crw-plugin-registry/architectures.json); do
-            echo "Checkout the published plugin registry at https://$GITHUB_ACTOR.github.io/$GITHUB_REPO_NAME/$VERSION_DIR/$arch/v3/plugins/"
-            echo "Checkout the published plugin registry at https://$GITHUB_ACTOR.github.io/$GITHUB_REPO_NAME/$LATEST_VERSION_DIR/$arch/v3/plugins/"
+            echo "Plugin registry published to https://$GITHUB_ACTOR.github.io/$GITHUB_REPO_NAME/$VERSION_DIR/$arch/v3/plugins/"
+            echo "Plugin registry published to https://$GITHUB_ACTOR.github.io/$GITHUB_REPO_NAME/$LATEST_VERSION_DIR/$arch/v3/plugins/"
           done
