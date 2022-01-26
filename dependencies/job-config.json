@@ -1,26 +1,26 @@
 {
   "Purpose": "To set configurations of jenkins jobs including upstream branches, dependencies and disabled status",
-  "Version": 2.15,
+  "Version": 2.16,
   "Jobs": {
     "backup": {
-      "2.13": {
-        "upstream_branch": [
-          "7.38.x",
-          "7.37.x"
-        ],
-        "disabled": true
-      },
       "2.14": {
         "upstream_branch": [
           "7.40.x",
           "7.39.x"
         ],
-        "disabled": false
+        "disabled": true
       },
       "2.15": {
         "upstream_branch": [
           "7.42.x",
           "7.41.x"
+        ],
+        "disabled": false
+      },
+      "2.16": {
+        "upstream_branch": [
+          "7.44.x",
+          "7.43.x"
         ],
         "disabled": false
       },
@@ -33,24 +33,24 @@
       }
     },
     "configbump": {
-      "2.13": {
-        "upstream_branch": [
-          "7.38.x",
-          "7.37.x"
-        ],
-        "disabled": true
-      },
       "2.14": {
         "upstream_branch": [
           "7.40.x",
           "7.39.x"
         ],
-        "disabled": false
+        "disabled": true
       },
       "2.15": {
         "upstream_branch": [
           "7.42.x",
           "7.41.x"
+        ],
+        "disabled": false
+      },
+      "2.16": {
+        "upstream_branch": [
+          "7.44.x",
+          "7.43.x"
         ],
         "disabled": false
       },
@@ -63,24 +63,24 @@
       }
     },
     "dashboard": {
-      "2.13": {
-        "upstream_branch": [
-          "7.38.x",
-          "7.37.x"
-        ],
-        "disabled": true
-      },
       "2.14": {
         "upstream_branch": [
           "7.40.x",
           "7.39.x"
         ],
-        "disabled": false
+        "disabled": true
       },
       "2.15": {
         "upstream_branch": [
           "7.42.x",
           "7.41.x"
+        ],
+        "disabled": false
+      },
+      "2.16": {
+        "upstream_branch": [
+          "7.44.x",
+          "7.43.x"
         ],
         "disabled": false
       },
@@ -93,24 +93,24 @@
       }
     },
     "imagepuller": {
-      "2.13": {
-        "upstream_branch": [
-          "7.38.x",
-          "7.37.x"
-        ],
-        "disabled": true
-      },
       "2.14": {
         "upstream_branch": [
           "7.40.x",
           "7.39.x"
         ],
-        "disabled": false
+        "disabled": true
       },
       "2.15": {
         "upstream_branch": [
           "7.42.x",
           "7.41.x"
+        ],
+        "disabled": false
+      },
+      "2.16": {
+        "upstream_branch": [
+          "7.44.x",
+          "7.43.x"
         ],
         "disabled": false
       },
@@ -123,24 +123,24 @@
       }
     },
     "jwtproxy": {
-      "2.13": {
-        "upstream_branch": [
-          "7.38.x",
-          "7.37.x"
-        ],
-        "disabled": true
-      },
       "2.14": {
         "upstream_branch": [
           "7.40.x",
           "7.39.x"
         ],
-        "disabled": false
+        "disabled": true
       },
       "2.15": {
         "upstream_branch": [
           "7.42.x",
           "7.41.x"
+        ],
+        "disabled": false
+      },
+      "2.16": {
+        "upstream_branch": [
+          "7.44.x",
+          "7.43.x"
         ],
         "disabled": false
       },
@@ -153,24 +153,24 @@
       }
     },
     "machineexec": {
-      "2.13": {
-        "upstream_branch": [
-          "7.38.x",
-          "7.37.x"
-        ],
-        "disabled": true
-      },
       "2.14": {
         "upstream_branch": [
           "7.40.x",
           "7.39.x"
         ],
-        "disabled": false
+        "disabled": true
       },
       "2.15": {
         "upstream_branch": [
           "7.42.x",
           "7.41.x"
+        ],
+        "disabled": false
+      },
+      "2.16": {
+        "upstream_branch": [
+          "7.44.x",
+          "7.43.x"
         ],
         "disabled": false
       },
@@ -183,24 +183,24 @@
       }
     },
     "operator": {
-      "2.13": {
-        "upstream_branch": [
-          "7.38.x",
-          "7.37.x"
-        ],
-        "disabled": true
-      },
       "2.14": {
         "upstream_branch": [
           "7.40.x",
           "7.39.x"
         ],
-        "disabled": false
+        "disabled": true
       },
       "2.15": {
         "upstream_branch": [
           "7.42.x",
           "7.41.x"
+        ],
+        "disabled": false
+      },
+      "2.16": {
+        "upstream_branch": [
+          "7.44.x",
+          "7.43.x"
         ],
         "disabled": false
       },
@@ -213,19 +213,12 @@
       }
     },
     "server": {
-      "2.13": {
-        "upstream_branch": [
-          "7.38.x",
-          "7.37.x"
-        ],
-        "disabled": true
-      },
       "2.14": {
         "upstream_branch": [
           "7.40.x",
           "7.39.x"
         ],
-        "disabled": false
+        "disabled": true
       },
       "2.15": {
         "upstream_branch": [
@@ -243,24 +236,24 @@
       }
     },
     "theia-dev": {
-      "2.13": {
-        "upstream_branch": [
-          "7.38.x",
-          "7.37.x"
-        ],
-        "disabled": true
-      },
       "2.14": {
         "upstream_branch": [
           "7.40.x",
           "7.39.x"
         ],
-        "disabled": false
+        "disabled": true
       },
       "2.15": {
         "upstream_branch": [
           "7.42.x",
           "7.41.x"
+        ],
+        "disabled": false
+      },
+      "2.16": {
+        "upstream_branch": [
+          "7.44.x",
+          "7.43.x"
         ],
         "disabled": false
       },
@@ -273,24 +266,24 @@
       }
     },
     "theia": {
-      "2.13": {
-        "upstream_branch": [
-          "7.38.x",
-          "7.37.x"
-        ],
-        "disabled": true
-      },
       "2.14": {
         "upstream_branch": [
           "7.40.x",
           "7.39.x"
         ],
-        "disabled": false
+        "disabled": true
       },
       "2.15": {
         "upstream_branch": [
           "7.42.x",
           "7.41.x"
+        ],
+        "disabled": false
+      },
+      "2.16": {
+        "upstream_branch": [
+          "7.44.x",
+          "7.43.x"
         ],
         "disabled": false
       },
@@ -303,24 +296,24 @@
       }
     },
     "theia-endpoint": {
-      "2.13": {
-        "upstream_branch": [
-          "7.38.x",
-          "7.37.x"
-        ],
-        "disabled": true
-      },
       "2.14": {
         "upstream_branch": [
           "7.40.x",
           "7.39.x"
         ],
-        "disabled": false
+        "disabled": true
       },
       "2.15": {
         "upstream_branch": [
           "7.42.x",
           "7.41.x"
+        ],
+        "disabled": false
+      },
+      "2.16": {
+        "upstream_branch": [
+          "7.44.x",
+          "7.43.x"
         ],
         "disabled": false
       },
@@ -333,24 +326,24 @@
       }
     },
     "devfileregistry": {
-      "2.13": {
-        "upstream_branch": [
-          "crw-2.13-rhel-8",
-          "crw-2.13-rhel-8"
-        ],
-        "disabled": true
-      },
       "2.14": {
         "upstream_branch": [
           "crw-2.14-rhel-8",
           "crw-2.14-rhel-8"
         ],
-        "disabled": false
+        "disabled": true
       },
       "2.15": {
         "upstream_branch": [
           "crw-2.15-rhel-8",
           "crw-2.15-rhel-8"
+        ],
+        "disabled": false
+      },
+      "2.16": {
+        "upstream_branch": [
+          "crw-2.16-rhel-8",
+          "crw-2.16-rhel-8"
         ],
         "disabled": false
       },
@@ -363,19 +356,12 @@
       }
     },
     "pluginregistry": {
-      "2.13": {
-        "upstream_branch": [
-          "crw-2.13-rhel-8",
-          "crw-2.13-rhel-8"
-        ],
-        "disabled": true
-      },
       "2.14": {
         "upstream_branch": [
           "crw-2.14-rhel-8",
           "crw-2.14-rhel-8"
         ],
-        "disabled": false
+        "disabled": true
       },
       "2.15": {
         "upstream_branch": [
@@ -384,183 +370,10 @@
         ],
         "disabled": false
       },
-      "2.x": {
+      "2.16": {
         "upstream_branch": [
-          "crw-2-rhel-8",
-          "crw-2-rhel-8"
-        ],
-        "disabled": false
-      }
-    },
-    "plugin-java11-openj9": {
-      "2.13": {
-        "upstream_branch": [
-          "crw-2.13-rhel-8",
-          "crw-2.13-rhel-8"
-        ],
-        "disabled": true
-      },
-      "2.14": {
-        "upstream_branch": [
-          "crw-2.14-rhel-8",
-          "crw-2.14-rhel-8"
-        ],
-        "disabled": false
-      },
-      "2.15": {
-        "upstream_branch": [
-          "crw-2.15-rhel-8",
-          "crw-2.15-rhel-8"
-        ],
-        "disabled": false
-      },
-      "2.x": {
-        "upstream_branch": [
-          "crw-2-rhel-8",
-          "crw-2-rhel-8"
-        ],
-        "disabled": false
-      }
-    },
-    "plugin-java11": {
-      "2.13": {
-        "upstream_branch": [
-          "crw-2.13-rhel-8",
-          "crw-2.13-rhel-8"
-        ],
-        "disabled": true
-      },
-      "2.14": {
-        "upstream_branch": [
-          "crw-2.14-rhel-8",
-          "crw-2.14-rhel-8"
-        ],
-        "disabled": false
-      },
-      "2.15": {
-        "upstream_branch": [
-          "crw-2.15-rhel-8",
-          "crw-2.15-rhel-8"
-        ],
-        "disabled": false
-      },
-      "2.x": {
-        "upstream_branch": [
-          "crw-2-rhel-8",
-          "crw-2-rhel-8"
-        ],
-        "disabled": false
-      }
-    },
-    "plugin-java8-openj9": {
-      "2.13": {
-        "upstream_branch": [
-          "crw-2.13-rhel-8",
-          "crw-2.13-rhel-8"
-        ],
-        "disabled": true
-      },
-      "2.14": {
-        "upstream_branch": [
-          "crw-2.14-rhel-8",
-          "crw-2.14-rhel-8"
-        ],
-        "disabled": false
-      },
-      "2.15": {
-        "upstream_branch": [
-          "crw-2.15-rhel-8",
-          "crw-2.15-rhel-8"
-        ],
-        "disabled": false
-      },
-      "2.x": {
-        "upstream_branch": [
-          "crw-2-rhel-8",
-          "crw-2-rhel-8"
-        ],
-        "disabled": false
-      }
-    },
-    "plugin-java8": {
-      "2.13": {
-        "upstream_branch": [
-          "crw-2.13-rhel-8",
-          "crw-2.13-rhel-8"
-        ],
-        "disabled": true
-      },
-      "2.14": {
-        "upstream_branch": [
-          "crw-2.14-rhel-8",
-          "crw-2.14-rhel-8"
-        ],
-        "disabled": false
-      },
-      "2.15": {
-        "upstream_branch": [
-          "crw-2.15-rhel-8",
-          "crw-2.15-rhel-8"
-        ],
-        "disabled": false
-      },
-      "2.x": {
-        "upstream_branch": [
-          "crw-2-rhel-8",
-          "crw-2-rhel-8"
-        ],
-        "disabled": false
-      }
-    },
-    "plugin-kubernetes": {
-      "2.13": {
-        "upstream_branch": [
-          "crw-2.13-rhel-8",
-          "crw-2.13-rhel-8"
-        ],
-        "disabled": true
-      },
-      "2.14": {
-        "upstream_branch": [
-          "crw-2.14-rhel-8",
-          "crw-2.14-rhel-8"
-        ],
-        "disabled": false
-      },
-      "2.15": {
-        "upstream_branch": [
-          "crw-2.15-rhel-8",
-          "crw-2.15-rhel-8"
-        ],
-        "disabled": false
-      },
-      "2.x": {
-        "upstream_branch": [
-          "crw-2-rhel-8",
-          "crw-2-rhel-8"
-        ],
-        "disabled": false
-      }
-    },
-    "plugin-openshift": {
-      "2.13": {
-        "upstream_branch": [
-          "crw-2.13-rhel-8",
-          "crw-2.13-rhel-8"
-        ],
-        "disabled": true
-      },
-      "2.14": {
-        "upstream_branch": [
-          "crw-2.14-rhel-8",
-          "crw-2.14-rhel-8"
-        ],
-        "disabled": false
-      },
-      "2.15": {
-        "upstream_branch": [
-          "crw-2.15-rhel-8",
-          "crw-2.15-rhel-8"
+          "crw-2.16-rhel-8",
+          "crw-2.16-rhel-8"
         ],
         "disabled": false
       },
@@ -573,19 +386,12 @@
       }
     },
     "stacks-cpp": {
-      "2.13": {
-        "upstream_branch": [
-          "crw-2.13-rhel-8",
-          "crw-2.13-rhel-8"
-        ],
-        "disabled": true
-      },
       "2.14": {
         "upstream_branch": [
           "crw-2.14-rhel-8",
           "crw-2.14-rhel-8"
         ],
-        "disabled": false
+        "disabled": true
       },
       "2.15": {
         "upstream_branch": [
@@ -603,19 +409,12 @@
       }
     },
     "stacks-dotnet": {
-      "2.13": {
-        "upstream_branch": [
-          "crw-2.13-rhel-8",
-          "crw-2.13-rhel-8"
-        ],
-        "disabled": true
-      },
       "2.14": {
         "upstream_branch": [
           "crw-2.14-rhel-8",
           "crw-2.14-rhel-8"
         ],
-        "disabled": false
+        "disabled": true
       },
       "2.15": {
         "upstream_branch": [
@@ -633,19 +432,12 @@
       }
     },
     "stacks-golang": {
-      "2.13": {
-        "upstream_branch": [
-          "crw-2.13-rhel-8",
-          "crw-2.13-rhel-8"
-        ],
-        "disabled": true
-      },
       "2.14": {
         "upstream_branch": [
           "crw-2.14-rhel-8",
           "crw-2.14-rhel-8"
         ],
-        "disabled": false
+        "disabled": true
       },
       "2.15": {
         "upstream_branch": [
@@ -663,19 +455,12 @@
       }
     },
     "stacks-php": {
-      "2.13": {
-        "upstream_branch": [
-          "crw-2.13-rhel-8",
-          "crw-2.13-rhel-8"
-        ],
-        "disabled": true
-      },
       "2.14": {
         "upstream_branch": [
           "crw-2.14-rhel-8",
           "crw-2.14-rhel-8"
         ],
-        "disabled": false
+        "disabled": true
       },
       "2.15": {
         "upstream_branch": [
@@ -693,21 +478,21 @@
       }
     },
     "pluginbroker-artifacts": {
-      "2.13": {
+      "2.14": {
         "upstream_branch": [
           "v3.4.x",
           "v3.4.x"
         ],
         "disabled": true
       },
-      "2.14": {
+      "2.15": {
         "upstream_branch": [
           "v3.4.x",
           "v3.4.x"
         ],
         "disabled": false
       },
-      "2.15": {
+      "2.16": {
         "upstream_branch": [
           "v3.4.x",
           "v3.4.x"
@@ -723,21 +508,21 @@
       }
     },
     "pluginbroker-metadata": {
-      "2.13": {
+      "2.14": {
         "upstream_branch": [
           "v3.4.x",
           "v3.4.x"
         ],
         "disabled": true
       },
-      "2.14": {
+      "2.15": {
         "upstream_branch": [
           "v3.4.x",
           "v3.4.x"
         ],
         "disabled": false
       },
-      "2.15": {
+      "2.16": {
         "upstream_branch": [
           "v3.4.x",
           "v3.4.x"
@@ -753,21 +538,21 @@
       }
     },
     "idea": {
-      "2.13": {
+      "2.14": {
         "upstream_branch": [
           "20210728",
           "20210728"
         ],
         "disabled": true
       },
-      "2.14": {
+      "2.15": {
         "upstream_branch": [
           "20210728",
           "20210728"
         ],
         "disabled": false
       },
-      "2.15": {
+      "2.16": {
         "upstream_branch": [
           "20210728",
           "20210728"
@@ -783,19 +568,12 @@
       }
     },
     "traefik": {
-      "2.13": {
-        "upstream_branch": [
-          "v2.5.0",
-          "v2.5.0"
-        ],
-        "disabled": true
-      },
       "2.14": {
         "upstream_branch": [
           "v2.5.0",
           "v2.5.0"
         ],
-        "disabled": false
+        "disabled": true
       },
       "2.15": {
         "upstream_branch": [
@@ -809,29 +587,12 @@
           "v2.5.0",
           "v2.5.0"
         ],
-        "disabled": false
-      }
-    },
-    "deprecated": {
-      "2.13": {
-        "disabled": true
-      },
-      "2.14": {
-        "disabled": false
-      },
-      "2.15": {
-        "disabled": false
-      },
-      "2.x": {
         "disabled": false
       }
     },
     "theia-akamai": {
-      "2.13": {
-        "disabled": true
-      },
       "2.14": {
-        "disabled": false
+        "disabled": true
       },
       "2.15": {
         "disabled": false
@@ -841,35 +602,74 @@
       }
     },
     "build-all-images": {
-      "2.13": {
-        "disabled": true
-      },
       "2.14": {
-        "disabled": false
+        "disabled": true
       },
       "2.15": {
         "disabled": false
       },
+      "2.16": {
+        "disabled": false
+      },
       "2.x": {
+        "disabled": false
+      }
+    },
+    "udi": {
+      "2.15": {
+        "upstream_branch": [
+          "crw-2.15-rhel-8",
+          "crw-2.15-rhel-8"
+        ],
+        "disabled": false
+      },
+      "2.16": {
+        "upstream_branch": [
+          "crw-2.16-rhel-8",
+          "crw-2.16-rhel-8"
+        ],
+        "disabled": false
+      },
+      "2.x": {
+        "upstream_branch": [
+          "crw-2-rhel-8",
+          "crw-2-rhel-8"
+        ],
+        "disabled": false
+      }
+    },
+    "udi-openj9": {
+      "2.15": {
+        "upstream_branch": [
+          "crw-2.15-rhel-8",
+          "crw-2.15-rhel-8"
+        ],
+        "disabled": false
+      },
+      "2.16": {
+        "upstream_branch": [
+          "crw-2.16-rhel-8",
+          "crw-2.16-rhel-8"
+        ],
+        "disabled": false
+      },
+      "2.x": {
+        "upstream_branch": [
+          "crw-2-rhel-8",
+          "crw-2-rhel-8"
+        ],
         "disabled": false
       }
     }
   },
   "Management-Jobs": {
     "crwctl": {
-      "2.13": {
-        "upstream_branch": [
-          "7.38.x",
-          "7.37.x"
-        ],
-        "disabled": true
-      },
       "2.14": {
         "upstream_branch": [
           "7.40.x",
           "7.39.x"
         ],
-        "disabled": false
+        "disabled": true
       },
       "2.15": {
         "upstream_branch": [
@@ -887,19 +687,12 @@
       }
     },
     "operator-bundle": {
-      "2.13": {
-        "upstream_branch": [
-          "7.38.x",
-          "7.37.x"
-        ],
-        "disabled": true
-      },
       "2.14": {
         "upstream_branch": [
           "7.40.x",
           "7.39.x"
         ],
-        "disabled": false
+        "disabled": true
       },
       "2.15": {
         "upstream_branch": [
@@ -917,19 +710,12 @@
       }
     },
     "operator-metadata": {
-      "2.13": {
-        "upstream_branch": [
-          "7.38.x",
-          "7.37.x"
-        ],
-        "disabled": true
-      },
       "2.14": {
         "upstream_branch": [
           "7.40.x",
           "7.39.x"
         ],
-        "disabled": false
+        "disabled": true
       },
       "2.15": {
         "upstream_branch": [
@@ -937,21 +723,11 @@
           "7.41.x"
         ],
         "disabled": false
-      },
-      "2.x": {
-        "upstream_branch": [
-          "main",
-          "main"
-        ],
-        "disabled": false
       }
     },
     "get-sources-rhpkg-container-build": {
-      "2.13": {
-        "disabled": true
-      },
       "2.14": {
-        "disabled": false
+        "disabled": true
       },
       "2.15": {
         "disabled": false
@@ -961,11 +737,8 @@
       }
     },
     "push-latest-container-to-quay": {
-      "2.13": {
-        "disabled": true
-      },
       "2.14": {
-        "disabled": false
+        "disabled": true
       },
       "2.15": {
         "disabled": false
@@ -975,11 +748,8 @@
       }
     },
     "sync-to-downstream": {
-      "2.13": {
-        "disabled": true
-      },
       "2.14": {
-        "disabled": false
+        "disabled": true
       },
       "2.15": {
         "disabled": false
@@ -989,11 +759,8 @@
       }
     },
     "update-digests-in-metadata": {
-      "2.13": {
-        "disabled": true
-      },
       "2.14": {
-        "disabled": false
+        "disabled": true
       },
       "2.15": {
         "disabled": false
@@ -1003,11 +770,8 @@
       }
     },
     "send-email-qe-build-list": {
-      "2.13": {
-        "disabled": true
-      },
       "2.14": {
-        "disabled": false
+        "disabled": true
       },
       "2.15": {
         "disabled": false
@@ -1019,87 +783,91 @@
   },
   "CSVs": {
     "operator-bundle": {
-      "2.13": {
-        "CSV_VERSION": "2.13.101-0.1639666401.p",
-        "CSV_VERSION_PREV": "2.13.100"
-      },
       "2.14": {
         "CSV_VERSION": "2.14.100",
         "CSV_VERSION_PREV": "2.13.101-0.1639666401.p"
       },
       "2.15": {
-        "CSV_VERSION": "2.15.0",
-        "CSV_VERSION_PREV": "2.13.101-0.1639666401.p"
+        "CSV_VERSION": "2.15.100",
+        "CSV_VERSION_PREV": "2.14.100"
+      },
+      "2.16": {
+        "CSV_VERSION": "2.16.0",
+        "CSV_VERSION_PREV": "2.14.100"
       },
       "2.x": {
-        "CSV_VERSION": "2.15.0",
-        "CSV_VERSION_PREV": "2.13.101-0.1639666401.p"
+        "CSV_VERSION": "2.16.0",
+        "CSV_VERSION_PREV": "2.14.100"
       }
     },
     "operator-metadata": {
-      "2.13": {
-        "CSV_VERSION": "2.13.1-0.1639666398.p",
-        "CSV_VERSION_PREV": "2.13.1"
-      },
       "2.14": {
         "CSV_VERSION": "2.14.0",
         "CSV_VERSION_PREV": "2.13.1-0.1639666398.p"
       },
+      "2.15": {
+        "CSV_VERSION": "2.15.0",
+        "CSV_VERSION_PREV": "2.14.0"
+      },
+      "2.16": {
+        "CSV_VERSION": "2.15.0",
+        "CSV_VERSION_PREV": "2.14.0"
+      },
       "2.x": {
         "CSV_VERSION": "2.15.0",
-        "CSV_VERSION_PREV": "2.13.1-0.1639666398.p"
+        "CSV_VERSION_PREV": "2.14.0"
       }
     }
   },
   "Other": {
     "Errata": {
-      "2.13": "85517",
       "2.14": "85526",
-      "2.15": "",
+      "2.15": "87201",
+      "2.16": "",
       "2.x": ""
     },
     "Epic": {
-      "2.13": "CRW-2543",
       "2.14": "CRW-2244",
-      "2.15": "",
+      "2.15": "CRW-2474",
+      "2.16": "",
       "2.x": ""
     },
     "FLOATING_QUAY_TAGS": {
-      "2.13": "2.13",
-      "2.14": "latest",
-      "2.15": "next",
+      "2.14": "2.14",
+      "2.15": "latest",
+      "2.16": "next",
       "2.x": "next"
     },
     "DEV_WORKSPACE_CONTROLLER_VERSION": {
-      "2.13": "v0.9.0",
       "2.14": "v0.9.0",
-      "2.15": "v0.9.0",
-      "2.x": "v0.9.0"
+      "2.15": "v0.11.0",
+      "2.16": "v0.11.0",
+      "2.x": "v0.11.0"
     },
     "DEV_HEADER_REWRITE_TRAEFIK_PLUGIN": {
-      "2.13": "v0.1.2",
       "2.14": "v0.1.2",
       "2.15": "v0.1.2",
+      "2.16": "v0.1.2",
       "2.x": "v0.1.2"
     },
     "@eclipse-che/plugin-registry-generator": {
-      "2.13": "7.38.2",
       "2.14": "7.40.2",
-      "2.15": "next",
+      "2.15": "7.42.0",
+      "2.16": "next",
       "2.x": "next"
     },
     "THEIA_BUILD_PARAMS": {
-      "2.13": {
-        "THEIA_BRANCH": "crw-2.13.0",
-        "THEIA_GITHUB_REPO": "redhat-developer/eclipse-theia",
-        "THEIA_COMMIT_SHA": "cd50236f058843ec6ca53bad7eee89de1cda4460"
-      },
       "2.14": {
         "THEIA_BRANCH": "crw-2.14.0",
         "THEIA_GITHUB_REPO": "redhat-developer/eclipse-theia",
         "THEIA_COMMIT_SHA": "cd50236f058843ec6ca53bad7eee89de1cda4460"
       },
       "2.15": {
+        "THEIA_BRANCH": "master",
+        "THEIA_GITHUB_REPO": "eclipse-theia/theia",
+        "THEIA_COMMIT_SHA": ""
+      },
+      "2.16": {
         "THEIA_BRANCH": "master",
         "THEIA_GITHUB_REPO": "eclipse-theia/theia",
         "THEIA_COMMIT_SHA": ""
@@ -1111,31 +879,31 @@
       }
     },
     "OPENSHIFT_CONTENT_SET_VERSION": {
-      "2.13": "4.9",
       "2.14": "4.9",
       "2.15": "4.9",
+      "2.16": "4.9",
       "2.x": "4.9"
     },
     "GOLANG_VERSION": {
-      "2.13": "1.16.2",
       "2.14": "1.16.2",
       "2.15": "1.16.2",
+      "2.16": "1.16.2",
       "2.x": "1.16.2"
     },
     "NODE_VERSION": {
-      "2.13": "12.22.3",
       "2.14": "12.22.3",
-      "2.15": "12.22.3",
-      "2.x": "12.22.3"
+      "2.15": "12.22.5",
+      "2.16": "12.22.5",
+      "2.x": "12.22.5"
     },
     "YARN_VERSION": {
-      "2.13": "1.22.5",
       "2.14": "1.22.5",
-      "2.15": "1.22.5",
-      "2.x": "1.22.5"
+      "2.15": "1.22.17",
+      "2.16": "1.22.17",
+      "2.x": "1.22.17"
     }
   },
   "Copyright": [
-    "#\n# Copyright (c) 2018-2021 Red Hat, Inc.\n#    This program and the accompanying materials are made\n#    available under the terms of the Eclipse Public License 2.0\n#    which is available at https://www.eclipse.org/legal/epl-2.0/\n#\n#  SPDX-License-Identifier: EPL-2.0\n#\n#  Contributors:\n#    Red Hat, Inc. - initial API and implementation\n"
+    "#\n# Copyright (c) 2018-2022 Red Hat, Inc.\n#    This program and the accompanying materials are made\n#    available under the terms of the Eclipse Public License 2.0\n#    which is available at https://www.eclipse.org/legal/epl-2.0/\n#\n#  SPDX-License-Identifier: EPL-2.0\n#\n#  Contributors:\n#    Red Hat, Inc. - initial API and implementation\n"
   ]
 }

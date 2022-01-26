@@ -19,7 +19,7 @@ components:
     go.lintFlags: '--fast'
 -
   type: dockerimage
-  image: registry.redhat.io/codeready-workspaces/stacks-golang-rhel8:2.15
+  image: registry.redhat.io/codeready-workspaces/stacks-golang-rhel8:2.16
   alias: go-cli
   env:
     - name: GOPATH

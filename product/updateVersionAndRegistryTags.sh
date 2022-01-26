@@ -254,18 +254,24 @@ updateVersion() {
     # debug: # cat "${WORKDIR}/dependencies/job-config.json" | grep -E -A5 "FLOATING_QUAY_TAGS|plugin-registry-gen"; exit
 
     # update CSV versions for 2.yy latest and 2.x too
+    echo "CRW_VERSION = $CRW_VERSION"
     for op in "operator-bundle"; do
       for ver in "${CRW_VERSION}" "2.x"; do
-        replaceField "${WORKDIR}/dependencies/job-config.json" ".CSVs[\"${op}\"][\"${ver}\"][\"CSV_VERSION\"]" "\"${CRW_VERSION}.0\""
+        # TODO CRW-2637 after we branch for 2.16, remove the .100 option
+        if [[ "${CRW_VERSION}" == "2.16" ]]; then 
+          replaceField "${WORKDIR}/dependencies/job-config.json" ".CSVs[\"${op}\"][\"${ver}\"][\"CSV_VERSION\"]" "\"${CRW_VERSION}.0\""
+        else
+          replaceField "${WORKDIR}/dependencies/job-config.json" ".CSVs[\"${op}\"][\"${ver}\"][\"CSV_VERSION\"]" "\"${CRW_VERSION}.100\""
+        fi
       done
     done
 
     # update CSV_VERSION_PREV values
     computeLatestCSV operator-bundle
 
-    # TODO remove this block when we're officially done with 2.14.z
-    if [[ $CRW_VERSION == "2.14" ]]; then
-      # set operator-bundle CSV_VERSION = 2.14.100
+    # TODO CRW-2637 remove this block when we're officially done with 2.14.z
+    if [[ $CRW_VERSION == "2.14" ]] || [[ $CRW_VERSION == "2.15" ]] || [[ $CRW_VERSION == "2.x" ]]; then
+      # set operator-bundle CSV_VERSION = 2.15.100
       replaceField "${WORKDIR}/dependencies/job-config.json" \
         ".CSVs[\"operator-bundle\"][\"${CRW_VERSION}\"][\"CSV_VERSION\"]" \
         "\"${CRW_VERSION}.100\""
@@ -274,7 +280,7 @@ updateVersion() {
         "\"${CRW_VERSION}.0\""
       computeLatestCSV operator-metadata
     fi
-    # TODO remove this block when we're officially done with 2.14.z
+    # TODO CRW-2637 remove this block when we're officially done with 2.15.z
 
     # optionally, can enable/disable specific job sets for a given version
     if [[ $ENABLE_CRW_MGMTJOBS_VERSION ]]; then 
@@ -385,7 +391,7 @@ echo "
 VERSION job-config.json, and registries updated.
 
 Remember to run job-configurator to regenerate jobs:
-https://main-jenkins-csb-crwqe.apps.ocp4.prod.psi.redhat.com/job/job-configurator/buildWithParameters?FAIL_ON_CASC_CHANGES=false&JOBDSL_INCLUDE=.*CRW_CI.*
-https://main-jenkins-csb-crwqe.apps.ocp4.prod.psi.redhat.com/job/job-configurator/lastBuild/parameters/
-https://main-jenkins-csb-crwqe.apps.ocp4.prod.psi.redhat.com/job/job-configurator/lastBuild/console
+https://main-jenkins-csb-crwqe.apps.ocp-c1.prod.psi.redhat.com/job/job-configurator/buildWithParameters?FAIL_ON_CASC_CHANGES=false&JOBDSL_INCLUDE=.*CRW_CI.*
+https://main-jenkins-csb-crwqe.apps.ocp-c1.prod.psi.redhat.com/job/job-configurator/lastBuild/parameters/
+https://main-jenkins-csb-crwqe.apps.ocp-c1.prod.psi.redhat.com/job/job-configurator/lastBuild/console
 "

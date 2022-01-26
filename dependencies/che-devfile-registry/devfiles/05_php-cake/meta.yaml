@@ -1,5 +1,7 @@
 ---
 displayName: "PHP CakePHP"
-description: PHP Stack with PHP 7.3.5, Apache Web Server 2.4.37, Composer 1.8.4 and a quickstart CakePHP application for OpenShift
-tags: ["tech-preview", "PHP", "CakePHP", "Apache", "Composer", "UBI8"]
+description: PHP Stack with PHP, Apache Web Server, Composer and a quickstart CakePHP application for OpenShift
+tags: ["Tech-Preview", "PHP", "CakePHP", "Apache", "Composer", "UBI8"]
 icon: /images/type-php.svg
+links:
+  v2: https://github.com/crw-samples/cakephp-ex/tree/devfilev2

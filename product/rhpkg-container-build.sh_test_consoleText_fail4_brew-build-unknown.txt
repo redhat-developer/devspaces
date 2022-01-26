@@ -290,34 +290,34 @@ CRW_VERSION = '2.9'
 + [[ ! -n 2.x ]]
 + UPSTREAM_JOB_NAME=crw-configbump_2.x
 + jenkinsURL=
-+ [[ -n https://main-jenkins-csb-crwqe.apps.ocp4.prod.psi.redhat.com/ ]]
-+ checkJenkinsURL https://main-jenkins-csb-crwqe.apps.ocp4.prod.psi.redhat.com/job/CRW_CI/job/crw-configbump_2.x
-+ checkURL=https://main-jenkins-csb-crwqe.apps.ocp4.prod.psi.redhat.com/job/CRW_CI/job/crw-configbump_2.x
-++ curl -sSLI https://main-jenkins-csb-crwqe.apps.ocp4.prod.psi.redhat.com/job/CRW_CI/job/crw-configbump_2.x
++ [[ -n https://main-jenkins-csb-crwqe.apps.ocp-c1.prod.psi.redhat.com/ ]]
++ checkJenkinsURL https://main-jenkins-csb-crwqe.apps.ocp-c1.prod.psi.redhat.com/job/CRW_CI/job/crw-configbump_2.x
++ checkURL=https://main-jenkins-csb-crwqe.apps.ocp-c1.prod.psi.redhat.com/job/CRW_CI/job/crw-configbump_2.x
+++ curl -sSLI https://main-jenkins-csb-crwqe.apps.ocp-c1.prod.psi.redhat.com/job/CRW_CI/job/crw-configbump_2.x
 ++ grep -E '404|Not Found|Failed to connect|No route to host|Could not resolve host|Connection refused'
 + [[ ! -n '' ]]
-+ jenkinsURL=https://main-jenkins-csb-crwqe.apps.ocp4.prod.psi.redhat.com/job/CRW_CI/job/crw-configbump_2.x
-+ [[ ! -n https://main-jenkins-csb-crwqe.apps.ocp4.prod.psi.redhat.com/job/CRW_CI/job/crw-configbump_2.x ]]
-+ [[ ! -n https://main-jenkins-csb-crwqe.apps.ocp4.prod.psi.redhat.com/job/CRW_CI/job/crw-configbump_2.x ]]
-+ [[ ! -n https://main-jenkins-csb-crwqe.apps.ocp4.prod.psi.redhat.com/job/CRW_CI/job/crw-configbump_2.x ]]
++ jenkinsURL=https://main-jenkins-csb-crwqe.apps.ocp-c1.prod.psi.redhat.com/job/CRW_CI/job/crw-configbump_2.x
++ [[ ! -n https://main-jenkins-csb-crwqe.apps.ocp-c1.prod.psi.redhat.com/job/CRW_CI/job/crw-configbump_2.x ]]
++ [[ ! -n https://main-jenkins-csb-crwqe.apps.ocp-c1.prod.psi.redhat.com/job/CRW_CI/job/crw-configbump_2.x ]]
++ [[ ! -n https://main-jenkins-csb-crwqe.apps.ocp-c1.prod.psi.redhat.com/job/CRW_CI/job/crw-configbump_2.x ]]
 + theTarGzs='
 lastSuccessfulBuild/artifact/asset-configbump-x86_64.tar.gz
 lastSuccessfulBuild/artifact/asset-configbump-s390x.tar.gz
 lastSuccessfulBuild/artifact/asset-configbump-ppc64le.tar.gz
 '
-+ lastSuccessfulURL='https://main-jenkins-csb-crwqe.apps.ocp4.prod.psi.redhat.com/job/CRW_CI/job/crw-configbump_2.x/lastSuccessfulBuild/api/xml?xpath=/workflowRun/'
++ lastSuccessfulURL='https://main-jenkins-csb-crwqe.apps.ocp-c1.prod.psi.redhat.com/job/CRW_CI/job/crw-configbump_2.x/lastSuccessfulBuild/api/xml?xpath=/workflowRun/'
 + LABELs=
 + outputFiles=
 + for theTarGz in ${theTarGzs}
 + outputFile=asset-configbump-x86_64.tar.gz
-+ log '[INFO] Download https://main-jenkins-csb-crwqe.apps.ocp4.prod.psi.redhat.com/job/CRW_CI/job/crw-configbump_2.x/lastSuccessfulBuild/artifact/asset-configbump-x86_64.tar.gz:'
++ log '[INFO] Download https://main-jenkins-csb-crwqe.apps.ocp-c1.prod.psi.redhat.com/job/CRW_CI/job/crw-configbump_2.x/lastSuccessfulBuild/artifact/asset-configbump-x86_64.tar.gz:'
 + [[ 1 -gt 0 ]]
-+ echo '[INFO] Download https://main-jenkins-csb-crwqe.apps.ocp4.prod.psi.redhat.com/job/CRW_CI/job/crw-configbump_2.x/lastSuccessfulBuild/artifact/asset-configbump-x86_64.tar.gz:'
-[INFO] Download https://main-jenkins-csb-crwqe.apps.ocp4.prod.psi.redhat.com/job/CRW_CI/job/crw-configbump_2.x/lastSuccessfulBuild/artifact/asset-configbump-x86_64.tar.gz:
++ echo '[INFO] Download https://main-jenkins-csb-crwqe.apps.ocp-c1.prod.psi.redhat.com/job/CRW_CI/job/crw-configbump_2.x/lastSuccessfulBuild/artifact/asset-configbump-x86_64.tar.gz:'
+[INFO] Download https://main-jenkins-csb-crwqe.apps.ocp-c1.prod.psi.redhat.com/job/CRW_CI/job/crw-configbump_2.x/lastSuccessfulBuild/artifact/asset-configbump-x86_64.tar.gz:
 + rm -f asset-configbump-x86_64.tar.gz
 + getFingerprints asset-configbump-x86_64.tar.gz
 + outputFile=asset-configbump-x86_64.tar.gz
-++ curl -L https://main-jenkins-csb-crwqe.apps.ocp4.prod.psi.redhat.com/job/CRW_CI/job/crw-configbump_2.x/lastSuccessfulBuild/fingerprints/
+++ curl -L https://main-jenkins-csb-crwqe.apps.ocp-c1.prod.psi.redhat.com/job/CRW_CI/job/crw-configbump_2.x/lastSuccessfulBuild/fingerprints/
 ++ grep asset-configbump-x86_64.tar.gz
 ++ sed -e 's#.\+/fingerprint/\([0-9a-f]\+\)/".\+#\1#'
 + latestFingerprint=
@@ -329,18 +329,18 @@ lastSuccessfulBuild/artifact/asset-configbump-ppc64le.tar.gz
 + echo '[WARNING] Cannot resolve artifact fingerprints for asset-configbump-x86_64.tar.gz'
 + [[ '' != \S\H\A\5\1\2 ]]
 [WARNING] Cannot resolve artifact fingerprints for asset-configbump-x86_64.tar.gz
-+ curl -sSL --insecure -o asset-configbump-x86_64.tar.gz https://main-jenkins-csb-crwqe.apps.ocp4.prod.psi.redhat.com/job/CRW_CI/job/crw-configbump_2.x/lastSuccessfulBuild/artifact/asset-configbump-x86_64.tar.gz
++ curl -sSL --insecure -o asset-configbump-x86_64.tar.gz https://main-jenkins-csb-crwqe.apps.ocp-c1.prod.psi.redhat.com/job/CRW_CI/job/crw-configbump_2.x/lastSuccessfulBuild/artifact/asset-configbump-x86_64.tar.gz
 + outputFiles=' asset-configbump-x86_64.tar.gz'
 + for theTarGz in ${theTarGzs}
 + outputFile=asset-configbump-s390x.tar.gz
-+ log '[INFO] Download https://main-jenkins-csb-crwqe.apps.ocp4.prod.psi.redhat.com/job/CRW_CI/job/crw-configbump_2.x/lastSuccessfulBuild/artifact/asset-configbump-s390x.tar.gz:'
++ log '[INFO] Download https://main-jenkins-csb-crwqe.apps.ocp-c1.prod.psi.redhat.com/job/CRW_CI/job/crw-configbump_2.x/lastSuccessfulBuild/artifact/asset-configbump-s390x.tar.gz:'
 + [[ 1 -gt 0 ]]
-+ echo '[INFO] Download https://main-jenkins-csb-crwqe.apps.ocp4.prod.psi.redhat.com/job/CRW_CI/job/crw-configbump_2.x/lastSuccessfulBuild/artifact/asset-configbump-s390x.tar.gz:'
-[INFO] Download https://main-jenkins-csb-crwqe.apps.ocp4.prod.psi.redhat.com/job/CRW_CI/job/crw-configbump_2.x/lastSuccessfulBuild/artifact/asset-configbump-s390x.tar.gz:
++ echo '[INFO] Download https://main-jenkins-csb-crwqe.apps.ocp-c1.prod.psi.redhat.com/job/CRW_CI/job/crw-configbump_2.x/lastSuccessfulBuild/artifact/asset-configbump-s390x.tar.gz:'
+[INFO] Download https://main-jenkins-csb-crwqe.apps.ocp-c1.prod.psi.redhat.com/job/CRW_CI/job/crw-configbump_2.x/lastSuccessfulBuild/artifact/asset-configbump-s390x.tar.gz:
 + rm -f asset-configbump-s390x.tar.gz
 + getFingerprints asset-configbump-s390x.tar.gz
 + outputFile=asset-configbump-s390x.tar.gz
-++ curl -L https://main-jenkins-csb-crwqe.apps.ocp4.prod.psi.redhat.com/job/CRW_CI/job/crw-configbump_2.x/lastSuccessfulBuild/fingerprints/
+++ curl -L https://main-jenkins-csb-crwqe.apps.ocp-c1.prod.psi.redhat.com/job/CRW_CI/job/crw-configbump_2.x/lastSuccessfulBuild/fingerprints/
 ++ grep asset-configbump-s390x.tar.gz
 ++ sed -e 's#.\+/fingerprint/\([0-9a-f]\+\)/".\+#\1#'
 + latestFingerprint=
@@ -352,18 +352,18 @@ lastSuccessfulBuild/artifact/asset-configbump-ppc64le.tar.gz
 + echo '[WARNING] Cannot resolve artifact fingerprints for asset-configbump-s390x.tar.gz'
 + [[ '' != \S\H\A\5\1\2 ]]
 [WARNING] Cannot resolve artifact fingerprints for asset-configbump-s390x.tar.gz
-+ curl -sSL --insecure -o asset-configbump-s390x.tar.gz https://main-jenkins-csb-crwqe.apps.ocp4.prod.psi.redhat.com/job/CRW_CI/job/crw-configbump_2.x/lastSuccessfulBuild/artifact/asset-configbump-s390x.tar.gz
++ curl -sSL --insecure -o asset-configbump-s390x.tar.gz https://main-jenkins-csb-crwqe.apps.ocp-c1.prod.psi.redhat.com/job/CRW_CI/job/crw-configbump_2.x/lastSuccessfulBuild/artifact/asset-configbump-s390x.tar.gz
 + outputFiles=' asset-configbump-x86_64.tar.gz asset-configbump-s390x.tar.gz'
 + for theTarGz in ${theTarGzs}
 + outputFile=asset-configbump-ppc64le.tar.gz
-+ log '[INFO] Download https://main-jenkins-csb-crwqe.apps.ocp4.prod.psi.redhat.com/job/CRW_CI/job/crw-configbump_2.x/lastSuccessfulBuild/artifact/asset-configbump-ppc64le.tar.gz:'
++ log '[INFO] Download https://main-jenkins-csb-crwqe.apps.ocp-c1.prod.psi.redhat.com/job/CRW_CI/job/crw-configbump_2.x/lastSuccessfulBuild/artifact/asset-configbump-ppc64le.tar.gz:'
 + [[ 1 -gt 0 ]]
-+ echo '[INFO] Download https://main-jenkins-csb-crwqe.apps.ocp4.prod.psi.redhat.com/job/CRW_CI/job/crw-configbump_2.x/lastSuccessfulBuild/artifact/asset-configbump-ppc64le.tar.gz:'
-[INFO] Download https://main-jenkins-csb-crwqe.apps.ocp4.prod.psi.redhat.com/job/CRW_CI/job/crw-configbump_2.x/lastSuccessfulBuild/artifact/asset-configbump-ppc64le.tar.gz:
++ echo '[INFO] Download https://main-jenkins-csb-crwqe.apps.ocp-c1.prod.psi.redhat.com/job/CRW_CI/job/crw-configbump_2.x/lastSuccessfulBuild/artifact/asset-configbump-ppc64le.tar.gz:'
+[INFO] Download https://main-jenkins-csb-crwqe.apps.ocp-c1.prod.psi.redhat.com/job/CRW_CI/job/crw-configbump_2.x/lastSuccessfulBuild/artifact/asset-configbump-ppc64le.tar.gz:
 + rm -f asset-configbump-ppc64le.tar.gz
 + getFingerprints asset-configbump-ppc64le.tar.gz
 + outputFile=asset-configbump-ppc64le.tar.gz
-++ curl -L https://main-jenkins-csb-crwqe.apps.ocp4.prod.psi.redhat.com/job/CRW_CI/job/crw-configbump_2.x/lastSuccessfulBuild/fingerprints/
+++ curl -L https://main-jenkins-csb-crwqe.apps.ocp-c1.prod.psi.redhat.com/job/CRW_CI/job/crw-configbump_2.x/lastSuccessfulBuild/fingerprints/
 ++ grep asset-configbump-ppc64le.tar.gz
 ++ sed -e 's#.\+/fingerprint/\([0-9a-f]\+\)/".\+#\1#'
 + latestFingerprint=
@@ -375,7 +375,7 @@ lastSuccessfulBuild/artifact/asset-configbump-ppc64le.tar.gz
 + echo '[WARNING] Cannot resolve artifact fingerprints for asset-configbump-ppc64le.tar.gz'
 + [[ '' != \S\H\A\5\1\2 ]]
 [WARNING] Cannot resolve artifact fingerprints for asset-configbump-ppc64le.tar.gz
-+ curl -sSL --insecure -o asset-configbump-ppc64le.tar.gz https://main-jenkins-csb-crwqe.apps.ocp4.prod.psi.redhat.com/job/CRW_CI/job/crw-configbump_2.x/lastSuccessfulBuild/artifact/asset-configbump-ppc64le.tar.gz
++ curl -sSL --insecure -o asset-configbump-ppc64le.tar.gz https://main-jenkins-csb-crwqe.apps.ocp-c1.prod.psi.redhat.com/job/CRW_CI/job/crw-configbump_2.x/lastSuccessfulBuild/artifact/asset-configbump-ppc64le.tar.gz
 + outputFiles=' asset-configbump-x86_64.tar.gz asset-configbump-s390x.tar.gz asset-configbump-ppc64le.tar.gz'
 + [[ -n  asset-configbump-x86_64.tar.gz asset-configbump-s390x.tar.gz asset-configbump-ppc64le.tar.gz ]]
 + log '[INFO] Upload new sources: asset-configbump-x86_64.tar.gz asset-configbump-s390x.tar.gz asset-configbump-ppc64le.tar.gz'
@@ -392,7 +392,7 @@ Source upload succeeded. Don't forget to commit the sources file
 + echo '[INFO] Commit new sources from: asset-configbump-x86_64.tar.gz asset-configbump-s390x.tar.gz asset-configbump-ppc64le.tar.gz'
 + field=id
 [INFO] Commit new sources from: asset-configbump-x86_64.tar.gz asset-configbump-s390x.tar.gz asset-configbump-ppc64le.tar.gz
-++ curl -sSL --insecure 'https://main-jenkins-csb-crwqe.apps.ocp4.prod.psi.redhat.com/job/CRW_CI/job/crw-configbump_2.x/lastSuccessfulBuild/api/xml?xpath=/workflowRun/id'
+++ curl -sSL --insecure 'https://main-jenkins-csb-crwqe.apps.ocp-c1.prod.psi.redhat.com/job/CRW_CI/job/crw-configbump_2.x/lastSuccessfulBuild/api/xml?xpath=/workflowRun/id'
 ++ sed -e 's#<id>\(.\+\)</id>#\1#' -e 's#&lt;br/&gt; #\n#g' -e 's#\&lt;a.\+/a\&gt;##g'
 + ID=11
 ++ echo 11
