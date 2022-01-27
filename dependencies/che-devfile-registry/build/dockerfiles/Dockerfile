@@ -49,6 +49,7 @@ COPY ./build/dockerfiles/rhel.install.sh /tmp
 RUN /tmp/rhel.install.sh && rm -f /tmp/rhel.install.sh
 
 COPY ./build/scripts ./arbitrary-users-patch/base_images /build/
+COPY ./versions.json /build/
 COPY ./devfiles /build/devfiles
 WORKDIR /build/
 

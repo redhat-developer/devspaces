@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Copyright (c) 2021 Red Hat, Inc.
+# Copyright (c) 2022 Red Hat, Inc.
 # This program and the accompanying materials are made
 # available under the terms of the Eclipse Public License 2.0
 # which is available at https://www.eclipse.org/legal/epl-2.0/
@@ -12,8 +12,8 @@ set -e
 
 # shellcheck disable=SC1091
 source ./clone_and_zip.sh
-
-npm install -g @eclipse-che/che-theia-devworkspace-handler@0.0.1-1640160609
+lib_name="che-theia-devworkspace-handler"
+npm install -g @eclipse-che/"${lib_name}"@"$(jq -r --arg v $lib_name '.[$v]' versions.json)"
 mkdir -p /build/resources/v2/
 for dir in /build/devfiles/*/
 do
