@@ -733,7 +733,7 @@ metadata:
     - Snippets
   icon: /images/redhat-java-icon.png
 sidecar:
-  image: 'registry.redhat.io/codeready-workspaces/plugin-java11-rhel8:2.11'
+  image: 'registry.redhat.io/codeready-workspaces/udi-rhel8:2.15-3'
   name: vscode-java
   memoryLimit: 1500Mi
   cpuLimit: 500m
@@ -759,7 +759,7 @@ metadata:
     - Snippets
   icon: /images/redhat-java-icon.png
 sidecar:
-  image: 'registry.redhat.io/codeready-workspaces/plugin-java11-rhel8@sha256:d0337762e71fd4badabcb38a582b2f35e7e7fc1c9c0f2e841e339d45b7bd34ed'
+  image: 'registry.redhat.io/codeready-workspaces/udi-rhel8@sha256:b0f59dad9e53cc3da64dfc98ae61f33f54107a8630ee828796b11581110e7117'
   name: vscode-java
   memoryLimit: 1500Mi
   cpuLimit: 500m
@@ -769,7 +769,7 @@ extensions:
 END
 )
 echo "$cheTheiaPluginYaml" > "${METAS_DIR}/che-theia-plugin.yaml"
-export RELATED_IMAGE_codeready_workspaces_plugin_java11_plugin_registry_image_GIXDCMIK='registry.redhat.io/codeready-workspaces/plugin-java11-rhel8@sha256:d0337762e71fd4badabcb38a582b2f35e7e7fc1c9c0f2e841e339d45b7bd34ed'
+export RELATED_IMAGE_codeready_workspaces_udi_plugin_registry_image_GIXDCMIK='registry.redhat.io/codeready-workspaces/udi-rhel8@sha256:b0f59dad9e53cc3da64dfc98ae61f33f54107a8630ee828796b11581110e7117'
 # shellcheck disable=SC1090
 source "${script_dir}/entrypoint.sh"
 
@@ -782,13 +782,13 @@ initTest "Should replace image references in external_images.txt with RELATED_IM
 
 externalImagesTxt=$(cat <<-END
 registry.redhat.io/codeready-workspaces/machineexec-rhel8:2.11
-registry.redhat.io/codeready-workspaces/plugin-java11-rhel8:2.11
+registry.redhat.io/codeready-workspaces/udi-rhel8:2.15-3
 registry.redhat.io/codeready-workspaces/stacks-golang-rhel8:2.11
 END
 )
 expected_externalImagesTxt=$(cat <<-END
 registry.redhat.io/codeready-workspaces/machineexec-rhel8@sha256:bfdd8cf61a6fad757f1e8334aa84dbf44baddf897ff8def7496bf6dbc066679d
-registry.redhat.io/codeready-workspaces/plugin-java11-rhel8@sha256:d0337762e71fd4badabcb38a582b2f35e7e7fc1c9c0f2e841e339d45b7bd34ed
+registry.redhat.io/codeready-workspaces/udi-rhel8@sha256:b0f59dad9e53cc3da64dfc98ae61f33f54107a8630ee828796b11581110e7117
 registry.redhat.io/codeready-workspaces/stacks-golang-rhel8@sha256:30e71577cb80ffaf1f67a292b4c96ab74108a2361347fc593cbb505784629db2
 
 END
@@ -797,7 +797,7 @@ END
 echo "$externalImagesTxt" > "${METAS_DIR}/external_images.txt"
 
 export RELATED_IMAGE_codeready_workspaces_machineexec_plugin_registry_image_GIXDCMIK='registry.redhat.io/codeready-workspaces/machineexec-rhel8@sha256:bfdd8cf61a6fad757f1e8334aa84dbf44baddf897ff8def7496bf6dbc066679d'
-export RELATED_IMAGE_codeready_workspaces_plugin_java11_plugin_registry_image_GIXDCMIK='registry.redhat.io/codeready-workspaces/plugin-java11-rhel8@sha256:d0337762e71fd4badabcb38a582b2f35e7e7fc1c9c0f2e841e339d45b7bd34ed'
+export RELATED_IMAGE_codeready_workspaces_udi_devfile_registry_image_GIXDCMIK='registry.redhat.io/codeready-workspaces/udi-rhel8@sha256:b0f59dad9e53cc3da64dfc98ae61f33f54107a8630ee828796b11581110e7117'
 export RELATED_IMAGE_codeready_workspaces_stacks_golang_plugin_registry_image_GIXDCMIK='registry.redhat.io/codeready-workspaces/stacks-golang-rhel8@sha256:30e71577cb80ffaf1f67a292b4c96ab74108a2361347fc593cbb505784629db2'
 
 # shellcheck disable=SC1090
