@@ -2,7 +2,7 @@
 
 # script to generate a manifest of all the 3rd party deps not built in OSBS, but built in Jenkins or imported from upstream community.
 
-JENKINS=https://main-jenkins-csb-crwqe.apps.ocp4.prod.psi.redhat.com/job/CRW_CI/job
+JENKINS=https://main-jenkins-csb-crwqe.apps.ocp-c1.prod.psi.redhat.com/job/CRW_CI/job
 
 MIDSTM_BRANCH=""
 SCRIPT_DIR=$(dirname $(readlink -f "${BASH_SOURCE[0]}"))
