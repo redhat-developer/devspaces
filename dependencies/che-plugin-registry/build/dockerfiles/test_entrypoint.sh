@@ -359,7 +359,7 @@ update_container_image_references
 assertFileContentEquals "${METAS_DIR}/meta.yaml" "${expected_metayaml}"
 
 #################################################################
-initTest "Should replace 2.11 image references in theia-ide devfile.yaml with RELATED_IMAGE env vars "
+initTest "Should replace image references in theia-ide devfile.yaml with RELATED_IMAGE env vars "
 
 devfileyaml=$(cat <<-END
 schemaVersion: 2.1.0
@@ -641,10 +641,8 @@ extract_and_use_related_images_env_variables_with_image_digest_info
 assertFileContentEquals "${METAS_DIR}/devfile.yaml" "${expected_devfileyaml}"
 
 
-
-
 #################################################################
-initTest "Should replace 2.11 image references in che-machine-exec-plugin devfile.yaml with RELATED_IMAGE env vars "
+initTest "Should replace image references in che-machine-exec-plugin devfile.yaml with RELATED_IMAGE env vars "
 
 devfileyaml=$(cat <<-END
 schemaVersion: 2.1.0
@@ -733,7 +731,7 @@ metadata:
     - Snippets
   icon: /images/redhat-java-icon.png
 sidecar:
-  image: 'registry.redhat.io/codeready-workspaces/udi-rhel8:2.15-3'
+  image: 'registry.redhat.io/codeready-workspaces/udi-rhel8:2.16'
   name: vscode-java
   memoryLimit: 1500Mi
   cpuLimit: 500m
@@ -759,7 +757,7 @@ metadata:
     - Snippets
   icon: /images/redhat-java-icon.png
 sidecar:
-  image: 'registry.redhat.io/codeready-workspaces/udi-rhel8@sha256:b0f59dad9e53cc3da64dfc98ae61f33f54107a8630ee828796b11581110e7117'
+  image: 'registry.redhat.io/codeready-workspaces/udi-rhel8@sha256:becfa80ae0e0e86f815e8981c071a68952b6a488298d7525751585538a14d88e'
   name: vscode-java
   memoryLimit: 1500Mi
   cpuLimit: 500m
@@ -769,7 +767,7 @@ extensions:
 END
 )
 echo "$cheTheiaPluginYaml" > "${METAS_DIR}/che-theia-plugin.yaml"
-export RELATED_IMAGE_codeready_workspaces_udi_plugin_registry_image_GIXDCMIK='registry.redhat.io/codeready-workspaces/udi-rhel8@sha256:b0f59dad9e53cc3da64dfc98ae61f33f54107a8630ee828796b11581110e7117'
+export RELATED_IMAGE_codeready_workspaces_udi_plugin_registry_image_GIXDCNQK='registry.redhat.io/codeready-workspaces/udi-rhel8@sha256:becfa80ae0e0e86f815e8981c071a68952b6a488298d7525751585538a14d88e'
 # shellcheck disable=SC1090
 source "${script_dir}/entrypoint.sh"
 
@@ -782,23 +780,22 @@ initTest "Should replace image references in external_images.txt with RELATED_IM
 
 externalImagesTxt=$(cat <<-END
 registry.redhat.io/codeready-workspaces/machineexec-rhel8:2.11
-registry.redhat.io/codeready-workspaces/udi-rhel8:2.15-3
 registry.redhat.io/codeready-workspaces/stacks-golang-rhel8:2.11
+registry.redhat.io/codeready-workspaces/udi-rhel8:2.16
 END
 )
 expected_externalImagesTxt=$(cat <<-END
 registry.redhat.io/codeready-workspaces/machineexec-rhel8@sha256:bfdd8cf61a6fad757f1e8334aa84dbf44baddf897ff8def7496bf6dbc066679d
-registry.redhat.io/codeready-workspaces/udi-rhel8@sha256:b0f59dad9e53cc3da64dfc98ae61f33f54107a8630ee828796b11581110e7117
 registry.redhat.io/codeready-workspaces/stacks-golang-rhel8@sha256:30e71577cb80ffaf1f67a292b4c96ab74108a2361347fc593cbb505784629db2
-
+registry.redhat.io/codeready-workspaces/udi-rhel8@sha256:becfa80ae0e0e86f815e8981c071a68952b6a488298d7525751585538a14d88e
 END
 )
-
 echo "$externalImagesTxt" > "${METAS_DIR}/external_images.txt"
 
+# NOTE: GIXDCNQK | base 32 -d = 2.16; GIXDCMIK | base 32 -d = 2.11 
 export RELATED_IMAGE_codeready_workspaces_machineexec_plugin_registry_image_GIXDCMIK='registry.redhat.io/codeready-workspaces/machineexec-rhel8@sha256:bfdd8cf61a6fad757f1e8334aa84dbf44baddf897ff8def7496bf6dbc066679d'
-export RELATED_IMAGE_codeready_workspaces_udi_devfile_registry_image_GIXDCMIK='registry.redhat.io/codeready-workspaces/udi-rhel8@sha256:b0f59dad9e53cc3da64dfc98ae61f33f54107a8630ee828796b11581110e7117'
 export RELATED_IMAGE_codeready_workspaces_stacks_golang_plugin_registry_image_GIXDCMIK='registry.redhat.io/codeready-workspaces/stacks-golang-rhel8@sha256:30e71577cb80ffaf1f67a292b4c96ab74108a2361347fc593cbb505784629db2'
+export RELATED_IMAGE_codeready_workspaces_udi_plugin_registry_image_GIXDCNQK='registry.redhat.io/codeready-workspaces/udi-rhel8@sha256:becfa80ae0e0e86f815e8981c071a68952b6a488298d7525751585538a14d88e'
 
 # shellcheck disable=SC1090
 source "${script_dir}/entrypoint.sh"
