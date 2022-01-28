@@ -37,8 +37,7 @@ if [[ "$arch" != "x86_64" ]] || [[ $FORCE_SWAP -eq 1 ]]; then
     if [[ $FORCE_SWAP -eq 1 ]]; then echo -n " (forced)"; fi
     echo
     for yaml in $cheYamls; do
-        sed -E -i 's|plugin-java8-rhel8|plugin-java8-openj9-rhel8|g' "$yaml"
-        sed -E -i 's|plugin-java11-rhel8|plugin-java11-openj9-rhel8|g' "$yaml"
+        sed -E -i 's|udi-rhel8|udi-openj9-rhel8|g' $devfiles
     done
 else
     echo "[INFO] nothing to do on $arch; only swap openjdk for openj9 images on s390x and ppc64le arches"
