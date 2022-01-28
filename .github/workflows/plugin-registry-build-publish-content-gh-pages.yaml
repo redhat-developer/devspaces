@@ -7,7 +7,7 @@
 # SPDX-License-Identifier: EPL-2.0
 #
 
-name: Plugin Registry - Publish Registry Content to GH Pages
+name: Plugin Registry - GH Pages - Publish Registry Content
 
 on:
   push:
@@ -81,8 +81,8 @@ jobs:
           done <   <(find . -name 'meta.yaml' -type f -print0)
           git add "$VERSION_DIR"
           [ -n "$NEXT_VERSION_DIR" ] && git add "$NEXT_VERSION_DIR"
-          git config user.email "crw-build@redhat.com"
-          git config user.name "CRW Build"
+          git config user.email "nickboldt+devstudio-release@gmail.com"
+          git config user.name "devstudio-release"
           git diff-index --quiet HEAD || git commit -m "publish registry $VERSION - $(date)" -s
           git push "https://$GITHUB_ACTOR:${{ secrets.GITHUB_TOKEN }}@github.com/$GITHUB_REPOSITORY.git" gh-pages
           for arch in $(cat /tmp/crw-plugin-registry/architectures.json); do
