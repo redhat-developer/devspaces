@@ -385,6 +385,102 @@
         "disabled": false
       }
     },
+    "plugin-java11-openj9": {
+      "2.14": {
+        "upstream_branch": [
+          "crw-2.14-rhel-8",
+          "crw-2.14-rhel-8"
+        ],
+        "disabled": true
+      },
+      "2.15": {
+        "upstream_branch": [
+          "crw-2.15-rhel-8",
+          "crw-2.15-rhel-8"
+        ],
+        "disabled": false
+      }
+    },
+    "plugin-java11": {
+      "2.14": {
+        "upstream_branch": [
+          "crw-2.14-rhel-8",
+          "crw-2.14-rhel-8"
+        ],
+        "disabled": true
+      },
+      "2.15": {
+        "upstream_branch": [
+          "crw-2.15-rhel-8",
+          "crw-2.15-rhel-8"
+        ],
+        "disabled": false
+      }
+    },
+    "plugin-java8-openj9": {
+      "2.14": {
+        "upstream_branch": [
+          "crw-2.14-rhel-8",
+          "crw-2.14-rhel-8"
+        ],
+        "disabled": true
+      },
+      "2.15": {
+        "upstream_branch": [
+          "crw-2.15-rhel-8",
+          "crw-2.15-rhel-8"
+        ],
+        "disabled": false
+      }
+    },
+    "plugin-java8": {
+      "2.14": {
+        "upstream_branch": [
+          "crw-2.14-rhel-8",
+          "crw-2.14-rhel-8"
+        ],
+        "disabled": true
+      },
+      "2.15": {
+        "upstream_branch": [
+          "crw-2.15-rhel-8",
+          "crw-2.15-rhel-8"
+        ],
+        "disabled": false
+      }
+    },
+    "plugin-kubernetes": {
+      "2.14": {
+        "upstream_branch": [
+          "crw-2.14-rhel-8",
+          "crw-2.14-rhel-8"
+        ],
+        "disabled": true
+      },
+      "2.15": {
+        "upstream_branch": [
+          "crw-2.15-rhel-8",
+          "crw-2.15-rhel-8"
+        ],
+        "disabled": false
+      }
+    },
+    "plugin-openshift": {
+      "2.14": {
+        "upstream_branch": [
+          "crw-2.14-rhel-8",
+          "crw-2.14-rhel-8"
+        ],
+        "disabled": true
+      },
+      "2.15": {
+        "upstream_branch": [
+          "crw-2.15-rhel-8",
+          "crw-2.15-rhel-8"
+        ],
+        "disabled": false
+      }
+    },
     "stacks-cpp": {
       "2.14": {
         "upstream_branch": [
@@ -621,7 +717,7 @@
           "crw-2.15-rhel-8",
           "crw-2.15-rhel-8"
         ],
-        "disabled": false
+        "disabled": true
       },
       "2.16": {
         "upstream_branch": [
@@ -644,7 +740,7 @@
           "crw-2.15-rhel-8",
           "crw-2.15-rhel-8"
         ],
-        "disabled": false
+        "disabled": true
       },
       "2.16": {
         "upstream_branch": [
@@ -806,14 +902,6 @@
         "CSV_VERSION_PREV": "2.13.1-0.1639666398.p"
       },
       "2.15": {
-        "CSV_VERSION": "2.15.0",
-        "CSV_VERSION_PREV": "2.14.0"
-      },
-      "2.16": {
-        "CSV_VERSION": "2.15.0",
-        "CSV_VERSION_PREV": "2.14.0"
-      },
-      "2.x": {
         "CSV_VERSION": "2.15.0",
         "CSV_VERSION_PREV": "2.14.0"
       }
