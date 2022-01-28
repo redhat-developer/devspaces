@@ -68,6 +68,21 @@ quay.io/crw/stacks-cpp-rhel8:2.16-1
    Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1860149
   Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-stacks-cpp/commit?id=a44daa476e3fd6e82035c1d6497bc8741ec4949c
 
+quay.io/crw/stacks-dotnet-rhel8:2.16-1
+     NVR: codeready-workspaces-stacks-dotnet-rhel8-container-2.16-1
+   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1867530
+  Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-stacks-dotnet/commit?id=e6187566ea4489236a50d4641d9eccf43309c3d6
+
+quay.io/crw/stacks-golang-rhel8:2.16-1
+     NVR: codeready-workspaces-stacks-golang-rhel8-container-2.16-1
+   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1867547
+  Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-stacks-golang/commit?id=c48f7e00ca3f2b3a26e8919e92852adebebc2012
+
+quay.io/crw/stacks-php-rhel8:2.16-1
+     NVR: codeready-workspaces-stacks-php-rhel8-container-2.16-1
+   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1867546
+  Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-stacks-php/commit?id=fd0de61e041d3d0499b76b15fe970b2428642586
+
 quay.io/crw/theia-dev-rhel8:2.16-2
      NVR: codeready-workspaces-theia-dev-rhel8-container-2.16-2
    Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1867477
@@ -88,14 +103,14 @@ quay.io/crw/traefik-rhel8:2.16-1
    Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1867483
   Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-traefik/commit?id=94fdf5dd16bf851b87d5bef0fe03df4e2b14034a
 
-quay.io/crw/udi-openj9-rhel8:2.16-2
-     NVR: codeready-workspaces-udi-openj9-rhel8-container-2.16-2
-   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1862184
-  Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-udi-openj9/commit?id=dd84a7432e0bbff670131a702e7a8c011abec0b5
+quay.io/crw/udi-openj9-rhel8:2.16-3
+     NVR: codeready-workspaces-udi-openj9-rhel8-container-2.16-3
+   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1867545
+  Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-udi-openj9/commit?id=84190ad97baad916de9af60c12229da0f0b070da
 
-quay.io/crw/udi-rhel8:2.16-3
-     NVR: codeready-workspaces-udi-rhel8-container-2.16-3
-   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1862177
-  Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-udi/commit?id=b6d411e7fbd9cd3ee32e728291b8cb5a422a5a11
+quay.io/crw/udi-rhel8:2.16-4
+     NVR: codeready-workspaces-udi-rhel8-container-2.16-4
+   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1867539
+  Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-udi/commit?id=a39f8225c280bcd204a4ecad24fa087e2b3ddc36
 
 .
