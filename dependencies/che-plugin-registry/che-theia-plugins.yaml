@@ -138,7 +138,7 @@ plugins:
       url: 'https://github.com/camel-tooling/vscode-camelk'
       revision: 0.0.26
     sidecar:
-      image: "registry.redhat.io/codeready-workspaces/plugin-kubernetes-rhel8:2.16"
+      image: "registry.redhat.io/codeready-workspaces/udi-rhel8:2.16"
       name: vscode-camelk
       memoryLimit: 1Gi
       memoryRequest: 20Mi
@@ -219,7 +219,7 @@ plugins:
       url: 'https://github.com/che-incubator/che-theia-openshift-auth'
       revision: 0.0.3
     sidecar:
-      image: "registry.redhat.io/codeready-workspaces/plugin-openshift-rhel8:2.16"
+      image: "registry.redhat.io/codeready-workspaces/udi-rhel8:2.16"
       name: vscode-openshift-connector
       memoryLimit: 1500Mi
       memoryRequest: 20Mi
@@ -232,7 +232,7 @@ plugins:
       url: 'https://github.com/redhat-developer/vscode-openshift-tools'
       revision: v0.2.11
     sidecar:
-      image: "registry.redhat.io/codeready-workspaces/plugin-openshift-rhel8:2.16"
+      image: "registry.redhat.io/codeready-workspaces/udi-rhel8:2.16"
       name: vscode-openshift-connector
       memoryLimit: 1500Mi
       memoryRequest: 20Mi
@@ -252,7 +252,7 @@ plugins:
       revision: 0.14.0
     featured: true
     sidecar:
-      image: "registry.redhat.io/codeready-workspaces/plugin-kubernetes-rhel8:2.16"
+      image: "registry.redhat.io/codeready-workspaces/udi-rhel8:2.16"
       name: vscode-yaml
       memoryLimit: 256Mi
       memoryRequest: 20Mi
@@ -363,7 +363,7 @@ plugins:
       url: 'https://github.com/Azure/vscode-kubernetes-tools'
       revision: 1.2.1
     sidecar:
-      image: "registry.redhat.io/codeready-workspaces/plugin-kubernetes-rhel8:2.16"
+      image: "registry.redhat.io/codeready-workspaces/udi-rhel8:2.16"
       name: vscode-kubernetes-tools
       memoryLimit: 1Gi
       memoryRequest: 20Mi
