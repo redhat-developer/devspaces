@@ -5,7 +5,7 @@ This repository holds ready-to-use plugins for different languages and technolog
 
 ## Building and Publishing .vsix Files
 
-Any .vsix file used in CRW needs to be built from source and have sources published alongside it. This is a non-negotiable requirement, and means that .vsix files hosted on OpenVSX or elsewhere are not fit for use in CRW.
+Any .vsix file used in CRW needs to be built from source and have sources published alongside it. This is a non-negotiable requirement, and means that .vsix files hosted on OpenVSX or elsewhere are not fit for use in CRW. 
 
 Luckily there is an automatic way to build and publish .vsix files and their sources. Please raise a PR against the [codeready-workspaces-vscode-extensions repository](https://github.com/redhat-developer/codeready-workspaces-vscode-extensions).
 
