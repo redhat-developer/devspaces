@@ -1,0 +1,470 @@
+[
+  {
+    "id": "bmewburn/vscode-intelephense-client/latest",
+    "description": "PHP code intelligence for Visual Studio Code",
+    "displayName": "PHP Intelephense",
+    "links": {
+      "self": "/v3/plugins/bmewburn/vscode-intelephense-client/latest",
+      "plugin": "/v3/plugins/bmewburn/vscode-intelephense-client/latest/che-theia-plugin.yaml"
+    },
+    "name": "vscode-intelephense-client",
+    "publisher": "bmewburn",
+    "type": "VS Code extension",
+    "version": "latest"
+  },
+  {
+    "id": "che-incubator/cpptools/latest",
+    "description": "CDT VS Code Extension for C/C++ Developers",
+    "displayName": "CDT VS Code Extension for C/C++ Developers",
+    "links": {
+      "self": "/v3/plugins/che-incubator/cpptools/latest",
+      "plugin": "/v3/plugins/che-incubator/cpptools/latest/che-theia-plugin.yaml"
+    },
+    "name": "cpptools",
+    "publisher": "che-incubator",
+    "type": "VS Code extension",
+    "version": "latest"
+  },
+  {
+    "id": "che-incubator/intellij-community/latest",
+    "description": "IntelliJ IDEA Community running using Projector",
+    "displayName": "IntelliJ IDEA Community Edition",
+    "links": {
+      "self": "/v3/plugins/che-incubator/intellij-community/latest",
+      "devfile": "/v3/plugins/che-incubator/intellij-community/latest/devfile.yaml"
+    },
+    "name": "intellij-community",
+    "publisher": "che-incubator",
+    "type": "Che Editor",
+    "version": "latest"
+  },
+  {
+    "id": "dbaeumer/vscode-eslint/latest",
+    "description": "Integrates ESLint JavaScript into VS Code.",
+    "displayName": "ESLint",
+    "links": {
+      "self": "/v3/plugins/dbaeumer/vscode-eslint/latest",
+      "plugin": "/v3/plugins/dbaeumer/vscode-eslint/latest/che-theia-plugin.yaml"
+    },
+    "name": "vscode-eslint",
+    "publisher": "dbaeumer",
+    "type": "VS Code extension",
+    "version": "latest"
+  },
+  {
+    "id": "eclipse-cdt/cdt-vscode/latest",
+    "description": "CDT VS Code Extension for C/C++ Developers",
+    "displayName": "CDT VS Code Extension for C/C++ Developers",
+    "links": {
+      "self": "/v3/plugins/eclipse-cdt/cdt-vscode/latest",
+      "plugin": "/v3/plugins/eclipse-cdt/cdt-vscode/latest/che-theia-plugin.yaml"
+    },
+    "name": "cdt-vscode",
+    "publisher": "eclipse-cdt",
+    "type": "VS Code extension",
+    "version": "latest"
+  },
+  {
+    "id": "eclipse/che-machine-exec-plugin/latest",
+    "description": "Che Plug-in with che-machine-exec service to provide creation terminal or tasks for Eclipse Che workspace containers.",
+    "displayName": "Che machine-exec Service",
+    "links": {
+      "self": "/v3/plugins/eclipse/che-machine-exec-plugin/latest",
+      "devfile": "/v3/plugins/eclipse/che-machine-exec-plugin/latest/devfile.yaml"
+    },
+    "name": "che-machine-exec-plugin",
+    "publisher": "eclipse",
+    "type": "Che Plugin",
+    "version": "latest"
+  },
+  {
+    "id": "eclipse/che-theia/latest",
+    "description": "Eclipse Theia, get the latest release each day.",
+    "displayName": "theia-ide",
+    "links": {
+      "self": "/v3/plugins/eclipse/che-theia/latest",
+      "devfile": "/v3/plugins/eclipse/che-theia/latest/devfile.yaml"
+    },
+    "name": "che-theia",
+    "publisher": "eclipse",
+    "type": "Che Editor",
+    "version": "latest"
+  },
+  {
+    "id": "felixfbecker/php-debug/latest",
+    "description": "Debug support for PHP with XDebug",
+    "displayName": "PHP Debug",
+    "links": {
+      "self": "/v3/plugins/felixfbecker/php-debug/latest",
+      "plugin": "/v3/plugins/felixfbecker/php-debug/latest/che-theia-plugin.yaml"
+    },
+    "name": "php-debug",
+    "publisher": "felixfbecker",
+    "type": "VS Code extension",
+    "version": "latest"
+  },
+  {
+    "id": "github/vscode-pull-request-github/latest",
+    "description": "Pull Request and Issue Provider for GitHub",
+    "displayName": "GitHub Pull Requests and Issues",
+    "links": {
+      "self": "/v3/plugins/github/vscode-pull-request-github/latest",
+      "plugin": "/v3/plugins/github/vscode-pull-request-github/latest/che-theia-plugin.yaml"
+    },
+    "name": "vscode-pull-request-github",
+    "publisher": "github",
+    "type": "VS Code extension",
+    "version": "latest"
+  },
+  {
+    "id": "golang/go/latest",
+    "description": "Rich Go language support for Visual Studio Code",
+    "displayName": "Go",
+    "links": {
+      "self": "/v3/plugins/golang/go/latest",
+      "plugin": "/v3/plugins/golang/go/latest/che-theia-plugin.yaml"
+    },
+    "name": "go",
+    "publisher": "golang",
+    "type": "VS Code extension",
+    "version": "latest"
+  },
+  {
+    "id": "ms-kubernetes-tools/vscode-kubernetes-tools/latest",
+    "description": "Develop, deploy and debug Kubernetes applications",
+    "displayName": "Kubernetes",
+    "links": {
+      "self": "/v3/plugins/ms-kubernetes-tools/vscode-kubernetes-tools/latest",
+      "plugin": "/v3/plugins/ms-kubernetes-tools/vscode-kubernetes-tools/latest/che-theia-plugin.yaml"
+    },
+    "name": "vscode-kubernetes-tools",
+    "publisher": "ms-kubernetes-tools",
+    "type": "VS Code extension",
+    "version": "latest"
+  },
+  {
+    "id": "ms-python/python/latest",
+    "description": "Linting, Debugging (multi-threaded, remote), Intellisense, Jupyter Notebooks, code formatting, refactoring, unit tests, snippets, and more.",
+    "displayName": "Python",
+    "links": {
+      "self": "/v3/plugins/ms-python/python/latest",
+      "plugin": "/v3/plugins/ms-python/python/latest/che-theia-plugin.yaml"
+    },
+    "name": "python",
+    "publisher": "ms-python",
+    "type": "VS Code extension",
+    "version": "latest"
+  },
+  {
+    "id": "ms-vscode/node-debug/latest",
+    "description": "Node.js debugging support (versions < 8.0)",
+    "displayName": "Node Debug (legacy)",
+    "links": {
+      "self": "/v3/plugins/ms-vscode/node-debug/latest",
+      "plugin": "/v3/plugins/ms-vscode/node-debug/latest/che-theia-plugin.yaml"
+    },
+    "name": "node-debug",
+    "publisher": "ms-vscode",
+    "type": "VS Code extension",
+    "version": "latest"
+  },
+  {
+    "id": "ms-vscode/node-debug2/latest",
+    "description": "Node.js debugging support",
+    "displayName": "Node Debug",
+    "links": {
+      "self": "/v3/plugins/ms-vscode/node-debug2/latest",
+      "plugin": "/v3/plugins/ms-vscode/node-debug2/latest/che-theia-plugin.yaml"
+    },
+    "name": "node-debug2",
+    "publisher": "ms-vscode",
+    "type": "VS Code extension",
+    "version": "latest"
+  },
+  {
+    "id": "ms-vscode/vscode-github-pullrequest/latest",
+    "description": "Pull Request and Issue Provider for GitHub",
+    "displayName": "GitHub Pull Requests and Issues",
+    "links": {
+      "self": "/v3/plugins/ms-vscode/vscode-github-pullrequest/latest",
+      "plugin": "/v3/plugins/ms-vscode/vscode-github-pullrequest/latest/che-theia-plugin.yaml"
+    },
+    "name": "vscode-github-pullrequest",
+    "publisher": "ms-vscode",
+    "type": "VS Code extension",
+    "version": "latest"
+  },
+  {
+    "id": "redhat-developer/che-omnisharp-plugin/latest",
+    "description": "omnisharp-theia-plugin",
+    "displayName": "omnisharp-theia-plugin",
+    "links": {
+      "self": "/v3/plugins/redhat-developer/che-omnisharp-plugin/latest",
+      "plugin": "/v3/plugins/redhat-developer/che-omnisharp-plugin/latest/che-theia-plugin.yaml"
+    },
+    "name": "che-omnisharp-plugin",
+    "publisher": "redhat-developer",
+    "type": "VS Code extension",
+    "version": "latest"
+  },
+  {
+    "id": "redhat-developer/netcoredbg-theia-plugin/latest",
+    "description": "netcoredbg-theia-plugin",
+    "displayName": "netcoredbg-theia-plugin",
+    "links": {
+      "self": "/v3/plugins/redhat-developer/netcoredbg-theia-plugin/latest",
+      "plugin": "/v3/plugins/redhat-developer/netcoredbg-theia-plugin/latest/che-theia-plugin.yaml"
+    },
+    "name": "netcoredbg-theia-plugin",
+    "publisher": "redhat-developer",
+    "type": "VS Code extension",
+    "version": "latest"
+  },
+  {
+    "id": "redhat/dependency-analytics/latest",
+    "description": "Insights about your application dependencies: Security, License compatibility and AI based guidance to choose appropriate dependencies for your application.",
+    "displayName": "Dependency Analytics",
+    "links": {
+      "self": "/v3/plugins/redhat/dependency-analytics/latest",
+      "plugin": "/v3/plugins/redhat/dependency-analytics/latest/che-theia-plugin.yaml"
+    },
+    "name": "dependency-analytics",
+    "publisher": "redhat",
+    "type": "VS Code extension",
+    "version": "latest"
+  },
+  {
+    "id": "redhat/fabric8-analytics/latest",
+    "description": "Insights about your application dependencies: Security, License compatibility and AI based guidance to choose appropriate dependencies for your application.",
+    "displayName": "Dependency Analytics",
+    "links": {
+      "self": "/v3/plugins/redhat/fabric8-analytics/latest",
+      "plugin": "/v3/plugins/redhat/fabric8-analytics/latest/che-theia-plugin.yaml"
+    },
+    "name": "fabric8-analytics",
+    "publisher": "redhat",
+    "type": "VS Code extension",
+    "version": "latest"
+  },
+  {
+    "id": "redhat/java/latest",
+    "description": "Java Linting, Intellisense, formatting, refactoring, Maven/Gradle support and more...",
+    "displayName": "Language Support for Java(TM) by Red Hat",
+    "links": {
+      "self": "/v3/plugins/redhat/java/latest",
+      "plugin": "/v3/plugins/redhat/java/latest/che-theia-plugin.yaml"
+    },
+    "name": "java",
+    "publisher": "redhat",
+    "type": "VS Code extension",
+    "version": "latest"
+  },
+  {
+    "id": "redhat/java11/latest",
+    "description": "Java Linting, Intellisense, formatting, refactoring, Maven/Gradle support and more...",
+    "displayName": "Language Support for Java(TM) by Red Hat",
+    "links": {
+      "self": "/v3/plugins/redhat/java11/latest",
+      "plugin": "/v3/plugins/redhat/java11/latest/che-theia-plugin.yaml"
+    },
+    "name": "java11",
+    "publisher": "redhat",
+    "type": "VS Code extension",
+    "version": "latest"
+  },
+  {
+    "id": "redhat/java8/latest",
+    "description": "Java Linting, Intellisense, formatting, refactoring, Maven/Gradle support and more...",
+    "displayName": "Language Support for Java(TM) by Red Hat",
+    "links": {
+      "self": "/v3/plugins/redhat/java8/latest",
+      "plugin": "/v3/plugins/redhat/java8/latest/che-theia-plugin.yaml"
+    },
+    "name": "java8",
+    "publisher": "redhat",
+    "type": "VS Code extension",
+    "version": "latest"
+  },
+  {
+    "id": "redhat/php-debugger/latest",
+    "description": "Debug support for PHP with XDebug",
+    "displayName": "PHP Debug",
+    "links": {
+      "self": "/v3/plugins/redhat/php-debugger/latest",
+      "plugin": "/v3/plugins/redhat/php-debugger/latest/che-theia-plugin.yaml"
+    },
+    "name": "php-debugger",
+    "publisher": "redhat",
+    "type": "VS Code extension",
+    "version": "latest"
+  },
+  {
+    "id": "redhat/php/latest",
+    "description": "PHP code intelligence for Visual Studio Code",
+    "displayName": "PHP Intelephense",
+    "links": {
+      "self": "/v3/plugins/redhat/php/latest",
+      "plugin": "/v3/plugins/redhat/php/latest/che-theia-plugin.yaml"
+    },
+    "name": "php",
+    "publisher": "redhat",
+    "type": "VS Code extension",
+    "version": "latest"
+  },
+  {
+    "id": "redhat/project-initializer/latest",
+    "description": "A lightweight extension based on Red Hat launcher to generate quickstart projects using VSCode",
+    "displayName": "Project Initializer by Red Hat",
+    "links": {
+      "self": "/v3/plugins/redhat/project-initializer/latest",
+      "plugin": "/v3/plugins/redhat/project-initializer/latest/che-theia-plugin.yaml"
+    },
+    "name": "project-initializer",
+    "publisher": "redhat",
+    "type": "VS Code extension",
+    "version": "latest"
+  },
+  {
+    "id": "redhat/project-initializer/latest",
+    "description": "A lightweight extension based on Red Hat launcher to generate quickstart projects using VSCode",
+    "displayName": "Project Initializer by Red Hat",
+    "links": {
+      "self": "/v3/plugins/redhat/project-initializer/latest",
+      "plugin": "/v3/plugins/redhat/project-initializer/latest/che-theia-plugin.yaml"
+    },
+    "name": "project-initializer",
+    "publisher": "redhat",
+    "type": "VS Code extension",
+    "version": "latest"
+  },
+  {
+    "id": "redhat/quarkus-java11/latest",
+    "description": "Quarkus Tools for Visual Studio Code",
+    "displayName": "Quarkus",
+    "links": {
+      "self": "/v3/plugins/redhat/quarkus-java11/latest",
+      "plugin": "/v3/plugins/redhat/quarkus-java11/latest/che-theia-plugin.yaml"
+    },
+    "name": "quarkus-java11",
+    "publisher": "redhat",
+    "type": "VS Code extension",
+    "version": "latest"
+  },
+  {
+    "id": "redhat/vscode-apache-camel/latest",
+    "description": "Provides completion and documentation features for Apache Camel URI elements in XML DSL.",
+    "displayName": "Language Support for Apache Camel by Red Hat",
+    "links": {
+      "self": "/v3/plugins/redhat/vscode-apache-camel/latest",
+      "plugin": "/v3/plugins/redhat/vscode-apache-camel/latest/che-theia-plugin.yaml"
+    },
+    "name": "vscode-apache-camel",
+    "publisher": "redhat",
+    "type": "VS Code extension",
+    "version": "latest"
+  },
+  {
+    "id": "redhat/vscode-camelk/latest",
+    "description": "VS Code support for Apache Camel K functionality",
+    "displayName": "Tooling for Apache Camel K by Red Hat",
+    "links": {
+      "self": "/v3/plugins/redhat/vscode-camelk/latest",
+      "plugin": "/v3/plugins/redhat/vscode-camelk/latest/che-theia-plugin.yaml"
+    },
+    "name": "vscode-camelk",
+    "publisher": "redhat",
+    "type": "VS Code extension",
+    "version": "latest"
+  },
+  {
+    "id": "redhat/vscode-microprofile/latest",
+    "description": "Language Support for Eclipse MicroProfile",
+    "displayName": "Tools for MicroProfile",
+    "links": {
+      "self": "/v3/plugins/redhat/vscode-microprofile/latest",
+      "plugin": "/v3/plugins/redhat/vscode-microprofile/latest/che-theia-plugin.yaml"
+    },
+    "name": "vscode-microprofile",
+    "publisher": "redhat",
+    "type": "VS Code extension",
+    "version": "latest"
+  },
+  {
+    "id": "redhat/vscode-openshift-connector/latest",
+    "description": "Simplified app dev for Kubernetes or Red Hat OpenShift",
+    "displayName": "OpenShift Connector",
+    "links": {
+      "self": "/v3/plugins/redhat/vscode-openshift-connector/latest",
+      "plugin": "/v3/plugins/redhat/vscode-openshift-connector/latest/che-theia-plugin.yaml"
+    },
+    "name": "vscode-openshift-connector",
+    "publisher": "redhat",
+    "type": "VS Code extension",
+    "version": "latest"
+  },
+  {
+    "id": "redhat/vscode-wsdl2rest/latest",
+    "description": "A VS Code extension supporting wsdl2rest via Camel Rest DSL",
+    "displayName": "wsdl2rest by Red Hat",
+    "links": {
+      "self": "/v3/plugins/redhat/vscode-wsdl2rest/latest",
+      "plugin": "/v3/plugins/redhat/vscode-wsdl2rest/latest/che-theia-plugin.yaml"
+    },
+    "name": "vscode-wsdl2rest",
+    "publisher": "redhat",
+    "type": "VS Code extension",
+    "version": "latest"
+  },
+  {
+    "id": "redhat/vscode-xml/latest",
+    "description": "XML Language Support by Red Hat",
+    "displayName": "XML",
+    "links": {
+      "self": "/v3/plugins/redhat/vscode-xml/latest",
+      "plugin": "/v3/plugins/redhat/vscode-xml/latest/che-theia-plugin.yaml"
+    },
+    "name": "vscode-xml",
+    "publisher": "redhat",
+    "type": "VS Code extension",
+    "version": "latest"
+  },
+  {
+    "id": "redhat/vscode-yaml/latest",
+    "description": "YAML Language Support by Red Hat, with built-in Kubernetes syntax support",
+    "displayName": "YAML",
+    "links": {
+      "self": "/v3/plugins/redhat/vscode-yaml/latest",
+      "plugin": "/v3/plugins/redhat/vscode-yaml/latest/che-theia-plugin.yaml"
+    },
+    "name": "vscode-yaml",
+    "publisher": "redhat",
+    "type": "VS Code extension",
+    "version": "latest"
+  },
+  {
+    "id": "sonarsource/sonarlint-vscode/latest",
+    "description": "SonarLint is an IDE extension that helps you detect and fix quality issues as you write code in JavaScript, TypeScript, Python, Java, HTML and PHP.",
+    "displayName": "SonarLint",
+    "links": {
+      "self": "/v3/plugins/sonarsource/sonarlint-vscode/latest",
+      "plugin": "/v3/plugins/sonarsource/sonarlint-vscode/latest/che-theia-plugin.yaml"
+    },
+    "name": "sonarlint-vscode",
+    "publisher": "sonarsource",
+    "type": "VS Code extension",
+    "version": "latest"
+  },
+  {
+    "id": "vscode/typescript-language-features/latest",
+    "description": "Provides rich language support for JavaScript and TypeScript.",
+    "displayName": "TypeScript and JavaScript Language Features (built-in)",
+    "links": {
+      "self": "/v3/plugins/vscode/typescript-language-features/latest",
+      "plugin": "/v3/plugins/vscode/typescript-language-features/latest/che-theia-plugin.yaml"
+    },
+    "name": "typescript-language-features",
+    "publisher": "vscode",
+    "type": "VS Code extension",
+    "version": "latest"
+  }
+]

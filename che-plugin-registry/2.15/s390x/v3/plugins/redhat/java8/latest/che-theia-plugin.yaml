@@ -1,0 +1,31 @@
+schemaVersion: 1.0.0
+metadata:
+  id: redhat/java8
+  publisher: redhat
+  name: java8
+  version: latest
+  displayName: Language Support for Java(TM) by Red Hat
+  description: Java Linting, Intellisense, formatting, refactoring, Maven/Gradle support and more...
+  repository: https://github.com/redhat-developer/vscode-java
+  categories:
+    - Programming Languages
+    - Linters
+    - Formatters
+    - Snippets
+  icon: /images/redhat-java-icon.png
+sidecar:
+  image: registry.redhat.io/codeready-workspaces/plugin-java8-openj9-rhel8:2.15
+  name: vscode-java
+  memoryLimit: 1500Mi
+  memoryRequest: 20Mi
+  cpuLimit: 800m
+  cpuRequest: 30m
+  volumeMounts:
+    - name: m2
+      path: /home/jboss/.m2
+preferences:
+  java.server.launchMode: Standard
+dependencies:
+  - vscjava/vscode-java-debug
+extensions:
+  - relative:extension/resources/download_jboss_org/jbosstools/static/jdt_ls/stable/java-0.63.0-2222.vsix

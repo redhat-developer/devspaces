@@ -1,0 +1,23 @@
+apiVersion: v2
+publisher: redhat
+name: fabric8-analytics
+version: latest
+type: VS Code extension
+displayName: Dependency Analytics
+title: Dependency Analytics
+description: 'Insights about your application dependencies: Security, License compatibility and AI based guidance to choose appropriate dependencies for your application.'
+icon: /images/redhat-fabric8-analytics-icon.png
+category: Other
+repository: https://github.com/fabric8-analytics/fabric8-analytics-vscode-extension
+firstPublicationDate: '2020-07-14'
+latestUpdateDate: '2022-01-28'
+spec:
+  containers:
+    - image: registry.redhat.io/codeready-workspaces/plugin-java8-rhel8:2.15
+      name: dependency-analytics
+      memoryLimit: 1Gi
+      memoryRequest: 20Mi
+      cpuRequest: 30m
+      cpuLimit: 500m
+  extensions:
+    - relative:extension/resources/github_com/fabric8-analytics/fabric8-analytics-vscode-extension/releases/download/0_1_0/fabric8-analytics-0.1.0.vsix

@@ -1,0 +1,25 @@
+schemaVersion: 1.0.0
+metadata:
+  id: redhat/vscode-xml
+  publisher: redhat
+  name: vscode-xml
+  version: latest
+  displayName: XML
+  description: XML Language Support by Red Hat
+  repository: https://github.com/redhat-developer/vscode-xml
+  categories:
+    - Programming Languages
+    - Linters
+    - Formatters
+    - Snippets
+  icon: /images/redhat-vscode-xml-icon.png
+sidecar:
+  image: registry.redhat.io/codeready-workspaces/plugin-java11-openj9-rhel8:2.15
+  name: vscode-xml
+  memoryLimit: 768Mi
+  memoryRequest: 20Mi
+  cpuLimit: 500m
+  cpuRequest: 30m
+dependencies: []
+extensions:
+  - relative:extension/resources/github_com/redhat-developer/codeready-workspaces-vscode-extensions/releases/download/v356aec7/vscode-xml-0.14.0.vsix

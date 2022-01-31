@@ -1,0 +1,40 @@
+apiVersion: v2
+publisher: che-incubator
+name: intellij-community
+version: latest
+type: Che Editor
+displayName: IntelliJ IDEA Community Edition
+title: IntelliJ IDEA Community as Editor for Eclipse Che
+description: IntelliJ IDEA Community running using Projector
+icon: /images/default.png
+category: Editor
+repository: https://github.com/che-incubator/jetbrains-editor-images
+firstPublicationDate: '2020-09-29'
+latestUpdateDate: '2022-01-28'
+spec:
+  endpoints:
+    - name: intellij
+      targetPort: 8887
+      attributes:
+        type: ide
+        cookiesAuthEnabled: true
+        urlRewriteSupported: true
+        discoverable: false
+        path: /?backgroundColor=434343&wss
+        protocol: http
+        secure: true
+      public: true
+  containers:
+    - image: registry.redhat.io/codeready-workspaces/idea-rhel8:2.15
+      mountSources: true
+      memoryRequest: 32Mi
+      memoryLimit: 2048M
+      cpuLimit: 1500m
+      cpuRequest: 100m
+      volumes:
+        - name: projector-user
+          mountPath: /home/projector-user
+      name: intellij
+      ports:
+        - exposedPort: 8887
+  initContainers: []

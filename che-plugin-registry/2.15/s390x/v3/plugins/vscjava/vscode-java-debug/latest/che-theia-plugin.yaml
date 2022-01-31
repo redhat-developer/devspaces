@@ -1,0 +1,24 @@
+schemaVersion: 1.0.0
+metadata:
+  id: vscjava/vscode-java-debug
+  publisher: vscjava
+  name: vscode-java-debug
+  version: latest
+  displayName: Debugger for Java
+  description: A lightweight Java debugger for Visual Studio Code
+  repository: https://github.com/Microsoft/vscode-java-debug.git
+  categories:
+    - Debuggers
+    - Programming Languages
+    - Other
+  icon: /images/vscjava-vscode-java-debug-icon.png
+sidecar:
+  image: registry.redhat.io/codeready-workspaces/plugin-java11-openj9-rhel8:2.15
+  name: vscode-java
+  memoryLimit: 1500Mi
+  memoryRequest: 20Mi
+  cpuLimit: 800m
+  cpuRequest: 30m
+dependencies: []
+extensions:
+  - relative:extension/resources/download_jboss_org/jbosstools/vscode/3rdparty/vscode-java-debug/vscode-java-debug-0.26.0.vsix

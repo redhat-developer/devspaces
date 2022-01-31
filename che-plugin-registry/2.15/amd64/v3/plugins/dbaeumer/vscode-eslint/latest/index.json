@@ -1,0 +1,16 @@
+apiVersion: v2
+publisher: dbaeumer
+name: vscode-eslint
+version: latest
+type: VS Code extension
+displayName: ESLint
+title: ESLint
+description: Integrates ESLint JavaScript into VS Code.
+icon: /images/dbaeumer-vscode-eslint-icon.png
+category: Programming Languages
+repository: https://github.com/Microsoft/vscode-eslint.git
+firstPublicationDate: '2020-11-18'
+latestUpdateDate: '2022-01-28'
+spec:
+  extensions:
+    - relative:extension/resources/download_jboss_org/jbosstools/vscode/3rdparty/vscode-eslint/vscode-eslint-2.1.1-1e15d3.vsix

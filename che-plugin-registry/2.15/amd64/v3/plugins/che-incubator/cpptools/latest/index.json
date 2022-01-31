@@ -1,0 +1,28 @@
+apiVersion: v2
+publisher: che-incubator
+name: cpptools
+version: latest
+type: VS Code extension
+displayName: CDT VS Code Extension for C/C++ Developers
+title: CDT VS Code Extension for C/C++ Developers
+description: CDT VS Code Extension for C/C++ Developers
+icon: /images/eclipse-cdt-cdt-vscode-icon.png
+category: Other
+repository: https://github.com/eclipse-cdt/cdt-vscode.git
+firstPublicationDate: '2019-12-18'
+latestUpdateDate: '2022-01-28'
+deprecate:
+  automigrate: true
+  migrateTo: eclipse-cdt/cdt-vscode/latest
+spec:
+  containers:
+    - image: registry.redhat.io/codeready-workspaces/stacks-cpp-rhel8:2.15
+      name: cpp-plugins
+      memoryLimit: 512Mi
+      memoryRequest: 20Mi
+      cpuRequest: 30m
+      cpuLimit: 500m
+  extensions:
+    - relative:extension/resources/download_jboss_org/jbosstools/vscode/3rdparty/cdt-vscode/cdt-vscode-0.0.7-75cf95.vsix
+    - relative:extension/resources/download_jboss_org/jbosstools/vscode/3rdparty/vscode-clangd/vscode-clangd-0.1.5-562d00.vsix
+    - relative:extension/resources/download_jboss_org/jbosstools/vscode/3rdparty/cdt-gdb-vscode/cdt-gdb-vscode-0.0.91-2cbbb8.vsix
