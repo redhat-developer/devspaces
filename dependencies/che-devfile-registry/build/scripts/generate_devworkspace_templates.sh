@@ -10,6 +10,10 @@
 
 set -e
 
+arch="$(uname -m)"
+if [[ "$arch" == "x86_64" ]]; then
+  arch="amd64"
+fi
 # shellcheck disable=SC1091
 source ./clone_and_zip.sh
 lib_name="che-theia-devworkspace-handler"
@@ -27,7 +31,7 @@ do
 
     npm_config_yes=true npx @eclipse-che/che-theia-devworkspace-handler --devfile-url:"${devfile_url}" \
     --editor:eclipse/che-theia/latest \
-    --plugin-registry-url:https://crw-plugin-registry-main.surge.sh/v3/ \
+    --plugin-registry-url:https://redhat-developer.github.io/codeready-workspaces/che-plugin-registry/"${VERSION}"/"${arch}"/v3 \
     --output-file:"${dir}"devworkspace-che-theia-latest.yaml \
     "--project.${name}={{ DEVFILE_REGISTRY_URL }}/resources/v2/${name}.zip"
     clone_and_zip "${devfile_repo}" "${devfile_url##*/}" "/build/resources/v2/$name.zip"

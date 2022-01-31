@@ -108,7 +108,7 @@ else
 fi
 
 IMAGE="${REGISTRY}/${ORGANIZATION}/${CONTAINERNAME}:${TAG}"
-${BUILDER} ${BUILD_COMMAND} \
+${BUILDER} ${BUILD_COMMAND} --build-arg VERSION="$(cat ../VERSION)"\
     -t "${IMAGE}" \
     -f ${DOCKERFILE} \
     --target "${TARGET}" .

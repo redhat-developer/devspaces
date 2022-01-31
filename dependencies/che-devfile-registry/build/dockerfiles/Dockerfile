@@ -23,6 +23,9 @@ USER 0
 ARG BOOTSTRAP=false
 ENV BOOTSTRAP=${BOOTSTRAP}
 
+ARG VERSION=next
+ENV VERSION=${VERSION}
+
 # to get all the python deps pre-fetched so we can build in Brew:
 # 1. extract files in the container to your local filesystem
 #    find v3 -type f -exec dos2unix {} \;
