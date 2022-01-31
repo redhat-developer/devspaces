@@ -765,6 +765,7 @@
           "7.40.x",
           "7.39.x"
         ],
+        "node_version": "12.22.5",
         "disabled": true
       },
       "2.15": {
@@ -772,13 +773,23 @@
           "7.42.x",
           "7.41.x"
         ],
+        "node_version": "12.22.5",
         "disabled": true
+      },
+      "2.16": {
+        "upstream_branch": [
+          "7.44.x",
+          "7.43.x"
+        ],
+        "node_version": "16.13.2",
+        "disabled": false
       },
       "2.x": {
         "upstream_branch": [
           "main",
           "main"
         ],
+        "node_version": "16.13.2",
         "disabled": false
       }
     },
