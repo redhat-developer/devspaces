@@ -1,0 +1,34 @@
+schemaVersion: 1.0.0
+metadata:
+  id: ms-python/python
+  publisher: ms-python
+  name: python
+  version: latest
+  displayName: Python
+  description: Linting, Debugging (multi-threaded, remote), Intellisense, Jupyter Notebooks, code formatting, refactoring, unit tests, snippets, and more.
+  repository: https://github.com/Microsoft/vscode-python
+  categories:
+    - Programming Languages
+    - Debuggers
+    - Linters
+    - Snippets
+    - Formatters
+    - Other
+    - Extension Packs
+    - Data Science
+    - Machine Learning
+    - Notebooks
+  icon: /images/ms-python-python-icon.png
+sidecar:
+  image: registry.redhat.io/codeready-workspaces/udi-rhel8:2.16
+  name: vscode-python
+  memoryLimit: 1Gi
+  memoryRequest: 20Mi
+  cpuLimit: 500m
+  cpuRequest: 30m
+  volumeMounts:
+    - name: venv
+      path: /home/jboss/.venv
+dependencies: []
+extensions:
+  - relative:extension/resources/github_com/redhat-developer/codeready-workspaces-vscode-extensions/releases/download/v34b6b7e/vscode-python-2020.7.94776.vsix

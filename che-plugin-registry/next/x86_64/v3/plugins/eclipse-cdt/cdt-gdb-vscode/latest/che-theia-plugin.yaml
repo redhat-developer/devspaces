@@ -1,0 +1,22 @@
+schemaVersion: 1.0.0
+metadata:
+  id: eclipse-cdt/cdt-gdb-vscode
+  publisher: eclipse-cdt
+  name: cdt-gdb-vscode
+  version: latest
+  displayName: ''
+  description: VS Code extension for CDT GDB debug adapter
+  repository: https://github.com/eclipse-cdt/cdt-gdb-vscode.git
+  categories:
+    - Other
+  icon: /images/eclipse-cdt-cdt-gdb-vscode-icon.png
+sidecar:
+  image: registry.redhat.io/codeready-workspaces/stacks-cpp-rhel8:2.16
+  name: cpp-plugins
+  memoryLimit: 512Mi
+  memoryRequest: 20Mi
+  cpuLimit: 500m
+  cpuRequest: 30m
+dependencies: []
+extensions:
+  - relative:extension/resources/download_jboss_org/jbosstools/vscode/3rdparty/cdt-gdb-vscode/cdt-gdb-vscode-0.0.91-2cbbb8.vsix

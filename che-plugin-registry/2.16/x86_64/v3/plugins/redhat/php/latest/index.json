@@ -1,0 +1,26 @@
+apiVersion: v2
+publisher: redhat
+name: php
+version: latest
+type: VS Code extension
+displayName: PHP Intelephense
+title: PHP Intelephense
+description: PHP code intelligence for Visual Studio Code
+icon: /images/bmewburn-vscode-intelephense-client-icon.png
+category: Programming Languages
+repository: https://github.com/bmewburn/vscode-intelephense.git
+firstPublicationDate: '2020-05-26'
+latestUpdateDate: '2022-01-31'
+deprecate:
+  automigrate: true
+  migrateTo: bmewburn/vscode-intelephense-client/latest
+spec:
+  containers:
+    - image: registry.redhat.io/codeready-workspaces/stacks-php-rhel8:2.16
+      name: php-intelephense
+      memoryLimit: 1Gi
+      memoryRequest: 20Mi
+      cpuRequest: 30m
+      cpuLimit: 500m
+  extensions:
+    - relative:extension/resources/download_jboss_org/jbosstools/vscode/3rdparty/vscode-intelephense/vscode-intelephense-client-1.3.11.vsix

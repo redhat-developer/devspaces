@@ -1,0 +1,25 @@
+schemaVersion: 1.0.0
+metadata:
+  id: ms-vscode/node-debug2
+  publisher: ms-vscode
+  name: node-debug2
+  version: latest
+  displayName: Node Debug
+  description: Node.js debugging support
+  repository: https://github.com/Microsoft/vscode-node-debug2.git
+  categories:
+    - Debuggers
+  icon: /images/ms-vscode-node-debug2-icon.png
+sidecar:
+  image: registry.redhat.io/codeready-workspaces/udi-openj9-rhel8:2.16
+  name: vscode-node
+  memoryLimit: 1Gi
+  memoryRequest: 20Mi
+  cpuLimit: 500m
+  cpuRequest: 30m
+preferences:
+  debug.node.useV3: false
+dependencies:
+  - ms-vscode/node-debug
+extensions:
+  - relative:extension/resources/download_jboss_org/jbosstools/vscode/3rdparty/vscode-node-debug2/node-debug2-1.42.3.vsix

@@ -1,0 +1,22 @@
+schemaVersion: 1.0.0
+metadata:
+  id: che-theia/che-openshift-authentication-plugin
+  publisher: che-theia
+  name: che-openshift-authentication-plugin
+  version: latest
+  displayName: Openshift authentication tool
+  description: Authenticates to Openshift using oAuth
+  repository: https://github.com/che-incubator/che-theia-openshift-auth
+  categories:
+    - Other
+  icon: /images/default.png
+sidecar:
+  image: registry.redhat.io/codeready-workspaces/udi-rhel8:2.16
+  name: vscode-openshift-connector
+  memoryLimit: 1500Mi
+  memoryRequest: 20Mi
+  cpuLimit: 800m
+  cpuRequest: 30m
+dependencies: []
+extensions:
+  - relative:extension/resources/github_com/che-incubator/che-theia-openshift-auth/releases/download/0_0_3/che-openshift-authentication-plugin-0.0.3.vsix

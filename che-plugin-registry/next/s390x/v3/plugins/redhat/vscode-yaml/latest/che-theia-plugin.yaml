@@ -1,0 +1,25 @@
+schemaVersion: 1.0.0
+metadata:
+  id: redhat/vscode-yaml
+  publisher: redhat
+  name: vscode-yaml
+  version: latest
+  displayName: YAML
+  description: YAML Language Support by Red Hat, with built-in Kubernetes syntax support
+  repository: https://github.com/redhat-developer/vscode-yaml
+  categories:
+    - Programming Languages
+    - Linters
+    - Snippets
+    - Formatters
+  icon: /images/redhat-vscode-yaml-icon.png
+sidecar:
+  image: registry.redhat.io/codeready-workspaces/udi-openj9-rhel8:2.16
+  name: vscode-yaml
+  memoryLimit: 256Mi
+  memoryRequest: 20Mi
+  cpuLimit: 500m
+  cpuRequest: 30m
+dependencies: []
+extensions:
+  - relative:extension/resources/github_com/redhat-developer/codeready-workspaces-vscode-extensions/releases/download/ve96a2bb/vscode-yaml-0.14.0.vsix

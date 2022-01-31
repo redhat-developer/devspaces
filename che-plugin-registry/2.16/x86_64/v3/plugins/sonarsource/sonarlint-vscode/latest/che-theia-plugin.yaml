@@ -1,0 +1,26 @@
+schemaVersion: 1.0.0
+metadata:
+  id: sonarsource/sonarlint-vscode
+  publisher: sonarsource
+  name: sonarlint-vscode
+  version: latest
+  displayName: SonarLint
+  description: SonarLint is an IDE extension that helps you detect and fix quality issues as you write code in JavaScript, TypeScript, Python, Java, HTML and PHP.
+  repository: https://github.com/SonarSource/sonarlint-vscode.git
+  categories:
+    - Linters
+  icon: /images/sonarsource-sonarlint-vscode-icon.png
+sidecar:
+  image: registry.redhat.io/codeready-workspaces/udi-rhel8:2.16
+  name: vscode-sonarlint
+  memoryLimit: 512Mi
+  memoryRequest: 20Mi
+  cpuLimit: 500m
+  cpuRequest: 30m
+  volumeMounts:
+    - name: m2
+      path: /home/jboss/.m2
+dependencies:
+  - vscode/typescript-language-features
+extensions:
+  - relative:extension/resources/github_com/redhat-developer/codeready-workspaces-vscode-extensions/releases/download/v8521e74/vscode-sonarlint-1.20.1.vsix

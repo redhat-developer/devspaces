@@ -1,0 +1,30 @@
+schemaVersion: 2.1.0
+metadata:
+  name: IntelliJ IDEA Community Edition
+components:
+  - name: intellij
+    container:
+      image: registry.redhat.io/codeready-workspaces/idea-rhel8:2.16
+      volumeMounts:
+        - name: projector-user
+          path: /home/projector-user
+      mountSources: true
+      memoryLimit: 2048M
+      memoryRequest: 32Mi
+      cpuLimit: 1500m
+      cpuRequest: 100m
+      endpoints:
+        - name: intellij
+          attributes:
+            type: main
+            cookiesAuthEnabled: true
+            urlRewriteSupported: true
+            discoverable: false
+            path: /?backgroundColor=434343&wss
+          targetPort: 8887
+          exposure: public
+          secure: false
+          protocol: https
+    attributes: {}
+  - name: projector-user
+    volume: {}

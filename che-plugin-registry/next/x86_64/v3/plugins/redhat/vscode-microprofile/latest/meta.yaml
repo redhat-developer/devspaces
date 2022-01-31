@@ -1,0 +1,29 @@
+apiVersion: v2
+publisher: redhat
+name: vscode-microprofile
+version: latest
+type: VS Code extension
+displayName: Tools for MicroProfile
+title: Tools for MicroProfile
+description: Language Support for Eclipse MicroProfile
+icon: /images/redhat-vscode-microprofile-icon.png
+category: Programming Languages
+repository: https://github.com/redhat-developer/vscode-microprofile
+firstPublicationDate: '2020-09-24'
+latestUpdateDate: '2022-01-31'
+spec:
+  containers:
+    - image: registry.redhat.io/codeready-workspaces/udi-rhel8:2.16
+      name: vscode-microp
+      volumes:
+        - name: m2
+          mountPath: /home/jboss/.m2
+        - name: gradle
+          mountPath: /home/jboss/.gradle
+      memoryLimit: 3500Mi
+      memoryRequest: 20Mi
+      cpuRequest: 30m
+      cpuLimit: 500m
+  extensions:
+    - relative:extension/resources/download_jboss_org/jbosstools/vscode/stable/vscode-microprofile/vscode-microprofile-0.1.1-48.vsix
+    - relative:extension/resources/download_jboss_org/jbosstools/static/jdt_ls/stable/java-0.82.0-369.vsix

@@ -1,0 +1,24 @@
+schemaVersion: 1.0.0
+metadata:
+  id: redhat/vscode-camelk
+  publisher: redhat
+  name: vscode-camelk
+  version: latest
+  displayName: Tooling for Apache Camel K by Red Hat
+  description: VS Code support for Apache Camel K functionality
+  repository: https://github.com/camel-tooling/vscode-camelk
+  categories:
+    - Other
+  icon: /images/redhat-vscode-camelk-icon.png
+sidecar:
+  image: registry.redhat.io/codeready-workspaces/udi-rhel8:2.16
+  name: vscode-camelk
+  memoryLimit: 1Gi
+  memoryRequest: 20Mi
+  cpuLimit: 500m
+  cpuRequest: 30m
+dependencies:
+  - ms-kubernetes-tools/vscode-kubernetes-tools
+  - redhat/vscode-yaml
+extensions:
+  - relative:extension/resources/download_jboss_org/jbosstools/vscode/stable/vscode-camelk/vscode-camelk-0.0.26-336.vsix

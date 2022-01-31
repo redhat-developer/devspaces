@@ -1,0 +1,22 @@
+schemaVersion: 1.0.0
+metadata:
+  id: redhat/php-debugger
+  publisher: redhat
+  name: php-debugger
+  version: latest
+  displayName: PHP Debug
+  description: Debug support for PHP with XDebug
+  repository: https://github.com/felixfbecker/vscode-php-debug.git
+  categories:
+    - Debuggers
+  icon: /images/felixfbecker-php-debug-icon.png
+sidecar:
+  image: registry.redhat.io/codeready-workspaces/stacks-php-rhel8:2.16
+  name: php-debugger
+  memoryLimit: 512Mi
+  memoryRequest: 20Mi
+  cpuLimit: 500m
+  cpuRequest: 30m
+dependencies: []
+extensions:
+  - relative:extension/resources/download_jboss_org/jbosstools/vscode/3rdparty/vscode-php-debug/php-debug-1.13.0.vsix

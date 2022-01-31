@@ -1,0 +1,22 @@
+schemaVersion: 1.0.0
+metadata:
+  id: redhat-developer/netcoredbg-theia-plugin
+  publisher: redhat-developer
+  name: netcoredbg-theia-plugin
+  version: latest
+  displayName: ''
+  description: ''
+  repository: https://github.com/redhat-developer/netcoredbg-theia-plugin
+  categories:
+    - Other
+  icon: /images/default.png
+sidecar:
+  image: registry.redhat.io/codeready-workspaces/stacks-dotnet-rhel8:2.16
+  name: theia-netcoredbg
+  memoryLimit: 512Mi
+  memoryRequest: 20Mi
+  cpuLimit: 500m
+  cpuRequest: 30m
+dependencies: []
+extensions:
+  - relative:extension/resources/github_com/redhat-developer/netcoredbg-theia-plugin/releases/download/v0_0_3/netcoredbg_theia_plugin.theia
