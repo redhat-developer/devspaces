@@ -774,7 +774,7 @@
           "7.41.x"
         ],
         "node_version": "12.22.5",
-        "disabled": true
+        "disabled": false
       },
       "2.16": {
         "upstream_branch": [
@@ -806,7 +806,7 @@
           "7.42.x",
           "7.41.x"
         ],
-        "disabled": true
+        "disabled": false
       },
       "2.x": {
         "upstream_branch": [
@@ -829,7 +829,7 @@
           "7.42.x",
           "7.41.x"
         ],
-        "disabled": true
+        "disabled": false
       }
     },
     "get-sources-rhpkg-container-build": {
@@ -837,7 +837,7 @@
         "disabled": true
       },
       "2.15": {
-        "disabled": true
+        "disabled": false
       },
       "2.x": {
         "disabled": false
@@ -848,7 +848,7 @@
         "disabled": true
       },
       "2.15": {
-        "disabled": true
+        "disabled": false
       },
       "2.x": {
         "disabled": false
@@ -859,7 +859,7 @@
         "disabled": true
       },
       "2.15": {
-        "disabled": true
+        "disabled": false
       },
       "2.x": {
         "disabled": false
@@ -870,7 +870,7 @@
         "disabled": true
       },
       "2.15": {
-        "disabled": true
+        "disabled": false
       },
       "2.x": {
         "disabled": false
@@ -881,7 +881,7 @@
         "disabled": true
       },
       "2.15": {
-        "disabled": true
+        "disabled": false
       },
       "2.x": {
         "disabled": true
