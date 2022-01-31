@@ -7,7 +7,7 @@
 # SPDX-License-Identifier: EPL-2.0
 #
 
-name: Plugin Registry - Publish Registry Content to GH Pages
+name: Plugin Registry - GH Pages - Publish Registry Content
 
 on:
   push:
@@ -21,8 +21,6 @@ jobs:
   publish:
     name: publish
     runs-on: ubuntu-20.04
-    env:
-      BUILD_DIR: /tmp/crw-plugin-registry/content
     steps:
       - name: Clone source code
         uses: actions/checkout@v2
@@ -30,6 +28,7 @@ jobs:
           fetch-depth: 0
       - name: extract content
         run: |
+          export BUILD_DIR="$PWD/content"
           mkdir -p /tmp/crw-plugin-registry
           touch /tmp/crw-plugin-registry/architectures.json
           if [[ "$GITHUB_REF_NAME" == "crw-2-rhel-8" ]]; then
@@ -51,7 +50,9 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.CRW_BUILD_TOKEN }}
         run: |
-          GH_PAGES_DIR="$PWD/gh-pages"
+          export BUILD_DIR="$PWD/content"
+          export GH_PAGES_DIR="$PWD/gh-pages"
+          export GITHUB_TOKEN=${{ secrets.CRW_BUILD_TOKEN }}
           GITHUB_REPO_NAME="codeready-workspaces"
           VERSION_DIR="che-plugin-registry"/"$(cat dependencies/VERSION)"
 
@@ -83,10 +84,14 @@ jobs:
           done <   <(find . -name 'meta.yaml' -type f -print0)
           git add "$VERSION_DIR"
           [ -n "$NEXT_VERSION_DIR" ] && git add "$NEXT_VERSION_DIR"
-          git config user.email "crw-build@redhat.com"
-          git config user.name "CRW Build"
+          git config user.email "nickboldt+devstudio-release@gmail.com"
+          git config user.name "devstudio-release"
+          git config --global push.default matching
+          git config --global pull.rebase true
+          git config --global hub.protocol https
+          git remote set-url origin https://$GITHUB_TOKEN:x-oauth-basic@github.com/redhat-developer/codeready-workspaces.git
           git diff-index --quiet HEAD || git commit -m "publish registry $VERSION - $(date)" -s
-          git push "https://${GITHUB_ACTOR}:${GITHUB_TOKEN}@github.com/$GITHUB_REPOSITORY.git" gh-pages
+          git push origin gh-pages
           for arch in $(cat /tmp/crw-plugin-registry/architectures.json); do
             echo "Plugin registry published to https://$GITHUB_ACTOR.github.io/$GITHUB_REPO_NAME/$VERSION_DIR/$arch/v3/plugins/"
             if [[ -n "$NEXT_VERSION_DIR" ]]; then
