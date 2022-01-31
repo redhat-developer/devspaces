@@ -15,7 +15,7 @@
           "7.42.x",
           "7.41.x"
         ],
-        "disabled": false
+        "disabled": true
       },
       "2.16": {
         "upstream_branch": [
@@ -45,7 +45,7 @@
           "7.42.x",
           "7.41.x"
         ],
-        "disabled": false
+        "disabled": true
       },
       "2.16": {
         "upstream_branch": [
@@ -75,7 +75,7 @@
           "7.42.x",
           "7.41.x"
         ],
-        "disabled": false
+        "disabled": true
       },
       "2.16": {
         "upstream_branch": [
@@ -105,7 +105,7 @@
           "7.42.x",
           "7.41.x"
         ],
-        "disabled": false
+        "disabled": true
       },
       "2.16": {
         "upstream_branch": [
@@ -135,7 +135,7 @@
           "7.42.x",
           "7.41.x"
         ],
-        "disabled": false
+        "disabled": true
       },
       "2.16": {
         "upstream_branch": [
@@ -165,7 +165,7 @@
           "7.42.x",
           "7.41.x"
         ],
-        "disabled": false
+        "disabled": true
       },
       "2.16": {
         "upstream_branch": [
@@ -195,7 +195,7 @@
           "7.42.x",
           "7.41.x"
         ],
-        "disabled": false
+        "disabled": true
       },
       "2.16": {
         "upstream_branch": [
@@ -225,7 +225,7 @@
           "7.42.x",
           "7.41.x"
         ],
-        "disabled": false
+        "disabled": true
       },
       "2.x": {
         "upstream_branch": [
@@ -248,7 +248,7 @@
           "7.42.x",
           "7.41.x"
         ],
-        "disabled": false
+        "disabled": true
       },
       "2.16": {
         "upstream_branch": [
@@ -278,7 +278,7 @@
           "7.42.x",
           "7.41.x"
         ],
-        "disabled": false
+        "disabled": true
       },
       "2.16": {
         "upstream_branch": [
@@ -308,7 +308,7 @@
           "7.42.x",
           "7.41.x"
         ],
-        "disabled": false
+        "disabled": true
       },
       "2.16": {
         "upstream_branch": [
@@ -338,7 +338,7 @@
           "crw-2.15-rhel-8",
           "crw-2.15-rhel-8"
         ],
-        "disabled": false
+        "disabled": true
       },
       "2.16": {
         "upstream_branch": [
@@ -368,7 +368,7 @@
           "crw-2.15-rhel-8",
           "crw-2.15-rhel-8"
         ],
-        "disabled": false
+        "disabled": true
       },
       "2.16": {
         "upstream_branch": [
@@ -398,7 +398,7 @@
           "crw-2.15-rhel-8",
           "crw-2.15-rhel-8"
         ],
-        "disabled": false
+        "disabled": true
       }
     },
     "plugin-java11": {
@@ -414,7 +414,7 @@
           "crw-2.15-rhel-8",
           "crw-2.15-rhel-8"
         ],
-        "disabled": false
+        "disabled": true
       }
     },
     "plugin-java8-openj9": {
@@ -430,7 +430,7 @@
           "crw-2.15-rhel-8",
           "crw-2.15-rhel-8"
         ],
-        "disabled": false
+        "disabled": true
       }
     },
     "plugin-java8": {
@@ -446,7 +446,7 @@
           "crw-2.15-rhel-8",
           "crw-2.15-rhel-8"
         ],
-        "disabled": false
+        "disabled": true
       }
     },
     "plugin-kubernetes": {
@@ -462,7 +462,7 @@
           "crw-2.15-rhel-8",
           "crw-2.15-rhel-8"
         ],
-        "disabled": false
+        "disabled": true
       }
     },
     "plugin-openshift": {
@@ -478,7 +478,7 @@
           "crw-2.15-rhel-8",
           "crw-2.15-rhel-8"
         ],
-        "disabled": false
+        "disabled": true
       }
     },
     "stacks-cpp": {
@@ -494,7 +494,7 @@
           "crw-2.15-rhel-8",
           "crw-2.15-rhel-8"
         ],
-        "disabled": false
+        "disabled": true
       },
       "2.x": {
         "upstream_branch": [
@@ -517,7 +517,7 @@
           "crw-2.15-rhel-8",
           "crw-2.15-rhel-8"
         ],
-        "disabled": false
+        "disabled": true
       },
       "2.x": {
         "upstream_branch": [
@@ -540,7 +540,7 @@
           "crw-2.15-rhel-8",
           "crw-2.15-rhel-8"
         ],
-        "disabled": false
+        "disabled": true
       },
       "2.x": {
         "upstream_branch": [
@@ -563,7 +563,7 @@
           "crw-2.15-rhel-8",
           "crw-2.15-rhel-8"
         ],
-        "disabled": false
+        "disabled": true
       },
       "2.x": {
         "upstream_branch": [
@@ -586,7 +586,7 @@
           "v3.4.x",
           "v3.4.x"
         ],
-        "disabled": false
+        "disabled": true
       },
       "2.16": {
         "upstream_branch": [
@@ -616,7 +616,7 @@
           "v3.4.x",
           "v3.4.x"
         ],
-        "disabled": false
+        "disabled": true
       },
       "2.16": {
         "upstream_branch": [
@@ -646,7 +646,7 @@
           "20210728",
           "20210728"
         ],
-        "disabled": false
+        "disabled": true
       },
       "2.16": {
         "upstream_branch": [
@@ -676,7 +676,7 @@
           "v2.5.0",
           "v2.5.0"
         ],
-        "disabled": false
+        "disabled": true
       },
       "2.x": {
         "upstream_branch": [
@@ -691,7 +691,7 @@
         "disabled": true
       },
       "2.15": {
-        "disabled": false
+        "disabled": true
       },
       "2.x": {
         "disabled": false
@@ -772,7 +772,7 @@
           "7.42.x",
           "7.41.x"
         ],
-        "disabled": false
+        "disabled": true
       },
       "2.x": {
         "upstream_branch": [
@@ -795,7 +795,7 @@
           "7.42.x",
           "7.41.x"
         ],
-        "disabled": false
+        "disabled": true
       },
       "2.x": {
         "upstream_branch": [
@@ -818,7 +818,7 @@
           "7.42.x",
           "7.41.x"
         ],
-        "disabled": false
+        "disabled": true
       }
     },
     "get-sources-rhpkg-container-build": {
@@ -826,7 +826,7 @@
         "disabled": true
       },
       "2.15": {
-        "disabled": false
+        "disabled": true
       },
       "2.x": {
         "disabled": false
@@ -837,7 +837,7 @@
         "disabled": true
       },
       "2.15": {
-        "disabled": false
+        "disabled": true
       },
       "2.x": {
         "disabled": false
@@ -848,7 +848,7 @@
         "disabled": true
       },
       "2.15": {
-        "disabled": false
+        "disabled": true
       },
       "2.x": {
         "disabled": false
@@ -859,7 +859,7 @@
         "disabled": true
       },
       "2.15": {
-        "disabled": false
+        "disabled": true
       },
       "2.x": {
         "disabled": false
@@ -870,7 +870,7 @@
         "disabled": true
       },
       "2.15": {
-        "disabled": false
+        "disabled": true
       },
       "2.x": {
         "disabled": true
