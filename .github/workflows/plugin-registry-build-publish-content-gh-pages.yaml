@@ -36,7 +36,8 @@ jobs:
           else
              version=$(cat dependencies/VERSION)
           fi
-          docker manifest inspect quay.io/crw/pluginregistry-rhel8:"$version" | jq -r '.manifests[] | .platform.architecture' \
+          # get arches and swap amd64 -> x86_64 so we have the uname -m value, not the quay arch name
+          docker manifest inspect quay.io/crw/pluginregistry-rhel8:"$version" | jq -r '.manifests[] | .platform.architecture' | sed -r -e "s#amd64#x86_64#g" \
           > /tmp/crw-plugin-registry/architectures.json
           for arch in $(cat /tmp/crw-plugin-registry/architectures.json); do
             docker pull quay.io/crw/pluginregistry-rhel8:"$version" --platform="$arch"
@@ -91,10 +92,10 @@ jobs:
           git config --global hub.protocol https
           git remote set-url origin https://$GITHUB_TOKEN:x-oauth-basic@github.com/redhat-developer/codeready-workspaces.git
           git diff-index --quiet HEAD || git commit -m "publish registry $VERSION - $(date)" -s
-          git push origin gh-pages
+          git push origin gh-pages # https://redhat-developer.github.io/codeready-workspaces/
           for arch in $(cat /tmp/crw-plugin-registry/architectures.json); do
-            echo "Plugin registry published to https://$GITHUB_ACTOR.github.io/$GITHUB_REPO_NAME/$VERSION_DIR/$arch/v3/plugins/"
+            echo "Plugin registry published to https://redhat-developer.github.io/$GITHUB_REPO_NAME/$VERSION_DIR/$arch/v3/plugins/"
             if [[ -n "$NEXT_VERSION_DIR" ]]; then
-              echo "Plugin registry published to https://$GITHUB_ACTOR.github.io/$GITHUB_REPO_NAME/$NEXT_VERSION_DIR/$arch/v3/plugins/"
+              echo "Plugin registry published to https://redhat-developer.github.io/$GITHUB_REPO_NAME/$NEXT_VERSION_DIR/$arch/v3/plugins/"
             fi
           done
