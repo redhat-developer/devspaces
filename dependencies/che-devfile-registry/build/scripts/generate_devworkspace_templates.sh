@@ -11,9 +11,6 @@
 set -e
 
 arch="$(uname -m)"
-if [[ "$arch" == "x86_64" ]]; then
-  arch="amd64"
-fi
 # shellcheck disable=SC1091
 source ./clone_and_zip.sh
 lib_name="che-theia-devworkspace-handler"
