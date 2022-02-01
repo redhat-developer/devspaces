@@ -1,0 +1,38 @@
+#
+# Copyright (c) 2020-2021 Red Hat, Inc.
+# This program and the accompanying materials are made
+# available under the terms of the Eclipse Public License 2.0
+# which is available at https://www.eclipse.org/legal/epl-2.0/
+#
+# SPDX-License-Identifier: EPL-2.0
+#
+
+name: Plugin Registry - Publish Registry Content
+
+on:
+  workflow_run:
+    workflows: ["Plugin Registry - Build"]
+    types:
+      - completed
+
+jobs:
+  publish:
+    name: publish
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '12'
+      - name: publish link to new content
+        env:
+          SURGE_TOKEN: ${{ secrets.SURGE_TOKEN }}
+        run: |
+          sudo apt-get install tree
+          npm install -g surge
+          mkdir -p /tmp/crw-plugin-registry/content
+          echo "Content has moved to <a href=https://redhat-developer.github.io/codeready-workspaces/che-plugin-registry/next/x86_64/>https://redhat-developer.github.io/codeready-workspaces/che-plugin-registry/next/x86_64/</a>" > /tmp/crw-plugin-registry/content/index.html
+          export DEPLOY_DOMAIN=https://crw-plugin-registry-main.surge.sh
+          echo "DEPLOY_DOMAIN=$DEPLOY_DOMAIN" >> $GITHUB_ENV
+          surge /tmp/crw-plugin-registry/content --domain $DEPLOY_DOMAIN
+          # in future we can remove the surge domain entirely
+          # surge teardown $DEPLOY_DOMAIN
