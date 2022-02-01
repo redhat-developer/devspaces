@@ -10,9 +10,9 @@
 
 set -e
 
-arch="$(uname -m)"
 # shellcheck disable=SC1091
 source ./clone_and_zip.sh
+arch="$(uname -m)"
 lib_name="che-theia-devworkspace-handler"
 npm install -g @eclipse-che/"${lib_name}"@"$(jq -r --arg v $lib_name '.[$v]' versions.json)"
 mkdir -p /build/resources/v2/
