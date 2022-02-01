@@ -15,36 +15,14 @@
 
 set -e
 
+# shellcheck disable=SC1091
+source ./clone_and_zip.sh
+
 DEVFILES_DIR="${1%/}"
 RESOURCES_DIR="${2%/}"
 TEMP_DIR="${RESOURCES_DIR}/devfiles_temp"
 TEMP_FILE="${TEMP_DIR}/temp.yaml"
 TEMP_REPO="${TEMP_DIR}/cloned"
-
-# Clone a git repository and create an archive zip at a specified location
-# Args:
-#   $1 - URL of git repo
-#   $2 - branch to archive
-#   $3 - destination path for the archived project zip file
-#   $4 - sparse checkout directory
-function cache_project() {
-  local repo="$1"
-  local branch="$2"
-  local destination="$3"
-  local sparse_checkout_dir="$4"
-
-  rm -fr "$TEMP_REPO"
-  git clone "$repo" -b "$branch" --depth 1 "$TEMP_REPO" -q
-  pushd "$TEMP_REPO" &>/dev/null
-    if [ -n "$sparse_checkout_dir" ]; then
-      echo "    Using sparse checkout dir '$sparse_checkout_dir'"
-      git archive -9 "$branch" "$sparse_checkout_dir" -o "$destination"
-    else 
-      git archive -9 "$branch" -o "$destination"
-    fi
-  popd &>/dev/null
-  rm -rf "$TEMP_REPO"
-}
 
 # Update devfile to refer to a locally stored zip instead of a public git repo
 # Args:
@@ -126,7 +104,7 @@ for devfile in "${devfiles[@]}"; do
     absolute_destination=$(realpath "$destination")
     # echo "    Caching project to $absolute_destination"
     echo "    Caching project from $location/blob/${branch} to $destination"
-    cache_project "$location" "$branch" "$absolute_destination" "$sparse_checkout_dir"
+    clone_and_zip "$location" "$branch" "$absolute_destination" "$sparse_checkout_dir"
 
     echo "    Updating devfile $devfile to point at cached project zip $destination"
     update_devfile "$devfile" "$project_name" "$destination"

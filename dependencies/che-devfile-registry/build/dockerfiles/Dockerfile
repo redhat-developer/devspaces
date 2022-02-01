@@ -23,6 +23,9 @@ USER 0
 ARG BOOTSTRAP=false
 ENV BOOTSTRAP=${BOOTSTRAP}
 
+ARG VERSION=next
+ENV VERSION=${VERSION}
+
 # to get all the python deps pre-fetched so we can build in Brew:
 # 1. extract files in the container to your local filesystem
 #    find v3 -type f -exec dos2unix {} \;
@@ -49,6 +52,7 @@ COPY ./build/dockerfiles/rhel.install.sh /tmp
 RUN /tmp/rhel.install.sh && rm -f /tmp/rhel.install.sh
 
 COPY ./build/scripts ./arbitrary-users-patch/base_images /build/
+COPY ./versions.json /build/
 COPY ./devfiles /build/devfiles
 WORKDIR /build/
 
@@ -65,7 +69,9 @@ RUN ./check_mandatory_fields.sh devfiles
 RUN ./swap_images.sh devfiles
 RUN ./index.sh > /build/devfiles/index.json
 RUN ./list_referenced_images.sh devfiles > /build/devfiles/external_images.txt
+RUN ./generate_devworkspace_templates.sh
 RUN chmod -R g+rwX /build/devfiles
+RUN chmod -R g+rwX /build/resources
 
 ################# 
 # PHASE TWO: configure registry image
@@ -108,6 +114,7 @@ WORKDIR /var/www/html
 RUN mkdir -m 777 /var/www/html/devfiles
 COPY README.md .htaccess /var/www/html/
 COPY --from=builder /build/devfiles /var/www/html/devfiles
+COPY --from=builder /build/resources /var/www/html/resources
 COPY ./images /var/www/html/images
 COPY ./build/dockerfiles/rhel.entrypoint.sh ./build/dockerfiles/entrypoint.sh /usr/local/bin/
 RUN chmod g+rwX /usr/local/bin/entrypoint.sh /usr/local/bin/rhel.entrypoint.sh && \
