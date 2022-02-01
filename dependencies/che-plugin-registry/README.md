@@ -1,6 +1,6 @@
 # CodeReady Workspaces Plugin Registry
 
-This repository holds ready-to-use plugins for different languages and technologies.
+This repository holds ready-to-use plugins for different languages and technologies. 
 
 ## Building and Publishing .vsix Files
 
