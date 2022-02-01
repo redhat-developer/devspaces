@@ -15,7 +15,7 @@
           "7.42.x",
           "7.41.x"
         ],
-        "disabled": false
+        "disabled": true
       },
       "2.16": {
         "upstream_branch": [
@@ -45,7 +45,7 @@
           "7.42.x",
           "7.41.x"
         ],
-        "disabled": false
+        "disabled": true
       },
       "2.16": {
         "upstream_branch": [
@@ -75,7 +75,7 @@
           "7.42.x",
           "7.41.x"
         ],
-        "disabled": false
+        "disabled": true
       },
       "2.16": {
         "upstream_branch": [
@@ -105,7 +105,7 @@
           "7.42.x",
           "7.41.x"
         ],
-        "disabled": false
+        "disabled": true
       },
       "2.16": {
         "upstream_branch": [
@@ -135,7 +135,7 @@
           "7.42.x",
           "7.41.x"
         ],
-        "disabled": false
+        "disabled": true
       },
       "2.16": {
         "upstream_branch": [
@@ -165,7 +165,7 @@
           "7.42.x",
           "7.41.x"
         ],
-        "disabled": false
+        "disabled": true
       },
       "2.16": {
         "upstream_branch": [
@@ -195,7 +195,7 @@
           "7.42.x",
           "7.41.x"
         ],
-        "disabled": false
+        "disabled": true
       },
       "2.16": {
         "upstream_branch": [
@@ -225,7 +225,7 @@
           "7.42.x",
           "7.41.x"
         ],
-        "disabled": false
+        "disabled": true
       },
       "2.x": {
         "upstream_branch": [
@@ -248,7 +248,7 @@
           "7.42.x",
           "7.41.x"
         ],
-        "disabled": false
+        "disabled": true
       },
       "2.16": {
         "upstream_branch": [
@@ -278,7 +278,7 @@
           "7.42.x",
           "7.41.x"
         ],
-        "disabled": false
+        "disabled": true
       },
       "2.16": {
         "upstream_branch": [
@@ -308,7 +308,7 @@
           "7.42.x",
           "7.41.x"
         ],
-        "disabled": false
+        "disabled": true
       },
       "2.16": {
         "upstream_branch": [
@@ -338,7 +338,7 @@
           "crw-2.15-rhel-8",
           "crw-2.15-rhel-8"
         ],
-        "disabled": false
+        "disabled": true
       },
       "2.16": {
         "upstream_branch": [
@@ -368,7 +368,7 @@
           "crw-2.15-rhel-8",
           "crw-2.15-rhel-8"
         ],
-        "disabled": false
+        "disabled": true
       },
       "2.16": {
         "upstream_branch": [
@@ -385,6 +385,102 @@
         "disabled": false
       }
     },
+    "plugin-java11-openj9": {
+      "2.14": {
+        "upstream_branch": [
+          "crw-2.14-rhel-8",
+          "crw-2.14-rhel-8"
+        ],
+        "disabled": true
+      },
+      "2.15": {
+        "upstream_branch": [
+          "crw-2.15-rhel-8",
+          "crw-2.15-rhel-8"
+        ],
+        "disabled": true
+      }
+    },
+    "plugin-java11": {
+      "2.14": {
+        "upstream_branch": [
+          "crw-2.14-rhel-8",
+          "crw-2.14-rhel-8"
+        ],
+        "disabled": true
+      },
+      "2.15": {
+        "upstream_branch": [
+          "crw-2.15-rhel-8",
+          "crw-2.15-rhel-8"
+        ],
+        "disabled": true
+      }
+    },
+    "plugin-java8-openj9": {
+      "2.14": {
+        "upstream_branch": [
+          "crw-2.14-rhel-8",
+          "crw-2.14-rhel-8"
+        ],
+        "disabled": true
+      },
+      "2.15": {
+        "upstream_branch": [
+          "crw-2.15-rhel-8",
+          "crw-2.15-rhel-8"
+        ],
+        "disabled": true
+      }
+    },
+    "plugin-java8": {
+      "2.14": {
+        "upstream_branch": [
+          "crw-2.14-rhel-8",
+          "crw-2.14-rhel-8"
+        ],
+        "disabled": true
+      },
+      "2.15": {
+        "upstream_branch": [
+          "crw-2.15-rhel-8",
+          "crw-2.15-rhel-8"
+        ],
+        "disabled": true
+      }
+    },
+    "plugin-kubernetes": {
+      "2.14": {
+        "upstream_branch": [
+          "crw-2.14-rhel-8",
+          "crw-2.14-rhel-8"
+        ],
+        "disabled": true
+      },
+      "2.15": {
+        "upstream_branch": [
+          "crw-2.15-rhel-8",
+          "crw-2.15-rhel-8"
+        ],
+        "disabled": true
+      }
+    },
+    "plugin-openshift": {
+      "2.14": {
+        "upstream_branch": [
+          "crw-2.14-rhel-8",
+          "crw-2.14-rhel-8"
+        ],
+        "disabled": true
+      },
+      "2.15": {
+        "upstream_branch": [
+          "crw-2.15-rhel-8",
+          "crw-2.15-rhel-8"
+        ],
+        "disabled": true
+      }
+    },
     "stacks-cpp": {
       "2.14": {
         "upstream_branch": [
@@ -398,7 +494,7 @@
           "crw-2.15-rhel-8",
           "crw-2.15-rhel-8"
         ],
-        "disabled": false
+        "disabled": true
       },
       "2.x": {
         "upstream_branch": [
@@ -421,7 +517,7 @@
           "crw-2.15-rhel-8",
           "crw-2.15-rhel-8"
         ],
-        "disabled": false
+        "disabled": true
       },
       "2.x": {
         "upstream_branch": [
@@ -444,7 +540,7 @@
           "crw-2.15-rhel-8",
           "crw-2.15-rhel-8"
         ],
-        "disabled": false
+        "disabled": true
       },
       "2.x": {
         "upstream_branch": [
@@ -467,7 +563,7 @@
           "crw-2.15-rhel-8",
           "crw-2.15-rhel-8"
         ],
-        "disabled": false
+        "disabled": true
       },
       "2.x": {
         "upstream_branch": [
@@ -490,7 +586,7 @@
           "v3.4.x",
           "v3.4.x"
         ],
-        "disabled": false
+        "disabled": true
       },
       "2.16": {
         "upstream_branch": [
@@ -520,7 +616,7 @@
           "v3.4.x",
           "v3.4.x"
         ],
-        "disabled": false
+        "disabled": true
       },
       "2.16": {
         "upstream_branch": [
@@ -550,7 +646,7 @@
           "20210728",
           "20210728"
         ],
-        "disabled": false
+        "disabled": true
       },
       "2.16": {
         "upstream_branch": [
@@ -580,7 +676,7 @@
           "v2.5.0",
           "v2.5.0"
         ],
-        "disabled": false
+        "disabled": true
       },
       "2.x": {
         "upstream_branch": [
@@ -595,7 +691,7 @@
         "disabled": true
       },
       "2.15": {
-        "disabled": false
+        "disabled": true
       },
       "2.x": {
         "disabled": false
@@ -606,7 +702,7 @@
         "disabled": true
       },
       "2.15": {
-        "disabled": false
+        "disabled": true
       },
       "2.16": {
         "disabled": false
@@ -621,7 +717,7 @@
           "crw-2.15-rhel-8",
           "crw-2.15-rhel-8"
         ],
-        "disabled": false
+        "disabled": true
       },
       "2.16": {
         "upstream_branch": [
@@ -644,7 +740,7 @@
           "crw-2.15-rhel-8",
           "crw-2.15-rhel-8"
         ],
-        "disabled": false
+        "disabled": true
       },
       "2.16": {
         "upstream_branch": [
@@ -669,6 +765,7 @@
           "7.40.x",
           "7.39.x"
         ],
+        "node_version": "12.22.5",
         "disabled": true
       },
       "2.15": {
@@ -676,6 +773,15 @@
           "7.42.x",
           "7.41.x"
         ],
+        "node_version": "12.22.5",
+        "disabled": true
+      },
+      "2.16": {
+        "upstream_branch": [
+          "7.44.x",
+          "7.43.x"
+        ],
+        "node_version": "16.13.2",
         "disabled": false
       },
       "2.x": {
@@ -683,6 +789,7 @@
           "main",
           "main"
         ],
+        "node_version": "16.13.2",
         "disabled": false
       }
     },
@@ -699,7 +806,7 @@
           "7.42.x",
           "7.41.x"
         ],
-        "disabled": false
+        "disabled": true
       },
       "2.x": {
         "upstream_branch": [
@@ -722,7 +829,7 @@
           "7.42.x",
           "7.41.x"
         ],
-        "disabled": false
+        "disabled": true
       }
     },
     "get-sources-rhpkg-container-build": {
@@ -730,7 +837,7 @@
         "disabled": true
       },
       "2.15": {
-        "disabled": false
+        "disabled": true
       },
       "2.x": {
         "disabled": false
@@ -741,7 +848,7 @@
         "disabled": true
       },
       "2.15": {
-        "disabled": false
+        "disabled": true
       },
       "2.x": {
         "disabled": false
@@ -752,7 +859,7 @@
         "disabled": true
       },
       "2.15": {
-        "disabled": false
+        "disabled": true
       },
       "2.x": {
         "disabled": false
@@ -763,7 +870,7 @@
         "disabled": true
       },
       "2.15": {
-        "disabled": false
+        "disabled": true
       },
       "2.x": {
         "disabled": false
@@ -774,7 +881,7 @@
         "disabled": true
       },
       "2.15": {
-        "disabled": false
+        "disabled": true
       },
       "2.x": {
         "disabled": true
@@ -806,14 +913,6 @@
         "CSV_VERSION_PREV": "2.13.1-0.1639666398.p"
       },
       "2.15": {
-        "CSV_VERSION": "2.15.0",
-        "CSV_VERSION_PREV": "2.14.0"
-      },
-      "2.16": {
-        "CSV_VERSION": "2.15.0",
-        "CSV_VERSION_PREV": "2.14.0"
-      },
-      "2.x": {
         "CSV_VERSION": "2.15.0",
         "CSV_VERSION_PREV": "2.14.0"
       }
