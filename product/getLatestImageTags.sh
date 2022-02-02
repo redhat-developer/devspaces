@@ -209,12 +209,8 @@ while [[ "$#" -gt 0 ]]; do
   shift 1
 done
 
-searchTag=":${latestNext}" # default to searching for :latest or :next (no tag)
-# if [[ ${CRW_VERSION} == "2.y" ]] || [[ $DWNSTM_BRANCH = "crw-2-rhel-8" ]]; then searchTag=":next"; latestNext="next"; fi
-# if [[ $CRW_VERSION ]] && [[ $CRW_VERSION != "2.y" ]]; then
-# 	searchTag=":${CRW_VERSION}"
-# fi
-# if [[ $VERBOSE -eq 1 ]]; then echo "[DEBUG] searchTag = ${searchTag}"; fi
+# null for osbs and others; only need this for quay repo when we might not have a :latest tag (but do have a :next one)
+searchTag=""
 
 # echo "DWNSTM_BRANCH = $DWNSTM_BRANCH"
 # tag to search for in quay
@@ -250,6 +246,7 @@ if [[ ${REGISTRY} != "" ]]; then
 		if [[ ${CONTAINERS} == "" ]]; then CONTAINERS="${CRW_CONTAINERS_OSBS//codeready-workspaces\//codeready-workspaces-}"; fi
 		if [[ ${CONTAINERS} == "${CRW_CONTAINERS_RHEC}" ]]; then CONTAINERS="${CRW_CONTAINERS_OSBS//codeready-workspaces\//codeready-workspaces-}"; fi
 	elif [[ ${REGISTRY} == *"quay.io"* ]]; then
+		searchTag=":${latestNext}"
 		if [[ ${CONTAINERS} == "${CRW_CONTAINERS_RHEC}" ]] || [[ ${CONTAINERS} == "" ]]; then
 			CONTAINERS="${CRW_CONTAINERS_RHEC}"; 
 			CONTAINERS="${CONTAINERS//codeready-workspaces/crw}"
@@ -372,7 +369,7 @@ for URLfrag in $CONTAINERS; do
 	fi
 	LATESTTAGs="$(${QUERY} 2>/dev/null | jq -r .RepoTags[] | grep -E -v "${EXCLUDES}" | grep -E "${BASETAG}" | sort -V)"
 	if [[ ! ${LATESTTAGs} ]]; then # try again with -container suffix
-		QUERY="$(echo "${URL}-container" | sed -e "s#.\+\(registry.redhat.io\|registry.access.redhat.com\)/#skopeo inspect ${ARCH_OVERRIDE} docker://${REGISTRYPRE}#g")${searchTag}"
+		QUERY="$(echo "${URL}-container" | sed -e "s#.\+\(registry.redhat.io\|registry.access.redhat.com\)/#skopeo inspect ${ARCH_OVERRIDE} docker://${REGISTRYPRE}#g")"
 		if [[ $VERBOSE -eq 1 ]]; then 
 		    echo ""; echo -n "LATESTTAGs=\"\$($QUERY | jq -r .RepoTags[] | grep -E -v '${EXCLUDES}' | grep -E '${BASETAG}' | sort -V)\"; " 
 		fi
