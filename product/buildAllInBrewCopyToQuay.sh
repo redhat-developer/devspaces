@@ -35,7 +35,7 @@ Example: $0 -t ${CRW_VERSION} --sources /path/to/pkgs.devel/projects/
 latestNext="--latest"
 if [[ ${DWNSTM_BRANCH} == "crw-2-rhel-8" ]]; then latestNext="--next"; fi
 
-PHASES="1 2 3 4"
+PHASES="1 2"
 while [[ "$#" -gt 0 ]]; do
   case $1 in
     '-t') CRW_VERSION="$2"; shift 1;;
@@ -80,24 +80,8 @@ doBuild () {
     echo
 }
 
-if [[ $PHASES == *"1"* ]]; then # 10 images
-    doBuild "codeready-workspaces-udi-openj9 \
-        codeready-workspaces-udi \
-        codeready-workspaces-stacks-cpp \
-        codeready-workspaces-stacks-dotnet \
-        codeready-workspaces-stacks-golang \
-        codeready-workspaces-stacks-php"
-fi
-
-if [[ $PHASES == *"2"* ]]; then # 3 images
-    doBuild codeready-workspaces-theia-dev
-    doBuild codeready-workspaces-theia
-    doBuild codeready-workspaces-theia-endpoint
-fi
-
-if [[ $PHASES == *"3"* ]]; then # 16 images
+if [[ $PHASES == *"1"* ]]; then 
     doBuild "codeready-workspaces \
-        codeready-workspaces-backup \
         codeready-workspaces-configbump \
         codeready-workspaces-dashboard \
         codeready-workspaces-devfileregistry \
@@ -109,16 +93,23 @@ if [[ $PHASES == *"3"* ]]; then # 16 images
         codeready-workspaces-pluginbroker-artifacts \
         codeready-workspaces-pluginbroker-metadata \
         codeready-workspaces-pluginregistry \
-        codeready-workspaces-traefik"
+        codeready-workspaces-theia-dev \
+        codeready-workspaces-traefik \
+        codeready-workspaces-udi-openj9 \
+        codeready-workspaces-udi \
+        codeready-workspaces-stacks-cpp \
+        codeready-workspaces-stacks-dotnet \
+        codeready-workspaces-stacks-golang \
+        codeready-workspaces-stacks-php"
 fi
 
-if [[ $PHASES == *"4"* ]]; then # 2 images
-    doBuild ""
-
-    doBuild "codeready-workspaces-operator-bundle \
-        codeready-workspaces-operator-metadata"
+# theia images depend on theia-dev; operator-bundle is built last after everything else is done
+if [[ $PHASES == *"2"* ]]; then 
+    doBuild "codeready-workspaces-theia"
+    doBuild "codeready-workspaces-theia-endpoint"
+    doBuild "codeready-workspaces-operator-bundle"
 fi
 
 # clean up checked out sources
-echo "[INFO] sources checked out into $SOURCEDIR"
-# rm -fr $SOURCEDIR
+# echo "[INFO] sources checked out into $SOURCEDIR"
+rm -fr $SOURCEDIR
