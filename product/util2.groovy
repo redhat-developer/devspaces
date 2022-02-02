@@ -590,5 +590,18 @@ exit 0
   return statusCode > 1 ? false : true
 }
 
+boolean hasSuccessfullyBuiltAllPlatfroms(String containerYamlPath, String jobOutput) {
+  int containerBuildCount = sh(script: '''#!/bin/bash -xe
+    yq -r ".platforms.only | length" ''' + containerYamlPath, returnStdout: true).trim()
+    echo "Total container builds detected: "+containerBuildCount
+  int containerSuccessCount = jobOutput.count("build has finished successfully \\\\o/") - 1
+    echo "Successfuly container builds detected: "+containerBuildCount
+  if (containerBuildCount == containerSuccessCount) {
+    return true
+  } else {
+    return false
+  }
+}
+
 // return this file's contents when loaded
 return this
