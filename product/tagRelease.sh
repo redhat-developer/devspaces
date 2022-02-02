@@ -91,6 +91,7 @@ pushTagPD ()
 }
 
 # tag pkgs.devel repos only (branches are created by SPMM ticket, eg., https://projects.engineering.redhat.com/browse/SPMM-2517)
+# TODO remove tagging for backup once 2.15 is live
 if [[ ${pkgs_devel_branch} ]] && [[ ${CSV_VERSION} ]]; then 
 	for d in \
 	codeready-workspaces-backup \
