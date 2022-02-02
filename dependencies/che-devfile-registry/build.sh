@@ -76,6 +76,19 @@ function parse_arguments() {
 
 parse_arguments "$@"
 
+function clear_generated_data() {
+    rm -rf ./resources
+    for dir in ./devfiles/*/
+    do
+      FILE="${dir}/devworkspace-che-theia-latest.yaml"
+      if [[ -f "$FILE" ]]; then
+        rm "${FILE}"
+      fi
+    done
+}
+
+./build/scripts/generate_devworkspace_templates.sh
+
 BUILD_COMMAND="build"
 if [[ -z $BUILDER ]]; then
     echo "BUILDER not specified, trying with podman"
@@ -108,7 +121,8 @@ else
 fi
 
 IMAGE="${REGISTRY}/${ORGANIZATION}/${CONTAINERNAME}:${TAG}"
-${BUILDER} ${BUILD_COMMAND} --build-arg VERSION="$(cat ../VERSION)"\
+${BUILDER} ${BUILD_COMMAND} \
     -t "${IMAGE}" \
     -f ${DOCKERFILE} \
     --target "${TARGET}" .
+clear_generated_data

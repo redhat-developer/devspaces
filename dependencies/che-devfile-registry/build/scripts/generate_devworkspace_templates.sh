@@ -11,16 +11,17 @@
 set -e
 
 # shellcheck disable=SC1091
-source ./clone_and_zip.sh
+source ./build/scripts/clone_and_zip.sh
+VERSION=$(cat ../VERSION)
 arch="$(uname -m)"
 lib_name="che-theia-devworkspace-handler"
 npm install -g @eclipse-che/"${lib_name}"@"$(jq -r --arg v $lib_name '.[$v]' versions.json)"
-mkdir -p /build/resources/v2/
-for dir in /build/devfiles/*/
+mkdir -p ./resources/v2/
+for dir in ./devfiles/*/
 do
-  devfile_url=$(grep "\"v2\":" "${dir}"meta.yaml) || :
+  devfile_url=$(grep "v2:" "${dir}"meta.yaml) || :
   if [ -n "$devfile_url" ]; then
-    devfile_url=${devfile_url##*\"v2\": \"}
+    devfile_url=${devfile_url##*v2: }
     devfile_url=${devfile_url%/}
     devfile_url=${devfile_url%\"*}
     devfile_repo=${devfile_url%/tree*}
@@ -31,6 +32,6 @@ do
     --plugin-registry-url:https://redhat-developer.github.io/codeready-workspaces/che-plugin-registry/"${VERSION}"/"${arch}"/v3 \
     --output-file:"${dir}"devworkspace-che-theia-latest.yaml \
     "--project.${name}={{ DEVFILE_REGISTRY_URL }}/resources/v2/${name}.zip"
-    clone_and_zip "${devfile_repo}" "${devfile_url##*/}" "/build/resources/v2/$name.zip"
+    clone_and_zip "${devfile_repo}" "${devfile_url##*/}" "$(pwd)/resources/v2/$name.zip"
   fi
 done
