@@ -209,7 +209,7 @@ while [[ "$#" -gt 0 ]]; do
   shift 1
 done
 
-searchTag="" # default to searching for :latest (no tag)
+searchTag=":${latestNext}" # default to searching for :latest or :next (no tag)
 # if [[ ${CRW_VERSION} == "2.y" ]] || [[ $DWNSTM_BRANCH = "crw-2-rhel-8" ]]; then searchTag=":next"; latestNext="next"; fi
 # if [[ $CRW_VERSION ]] && [[ $CRW_VERSION != "2.y" ]]; then
 # 	searchTag=":${CRW_VERSION}"
