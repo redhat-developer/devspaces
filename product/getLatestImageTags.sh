@@ -63,68 +63,33 @@ checkVersion() {
 }
 checkVersion 1.1 "$(skopeo --version | sed -e "s/skopeo version //")" skopeo
 
-CRW_CONTAINERS_RHEC="\
-codeready-workspaces/backup-rhel8 \
+CRW_CONTAINERS="\
 codeready-workspaces/configbump-rhel8 \
 codeready-workspaces/crw-2-rhel8-operator \
-\
 codeready-workspaces/crw-2-rhel8-operator-bundle \
-codeready-workspaces/crw-2-rhel8-operator-metadata \
 codeready-workspaces/dashboard-rhel8 \
 codeready-workspaces/devfileregistry-rhel8 \
-codeready-workspaces/idea-rhel8 \
 \
+codeready-workspaces/idea-rhel8 \
 codeready-workspaces/imagepuller-rhel8 \
 codeready-workspaces/jwtproxy-rhel8 \
 codeready-workspaces/machineexec-rhel8 \
 codeready-workspaces/pluginbroker-artifacts-rhel8 \
-codeready-workspaces/pluginbroker-metadata-rhel8 \
 \
+codeready-workspaces/pluginbroker-metadata-rhel8 \
 codeready-workspaces/pluginregistry-rhel8 \
 codeready-workspaces/server-rhel8 \
 codeready-workspaces/stacks-cpp-rhel8 \
 codeready-workspaces/stacks-dotnet-rhel8 \
-codeready-workspaces/stacks-golang-rhel8 \
 \
+codeready-workspaces/stacks-golang-rhel8 \
 codeready-workspaces/stacks-php-rhel8 \
 codeready-workspaces/theia-dev-rhel8 \
 codeready-workspaces/theia-endpoint-rhel8 \
 codeready-workspaces/theia-rhel8 \
-codeready-workspaces/traefik-rhel8 \
 \
-codeready-workspaces/udi-openj9-rhel8 \
-codeready-workspaces/udi-rhel8 \
-"
-
-CRW_CONTAINERS_OSBS="\
-codeready-workspaces/backup-rhel8 \
-codeready-workspaces/configbump-rhel8 \
-codeready-workspaces/operator \
-\
-codeready-workspaces/operator-bundle \
-codeready-workspaces/operator-metadata \
-codeready-workspaces/dashboard-rhel8 \
-codeready-workspaces/devfileregistry-rhel8 \
-codeready-workspaces/idea-rhel8 \
-\
-codeready-workspaces/imagepuller-rhel8 \
-codeready-workspaces/jwtproxy-rhel8 \
-codeready-workspaces/machineexec-rhel8 \
-codeready-workspaces/pluginbroker-artifacts-rhel8 \
-codeready-workspaces/pluginbroker-metadata-rhel8 \
-\
-codeready-workspaces/server-rhel8 \
-codeready-workspaces/stacks-cpp-rhel8 \
-codeready-workspaces/stacks-dotnet-rhel8 \
-codeready-workspaces/stacks-golang-rhel8 \
-codeready-workspaces/stacks-php-rhel8 \
-\
-codeready-workspaces/theia-dev-rhel8 \
-codeready-workspaces/theia-endpoint-rhel8 \
-codeready-workspaces/theia-rhel8 \
 codeready-workspaces/traefik-rhel8 \
 codeready-workspaces/udi-openj9-rhel8 \
-\
 codeready-workspaces/udi-rhel8 \
 "
 
@@ -199,8 +164,8 @@ while [[ "$#" -gt 0 ]]; do
     '--dockerfile') SHOWHISTORY=1;;
     '--tag') BASETAG="$2"; shift 1;;
     '--candidatetag') candidateTag="$2"; shift 1;;
-    '--nvr')    if [[ ! $CONTAINERS ]]; then CONTAINERS="${CRW_CONTAINERS_OSBS}"; fi; SHOWNVR=1;;
-    '--errata') if [[ ! $CONTAINERS ]]; then CONTAINERS="${CRW_CONTAINERS_OSBS}"; fi; SHOWNVR=1; ERRATA_NUM="$2"; HIDE_MISSING=1; shift 1;;
+    '--nvr')    if [[ ! $CONTAINERS ]]; then CONTAINERS="${CRW_CONTAINERS}"; CONTAINERS=${CONTAINERS//crw-2-rhel8-/}; fi; SHOWNVR=1;;
+    '--errata') if [[ ! $CONTAINERS ]]; then CONTAINERS="${CRW_CONTAINERS}"; CONTAINERS=${CONTAINERS//crw-2-rhel8-/}; fi; SHOWNVR=1; ERRATA_NUM="$2"; HIDE_MISSING=1; shift 1;;
     '--tagonly') TAGONLY=1;;
     '--log') SHOWLOG=1;;
     '--sort') SORTED=1;;
@@ -243,16 +208,16 @@ if [[ ${REGISTRY} != "" ]]; then
 	REGISTRYSTRING="--registry ${REGISTRY}"
 	REGISTRYPRE="${REGISTRY##*://}/"
 	if [[ ${REGISTRY} == *"registry-proxy.engineering.redhat.com"* ]]; then
-		if [[ ${CONTAINERS} == "" ]]; then CONTAINERS="${CRW_CONTAINERS_OSBS//codeready-workspaces\//codeready-workspaces-}"; fi
-		if [[ ${CONTAINERS} == "${CRW_CONTAINERS_RHEC}" ]]; then CONTAINERS="${CRW_CONTAINERS_OSBS//codeready-workspaces\//codeready-workspaces-}"; fi
+		if [[ ${CONTAINERS} == "" ]] || [[ ${CONTAINERS} == "${CRW_CONTAINERS}" ]]; then 
+			CONTAINERS="${CRW_CONTAINERS}"; CONTAINERS=${CONTAINERS//crw-2-rhel8-/}; CONTAINERS="${CONTAINERS//codeready-workspaces\//codeready-workspaces-}"; fi
 	elif [[ ${REGISTRY} == *"quay.io"* ]]; then
 		searchTag=":${latestNext}"
-		if [[ ${CONTAINERS} == "${CRW_CONTAINERS_RHEC}" ]] || [[ ${CONTAINERS} == "" ]]; then
-			CONTAINERS="${CRW_CONTAINERS_RHEC}"; 
+		if [[ ${CONTAINERS} == "${CRW_CONTAINERS}" ]] || [[ ${CONTAINERS} == "" ]]; then
+			CONTAINERS="${CRW_CONTAINERS}"; 
 			CONTAINERS="${CONTAINERS//codeready-workspaces/crw}"
 		fi
 	elif [[ ! ${CONTAINERS} ]]; then
-		CONTAINERS="${CRW_CONTAINERS_RHEC}"
+		CONTAINERS="${CRW_CONTAINERS}"
 	fi
 else
 	REGISTRYSTRING=""
