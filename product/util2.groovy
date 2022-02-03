@@ -593,10 +593,11 @@ exit 0
 boolean hasSuccessfullyBuiltAllArches(String containerYamlPath, String jobOutput) {
   int containerBuildCount = sh(script: '''#!/bin/bash -xe
     yq -r ".platforms.only | length" ''' + containerYamlPath, returnStdout: true).trim()
-    echo "Total container builds detected: "+containerBuildCount
-  int containerSuccessCount = jobOutput.count("build has finished successfully \\\\o/") - 1
-    echo "Successfuly container builds detected: "+containerBuildCount
-  if (containerBuildCount == containerSuccessCount) {
+    echo "Expected number of container builds (arches in container.yaml): "+containerBuildCount
+  int containerSuccessCount = jobOutput.count("build has finished successfully \\\\o/")
+    echo "Successful builds detected: "+containerBuildCount
+  // should get 1 per arch + 1 overall success, which is 1 more than list in container.yaml
+  if (containerSuccessCount > containerBuildCount) { 
     return true
   } else {
     return false
