@@ -258,12 +258,11 @@ if [[ ${SHOWNVR} -eq 1 ]]; then
 	n=0 # containers found
 	for containername in ${CONTAINERS}; do
 		(( c = c + 1 ))
-		# codeready-workspaces/operator-metadata -> codeready-workspaces-rhel8-operator-metadata-container-2.y-9
+		# codeready-workspaces/operator-bundle -> codeready-workspaces-rhel8-operator-bundle-container-2.y-9
 		# codeready-workspaces/operator -> codeready-workspaces-rhel8-operator-container-2.y-10
 		containername="${containername//workspaces-operator/workspaces-rhel8-operator}"
 		containername="${containername//\/operator/-rhel8-operator}"
 		containername="${containername//crw-2-/}"
-		# @since 2.12 operator-bundle doesn't have rhel- prefix, but operator-metadata DOES
 		containername="${containername/rhel8-operator-bundle/operator-bundle}" 
 		if [[ ${VERBOSE} -eq 1 ]]; then
 			# shellcheck disable=SC2028
@@ -408,7 +407,7 @@ for URLfrag in $CONTAINERS; do
 
 		if [[ ${PUSHTOQUAY} -eq 1 ]] && [[ ${REGISTRY} != *"quay.io"* ]]; then
 			QUAYDEST="${REGISTRYPRE}${URLfrag}"; QUAYDEST=${QUAYDEST##*codeready-workspaces-} # plugin-java8 or operator
-			# special case for the operator and metadata images, which don't follow the same pattern in osbs as quay
+			# special case for the operator and bundle images, which don't follow the same pattern in osbs as quay
 			if [[ ${QUAYDEST} == "operator" ]] || [[ ${QUAYDEST} == "operator-"* ]]; then QUAYDEST="crw-2-rhel8-${QUAYDEST}"; fi
 			QUAYDEST="quay.io/crw/${QUAYDEST}"
 

@@ -41,9 +41,9 @@ Options:
   -o                      open browser if PR generated
   
   --remove [CRW_VERSION]                  remove data for [CRW_VERSION] (Example: for .Version = 2.yy, delete 2.yy-2)
-  --enable-jobs [CRW_VERSION]             enable [CRW_VERSION] jobs in job-config.json, but leave metadata/bundle + management jobs alone
+  --enable-jobs [CRW_VERSION]             enable [CRW_VERSION] jobs in job-config.json, but leave bundle + management jobs alone
   --enable-management-jobs [CRW_VERSION]  enable ALL [CRW_VERSION] jobs in job-config.json
-  --disable-jobs [CRW_VERSION]            disable [CRW_VERSION] jobs in job-config.json, but leave metadata/bundle + management jobs alone
+  --disable-jobs [CRW_VERSION]            disable [CRW_VERSION] jobs in job-config.json, but leave bundle + management jobs alone
   --disable-management-jobs [CRW_VERSION] disable ALL [CRW_VERSION] jobs in job-config.json (implement code freeze)
   "
 }
@@ -103,7 +103,7 @@ replaceField()
 }
 
 computeLatestCSV() {
-  image=$1 # operator-bundle or operator-metadata
+  image=$1 # operator-bundle
   SOURCE_CONTAINER=registry.redhat.io/codeready-workspaces/crw-2-rhel8-${image}
   containerTag=$(skopeo inspect docker://${SOURCE_CONTAINER} | jq -r '.Labels.url' | sed -r -e "s#.+/images/##")
   echo "Found containerTag = ${containerTag}"
@@ -258,10 +258,10 @@ updateVersion() {
     for op in "operator-bundle"; do
       for ver in "${CRW_VERSION}" "2.x"; do
         # TODO CRW-2637 after we branch for 2.16, remove the .100 option
-        if [[ "${CRW_VERSION}" == "2.16" ]]; then 
-          replaceField "${WORKDIR}/dependencies/job-config.json" ".CSVs[\"${op}\"][\"${ver}\"][\"CSV_VERSION\"]" "\"${CRW_VERSION}.0\""
-        else
+        if [[ $CRW_VERSION == "2.14" ]] || [[ $CRW_VERSION == "2.15" ]]; then
           replaceField "${WORKDIR}/dependencies/job-config.json" ".CSVs[\"${op}\"][\"${ver}\"][\"CSV_VERSION\"]" "\"${CRW_VERSION}.100\""
+        else
+          replaceField "${WORKDIR}/dependencies/job-config.json" ".CSVs[\"${op}\"][\"${ver}\"][\"CSV_VERSION\"]" "\"${CRW_VERSION}.0\""
         fi
       done
     done
@@ -269,8 +269,8 @@ updateVersion() {
     # update CSV_VERSION_PREV values
     computeLatestCSV operator-bundle
 
-    # TODO CRW-2637 remove this block when we're officially done with 2.14.z
-    if [[ $CRW_VERSION == "2.14" ]] || [[ $CRW_VERSION == "2.15" ]] || [[ $CRW_VERSION == "2.x" ]]; then
+    # TODO CRW-2637 remove this block when we're officially done with 2.15.z
+    if [[ $CRW_VERSION == "2.14" ]] || [[ $CRW_VERSION == "2.15" ]]; then
       # set operator-bundle CSV_VERSION = 2.15.100
       replaceField "${WORKDIR}/dependencies/job-config.json" \
         ".CSVs[\"operator-bundle\"][\"${CRW_VERSION}\"][\"CSV_VERSION\"]" \

@@ -5,7 +5,7 @@ DELETE_LOCAL_IMAGE=""
 usage ()
 {
   echo "Usage: $0 CONTAINER [--override-arch s390x] [--tar-flags tar-extraction-flags] [--delete-before] [--delete-after]"
-  echo "Usage: $0 quay.io/crw/operator-metadata:latest"
+  echo "Usage: $0 quay.io/crw/operator-bundle:latest"
   echo "Usage: $0 quay.io/crw/udi-openj9-rhel8:2.4 --override-arch s390x"
   echo "Usage: $0 quay.io/crw/pluginregistry-rhel8:latest --tar-flags var/www/html/*/external_images.txt"
   echo "Usage: $0 quay.io/crw/devfileregistry-rhel8:latest --tar-flags var/www/html/*/external_images.txt --override-arch ppc64le"

@@ -164,7 +164,7 @@ if [[ ${phases} == *"1"* ]] || [[ ${phases} == *"2"* ]] || [[ ${phases} == *"3"*
 	# NOTE: don't delete this checkout yet, we need it for later.
 fi
 
-# TODO remove backup once 2.15 is live
+# TODO remove backup and operator-metadata once 2.15 is live
 if [[ ${phases} == *"1"* ]]; then
 	log "1b. Define list of upstream containers & RPMs pulled into them from https://pkgs.devel.redhat.com/cgit/?q=codeready-workspaces "
 	for d in \

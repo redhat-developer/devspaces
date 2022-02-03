@@ -7,7 +7,7 @@ usage () {
 Usage: 
   $0 [image1] [image2] [image3] ... [-t show container names, sorted]
 Examples: 
-  $0 quay.io/crw/crw-2-rhel8-operator-metadata:2.3-54 registry.redhat.io/codeready-workspaces/server-rhel8:2.2 codeready-workspaces-rhel8-operator-metadata-container-2.3-54
+  $0 quay.io/crw/crw-2-rhel8-operator-bundle:2.15-5 registry.redhat.io/codeready-workspaces/server-rhel8:2.2 codeready-workspaces-rhel8-operator-bundle-container-2.153-5
   $0 \$(cat LATEST_IMAGES) -s
 "
 	exit

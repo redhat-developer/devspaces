@@ -8,8 +8,8 @@
 # SPDX-License-Identifier: EPL-2.0
 #
 
-# script to fetch latest operator-metadata image, extract contents, and publish to 
-# https://github.com/redhat-developer/codeready-workspaces-images/tree/${MIDSTM_BRANCH}/codeready-workspaces-operator-metadata-generated/
+# script to fetch latest operator-bundle image, extract contents, and publish to 
+# https://github.com/redhat-developer/codeready-workspaces-images/tree/${MIDSTM_BRANCH}/codeready-workspaces-operator-bundle-generated/
 
 usage () 
 {
@@ -21,8 +21,8 @@ usage ()
 
 SCRIPT=$(readlink -f "$0"); SCRIPTPATH=$(dirname "$SCRIPT")
 
-DEST_DIR=codeready-workspaces-operator-bundle-generated # or codeready-workspaces-operator-metadata-generated (deprecated)
-SOURCE_CONTAINER=quay.io/crw/crw-2-rhel8-operator-bundle # or quay.io/crw/crw-2-rhel8-operator-metadata (deprecated)
+DEST_DIR=codeready-workspaces-operator-bundle-generated 
+SOURCE_CONTAINER=quay.io/crw/crw-2-rhel8-operator-bundle
 # commandline args
 while [[ "$#" -gt 0 ]]; do
   case $1 in
@@ -51,11 +51,9 @@ rsync -zrlt /tmp/${SOURCE_CONTAINER//\//-}-${CRW_VERSION}-*/* \
 
 # CRW-2077 generate a json file with the latest CRW version and CSV versions too
 CSV_VERSION_BUNDLE="$(yq -r '.spec.version' ${SOURCE_DIR}/codeready-workspaces-operator-bundle-generated/manifests/codeready-workspaces.csv.yaml)"
-CSV_VERSION_METADATA="$(yq -r '.spec.version' ${SOURCE_DIR}/codeready-workspaces-operator-metadata-generated/manifests/codeready-workspaces.csv.yaml)"
 echo '{' > ${SOURCE_DIR}/VERSION.json
 echo '    "CRW_VERSION": "'${CRW_VERSION}'",'                   >> ${SOURCE_DIR}/VERSION.json
 echo '    "CSV_VERSION_BUNDLE": "'${CSV_VERSION_BUNDLE}'",' >> ${SOURCE_DIR}/VERSION.json
-echo '    "CSV_VERSION_METADATA": "'${CSV_VERSION_METADATA}'"' >> ${SOURCE_DIR}/VERSION.json
 echo '}' >> ${SOURCE_DIR}/VERSION.json
 
 # get container suffix number

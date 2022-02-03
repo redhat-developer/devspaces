@@ -26,7 +26,7 @@ CLEAN="false" #  if set true, delete existing folders and do fresh checkouts
 
 if [[ $# -lt 4 ]]; then
 	echo "
-To create tags (and push updated CSV content into operator-metadata and operator-bundle repo):
+To create tags (and push updated CSV content into operator-bundle repo):
   $0 -v CSV_VERSION -t CRW_VERSION -gh CRW_GH_BRANCH -ghtoken GITHUB_TOKEN -pd PKGS_DEVEL_BRANCH -pduser kerberos_user
 Example: 
   $0 -v 2.y.0 -t 2.y -gh ${crw_repos_branch} -ghtoken \$GITHUB_TOKEN -pd ${pkgs_devel_branch} -pduser crw-build
@@ -44,7 +44,7 @@ while [[ "$#" -gt 0 ]]; do
   case $1 in
     '--branchfrom') SOURCE_BRANCH="$2"; shift 1;; # this flag will create branches instead of using branches to create tags
     '-v') CSV_VERSION="$2"; shift 1;; # 2.y.0
-    '-t') CRW_VERSION="$2"; shift 1;; # 2.y # used to get released metadata container's CSV contents
+    '-t') CRW_VERSION="$2"; shift 1;; # 2.y # used to get released bundle container's CSV contents
     '-gh') crw_repos_branch="$2"; shift 1;;
     '-ghtoken') GITHUB_TOKEN="$2"; shift 1;;
     '-pd') pkgs_devel_branch="$2"; shift 1;;
@@ -91,7 +91,7 @@ pushTagPD ()
 }
 
 # tag pkgs.devel repos only (branches are created by SPMM ticket, eg., https://projects.engineering.redhat.com/browse/SPMM-2517)
-# TODO remove tagging for backup once 2.15 is live
+# TODO remove tagging for backup and operator-metadata once 2.15 is live
 if [[ ${pkgs_devel_branch} ]] && [[ ${CSV_VERSION} ]]; then 
 	for d in \
 	codeready-workspaces-backup \
