@@ -1,4 +1,50 @@
 {
     "Indexes": {
+        "operator-metadata": {
+            "2.15": {
+                "v4.6": {
+                    "iibURL": "registry-proxy.engineering.redhat.com/rh-osbs/iib:171379",
+                    "iibTag": "171379"
+                },
+                "v4.7": {
+                    "iibURL": "registry-proxy.engineering.redhat.com/rh-osbs/iib:171382",
+                    "iibTag": "171382"
+                },
+                "v4.8": {
+                    "iibURL": "registry-proxy.engineering.redhat.com/rh-osbs/iib:171385",
+                    "iibTag": "171385"
+                },
+                "v4.9": {
+                    "iibURL": "registry-proxy.engineering.redhat.com/rh-osbs/iib:171392",
+                    "iibTag": "171392"
+                },
+                "v4.10": {
+                    "iibURL": "registry-proxy.engineering.redhat.com/rh-osbs/iib:171399",
+                    "iibTag": "171399"
+                },
+                "OSBSImage": "registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-operator-metadata:2.15-55",
+                "quayImage": "quay.io/crw/crw-2-rhel8-operator-metadata:2.15-55",
+                "tag": "2.15-55"
+            }
+        },
+        "operator-bundle": {
+            "2.15": {
+                "v4.8": {
+                    "iibURL": "registry-proxy.engineering.redhat.com/rh-osbs/iib:171391",
+                    "iibTag": "171391"
+                },
+                "v4.9": {
+                    "iibURL": "registry-proxy.engineering.redhat.com/rh-osbs/iib:171398",
+                    "iibTag": "171398"
+                },
+                "v4.10": {
+                    "iibURL": "registry-proxy.engineering.redhat.com/rh-osbs/iib:171402",
+                    "iibTag": "171402"
+                },
+                "OSBSImage": "registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-operator-bundle:2.15-258",
+                "quayImage": "quay.io/crw/crw-2-rhel8-operator-bundle:2.15-258",
+                "tag": "2.15-258"
+            }
+        }
     }
 }
