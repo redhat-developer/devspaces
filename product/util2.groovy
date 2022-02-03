@@ -590,7 +590,7 @@ exit 0
   return statusCode > 1 ? false : true
 }
 
-boolean hasSuccessfullyBuiltAllPlatfroms(String containerYamlPath, String jobOutput) {
+boolean hasSuccessfullyBuiltAllArches(String containerYamlPath, String jobOutput) {
   int containerBuildCount = sh(script: '''#!/bin/bash -xe
     yq -r ".platforms.only | length" ''' + containerYamlPath, returnStdout: true).trim()
     echo "Total container builds detected: "+containerBuildCount
