@@ -6,7 +6,7 @@ import groovy.transform.Field
 def String getCSVVersion(String MIDSTM_BRANCH) {
   if (CSV_VERSION_F.equals("")) {
     CSV_VERSION_F = sh(script: '''#!/bin/bash -xe
-    curl -sSLo- https://raw.githubusercontent.com/redhat-developer/codeready-workspaces-images/''' + MIDSTM_BRANCH + '''/codeready-workspaces-operator-metadata/manifests/codeready-workspaces.csv.yaml | yq -r .spec.version''', returnStdout: true).trim()
+    curl -sSLo- https://raw.githubusercontent.com/redhat-developer/codeready-workspaces-images/''' + MIDSTM_BRANCH + '''/codeready-workspaces-operator-bundle/manifests/codeready-workspaces.csv.yaml | yq -r .spec.version''', returnStdout: true).trim()
   }
   // CRW-2039 check that CSV version is aligned to CRW version, and throw warning w/ call to action to avoid surprises
   if (CRW_VERSION_F.equals("")) {
@@ -22,8 +22,8 @@ def String getCSVVersion(String MIDSTM_BRANCH) {
     println "* https://main-jenkins-csb-crwqe.apps.ocp-c1.prod.psi.redhat.com/job/CRW_CI/job/crw-operator-metadata_" + getJobBranch(MIDSTM_BRANCH)
     println "Check these files:"
     println "https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/" + MIDSTM_BRANCH + "/dependencies/VERSION"
-    println "https://github.com/redhat-developer/codeready-workspaces-images/blob/" + MIDSTM_BRANCH + "/codeready-workspaces-operator-metadata/manifests/codeready-workspaces.csv.yaml"
-    println "https://github.com/redhat-developer/codeready-workspaces-images/blob/" + MIDSTM_BRANCH + "/codeready-workspaces-operator-metadata-generated/manifests/codeready-workspaces.csv.yaml"
+    println "https://github.com/redhat-developer/codeready-workspaces-images/blob/" + MIDSTM_BRANCH + "/codeready-workspaces-operator-bundle/manifests/codeready-workspaces.csv.yaml"
+    println "https://github.com/redhat-developer/codeready-workspaces-images/blob/" + MIDSTM_BRANCH + "/codeready-workspaces-operator-bundle-generated/manifests/codeready-workspaces.csv.yaml"
   }
 
   return CSV_VERSION_F
