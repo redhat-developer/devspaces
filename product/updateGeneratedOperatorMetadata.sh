@@ -53,7 +53,7 @@ rsync -zrlt /tmp/${SOURCE_CONTAINER//\//-}-${CRW_VERSION}-*/* \
 CSV_VERSION_BUNDLE="$(yq -r '.spec.version' ${SOURCE_DIR}/codeready-workspaces-operator-bundle-generated/manifests/codeready-workspaces.csv.yaml)"
 echo '{' > ${SOURCE_DIR}/VERSION.json
 echo '    "CRW_VERSION": "'${CRW_VERSION}'",'                   >> ${SOURCE_DIR}/VERSION.json
-echo '    "CSV_VERSION_BUNDLE": "'${CSV_VERSION_BUNDLE}'",' >> ${SOURCE_DIR}/VERSION.json
+echo '    "CSV_VERSION_BUNDLE": "'${CSV_VERSION_BUNDLE}'"' >> ${SOURCE_DIR}/VERSION.json
 echo '}' >> ${SOURCE_DIR}/VERSION.json
 
 # get container suffix number
