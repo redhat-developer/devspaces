@@ -2,6 +2,26 @@
     "Indexes": {
         "operator-metadata": {
             "2.15": {
+                "v4.6": {
+                    "iibURL": "registry-proxy.engineering.redhat.com/rh-osbs/iib:171988",
+                    "iibTag": "171988"
+                },
+                "v4.7": {
+                    "iibURL": "registry-proxy.engineering.redhat.com/rh-osbs/iib:171994",
+                    "iibTag": "171994"
+                },
+                "v4.8": {
+                    "iibURL": "registry-proxy.engineering.redhat.com/rh-osbs/iib:172002",
+                    "iibTag": "172002"
+                },
+                "v4.9": {
+                    "iibURL": "registry-proxy.engineering.redhat.com/rh-osbs/iib:172007",
+                    "iibTag": "172007"
+                },
+                "v4.10": {
+                    "iibURL": "registry-proxy.engineering.redhat.com/rh-osbs/iib:172012",
+                    "iibTag": "172012"
+                },
                 "OSBSImage": "registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-operator-metadata:2.15-59",
                 "quayImage": "quay.io/crw/crw-2-rhel8-operator-metadata:2.15-59",
                 "tag": "2.15-59"
