@@ -63,6 +63,7 @@ else
 fi
 
 for d in $CONTAINERS; do
+	echo
 	echo "$d"
 	d=${d/crw-2-rhel8-/} # special case for operator and metadata images
 
@@ -90,6 +91,5 @@ for d in $CONTAINERS; do
 		echo "   Build: "$(brew buildinfo $NVR | grep "BUILD" | sed -e "s#.\+\[\([0-9]\+\)\].*#https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=\1#")
 		# get the sources URL
 		echo -n "  "; brew buildinfo $NVR | grep Source | sed -e "s#/containers#/cgit/containers#" -e "s#git:#https:#" -e "s%#%/commit?id=%"
-		echo
 	done
 done

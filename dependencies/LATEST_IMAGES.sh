@@ -146,9 +146,8 @@ rm -f dependencies/LATEST_IMAGES_COMMITS
 for d in $(cat dependencies/LATEST_IMAGES); do 
   # shellcheck disable=SC2086
   ./product/getCommitSHAForTag.sh ${d} -b ${DWNSTM_BRANCH} | tee -a dependencies/LATEST_IMAGES_COMMITS
+  cat dependencies/LATEST_IMAGES_COMMITS | grep NVR | sed -r -e "s#.+NVR: ##" > dependencies/LATEST_IMAGES_NVRS
 done
-# add an extra line to avoid linelint errors, ffs.
-echo "." >> dependencies/LATEST_IMAGES_COMMITS
 
 if [[ ${COMMIT_CHANGES} -eq 1 ]]; then
   # CRW-1621 if any gz resources are larger than 10485760b, must use MaxFileSize to force dist-git to shut up and take my sources!
