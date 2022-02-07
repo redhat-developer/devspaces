@@ -2,9 +2,13 @@
     "Indexes": {
         "operator-metadata": {
             "2.15": {
-                "OSBSImage": "registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-operator-metadata:2.15-60",
-                "quayImage": "quay.io/crw/crw-2-rhel8-operator-metadata:2.15-60",
-                "tag": "2.15-60"
+                "v4.8": {
+                    "iibURL": "registry-proxy.engineering.redhat.com/rh-osbs/iib:172769",
+                    "iibTag": "172769"
+                },
+                "OSBSImage": "registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-operator-metadata:2.15-61",
+                "quayImage": "quay.io/crw/crw-2-rhel8-operator-metadata:2.15-61",
+                "tag": "2.15-61"
             }
         },
         "operator-bundle": {
