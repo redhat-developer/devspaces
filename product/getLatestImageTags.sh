@@ -115,14 +115,14 @@ latestNext="latest"; if [[ $CRW_VERSION == "2.y" ]] || [[ $DWNSTM_BRANCH = "crw-
 usage () {
 	echo "
 Usage: 
-  $0 -b ${DWNSTM_BRANCH} --nvr --log                       | check images in brew; output NVRs can be copied to Errata; show Brew builds/logs
-  $0 -b ${DWNSTM_BRANCH} --errata $DEFAULT_ERRATA_NUM                    | check images in brew; output NVRs and update builds in specified Errata (implies --nvr --hide)
+  $0 -b ${DWNSTM_BRANCH} --nvr --log                      | check images in brew; output NVRs can be copied to Errata; show Brew builds/logs
+  $0 -b ${DWNSTM_BRANCH} --errata $DEFAULT_ERRATA_NUM                   | check images in brew; output NVRs + update builds in specified Errata (implies --nvr --hide)
 
   $0 -b ${DWNSTM_BRANCH} --quay --tag \"${CRW_VERSION}-\" --hide       | use default list of CRW images in quay.io/crw, for tag 2.y-; show nothing if tag umatched
-  $0 -b ${DWNSTM_BRANCH} --osbs                            | check images in OSBS ( registry-proxy.engineering.redhat.com/rh-osbs )
+  $0 -b ${DWNSTM_BRANCH} --osbs                           | check images in OSBS ( registry-proxy.engineering.redhat.com/rh-osbs )
   $0 -b ${DWNSTM_BRANCH} --osbs --pushtoquay='${CRW_VERSION} ${latestNext}' | pull images from OSBS, push ${CRW_VERSION}-z tag + 2 extras to quay
-  $0 -b ${DWNSTM_BRANCH} --stage --sort                    | use default list of CRW images in RHEC Stage, sorted alphabetically
-  $0 -b ${DWNSTM_BRANCH} --arches                          | use default list of CRW images in RHEC Prod; show arches
+  $0 -b ${DWNSTM_BRANCH} --stage --sort                   | use default list of CRW images in RHEC Stage, sorted alphabetically
+  $0 -b ${DWNSTM_BRANCH} --arches                         | use default list of CRW images in RHEC Prod; show arches
 
   $0 -c 'crw/theia-rhel8 crw/theia-endpoint-rhel8' --quay      | check latest tag for specific Quay images, with branch = ${DWNSTM_BRANCH}
   $0 -c crw/udi-openj9-rhel8 --quay                            | check a non-amd64 image
