@@ -1,6 +1,6 @@
 apiVersion: v2
 publisher: che-incubator
-name: intellij-community
+name: che-idea
 version: latest
 type: Che Editor
 displayName: IntelliJ IDEA Community Edition
@@ -10,7 +10,7 @@ icon: /images/default.png
 category: Editor
 repository: https://github.com/che-incubator/jetbrains-editor-images
 firstPublicationDate: '2020-09-29'
-latestUpdateDate: '2022-02-06'
+latestUpdateDate: '2022-02-09'
 spec:
   endpoints:
     - name: intellij
@@ -27,10 +27,10 @@ spec:
   containers:
     - image: registry.redhat.io/codeready-workspaces/idea-rhel8:2.16
       mountSources: true
-      memoryRequest: 32Mi
-      memoryLimit: 2048M
-      cpuLimit: 1500m
-      cpuRequest: 100m
+      memoryLimit: 5120Mi
+      memoryRequest: 2048Mi
+      cpuLimit: 2000m
+      cpuRequest: 1500m
       volumes:
         - name: projector-user
           mountPath: /home/projector-user

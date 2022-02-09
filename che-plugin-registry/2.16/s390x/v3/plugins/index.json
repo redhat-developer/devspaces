@@ -13,6 +13,19 @@
     "version": "latest"
   },
   {
+    "id": "che-incubator/che-idea/latest",
+    "description": "IntelliJ IDEA Community running using Projector",
+    "displayName": "IntelliJ IDEA Community Edition",
+    "links": {
+      "self": "/v3/plugins/che-incubator/che-idea/latest",
+      "devfile": "/v3/plugins/che-incubator/che-idea/latest/devfile.yaml"
+    },
+    "name": "che-idea",
+    "publisher": "che-incubator",
+    "type": "Che Editor",
+    "version": "latest"
+  },
+  {
     "id": "che-incubator/cpptools/latest",
     "description": "CDT VS Code Extension for C/C++ Developers",
     "displayName": "CDT VS Code Extension for C/C++ Developers",
@@ -23,19 +36,6 @@
     "name": "cpptools",
     "publisher": "che-incubator",
     "type": "VS Code extension",
-    "version": "latest"
-  },
-  {
-    "id": "che-incubator/intellij-community/latest",
-    "description": "IntelliJ IDEA Community running using Projector",
-    "displayName": "IntelliJ IDEA Community Edition",
-    "links": {
-      "self": "/v3/plugins/che-incubator/intellij-community/latest",
-      "devfile": "/v3/plugins/che-incubator/intellij-community/latest/devfile.yaml"
-    },
-    "name": "intellij-community",
-    "publisher": "che-incubator",
-    "type": "Che Editor",
     "version": "latest"
   },
   {

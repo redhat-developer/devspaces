@@ -9,10 +9,10 @@ components:
         - name: projector-user
           path: /home/projector-user
       mountSources: true
-      memoryLimit: 2048M
-      memoryRequest: 32Mi
-      cpuLimit: 1500m
-      cpuRequest: 100m
+      memoryLimit: 5120Mi
+      memoryRequest: 2048Mi
+      cpuLimit: 2000m
+      cpuRequest: 1500m
       endpoints:
         - name: intellij
           attributes:
