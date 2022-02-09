@@ -50,9 +50,6 @@ quay.io/crw/pluginbroker-artifacts-rhel8:2.16-3
   Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-pluginbroker-artifacts/commit?id=e8dbe1527aa53731c2765d5858d9e88f35ad0fe8
 
 quay.io/crw/pluginbroker-metadata-rhel8:2.16-3
-     NVR: codeready-workspaces-pluginbroker-metadata-rhel8-container-2.16-3
-   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1877130
-  Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-pluginbroker-metadata/commit?id=a4085c605a3967eccd5b5a1214aa1a0d98d21c6e
 
 quay.io/crw/pluginregistry-rhel8:2.16-13
      NVR: codeready-workspaces-pluginregistry-rhel8-container-2.16-13
@@ -103,11 +100,6 @@ quay.io/crw/traefik-rhel8:2.16-2
      NVR: codeready-workspaces-traefik-rhel8-container-2.16-2
    Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1872303
   Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-traefik/commit?id=03f4cc2b5659910ffacdf377cdc98f4c559d1dfa
-
-quay.io/crw/udi-openj9-rhel8:2.16-7
-     NVR: codeready-workspaces-udi-openj9-rhel8-container-2.16-7
-   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1877053
-  Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-udi-openj9/commit?id=10400b2c5ca336047f134e4443f8bb164f5552e0
 
 quay.io/crw/udi-rhel8:2.16-12
      NVR: codeready-workspaces-udi-rhel8-container-2.16-12
