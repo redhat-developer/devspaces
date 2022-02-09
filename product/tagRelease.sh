@@ -94,34 +94,26 @@ pushTagPD ()
 # TODO remove tagging for backup and operator-metadata once 2.15 is live
 if [[ ${pkgs_devel_branch} ]] && [[ ${CSV_VERSION} ]]; then 
 	for d in \
-	codeready-workspaces-backup \
 	codeready-workspaces-configbump \
 	codeready-workspaces-operator \
-	\
 	codeready-workspaces-operator-bundle \
-	codeready-workspaces-operator-metadata \
 	codeready-workspaces-dashboard \
+	\
 	codeready-workspaces-devfileregistry \
 	codeready-workspaces-idea \
-	\
 	codeready-workspaces-imagepuller \
 	codeready-workspaces-jwtproxy \
 	codeready-workspaces-machineexec \
+	\
 	codeready-workspaces-pluginbroker-artifacts \
 	codeready-workspaces-pluginbroker-metadata \
-	\
 	codeready-workspaces-pluginregistry \
 	codeready-workspaces \
-	codeready-workspaces-stacks-cpp \
-	codeready-workspaces-stacks-dotnet \
-	codeready-workspaces-stacks-golang \
-	\
-	codeready-workspaces-stacks-php \
 	codeready-workspaces-theia-dev \
+	\
 	codeready-workspaces-theia-endpoint \
 	codeready-workspaces-theia \
 	codeready-workspaces-traefik \
-	\
 	codeready-workspaces-udi \
 	; do
 	  pushTagPD $d
