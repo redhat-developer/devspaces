@@ -719,29 +719,6 @@
         ],
         "disabled": false
       }
-    },
-    "udi-openj9": {
-      "2.15": {
-        "upstream_branch": [
-          "crw-2.15-rhel-8",
-          "crw-2.15-rhel-8"
-        ],
-        "disabled": true
-      },
-      "2.16": {
-        "upstream_branch": [
-          "crw-2.16-rhel-8",
-          "crw-2.16-rhel-8"
-        ],
-        "disabled": false
-      },
-      "2.x": {
-        "upstream_branch": [
-          "crw-2-rhel-8",
-          "crw-2-rhel-8"
-        ],
-        "disabled": false
-      }
     }
   },
   "Management-Jobs": {
