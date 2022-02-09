@@ -195,7 +195,6 @@ if [[ ${phases} == *"1"* ]]; then
 	\
 	codeready-workspaces-theia \
 	codeready-workspaces-traefik \
-	codeready-workspaces-udi-openj9 \
 	codeready-workspaces-udi \
 	; do
 		if [[ $d == "codeready-workspaces" ]]; then

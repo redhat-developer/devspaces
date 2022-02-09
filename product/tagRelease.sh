@@ -122,7 +122,6 @@ if [[ ${pkgs_devel_branch} ]] && [[ ${CSV_VERSION} ]]; then
 	codeready-workspaces-theia \
 	codeready-workspaces-traefik \
 	\
-	codeready-workspaces-udi-openj9 \
 	codeready-workspaces-udi \
 	; do
 	  pushTagPD $d

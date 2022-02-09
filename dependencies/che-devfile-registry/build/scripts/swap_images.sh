@@ -30,7 +30,7 @@ if [[ "$arch" != "x86_64" ]] || [[ $FORCE_SWAP -eq 1 ]]; then
     echo -n "[INFO] swap openjdk for openj9 images on $arch"
     if [[ $FORCE_SWAP -eq 1 ]]; then echo -n " (forced)"; fi
     echo
-    sed -E -i 's|udi-rhel8|udi-openj9-rhel8|g' $devfiles
+    # TODO when we have eap-xp3-openjdk11-openshift-rhel8 for Z and P, disable this whole script
     sed -E -i 's|eap-xp3-openjdk11-openshift-rhel8:.*|eap-xp3-openj9-11-openshift-rhel8:3.0|g' $devfiles
 else
     echo "[INFO] nothing to do on $arch; only swap openjdk for openj9 images on s390x and ppc64le arches"

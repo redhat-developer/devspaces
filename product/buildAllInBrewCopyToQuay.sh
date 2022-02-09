@@ -95,7 +95,6 @@ if [[ $PHASES == *"1"* ]]; then
         codeready-workspaces-pluginregistry \
         codeready-workspaces-theia-dev \
         codeready-workspaces-traefik \
-        codeready-workspaces-udi-openj9 \
         codeready-workspaces-udi \
         codeready-workspaces-stacks-cpp \
         codeready-workspaces-stacks-dotnet \
