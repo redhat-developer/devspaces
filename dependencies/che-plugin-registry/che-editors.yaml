@@ -163,7 +163,7 @@ editors:
           ephemeral: true
   - schemaVersion: 2.1.0
     metadata:
-      name: che-incubator/intellij-community/2020.3.3
+      name: che-incubator/che-idea/latest
       displayName: IntelliJ IDEA Community Edition
       description: IntelliJ IDEA Community running using Projector
       icon: https://resources.jetbrains.com/storage/products/intellij-idea/img/meta/intellij-idea_logo_300x300.png
@@ -181,10 +181,10 @@ editors:
             - name: projector-user
               path: /home/projector-user
           mountSources: true
-          memoryRequest: 32Mi
-          memoryLimit: 2048M
-          cpuLimit: 1500m
-          cpuRequest: 100m
+          memoryLimit: 5120Mi
+          memoryRequest: 2048Mi
+          cpuLimit: 2000m
+          cpuRequest: 1500m
           endpoints:
             - name: intellij
               targetPort: 8887
