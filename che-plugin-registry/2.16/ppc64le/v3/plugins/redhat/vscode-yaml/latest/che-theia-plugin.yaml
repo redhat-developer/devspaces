@@ -14,7 +14,7 @@ metadata:
     - Formatters
   icon: /images/redhat-vscode-yaml-icon.png
 sidecar:
-  image: registry.redhat.io/codeready-workspaces/udi-openj9-rhel8:2.16
+  image: registry.redhat.io/codeready-workspaces/udi-rhel8:2.16
   name: vscode-yaml
   memoryLimit: 256Mi
   memoryRequest: 20Mi

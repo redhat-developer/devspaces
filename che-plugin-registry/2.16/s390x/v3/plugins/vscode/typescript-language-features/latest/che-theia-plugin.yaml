@@ -11,7 +11,7 @@ metadata:
     - Programming Languages
   icon: /images/vscode-typescript-language-features-icon.png
 sidecar:
-  image: registry.redhat.io/codeready-workspaces/udi-openj9-rhel8:2.16
+  image: registry.redhat.io/codeready-workspaces/udi-rhel8:2.16
   memoryLimit: 512Mi
   name: vscode-node
   memoryRequest: 20Mi

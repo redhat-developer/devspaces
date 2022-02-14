@@ -13,7 +13,7 @@ firstPublicationDate: '2020-07-14'
 latestUpdateDate: '2022-02-09'
 spec:
   containers:
-    - image: registry.redhat.io/codeready-workspaces/udi-openj9-rhel8:2.16
+    - image: registry.redhat.io/codeready-workspaces/udi-rhel8:2.16
       name: dependency-analytics
       memoryLimit: 1Gi
       memoryRequest: 20Mi
