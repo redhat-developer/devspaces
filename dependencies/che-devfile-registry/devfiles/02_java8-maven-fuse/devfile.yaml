@@ -51,7 +51,7 @@ commands:
       -
         type: exec
         component: maven
-        command: "MAVEN_OPTS='-Xmx200m' && mvn clean package"
+        command: "mvn clean package"
         workdir: "${CHE_PROJECTS_ROOT}/java-fuse"
   -
     name: 2. Run
