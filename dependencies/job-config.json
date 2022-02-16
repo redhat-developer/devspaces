@@ -155,7 +155,7 @@
           "7.42.x",
           "7.41.x"
         ],
-        "disabled": true
+        "disabled": false
       },
       "2.x": {
         "upstream_branch": [
@@ -240,7 +240,7 @@
           "crw-2.15-rhel-8",
           "crw-2.15-rhel-8"
         ],
-        "disabled": true
+        "disabled": false
       },
       "2.16": {
         "upstream_branch": [
@@ -263,7 +263,7 @@
           "crw-2.15-rhel-8",
           "crw-2.15-rhel-8"
         ],
-        "disabled": true
+        "disabled": false
       },
       "2.16": {
         "upstream_branch": [
@@ -295,7 +295,7 @@
           "crw-2.15-rhel-8",
           "crw-2.15-rhel-8"
         ],
-        "disabled": true
+        "disabled": false
       }
     },
     "plugin-java8-openj9": {
@@ -313,7 +313,7 @@
           "crw-2.15-rhel-8",
           "crw-2.15-rhel-8"
         ],
-        "disabled": true
+        "disabled": false
       }
     },
     "plugin-kubernetes": {
@@ -643,12 +643,12 @@
   },
   "Other": {
     "Errata": {
-      "2.15": "87201",
+      "2.15": "88663",
       "2.16": "",
       "2.x": ""
     },
     "Epic": {
-      "2.15": "CRW-2474",
+      "2.15": "CRW-2766",
       "2.16": "",
       "2.x": ""
     },
