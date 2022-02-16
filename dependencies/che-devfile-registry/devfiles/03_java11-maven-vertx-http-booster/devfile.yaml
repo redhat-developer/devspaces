@@ -40,7 +40,7 @@ commands:
     actions:
       - workdir: '${CHE_PROJECTS_ROOT}/vertx-http-booster'
         type: exec
-        command: mvn -DskipTestsclean install
+        command: mvn -DskipTests clean install
         component: maven
   - name: 2. Run
     actions:
