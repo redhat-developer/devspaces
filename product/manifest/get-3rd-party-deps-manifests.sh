@@ -352,7 +352,7 @@ if [[ ${phases} == *"5"* ]]; then
 	log ""
 	log "5. Install python deps (including python3-virtualenv): pip install python-language-server[all]==${PYTHON_LS_VERSION}"
 	pyrpms="python3-six python3-pip python3-virtualenv"
-	if [[ ! $(which python3) ]] || [[ ! $(pydoc3 modules | grep virtualenv) ]]; then sudo yum install -y -q $pyrpms || true; fi
+	if [[ ! $(which python3) ]] || [[ ! $(pydoc3 modules | grep virtualenv) ]]; then sudo yum -y -q install $pyrpms || true; fi
 	if [[ ! $(which python3) ]] || [[ ! $(pydoc3 modules | grep virtualenv) ]]; then echo "Error: install $pyrpms to run this script: sudo yum -y install $pyrpms"; exit 1; fi
 	getBashVars codeready-workspaces-plugin-java8 build_python.sh
 	for d in \
