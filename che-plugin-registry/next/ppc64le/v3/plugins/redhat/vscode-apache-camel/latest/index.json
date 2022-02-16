@@ -9,8 +9,8 @@ description: Provides completion and documentation features for Apache Camel URI
 icon: /images/redhat-vscode-apache-camel-icon.png
 category: Programming Languages
 repository: https://github.com/camel-tooling/camel-lsp-client-vscode.git
-firstPublicationDate: '2021-12-10'
-latestUpdateDate: '2022-02-09'
+firstPublicationDate: '2022-02-11'
+latestUpdateDate: '2022-02-14'
 spec:
   containers:
     - image: registry.redhat.io/codeready-workspaces/udi-rhel8:2.16
@@ -20,4 +20,4 @@ spec:
       cpuRequest: 30m
       cpuLimit: 500m
   extensions:
-    - relative:extension/resources/download_jboss_org/jbosstools/vscode/stable/vscode-apache-camel/vscode-apache-camel-0.1.3-1315.vsix
+    - relative:extension/resources/download_jboss_org/jbosstools/vscode/stable/vscode-apache-camel/vscode-apache-camel-0.1.5-1377.vsix
