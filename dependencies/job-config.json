@@ -737,7 +737,7 @@
           "7.41.x"
         ],
         "node_version": "12.22.5",
-        "disabled": true
+        "disabled": false
       },
       "2.16": {
         "upstream_branch": [
@@ -769,7 +769,7 @@
           "7.42.x",
           "7.41.x"
         ],
-        "disabled": true
+        "disabled": false
       },
       "2.x": {
         "upstream_branch": [
@@ -792,7 +792,7 @@
           "7.42.x",
           "7.41.x"
         ],
-        "disabled": true
+        "disabled": false
       }
     },
     "get-sources-rhpkg-container-build": {
@@ -800,7 +800,7 @@
         "disabled": true
       },
       "2.15": {
-        "disabled": true
+        "disabled": false
       },
       "2.x": {
         "disabled": false
@@ -811,7 +811,7 @@
         "disabled": true
       },
       "2.15": {
-        "disabled": true
+        "disabled": false
       },
       "2.x": {
         "disabled": false
@@ -822,7 +822,7 @@
         "disabled": true
       },
       "2.15": {
-        "disabled": true
+        "disabled": false
       },
       "2.x": {
         "disabled": false
@@ -833,7 +833,7 @@
         "disabled": true
       },
       "2.15": {
-        "disabled": true
+        "disabled": false
       },
       "2.x": {
         "disabled": false
@@ -844,7 +844,7 @@
         "disabled": true
       },
       "2.15": {
-        "disabled": true
+        "disabled": false
       },
       "2.x": {
         "disabled": true
@@ -853,31 +853,23 @@
   },
   "CSVs": {
     "operator-bundle": {
-      "2.14": {
-        "CSV_VERSION": "2.14.100",
-        "CSV_VERSION_PREV": "2.13.101-0.1639666401.p"
-      },
       "2.15": {
-        "CSV_VERSION": "2.15.100",
-        "CSV_VERSION_PREV": "2.14.100-0.1643720183.p"
+        "CSV_VERSION": "2.15.101",
+        "CSV_VERSION_PREV": "2.15.100"
       },
       "2.16": {
         "CSV_VERSION": "2.16.0",
-        "CSV_VERSION_PREV": "2.14.100-0.1643720183.p"
+        "CSV_VERSION_PREV": "2.15.100"
       },
       "2.x": {
         "CSV_VERSION": "2.16.0",
-        "CSV_VERSION_PREV": "2.14.100-0.1643720183.p"
+        "CSV_VERSION_PREV": "2.15.100"
       }
     },
     "operator-metadata": {
-      "2.14": {
-        "CSV_VERSION": "2.14.0",
-        "CSV_VERSION_PREV": "2.13.1-0.1639666398.p"
-      },
       "2.15": {
-        "CSV_VERSION": "2.15.0",
-        "CSV_VERSION_PREV": "2.14.0-0.1643720187.p"
+        "CSV_VERSION": "2.15.1",
+        "CSV_VERSION_PREV": "2.15.0"
       }
     }
   },
