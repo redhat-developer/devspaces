@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2018-2021 Red Hat, Inc.
+# Copyright (c) 2018-2022 Red Hat, Inc.
 # This program and the accompanying materials are made
 # available under the terms of the Eclipse Public License 2.0
 # which is available at https://www.eclipse.org/legal/epl-2.0/
@@ -62,6 +62,7 @@ RUN TAG=${PATCHED_IMAGES_TAG} \
     REGISTRY=${PATCHED_IMAGES_REG} \
     ./update_devfile_patched_image_tags.sh
 RUN ./check_mandatory_fields.sh devfiles
+# TODO CRW-2750 CRW-2729 when we have eap-xp3-openjdk11-openshift-rhel8 for Z and P, remove swap_images.sh entirely
 RUN ./swap_images.sh devfiles
 RUN ./index.sh > /build/devfiles/index.json
 RUN ./list_referenced_images.sh devfiles > /build/devfiles/external_images.txt

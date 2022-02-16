@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2018-2021 Red Hat, Inc.
+# Copyright (c) 2018-2022 Red Hat, Inc.
 # This program and the accompanying materials are made
 # available under the terms of the Eclipse Public License 2.0
 # which is available at https://www.eclipse.org/legal/epl-2.0/
@@ -53,7 +53,6 @@ WORKDIR /build/
 
 RUN tar -xvf resources.tgz -C ./
 RUN rm -rf ./output/v3/che-theia-plugins.yaml ./output/v3/che-editors.yaml ./output/v3/che-plugins.yaml
-RUN ./swap_images.sh ./output/v3 --use-generated-content
 RUN ./swap_plugins_memory.sh ./output/v3
 RUN ./list_referenced_images.sh ./output/v3 --use-generated-content > /build/output/v3/external_images.txt && cat /build/output/v3/external_images.txt
 RUN chmod -R g+rwX /build
