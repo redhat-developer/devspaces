@@ -48,15 +48,11 @@ CHE_THEIA_BRANCH=$(grep "echo SOURCE_BRANCH=" "${MANIFEST_FILE}".2 | sed -r -e "
 rm -f "${MANIFEST_FILE}.2"
 
 if [[ -z $CHE_THEIA_BRANCH ]]; then 
-	echo "[INFO] Could not obtain theia source branch from latest build on Jenkins. Trying to obtain one from BUILD_PARAMS instead"
-	for d in $(curl -sSLo - https://raw.githubusercontent.com/redhat-developer/codeready-workspaces-theia/${MIDSTM_BRANCH}/BUILD_PARAMS); do
-		export $d
-	done
-	if [[ -z $SOURCE_BRANCH ]]; then
-		echo "[ERROR] Could not compute CHE_THEIA_BRANCH from ${JENKINS}/crw-theia-sources_${JOB_BRANCH}/lastSuccessfulBuild/consoleText"
+	echo "[INFO] Could not obtain theia source branch from ${JENKINS}/crw-theia-sources_${JOB_BRANCH}/lastSuccessfulBuild/consoleText - checking BUILD_PARAMS:"
+	export $(curl -sSLo- https://raw.githubusercontent.com/redhat-developer/codeready-workspaces-theia/${MIDSTM_BRANCH}/BUILD_PARAMS | grep SOURCE_BRANCH | sed -r -e "s@SOURCE_BRANCH@CHE_THEIA_BRANCH@")
+	if [[ -z $CHE_THEIA_BRANCH ]]; then
+		echo "[ERROR] Could not compute CHE_THEIA_BRANCH from https://raw.githubusercontent.com/redhat-developer/codeready-workspaces-theia/${MIDSTM_BRANCH}/BUILD_PARAMS"
 		exit 1
-	else
-		CHE_THEIA_BRANCH=$SOURCE_BRANCH
 	fi
 fi
 
