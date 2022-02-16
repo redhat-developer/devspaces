@@ -12,7 +12,7 @@ checkdependencies ()
 # or https://github.com/redhat-developer/codeready-workspaces-images/blob/crw-2-rhel-8/crw-jenkins/jobs/CRW_CI/Releng/get-3rd-party-deps-manifests.jenkinsfile (external copy)
 
 # rpm installed dependencies
-# rhpkg krb5-workstation tree golang php-devel php-json python3-six python3-pip python3-virtualenv
+# rhpkg krb5-workstation tree golang php-devel php-json python3-six
 for rpm in rhpkg kinit tree pyvenv; do
   rpm -qf $(which $rpm) || { echo "$rpm not installed!"; exit 1; }; echo "-----"
 done
@@ -350,12 +350,12 @@ if [[ ${phases} == *"5"* ]]; then
 	log ""
 	log " == python (plugin-java8 container) =="
 	log ""
-	log "5. Install python deps (including python3-virtualenv): pip install python-language-server[all]==${PYTHON_LS_VERSION}"
-	pyrpms="python3-six python3-pip python3-virtualenv"
-	if [[ ! $(which python3) ]] || [[ ! $(pydoc3 modules | grep virtualenv) ]]; then sudo yum -y install $pyrpms || true; fi
+	log "5. Install python deps: pip install python-language-server[all]==${PYTHON_LS_VERSION}"
+	pyrpms="python3-six python3-pip"
+	if [[ ! $(which python3) ]] || [[ ! $(pydoc3 modules | grep venv) ]]; then sudo yum -y install $pyrpms || true; fi
 	which pydoc3
 	pydoc3 modules
-	if [[ ! $(which python3) ]] || [[ ! $(pydoc3 modules | grep virtualenv) ]]; then echo "Error: install $pyrpms to run this script: sudo yum -y install $pyrpms"; exit 1; fi
+	if [[ ! $(which python3) ]] || [[ ! $(pydoc3 modules | grep venv) ]]; then echo "Error: install $pyrpms to run this script: sudo yum -y install $pyrpms"; exit 1; fi
 	getBashVars codeready-workspaces-plugin-java8 build_python.sh
 	for d in \
 		"PYTHON_IMAGE" \
@@ -368,7 +368,7 @@ if [[ ${phases} == *"5"* ]]; then
 	rm -fr /tmp/python-deps-tmp
 	mkdir -p python-deps-tmp && cd python-deps-tmp
 
-	/usr/bin/python3 -m virtualenv env
+	/usr/bin/python3 -m venv env
 	source env/bin/activate
 	/usr/bin/python3 -m pip install --upgrade pip
 	{ /usr/bin/python3 -m pip install python-language-server[all]==${PYTHON_LS_VERSION} | tee -a ${LOG_FILE}; } || true
