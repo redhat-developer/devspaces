@@ -40,31 +40,25 @@ commands:
     actions:
       - workdir: '${CHE_PROJECTS_ROOT}/vertx-http-booster'
         type: exec
-        command: >-
-          MAVEN_OPTS="-Xmx200m" && mvn -Duser.home=${HOME} -DskipTestsclean
-          install
+        command: mvn -DskipTests clean install
         component: maven
   - name: 2. Run
     actions:
       - workdir: '${CHE_PROJECTS_ROOT}/vertx-http-booster'
         type: exec
-        command: >-
-          MAVEN_OPTS="-Xmx200m" && mvn -Duser.home=${HOME}
-          -Dvertx.disableDnsResolver=true vertx:run
+        command: mvn -Dvertx.disableDnsResolver=true vertx:run
         component: maven
   - name: 3. Run in debug mode
     actions:
       - workdir: '${CHE_PROJECTS_ROOT}/vertx-http-booster'
         type: exec
-        command: >-
-          MAVEN_OPTS="-Xmx200m" && mvn -Duser.home=${HOME} -DskipTests
-          vertx:debug
+        command: mvn -DskipTests vertx:debug
         component: maven
   - name: 4. Run tests
     actions:
       - workdir: '${CHE_PROJECTS_ROOT}/vertx-http-booster'
         type: exec
-        command: 'MAVEN_OPTS="-Xmx200m" && mvn -Duser.home=${HOME} -DskipTests verify '
+        command: mvn -DskipTests verify
         component: maven
   - name: 5. Log into deployment cluster
     actions:
@@ -80,9 +74,7 @@ commands:
     actions:
       - workdir: '${CHE_PROJECTS_ROOT}/vertx-http-booster'
         type: exec
-        command: >-
-          MAVEN_OPTS="-Xmx200m" &&  mvn fabric8:deploy -Popenshift -DskipTests
-          -Dvertx.disableDnsResolver=true
+        command: mvn fabric8:deploy -Popenshift -DskipTests -Dvertx.disableDnsResolver=true
         component: maven
   - name: Debug remote java application
     actions:

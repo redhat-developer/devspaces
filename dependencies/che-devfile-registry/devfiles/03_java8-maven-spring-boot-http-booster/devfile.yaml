@@ -38,29 +38,27 @@ commands:
     actions:
       - workdir: '${CHE_PROJECTS_ROOT}/spring-boot-http-booster'
         type: exec
-        command: >-
-          MAVEN_OPTS="-Xmx200m" && mvn -Duser.home=${HOME} -DskipTests clean
-          install
+        command: mvn -DskipTests clean install
         component: maven
   - name: 2. Run
     actions:
       - workdir: '${CHE_PROJECTS_ROOT}/spring-boot-http-booster'
         type: exec
-        command: MAVEN_OPTS="-Xmx200m" && mvn -Duser.home=${HOME} spring-boot:run
+        command: mvn spring-boot:run
         component: maven
   - name: 3. Run in debug mode
     actions:
       - workdir: '${CHE_PROJECTS_ROOT}/spring-boot-http-booster'
         type: exec
         command: >-
-         mvn  -Duser.home=${HOME} spring-boot:run -Dspring-boot.run.jvmArguments="-Xdebug
+          mvn spring-boot:run -Dspring-boot.run.jvmArguments="-Xdebug
           -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005"
         component: maven
   - name: 4. Run tests
     actions:
       - workdir: '${CHE_PROJECTS_ROOT}/spring-boot-http-booster'
         type: exec
-        command: MAVEN_OPTS="-Xmx200m" && mvn -Duser.home=${HOME} verify
+        command: mvn verify
         component: maven
   - name: 5. Log into deployment cluster
     actions:
