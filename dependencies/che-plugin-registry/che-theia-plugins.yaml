@@ -52,7 +52,7 @@ plugins:
     metaYaml:
      skipIndex: true
     sidecar:
-      image: "registry.redhat.io/codeready-workspaces/stacks-cpp-rhel8:2.16"
+      image: "registry.redhat.io/codeready-workspaces/udi-rhel8:2.16"
       name: cpp-plugins
       memoryLimit: 512Mi
       memoryRequest: 20Mi
@@ -65,7 +65,7 @@ plugins:
     metaYaml:
      skipIndex: true
     sidecar:
-      image: "registry.redhat.io/codeready-workspaces/stacks-cpp-rhel8:2.16"
+      image: "registry.redhat.io/codeready-workspaces/udi-rhel8:2.16"
       name: cpp-plugins
       memoryLimit: 512Mi
       memoryRequest: 20Mi
@@ -83,7 +83,7 @@ plugins:
         - llvm-vs-code-extensions/vscode-clangd
     featured: true
     sidecar:
-      image: "registry.redhat.io/codeready-workspaces/stacks-cpp-rhel8:2.16"
+      image: "registry.redhat.io/codeready-workspaces/udi-rhel8:2.16"
       name: cpp-plugins
       memoryLimit: 512Mi
       memoryRequest: 20Mi
@@ -97,7 +97,7 @@ plugins:
     aliases:
       - redhat/php
     sidecar:
-      image: "registry.redhat.io/codeready-workspaces/stacks-php-rhel8:2.16"
+      image: "registry.redhat.io/codeready-workspaces/udi-rhel8:2.16"
       name: php-intelephense
       memoryLimit: 1Gi
       memoryRequest: 20Mi
@@ -124,7 +124,7 @@ plugins:
       revision: v0.16.1
     featured: true
     sidecar:
-      image: "registry.redhat.io/codeready-workspaces/stacks-golang-rhel8:2.16"
+      image: "registry.redhat.io/codeready-workspaces/udi-rhel8:2.16"
       name: vscode-go
       memoryLimit: 512Mi
       memoryRequest: 20Mi
@@ -326,7 +326,7 @@ plugins:
     aliases:
       - redhat/php-debugger
     sidecar:
-      image: "registry.redhat.io/codeready-workspaces/stacks-php-rhel8:2.16"
+      image: "registry.redhat.io/codeready-workspaces/udi-rhel8:2.16"
       name: php-debugger
       memoryLimit: 512Mi
       memoryRequest: 20Mi
@@ -375,7 +375,7 @@ plugins:
       url: 'https://github.com/redhat-developer/netcoredbg-theia-plugin'
       revision: v0.0.3
     sidecar:
-      image: "registry.redhat.io/codeready-workspaces/stacks-dotnet-rhel8:2.16"
+      image: "registry.redhat.io/codeready-workspaces/udi-rhel8:2.16"
       name: theia-netcoredbg
       memoryLimit: 512Mi
       memoryRequest: 20Mi
@@ -387,7 +387,7 @@ plugins:
       url: 'https://github.com/redhat-developer/omnisharp-theia-plugin'
       revision: v0.0.6
     sidecar:
-      image: "registry.redhat.io/codeready-workspaces/stacks-dotnet-rhel8:2.16"
+      image: "registry.redhat.io/codeready-workspaces/udi-rhel8:2.16"
       name: theia-omnisharp
       memoryLimit: 1Gi
       memoryRequest: 20Mi
