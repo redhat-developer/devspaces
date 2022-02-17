@@ -58,13 +58,11 @@ initTest "Should replace image references in external_images.txt with RELATED_IM
 
 externalImagesTxt=$(cat <<-END
 registry.redhat.io/rhscl/mongodb-36-rhel7:1-50
-registry.redhat.io/codeready-workspaces/stacks-dotnet-rhel8:2.11
 registry.redhat.io/codeready-workspaces/udi-rhel8:2.16
 END
 )
 expected_externalImagesTxt=$(cat <<-END
 registry.redhat.io/rhscl/mongodb-36-rhel7@sha256:9f799d356d7d2e442bde9d401b720600fd9059a3d8eefea6f3b2ffa721c0dc73
-registry.redhat.io/codeready-workspaces/stacks-dotnet-rhel8@sha256:6ca14e5a94a98b15f39a353e533cf659b2b3937a86bd51af175dc3eadd8b80d5
 registry.redhat.io/codeready-workspaces/udi-rhel8@sha256:becfa80ae0e0e86f815e8981c071a68952b6a488298d7525751585538a14d88e
 END
 )
@@ -73,7 +71,6 @@ echo "$externalImagesTxt" > "${DEVFILES_DIR}/external_images.txt"
 
 # NOTE: GIXDCNQK | base 32 -d = 2.16; GIXDCMIK | base 32 -d = 2.11 
 export RELATED_IMAGE_rhscl_mongodb_36_rhel7_devfile_registry_image_GEWTKMAK='registry.redhat.io/rhscl/mongodb-36-rhel7@sha256:9f799d356d7d2e442bde9d401b720600fd9059a3d8eefea6f3b2ffa721c0dc73'
-export RELATED_IMAGE_codeready_workspaces_stacks_dotnet_devfile_registry_image_GIXDCMIK='registry.redhat.io/codeready-workspaces/stacks-dotnet-rhel8@sha256:6ca14e5a94a98b15f39a353e533cf659b2b3937a86bd51af175dc3eadd8b80d5'
 export RELATED_IMAGE_codeready_workspaces_udi_devfile_registry_image_GIXDCNQK='registry.redhat.io/codeready-workspaces/udi-rhel8@sha256:becfa80ae0e0e86f815e8981c071a68952b6a488298d7525751585538a14d88e'
 
 # shellcheck disable=SC1090

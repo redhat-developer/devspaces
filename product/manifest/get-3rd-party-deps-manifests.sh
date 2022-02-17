@@ -164,32 +164,24 @@ if [[ ${phases} == *"1"* ]] || [[ ${phases} == *"2"* ]] || [[ ${phases} == *"3"*
 	# NOTE: don't delete this checkout yet, we need it for later.
 fi
 
-# TODO remove backup and operator-metadata once 2.15 is live
 if [[ ${phases} == *"1"* ]]; then
 	log "1b. Define list of upstream containers & RPMs pulled into them from https://pkgs.devel.redhat.com/cgit/?q=codeready-workspaces "
 	for d in \
-	codeready-workspaces-backup \
 	codeready-workspaces-configbump \
 	codeready-workspaces-operator \
 	codeready-workspaces-operator-bundle \
-	codeready-workspaces-operator-metadata \
 	codeready-workspaces-dashboard \
-	\
 	codeready-workspaces-devfileregistry \
+	\
 	codeready-workspaces-idea \
 	codeready-workspaces-imagepuller \
 	codeready-workspaces-jwtproxy \
 	codeready-workspaces-machineexec \
-	\
 	codeready-workspaces-pluginbroker-artifacts \
+	\
 	codeready-workspaces-pluginbroker-metadata \
 	codeready-workspaces-pluginregistry \
 	codeready-workspaces \
-	codeready-workspaces-stacks-cpp \
-	\
-	codeready-workspaces-stacks-dotnet \
-	codeready-workspaces-stacks-golang \
-	codeready-workspaces-stacks-php \
 	codeready-workspaces-theia-dev \
 	codeready-workspaces-theia-endpoint \
 	\
@@ -227,7 +219,7 @@ if [[ ${phases} == *"2"* ]]; then
 	log "2a. Install golang go deps: go-language-server@${GOLANG_LS_VERSION}"
 	if [[ ! -x /usr/bin/go ]]; then sudo yum -y -q install golang || true; fi
 	if [[ ! -x /usr/bin/go ]]; then echo "Error: install golang to run this script: sudo yum -y install golang"; exit 1; fi
-	getBashVars codeready-workspaces-stacks-golang
+	getBashVars codeready-workspaces-udi
 	for d in \
 		"GOLANG_IMAGE" \
 		"GOLANG_LINT_VERSION" \
@@ -243,7 +235,7 @@ if [[ ${phases} == *"2"* ]]; then
 	mkdir -p go-deps-tmp && cd go-deps-tmp
 
 	# run the same set of go get -v commands in the build.sh script:
-	grep -E "go get -v|go build -o" /tmp/codeready-workspaces-images/codeready-workspaces-stacks-golang/build/build.sh > todos.txt
+	grep -E "go get -v|go build -o" /tmp/codeready-workspaces-images/codeready-workspaces-udi/build/build.sh > todos.txt
 	while read p; do
 		# if you want more detailed output and logging, comment the next 1 line and uncomment the following 4 lines
 		log "  ${p%%;*}"; ${p%%;*} || true
@@ -252,16 +244,16 @@ if [[ ${phases} == *"2"* ]]; then
 		#log "<== ${p%%;*} =="
 		#log ""
 	done <todos.txt
-	grep -E "GOLANG_LINT_VERSION" /tmp/codeready-workspaces-images/codeready-workspaces-stacks-golang/build/build.sh > todos.txt
+	grep -E "GOLANG_LINT_VERSION" /tmp/codeready-workspaces-images/codeready-workspaces-udi/build/build.sh > todos.txt
 	. todos.txt
 	rm -f todos.txt
 
 	# now get the SHAs used in each github repo cloned locally
-	mnf "codeready-workspaces-stacks-golang-container:${CSV_VERSION}/go-language-server:${GOLANG_LS_VERSION}"
+	mnf "codeready-workspaces-udi-container:${CSV_VERSION}/go-language-server:${GOLANG_LS_VERSION}"
 	for d in $(find . -name ".git" | sort); do
 		g=${d%%/.git}
 		pushd ${g} >/dev/null
-		mnf "  codeready-workspaces-stacks-golang-container:${CSV_VERSION}/${g##./src/}:$(git rev-parse HEAD)"
+		mnf "  codeready-workspaces-udi-container:${CSV_VERSION}/${g##./src/}:$(git rev-parse HEAD)"
 		popd >/dev/null
 	done
 	mnf ""
@@ -278,8 +270,8 @@ if [[ ${phases} == *"2"* ]]; then
 	{ npm install --prefix /tmp/npm-deps-tmp/ go-language-server@${GOLANG_LS_VERSION} | tee -a ${LOG_FILE}; } || true
 	log ""
 	{ npm list >> ${LOG_FILE}; } || true
-	mnf "codeready-workspaces-stacks-golang-container:${CSV_VERSION}/go-language-server:${GOLANG_LS_VERSION}"
-	npmList "  codeready-workspaces-stacks-golang-container:${CSV_VERSION}/"
+	mnf "codeready-workspaces-udi-container:${CSV_VERSION}/go-language-server:${GOLANG_LS_VERSION}"
+	npmList "  codeready-workspaces-udi-container:${CSV_VERSION}/"
 	mnf ""
 	rm -fr /tmp/npm-deps-tmp
 
@@ -308,7 +300,7 @@ if [[ ${phases} == *"4"* ]]; then
 	log "4. Install php deps: "
 	if [[ ! $(which php) ]]; then sudo yum -y -q install php-devel php-json || true; fi
 	if [[ ! $(which php) ]]; then echo "Error: install php to run this script: sudo yum -y install php-devel php-json"; exit 1; fi
-	getBashVars codeready-workspaces-stacks-php
+	getBashVars codeready-workspaces-udi
 	for d in \
 		"PHP_LS_VERSION" \
 		"PHP_LS_IMAGE" \
@@ -330,9 +322,9 @@ if [[ ${phases} == *"4"* ]]; then
 	php composer.phar require -d /tmp/php-deps-tmp felixfbecker/language-server:${PHP_LS_VERSION} | tee -a ${LOG_FILE}
 	# php composer.phar run-script --working-dir=vendor/felixfbecker/language-server parse-stubs # does not install new deps, so don't need to run this
 	php composer.phar show >> ${LOG_FILE}
-	mnf "codeready-workspaces-stacks-php-container:${CSV_VERSION}/jetbrains/phpstorm-stubs:dev-master"
-	mnf "codeready-workspaces-stacks-php-container:${CSV_VERSION}/felixfbecker/language-server:v${PHP_LS_VERSION}"
-	phpList "  codeready-workspaces-stacks-php-container:${CSV_VERSION}/"
+	mnf "codeready-workspaces-udi-container:${CSV_VERSION}/jetbrains/phpstorm-stubs:dev-master"
+	mnf "codeready-workspaces-udi-container:${CSV_VERSION}/felixfbecker/language-server:v${PHP_LS_VERSION}"
+	phpList "  codeready-workspaces-udi-container:${CSV_VERSION}/"
 	mnf ""
 	cd /tmp
 	rm -fr /tmp/php-deps-tmp

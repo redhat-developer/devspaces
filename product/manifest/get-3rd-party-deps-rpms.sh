@@ -19,9 +19,9 @@ NVR1 NVR2 ...   | list of NVRs to query. If omitted, generate list from ${candid
 -g \"regex\"      | if provided, grep resulting rpm logs for matching regex
 
 Examples:
-$0 codeready-workspaces-stacks-node-container-2.0-12.1552519049 codeready-workspaces-stacks-java-container
+$0 codeready-workspaces-udi-container-2.16-12.1552519049 codeready-workspaces-udi-container
 
-$0 stacks-dotnet -g \"/(libssh2|python|python-libs).x86_64\" # check one container for version of two rpms
+$0 udi -g \"/(libssh2|python|python-libs).x86_64\" # check one container for version of two rpms
 
 $0 # to generate overall log for all latest NVRs
 "
@@ -103,8 +103,8 @@ function loadNVRlog() {
 		fi
 		if [[ $collecting -eq 1 ]] && [[ $line ]]; then
 			# rh-maven35-maven-lib.noarch                               1:3.5.0-4.3.el7                @rhel-server-rhscl-7-rpms          
-			# NVR = codeready-workspaces-stacks-python-container-2.0-8 (NVR notation)
-			# want  codeready-workspaces-stacks-python-container:2.0-8 (prod:version notation)
+			# NVR = codeready-workspaces-udi-container-2.16-8 (NVR notation)
+			# want  codeready-workspaces-udi-container:2.16-8 (prod:version notation)
 			# shellcheck disable=SC2001,SC2086
 			echo "${NVR/-container-/-container:}/$(echo $line | sed -e "s#\(.\+\)[\ \t]\+\(.\+\)[\ \t]\+\@.\+#\1-\2#g")" >> ${MANIFEST_FILE}
 			# shellcheck disable=SC2001,SC2086
@@ -127,7 +127,7 @@ done
 
 log ""
 
-# allNVRs=codeready-workspaces-stacks-python-container-2.0-6
+# allNVRs=codeready-workspaces-udi-container-2.16-6
 log "[INFO] Brew logs:"
 for NVR in ${allNVRs}; do
 	MANIFEST_FILE2="${WORKSPACE}/${CSV_VERSION}/rpms/manifest-rpms-${NVR}.txt"

@@ -79,15 +79,10 @@ codeready-workspaces/pluginbroker-artifacts-rhel8 \
 codeready-workspaces/pluginbroker-metadata-rhel8 \
 codeready-workspaces/pluginregistry-rhel8 \
 codeready-workspaces/server-rhel8 \
-codeready-workspaces/stacks-cpp-rhel8 \
-codeready-workspaces/stacks-dotnet-rhel8 \
-\
-codeready-workspaces/stacks-golang-rhel8 \
-codeready-workspaces/stacks-php-rhel8 \
 codeready-workspaces/theia-dev-rhel8 \
 codeready-workspaces/theia-endpoint-rhel8 \
-codeready-workspaces/theia-rhel8 \
 \
+codeready-workspaces/theia-rhel8 \
 codeready-workspaces/traefik-rhel8 \
 codeready-workspaces/udi-rhel8 \
 "

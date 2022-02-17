@@ -2,8 +2,7 @@
 # build all containers in brew, then if successful, copy to quay.
 
 # to run for multiple repos checked out locally...
-# $➔ for d in $(ls -1 -d stacks-*); do cd $d; { ../buildInBrewCopyToQuay.sh $d; }; cd ..; done
-# $➔ for d in $(ls -1 -d plugin-*); do cd $d; { ../buildInBrewCopyToQuay.sh $d; }; cd ..; done
+# $➔ for d in $(ls -1 -d operator-*); do cd $d; { ../buildInBrewCopyToQuay.sh $d; }; cd ..; done
 
 # TODO should we invoke this and commit changes first?
 # /path/to/product/getLatestRPM.sh -s "$(pwd)" -r openshift-clients-4 -u http://rhsm-pulp.corp.redhat.com/content/dist/layered/rhel8/basearch/rhocp/4.7 -a "x86_64 s390x ppc64le" 
@@ -95,11 +94,7 @@ if [[ $PHASES == *"1"* ]]; then
         codeready-workspaces-pluginregistry \
         codeready-workspaces-theia-dev \
         codeready-workspaces-traefik \
-        codeready-workspaces-udi \
-        codeready-workspaces-stacks-cpp \
-        codeready-workspaces-stacks-dotnet \
-        codeready-workspaces-stacks-golang \
-        codeready-workspaces-stacks-php"
+        codeready-workspaces-udi"
 fi
 
 # theia images depend on theia-dev; operator-bundle is built last after everything else is done

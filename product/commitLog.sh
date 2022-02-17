@@ -137,8 +137,6 @@ function parseCommitLog ()
     # codeready-workspaces @ 184e24bee5bd923b733fa8c9f4b055a9caad40d2 (1.1.0.GA) ::
     # codeready-workspaces-deprecated @ 620a53c5b0a1bbc02ba68e96be94ec3b932c9bee (1.0.0.GA-SNAPSHOT) ::
     # codeready-workspaces-assembly-main.tar.gz
-    # codeready-workspaces-stacks-language-servers-dependencies-bayesian.tar.gz
-    # codeready-workspaces-stacks-language-servers-dependencies-node.tar.gz
     tarballs=""
     OTHER=""
     JOB_NAME=""

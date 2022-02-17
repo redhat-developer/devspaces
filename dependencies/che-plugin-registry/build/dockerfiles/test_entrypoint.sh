@@ -780,13 +780,11 @@ initTest "Should replace image references in external_images.txt with RELATED_IM
 
 externalImagesTxt=$(cat <<-END
 registry.redhat.io/codeready-workspaces/machineexec-rhel8:2.11
-registry.redhat.io/codeready-workspaces/stacks-golang-rhel8:2.11
 registry.redhat.io/codeready-workspaces/udi-rhel8:2.16
 END
 )
 expected_externalImagesTxt=$(cat <<-END
 registry.redhat.io/codeready-workspaces/machineexec-rhel8@sha256:bfdd8cf61a6fad757f1e8334aa84dbf44baddf897ff8def7496bf6dbc066679d
-registry.redhat.io/codeready-workspaces/stacks-golang-rhel8@sha256:30e71577cb80ffaf1f67a292b4c96ab74108a2361347fc593cbb505784629db2
 registry.redhat.io/codeready-workspaces/udi-rhel8@sha256:becfa80ae0e0e86f815e8981c071a68952b6a488298d7525751585538a14d88e
 END
 )
@@ -794,7 +792,6 @@ echo "$externalImagesTxt" > "${METAS_DIR}/external_images.txt"
 
 # NOTE: GIXDCNQK | base 32 -d = 2.16; GIXDCMIK | base 32 -d = 2.11 
 export RELATED_IMAGE_codeready_workspaces_machineexec_plugin_registry_image_GIXDCMIK='registry.redhat.io/codeready-workspaces/machineexec-rhel8@sha256:bfdd8cf61a6fad757f1e8334aa84dbf44baddf897ff8def7496bf6dbc066679d'
-export RELATED_IMAGE_codeready_workspaces_stacks_golang_plugin_registry_image_GIXDCMIK='registry.redhat.io/codeready-workspaces/stacks-golang-rhel8@sha256:30e71577cb80ffaf1f67a292b4c96ab74108a2361347fc593cbb505784629db2'
 export RELATED_IMAGE_codeready_workspaces_udi_plugin_registry_image_GIXDCNQK='registry.redhat.io/codeready-workspaces/udi-rhel8@sha256:becfa80ae0e0e86f815e8981c071a68952b6a488298d7525751585538a14d88e'
 
 # shellcheck disable=SC1090

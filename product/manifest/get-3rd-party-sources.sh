@@ -71,7 +71,7 @@ maketarball ()
     # shellcheck disable=SC2044
     for t in $(find . -name "*.tar.gz" -o -name "*.tgz"); do
         subfolder=${t//.\/codeready-workspaces-/}
-        subfolder=${subfolder//stacks-language-servers-dependencies-/}
+        subfolder=${subfolder//asset-/}
         subfolder=${subfolder//.tar.gz/}
         subfolder=${subfolder//.tgz/}
         mkdir -p ${WORKSPACE}/nvr-sources/${NVR}/${subfolder}
