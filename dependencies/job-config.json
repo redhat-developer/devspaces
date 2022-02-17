@@ -280,15 +280,6 @@
         "disabled": false
       }
     },
-    "plugin-java11-openj9": {
-      "2.15": {
-        "upstream_branch": [
-          "crw-2.15-rhel-8",
-          "crw-2.15-rhel-8"
-        ],
-        "disabled": true
-      }
-    },
     "plugin-java11": {
       "2.15": {
         "upstream_branch": [
@@ -296,15 +287,6 @@
           "crw-2.15-rhel-8"
         ],
         "disabled": false
-      }
-    },
-    "plugin-java8-openj9": {
-      "2.15": {
-        "upstream_branch": [
-          "crw-2.15-rhel-8",
-          "crw-2.15-rhel-8"
-        ],
-        "disabled": true
       }
     },
     "plugin-java8": {
