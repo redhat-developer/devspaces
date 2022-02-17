@@ -135,6 +135,19 @@ updateTechPreviewDevfiles() {
     git commit -a -s -m "chore(tech-preview-devfiles) update tag/branch to ${CRW_VERSION}"
 }
 
+# for the crw main repo, update meta.yaml files to point to the correct branch of crw-sample 
+updatelinksToDevfiles() {
+    YAML_ROOT="dependencies/che-devfile-registry/devfiles"
+
+    # replace CRW devfiles with image references to current version tag instead of crw-2-rhel-8 and :latest tag
+    for meta in $(find ${YAML_ROOT} -name "meta.yaml"); do
+       sed -r -i "${meta}" \
+           -e "s|devfilev2|${CRW_VERSION}-devfilev2/|g"
+    done
+    git diff -q "${YAML_ROOT}" || true
+    git commit -a -s -m "chore(devfile) update link to devfiles v2"
+}
+
 pushTagGH () {
 	d="$1"
 	org="$2"
@@ -165,7 +178,10 @@ pushTagGH () {
 		git branch ${branch} || true
 
 		# for the crw main repo, update tech preview devfiles to point to the correct tag/branch
-		if [[ $d == "codeready-workspaces" ]]; then updateTechPreviewDevfiles; fi
+		if [[ $d == "codeready-workspaces" ]]; then 
+			updateTechPreviewDevfiles;
+			updatelinksToDevfiles;
+		fi
 
 		git push origin ${branch} || true
 	fi
