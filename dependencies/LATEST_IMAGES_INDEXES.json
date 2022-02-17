@@ -2,32 +2,24 @@
     "Indexes": {
         "operator-metadata": {
             "2.15": {
-                "v4.8": {
-                    "iibURL": "registry-proxy.engineering.redhat.com/rh-osbs/iib:178247",
-                    "iibTag": "178247"
-                },
-                "v4.9": {
-                    "iibURL": "registry-proxy.engineering.redhat.com/rh-osbs/iib:178251",
-                    "iibTag": "178251"
-                },
-                "OSBSImage": "registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-operator-metadata:2.15-63",
-                "quayImage": "quay.io/crw/crw-2-rhel8-operator-metadata:2.15-63",
-                "tag": "2.15-63"
+                "OSBSImage": "registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-operator-metadata:2.15-64",
+                "quayImage": "quay.io/crw/crw-2-rhel8-operator-metadata:2.15-64",
+                "tag": "2.15-64"
             }
         },
         "operator-bundle": {
             "2.15": {
                 "v4.8": {
-                    "iibURL": "registry-proxy.engineering.redhat.com/rh-osbs/iib:178220",
-                    "iibTag": "178220"
+                    "iibURL": "registry-proxy.engineering.redhat.com/rh-osbs/iib:178458",
+                    "iibTag": "178458"
                 },
                 "v4.9": {
-                    "iibURL": "registry-proxy.engineering.redhat.com/rh-osbs/iib:178222",
-                    "iibTag": "178222"
+                    "iibURL": "registry-proxy.engineering.redhat.com/rh-osbs/iib:178459",
+                    "iibTag": "178459"
                 },
-                "OSBSImage": "registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-operator-bundle:2.15-264",
-                "quayImage": "quay.io/crw/crw-2-rhel8-operator-bundle:2.15-264",
-                "tag": "2.15-264"
+                "OSBSImage": "registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-operator-bundle:2.15-265",
+                "quayImage": "quay.io/crw/crw-2-rhel8-operator-bundle:2.15-265",
+                "tag": "2.15-265"
             }
         }
     }
