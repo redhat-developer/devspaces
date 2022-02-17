@@ -2,7 +2,7 @@
     "Images": {
         "quay.io/crw/configbump-rhel8:2.16-2": {"Created": "2022-02-02T04:22:44.809334771Z", "Digest": "16469ef9c277361b9cde53362873e2baa4fec52cd5bc49d99a8fa0cc35de717c", "Image": "quay.io/crw/configbump-rhel8:2.16-2"},
         "quay.io/crw/crw-2-rhel8-operator:2.16-7": {"Created": "2022-02-06T08:22:33.377415291Z", "Digest": "7314449345f94e409096e91307a8161672acaaef51638b93db54fe2a4af341a3", "Image": "quay.io/crw/crw-2-rhel8-operator:2.16-7"},
-        "quay.io/crw/crw-2-rhel8-operator-bundle:2.16-48": {"Created": "2022-02-17T21:01:03.68349051Z", "Digest": "260439a2fa97142bab183f4eb4797e6f2a70aa9c53b8135f897a942a6500fdd0", "Image": "quay.io/crw/crw-2-rhel8-operator-bundle:2.16-48"},
+        "quay.io/crw/crw-2-rhel8-operator-bundle:2.16-49": {"Created": "2022-02-17T21:38:53.42593809Z", "Digest": "8ffcf636af8260239beee9023f9759b962027abd503e08bdd70252a950fe6d90", "Image": "quay.io/crw/crw-2-rhel8-operator-bundle:2.16-49"},
         "quay.io/crw/dashboard-rhel8:2.16-17": {"Created": "2022-02-17T15:03:49.436275569Z", "Digest": "0e68a94777c0539461fc249c1f96c995614d957712eeb9d69024dc037b50fe0f", "Image": "quay.io/crw/dashboard-rhel8:2.16-17"},
         "quay.io/crw/devfileregistry-rhel8:2.16-17": {"Created": "2022-02-17T20:28:50.941881388Z", "Digest": "d032191e715f9ea2f8fd606fbe30726114f83869693ad868810cb22d91de99e7", "Image": "quay.io/crw/devfileregistry-rhel8:2.16-17"},
         "quay.io/crw/idea-rhel8:2.16-3": {"Created": "2022-02-06T08:24:09.428380799Z", "Digest": "c73dc1b7395f7241756f94af804bf5c90a31298fcb184b02a4e0d7d6eb880798", "Image": "quay.io/crw/idea-rhel8:2.16-3"},
@@ -11,13 +11,13 @@
         "quay.io/crw/machineexec-rhel8:2.16-6": {"Created": "2022-02-07T14:35:07.209647419Z", "Digest": "f104ff91ab7cd967c4468aafca77b255333b4a0fc5a33c0856f8a1001c5a293f", "Image": "quay.io/crw/machineexec-rhel8:2.16-6"},
         "quay.io/crw/pluginbroker-artifacts-rhel8:2.16-3": {"Created": "2022-02-06T08:19:07.319002837Z", "Digest": "cc2a65ee92d862f5dc693ec5f32e95b9fcc52835b569ef315b31ba3371ad35c6", "Image": "quay.io/crw/pluginbroker-artifacts-rhel8:2.16-3"},
         "quay.io/crw/pluginbroker-metadata-rhel8:2.16-3": {"Created": "2022-02-06T08:19:32.340090231Z", "Digest": "01c9d60d987ed12c236d2f40a2b6fea9b84baaa5d2bbdecb27a341ba0d25c983", "Image": "quay.io/crw/pluginbroker-metadata-rhel8:2.16-3"},
-        "quay.io/crw/pluginregistry-rhel8:2.16-16": {"Created": "2022-02-16T22:03:44.638235601Z", "Digest": "e39ec82fa60d3d01e1e121ab49f89dc5deb983cd9c316b3caf220fc511021ec8", "Image": "quay.io/crw/pluginregistry-rhel8:2.16-16"},
+        "quay.io/crw/pluginregistry-rhel8:2.16-17": {"Created": "2022-02-17T21:15:00.14516684Z", "Digest": "bd9087f1731f1f4c3fee8ec5ef6d19da8b83eaee7625d92303939eb247952208", "Image": "quay.io/crw/pluginregistry-rhel8:2.16-17"},
         "quay.io/crw/server-rhel8:2.16-9": {"Created": "2022-02-14T20:11:23.092853863Z", "Digest": "1e110df44e26fd76f401398ab6d6b2ff02dc5175b044a30bdb027363620087f6", "Image": "quay.io/crw/server-rhel8:2.16-9"},
         "quay.io/crw/theia-dev-rhel8:2.16-6": {"Created": "2022-02-06T12:23:48.436559815Z", "Digest": "4a8b10f4e3278a02bebb77a7720ac58421e07ea60ed9df00e054de5aa1006c91", "Image": "quay.io/crw/theia-dev-rhel8:2.16-6"},
         "quay.io/crw/theia-endpoint-rhel8:2.16-4": {"Created": "2022-02-04T22:27:18.351663348Z", "Digest": "46766fc2679633450571600dde72ef17221096ad71a01d86ee96d5e809d48d82", "Image": "quay.io/crw/theia-endpoint-rhel8:2.16-4"},
         "quay.io/crw/theia-rhel8:2.16-4": {"Created": "2022-02-04T21:54:15.281299618Z", "Digest": "2e86483751d3f9a1917ac3dbd6e6acea78c3fba76a3753daabc916fbe06c786b", "Image": "quay.io/crw/theia-rhel8:2.16-4"},
         "quay.io/crw/traefik-rhel8:2.16-2": {"Created": "2022-02-02T04:17:46.226037056Z", "Digest": "7b7ea6044c12c653c6a5984966e6372b544ff18d81a656ebf219c4a61cd13dac", "Image": "quay.io/crw/traefik-rhel8:2.16-2"},
-        "quay.io/crw/udi-rhel8:2.16-17": {"Created": "2022-02-17T20:48:14.036247566Z", "Digest": "c88b3247011c6b20c011aac4584e93d2861b4a8e67392bd911daf0ed5f871d8b", "Image": "quay.io/crw/udi-rhel8:2.16-17"},
+        "quay.io/crw/udi-rhel8:2.16-18": {"Created": "2022-02-17T21:23:15.309981523Z", "Digest": "8c60ea525da41565dff2ed30b0a627c67efc1e8ac704b2fdbd2cc378c9727ab3", "Image": "quay.io/crw/udi-rhel8:2.16-18"},
         "": {"Created":"", "Digest":"", "Image":""}
     }
 }
