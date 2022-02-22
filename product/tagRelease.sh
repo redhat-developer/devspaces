@@ -109,9 +109,7 @@ if [[ ${pkgs_devel_branch} ]] && [[ ${CSV_VERSION} ]]; then
 	codeready-workspaces-pluginbroker-artifacts \
 	codeready-workspaces-pluginbroker-metadata \
 	\
-	codeready-workspaces-plugin-java11-openj9 \
 	codeready-workspaces-plugin-java11 \
-	codeready-workspaces-plugin-java8-openj9 \
 	codeready-workspaces-plugin-java8 \
 	codeready-workspaces-plugin-kubernetes \
 	\

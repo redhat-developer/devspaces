@@ -81,9 +81,7 @@ codeready-workspaces/machineexec-rhel8 \
 codeready-workspaces/pluginbroker-artifacts-rhel8 \
 codeready-workspaces/pluginbroker-metadata-rhel8 \
 \
-codeready-workspaces/plugin-java11-openj9-rhel8 \
 codeready-workspaces/plugin-java11-rhel8 \
-codeready-workspaces/plugin-java8-openj9-rhel8 \
 codeready-workspaces/plugin-java8-rhel8 \
 codeready-workspaces/plugin-kubernetes-rhel8 \
 \
@@ -119,9 +117,7 @@ codeready-workspaces/machineexec-rhel8 \
 codeready-workspaces/pluginbroker-artifacts-rhel8 \
 codeready-workspaces/pluginbroker-metadata-rhel8 \
 \
-codeready-workspaces/plugin-java11-openj9-rhel8 \
 codeready-workspaces/plugin-java11-rhel8  \
-codeready-workspaces/plugin-java8-openj9-rhel8 \
 codeready-workspaces/plugin-java8-rhel8 \
 codeready-workspaces/plugin-kubernetes-rhel8 \
 \
@@ -172,7 +168,6 @@ Usage:
   $0 -b ${DWNSTM_BRANCH} --arches                           | use default list of CRW images in RHEC Prod; show arches
 
   $0 -c 'crw/theia-rhel8 crw/theia-endpoint-rhel8' --quay      | check latest tag for specific Quay images, with branch = ${DWNSTM_BRANCH}
-  $0 -c crw/plugin-java11-openj9-rhel8 --quay                  | check a non-amd64 image
   $0 -c codeready-workspaces-jwtproxy-rhel8 --osbs             | check an image from OSBS
   $0 -c codeready-workspaces-jwtproxy-rhel8 --nvr              | check an NVR from OSBS
   $0 -c 'rhoar-nodejs/nodejs-10 jboss-eap-7/eap72-openshift'   | check latest tags for specific RHEC images

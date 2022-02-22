@@ -81,9 +81,7 @@ doBuild () {
 }
 
 if [[ $PHASES == *"1"* ]]; then # 10 images
-    doBuild "codeready-workspaces-plugin-java11-openj9 \
-        codeready-workspaces-plugin-java11 \
-        codeready-workspaces-plugin-java8-openj9 \
+    doBuild "codeready-workspaces-plugin-java11 \
         codeready-workspaces-plugin-java8 \
         codeready-workspaces-plugin-kubernetes \
         codeready-workspaces-plugin-openshift \

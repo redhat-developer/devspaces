@@ -116,9 +116,6 @@ echo '    "Images": {' >> dependencies/LATEST_IMAGES_DIGESTS.json
 # shellcheck disable=SC2013
 for d in $(cat dependencies/LATEST_IMAGES); do
   archOverride="--override-arch amd64"
-  if [[ ${d} = *"-openj9-"* ]]; then 
-    archOverride="--override-arch ppc64le"
-  fi
   if [[ ${d} != *":???" ]]; then
   # shellcheck disable=SC2086
     digestAndCreatedTime=$(skopeo inspect docker://${d} ${archOverride}| jq -r '[.Digest, .Created] | @csv' | sed -r -e "s/sha256://" 2>/dev/null)
