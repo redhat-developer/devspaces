@@ -135,19 +135,33 @@ updateTechPreviewDevfiles() {
     git commit -a -s -m "chore(tech-preview-devfiles) update tag/branch to ${CRW_VERSION}"
 }
 
+# for the crw main repo, update meta.yaml files to point to the correct branch of crw-sample 
+updateLinksToDevfiles() {
+    YAML_ROOT="dependencies/che-devfile-registry/devfiles"
+
+    # replace CRW meta.yaml files with links to current version of devfile v2
+    for meta in $(find ${YAML_ROOT} -name "meta.yaml"); do
+       sed -r -i "${meta}" \
+           -e "s|devfilev2|${CRW_VERSION}-devfilev2|g"
+    done
+    git diff -q "${YAML_ROOT}" || true
+    git commit -a -s -m "chore(devfile) update link to devfiles v2"
+}
+
 pushTagGH () {
 	d="$1"
+	org="$2"
 	echo; echo "== $d =="
 	if [[ ${SOURCE_BRANCH} ]]; then clone_branch=${SOURCE_BRANCH}; else clone_branch=${crw_repos_branch}; fi
 	if [[ ! -d /tmp/tmp-checkouts/projects_${d} ]]; then
-		git clone --depth 1 -b ${clone_branch} https://github.com/redhat-developer/${d}.git projects_${d}
+		git clone --depth 1 -b ${clone_branch} https://github.com/${org}/${d}.git projects_${d}
 		pushd /tmp/tmp-checkouts/projects_${d} >/dev/null || exit 1
 			export GITHUB_TOKEN="${GITHUB_TOKEN}"
 			git config user.email "nickboldt+devstudio-release@gmail.com"
 			git config user.name "Red Hat Devstudio Release Bot"
 			git config --global push.default matching
 			git config --global hub.protocol https
-			git remote set-url origin https://${GITHUB_TOKEN}:x-oauth-basic@github.com/redhat-developer/${d}.git
+			git remote set-url origin https://${GITHUB_TOKEN}:x-oauth-basic@github.com/${org}/${d}.git
 
 			git checkout --track origin/${clone_branch} -q || true
 			git pull -q
@@ -155,12 +169,21 @@ pushTagGH () {
 	fi
 	pushd /tmp/tmp-checkouts/projects_${d} >/dev/null || exit 1
 	if [[ ${SOURCE_BRANCH} ]]; then # push a new branch (or no-op if exists)
-		git branch ${crw_repos_branch} || true
+		branch=${crw_repos_branch}
+		if [[ $org == "crw-samples" ]]; then 
+			# new branch for crw-sample should be 2.x-devfilev2
+			branch="$CRW_VERSION-$SOURCE_BRANCH";
+		fi
+		
+		git branch ${branch} || true
 
 		# for the crw main repo, update tech preview devfiles to point to the correct tag/branch
-		if [[ $d == "codeready-workspaces" ]]; then updateTechPreviewDevfiles; fi
+		if [[ $d == "codeready-workspaces" ]]; then 
+			updateTechPreviewDevfiles;
+			updateLinksToDevfiles;
+		fi
 
-		git push origin ${crw_repos_branch} || true
+		git push origin ${branch} || true
 	fi
 	if [[ $CSV_VERSION ]]; then # push a new tag (or no-op if exists)
 		git tag ${CSV_VERSION} || true
@@ -169,13 +192,45 @@ pushTagGH () {
 	popd >/dev/null || exit 1
 }
 
+org="redhat-developer"
 for d in \
 codeready-workspaces \
 codeready-workspaces-chectl \
 codeready-workspaces-images \
 codeready-workspaces-theia \
 ; do
-	pushTagGH $d
+	pushTagGH $d $org
+done
+
+# create branches for crw samples
+# all samples are located in https://github.com/orgs/crw-samples
+# the source branch is devfilev2
+org="crw-samples"
+SOURCE_BRANCH="devfilev2"
+for s in \
+jboss-eap-quickstarts \
+microprofile-quickstart-bootable \
+microprofile-quickstart \
+fuse-rest-http-booster \
+camel-k \
+rest-http-example \
+gs-validating-form-input \
+lombok-project-sample \
+quarkus-quickstarts \
+vertx-health-checks-example-redhat \
+vertx-http-example \
+nodejs-configmap \
+nodejs-mongodb-sample \
+web-nodejs-sample \
+python-hello-world \
+c-plus-plus \
+dotnet-web-simple \
+golang-health-check \
+cakephp-ex \
+demo \
+gradle-demo-project \
+; do
+	pushTagGH $s $org
 done
 
 # cleanup
