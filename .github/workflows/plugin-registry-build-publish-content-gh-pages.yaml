@@ -92,7 +92,7 @@ jobs:
           git config --global hub.protocol https
           git remote set-url origin https://$GITHUB_TOKEN:x-oauth-basic@github.com/redhat-developer/codeready-workspaces.git
           git diff-index --quiet HEAD || git commit -m "publish registry $VERSION - $(date)" -s
-          git push origin gh-pages # https://redhat-developer.github.io/codeready-workspaces/
+          git push origin gh-pages || echo "No changes to push!" # https://redhat-developer.github.io/codeready-workspaces/
           for arch in $(cat /tmp/crw-plugin-registry/architectures.json); do
             echo "Plugin registry published to https://redhat-developer.github.io/$GITHUB_REPO_NAME/$VERSION_DIR/$arch/v3/plugins/"
             if [[ -n "$NEXT_VERSION_DIR" ]]; then
