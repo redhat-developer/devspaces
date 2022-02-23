@@ -11,7 +11,7 @@ metadata:
     - Other
   icon: /images/eclipse-cdt-cdt-vscode-icon.png
 sidecar:
-  image: registry.redhat.io/codeready-workspaces/stacks-cpp-rhel8:2.16
+  image: registry.redhat.io/codeready-workspaces/udi-rhel8:2.16
   name: cpp-plugins
   memoryLimit: 512Mi
   memoryRequest: 20Mi
