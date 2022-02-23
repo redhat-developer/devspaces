@@ -13,7 +13,7 @@
 
 # Builder: check meta.yamls and create index.json
 # https://access.redhat.com/containers/?tab=tags#/registry.access.redhat.com/ubi8/python-38
-FROM registry.access.redhat.com/ubi8/python-38:1-63.1626843762 as builder
+FROM registry.access.redhat.com/ubi8/python-38:1-80 as builder
 USER 0
 
 ################# 
@@ -64,13 +64,6 @@ RUN TAG=${PATCHED_IMAGES_TAG} \
     ./update_devfile_patched_image_tags.sh
 RUN ./check_mandatory_fields.sh devfiles
 # Cache projects in CRW 
-COPY ./build/dockerfiles/rhel.cache_projects.sh resources.tgz /tmp/ 
-RUN /tmp/rhel.cache_projects.sh /build/ && rm -rf /tmp/rhel.cache_projects.sh /tmp/resources.tgz 
-RUN ./swap_yamlfiles.sh devfiles
-# Cache projects in CRW 
-COPY ./build/dockerfiles/rhel.cache_projects.sh resources.tgz /tmp/ 
-RUN /tmp/rhel.cache_projects.sh /build/ && rm -rf /tmp/rhel.cache_projects.sh /tmp/resources.tgz 
-RUN ./swap_yamlfiles.sh devfiles
 RUN ./index.sh > /build/devfiles/index.json
 RUN ./list_referenced_images.sh devfiles > /build/devfiles/external_images.txt
 RUN chmod -R g+rwX /build/devfiles
@@ -82,7 +75,7 @@ RUN chmod -R g+rwX /build/resources
 
 # Build registry, copying meta.yamls and index.json from builder
 # https://access.redhat.com/containers/?tab=tags#/registry.access.redhat.com/ubi8/httpd-24
-FROM registry.access.redhat.com/ubi8/httpd-24:1-143.1626836617 AS registry
+FROM registry.access.redhat.com/ubi8/httpd-24:1-166 AS registry
 USER 0
 
 # latest httpd container doesn't include ssl cert, so generate one
