@@ -14,6 +14,18 @@
                     "iibURL": "registry-proxy.engineering.redhat.com/rh-osbs/iib:186230",
                     "iibTag": "186230"
                 },
+                "v4.8": {
+                    "iibURL": "registry-proxy.engineering.redhat.com/rh-osbs/iib:186561",
+                    "iibTag": "186561"
+                },
+                "v4.9": {
+                    "iibURL": "registry-proxy.engineering.redhat.com/rh-osbs/iib:186573",
+                    "iibTag": "186573"
+                },
+                "v4.10": {
+                    "iibURL": "registry-proxy.engineering.redhat.com/rh-osbs/iib:186580",
+                    "iibTag": "186580"
+                },
                 "OSBSImage": "registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-operator-metadata:2.15-72",
                 "quayImage": "quay.io/crw/crw-2-rhel8-operator-metadata:2.15-72",
                 "tag": "2.15-72"
@@ -21,21 +33,9 @@
         },
         "operator-bundle": {
             "2.15": {
-                "v4.8": {
-                    "iibURL": "registry-proxy.engineering.redhat.com/rh-osbs/iib:186275",
-                    "iibTag": "186275"
-                },
-                "v4.9": {
-                    "iibURL": "registry-proxy.engineering.redhat.com/rh-osbs/iib:186277",
-                    "iibTag": "186277"
-                },
-                "v4.10": {
-                    "iibURL": "registry-proxy.engineering.redhat.com/rh-osbs/iib:186280",
-                    "iibTag": "186280"
-                },
-                "OSBSImage": "registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-operator-bundle:2.15-275",
-                "quayImage": "quay.io/crw/crw-2-rhel8-operator-bundle:2.15-275",
-                "tag": "2.15-275"
+                "OSBSImage": "registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-operator-bundle:2.15-276",
+                "quayImage": "quay.io/crw/crw-2-rhel8-operator-bundle:2.15-276",
+                "tag": "2.15-276"
             }
         }
     }
