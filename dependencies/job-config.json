@@ -509,7 +509,7 @@
           "7.41.x"
         ],
         "node_version": "12.22.5",
-        "disabled": false
+        "disabled": true
       },
       "2.16": {
         "upstream_branch": [
@@ -534,7 +534,7 @@
           "7.42.x",
           "7.41.x"
         ],
-        "disabled": false
+        "disabled": true
       },
       "2.x": {
         "upstream_branch": [
@@ -550,12 +550,12 @@
           "7.42.x",
           "7.41.x"
         ],
-        "disabled": false
+        "disabled": true
       }
     },
     "get-sources-rhpkg-container-build": {
       "2.15": {
-        "disabled": false
+        "disabled": true
       },
       "2.x": {
         "disabled": false
@@ -563,7 +563,7 @@
     },
     "push-latest-container-to-quay": {
       "2.15": {
-        "disabled": false
+        "disabled": true
       },
       "2.x": {
         "disabled": false
@@ -571,7 +571,7 @@
     },
     "sync-to-downstream": {
       "2.15": {
-        "disabled": false
+        "disabled": true
       },
       "2.x": {
         "disabled": false
@@ -579,7 +579,7 @@
     },
     "update-digests-in-metadata": {
       "2.15": {
-        "disabled": false
+        "disabled": true
       },
       "2.x": {
         "disabled": false
@@ -587,7 +587,7 @@
     },
     "send-email-qe-build-list": {
       "2.15": {
-        "disabled": false
+        "disabled": true
       },
       "2.x": {
         "disabled": true
