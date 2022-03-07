@@ -33,6 +33,14 @@
         },
         "operator-bundle": {
             "2.15": {
+                "v4.8": {
+                    "iibURL": "registry-proxy.engineering.redhat.com/rh-osbs/iib:187730",
+                    "iibTag": "187730"
+                },
+                "v4.9": {
+                    "iibURL": "registry-proxy.engineering.redhat.com/rh-osbs/iib:187734",
+                    "iibTag": "187734"
+                },
                 "OSBSImage": "registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-operator-bundle:2.15-276",
                 "quayImage": "quay.io/crw/crw-2-rhel8-operator-bundle:2.15-276",
                 "tag": "2.15-276"
