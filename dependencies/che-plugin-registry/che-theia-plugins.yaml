@@ -33,7 +33,7 @@ plugins:
     extension: https://open-vsx.org/api/vscode/typescript-language-features/1.49.3/file/vscode.typescript-language-features-1.49.3.vsix
   - repository:
       url: https://github.com/clangd/vscode-clangd
-      revision: c7f4a1b84fcc10d5b8241750cf2a84097ee4c37e
+      revision: 0.1.15
     metaYaml:
      skipIndex: true
     sidecar:
@@ -43,10 +43,10 @@ plugins:
       memoryRequest: 20Mi
       cpuLimit: 500m
       cpuRequest: 30m
-    extension: https://download.jboss.org/jbosstools/vscode/3rdparty/vscode-clangd/vscode-clangd-0.1.5-562d00.vsix
+    extension: https://open-vsx.org/api/llvm-vs-code-extensions/vscode-clangd/0.1.15/file/llvm-vs-code-extensions.vscode-clangd-0.1.15.vsix
   - repository:
       url: https://github.com/eclipse-cdt/cdt-gdb-vscode
-      revision: 2cbbb857a2acf0b2e46bab30e0cbbfb547514856
+      revision: 528a63de7e21d3e62d9e8aad6491718b69ec311e
     metaYaml:
      skipIndex: true
     sidecar:
@@ -56,7 +56,7 @@ plugins:
       memoryRequest: 20Mi
       cpuLimit: 500m
       cpuRequest: 30m
-    extension: https://download.jboss.org/jbosstools/vscode/3rdparty/cdt-gdb-vscode/cdt-gdb-vscode-0.0.91-2cbbb8.vsix
+    extension: https://open-vsx.org/api/eclipse-cdt/cdt-gdb-vscode/0.0.92/file/eclipse-cdt.cdt-gdb-vscode-0.0.92.vsix
   - repository:
       url: 'https://github.com/eclipse-cdt/cdt-vscode'
       revision: 2edfc3a3474bc7a732014e1a4631561b991f845a
@@ -71,7 +71,7 @@ plugins:
     extension: https://download.jboss.org/jbosstools/vscode/3rdparty/cdt-vscode/cdt-vscode-0.0.7-75cf95.vsix
   - repository:
       url: 'https://github.com/bmewburn/vscode-intelephense'
-      revision: v1.5.4
+      revision: v1.8.2
     featured: true
     sidecar:
       image: "registry.redhat.io/codeready-workspaces/udi-rhel8:2.16"
@@ -79,7 +79,7 @@ plugins:
       memoryRequest: 20Mi
       cpuLimit: 500m
       cpuRequest: 30m
-    extension: https://download.jboss.org/jbosstools/vscode/3rdparty/vscode-intelephense/vscode-intelephense-client-1.5.4.vsix
+    extension: https://open-vsx.org/api/bmewburn/vscode-intelephense-client/1.8.2/file/bmewburn.vscode-intelephense-client-1.8.2.vsix
   - repository:
       url: 'https://github.com/Microsoft/vscode-python'
       revision: 2020.7.94776
