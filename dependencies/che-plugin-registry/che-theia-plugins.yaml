@@ -10,7 +10,7 @@ plugins:
       url: 'https://github.com/microsoft/vscode-js-debug'
       revision: v1.66.0
     sidecar:
-      directory: node
+      image: "registry.redhat.io/codeready-workspaces/udi-rhel8:2.16"
       name: jsdebug
       memoryLimit: 512Mi
       memoryRequest: 20Mi
@@ -60,12 +60,6 @@ plugins:
   - repository:
       url: 'https://github.com/eclipse-cdt/cdt-vscode'
       revision: 2edfc3a3474bc7a732014e1a4631561b991f845a
-    aliases:
-      - che-incubator/cpptools
-    metaYaml:
-      extraDependencies:
-        - eclipse-cdt/cdt-gdb-vscode
-        - llvm-vs-code-extensions/vscode-clangd
     featured: true
     sidecar:
       image: "registry.redhat.io/codeready-workspaces/udi-rhel8:2.16"
@@ -79,11 +73,8 @@ plugins:
       url: 'https://github.com/bmewburn/vscode-intelephense'
       revision: v1.5.4
     featured: true
-    aliases:
-      - redhat/php
     sidecar:
       image: "registry.redhat.io/codeready-workspaces/udi-rhel8:2.16"
-      name: php-intelephense
       memoryLimit: 1Gi
       memoryRequest: 20Mi
       cpuLimit: 500m
@@ -106,7 +97,7 @@ plugins:
     extension: https://github.com/redhat-developer/codeready-workspaces-vscode-extensions/releases/download/v34b6b7e/vscode-python-2020.7.94776.vsix
   - repository:
       url: 'https://github.com/golang/vscode-go'
-      revision: v0.16.1
+      revision: v0.23.0
     featured: true
     sidecar:
       image: "registry.redhat.io/codeready-workspaces/udi-rhel8:2.16"
@@ -117,8 +108,8 @@ plugins:
       cpuRequest: 30m
       env:
         - name: GOPATH
-          value: /projects/.che/gopath:$(CHE_PROJECTS_ROOT)
-    extension: https://download.jboss.org/jbosstools/vscode/3rdparty/vscode-go/go-0.16.1.vsix
+          value: '/projects/.che/gopath:/go:$(CHE_PROJECTS_ROOT)'
+    extension: https://github.com/golang/vscode-go/releases/download/v0.23.0/go-0.23.0.vsix
   - repository:
       url: 'https://github.com/camel-tooling/vscode-camelk'
       revision: 0.0.26
@@ -146,10 +137,12 @@ plugins:
         - name: gradle
           path: /home/user/.gradle
     extension: https://download.jboss.org/jbosstools/vscode/stable/vscode-microprofile/vscode-microprofile-0.1.1-48.vsix
-  - id: redhat/quarkus-java11
+  - id: redhat/vscode-quarkus
     repository:
       url: 'https://github.com/redhat-developer/vscode-quarkus'
       revision: v1.7.0
+    aliases:
+      - redhat/quarkus-java11
     preferences:
       java.server.launchMode: Standard
     sidecar:
@@ -170,20 +163,22 @@ plugins:
         - redhat/vscode-commons
       extraDependencies:
         - vscjava/vscode-java-debug
+        - vscjava/vscode-java-test
   - repository:
       url: 'https://github.com/camel-tooling/vscode-wsdl2rest'
       revision: 0.0.11
     sidecar:
       image: "registry.redhat.io/codeready-workspaces/udi-rhel8:2.16"
       memoryLimit: 256Mi
-      name: vscode-wsdl2rest
       memoryRequest: 20Mi
-      cpuLimit: 500m
+      cpuLimit: 800m
       cpuRequest: 30m
     extension: https://download.jboss.org/jbosstools/vscode/stable/vscode-wsdl2rest/vscode-wsdl2rest-0.0.11-106.vsix
+    deprecate:
+      automigrate: false
   - repository:
       url: 'https://github.com/fabric8-analytics/fabric8-analytics-vscode-extension'
-      revision: 0.1.0
+      revision: 0.2.1
     aliases:
       - redhat/dependency-analytics
     sidecar:
@@ -193,7 +188,7 @@ plugins:
       memoryRequest: 20Mi
       cpuLimit: 500m
       cpuRequest: 30m
-    extension: https://github.com/fabric8-analytics/fabric8-analytics-vscode-extension/releases/download/0.1.0/fabric8-analytics-0.1.0.vsix
+    extension: https://github.com/fabric8-analytics/fabric8-analytics-vscode-extension/releases/download/0.2.1/fabric8-analytics-0.2.1.vsix
   - repository:
       url: 'https://github.com/redhat-developer/vscode-project-initializer'
       revision: v0.0.10
@@ -215,7 +210,7 @@ plugins:
     extension: https://github.com/che-incubator/che-theia-openshift-auth/releases/download/0.0.3/che-openshift-authentication-plugin-0.0.3.vsix
   - repository:
       url: 'https://github.com/redhat-developer/vscode-openshift-tools'
-      revision: v0.2.11
+      revision: v0.2.13
     sidecar:
       image: "registry.redhat.io/codeready-workspaces/udi-rhel8:2.16"
       name: vscode-openshift-connector
@@ -226,12 +221,11 @@ plugins:
       volumeMounts:
         - name: kube
           path: /home/theia/.kube
-    extension: https://github.com/redhat-developer/codeready-workspaces-vscode-extensions/releases/download/va21efef/vscode-openshift-connector-v0.2.11.vsix
+    extension: https://open-vsx.org/api/redhat/vscode-openshift-connector/0.2.13/file/redhat.vscode-openshift-connector-0.2.13.vsix
     metaYaml:
       extraDependencies:
         - ms-kubernetes-tools/vscode-kubernetes-tools
         - redhat/vscode-yaml
-        - che-theia/che-openshift-authentication-plugin
   - repository:
       url: 'https://github.com/redhat-developer/vscode-yaml'
       revision: 0.14.0
@@ -309,6 +303,7 @@ plugins:
       url: 'https://github.com/felixfbecker/vscode-php-debug'
       revision: v1.13.0
     aliases:
+      - felixfbecker/vscode-php-debug
       - redhat/php-debugger
     sidecar:
       image: "registry.redhat.io/codeready-workspaces/udi-rhel8:2.16"
