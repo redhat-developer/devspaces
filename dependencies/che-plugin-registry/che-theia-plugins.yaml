@@ -212,7 +212,20 @@ plugins:
       memoryRequest: 20Mi
       cpuLimit: 500m
       cpuRequest: 30m
-    extension: https://github.com/redhat-developer/codeready-workspaces-vscode-extensions/releases/download/ve96a2bb/vscode-yaml-0.14.0.vsix
+    extension: https://open-vsx.org/api/redhat/vscode-yaml/0.14.0/file/redhat.vscode-yaml-0.14.0.vsix
+  - repository:
+      url: 'https://github.com/microsoft/vscode-java-test'
+      revision: 0.28.1
+    metaYaml:
+      skipIndex: true
+    sidecar:
+      directory: java
+      name: vscode-java
+      memoryLimit: 1500Mi
+      memoryRequest: 20Mi
+      cpuLimit: 500m
+      cpuRequest: 30m
+    extension: https://open-vsx.org/api/vscjava/vscode-java-test/0.28.1/file/vscjava.vscode-java-test-0.28.1.vsix
   - repository:
       url: 'https://github.com/microsoft/vscode-java-debug'
       revision: 0.26.0
@@ -254,6 +267,7 @@ plugins:
     metaYaml:
       extraDependencies:
         - vscjava/vscode-java-debug
+        - vscjava/vscode-java-test
   - id: redhat/java8
     repository:
       url: 'https://github.com/redhat-developer/vscode-java'
@@ -274,6 +288,7 @@ plugins:
     metaYaml:
       extraDependencies:
         - vscjava/vscode-java-debug
+        - vscjava/vscode-java-test
   - repository:
       url: 'https://github.com/felixfbecker/vscode-php-debug'
       revision: v1.22.0
