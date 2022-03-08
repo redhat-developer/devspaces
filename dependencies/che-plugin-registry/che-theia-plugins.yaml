@@ -123,7 +123,7 @@ plugins:
     extension: https://open-vsx.org/api/redhat/vscode-camelk/0.0.30/file/redhat.vscode-camelk-0.0.30.vsix
   - repository:
       url: 'https://github.com/redhat-developer/vscode-microprofile'
-      revision: 174c77f51a57bf1cfadba8f78ad7072ce63baa1d
+      revision: 0.3.0
     sidecar:
       image: "registry.redhat.io/codeready-workspaces/udi-rhel8:2.16"
       name: vscode-microp
@@ -136,7 +136,7 @@ plugins:
           path: /home/user/.m2
         - name: gradle
           path: /home/user/.gradle
-    extension: https://download.jboss.org/jbosstools/vscode/stable/vscode-microprofile/vscode-microprofile-0.1.1-48.vsix
+    extension: https://open-vsx.org/api/redhat/vscode-microprofile/0.3.0/file/redhat.vscode-microprofile-0.3.0.vsix
   - id: redhat/vscode-quarkus
     repository:
       url: 'https://github.com/redhat-developer/vscode-quarkus'
