@@ -126,6 +126,9 @@ if [[ $PUBLISH_ASSETS -eq 1 ]]; then
       ${PRE_RELEASE} "${CSV_VERSION}-${ASSET_NAME}-assets"
   fi
 
+  # in case API is running slow, sleep for a bit before trying to push files into the freshly created release
+  sleep 10s
+
   # upload artifacts for each platform 
   for fileToPush in $fileList; do
     # attempt to upload a new file
