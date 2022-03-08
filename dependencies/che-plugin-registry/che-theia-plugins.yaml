@@ -140,7 +140,7 @@ plugins:
   - id: redhat/vscode-quarkus
     repository:
       url: 'https://github.com/redhat-developer/vscode-quarkus'
-      revision: v1.7.0
+      revision: v1.9.0
     aliases:
       - redhat/quarkus-java11
     preferences:
@@ -157,7 +157,7 @@ plugins:
           path: /home/user/.m2
         - name: gradle
           path: /home/user/.gradle
-    extension: https://download.jboss.org/jbosstools/vscode/stable/vscode-quarkus/vscode-quarkus-1.7.0-437.vsix
+    extension: https://open-vsx.org/api/redhat/vscode-quarkus/1.9.0/file/redhat.vscode-quarkus-1.9.0.vsix
     metaYaml:
       skipDependencies:
         - redhat/vscode-commons
@@ -166,19 +166,19 @@ plugins:
         - vscjava/vscode-java-test
   - repository:
       url: 'https://github.com/camel-tooling/vscode-wsdl2rest'
-      revision: 0.0.11
+      revision: 0.0.15
     sidecar:
       image: "registry.redhat.io/codeready-workspaces/udi-rhel8:2.16"
       memoryLimit: 256Mi
       memoryRequest: 20Mi
       cpuLimit: 800m
       cpuRequest: 30m
-    extension: https://download.jboss.org/jbosstools/vscode/stable/vscode-wsdl2rest/vscode-wsdl2rest-0.0.11-106.vsix
+    extension: https://open-vsx.org/api/redhat/vscode-wsdl2rest/0.0.15/file/redhat.vscode-wsdl2rest-0.0.15.vsix
     deprecate:
       automigrate: false
   - repository:
       url: 'https://github.com/fabric8-analytics/fabric8-analytics-vscode-extension'
-      revision: 0.2.1
+      revision: 0.3.5
     aliases:
       - redhat/dependency-analytics
     sidecar:
@@ -188,13 +188,13 @@ plugins:
       memoryRequest: 20Mi
       cpuLimit: 500m
       cpuRequest: 30m
-    extension: https://github.com/fabric8-analytics/fabric8-analytics-vscode-extension/releases/download/0.2.1/fabric8-analytics-0.2.1.vsix
+    extension: https://open-vsx.org/api/redhat/fabric8-analytics/0.3.5/file/redhat.fabric8-analytics-0.3.5.vsix
   - repository:
       url: 'https://github.com/redhat-developer/vscode-project-initializer'
-      revision: v0.0.10
+      revision: v0.2.1
     aliases:
       - redhat/project-initializer
-    extension: https://download.jboss.org/jbosstools/vscode/stable/vscode-project-initializer/project-initializer-0.0.10-582.vsix
+    extension: https://open-vsx.org/api/redhat/project-initializer/0.2.1/file/redhat.project-initializer-0.2.1.vsix
   - repository:
       url: 'https://github.com/che-incubator/che-theia-openshift-auth'
       revision: 0.0.3
