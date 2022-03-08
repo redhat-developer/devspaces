@@ -131,7 +131,7 @@ if [[ $PUBLISH_ASSETS -eq 1 ]]; then
     # attempt to upload a new file
     echo "Upload new asset $fileToPush"
     try=$(hub release edit -a ${fileToPush} "${CSV_VERSION}-${ASSET_NAME}-assets" \
-      -m "Assets for the ${CSV_VERSION} ${ASSET_NAME} release" -m "Container build asset files for ${CSV_VERSION}")
+      -m "Assets for the ${CSV_VERSION} ${ASSET_NAME} release" -m "Container build asset files for ${CSV_VERSION}" || true)
 
     # if release doesn't exist, create it
     if [[ $try == *"Unable to find release with tag name" ]]; then
@@ -141,7 +141,7 @@ if [[ $PUBLISH_ASSETS -eq 1 ]]; then
         ${PRE_RELEASE} "${CSV_VERSION}-${ASSET_NAME}-assets" || true
       sleep 10s
       tryAgain=$(hub release edit -a ${fileToPush} "${CSV_VERSION}-${ASSET_NAME}-assets" \
-      -m "Assets for the ${CSV_VERSION} ${ASSET_NAME} release" -m "Container build asset files for ${CSV_VERSION}")
+      -m "Assets for the ${CSV_VERSION} ${ASSET_NAME} release" -m "Container build asset files for ${CSV_VERSION}" || true)
     fi
     # if release STILL doesn't exist, create it again (?)
     if [[ $tryAgain == *"Unable to find release with tag name" ]]; then
@@ -151,7 +151,8 @@ if [[ $PUBLISH_ASSETS -eq 1 ]]; then
         ${PRE_RELEASE} "${CSV_VERSION}-${ASSET_NAME}-assets" || true
       sleep 10s
       hub release edit -a ${fileToPush} "${CSV_VERSION}-${ASSET_NAME}-assets" \
-      -m "Assets for the ${CSV_VERSION} ${ASSET_NAME} release" -m "Container build asset files for ${CSV_VERSION}"
+      -m "Assets for the ${CSV_VERSION} ${ASSET_NAME} release" -m "Container build asset files for ${CSV_VERSION}" || \
+      echo "[ERROR] Failed to push ${fileToPush} to '${CSV_VERSION}-${ASSET_NAME}-assets' release!"; exit 1
     fi
   done
 fi
