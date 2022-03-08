@@ -152,7 +152,7 @@ if [[ $PUBLISH_ASSETS -eq 1 ]]; then
       sleep 10s
       hub release edit -a ${fileToPush} "${CSV_VERSION}-${ASSET_NAME}-assets" \
       -m "Assets for the ${CSV_VERSION} ${ASSET_NAME} release" -m "Container build asset files for ${CSV_VERSION}" || \
-      echo "[ERROR] Failed to push ${fileToPush} to '${CSV_VERSION}-${ASSET_NAME}-assets' release!"; exit 1
+      { echo "[ERROR] Failed to push ${fileToPush} to '${CSV_VERSION}-${ASSET_NAME}-assets' release!"; exit 1; }
     fi
   done
 fi
