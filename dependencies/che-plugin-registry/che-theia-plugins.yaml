@@ -112,7 +112,7 @@ plugins:
     extension: https://github.com/golang/vscode-go/releases/download/v0.23.0/go-0.23.0.vsix
   - repository:
       url: 'https://github.com/camel-tooling/vscode-camelk'
-      revision: 0.0.26
+      revision: 0.0.30
     sidecar:
       image: "registry.redhat.io/codeready-workspaces/udi-rhel8:2.16"
       name: vscode-camelk
@@ -120,7 +120,7 @@ plugins:
       memoryRequest: 20Mi
       cpuLimit: 500m
       cpuRequest: 30m
-    extension: https://download.jboss.org/jbosstools/vscode/stable/vscode-camelk/vscode-camelk-0.0.26-336.vsix
+    extension: https://open-vsx.org/api/redhat/vscode-camelk/0.0.30/file/redhat.vscode-camelk-0.0.30.vsix
   - repository:
       url: 'https://github.com/redhat-developer/vscode-microprofile'
       revision: 174c77f51a57bf1cfadba8f78ad7072ce63baa1d
@@ -301,7 +301,7 @@ plugins:
         - vscjava/vscode-java-debug
   - repository:
       url: 'https://github.com/felixfbecker/vscode-php-debug'
-      revision: v1.13.0
+      revision: v1.22.0
     aliases:
       - felixfbecker/vscode-php-debug
       - redhat/php-debugger
@@ -312,10 +312,10 @@ plugins:
       memoryRequest: 20Mi
       cpuLimit: 500m
       cpuRequest: 30m
-    extension: https://download.jboss.org/jbosstools/vscode/3rdparty/vscode-php-debug/php-debug-1.13.0.vsix
+    extension: https://open-vsx.org/api/felixfbecker/php-debug/1.22.0/file/felixfbecker.php-debug-1.22.0.vsix
   - repository:
       url: 'https://github.com/camel-tooling/camel-lsp-client-vscode'
-      revision: 0.1.5
+      revision: 0.2.0
     sidecar:
       image: "registry.redhat.io/codeready-workspaces/udi-rhel8:2.16"
       name: vscode-apache-camel
@@ -323,7 +323,7 @@ plugins:
       memoryRequest: 20Mi
       cpuLimit: 500m
       cpuRequest: 30m
-    extension: https://download.jboss.org/jbosstools/vscode/stable/vscode-apache-camel/vscode-apache-camel-0.1.5-1377.vsix
+    extension: https://open-vsx.org/api/redhat/vscode-apache-camel/0.2.0/file/redhat.vscode-apache-camel-0.2.0.vsix
     metaYaml:
       skipDependencies:
         - redhat/vscode-commons
