@@ -165,18 +165,6 @@ plugins:
         - vscjava/vscode-java-debug
         - vscjava/vscode-java-test
   - repository:
-      url: 'https://github.com/camel-tooling/vscode-wsdl2rest'
-      revision: 0.0.15
-    sidecar:
-      image: "registry.redhat.io/codeready-workspaces/udi-rhel8:2.16"
-      memoryLimit: 256Mi
-      memoryRequest: 20Mi
-      cpuLimit: 800m
-      cpuRequest: 30m
-    extension: https://open-vsx.org/api/redhat/vscode-wsdl2rest/0.0.15/file/redhat.vscode-wsdl2rest-0.0.15.vsix
-    deprecate:
-      automigrate: false
-  - repository:
       url: 'https://github.com/fabric8-analytics/fabric8-analytics-vscode-extension'
       revision: 0.3.5
     aliases:
@@ -195,19 +183,6 @@ plugins:
     aliases:
       - redhat/project-initializer
     extension: https://open-vsx.org/api/redhat/project-initializer/0.2.1/file/redhat.project-initializer-0.2.1.vsix
-  - repository:
-      url: 'https://github.com/che-incubator/che-theia-openshift-auth'
-      revision: 0.0.3
-    sidecar:
-      image: "registry.redhat.io/codeready-workspaces/udi-rhel8:2.16"
-      name: vscode-openshift-connector
-      memoryLimit: 1500Mi
-      memoryRequest: 20Mi
-      cpuLimit: 800m
-      cpuRequest: 30m
-    metaYaml:
-      skipIndex: true
-    extension: https://github.com/che-incubator/che-theia-openshift-auth/releases/download/0.0.3/che-openshift-authentication-plugin-0.0.3.vsix
   - repository:
       url: 'https://github.com/redhat-developer/vscode-openshift-tools'
       revision: v0.2.13
@@ -250,7 +225,7 @@ plugins:
       memoryRequest: 20Mi
       cpuLimit: 800m
       cpuRequest: 30m
-    extension: https://download.jboss.org/jbosstools/vscode/3rdparty/vscode-java-debug/vscode-java-debug-0.26.0.vsix
+    extension: https://open-vsx.org/api/vscjava/vscode-java-debug/0.26.0/file/vscjava.vscode-java-debug-0.26.0.vsix
   - id: redhat/java
     repository:
       url: 'https://github.com/redhat-developer/vscode-java'
@@ -349,7 +324,7 @@ plugins:
       memoryRequest: 20Mi
       cpuLimit: 500m
       cpuRequest: 30m
-    extension: https://download.jboss.org/jbosstools/vscode/3rdparty/vscode-kubernetes-tools/vscode-kubernetes-tools-1.2.1.vsix
+    extension: https://open-vsx.org/api/ms-kubernetes-tools/vscode-kubernetes-tools/1.2.1/file/ms-kubernetes-tools.vscode-kubernetes-tools-1.2.1.vsix
   - id: redhat-developer/netcoredbg-theia-plugin
     repository:
       url: 'https://github.com/redhat-developer/netcoredbg-theia-plugin'
@@ -393,5 +368,5 @@ plugins:
     extension: https://github.com/redhat-developer/codeready-workspaces-vscode-extensions/releases/download/v8521e74/vscode-sonarlint-1.20.1.vsix
   - repository:
       url: 'https://github.com/microsoft/vscode-eslint'
-      revision: 1e15d3495da89072d48cf583d48d92829f0c4b82
-    extension: https://download.jboss.org/jbosstools/vscode/3rdparty/vscode-eslint/vscode-eslint-2.1.1-1e15d3.vsix
+      revision: release/2.1.20
+    extension: https://open-vsx.org/api/dbaeumer/vscode-eslint/2.1.20/file/dbaeumer.vscode-eslint-2.1.20.vsix
