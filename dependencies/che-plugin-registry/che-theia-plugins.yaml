@@ -275,7 +275,7 @@ plugins:
           path: /home/user/.m2
         - name: gradle
           path: /home/user/.gradle
-    extension: https://download.jboss.org/jbosstools/static/jdt.ls/stable/java-0.82.0-369.vsix
+    extension: https://open-vsx.org/api/redhat/java/0.82.0/file/redhat.java-0.82.0.vsix
     metaYaml:
       extraDependencies:
         - vscjava/vscode-java-debug
@@ -295,7 +295,7 @@ plugins:
       volumeMounts:
         - name: m2
           path: /home/user/.m2
-    extension: https://download.jboss.org/jbosstools/static/jdt.ls/stable/java-0.63.0-2222.vsix
+    extension: https://open-vsx.org/api/redhat/java/0.63.0/file/redhat.java-0.63.0.vsix
     metaYaml:
       extraDependencies:
         - vscjava/vscode-java-debug
