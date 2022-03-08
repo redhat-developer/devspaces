@@ -171,9 +171,9 @@ if [[ $PULL_ASSETS -eq 1 ]]; then
     if [[ ! -d $GITHUB_REPO_PATH ]]; then # clone the specified GH repo and use that to fetch assets
       pushd $TMP >/dev/null
       if [[ $GITHUB_REPO ]]; then
-        git clone --depth 1 https://github.com/$GITHUB_REPO --branch crw-2-rhel-8 --single-branch sources
+        git clone --depth 1 https://github.com/$GITHUB_REPO --branch "${MIDSTM_BRANCH}" --single-branch sources
       else 
-        git clone --depth 1 https://github.com/$GITHUB_REPO_DEFAULT --branch crw-2-rhel-8 --single-branch sources
+        git clone --depth 1 https://github.com/$GITHUB_REPO_DEFAULT --branch "${MIDSTM_BRANCH}" --single-branch sources
       fi
       cd sources
     else
