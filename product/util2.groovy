@@ -322,7 +322,7 @@ def updateHelmRpms(String rpmRepoVersion="4.9", String dir="${WORKSPACE}/sources
 
 // run a job with default token, FORCE_BUILD=true, and SCRATCH=false
 // use jobPath = /job/folder/job/jobname so we can both invoke a job, and then use json API in getLastSuccessfulBuildId()
-def runJob(String jobPath, boolean doWait=false, boolean doPropagateStatus=true, String jenkinsURL=JENKINS_URL) {
+def runJob(String jobPath, boolean doWait=false, boolean doPropagateStatus=true, String jenkinsURL=JENKINS_URL, String TIMEOUT="180") {
   def int prevSuccessBuildId = getLastSuccessfulBuildId(jenkinsURL + jobPath) // eg., #5
   println ("runJob(" + jobPath + ") :: prevSuccessBuildId = " + prevSuccessBuildId)
   final jobResult = build(
@@ -334,8 +334,8 @@ def runJob(String jobPath, boolean doWait=false, boolean doPropagateStatus=true,
     parameters: [
       [
         $class: 'StringParameterValue',
-        name: 'token',
-        value: "CI_BUILD"
+        name: 'TIMEOUT',
+        value: TIMEOUT
       ],
       [
         $class: 'BooleanParameterValue',
@@ -367,6 +367,7 @@ def runJob(String jobPath, boolean doWait=false, boolean doPropagateStatus=true,
   return getLastSuccessfulBuildId(jenkinsURL + jobPath)
 }
 
+// @since 2.16 - method no longer used; shall we remove it?
 def runJobSyncToDownstream(String jobPath, String REPOS, boolean doWait=false, boolean doPropagateStatus=true, String jenkinsURL=JENKINS_URL) {
   def int prevSuccessBuildId = getLastSuccessfulBuildId(jenkinsURL + jobPath) // eg., #5
   println ("runJob(" + jobPath + "["+REPOS+"]) :: prevSuccessBuildId = " + prevSuccessBuildId)
@@ -377,11 +378,6 @@ def runJobSyncToDownstream(String jobPath, String REPOS, boolean doWait=false, b
     propagate: doPropagateStatus,
     quietPeriod: 0,
     parameters: [
-      [
-        $class: 'StringParameterValue',
-        name: 'token',
-        value: "CI_BUILD"
-      ],
       [
         $class: 'StringParameterValue',
         name: 'REPOS',
