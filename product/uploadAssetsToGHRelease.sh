@@ -130,8 +130,29 @@ if [[ $PUBLISH_ASSETS -eq 1 ]]; then
   for fileToPush in $fileList; do
     # attempt to upload a new file
     echo "Upload new asset $fileToPush"
-    hub release edit -a ${fileToPush} "${CSV_VERSION}-${ASSET_NAME}-assets" \
+    try=$(hub release edit -a ${fileToPush} "${CSV_VERSION}-${ASSET_NAME}-assets" \
+      -m "Assets for the ${CSV_VERSION} ${ASSET_NAME} release" -m "Container build asset files for ${CSV_VERSION}")
+
+    # if release doesn't exist, create it
+    if [[ $try == *"Unable to find release with tag name" ]]; then
+      echo "GH release 'Assets for the ${CSV_VERSION} ${ASSET_NAME} release' does not exist: create it (1)"
+      hub release create -t "${MIDSTM_BRANCH}" \
+        -m "Assets for the ${CSV_VERSION} ${ASSET_NAME} release" -m "Container build asset files for ${CSV_VERSION}" \
+        ${PRE_RELEASE} "${CSV_VERSION}-${ASSET_NAME}-assets" || true
+      sleep 10s
+      tryAgain=$(hub release edit -a ${fileToPush} "${CSV_VERSION}-${ASSET_NAME}-assets" \
+      -m "Assets for the ${CSV_VERSION} ${ASSET_NAME} release" -m "Container build asset files for ${CSV_VERSION}")
+    fi
+    # if release STILL doesn't exist, create it again (?)
+    if [[ $tryAgain == *"Unable to find release with tag name" ]]; then
+      echo "GH release 'Assets for the ${CSV_VERSION} ${ASSET_NAME} release' does not exist: create it (2)"
+      hub release create -t "${MIDSTM_BRANCH}" \
+        -m "Assets for the ${CSV_VERSION} ${ASSET_NAME} release" -m "Container build asset files for ${CSV_VERSION}" \
+        ${PRE_RELEASE} "${CSV_VERSION}-${ASSET_NAME}-assets" || true
+      sleep 10s
+      hub release edit -a ${fileToPush} "${CSV_VERSION}-${ASSET_NAME}-assets" \
       -m "Assets for the ${CSV_VERSION} ${ASSET_NAME} release" -m "Container build asset files for ${CSV_VERSION}"
+    fi
   done
 fi
 
