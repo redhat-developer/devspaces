@@ -129,27 +129,31 @@ if [[ $PUBLISH_ASSETS -eq 1 ]]; then
   # upload artifacts for each platform 
   for fileToPush in $fileList; do
     # attempt to upload a new file
-    echo "Upload new asset $fileToPush"
+    echo "[INFO] Upload new asset $fileToPush (1/3)"
     try=$(hub release edit -a ${fileToPush} "${CSV_VERSION}-${ASSET_NAME}-assets" \
-      -m "Assets for the ${CSV_VERSION} ${ASSET_NAME} release" -m "Container build asset files for ${CSV_VERSION}" || true)
+      -m "Assets for the ${CSV_VERSION} ${ASSET_NAME} release" -m "Container build asset files for ${CSV_VERSION}" 2>&1 || true)
 
     # if release doesn't exist, create it
     if [[ $try == *"Unable to find release with tag name" ]]; then
-      echo "GH release 'Assets for the ${CSV_VERSION} ${ASSET_NAME} release' does not exist: create it (1)"
+      echo "[WARNING] $try"
+      echo "[WARNING] GH release 'Assets for the ${CSV_VERSION} ${ASSET_NAME} release' does not exist: create it (1)"
       hub release create -t "${MIDSTM_BRANCH}" \
         -m "Assets for the ${CSV_VERSION} ${ASSET_NAME} release" -m "Container build asset files for ${CSV_VERSION}" \
         ${PRE_RELEASE} "${CSV_VERSION}-${ASSET_NAME}-assets" || true
       sleep 10s
+      echo "[INFO] Upload new asset $fileToPush (2/3)"
       tryAgain=$(hub release edit -a ${fileToPush} "${CSV_VERSION}-${ASSET_NAME}-assets" \
-      -m "Assets for the ${CSV_VERSION} ${ASSET_NAME} release" -m "Container build asset files for ${CSV_VERSION}" || true)
+      -m "Assets for the ${CSV_VERSION} ${ASSET_NAME} release" -m "Container build asset files for ${CSV_VERSION}"  2>&1 || true)
     fi
     # if release STILL doesn't exist, create it again (?)
     if [[ $tryAgain == *"Unable to find release with tag name" ]]; then
-      echo "GH release 'Assets for the ${CSV_VERSION} ${ASSET_NAME} release' does not exist: create it (2)"
+      echo "[WARNING] $tryAgain"
+      echo "[WARNING] GH release 'Assets for the ${CSV_VERSION} ${ASSET_NAME} release' does not exist: create it (2)"
       hub release create -t "${MIDSTM_BRANCH}" \
         -m "Assets for the ${CSV_VERSION} ${ASSET_NAME} release" -m "Container build asset files for ${CSV_VERSION}" \
         ${PRE_RELEASE} "${CSV_VERSION}-${ASSET_NAME}-assets" || true
       sleep 10s
+      echo "[INFO] Upload new asset $fileToPush (3/3)"
       hub release edit -a ${fileToPush} "${CSV_VERSION}-${ASSET_NAME}-assets" \
       -m "Assets for the ${CSV_VERSION} ${ASSET_NAME} release" -m "Container build asset files for ${CSV_VERSION}" || \
       { echo "[ERROR] Failed to push ${fileToPush} to '${CSV_VERSION}-${ASSET_NAME}-assets' release!"; exit 1; }
