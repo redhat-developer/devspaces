@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Copyright (c) 2018-2021 Red Hat, Inc.
+# Copyright (c) 2018-2022 Red Hat, Inc.
 # This program and the accompanying materials are made
 # available under the terms of the Eclipse Public License 2.0
 # which is available at https://www.eclipse.org/legal/epl-2.0/
@@ -8,13 +8,13 @@
 # SPDX-License-Identifier: EPL-2.0
 #
 
-# script to tag the Che/CRW repos for a given release
+# script to tag the Che/devspaces repos for a given release
 
 # defaults
 # try to compute branches from currently checked out branch; else fall back to hard coded value
 crw_repos_branch="$(git rev-parse --abbrev-ref HEAD 2>/dev/null || true)"
-if [[ $crw_repos_branch != "crw-2."*"-rhel-8" ]]; then
-	crw_repos_branch="crw-2.8-rhel-8"
+if [[ $crw_repos_branch != "devspaces-3."*"-rhel-8" ]]; then
+	crw_repos_branch="devspaces-3-rhel-8"
 fi
 pkgs_devel_branch=${crw_repos_branch}
 
@@ -76,7 +76,7 @@ pushTagPD ()
 		pushd /tmp/tmp-checkouts/containers_${d} >/dev/null || exit 1
 			export KRB5CCNAME=/var/tmp/${pduser}_ccache
 			git config user.email ${pduser}@REDHAT.COM
-			git config user.name "CRW Build"
+			git config user.name "Dev Spaces Build"
 			git config --global push.default matching
 
 			git checkout --track origin/${pkgs_devel_branch} -q || true
@@ -94,27 +94,27 @@ pushTagPD ()
 # TODO remove tagging for backup and operator-metadata once 2.15 is live
 if [[ ${pkgs_devel_branch} ]] && [[ ${CSV_VERSION} ]]; then 
 	for d in \
-	codeready-workspaces-configbump \
-	codeready-workspaces-operator \
-	codeready-workspaces-operator-bundle \
-	codeready-workspaces-dashboard \
+	devspaces-configbump \
+	devspaces-operator \
+	devspaces-operator-bundle \
+	devspaces-dashboard \
+	devspaces-devfileregistry \
 	\
-	codeready-workspaces-devfileregistry \
-	codeready-workspaces-idea \
-	codeready-workspaces-imagepuller \
-	codeready-workspaces-jwtproxy \
-	codeready-workspaces-machineexec \
+	devspaces-idea \
+	devspaces-imagepuller \
+	devspaces-jwtproxy \
+	devspaces-machineexec \
+	devspaces-pluginbroker-artifacts \
 	\
-	codeready-workspaces-pluginbroker-artifacts \
-	codeready-workspaces-pluginbroker-metadata \
-	codeready-workspaces-pluginregistry \
-	codeready-workspaces \
-	codeready-workspaces-theia-dev \
+	devspaces-pluginbroker-metadata \
+	devspaces-pluginregistry \
+	devspaces-server \
+	devspaces-theia-dev \
+	devspaces-theia-endpoint \
 	\
-	codeready-workspaces-theia-endpoint \
-	codeready-workspaces-theia \
-	codeready-workspaces-traefik \
-	codeready-workspaces-udi \
+	devspaces-theia \
+	devspaces-traefik \
+	devspaces-udi \
 	; do
 	  pushTagPD $d
 	done
@@ -124,12 +124,12 @@ fi
 updateTechPreviewDevfiles() {
     YAML_ROOT="tech-preview-devfiles"
 
-    # replace CRW devfiles with image references to current version tag instead of crw-2-rhel-8 and :latest tag
+    # replace CRW devfiles with image references to current version tag instead of devspaces-3-rhel-8 and :latest tag
     for devfile in $(find ${YAML_ROOT} -name "*.yaml" -o -name "*.yml"); do
        sed -r -i "${devfile}" \
            -e "s|(.*image: \"*?.*quay.io/crw/.*:).+|\1${CRW_VERSION}\"|g" \
-           -e "s|(.*image: \"*?.*registry.redhat.io/codeready-workspaces/.*:).+|\1${CRW_VERSION}\"|g" \
-           -e "s|codeready-workspaces/crw-2-rhel-8/|codeready-workspaces/crw-${CRW_VERSION}-rhel-8/|g"
+           -e "s|(.*image: \"*?.*registry.redhat.io/devspaces/.*:).+|\1${CRW_VERSION}\"|g" \
+           -e "s|devspaces/devspaces-3-rhel-8/|devspaces/devspaces-${CRW_VERSION}-rhel-8/|g"
     done
     git diff -q "${YAML_ROOT}" || true
     git commit -a -s -m "chore(tech-preview-devfiles) update tag/branch to ${CRW_VERSION}"
@@ -178,7 +178,7 @@ pushTagGH () {
 		git branch ${branch} || true
 
 		# for the crw main repo, update tech preview devfiles to point to the correct tag/branch
-		if [[ $d == "codeready-workspaces" ]]; then 
+		if [[ $d == "devspaces" ]]; then 
 			updateTechPreviewDevfiles;
 			updateLinksToDevfiles;
 		fi
@@ -194,10 +194,10 @@ pushTagGH () {
 
 org="redhat-developer"
 for d in \
-codeready-workspaces \
-codeready-workspaces-chectl \
-codeready-workspaces-images \
-codeready-workspaces-theia \
+devspaces \
+devspaces-chectl \
+devspaces-images \
+devspaces-theia \
 ; do
 	pushTagGH $d $org
 done
@@ -207,33 +207,35 @@ done
 # the source branch is devfilev2
 org="crw-samples"
 SOURCE_BRANCH="devfilev2"
-for s in \
-jboss-eap-quickstarts \
-microprofile-quickstart-bootable \
-microprofile-quickstart \
-fuse-rest-http-booster \
-camel-k \
-rest-http-example \
-gs-validating-form-input \
-lombok-project-sample \
-quarkus-quickstarts \
-vertx-health-checks-example-redhat \
-vertx-http-example \
-nodejs-configmap \
-nodejs-mongodb-sample \
-web-nodejs-sample \
-python-hello-world \
-c-plus-plus \
-dotnet-web-simple \
-golang-health-check \
-cakephp-ex \
-demo \
-gradle-demo-project \
-; do
-	pushTagGH $s $org
-done
+if [[ $CRW_VERSION ]]; then # don't do this if there's no CRW_VERSION set
+	echo "Publish new tags for ${CRW_VERSION}-devfilev2 ..."
+	for s in \
+	jboss-eap-quickstarts \
+	microprofile-quickstart-bootable \
+	microprofile-quickstart \
+	fuse-rest-http-booster \
+	camel-k \
+	rest-http-example \
+	gs-validating-form-input \
+	lombok-project-sample \
+	quarkus-quickstarts \
+	vertx-health-checks-example-redhat \
+	vertx-http-example \
+	nodejs-configmap \
+	nodejs-mongodb-sample \
+	web-nodejs-sample \
+	python-hello-world \
+	c-plus-plus \
+	dotnet-web-simple \
+	golang-health-check \
+	cakephp-ex \
+	demo \
+	gradle-demo-project \
+	; do
+		pushTagGH $s $org
+	done
+fi
 
 # cleanup
-# cd /tmp
 echo "Temporary checkouts are in /tmp/tmp-checkouts"
 rm -fr /tmp/tmp-checkouts
