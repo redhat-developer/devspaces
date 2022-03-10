@@ -122,7 +122,7 @@ computeLatestCSV() {
 
   # update CSVs["${image}"].$version.CSV_VERSION_PREV
   replaceField "${WORKDIR}/dependencies/job-config.json" "(.CSVs[\"${image}\"][\"${DEVSPACES_VERSION}\"].CSV_VERSION_PREV)" "\"${CSV_VERSION_PREV}\""
-  replaceField "${WORKDIR}/dependencies/job-config.json" "(.CSVs[\"${image}\"][\"2.x\"].CSV_VERSION_PREV)" "\"${CSV_VERSION_PREV}\""
+  replaceField "${WORKDIR}/dependencies/job-config.json" "(.CSVs[\"${image}\"][\"3.x\"].CSV_VERSION_PREV)" "\"${CSV_VERSION_PREV}\""
 }
 
 # for a given DEVSPACES version, compute the equivalent Che versions that could be compatible 
@@ -194,12 +194,12 @@ updateVersion() {
 
           for KEY in ${KEYS[@]}
           do
-            #save content of 2.x
-            content=$(cat ${WORKDIR}/dependencies/job-config.json | jq ".\"${TOP_KEY}\"[\"${KEY}\"][\"2.x\"]")
-            #Add DEVSPACES_VERSION from 2.x then delete 2.x
-            #then append 2.x so the general order remains the same
-            replaceField "${WORKDIR}/dependencies/job-config.json" ".\"${TOP_KEY}\"[\"${KEY}\"]" "(. + {\"${DEVSPACES_VERSION}\": .\"2.x\"} | del(.\"2.x\"))"
-            replaceField "${WORKDIR}/dependencies/job-config.json" ".\"${TOP_KEY}\"[\"${KEY}\"]" ". + {\"2.x\": ${content}}"
+            #save content of 3.x
+            content=$(cat ${WORKDIR}/dependencies/job-config.json | jq ".\"${TOP_KEY}\"[\"${KEY}\"][\"3.x\"]")
+            #Add DEVSPACES_VERSION from 3.x then delete 3.x
+            #then append 3.x so the general order remains the same
+            replaceField "${WORKDIR}/dependencies/job-config.json" ".\"${TOP_KEY}\"[\"${KEY}\"]" "(. + {\"${DEVSPACES_VERSION}\": .\"3.x\"} | del(.\"3.x\"))"
+            replaceField "${WORKDIR}/dependencies/job-config.json" ".\"${TOP_KEY}\"[\"${KEY}\"]" ". + {\"3.x\": ${content}}"
 
             #while in here remove version if desired
             if [[ $REMOVE_DEVSPACES_VERSION ]]; then
@@ -223,7 +223,7 @@ updateVersion() {
     #find and disable version-2
     #start by gathering all DEVSPACES_VERSIONs that have data in the json
     VERSION_KEYS=($(cat ${WORKDIR}/dependencies/job-config.json | jq -r '.Jobs'[\"dashboard\"]' | keys[]'))
-    #get the array index of version -2. length -1 is 2.x, -2 is the version that was added, so the old version that needs to get disabled is length - 4
+    #get the array index of version -2. length -1 is 3.x, -2 is the version that was added, so the old version that needs to get disabled is length - 4
     DISABLE_VERSION_INDEX=$(( ${#VERSION_KEYS[@]} - 4 )) 
 
     #Disable version -2, and everything previous (if there)
@@ -243,7 +243,7 @@ updateVersion() {
 
     #update tags
     replaceField "${WORKDIR}/dependencies/job-config.json" ".Other[\"FLOATING_QUAY_TAGS\"][\"${DEVSPACES_VERSION}\"]" "\"next\""
-    replaceField "${WORKDIR}/dependencies/job-config.json" ".Other[\"FLOATING_QUAY_TAGS\"][\"2.x\"]" "\"next\""
+    replaceField "${WORKDIR}/dependencies/job-config.json" ".Other[\"FLOATING_QUAY_TAGS\"][\"3.x\"]" "\"next\""
 
     #the 'latest' tag should go on the previous/stable version, which would be version -1, or the index 3 form the end of the VERSION_KEYS array
     LATEST_INDEX=$(( ${#VERSION_KEYS[@]} - 3 )); LATEST_VERSION="${VERSION_KEYS[$LATEST_INDEX]}"; # echo "LATEST_VERSION = $LATEST_VERSION"
@@ -253,10 +253,10 @@ updateVersion() {
     # or use "latest" release with replaceField "${WORKDIR}/dependencies/job-config.json" ".Other[\"@eclipse-che/plugin-registry-generator\"][\"${LATEST_VERSION}\"]" "\"latest\""
     # debug: # cat "${WORKDIR}/dependencies/job-config.json" | grep -E -A5 "FLOATING_QUAY_TAGS|plugin-registry-gen"; exit
 
-    # update CSV versions for 2.yy latest and 2.x too
+    # update CSV versions for 2.yy latest and 3.x too
     echo "DEVSPACES_VERSION = $DEVSPACES_VERSION"
     for op in "operator-bundle"; do
-      for ver in "${DEVSPACES_VERSION}" "2.x"; do
+      for ver in "${DEVSPACES_VERSION}" "3.x"; do
         # TODO CRW-2637 after we branch for 2.16, remove the .100 option
         if [[ $DEVSPACES_VERSION == "2.14" ]] || [[ $DEVSPACES_VERSION == "2.15" ]]; then
           replaceField "${WORKDIR}/dependencies/job-config.json" ".CSVs[\"${op}\"][\"${ver}\"][\"CSV_VERSION\"]" "\"${DEVSPACES_VERSION}.100\""
