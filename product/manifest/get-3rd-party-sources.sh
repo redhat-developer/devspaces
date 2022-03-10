@@ -121,8 +121,8 @@ if [[ ${phases} == *"1"* ]]; then
         for d in $(cat ${WORKSPACE}/NVRs.txt | sort); do
             NVR=${d}
             SOURCES_DIR=${d%-container-*}; SOURCES_DIR=${SOURCES_DIR/-rhel8}; SOURCES_DIR=${SOURCES_DIR/-server}; # echo $SOURCES_DIR
-            echo "git clone ${SOURCES_DIR} from ${MIDSTM_BRANCH} ..."
-            git clone -q ssh://${PKGS_DEVEL_USER}@pkgs.devel.redhat.com/containers/${SOURCES_DIR} ${SOURCES_DIR} || true
+            echo "git clone --depth=1 --branch ${MIDSTM_BRANCH} to ${SOURCES_DIR} ..."
+            git clone --depth=1 --branch ${MIDSTM_BRANCH} ssh://${PKGS_DEVEL_USER}@pkgs.devel.redhat.com/containers/${SOURCES_DIR} ${SOURCES_DIR} || true
             cd ${SOURCES_DIR} && git checkout ${MIDSTM_BRANCH} -q && cd ..
             if [[ -d ${SOURCES_DIR} ]]; then
                 maketarball ${SOURCES_DIR} ${NVR}
