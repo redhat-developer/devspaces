@@ -19,7 +19,7 @@ plugins:
     extension: https://open-vsx.org/api/ms-vscode/node-debug/1.44.8/file/ms-vscode.node-debug-1.44.8.vsix
   - repository:
       url: 'https://github.com/Microsoft/vscode-js-debug'
-      revision: v1.52.2
+      revision: v1.66.0
     sidecar:
       image: "registry.redhat.io/codeready-workspaces/udi-rhel8:2.16"
       name: jsdebug
@@ -27,7 +27,7 @@ plugins:
       memoryRequest: 20Mi
       cpuLimit: 500m
       cpuRequest: 30m
-    extension: https://open-vsx.org/api/ms-vscode/js-debug/1.52.2/file/ms-vscode.js-debug-1.52.2.vsix
+    extension: https://open-vsx.org/api/ms-vscode/js-debug/1.66.0/file/ms-vscode.js-debug-1.66.0.vsix
   - repository:
       url: 'https://github.com/Microsoft/vscode-node-debug2'
       revision: v1.42.5
