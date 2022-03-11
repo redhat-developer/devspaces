@@ -7,17 +7,6 @@ plugins:
       - ms-vscode/vscode-github-pullrequest
     extension: https://github.com/redhat-developer/codeready-workspaces-vscode-extensions/releases/download/v4c5e8c4/vscode-pull-request-github-0.21.1.vsix
   - repository:
-      url: 'https://github.com/Microsoft/vscode-node-debug'
-      revision: v1.44.8
-    sidecar:
-      image: "registry.redhat.io/codeready-workspaces/udi-rhel8:2.16"
-      name: vscode-node-debug
-      memoryLimit: 512Mi
-      memoryRequest: 20Mi
-      cpuLimit: 500m
-      cpuRequest: 30m
-    extension: https://open-vsx.org/api/ms-vscode/node-debug/1.44.8/file/ms-vscode.node-debug-1.44.8.vsix
-  - repository:
       url: 'https://github.com/Microsoft/vscode-js-debug'
       revision: v1.52.2
     sidecar:
@@ -28,22 +17,6 @@ plugins:
       cpuLimit: 500m
       cpuRequest: 30m
     extension: https://open-vsx.org/api/ms-vscode/js-debug/1.52.2/file/ms-vscode.js-debug-1.52.2.vsix
-  - repository:
-      url: 'https://github.com/Microsoft/vscode-node-debug2'
-      revision: v1.42.5
-    metaYaml:
-      extraDependencies:
-        - ms-vscode/node-debug
-    preferences:
-      debug.node.useV3: false
-    sidecar:
-      image: "registry.redhat.io/codeready-workspaces/udi-rhel8:2.16"
-      name: vscode-node
-      memoryLimit: 1Gi
-      memoryRequest: 20Mi
-      cpuLimit: 500m
-      cpuRequest: 30m
-    extension: https://open-vsx.org/api/ms-vscode/node-debug2/1.42.5/file/ms-vscode.node-debug2-1.42.5.vsix
   - repository:
       url: 'https://github.com/Microsoft/vscode'
       revision: 1.49.3
