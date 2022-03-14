@@ -12,7 +12,7 @@ name: Plugin Registry - Build
 on:
   push:
     branches: 
-      - crw-2-rhel-8
+      - devspaces-3-rhel-8
     paths:
       - 'dependencies/che-plugin-registry/**'
 
@@ -65,9 +65,9 @@ jobs:
 
       - name: image-build
         run: |
-          docker pull quay.io/crw/pluginregistry-rhel8:next-gh-action
+          docker pull quay.io/devspaces/pluginregistry-rhel8:next-gh-action
           BUILDER=docker SKIP_FORMAT=true SKIP_LINT=true SKIP_TEST=true ./build.sh --tag next-gh-action --offline
 
       - name: push plugin registry image
         run: |
-          docker push quay.io/crw/pluginregistry-rhel8:next-gh-action
+          docker push quay.io/devspaces/pluginregistry-rhel8:next-gh-action
