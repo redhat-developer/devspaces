@@ -34,9 +34,9 @@ function initTest() {
     unset CHE_SIDECAR_CONTAINERS_REGISTRY_URL \
           CHE_SIDECAR_CONTAINERS_REGISTRY_ORGANIZATION \
           CHE_SIDECAR_CONTAINERS_REGISTRY_TAG \
-          RELATED_IMAGE_codeready_workspaces_theia_endpoint_plugin_registry_image_GIXDCMIK \
-          RELATED_IMAGE_codeready_workspaces_machineexec_plugin_registry_image_GIXDCMIK \
-          RELATED_IMAGE_codeready_workspaces_theia_plugin_registry_image_GIXDCMIK
+          RELATED_IMAGE_devspaces_theia_endpoint_plugin_registry_image_GIXDCMIK \
+          RELATED_IMAGE_devspaces_machineexec_plugin_registry_image_GIXDCMIK \
+          RELATED_IMAGE_devspaces_theia_plugin_registry_image_GIXDCMIK
 
 }
 
@@ -375,7 +375,7 @@ events:
 components:
   - name: theia-ide
     container:
-      image: 'registry.redhat.io/codeready-workspaces/theia-rhel8:2.11'
+      image: 'registry.redhat.io/devspaces/theia-rhel8:2.11'
       env:
         - name: THEIA_PLUGINS
           value: 'local-dir:///plugins'
@@ -465,7 +465,7 @@ components:
     volume: {}
   - name: che-machine-exec
     container:
-      image: 'registry.redhat.io/codeready-workspaces/machineexec-rhel8:2.11'
+      image: 'registry.redhat.io/devspaces/machineexec-rhel8:2.11'
       command:
         - /go/bin/che-machine-exec
         - '--url'
@@ -477,7 +477,7 @@ components:
     attributes: {}
   - name: remote-runtime-injector
     container:
-      image: 'registry.redhat.io/codeready-workspaces/theia-endpoint-rhel8:2.11'
+      image: 'registry.redhat.io/devspaces/theia-endpoint-rhel8:2.11'
       env:
         - name: PLUGIN_REMOTE_ENDPOINT_EXECUTABLE
           value: /remote-endpoint/plugin-remote-endpoint
@@ -509,7 +509,7 @@ events:
 components:
   - name: theia-ide
     container:
-      image: 'registry.redhat.io/codeready-workspaces/theia-rhel8@sha256:be279f90a9aeeb885fcedca4749396ce16825eb66947900b549cfdf16f97dfeb'
+      image: 'registry.redhat.io/devspaces/theia-rhel8@sha256:be279f90a9aeeb885fcedca4749396ce16825eb66947900b549cfdf16f97dfeb'
       env:
         - name: THEIA_PLUGINS
           value: 'local-dir:///plugins'
@@ -599,7 +599,7 @@ components:
     volume: {}
   - name: che-machine-exec
     container:
-      image: 'registry.redhat.io/codeready-workspaces/machineexec-rhel8@sha256:bfdd8cf61a6fad757f1e8334aa84dbf44baddf897ff8def7496bf6dbc066679d'
+      image: 'registry.redhat.io/devspaces/machineexec-rhel8@sha256:bfdd8cf61a6fad757f1e8334aa84dbf44baddf897ff8def7496bf6dbc066679d'
       command:
         - /go/bin/che-machine-exec
         - '--url'
@@ -611,7 +611,7 @@ components:
     attributes: {}
   - name: remote-runtime-injector
     container:
-      image: 'registry.redhat.io/codeready-workspaces/theia-endpoint-rhel8@sha256:cda289285594c87d1acfb77543aae109973cd1b84953bde061a27889423979c5'
+      image: 'registry.redhat.io/devspaces/theia-endpoint-rhel8@sha256:cda289285594c87d1acfb77543aae109973cd1b84953bde061a27889423979c5'
       env:
         - name: PLUGIN_REMOTE_ENDPOINT_EXECUTABLE
           value: /remote-endpoint/plugin-remote-endpoint
@@ -630,9 +630,9 @@ components:
 END
 )
 echo "$devfileyaml" > "${METAS_DIR}/devfile.yaml"
-export RELATED_IMAGE_codeready_workspaces_theia_endpoint_plugin_registry_image_GIXDCMIK='registry.redhat.io/codeready-workspaces/theia-endpoint-rhel8@sha256:cda289285594c87d1acfb77543aae109973cd1b84953bde061a27889423979c5'
-export RELATED_IMAGE_codeready_workspaces_machineexec_plugin_registry_image_GIXDCMIK='registry.redhat.io/codeready-workspaces/machineexec-rhel8@sha256:bfdd8cf61a6fad757f1e8334aa84dbf44baddf897ff8def7496bf6dbc066679d'
-export RELATED_IMAGE_codeready_workspaces_theia_plugin_registry_image_GIXDCMIK='registry.redhat.io/codeready-workspaces/theia-rhel8@sha256:be279f90a9aeeb885fcedca4749396ce16825eb66947900b549cfdf16f97dfeb'
+export RELATED_IMAGE_devspaces_theia_endpoint_plugin_registry_image_GIXDCMIK='registry.redhat.io/devspaces/theia-endpoint-rhel8@sha256:cda289285594c87d1acfb77543aae109973cd1b84953bde061a27889423979c5'
+export RELATED_IMAGE_devspaces_machineexec_plugin_registry_image_GIXDCMIK='registry.redhat.io/devspaces/machineexec-rhel8@sha256:bfdd8cf61a6fad757f1e8334aa84dbf44baddf897ff8def7496bf6dbc066679d'
+export RELATED_IMAGE_devspaces_theia_plugin_registry_image_GIXDCMIK='registry.redhat.io/devspaces/theia-rhel8@sha256:be279f90a9aeeb885fcedca4749396ce16825eb66947900b549cfdf16f97dfeb'
 # shellcheck disable=SC1090
 source "${script_dir}/entrypoint.sh"
 
@@ -651,7 +651,7 @@ metadata:
 components:
   - name: che-machine-exec
     container:
-      image: 'registry.redhat.io/codeready-workspaces/machineexec-rhel8:2.11'
+      image: 'registry.redhat.io/devspaces/machineexec-rhel8:2.11'
       command:
         - /go/bin/che-machine-exec
         - '--url'
@@ -679,7 +679,7 @@ metadata:
 components:
   - name: che-machine-exec
     container:
-      image: 'registry.redhat.io/codeready-workspaces/machineexec-rhel8@sha256:bfdd8cf61a6fad757f1e8334aa84dbf44baddf897ff8def7496bf6dbc066679d'
+      image: 'registry.redhat.io/devspaces/machineexec-rhel8@sha256:bfdd8cf61a6fad757f1e8334aa84dbf44baddf897ff8def7496bf6dbc066679d'
       command:
         - /go/bin/che-machine-exec
         - '--url'
@@ -701,9 +701,9 @@ components:
 END
 )
 echo "$devfileyaml" > "${METAS_DIR}/devfile.yaml"
-export RELATED_IMAGE_codeready_workspaces_theia_endpoint_plugin_registry_image_GIXDCMIK='registry.redhat.io/codeready-workspaces/theia-endpoint-rhel8@sha256:cda289285594c87d1acfb77543aae109973cd1b84953bde061a27889423979c5'
-export RELATED_IMAGE_codeready_workspaces_machineexec_plugin_registry_image_GIXDCMIK='registry.redhat.io/codeready-workspaces/machineexec-rhel8@sha256:bfdd8cf61a6fad757f1e8334aa84dbf44baddf897ff8def7496bf6dbc066679d'
-export RELATED_IMAGE_codeready_workspaces_theia_plugin_registry_image_GIXDCMIK='registry.redhat.io/codeready-workspaces/theia-rhel8@sha256:be279f90a9aeeb885fcedca4749396ce16825eb66947900b549cfdf16f97dfeb'
+export RELATED_IMAGE_devspaces_theia_endpoint_plugin_registry_image_GIXDCMIK='registry.redhat.io/devspaces/theia-endpoint-rhel8@sha256:cda289285594c87d1acfb77543aae109973cd1b84953bde061a27889423979c5'
+export RELATED_IMAGE_devspaces_machineexec_plugin_registry_image_GIXDCMIK='registry.redhat.io/devspaces/machineexec-rhel8@sha256:bfdd8cf61a6fad757f1e8334aa84dbf44baddf897ff8def7496bf6dbc066679d'
+export RELATED_IMAGE_devspaces_theia_plugin_registry_image_GIXDCMIK='registry.redhat.io/devspaces/theia-rhel8@sha256:be279f90a9aeeb885fcedca4749396ce16825eb66947900b549cfdf16f97dfeb'
 # shellcheck disable=SC1090
 source "${script_dir}/entrypoint.sh"
 
@@ -731,7 +731,7 @@ metadata:
     - Snippets
   icon: /images/redhat-java-icon.png
 sidecar:
-  image: 'registry.redhat.io/codeready-workspaces/udi-rhel8:2.16'
+  image: 'registry.redhat.io/devspaces/udi-rhel8:2.16'
   name: vscode-java
   memoryLimit: 1500Mi
   cpuLimit: 500m
@@ -757,7 +757,7 @@ metadata:
     - Snippets
   icon: /images/redhat-java-icon.png
 sidecar:
-  image: 'registry.redhat.io/codeready-workspaces/udi-rhel8@sha256:becfa80ae0e0e86f815e8981c071a68952b6a488298d7525751585538a14d88e'
+  image: 'registry.redhat.io/devspaces/udi-rhel8@sha256:becfa80ae0e0e86f815e8981c071a68952b6a488298d7525751585538a14d88e'
   name: vscode-java
   memoryLimit: 1500Mi
   cpuLimit: 500m
@@ -767,7 +767,7 @@ extensions:
 END
 )
 echo "$cheTheiaPluginYaml" > "${METAS_DIR}/che-theia-plugin.yaml"
-export RELATED_IMAGE_codeready_workspaces_udi_plugin_registry_image_GIXDCNQK='registry.redhat.io/codeready-workspaces/udi-rhel8@sha256:becfa80ae0e0e86f815e8981c071a68952b6a488298d7525751585538a14d88e'
+export RELATED_IMAGE_devspaces_udi_plugin_registry_image_GIXDCNQK='registry.redhat.io/devspaces/udi-rhel8@sha256:becfa80ae0e0e86f815e8981c071a68952b6a488298d7525751585538a14d88e'
 # shellcheck disable=SC1090
 source "${script_dir}/entrypoint.sh"
 
@@ -779,20 +779,20 @@ assertFileContentEquals "${METAS_DIR}/che-theia-plugin.yaml" "${expected_cheThei
 initTest "Should replace image references in external_images.txt with RELATED_IMAGE env vars"
 
 externalImagesTxt=$(cat <<-END
-registry.redhat.io/codeready-workspaces/machineexec-rhel8:2.11
-registry.redhat.io/codeready-workspaces/udi-rhel8:2.16
+registry.redhat.io/devspaces/machineexec-rhel8:2.11
+registry.redhat.io/devspaces/udi-rhel8:2.16
 END
 )
 expected_externalImagesTxt=$(cat <<-END
-registry.redhat.io/codeready-workspaces/machineexec-rhel8@sha256:bfdd8cf61a6fad757f1e8334aa84dbf44baddf897ff8def7496bf6dbc066679d
-registry.redhat.io/codeready-workspaces/udi-rhel8@sha256:becfa80ae0e0e86f815e8981c071a68952b6a488298d7525751585538a14d88e
+registry.redhat.io/devspaces/machineexec-rhel8@sha256:bfdd8cf61a6fad757f1e8334aa84dbf44baddf897ff8def7496bf6dbc066679d
+registry.redhat.io/devspaces/udi-rhel8@sha256:becfa80ae0e0e86f815e8981c071a68952b6a488298d7525751585538a14d88e
 END
 )
 echo "$externalImagesTxt" > "${METAS_DIR}/external_images.txt"
 
 # NOTE: GIXDCNQK | base 32 -d = 2.16; GIXDCMIK | base 32 -d = 2.11 
-export RELATED_IMAGE_codeready_workspaces_machineexec_plugin_registry_image_GIXDCMIK='registry.redhat.io/codeready-workspaces/machineexec-rhel8@sha256:bfdd8cf61a6fad757f1e8334aa84dbf44baddf897ff8def7496bf6dbc066679d'
-export RELATED_IMAGE_codeready_workspaces_udi_plugin_registry_image_GIXDCNQK='registry.redhat.io/codeready-workspaces/udi-rhel8@sha256:becfa80ae0e0e86f815e8981c071a68952b6a488298d7525751585538a14d88e'
+export RELATED_IMAGE_devspaces_machineexec_plugin_registry_image_GIXDCMIK='registry.redhat.io/devspaces/machineexec-rhel8@sha256:bfdd8cf61a6fad757f1e8334aa84dbf44baddf897ff8def7496bf6dbc066679d'
+export RELATED_IMAGE_devspaces_udi_plugin_registry_image_GIXDCNQK='registry.redhat.io/devspaces/udi-rhel8@sha256:becfa80ae0e0e86f815e8981c071a68952b6a488298d7525751585538a14d88e'
 
 # shellcheck disable=SC1090
 source "${script_dir}/entrypoint.sh"

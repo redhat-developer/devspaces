@@ -8,7 +8,7 @@
 
 # VS Code extension (.vsix) builds
 
-Third party VS Code extensions must be built from sources and co-published with those sources. link:che-plugin-registry/vsix.Jenkinsfile[vsix.Jenkinsfile] will link:https://github.com/redhat-developer/codeready-workspaces/blob/master/devdoc/building/build-vsix-extension.adoc[build and publish] any .vsix bundle for use in both Che and CRW plugin registries.
+Third party VS Code extensions must be built from sources and co-published with those sources. See https://github.com/redhat-developer/codeready-workspaces-vscode-extensions
 
 # Builds will:
 

@@ -88,13 +88,13 @@ elif [[ -f "${base_dir%/*}/job-config.json" ]]; then
 else
     # echo "[WARN] Could not find VERSION.json in ${base_dir} or ${base_dir%/*}!"
     # try to compute branches from currently checked out branch; else fall back to hard coded value
-    # where to find redhat-developer/codeready-workspaces/${SCRIPTS_BRANCH}/product/getLatestImageTags.sh
+    # where to find redhat-developer/devspaces/${SCRIPTS_BRANCH}/product/getLatestImageTags.sh
     SCRIPTS_BRANCH="$(git rev-parse --abbrev-ref HEAD 2>/dev/null || true)"
-    if [[ $SCRIPTS_BRANCH != "crw-2."*"-rhel-8" ]]; then
-        SCRIPTS_BRANCH="crw-2-rhel-8"
+    if [[ $SCRIPTS_BRANCH != "devspaces-3."*"-rhel-8" ]]; then
+        SCRIPTS_BRANCH="devspaces-3-rhel-8"
     fi
-    echo "Load https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/${SCRIPTS_BRANCH}/dependencies/job-config.json [3]"
-    curl -sSLo /tmp/VERSION.json https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/${SCRIPTS_BRANCH}/dependencies/job-config.json
+    echo "Load https://raw.githubusercontent.com/redhat-developer/devspaces/${SCRIPTS_BRANCH}/dependencies/job-config.json [3]"
+    curl -sSLo /tmp/VERSION.json https://raw.githubusercontent.com/redhat-developer/devspaces/${SCRIPTS_BRANCH}/dependencies/job-config.json
     versionjson=/tmp/VERSION.json
 fi
 REGISTRY_VERSION=$(jq -r '.Version' "${versionjson}");
@@ -151,7 +151,7 @@ if [ "${SKIP_OCI_IMAGE}" != "true" ]; then
     fi
     echo "Build with $BUILDER $BUILD_COMMAND"
     IMAGE="${REGISTRY}/${ORGANIZATION}/pluginregistry-rhel8:${TAG}"
-    # Copy to root directory to behave as if in Brew or codeready-workspaces-images
+    # Copy to root directory to behave as if in Brew or devspaces-images
     cp "${DOCKERFILE}" ./builder.Dockerfile
     ${BUILDER} ${BUILD_COMMAND} -t "${IMAGE}" -f ./builder.Dockerfile .
     # Remove copied Dockerfile and tarred zip
