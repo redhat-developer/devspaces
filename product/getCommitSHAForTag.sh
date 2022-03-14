@@ -10,7 +10,7 @@
 
 # For a given tag, produce a link to the commit that was used for that tag.
 # 
-# Eg., for quay.io/crw/udi:2.y-1 get https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-udi/commit?id=53306c3f99d3b35d4bdeb22b5ef2081e322db7f8
+# Eg., for quay.io/devspaces/udi:3.y-1 get https://pkgs.devel.redhat.com/cgit/containers/devspaces-udi/commit?id=53306c3f99d3b35d4bdeb22b5ef2081e322db7f8
 
 if [[ ! -x /usr/bin/brew ]]; then 
 	echo "Brew is required. Please install brewkoji rpm from one of these repos:";
@@ -21,22 +21,22 @@ fi
 usage () {
 	echo "
 Usage: for 1 or more containes in quay or Pulp, compute the NVR, Build URL, and Source commit for that build. eg., 
-  $0  quay.io/crw/udi-rhel8:2.y-1 quay.io/crw/udi-rhel8:2.y-1 ...
-  $0  registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-udi-rhel8 -j 2.y -n 2      | show last 2 tags
+  $0  quay.io/devspaces/udi-rhel8:3.y-1 quay.io/devspaces/udi-rhel8:3.y-1 ...
+  $0  registry-proxy.engineering.redhat.com/rh-osbs/devspaces-udi-rhel8 -j 3.y -n 2      | show last 2 tags
 "
 exit
 }
 
 if [[ $# -lt 1 ]]; then usage; fi
 
-# JOB_BRANCH=2.y
+# JOB_BRANCH=3.y
 # # could this be computed from $(git rev-parse --abbrev-ref HEAD) ?
-# DWNSTM_BRANCH="crw-${JOB_BRANCH}-rhel-8"
+# DWNSTM_BRANCH="devspaces-${JOB_BRANCH}-rhel-8"
 NUMTAGS=1 # by default show only the latest tag for each container; or show n latest ones
 CONTAINERS=""
 while [[ "$#" -gt 0 ]]; do
   case $1 in
-    '-j') JOB_BRANCH="$2"; DWNSTM_BRANCH="crw-${JOB_BRANCH}-rhel-8"; shift 2;; 
+    '-j') JOB_BRANCH="$2"; DWNSTM_BRANCH="devspaces-${JOB_BRANCH}-rhel-8"; shift 2;; 
     '-b') DWNSTM_BRANCH="$2"; shift 2;; 
     '--tag') BASETAG="$2"; shift 2;;
     '--candidatetag') candidateTag="$2"; shift 2;;
@@ -56,7 +56,7 @@ fi
 if [[ -z ${candidateTag} ]] && [[ ${DWNSTM_BRANCH} ]]; then
 	candidateTag="${DWNSTM_BRANCH}-container-candidate"
 elif [[ -z ${candidateTag} ]] && [[ ${BASETAG} ]]; then
-	candidateTag="crw-${BASETAG}-rhel-8-container-candidate"
+	candidateTag="devspaces-${BASETAG}-rhel-8-container-candidate"
 else
 	# instead of passing in a value, we'll compute it below from the specified image
 	true
@@ -65,14 +65,14 @@ fi
 for d in $CONTAINERS; do
 	echo
 	echo "$d"
-	d=${d/crw-2-rhel8-/} # special case for operator and metadata images
+	d=${d/devspaces-3-rhel8-/} # special case for operator and metadata images
 
 	#strip off the registry and just find the container name
 	dd=${d#*/}
 	TAG=${dd##*:}; # echo $TAG
 	if [[ ! $candidateTag ]]; then
 		# compute BASETAG and use that for candidateTag below, but we're using 
-		candidateTagUsed="crw-${TAG%%-*}-rhel-8-container-candidate"
+		candidateTagUsed="devspaces-${TAG%%-*}-rhel-8-container-candidate"
 	else
 		candidateTagUsed="${candidateTag}"
 	fi

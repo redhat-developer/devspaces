@@ -9,13 +9,13 @@
 # /path/to/product/getLatestRPM.sh -s "$(pwd)" -r helm-3 -u http://rhsm-pulp.corp.redhat.com/content/dist/layered/rhel8/basearch/ocp-tools/4.7 -a "x86_64 s390x ppc64le" 
 
 # try to compute branches from currently checked out branch; else fall back to hard coded value
-# where to find redhat-developer/codeready-workspaces/${DWNSTM_BRANCH}/product/getLatestImageTags.sh
-CRW_VERSION="2.y"
+# where to find redhat-developer/devspaces/${DWNSTM_BRANCH}/product/getLatestImageTags.sh
+CRW_VERSION="3.y"
 DWNSTM_BRANCH="$(git rev-parse --abbrev-ref HEAD 2>/dev/null || true)"
-if [[ $DWNSTM_BRANCH != "crw-2."*"-rhel-8" ]]; then
-  DWNSTM_BRANCH="crw-2-rhel-8"
+if [[ $DWNSTM_BRANCH != "devspaces-3."*"-rhel-8" ]]; then
+  DWNSTM_BRANCH="devspaces-3-rhel-8"
 else 
-  CRW_VERSION=${DWNSTM_BRANCH/crw-/}; CRW_VERSION=${CRW_VERSION/-rhel-8/}
+  CRW_VERSION=${DWNSTM_BRANCH/devspaces-/}; CRW_VERSION=${CRW_VERSION/-rhel-8/}
 fi
 
 SCRIPT=$(readlink -f "$0"); SCRIPTPATH=$(dirname "$SCRIPT")
@@ -32,7 +32,7 @@ Example: $0 -t ${CRW_VERSION} --sources /path/to/pkgs.devel/projects/
 }
 
 latestNext="--latest"
-if [[ ${DWNSTM_BRANCH} == "crw-2-rhel-8" ]]; then latestNext="--next"; fi
+if [[ ${DWNSTM_BRANCH} == "devspaces-3-rhel-8" ]]; then latestNext="--next"; fi
 
 PHASES="1 2"
 while [[ "$#" -gt 0 ]]; do
@@ -46,7 +46,7 @@ while [[ "$#" -gt 0 ]]; do
   shift 1
 done
 
-if [[ ${CRW_VERSION} == "2.y" ]]; then echo "CRW version / tag cannot be 2.y; please set a real version like 2.7"; usage; fi
+if [[ ${CRW_VERSION} == "3.y" ]]; then echo "CRW version / tag cannot be 3.y; please set a real version like 2.7"; usage; fi
 
 if [[ ! $SOURCEDIR ]]; then SOURCEDIR=$(mktemp -d); fi
 pushd $SOURCEDIR >/dev/null || exit 1
@@ -62,8 +62,7 @@ doBuild () {
         else 
             echo "[INFO] Use existing folder ${d}"
         fi
-        projname=${d/codeready-workspaces-/}; 
-        projname=${projname/codeready-workspaces/server} # special case
+        projname=${d/devspaces-/}; 
         pushd ${d} >/dev/null || exit 1
             # switch to correct branch
             git checkout ${DWNSTM_BRANCH} || exit 1
@@ -80,28 +79,28 @@ doBuild () {
 }
 
 if [[ $PHASES == *"1"* ]]; then 
-    doBuild "codeready-workspaces \
-        codeready-workspaces-configbump \
-        codeready-workspaces-dashboard \
-        codeready-workspaces-devfileregistry \
-        codeready-workspaces-idea \
-        codeready-workspaces-imagepuller \
-        codeready-workspaces-jwtproxy \
-        codeready-workspaces-machineexec \
-        codeready-workspaces-operator \
-        codeready-workspaces-pluginbroker-artifacts \
-        codeready-workspaces-pluginbroker-metadata \
-        codeready-workspaces-pluginregistry \
-        codeready-workspaces-theia-dev \
-        codeready-workspaces-traefik \
-        codeready-workspaces-udi"
+    doBuild "devspaces-configbump \
+        devspaces-dashboard \
+        devspaces-devfileregistry \
+        devspaces-idea \
+        devspaces-imagepuller \
+        devspaces-jwtproxy \
+        devspaces-machineexec \
+        devspaces-operator \
+        devspaces-pluginbroker-artifacts \
+        devspaces-pluginbroker-metadata \
+        devspaces-pluginregistry \
+        devspaces-server \
+        devspaces-theia-dev \
+        devspaces-traefik \
+        devspaces-udi"
 fi
 
 # theia images depend on theia-dev; operator-bundle is built last after everything else is done
 if [[ $PHASES == *"2"* ]]; then 
-    doBuild "codeready-workspaces-theia"
-    doBuild "codeready-workspaces-theia-endpoint"
-    doBuild "codeready-workspaces-operator-bundle"
+    doBuild "devspaces-theia"
+    doBuild "devspaces-theia-endpoint"
+    doBuild "devspaces-operator-bundle"
 fi
 
 # clean up checked out sources

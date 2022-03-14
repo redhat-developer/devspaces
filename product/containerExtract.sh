@@ -5,10 +5,10 @@ DELETE_LOCAL_IMAGE=""
 usage ()
 {
   echo "Usage: $0 CONTAINER [--override-arch s390x] [--tar-flags tar-extraction-flags] [--delete-before] [--delete-after]"
-  echo "Usage: $0 quay.io/crw/operator-bundle:latest"
-  echo "Usage: $0 quay.io/crw/udi-rhel8:2.4"
-  echo "Usage: $0 quay.io/crw/pluginregistry-rhel8:latest --tar-flags var/www/html/*/external_images.txt"
-  echo "Usage: $0 quay.io/crw/devfileregistry-rhel8:latest --tar-flags var/www/html/*/external_images.txt --override-arch ppc64le"
+  echo "Usage: $0 quay.io/devspaces/operator-bundle:latest"
+  echo "Usage: $0 quay.io/devspaces/udi-rhel8:2.4"
+  echo "Usage: $0 quay.io/devspaces/pluginregistry-rhel8:latest --tar-flags var/www/html/*/external_images.txt"
+  echo "Usage: $0 quay.io/devspaces/devfileregistry-rhel8:latest --tar-flags var/www/html/*/external_images.txt --override-arch ppc64le"
   echo "
 Options:
   --delete-before    remove any local images before attempting to pull and extract a new copy

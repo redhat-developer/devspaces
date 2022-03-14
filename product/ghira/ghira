@@ -101,7 +101,7 @@ class IssueToJIRA:
     return ret
   
   def _map_fixVersions(data):
-    url = 'https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/crw-2-rhel-8/dependencies/job-config.json'
+    url = 'https://raw.githubusercontent.com/redhat-developer/devspaces/devspaces-3-rhel-8/dependencies/job-config.json'
     resp = requests.get(url)
     if resp.status_code != 200:
       logging.error("Unable to fetch fix version mapping from theia-sources.groovy in github")
@@ -120,7 +120,7 @@ class IssueToJIRA:
 
     # modify CRW version to be JIRA friendly
     for k, v in version_map.items():
-      if v[-2:] == ".x":  # leave 2.x branch as-is
+      if v[-2:] == ".x":  # leave 3.x branch as-is
         continue
       if v.count('.') == 1:
         version_map[k] = v + '.0.GA'
@@ -132,7 +132,7 @@ class IssueToJIRA:
     # now that we have mapping, convert milestone to fixVersions
     if data and 'title' in data and data['title']:
       if 'DevWorkspace' in data['title']:
-        return ['2.x']
+        return ['3.x']
       elif data['title'] in version_map:
         return [version_map[data['title']]]
       elif data['title'] + '.x' in version_map:
@@ -222,7 +222,7 @@ for i in pending_issues:
       f"Issue not synced to JIRA because milestone field is invalid ({ milestone })"
     send_email(EMAIL_FROM, msg_to, subject, body)
     continue
-  elif '2.x' in new_jira['fixVersions']:
+  elif '3.x' in new_jira['fixVersions']:
     logging.info("Skip https://github.com/eclipse/che/issues/%s -- for future release" % i.number)
     continue
 

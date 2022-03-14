@@ -29,12 +29,12 @@ if [[ $# -lt 4 ]]; then
 To create tags (and push updated CSV content into operator-bundle repo):
   $0 -v CSV_VERSION -t CRW_VERSION -gh CRW_GH_BRANCH -ghtoken GITHUB_TOKEN -pd PKGS_DEVEL_BRANCH -pduser kerberos_user
 Example: 
-  $0 -v 2.y.0 -t 2.y -gh ${crw_repos_branch} -ghtoken \$GITHUB_TOKEN -pd ${pkgs_devel_branch} -pduser crw-build
+  $0 -v 3.y.0 -t 3.y -gh ${crw_repos_branch} -ghtoken \$GITHUB_TOKEN -pd ${pkgs_devel_branch} -pduser crw-build
 
 To create branches:
   $0 --branchfrom PREVIOUS_CRW_GH_BRANCH -gh NEW_CRW_GH_BRANCH -ghtoken GITHUB_TOKEN
 Example: 
-  $0 --branchfrom crw-2-rhel-8 -gh ${crw_repos_branch} -ghtoken \$GITHUB_TOKEN
+  $0 --branchfrom devspaces-3-rhel-8 -gh ${crw_repos_branch} -ghtoken \$GITHUB_TOKEN
 "
 	exit 1
 fi
@@ -43,8 +43,8 @@ fi
 while [[ "$#" -gt 0 ]]; do
   case $1 in
     '--branchfrom') SOURCE_BRANCH="$2"; shift 1;; # this flag will create branches instead of using branches to create tags
-    '-v') CSV_VERSION="$2"; shift 1;; # 2.y.0
-    '-t') CRW_VERSION="$2"; shift 1;; # 2.y # used to get released bundle container's CSV contents
+    '-v') CSV_VERSION="$2"; shift 1;; # 3.y.0
+    '-t') CRW_VERSION="$2"; shift 1;; # 3.y # used to get released bundle container's CSV contents
     '-gh') crw_repos_branch="$2"; shift 1;;
     '-ghtoken') GITHUB_TOKEN="$2"; shift 1;;
     '-pd') pkgs_devel_branch="$2"; shift 1;;
@@ -55,7 +55,7 @@ while [[ "$#" -gt 0 ]]; do
 done
 
 if [[ ! ${CRW_VERSION} ]]; then
-  CRW_VERSION=${CSV_VERSION%.*} # given 2.y.0, want 2.y
+  CRW_VERSION=${CSV_VERSION%.*} # given 3.y.0, want 3.y
 fi
 
 if [[ ${CLEAN} == "true" ]]; then 
@@ -127,7 +127,7 @@ updateTechPreviewDevfiles() {
     # replace CRW devfiles with image references to current version tag instead of devspaces-3-rhel-8 and :latest tag
     for devfile in $(find ${YAML_ROOT} -name "*.yaml" -o -name "*.yml"); do
        sed -r -i "${devfile}" \
-           -e "s|(.*image: \"*?.*quay.io/crw/.*:).+|\1${CRW_VERSION}\"|g" \
+           -e "s|(.*image: \"*?.*quay.io/devspaces/.*:).+|\1${CRW_VERSION}\"|g" \
            -e "s|(.*image: \"*?.*registry.redhat.io/devspaces/.*:).+|\1${CRW_VERSION}\"|g" \
            -e "s|devspaces/devspaces-3-rhel-8/|devspaces/devspaces-${CRW_VERSION}-rhel-8/|g"
     done
@@ -135,7 +135,8 @@ updateTechPreviewDevfiles() {
     git commit -a -s -m "chore(tech-preview-devfiles) update tag/branch to ${CRW_VERSION}"
 }
 
-# for the crw main repo, update meta.yaml files to point to the correct branch of crw-sample 
+# for the crw main repo, update meta.yaml files to point to the correct branch of crw-samples 
+# TODO https://issues.redhat.com/browse/CRW-2817 move to new devspaces-samples repo
 updateLinksToDevfiles() {
     YAML_ROOT="dependencies/che-devfile-registry/devfiles"
 
@@ -170,8 +171,9 @@ pushTagGH () {
 	pushd /tmp/tmp-checkouts/projects_${d} >/dev/null || exit 1
 	if [[ ${SOURCE_BRANCH} ]]; then # push a new branch (or no-op if exists)
 		branch=${crw_repos_branch}
+		# TODO https://issues.redhat.com/browse/CRW-2817 move to new devspaces-samples repo
 		if [[ $org == "crw-samples" ]]; then 
-			# new branch for crw-sample should be 2.x-devfilev2
+			# new branch for samples should be 3.x-devfilev2
 			branch="$CRW_VERSION-$SOURCE_BRANCH";
 		fi
 		
@@ -205,6 +207,8 @@ done
 # create branches for crw samples
 # all samples are located in https://github.com/orgs/crw-samples
 # the source branch is devfilev2
+
+# TODO https://issues.redhat.com/browse/CRW-2817 move this to new devspaces-samples repo
 org="crw-samples"
 SOURCE_BRANCH="devfilev2"
 if [[ $CRW_VERSION ]]; then # don't do this if there's no CRW_VERSION set

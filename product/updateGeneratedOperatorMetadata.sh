@@ -9,20 +9,20 @@
 #
 
 # script to fetch latest operator-bundle image, extract contents, and publish to 
-# https://github.com/redhat-developer/codeready-workspaces-images/tree/${MIDSTM_BRANCH}/codeready-workspaces-operator-bundle-generated/
+# https://github.com/redhat-developer/devspaces-images/tree/${MIDSTM_BRANCH}/devspaces-operator-bundle-generated/
 
 usage () 
 {
     echo "Usage: $0 -b [midstream branch] -t [quay tag] -s [sources to update]"
-    echo "Example: $0 -b crw-2.y-rhel-8 -t 2.y -s /path/to/github/redhat-developer/codeready-workspaces-images/"
+    echo "Example: $0 -b devspaces-3.y-rhel-8 -t 3.y -s /path/to/github/redhat-developer/devspaces-images/"
 	echo ""
     exit
 }
 
 SCRIPT=$(readlink -f "$0"); SCRIPTPATH=$(dirname "$SCRIPT")
 
-DEST_DIR=codeready-workspaces-operator-bundle-generated 
-SOURCE_CONTAINER=quay.io/crw/crw-2-rhel8-operator-bundle
+DEST_DIR=devspaces-operator-bundle-generated 
+SOURCE_CONTAINER=quay.io/devspaces/devspaces-operator-bundle
 # commandline args
 while [[ "$#" -gt 0 ]]; do
   case $1 in
@@ -40,7 +40,7 @@ if [[ ! ${MIDSTM_BRANCH} ]]; then usage; fi
 if [[ ! ${SOURCE_DIR} ]]; then usage; fi
 
 if [[ ! -x ${SCRIPTPATH}/containerExtract.sh ]]; then
-    curl -sSLO https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/${MIDSTM_BRANCH}/product/containerExtract.sh
+    curl -sSLO https://raw.githubusercontent.com/redhat-developer/devspaces/${MIDSTM_BRANCH}/product/containerExtract.sh
     chmod +x containerExtract.sh
 fi
 
@@ -50,7 +50,7 @@ rsync -zrlt /tmp/${SOURCE_CONTAINER//\//-}-${CRW_VERSION}-*/* \
     ${SOURCE_DIR}/${DEST_DIR}/
 
 # CRW-2077 generate a json file with the latest CRW version and CSV versions too
-CSV_VERSION_BUNDLE="$(yq -r '.spec.version' ${SOURCE_DIR}/codeready-workspaces-operator-bundle-generated/manifests/codeready-workspaces.csv.yaml)"
+CSV_VERSION_BUNDLE="$(yq -r '.spec.version' ${SOURCE_DIR}/devspaces-operator-bundle-generated/manifests/devspaces.csv.yaml)"
 echo '{' > ${SOURCE_DIR}/VERSION.json
 echo '    "CRW_VERSION": "'${CRW_VERSION}'",'                   >> ${SOURCE_DIR}/VERSION.json
 echo '    "CSV_VERSION_BUNDLE": "'${CSV_VERSION_BUNDLE}'"' >> ${SOURCE_DIR}/VERSION.json

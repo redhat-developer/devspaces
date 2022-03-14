@@ -17,16 +17,16 @@ set -e
 TARGETDIR=$(pwd)
 
 # defaults
-GITHUB_REPO_DEFAULT="redhat-developer/codeready-workspaces-images" # or redhat-developer/codeready-workspaces-chectl
-CSV_VERSION="2.y.0" # csv 2.y.0
+GITHUB_REPO_DEFAULT="redhat-developer/devspaces-images" # or redhat-developer/devspaces-chectl
+CSV_VERSION="3.y.0" # csv 3.y.0
 ASSET_NAME=""
 fileList=""
 DELETE_ASSETS=0 # this also deletes the release in which the assets are stored
 PUBLISH_ASSETS=0 # publish asset(s) to GH
 PULL_ASSETS=0 # pull asset(s) from GH
 PRE_RELEASE="--prerelease" # by default create pre-releases
-MIDSTM_BRANCH=$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "crw-2-rhel-8")
-if [[ ${MIDSTM_BRANCH} != "crw-"*"-rhel-"* ]]; then MIDSTM_BRANCH="crw-2-rhel-8"; fi
+MIDSTM_BRANCH=$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "devspaces-3-rhel-8")
+if [[ ${MIDSTM_BRANCH} != "devspaces-"*"-rhel-"* ]]; then MIDSTM_BRANCH="devspaces-3-rhel-8"; fi
 
 usageGHT() {
     echo 'Setup:
@@ -63,10 +63,10 @@ Options:
 
 Examples:
 
-  $0 --delete-assets -v 2.y.0 -n traefik              # delete release, tag, and asset(s)
-  $0 --publish-assets -v 2.y.0 -n traefik asset-*gz   # publish specific asset(s)
-  $0 --pull-assets -v 2.y.0 -n traefik asset-*gz      # pull specific asset(s)
-  $0 --pull-assets -v 2.y.0 -n traefik                # pull all assets
+  $0 --delete-assets -v 3.y.0 -n traefik              # delete release, tag, and asset(s)
+  $0 --publish-assets -v 3.y.0 -n traefik asset-*gz   # publish specific asset(s)
+  $0 --pull-assets -v 3.y.0 -n traefik asset-*gz      # pull specific asset(s)
+  $0 --pull-assets -v 3.y.0 -n traefik                # pull all assets
 "
 }
 
@@ -93,7 +93,7 @@ while [[ "$#" -gt 0 ]]; do
 done
 
 if [[ ! "${GITHUB_TOKEN}" ]]; then usageGHT; exit 1; fi
-if [[ $CSV_VERSION == "2.y.0" ]]; then echo "Error: must specify CSV_VERSION with -v flag.";echo; usage; exit 1; fi
+if [[ $CSV_VERSION == "3.y.0" ]]; then echo "Error: must specify CSV_VERSION with -v flag.";echo; usage; exit 1; fi
 if [[ $ASSET_NAME == "" ]]; then echo "Error: must specify ASSET_NAME with -n flag.";echo; usage; exit 1; fi
 if [[ $DELETE_ASSETS -eq 0 ]] && [[ $PUBLISH_ASSETS -eq 0 ]] && [[ $PULL_ASSETS -eq 0 ]]; then 
   echo "Error: Must specify which operation to run:

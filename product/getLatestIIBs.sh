@@ -30,13 +30,13 @@ if [[ $CRW_VERSION == "2.15" ]]; then CSVs="operator-metadata operator-bundle"; 
 
 echo "Checking for latest IIBs for CRW ${CRW_VERSION} ..."; echo
 for csv in $CSVs; do
-  lastcsv=$(curl -sSLk "https://datagrepper.engineering.redhat.com/raw?topic=/topic/VirtualTopic.eng.ci.redhat-container-image.index.built&delta=1728000&rows_per_page=30&contains=codeready-workspaces" | \
+  lastcsv=$(curl -sSLk "https://datagrepper.engineering.redhat.com/raw?topic=/topic/VirtualTopic.eng.ci.redhat-container-image.index.built&delta=1728000&rows_per_page=30&contains=devspaces" | \
 jq ".raw_messages[].msg.index | .added_bundle_images[0]" -r | sort -uV | grep "${csv}:${CRW_VERSION}" | tail -1 | \
-sed -r -e "s#registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-##");
+sed -r -e "s#registry-proxy.engineering.redhat.com/rh-osbs/devspaces-##");
 
-  curl -sSLk "https://datagrepper.engineering.redhat.com/raw?topic=/topic/VirtualTopic.eng.ci.redhat-container-image.index.built&delta=1728000&rows_per_page=30&contains=codeready-workspaces" | \
+  curl -sSLk "https://datagrepper.engineering.redhat.com/raw?topic=/topic/VirtualTopic.eng.ci.redhat-container-image.index.built&delta=1728000&rows_per_page=30&contains=devspaces" | \
 jq ".raw_messages[].msg.index | [.added_bundle_images[0], .index_image, .ocp_version] | @tsv" -r | sort -uV | \
-grep "${lastcsv}" | sed -r -e "s#registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-#  #";
+grep "${lastcsv}" | sed -r -e "s#registry-proxy.engineering.redhat.com/rh-osbs/devspaces-#  #";
   echo;
 done
 

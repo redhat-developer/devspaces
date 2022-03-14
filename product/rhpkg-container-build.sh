@@ -40,8 +40,8 @@ export KRB5CCNAME=/var/tmp/crw-build_ccache
 if [[ ${doRhpkgContainerBuild} -eq 1 ]]; then
   # if not set, compute from current branch
   if [[ ! ${JOB_BRANCH} ]]; then 
-    JOB_BRANCH=$(git rev-parse --abbrev-ref HEAD || true); JOB_BRANCH=${JOB_BRANCH//crw-}; JOB_BRANCH=${JOB_BRANCH%%-rhel*}
-    if [[ ${JOB_BRANCH} == "2" ]]; then JOB_BRANCH="2.x"; fi
+    JOB_BRANCH=$(git rev-parse --abbrev-ref HEAD || true); JOB_BRANCH=${JOB_BRANCH//devspaces-}; JOB_BRANCH=${JOB_BRANCH%%-rhel*}
+    if [[ ${JOB_BRANCH} == "3" ]]; then JOB_BRANCH="3.x"; fi
   fi
   pushd ${SOURCEDIR} >/dev/null
     # REQUIRE: rhpkg
@@ -65,8 +65,8 @@ fi
 #      "2.0"
 #  ],
 #  "pull": [
-#      "registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-pluginregistry-rhel8@sha256:85c89a1d9e382bebe70f4204f05f06f0fc2b9c76f1c3ca2983c17989b92239fe",
-#      "registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-pluginregistry-rhel8:2.0-212"
+#      "registry-proxy.engineering.redhat.com/rh-osbs/devspaces-pluginregistry-rhel8@sha256:85c89a1d9e382bebe70f4204f05f06f0fc2b9c76f1c3ca2983c17989b92239fe",
+#      "registry-proxy.engineering.redhat.com/rh-osbs/devspaces-pluginregistry-rhel8:2.0-212"
 #  ],
 #  "tags": [
 #      "2.0-212"
@@ -77,24 +77,24 @@ fi
 # make sure these files exist, in case get-sources*.sh didn't produce useful output
 touch "${LOGFILE}"
 
-# get list of reg-proxy repo:tag as '2.y-zz'
+# get list of reg-proxy repo:tag as '3.y-zz'
 TAGs=$(grep -E -A2 '"(tags|floating_tags)": \[' "${LOGFILE}" | grep -E -v "tags|\]|\[|--|latest" \
 | grep -E "[0-9]+\.[0-9]+-[0-9]+" | tr -d ' "' | sort -urV || true)
 
 # OPTION 1/3: Successful non-scratch build - compute build desc from tag(s)
 echo "REPO_PATH=\"$(cat "${LOGFILE}" \
-    | grep -E -A2 '"(pull)": \[' | grep -E -v "candidate" | grep -E "registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-" \
+    | grep -E -A2 '"(pull)": \[' | grep -E -v "candidate" | grep -E "registry-proxy.engineering.redhat.com/rh-osbs/devspaces-" \
     | grep -E -v "@sha" | sed -r -e "s@.+\"(.+)\",*@\1@" | sort -u | tr -d "\n\r" )\"" \
     | tee "${WORKSPACE}"/build_desc.txt
 source "${WORKSPACE}"/build_desc.txt
 REPOS="${REPO_PATH}" # used for build description
 if [[ $REPOS ]] && [[ ${VERBOSE} -eq 1 ]]; then echo "[INFO] #2 Console parser successful!"; fi
 
-# # OPTION 1b/3: scratch build - Compute build desc with image created eg., "2.y-65 quay.io/crw/pluginregistry-rhel8:2.y-65"
+# # OPTION 1b/3: scratch build - Compute build desc with image created eg., "3.y-65 quay.io/devspaces/pluginregistry-rhel8:3.y-65"
 # if [[ ! ${REPOS} ]] || [[ ${REPOS} == " " ]]; then
 #   # for scratch builds look for this line:
 #   # platform:- - atomic_reactor.plugins.tag_from_config - DEBUG - Using additional unique tag 
-#   # rh-osbs/codeready-workspaces-server-rhel8:crw-2.0-rhel-8-containers-candidate-89319-20191122035915
+#   # rh-osbs/devspaces-server-rhel8:crw-2.0-rhel-8-containers-candidate-89319-20191122035915
 #   echo "REPO_PATH=\"$(grep -E "platform:- - atomic_reactor.plugins.tag_from_config - DEBUG - Using additional unique tag " "${LOGFILE}" \
 #     | grep -v grep | sed -r -e "s@.+Using additional primary tag (.+)@registry-proxy.engineering.redhat.com/\1@" | tr "\n\r" " " )\"" \
 #     | tee "${WORKSPACE}"/build_desc.txt
@@ -106,9 +106,9 @@ if [[ $REPOS ]] && [[ ${VERBOSE} -eq 1 ]]; then echo "[INFO] #2 Console parser s
 # OPTION 2/3
 if [[ ! ${REPOS} ]] || [[ ${REPOS} == " " ]]; then
   # for scratch builds look for this line:
-  # ^ADD Dockerfile-codeready-workspaces-server-rhel8-2.0-scratch-89319-20191122035915 /root/buildinfo/Dockerfile-codeready-workspaces-server-rhel8-2.0-scratch-89319-20191122035915
-  echo "REPO_PATH=\"$(grep -E "^ADD Dockerfile-codeready-workspaces-" "${LOGFILE}" \
-    | sed -r -e "s@^ADD Dockerfile-codeready-workspaces-(.+) /root/.+@\1@" | sort -u | tr "\n\r" " " )\"" \
+  # ^ADD Dockerfile-devspaces-server-rhel8-2.0-scratch-89319-20191122035915 /root/buildinfo/Dockerfile-devspaces-server-rhel8-2.0-scratch-89319-20191122035915
+  echo "REPO_PATH=\"$(grep -E "^ADD Dockerfile-devspaces-" "${LOGFILE}" \
+    | sed -r -e "s@^ADD Dockerfile-devspaces-(.+) /root/.+@\1@" | sort -u | tr "\n\r" " " )\"" \
     | tee "${WORKSPACE}"/build_desc.txt
   source "${WORKSPACE}"/build_desc.txt
   REPOS="${REPO_PATH}" # used for build description
@@ -163,9 +163,9 @@ ${ERRORS_FOUND}
 TASK_URL="$(grep "Task info: https://brewweb.engineering.redhat.com/brew/taskinfo?taskID=" "${LOGFILE}" | grep -v grep | sed -e "s#Task info: ##" | head -1 || true)"
 TASK_ID="${TASK_URL##*=}"
 BUILD_DESC=$(echo $REPO_PATH | sed -r \
-    -e 's#registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-#quay.io/crw/#g' \
-    -e 's#(quay.io/crw/.+-rhel8:[0-9.-]+) *#<a href="https://\1">\1</a> #g' \
-    -e 's#(quay.io/crw)/(operator|operator-bundle):([0-9.-]+) *#<a href="https://\1/crw-2-rhel8-\2:\3">\1/crw-2-rhel8-\2:\3</a> #g'
+    -e 's#registry-proxy.engineering.redhat.com/rh-osbs/devspaces-#quay.io/devspaces/#g' \
+    -e 's#(quay.io/devspaces/.+-rhel8:[0-9.-]+) *#<a href="https://\1">\1</a> #g' \
+    -e 's#(quay.io/devspaces)/(operator|operator-bundle):([0-9.-]+) *#<a href="https://\1/devspaces-3-rhel-8-\2:\3">\1/devspaces-3-rhel-8-\2:\3</a> #g'
 )
 BUILD_RESULT="SUCCESS"
 if [[ ${BUILD_DESC} == *"UNKNOWN"* ]]; then BUILD_RESULT="UNSTABLE"; fi

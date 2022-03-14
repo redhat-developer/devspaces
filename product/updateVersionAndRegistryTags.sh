@@ -27,8 +27,8 @@ BRANCH="devspaces-3-rhel-8"
 usage () {
   echo "
 Usage:   $0 -v [DEVSPACES CSV_VERSION] [-t DEVSPACES_VERSION]
-Example: $0 -v 2.yy.0 # use CSV version
-Example: $0 -t 2.yy   # use tag version
+Example: $0 -v 3.yy.0 # use CSV version
+Example: $0 -t 3.yy   # use tag version
 
 Options:
   --help, -h              help
@@ -40,7 +40,7 @@ Options:
   -prb                    set a PR_BRANCH; default: pr-update-version-and-registry-tags-(timestamp)
   -o                      open browser if PR generated
   
-  --remove [DEVSPACES_VERSION]                  remove data for [DEVSPACES_VERSION] (Example: for .Version = 2.yy, delete 2.yy-2)
+  --remove [DEVSPACES_VERSION]                  remove data for [DEVSPACES_VERSION] (Example: for .Version = 3.yy, delete 3.yy-2)
   --enable-jobs [DEVSPACES_VERSION]             enable [DEVSPACES_VERSION] jobs in job-config.json, but leave bundle + management jobs alone
   --enable-management-jobs [DEVSPACES_VERSION]  enable ALL [DEVSPACES_VERSION] jobs in job-config.json
   --disable-jobs [DEVSPACES_VERSION]            disable [DEVSPACES_VERSION] jobs in job-config.json, but leave bundle + management jobs alone
@@ -54,8 +54,8 @@ while [[ "$#" -gt 0 ]]; do
   case $1 in
     '-w') WORKDIR="$2"; shift 1;;
     '-b') BRANCH="$2"; shift 1;;
-    '-v') CSV_VERSION="$2"; shift 1;; # 2.y.0
-    '-t') DEVSPACES_VERSION="$2"; shift 1;; # 2.y
+    '-v') CSV_VERSION="$2"; shift 1;; # 3.y.0
+    '-t') DEVSPACES_VERSION="$2"; shift 1;; # 3.y
     '-n'|'--no-commit') docommit=0; dopush=0; shift 0;;
     '-p'|'--no-push') dopush=0; shift 0;;
     '-prb') PR_BRANCH="$2"; shift 1;;
@@ -72,7 +72,7 @@ while [[ "$#" -gt 0 ]]; do
 done
 
 if [[ ! ${DEVSPACES_VERSION} ]]; then
-  DEVSPACES_VERSION=${CSV_VERSION%.*} # given 2.y.0, want 2.y
+  DEVSPACES_VERSION=${CSV_VERSION%.*} # given 3.y.0, want 3.y
 fi
 
 COPYRIGHT="#
@@ -104,19 +104,19 @@ replaceField()
 
 computeLatestCSV() {
   image=$1 # operator-bundle
-  SOURCE_CONTAINER=registry.redhat.io/codeready-workspaces/devspaces-3-rhel8-${image}
+  SOURCE_CONTAINER=registry.redhat.io/devspaces/devspaces-3-rhel8-${image}
   containerTag=$(skopeo inspect docker://${SOURCE_CONTAINER} | jq -r '.Labels.url' | sed -r -e "s#.+/images/##")
   echo "Found containerTag = ${containerTag}"
 
   # extract the CSV version from the container as with CVE respins, the CSV version != the nominal container tag or JIRA version 2.13.1
   if [[ ! -x ${SCRIPTPATH}/containerExtract.sh ]]; then
-      curl -sSLO https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/devspaces-3-rhel-8/product/containerExtract.sh
+      curl -sSLO https://raw.githubusercontent.com/redhat-developer/devspaces/devspaces-3-rhel-8/product/containerExtract.sh
       chmod +x containerExtract.sh
   fi
   rm -fr /tmp/${SOURCE_CONTAINER//\//-}-${containerTag}-*/
   ${SCRIPTPATH}/containerExtract.sh ${SOURCE_CONTAINER}:${containerTag} --delete-before --delete-after 2>&1 >/dev/null || true
-  grep -E "crwoperator|replaces:" /tmp/${SOURCE_CONTAINER//\//-}-${containerTag}-*/manifests/codeready-workspaces.csv.yaml 
-  CSV_VERSION_PREV=$(yq -r '.spec.version' /tmp/${SOURCE_CONTAINER//\//-}-${containerTag}-*/manifests/codeready-workspaces.csv.yaml 2>/dev/null | tr "+" "-")
+  grep -E "crwoperator|replaces:" /tmp/${SOURCE_CONTAINER//\//-}-${containerTag}-*/manifests/devspaces.csv.yaml 
+  CSV_VERSION_PREV=$(yq -r '.spec.version' /tmp/${SOURCE_CONTAINER//\//-}-${containerTag}-*/manifests/devspaces.csv.yaml 2>/dev/null | tr "+" "-")
   rm -fr /tmp/${SOURCE_CONTAINER//\//-}-${containerTag}-*/
   echo "Found CSV_VERSION_PREV = ${CSV_VERSION_PREV}"
 
@@ -253,7 +253,7 @@ updateVersion() {
     # or use "latest" release with replaceField "${WORKDIR}/dependencies/job-config.json" ".Other[\"@eclipse-che/plugin-registry-generator\"][\"${LATEST_VERSION}\"]" "\"latest\""
     # debug: # cat "${WORKDIR}/dependencies/job-config.json" | grep -E -A5 "FLOATING_QUAY_TAGS|plugin-registry-gen"; exit
 
-    # update CSV versions for 2.yy latest and 3.x too
+    # update CSV versions for 3.yy latest and 3.x too
     echo "DEVSPACES_VERSION = $DEVSPACES_VERSION"
     for op in "operator-bundle"; do
       for ver in "${DEVSPACES_VERSION}" "3.x"; do
@@ -305,7 +305,7 @@ updateDevfileRegistry() {
 
     # replace DEVSPACES devfiles with image references to current version tag
     for devfile in $("$SCRIPT_DIR"/list_yaml.sh "$YAML_ROOT"); do
-       sed -E -e "s|(.*image: *?.*registry.redhat.io/codeready-workspaces/.*:).+|\1${DEVSPACES_VERSION}|g" \
+       sed -E -e "s|(.*image: *?.*registry.redhat.io/devspaces/.*:).+|\1${DEVSPACES_VERSION}|g" \
            -i "${devfile}"
     done
 
@@ -322,11 +322,11 @@ updatePluginRegistry() {
 
     for yaml in $("$SCRIPT_DIR"/list_che_yaml.sh "$YAML_ROOT"); do
         sed -E \
-            -e "s|(.*image: (['\"]*)registry.redhat.io/codeready-workspaces/.*:)[0-9.]+(['\"]*)|\1${DEVSPACES_VERSION}\2|g" \
+            -e "s|(.*image: (['\"]*)registry.redhat.io/devspaces/.*:)[0-9.]+(['\"]*)|\1${DEVSPACES_VERSION}\2|g" \
             -i "${yaml}"
     done
 
-    # update '.parameters[]|select(.name=="IMAGE_TAG")|.value' ==> 2.yy
+    # update '.parameters[]|select(.name=="IMAGE_TAG")|.value' ==> 3.yy
     yq -ryiY "(.parameters[] | select(.name == \"IMAGE_TAG\") | .value ) = \"${DEVSPACES_VERSION}\"" "${TEMPLATE_FILE}"
     echo "${COPYRIGHT}$(cat "${TEMPLATE_FILE}")" > "${TEMPLATE_FILE}".2; mv "${TEMPLATE_FILE}".2 "${TEMPLATE_FILE}"
 
