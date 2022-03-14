@@ -12,7 +12,7 @@ projects:
 components:
   -
     type: chePlugin
-    id: redhat/java8/latest
+    id: redhat/java11/latest
   -
     type: chePlugin
     id: redhat/vscode-apache-camel/latest
@@ -86,7 +86,7 @@ commands:
       -
         type: exec
         component: maven
-        command: "mvn fabric8:deploy -Popenshift -DskipTests"
+        command: "mvn oc:deploy -Popenshift -DskipTests"
         workdir: "${CHE_PROJECTS_ROOT}/java-fuse"
   - name: Debug remote java application
     actions:
