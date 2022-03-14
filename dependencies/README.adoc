@@ -1,24 +1,19 @@
-# This folder contains the build process metadata for syncing from upstream and building:
+# This folder contains forks of the upstream Che plugin and devfile registries.
 
 * che-devfile-registry
-* che-jwtproxy
-* che-machine-exec
-* che-pluginbroker(s)
 * che-plugin-registry
 
-# VS Code extension (.vsix) builds
-
-Third party VS Code extensions must be built from sources and co-published with those sources. See https://github.com/redhat-developer/codeready-workspaces-vscode-extensions
-
-# Builds will:
+## Builds will:
 
 * fetch 3rd party sources, dependencies, and any applicable patches (eg., from npm/yarn/golang projects & registries)
+
+* collect link:https://github.com/crw-samples/[sample projects] and link:https://github.com/redhat-developer/codeready-workspaces-vscode-extensions[vscode-extensions]
 
 * tar sources & binaries used in Brew build
 
 * provide Dockerfile (synced w/ transformations to pkgs.devel for use in Brew), which can be also used to build the container locally
 
-# Downstream, Brew builds must:
+## In the link:https://github.com/redhat-developer/devspaces-images[midstream], Brew builds must:
 
 * apply changes to upstream Dockerfile to see Pulp repos and support Brew build process
 
@@ -30,8 +25,8 @@ Third party VS Code extensions must be built from sources and co-published with 
 
 * run a container build
 
-# Further downstream, Jenkins and Errata are used to:
+## Downstream, Jenkins and Errata are used to:
 
-* publish nightlies to Quay
-* publish releases to Red Hat Container Catalog
+* publish CI builds to Quay
+* publish releases to Red Hat Ecosystem Catalog
  
