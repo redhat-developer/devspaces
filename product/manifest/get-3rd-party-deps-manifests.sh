@@ -9,7 +9,7 @@ SCRIPT_DIR=$(dirname $(readlink -f "${BASH_SOURCE[0]}"))
 checkdependencies ()
 {
 # see also https://gitlab.cee.redhat.com/codeready-workspaces/crw-jenkins/-/blob/master/jobs/CRW_CI/Releng/get-3rd-party-deps-manifests.jenkinsfile (live sources)
-# or https://github.com/redhat-developer/codeready-workspaces-images/blob/crw-2-rhel-8/crw-jenkins/jobs/CRW_CI/Releng/get-3rd-party-deps-manifests.jenkinsfile (external copy)
+# or https://github.com/redhat-developer/devspaces-images/blob/devspaces-3-rhel-8/crw-jenkins/jobs/CRW_CI/Releng/get-3rd-party-deps-manifests.jenkinsfile (external copy)
 
 # rpm installed dependencies
 # rhpkg krb5-workstation tree golang php-devel php-json python3-six python3-pip
@@ -39,7 +39,7 @@ exit
 
 usage () 
 {
-    echo "Usage: $0 -b crw-2.y-rhel-8 -v 2.y.0"
+    echo "Usage: $0 -b devspaces-3.y-rhel-8 -v 3.y.0"
 	echo ""
 	echo "To check if all dependencies are installed: "
 	echo "  $0 --check-dependencies"
@@ -66,7 +66,7 @@ if [[ ! ${MIDSTM_BRANCH} ]]; then usage; fi
 if [[ ! ${phases} ]]; then phases=" 1 2 3 4 5 6 7 8 "; fi
 
 if [[ ! ${CSV_VERSION} ]]; then 
-  CSV_VERSION=$(curl -sSLo - https://raw.githubusercontent.com/redhat-developer/codeready-workspaces-operator/${MIDSTM_BRANCH}/manifests/codeready-workspaces.csv.yaml | yq -r .spec.version)
+  CSV_VERSION=$(curl -sSLo - https://raw.githubusercontent.com/redhat-developer/devspaces-operator/${MIDSTM_BRANCH}/manifests/devspaces.csv.yaml | yq -r .spec.version)
 fi
 
 CRW_BRANCH_TAG=${CSV_VERSION}
@@ -94,7 +94,7 @@ function getBashVars () {
 	dir="$1" # script dir
 	buildsh="${2:-build.sh}" #the build.sh
 	# parse the specific file and export the correct variables
-	pushd /tmp/codeready-workspaces-images >/dev/null || exit 1
+	pushd /tmp/devspaces-images >/dev/null || exit 1
 		for p in ${dir}/build/${buildsh}; do 
 			grep -E "export " $p | grep -E -v "SCRIPT_DIR|PATH=" | sed -r -e "s@#.+@@g" > "${p}.tmp"
 			# shellcheck disable=SC1090
@@ -152,10 +152,10 @@ rm -f ${LOG_FILE} ${MANIFEST_FILE}
 if [[ ${phases} == *"1"* ]] || [[ ${phases} == *"2"* ]] || [[ ${phases} == *"3"* ]] || [[ ${phases} == *"4"* ]] || [[ ${phases} == *"5"* ]] || [[ ${phases} == *"6"* ]]; then
 	log "1a. Check out 3rd party language server dependencies builder repo (will collect variables later)" 
 	cd /tmp
-	if [[ ! -d codeready-workspaces-images ]]; then
-		git clone https://$GITHUB_TOKEN:x-oauth-basic@github.com/redhat-developer/codeready-workspaces-images.git
+	if [[ ! -d devspaces-images ]]; then
+		git clone https://$GITHUB_TOKEN:x-oauth-basic@github.com/redhat-developer/devspaces-images.git
 	fi
-	pushd codeready-workspaces-images>/dev/null
+	pushd devspaces-images>/dev/null
 		git config --global push.default matching
 		git config --global hub.protocol https
 		git checkout ${CRW_BRANCH_TAG} || { echo "Tag or branch ${CRW_BRANCH_TAG} does not exist! Create it before running this script."; exit 1; }
@@ -165,31 +165,31 @@ if [[ ${phases} == *"1"* ]] || [[ ${phases} == *"2"* ]] || [[ ${phases} == *"3"*
 fi
 
 if [[ ${phases} == *"1"* ]]; then
-	log "1b. Define list of upstream containers & RPMs pulled into them from https://pkgs.devel.redhat.com/cgit/?q=codeready-workspaces "
+	log "1b. Define list of upstream containers & RPMs pulled into them from https://pkgs.devel.redhat.com/cgit/?q=devspaces "
 	for d in \
-	codeready-workspaces-configbump \
-	codeready-workspaces-operator \
-	codeready-workspaces-operator-bundle \
-	codeready-workspaces-dashboard \
-	codeready-workspaces-devfileregistry \
+	devspaces-configbump \
+	devspaces-operator \
+	devspaces-operator-bundle \
+	devspaces-dashboard \
+	devspaces-devfileregistry \
 	\
-	codeready-workspaces-idea \
-	codeready-workspaces-imagepuller \
-	codeready-workspaces-jwtproxy \
-	codeready-workspaces-machineexec \
-	codeready-workspaces-pluginbroker-artifacts \
+	devspaces-idea \
+	devspaces-imagepuller \
+	devspaces-jwtproxy \
+	devspaces-machineexec \
+	devspaces-pluginbroker-artifacts \
 	\
-	codeready-workspaces-pluginbroker-metadata \
-	codeready-workspaces-pluginregistry \
-	codeready-workspaces \
-	codeready-workspaces-theia-dev \
-	codeready-workspaces-theia-endpoint \
+	devspaces-pluginbroker-metadata \
+	devspaces-pluginregistry \
+	devspaces-server \
+	devspaces-theia-dev \
+	devspaces-theia-endpoint \
 	\
-	codeready-workspaces-theia \
-	codeready-workspaces-traefik \
-	codeready-workspaces-udi \
+	devspaces-theia \
+	devspaces-traefik \
+	devspaces-udi \
 	; do
-		if [[ $d == "codeready-workspaces" ]]; then
+		if [[ $d == "devspaces" ]]; then
 			containerName=${d##containers/}-server-rhel8-container
 		else
 			containerName=${d##containers/}-rhel8-container
@@ -201,13 +201,13 @@ if [[ ${phases} == *"1"* ]]; then
 	done
 	bth ""
 
-	log "1c. Other than the above, all artifacts used in CodeReady Workspaces are now built in RH Central CI Jenkins:"
-	log "https://codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/CRW_CI/view/Builds/"
-	log "https://codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/CRW_CI/view/Pipelines/"
+	log "1c. Other than the above, all artifacts used in Red Hat OpenShift Dev Spaces (formerly "
+	log "    Red Hat CodeReady Workspaces) Workspaces are now built in RH Central CI Jenkins:"
+	log "https://main-jenkins-csb-crwqe.apps.ocp-c1.prod.psi.redhat.com/"
 	log ""
 	log "See also latest build architecture diagram & development documentation:"
 	log "https://docs.google.com/presentation/d/1R9tr67pDMk3UVUbvN7vBJbJCYGlUsO2ZPcXbdaoOvTs/edit#slide=id.g4ac34a3cdd_0_0"
-	log "https://github.com/redhat-developer/codeready-workspaces-productization/tree/master/devdoc"
+	log "https://github.com/redhat-developer/devtools-productization/tree/main/codeready-workspaces"
 fi
 
 ##################################
@@ -219,7 +219,7 @@ if [[ ${phases} == *"2"* ]]; then
 	log "2a. Install golang go deps: go-language-server@${GOLANG_LS_VERSION}"
 	if [[ ! -x /usr/bin/go ]]; then sudo yum -y -q install golang || true; fi
 	if [[ ! -x /usr/bin/go ]]; then echo "Error: install golang to run this script: sudo yum -y install golang"; exit 1; fi
-	getBashVars codeready-workspaces-udi
+	getBashVars devspaces-udi
 	for d in \
 		"GOLANG_IMAGE" \
 		"GOLANG_LINT_VERSION" \
@@ -235,7 +235,7 @@ if [[ ${phases} == *"2"* ]]; then
 	mkdir -p go-deps-tmp && cd go-deps-tmp
 
 	# run the same set of go get -v commands in the build.sh script:
-	grep -E "go get -v|go build -o" /tmp/codeready-workspaces-images/codeready-workspaces-udi/build/build.sh > todos.txt
+	grep -E "go get -v|go build -o" /tmp/devspaces-images/devspaces-udi/build/build.sh > todos.txt
 	while read p; do
 		# if you want more detailed output and logging, comment the next 1 line and uncomment the following 4 lines
 		log "  ${p%%;*}"; ${p%%;*} || true
@@ -244,16 +244,16 @@ if [[ ${phases} == *"2"* ]]; then
 		#log "<== ${p%%;*} =="
 		#log ""
 	done <todos.txt
-	grep -E "GOLANG_LINT_VERSION" /tmp/codeready-workspaces-images/codeready-workspaces-udi/build/build.sh > todos.txt
+	grep -E "GOLANG_LINT_VERSION" /tmp/devspaces-images/devspaces-udi/build/build.sh > todos.txt
 	. todos.txt
 	rm -f todos.txt
 
 	# now get the SHAs used in each github repo cloned locally
-	mnf "codeready-workspaces-udi-container:${CSV_VERSION}/go-language-server:${GOLANG_LS_VERSION}"
+	mnf "devspaces-udi-container:${CSV_VERSION}/go-language-server:${GOLANG_LS_VERSION}"
 	for d in $(find . -name ".git" | sort); do
 		g=${d%%/.git}
 		pushd ${g} >/dev/null
-		mnf "  codeready-workspaces-udi-container:${CSV_VERSION}/${g##./src/}:$(git rev-parse HEAD)"
+		mnf "  devspaces-udi-container:${CSV_VERSION}/${g##./src/}:$(git rev-parse HEAD)"
 		popd >/dev/null
 	done
 	mnf ""
@@ -270,8 +270,8 @@ if [[ ${phases} == *"2"* ]]; then
 	{ npm install --prefix /tmp/npm-deps-tmp/ go-language-server@${GOLANG_LS_VERSION} | tee -a ${LOG_FILE}; } || true
 	log ""
 	{ npm list >> ${LOG_FILE}; } || true
-	mnf "codeready-workspaces-udi-container:${CSV_VERSION}/go-language-server:${GOLANG_LS_VERSION}"
-	npmList "  codeready-workspaces-udi-container:${CSV_VERSION}/"
+	mnf "devspaces-udi-container:${CSV_VERSION}/go-language-server:${GOLANG_LS_VERSION}"
+	npmList "  devspaces-udi-container:${CSV_VERSION}/"
 	mnf ""
 	rm -fr /tmp/npm-deps-tmp
 
@@ -280,7 +280,7 @@ if [[ ${phases} == *"2"* ]]; then
 	log " == kamel =="
 	log ""
 	log "2c. kamel is built from go sources with no additional requirements"
-	getBashVars codeready-workspaces-udi build_kamel.sh
+	getBashVars devspaces-udi build_kamel.sh
 	for d in \
 		"GOLANG_IMAGE" \
 		"KAMEL_VERSION" \
@@ -300,7 +300,7 @@ if [[ ${phases} == *"4"* ]]; then
 	log "4. Install php deps: "
 	if [[ ! $(which php) ]]; then sudo yum -y -q install php-devel php-json || true; fi
 	if [[ ! $(which php) ]]; then echo "Error: install php to run this script: sudo yum -y install php-devel php-json"; exit 1; fi
-	getBashVars codeready-workspaces-udi
+	getBashVars devspaces-udi
 	for d in \
 		"PHP_LS_VERSION" \
 		"PHP_LS_IMAGE" \
@@ -322,9 +322,9 @@ if [[ ${phases} == *"4"* ]]; then
 	php composer.phar require -d /tmp/php-deps-tmp felixfbecker/language-server:${PHP_LS_VERSION} | tee -a ${LOG_FILE}
 	# php composer.phar run-script --working-dir=vendor/felixfbecker/language-server parse-stubs # does not install new deps, so don't need to run this
 	php composer.phar show >> ${LOG_FILE}
-	mnf "codeready-workspaces-udi-container:${CSV_VERSION}/jetbrains/phpstorm-stubs:dev-master"
-	mnf "codeready-workspaces-udi-container:${CSV_VERSION}/felixfbecker/language-server:v${PHP_LS_VERSION}"
-	phpList "  codeready-workspaces-udi-container:${CSV_VERSION}/"
+	mnf "devspaces-udi-container:${CSV_VERSION}/jetbrains/phpstorm-stubs:dev-master"
+	mnf "devspaces-udi-container:${CSV_VERSION}/felixfbecker/language-server:v${PHP_LS_VERSION}"
+	phpList "  devspaces-udi-container:${CSV_VERSION}/"
 	mnf ""
 	cd /tmp
 	rm -fr /tmp/php-deps-tmp
@@ -341,7 +341,7 @@ if [[ ${phases} == *"5"* ]]; then
 	pyrpms="python3-six python3-pip"
 	if [[ ! $(which python3) ]] || [[ ! $(pydoc3 modules | grep venv) ]]; then sudo yum install -y -q $pyrpms || true; fi
 	if [[ ! $(which python3) ]] || [[ ! $(pydoc3 modules | grep venv) ]]; then echo "Error: install $pyrpms to run this script: sudo yum -y install $pyrpms"; exit 1; fi
-	getBashVars codeready-workspaces-udi build_python.sh
+	getBashVars devspaces-udi build_python.sh
 	for d in \
 		"PYTHON_IMAGE" \
 		"PYTHON_LS_VERSION" \
@@ -359,14 +359,14 @@ if [[ ${phases} == *"5"* ]]; then
 	{ /usr/bin/python3 -m pip install python-language-server[all]==${PYTHON_LS_VERSION} | tee -a ${LOG_FILE}; } || true
 	log ""
 	{ /usr/bin/python3 -m pip list >> ${LOG_FILE}; } || true
-	mnf "codeready-workspaces-udi-container:${CSV_VERSION}/python-language-server[all]:${PYTHON_LS_VERSION}"
-	pythonList "  codeready-workspaces-udi-container:${CSV_VERSION}/"
+	mnf "devspaces-udi-container:${CSV_VERSION}/python-language-server[all]:${PYTHON_LS_VERSION}"
+	pythonList "  devspaces-udi-container:${CSV_VERSION}/"
 	deactivate
 	rm -fr /tmp/python-deps-tmp
 fi
 
-# now we can delete the codeready-workspaces-images checkout folder as we don't need its contents anymore
-rm -fr /tmp/codeready-workspaces-images
+# now we can delete the devspaces-images checkout folder as we don't need its contents anymore
+rm -fr /tmp/devspaces-images
 
 
 ##################################

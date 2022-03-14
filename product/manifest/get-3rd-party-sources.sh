@@ -15,7 +15,7 @@ phases=" 1 2 3 "
 
 usage () 
 {
-    echo "Usage: $0 -b crw-2.y-rhel-8 [--clean] [--debug]"
+    echo "Usage: $0 -b devspaces-3.y-rhel-8 [--clean] [--debug]"
     exit
 }
 
@@ -70,7 +70,7 @@ maketarball ()
     # unpack 3rd party dep tarballs
     # shellcheck disable=SC2044
     for t in $(find . -name "*.tar.gz" -o -name "*.tgz"); do
-        subfolder=${t//.\/codeready-workspaces-/}
+        subfolder=${t//.\/devspaces-/}
         subfolder=${subfolder//asset-/}
         subfolder=${subfolder//.tar.gz/}
         subfolder=${subfolder//.tgz/}
