@@ -18,9 +18,9 @@
 # docker login registry.redhat.io -u=USERNAME -p=PASSWORD
 
 # access created date and digest with 
-# $➔ jq -r '.Images["quay.io/crw/pluginbroker-artifacts-rhel8:2.13-2"].Digest' dependencies/LATEST_IMAGES_DIGESTS.json 
+# $➔ jq -r '.Images["quay.io/devspaces/pluginbroker-artifacts-rhel8:2.13-2"].Digest' dependencies/LATEST_IMAGES_DIGESTS.json 
 # 8b6063b116a78a6886e4e1afc836c5f7d03ce010d58af7b426dce4293d60cf25
-# $➔ jq -r '.Images["quay.io/crw/pluginbroker-artifacts-rhel8:2.13-2"].Created' dependencies/LATEST_IMAGES_DIGESTS.json 
+# $➔ jq -r '.Images["quay.io/devspaces/pluginbroker-artifacts-rhel8:2.13-2"].Created' dependencies/LATEST_IMAGES_DIGESTS.json 
 # 2021-10-09T01:49:17.048651536Z
 
 COMMIT_CHANGES=0
@@ -51,8 +51,8 @@ fi
 
 # try to compute branches from currently checked out branch; else fall back to hard coded value
 DWNSTM_BRANCH="$(git rev-parse --abbrev-ref HEAD 2>/dev/null || true)"
-if [[ $DWNSTM_BRANCH != "crw-2."*"-rhel-8" ]] && [[ $DWNSTM_BRANCH != "crw-2-rhel-8" ]]; then
-	DWNSTM_BRANCH="crw-${VERSION}-rhel-8"
+if [[ $DWNSTM_BRANCH != "devspaces-3."*"-rhel-8" ]] && [[ $DWNSTM_BRANCH != "devspaces-3-rhel-8" ]]; then
+	DWNSTM_BRANCH="devspaces-${VERSION}-rhel-8"
 fi
 
 # STEP 1 :: regenerate image tag list in LATEST_IMAGES
@@ -65,18 +65,18 @@ $CMD | tee dependencies/LATEST_IMAGES
 echo '{' > dependencies/LATEST_IMAGES_INDEXES.json
 echo '    "Indexes": {' >> dependencies/LATEST_IMAGES_INDEXES.json
 
-for opmetbun in  operator-metadata operator-bundle; do 
+for opmetbun in operator-bundle; do 
   for d in $(cat dependencies/LATEST_IMAGES | grep -E "${opmetbun}"); do
-    BUNDLE_TAG=${d##*:} # quay.io/crw/crw-2-rhel8-operator-bundle:2.15-153 ==> 2.15-153
-    # compute internal OSBS image path, eg. registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-operator-bundle:2.15-153
-    BUNDLE_OSBS=${d##quay.io/crw/crw-2-rhel8-}
+    BUNDLE_TAG=${d##*:} # quay.io/devspaces/devspaces-operator-bundle:2.15-153 ==> 2.15-153
+    # compute internal OSBS image path, eg. registry-proxy.engineering.redhat.com/rh-osbs/devspaces-operator-bundle:2.15-153
+    BUNDLE_OSBS=${d##quay.io/devspaces/}
     # echo "BUNDLE_TAG  = $BUNDLE_TAG"
     # echo "BUNDLE_OSBS = $BUNDLE_OSBS"
 
     # NOTE datagrepper is paginated, may need to select a different page than 1 here
-    results=$(curl -sSLk "https://datagrepper.engineering.redhat.com/raw?topic=/topic/VirtualTopic.eng.ci.redhat-container-image.index.built&delta=1728000&rows_per_page=100&contains=codeready-workspaces&page=1" | \
+    results=$(curl -sSLk "https://datagrepper.engineering.redhat.com/raw?topic=/topic/VirtualTopic.eng.ci.redhat-container-image.index.built&delta=1728000&rows_per_page=100&contains=devspaces&page=1" | \
     jq ".raw_messages[].msg.index | [.added_bundle_images[0], .index_image, .ocp_version] | @csv" -r | sort -uV | \
-    grep "${BUNDLE_OSBS}" | sed -r -e "s#registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-##" | tr -d "\"")
+    grep "${BUNDLE_OSBS}" | sed -r -e "s#registry-proxy.engineering.redhat.com/rh-osbs/devspaces-##" | tr -d "\"")
     echo '        "'${opmetbun}'": {' >> dependencies/LATEST_IMAGES_INDEXES.json
     echo '            "'${VERSION}'": {' >> dependencies/LATEST_IMAGES_INDEXES.json # crw version
     for row in $results; do
@@ -88,7 +88,7 @@ for opmetbun in  operator-metadata operator-bundle; do
       echo '                    "iibTag": "'${iibTag}'"' >> dependencies/LATEST_IMAGES_INDEXES.json # ocp version
       echo '                },' >> dependencies/LATEST_IMAGES_INDEXES.json # ocp version
     done
-    echo '                "OSBSImage": "'registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-${BUNDLE_OSBS}'",' >> dependencies/LATEST_IMAGES_INDEXES.json # ocp version
+    echo '                "OSBSImage": "'registry-proxy.engineering.redhat.com/rh-osbs/devspaces-${BUNDLE_OSBS}'",' >> dependencies/LATEST_IMAGES_INDEXES.json # ocp version
     echo '                "quayImage": "'${d}'",' >> dependencies/LATEST_IMAGES_INDEXES.json # ocp version
     echo '                "tag": "'${BUNDLE_TAG}'"' >> dependencies/LATEST_IMAGES_INDEXES.json # ocp version
     echo '            }' >> dependencies/LATEST_IMAGES_INDEXES.json # crw version
@@ -147,7 +147,7 @@ for d in $(cat dependencies/LATEST_IMAGES); do
 done
 
 if [[ ${COMMIT_CHANGES} -eq 1 ]]; then
-  # CRW-1621 if any gz resources are larger than 10485760b, must use MaxFileSize to force dist-git to shut up and take my sources!
+  # devspaces-operator-bundle1621 if any gz resources are larger than 10485760b, must use MaxFileSize to force dist-git to shut up and take my sources!
   if [[ $(git commit -s -m "chore: Update dependencies/LATEST_IMAGES, COMMITS, DIGESTS, INDEXES" dependencies/LATEST_IMAGES* || true) == *"nothing to commit, working tree clean"* ]]; then
     echo "[INFO] No changes to commit."
   else
