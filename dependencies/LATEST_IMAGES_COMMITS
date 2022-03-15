@@ -1,90 +1,90 @@
 
-quay.io/crw/configbump-rhel8:2.16-4
+quay.io/devspaces/configbump-rhel8:3.0
      NVR: codeready-workspaces-configbump-rhel8-container-2.16-4
    Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1920638
   Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-configbump/commit?id=aa3ea1822305445b376925b76a0e61fcfddd3d9f
 
-quay.io/crw/crw-2-rhel8-operator:2.16-11
+quay.io/devspaces/devspaces-rhel8-operator:3.0
      NVR: codeready-workspaces-rhel8-operator-container-2.16-11
    Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1918770
   Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-operator/commit?id=7e8ca14023b0237403fa886146d51c4f0c861d1f
 
-quay.io/crw/crw-2-rhel8-operator-bundle:2.16-120
+quay.io/devspaces/devspaces-operator-bundle:3.0
      NVR: codeready-workspaces-operator-bundle-container-2.16-120
    Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1921658
   Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-operator-bundle/commit?id=b861764294b563b0c38fd1df333f36ffceb785c6
 
-quay.io/crw/dashboard-rhel8:2.16-28
-     NVR: codeready-workspaces-dashboard-rhel8-container-2.16-28
+quay.io/devspaces/dashboard-rhel8:3.0
+     NVR: devspaces-dashboard-rhel8-container-2.16-28
    Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1921608
-  Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-dashboard/commit?id=c703ef54a9c8810f11674ccb07be24c0ac2cd42b
+  Source: https://pkgs.devel.redhat.com/cgit/containers/devspaces-dashboard/commit?id=c703ef54a9c8810f11674ccb07be24c0ac2cd42b
 
-quay.io/crw/devfileregistry-rhel8:2.16-22
+quay.io/devspaces/devfileregistry-rhel8:3.0
      NVR: codeready-workspaces-devfileregistry-rhel8-container-2.16-22
    Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1918351
   Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-devfileregistry/commit?id=4cc2be6ae9e5a4f275d2bd8cbde0cb15d46c4be8
 
-quay.io/crw/idea-rhel8:2.16-7
+quay.io/devspaces/idea-rhel8:3.0
      NVR: codeready-workspaces-idea-rhel8-container-2.16-7
    Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1918766
   Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-idea/commit?id=ca260175dea1fa15ddc5c0555d86b7ebc31b61d2
 
-quay.io/crw/imagepuller-rhel8:2.16-7
+quay.io/devspaces/imagepuller-rhel8:3.0
      NVR: codeready-workspaces-imagepuller-rhel8-container-2.16-7
    Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1918801
   Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-imagepuller/commit?id=5ae879fda2f0999e04b77f266d43d47af771f41e
 
-quay.io/crw/jwtproxy-rhel8:2.16-7
+quay.io/devspaces/jwtproxy-rhel8:3.0
      NVR: codeready-workspaces-jwtproxy-rhel8-container-2.16-7
    Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1918798
   Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-jwtproxy/commit?id=a587ab6dab6224b27a2b9a56ab74794d71244b71
 
-quay.io/crw/machineexec-rhel8:2.16-11
+quay.io/devspaces/machineexec-rhel8:3.0
      NVR: codeready-workspaces-machineexec-rhel8-container-2.16-11
    Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1918786
   Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-machineexec/commit?id=a6a1dde4e9d99e620486d1a31d9d307c37a819d4
 
-quay.io/crw/pluginbroker-artifacts-rhel8:2.16-7
+quay.io/devspaces/pluginbroker-artifacts-rhel8:3.0
      NVR: codeready-workspaces-pluginbroker-artifacts-rhel8-container-2.16-7
    Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1918767
   Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-pluginbroker-artifacts/commit?id=c33224134499bba07a0e312cb587168ebed8ba8d
 
-quay.io/crw/pluginbroker-metadata-rhel8:2.16-7
+quay.io/devspaces/pluginbroker-metadata-rhel8:3.0
      NVR: codeready-workspaces-pluginbroker-metadata-rhel8-container-2.16-7
    Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1918768
   Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-pluginbroker-metadata/commit?id=1c962f66f5620ca9c824075062da03ef131c83fc
 
-quay.io/crw/pluginregistry-rhel8:2.16-20
+quay.io/devspaces/pluginregistry-rhel8:3.0
      NVR: codeready-workspaces-pluginregistry-rhel8-container-2.16-20
    Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1919234
   Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-pluginregistry/commit?id=0a7defb9f458415dba7bd7a996e5e1ab895200b0
 
-quay.io/crw/server-rhel8:2.16-12
+quay.io/devspaces/server-rhel8:3.0
      NVR: codeready-workspaces-server-rhel8-container-2.16-12
    Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1920264
   Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces/commit?id=624a9c5976257063bc565e4e37b455b4f6605f78
 
-quay.io/crw/theia-dev-rhel8:2.16-12
+quay.io/devspaces/theia-dev-rhel8:3.0
      NVR: codeready-workspaces-theia-dev-rhel8-container-2.16-12
    Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1919612
   Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-theia-dev/commit?id=3d5c9cb65dd4ddfd026f6d29be40b00247867cd0
 
-quay.io/crw/theia-endpoint-rhel8:2.16-8
+quay.io/devspaces/theia-endpoint-rhel8:3.0
      NVR: codeready-workspaces-theia-endpoint-rhel8-container-2.16-8
    Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1920110
   Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-theia-endpoint/commit?id=d705e431a4d36e388f0005f57faf0c331569371e
 
-quay.io/crw/theia-rhel8:2.16-8
+quay.io/devspaces/theia-rhel8:3.0
      NVR: codeready-workspaces-theia-rhel8-container-2.16-8
    Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1918808
   Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-theia/commit?id=832a6efcdb9d8395ffa555baed68df8b1af0425d
 
-quay.io/crw/traefik-rhel8:2.16-5
+quay.io/devspaces/traefik-rhel8:3.0
      NVR: codeready-workspaces-traefik-rhel8-container-2.16-5
    Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1920402
   Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-traefik/commit?id=719a54832df1092b0004fcf674accf6eb8600506
 
-quay.io/crw/udi-rhel8:2.16-108
+quay.io/devspaces/udi-rhel8:3.0
      NVR: codeready-workspaces-udi-rhel8-container-2.16-108
    Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1919219
   Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-udi/commit?id=abb8c4e6a92e93bbd5034ae78a3c1cf0b62bba24

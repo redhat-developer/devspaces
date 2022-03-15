@@ -40,7 +40,7 @@ Running on crwjen-ppc-1 in /var/lib/jenkins/workspace/CRW_CI/get-sources-rhpkg-c
 Masking supported pattern matches of $GITHUB_TOKEN or $QUAY_TOKEN or $CRW_KEYTAB or $CRW_BOT_USERNAME or $CRW_BOT_PASSWORD
 [Pipeline] {
 [Pipeline] sh
-+ curl -sSLO https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/crw-2-rhel-8/product/util.groovy
++ curl -sSLO https://raw.githubusercontent.com/redhat-developer/devspaces/devspaces-3-rhel-8/product/util.groovy
 [Pipeline] load
 [Pipeline] { (/var/lib/jenkins/workspace/CRW_CI/get-sources-rhpkg-container-build_2.x/util.groovy)
 [Pipeline] }
@@ -212,26 +212,26 @@ Cloning into '/var/lib/jenkins/workspace/CRW_CI/get-sources-rhpkg-container-buil
 + export KRB5CCNAME=/var/tmp/crw-build_ccache
 + KRB5CCNAME=/var/tmp/crw-build_ccache
 + cd /var/lib/jenkins/workspace/CRW_CI/get-sources-rhpkg-container-build_2.x/sources
-+ git checkout --track origin/crw-2-rhel-8
-Switched to a new branch 'crw-2-rhel-8'
-Branch 'crw-2-rhel-8' set up to track remote branch 'crw-2-rhel-8' from 'origin'.
++ git checkout --track origin/devspaces-3-rhel-8
+Switched to a new branch 'devspaces-3-rhel-8'
+Branch 'devspaces-3-rhel-8' set up to track remote branch 'devspaces-3-rhel-8' from 'origin'.
 + git config user.email crw-build@REDHAT.COM
 + git config user.name 'CRW Build'
 + git config --global push.default matching
 [Pipeline] sh
-+ curl -sSLo- https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/crw-2-rhel-8/dependencies/VERSION
++ curl -sSLo- https://raw.githubusercontent.com/redhat-developer/devspaces/devspaces-3-rhel-8/dependencies/VERSION
 [Pipeline] echo
 CRW_VERSION = '2.9'
 [Pipeline] fileExists
 [Pipeline] sh
-+ URL=https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/crw-2-rhel-8/product/updateBaseImages.sh
-++ curl -sSLI https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/crw-2-rhel-8/product/updateBaseImages.sh
++ URL=https://raw.githubusercontent.com/redhat-developer/devspaces/devspaces-3-rhel-8/product/updateBaseImages.sh
+++ curl -sSLI https://raw.githubusercontent.com/redhat-developer/devspaces/devspaces-3-rhel-8/product/updateBaseImages.sh
 ++ grep -E -v 'id: |^x-'
 ++ grep -E '404|Not Found'
 ++ true
 + header404=
 + [[ -n '' ]]
-+ curl -sSL https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/crw-2-rhel-8/product/updateBaseImages.sh -o /var/lib/jenkins/workspace/CRW_CI/get-sources-rhpkg-container-build_2.x/updateBaseImages.sh
++ curl -sSL https://raw.githubusercontent.com/redhat-developer/devspaces/devspaces-3-rhel-8/product/updateBaseImages.sh -o /var/lib/jenkins/workspace/CRW_CI/get-sources-rhpkg-container-build_2.x/updateBaseImages.sh
 + chmod +x /var/lib/jenkins/workspace/CRW_CI/get-sources-rhpkg-container-build_2.x/updateBaseImages.sh
 [Pipeline] sh
 + cd /var/lib/jenkins/workspace/CRW_CI/get-sources-rhpkg-container-build_2.x/sources
@@ -240,12 +240,12 @@ CRW_VERSION = '2.9'
 [Pipeline] sh
 + export KRB5CCNAME=/var/tmp/crw-build_ccache
 + KRB5CCNAME=/var/tmp/crw-build_ccache
-+ echo '[INFO] util.groovy :: updateBaseImages :: SOURCES_BRANCH = crw-2-rhel-8'
-[INFO] util.groovy :: updateBaseImages :: SOURCES_BRANCH = crw-2-rhel-8
-+ echo '[INFO] util.groovy :: updateBaseImages :: SCRIPTS_BRANCH = crw-2-rhel-8'
-[INFO] util.groovy :: updateBaseImages :: SCRIPTS_BRANCH = crw-2-rhel-8
++ echo '[INFO] util.groovy :: updateBaseImages :: SOURCES_BRANCH = devspaces-3-rhel-8'
+[INFO] util.groovy :: updateBaseImages :: SOURCES_BRANCH = devspaces-3-rhel-8
++ echo '[INFO] util.groovy :: updateBaseImages :: SCRIPTS_BRANCH = devspaces-3-rhel-8'
+[INFO] util.groovy :: updateBaseImages :: SCRIPTS_BRANCH = devspaces-3-rhel-8
 + cd /var/lib/jenkins/workspace/CRW_CI/get-sources-rhpkg-container-build_2.x/sources
-+ /var/lib/jenkins/workspace/CRW_CI/get-sources-rhpkg-container-build_2.x/updateBaseImages.sh --sources-branch crw-2-rhel-8 --scripts-branch crw-2-rhel-8
++ /var/lib/jenkins/workspace/CRW_CI/get-sources-rhpkg-container-build_2.x/updateBaseImages.sh --sources-branch devspaces-3-rhel-8 --scripts-branch devspaces-3-rhel-8
 
 # Checking /var/lib/jenkins/workspace/CRW_CI/get-sources-rhpkg-container-build_2.x/sources/Dockerfile ...
 + ubi8-minimal:8.3-298.1618432845
@@ -402,8 +402,8 @@ Source upload succeeded. Don't forget to commit the sources file
 :: asset-configbump-x86_64.tar.gz asset-configbump-s390x.tar.gz asset-configbump-ppc64le.tar.gz'
 ++ git commit -s -m '[get sources] Update from Jenkins :: crw-configbump_2.x :: 11
 :: asset-configbump-x86_64.tar.gz asset-configbump-s390x.tar.gz asset-configbump-ppc64le.tar.gz' sources Dockerfile .gitignore
-+ [[ On branch crw-2-rhel-8
-Your branch is up to date with 'origin/crw-2-rhel-8'.
++ [[ On branch devspaces-3-rhel-8
+Your branch is up to date with 'origin/devspaces-3-rhel-8'.
 
 nothing to commit, working tree clean == *\n\o\t\h\i\n\g\ \t\o\ \c\o\m\m\i\t\,\ \w\o\r\k\i\n\g\ \t\r\e\e\ \c\l\e\a\n* ]]
 + log '[INFO] No new sources, so nothing to build.'
@@ -414,8 +414,8 @@ nothing to commit, working tree clean == *\n\o\t\h\i\n\g\ \t\o\ \c\o\m\m\i\t\,\ 
 + echo '[INFO] #1 Trigger container-build in current branch: rhpkg container-build '
 + git status
 [INFO] #1 Trigger container-build in current branch: rhpkg container-build 
-On branch crw-2-rhel-8
-Your branch is up to date with 'origin/crw-2-rhel-8'.
+On branch devspaces-3-rhel-8
+Your branch is up to date with 'origin/devspaces-3-rhel-8'.
 
 nothing to commit, working tree clean
 ++ mktemp
@@ -531,7 +531,7 @@ Running on cpt-ppc-006 in /var/lib/jenkins/workspace/CRW_CI/get-sources-rhpkg-co
 [Pipeline] echo
 ########################################################################################################
 [Pipeline] sh
-+ curl -sSLO https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/crw-2-rhel-8/product/util.groovy
++ curl -sSLO https://raw.githubusercontent.com/redhat-developer/devspaces/devspaces-3-rhel-8/product/util.groovy
 [Pipeline] load
 [Pipeline] { (/var/lib/jenkins/workspace/CRW_CI/get-sources-rhpkg-container-build_2.x/util.groovy)
 [Pipeline] }

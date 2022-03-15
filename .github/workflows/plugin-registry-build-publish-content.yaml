@@ -29,10 +29,10 @@
 #         run: |
 #           sudo apt-get install tree
 #           npm install -g surge
-#           mkdir -p /tmp/crw-plugin-registry/content
-#           echo "Content has moved to <a href=https://redhat-developer.github.io/codeready-workspaces/che-plugin-registry/next/x86_64/>https://redhat-developer.github.io/codeready-workspaces/che-plugin-registry/next/x86_64/</a>" > /tmp/crw-plugin-registry/content/index.html
+#           mkdir -p /tmp/devspaces-plugin-registry/content
+#           echo "Content has moved to <a href=https://redhat-developer.github.io/devspaces/che-plugin-registry/next/x86_64/>https://redhat-developer.github.io/devspaces/che-plugin-registry/next/x86_64/</a>" > /tmp/devspaces-plugin-registry/content/index.html
 #           export DEPLOY_DOMAIN=https://crw-plugin-registry-main.surge.sh
 #           echo "DEPLOY_DOMAIN=$DEPLOY_DOMAIN" >> $GITHUB_ENV
-#           surge /tmp/crw-plugin-registry/content --domain $DEPLOY_DOMAIN
+#           surge /tmp/devspaces-plugin-registry/content --domain $DEPLOY_DOMAIN
 #           # in future we can remove the surge domain entirely
 #           # surge teardown $DEPLOY_DOMAIN

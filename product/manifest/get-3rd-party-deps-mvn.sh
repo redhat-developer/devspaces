@@ -6,7 +6,7 @@ MIDSTM_BRANCH=""
 SCRIPT_DIR=$(dirname $(readlink -f "${BASH_SOURCE[0]}"))
 usage () 
 {
-    echo "Usage: $0 -b crw-2.y-rhel-8 -v 2.y.0"
+    echo "Usage: $0 -b devspaces-3.y-rhel-8 -v 3.y.0"
     exit
 }
 # commandline args
@@ -20,15 +20,15 @@ done
 
 if [[ ! ${MIDSTM_BRANCH} ]]; then usage; fi
 if [[ ! ${CSV_VERSION} ]]; then 
-  CSV_VERSION=$(curl -sSLo - https://raw.githubusercontent.com/redhat-developer/codeready-workspaces-operator/${MIDSTM_BRANCH}/manifests/codeready-workspaces.csv.yaml | yq -r .spec.version)
+  CSV_VERSION=$(curl -sSLo - https://raw.githubusercontent.com/redhat-developer/devspaces-operator/${MIDSTM_BRANCH}/manifests/devspaces.csv.yaml | yq -r .spec.version)
 fi
 
 # use x.y (not x.y.z) version, eg., 2.3
-CRW_VERSION=$(curl -sSLo - https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/${MIDSTM_BRANCH}/dependencies/VERSION)
+CRW_VERSION=$(curl -sSLo - https://raw.githubusercontent.com/redhat-developer/devspaces/${MIDSTM_BRANCH}/dependencies/VERSION)
 CRW_TAG_OR_BRANCH=${MIDSTM_BRANCH}
 
 # load SOURCE_BRANCH from theia BUILD_PARAMS
-for d in $(curl -sSLo - https://raw.githubusercontent.com/redhat-developer/codeready-workspaces-theia/${MIDSTM_BRANCH}/BUILD_PARAMS); do
+for d in $(curl -sSLo - https://raw.githubusercontent.com/redhat-developer/devspaces-theia/${MIDSTM_BRANCH}/BUILD_PARAMS); do
 	export $d
 done
 
@@ -72,7 +72,7 @@ function clone_and_generate_dep_tree () {
 			-e "s#^\(org.eclipse.che\|org.apache.maven\).\+##g" \
 			-e "s#\(.\+\):\(.\+\):jar:#\1_\2.jar:#g" \
 			-e 's/^[ \t]*//' \
-			-e "s#^#codeready-workspaces-server-container:${CRW_VERSION}/#g" \
+			-e "s#^#devspaces-server-container:${CRW_VERSION}/#g" \
 		| sort | uniq >> ${MANIFEST_FILE/.txt/-raw-unsorted.txt}
 	cd .. && rm -fr ${GITREPO##*/}
 }

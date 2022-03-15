@@ -1,4 +1,4 @@
-# CodeReady Workspaces devfile registry
+# Red Hat OpenShift Dev Spaces (formerly CodeReady Workspaces) devfile registry
 
 This repository holds ready-to-use Devfiles for different languages and technologies.
 
@@ -20,7 +20,7 @@ Options:
         Build offline version of registry, with all artifacts included
         cached in the registry; disabled by default.
 ```
-By default, the built registry will be tagged `quay.io/crw/devfileregistry-rhel8:next`, and will be built with offline mode disabled.
+By default, the built registry will be tagged `quay.io/devspaces/devfileregistry-rhel8:next`, and will be built with offline mode disabled.
 
 This script listens to the `BUILDER` variable, and will use the tool specified there to build the image. For example:
 ```sh
@@ -37,7 +37,7 @@ Note that the Dockerfiles in this repository utilize multi-stage builds, so Dock
 The Jenkinsfile in this repo has moved. See:
 
 * https://gitlab.cee.redhat.com/codeready-workspaces/crw-jenkins/-/tree/master/jobs/CRW_CI
-* https://github.com/redhat-developer/codeready-workspaces-images#jenkins-jobs
+* https://github.com/redhat-developer/devspaces-images#jenkins-jobs
 
 
 ### Offline and airgapped registry images
@@ -55,7 +55,7 @@ You can deploy the registry to Openshift as follows:
 
 ```bash
   oc new-app -f deploy/openshift/che-devfile-registry.yaml \
-             -p IMAGE="quay.io/crw/devfileregistry-rhel8" \
+             -p IMAGE="quay.io/devspaces/devfileregistry-rhel8" \
              -p IMAGE_TAG="next" \
              -p PULL_POLICY="Always"
 ```
@@ -63,7 +63,7 @@ You can deploy the registry to Openshift as follows:
 ## Run the registry
 
 ```bash
-docker run -it --rm -p 8080:8080 quay.io/crw/devfileregistry-rhel8:next
+docker run -it --rm -p 8080:8080 quay.io/devspaces/devfileregistry-rhel8:next
 ```
 
 ### License

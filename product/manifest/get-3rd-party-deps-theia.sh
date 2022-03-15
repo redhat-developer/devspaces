@@ -8,7 +8,7 @@ MIDSTM_BRANCH=""
 SCRIPT_DIR=$(dirname $(readlink -f "${BASH_SOURCE[0]}"))
 usage () 
 {
-    echo "Usage: $0 -b $(git rev-parse --abbrev-ref HEAD) -v 2.y.0"
+    echo "Usage: $0 -b $(git rev-parse --abbrev-ref HEAD) -v 3.y.0"
     exit
 }
 # commandline args
@@ -22,12 +22,12 @@ done
 
 if [[ ! ${MIDSTM_BRANCH} ]]; then usage; fi
 if [[ ! ${CSV_VERSION} ]]; then 
-  CSV_VERSION=$(curl -sSLo - https://raw.githubusercontent.com/redhat-developer/codeready-workspaces-operator/${MIDSTM_BRANCH}/manifests/codeready-workspaces.csv.yaml | yq -r .spec.version)
+  CSV_VERSION=$(curl -sSLo - https://raw.githubusercontent.com/redhat-developer/devspaces-operator/${MIDSTM_BRANCH}/manifests/devspaces.csv.yaml | yq -r .spec.version)
 fi
-CRW_VERSION=$(curl -sSLo - https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/${MIDSTM_BRANCH}/dependencies/VERSION)
+CRW_VERSION=$(curl -sSLo - https://raw.githubusercontent.com/redhat-developer/devspaces/${MIDSTM_BRANCH}/dependencies/VERSION)
 
 EXCLUDE_FILES="e2e|kubernetes"
-EXCLUDE_LINES="eclipse-che/che-theia|redhat-developer/codeready-workspaces/|redhat-developer/codeready-workspaces-theia|SHASUMS256.txt|CDN_PREFIX|cdn.stage.redhat.com|api.github.com|GITHUB_LIMIT|GITHUB_TOKEN|THEIA_GITHUB_REPO|.git$|.asc|/debian$|/debian/$|APKINDEX.tar.gz|get-pip|=http"
+EXCLUDE_LINES="eclipse-che/che-theia|redhat-developer/devspaces/|redhat-developer/devspaces-theia|SHASUMS256.txt|CDN_PREFIX|cdn.stage.redhat.com|api.github.com|GITHUB_LIMIT|GITHUB_TOKEN|THEIA_GITHUB_REPO|.git$|.asc|/debian$|/debian/$|APKINDEX.tar.gz|get-pip|=http"
 EXCLUDE_LINES2="che:theia"
 
 cd /tmp || exit
@@ -41,7 +41,7 @@ function log () {
 }
 
 rm -f "${MANIFEST_FILE}" "${MANIFEST_FILE}".2 "${MANIFEST_FILE}".3 "${LOG_FILE}"
-[[ "${MIDSTM_BRANCH}" == "crw-2-rhel-8" ]] && JOB_BRANCH="2.x" || JOB_BRANCH="${CRW_VERSION}"
+[[ "${MIDSTM_BRANCH}" == "devspaces-3-rhel-8" ]] && JOB_BRANCH="2.x" || JOB_BRANCH="${CRW_VERSION}"
 echo "Parsing ${JENKINS}/crw-theia-sources_${JOB_BRANCH}/lastSuccessfulBuild/consoleText ..."
 curl -sSL -o "${MANIFEST_FILE}".2 "${JENKINS}/crw-theia-sources_${JOB_BRANCH}/lastSuccessfulBuild/consoleText"
 CHE_THEIA_BRANCH=$(grep "echo SOURCE_BRANCH=" "${MANIFEST_FILE}".2 | sed -r -e "s#.+echo SOURCE_BRANCH=(.+)#\1#") # 7.yy.x
@@ -49,9 +49,9 @@ rm -f "${MANIFEST_FILE}.2"
 
 if [[ -z $CHE_THEIA_BRANCH ]]; then 
 	echo "[INFO] Could not obtain theia source branch from ${JENKINS}/crw-theia-sources_${JOB_BRANCH}/lastSuccessfulBuild/consoleText - checking BUILD_PARAMS:"
-	export $(curl -sSLo- https://raw.githubusercontent.com/redhat-developer/codeready-workspaces-theia/${MIDSTM_BRANCH}/BUILD_PARAMS | grep SOURCE_BRANCH | sed -r -e "s@SOURCE_BRANCH@CHE_THEIA_BRANCH@")
+	export $(curl -sSLo- https://raw.githubusercontent.com/redhat-developer/devspaces-theia/${MIDSTM_BRANCH}/BUILD_PARAMS | grep SOURCE_BRANCH | sed -r -e "s@SOURCE_BRANCH@CHE_THEIA_BRANCH@")
 	if [[ -z $CHE_THEIA_BRANCH ]]; then
-		echo "[ERROR] Could not compute CHE_THEIA_BRANCH from https://raw.githubusercontent.com/redhat-developer/codeready-workspaces-theia/${MIDSTM_BRANCH}/BUILD_PARAMS"
+		echo "[ERROR] Could not compute CHE_THEIA_BRANCH from https://raw.githubusercontent.com/redhat-developer/devspaces-theia/${MIDSTM_BRANCH}/BUILD_PARAMS"
 		exit 1
 	fi
 fi
@@ -61,7 +61,7 @@ pushd "$TMPDIR" >/dev/null || exit
 	if [[ -x ${SCRIPT_DIR}/../containerExtract.sh ]]; then
 		cp ${SCRIPT_DIR}/../containerExtract.sh $TMPDIR/containerExtract.sh
 	else
-		curl -sSLO https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/${MIDSTM_BRANCH}/product/containerExtract.sh
+		curl -sSLO https://raw.githubusercontent.com/redhat-developer/devspaces/${MIDSTM_BRANCH}/product/containerExtract.sh
 	fi
 	chmod +x containerExtract.sh
 
@@ -81,13 +81,13 @@ pushd "$TMPDIR" >/dev/null || exit
 				-e 's/^[ \t]*//' \
 				-e 's/^@//' \
 				-e "s/@/:/g" \
-				-e "s#^#codeready-workspaces-theia-rhel8-container:${CRW_VERSION}/#g"	\
+				-e "s#^#devspaces-theia-rhel8-container:${CRW_VERSION}/#g"	\
 		| sort -uV > ${MANIFEST_FILE}.yarn
 
-		podman pull quay.io/crw/theia-rhel8:${CRW_VERSION}
+		podman pull quay.io/devspaces/theia-rhel8:${CRW_VERSION}
 
 		# copy plugin directories into the filesystem, in order to execute yarn commands to obtain yarn.lock file, and list dependencies from it
-		"${TMPDIR}/containerExtract.sh" quay.io/crw/theia-rhel8:${CRW_VERSION} --tar-flags home/theia/plugins/**
+		"${TMPDIR}/containerExtract.sh" quay.io/devspaces/theia-rhel8:${CRW_VERSION} --tar-flags home/theia/plugins/**
 		find /tmp/quay.io-crw-theia-rhel8-${CRW_VERSION}-* -path '*extension/node_modules' -exec sh -c "cd {}/.. && yarn --silent && yarn list --depth=0" \; >> ${MANIFEST_FILE}.plugin-extensions
 		sed \
 				-e '/Done in/d' \
@@ -96,13 +96,13 @@ pushd "$TMPDIR" >/dev/null || exit
 				-e 's/^[ \t]*//' \
 				-e 's/^@//' \
 				-e "s/@/:/g" \
-				-e "s#^#codeready-workspaces-theia-rhel8-container:${CRW_VERSION}/#g"	\
+				-e "s#^#devspaces-theia-rhel8-container:${CRW_VERSION}/#g"	\
 		${MANIFEST_FILE}.plugin-extensions | sort -uV >> ${MANIFEST_FILE}
 		
 		echo >> ${MANIFEST_FILE}
 
 		# collect global yarn dependencies, obtained from yarn.lock file in the theia-container yarn installation
-		podman run --rm  --entrypoint /bin/sh "quay.io/crw/theia-rhel8:${CRW_VERSION}" \
+		podman run --rm  --entrypoint /bin/sh "quay.io/devspaces/theia-rhel8:${CRW_VERSION}" \
 			-c "cat /usr/local/share/.config/yarn/global/yarn.lock" | grep -e 'version "' -B1 | \
 			sed -r -e '/^--$/d' \
 			-e 's/^"@//' > "${MANIFEST_FILE}.globalyarn"
@@ -111,7 +111,7 @@ pushd "$TMPDIR" >/dev/null || exit
 			read -r version
 			dependency=$(echo ${dependency} | tr -d '"' | cut -f1 -d"@")
 			version=$(echo ${version} | cut -f2 -d" " | tr -d '"')
-			echo "codeready-workspaces-theia-rhel8-container:${CRW_VERSION}/${dependency}:${version}" >> "${MANIFEST_FILE}.yarn"
+			echo "devspaces-theia-rhel8-container:${CRW_VERSION}/${dependency}:${version}" >> "${MANIFEST_FILE}.yarn"
 		done < "${MANIFEST_FILE}.globalyarn"
 		
 		cat ${MANIFEST_FILE}.yarn | sort -uV >> ${MANIFEST_FILE}
@@ -120,7 +120,7 @@ pushd "$TMPDIR" >/dev/null || exit
 		cat generator/src/templates/theiaPlugins.json | jq -r '. | to_entries[] | " \(.value)"' | sed \
 				-e 's/^[ \t]*//' \
 				-e 's#.*/##'  \
-				-e "s#^#codeready-workspaces-theia-rhel8-container:${CRW_VERSION}/#g"	\
+				-e "s#^#devspaces-theia-rhel8-container:${CRW_VERSION}/#g"	\
 		| sort -uV >> ${MANIFEST_FILE}
 
 		# re-sort uniquely after adding more content

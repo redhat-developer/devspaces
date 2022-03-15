@@ -6,13 +6,13 @@ import groovy.transform.Field
 def String getCSVVersion(String MIDSTM_BRANCH) {
   if (CSV_VERSION_F.equals("")) {
     CSV_VERSION_F = sh(script: '''#!/bin/bash -xe
-    curl -sSLo- https://raw.githubusercontent.com/redhat-developer/codeready-workspaces-images/''' + MIDSTM_BRANCH + '''/codeready-workspaces-operator-bundle/manifests/codeready-workspaces.csv.yaml | yq -r .spec.version''', returnStdout: true).trim()
+    curl -sSLo- https://raw.githubusercontent.com/redhat-developer/devspaces-images/''' + MIDSTM_BRANCH + '''/devspaces-operator-bundle/manifests/devspaces.csv.yaml | yq -r .spec.version''', returnStdout: true).trim()
   }
   // CRW-2039 check that CSV version is aligned to CRW version, and throw warning w/ call to action to avoid surprises
   if (CRW_VERSION_F.equals("")) {
     CRW_VERSION_F = getCrwVersion(MIDSTM_BRANCH)
   }
-  CSV_VERSION_BASE=CSV_VERSION_F.replaceAll("([0-9]+\\.[0-9]+)\\.[0-9]+","\$1"); // extract 2.yy from 2.yy.z
+  CSV_VERSION_BASE=CSV_VERSION_F.replaceAll("([0-9]+\\.[0-9]+)\\.[0-9]+","\$1"); // extract 3.yy from 3.yy.z
   if (!CSV_VERSION_BASE.equals(CRW_VERSION_F)) {
     println "[WARNING] CSV version (from getCSVVersion() -> csv.yaml = " + CSV_VERSION_F + 
       ") does not match CRW version (from getCrwVersion() -> VERSION = " + CRW_VERSION_F + ") !"
@@ -21,9 +21,9 @@ def String getCSVVersion(String MIDSTM_BRANCH) {
     println "* https://main-jenkins-csb-crwqe.apps.ocp-c1.prod.psi.redhat.com/job/CRW_CI/job/Releng/job/update-version-and-registry-tags/ "
     println "* https://main-jenkins-csb-crwqe.apps.ocp-c1.prod.psi.redhat.com/job/CRW_CI/job/crw-operator-metadata_" + getJobBranch(MIDSTM_BRANCH)
     println "Check these files:"
-    println "https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/" + MIDSTM_BRANCH + "/dependencies/VERSION"
-    println "https://github.com/redhat-developer/codeready-workspaces-images/blob/" + MIDSTM_BRANCH + "/codeready-workspaces-operator-bundle/manifests/codeready-workspaces.csv.yaml"
-    println "https://github.com/redhat-developer/codeready-workspaces-images/blob/" + MIDSTM_BRANCH + "/codeready-workspaces-operator-bundle-generated/manifests/codeready-workspaces.csv.yaml"
+    println "https://raw.githubusercontent.com/redhat-developer/devspaces/" + MIDSTM_BRANCH + "/dependencies/VERSION"
+    println "https://github.com/redhat-developer/devspaces-images/blob/" + MIDSTM_BRANCH + "/devspaces-operator-bundle/manifests/devspaces.csv.yaml"
+    println "https://github.com/redhat-developer/devspaces-images/blob/" + MIDSTM_BRANCH + "/devspaces-operator-bundle-generated/manifests/devspaces.csv.yaml"
   }
 
   return CSV_VERSION_F
@@ -35,19 +35,22 @@ def String getCrwVersion(String MIDSTM_BRANCH) {
   if (CRW_VERSION_F.equals("")) {
     CRW_BRANCH_F = MIDSTM_BRANCH
     CRW_VERSION_F = sh(script: '''#!/bin/bash -xe
-    curl -sSLo- https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/''' + MIDSTM_BRANCH + '''/dependencies/VERSION''', returnStdout: true).trim()
+    curl -sSLo- https://raw.githubusercontent.com/redhat-developer/devspaces/''' + MIDSTM_BRANCH + '''/dependencies/VERSION''', returnStdout: true).trim()
   }
   return CRW_VERSION_F
 }
 
 @Field String JOB_BRANCH
-// JOB_BRANCH defines which set of jobs to run, eg., crw-server_ + JOB_BRANCH
+// JOB_BRANCH defines which set of jobs to run, eg., dashboard_ + JOB_BRANCH
 def String getJobBranch(String MIDSTM_BRANCH) {
   if (JOB_BRANCH.equals("") || JOB_BRANCH == null) {
-    if (MIDSTM_BRANCH.equals("crw-2-rhel-8") || MIDSTM_BRANCH.equals("main")) {
-      JOB_BRANCH="2.x"
+    if (MIDSTM_BRANCH.equals("devspaces-3-rhel-8") || MIDSTM_BRANCH.equals("main")) {
+      JOB_BRANCH="3.x"
     } else {
-      // for 2.7, 2.8, etc.
+      // for 3.y
+      JOB_BRANCH=MIDSTM_BRANCH.replaceAll("devspaces-","").replaceAll("-rhel-8","")
+      // for 3.y
+      // TODO remove this after 3.1 is live
       JOB_BRANCH=MIDSTM_BRANCH.replaceAll("crw-","").replaceAll("-rhel-8","")
     }
   }
@@ -66,11 +69,11 @@ def globalVar(varNameExpr) {
 }
 
 def getTheiaBuildParam(String property) { 
-  return getVarFromPropertiesFileURL(property, "https://raw.githubusercontent.com/redhat-developer/codeready-workspaces-theia/"+MIDSTM_BRANCH+"/BUILD_PARAMS")
+  return getVarFromPropertiesFileURL(property, "https://raw.githubusercontent.com/redhat-developer/devspaces-theia/"+MIDSTM_BRANCH+"/BUILD_PARAMS")
 }
 
 // load a property from a remote file, eg., nodeVersion=12.21.0 or yarnVersion=1.21.1 from 
-// https://github.com/redhat-developer/codeready-workspaces-theia/blob/crw-2-rhel-8/BUILD_PARAMS
+// https://github.com/redhat-developer/devspaces-theia/blob/devspaces-3-rhel-8/BUILD_PARAMS
 def getVarFromPropertiesFileURL(String property, String tURL) {
   def data = tURL.toURL().readLines()
   varVal=""
@@ -164,7 +167,7 @@ def updateBaseImages(String REPO_PATH, String SOURCES_BRANCH, String FLAGS="", S
   if (!fileExists(updateBaseImages_bin)) {
     // otherwise continue
     sh('''#!/bin/bash -xe
-URL="https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/''' + SCRIPTS_BRANCH + '''/product/updateBaseImages.sh"
+URL="https://raw.githubusercontent.com/redhat-developer/devspaces/''' + SCRIPTS_BRANCH + '''/product/updateBaseImages.sh"
 # check for 404 and fail if can't load the file
 header404="$(curl -sSLI $URL | grep -E -v "id: |^x-" | grep -v "content-length" | grep -E "404|Not Found" || true)"
 if [[ $header404 ]]; then
@@ -208,16 +211,16 @@ def getLastCommitSHA(String REPO_PATH) {
 
 def getCRWLongName(String SHORT_NAME) {
   if (SHORT_NAME == "server") {
-    return "codeready-workspaces"
+    return "devspaces"
   }
-  return "codeready-workspaces-" + SHORT_NAME
+  return "devspaces-" + SHORT_NAME
 }
 
 def getCRWShortName(String LONG_NAME) {
-  if (LONG_NAME == "codeready-workspaces") {
+  if (LONG_NAME == "devspaces") {
     return "server"
   }
-  return LONG_NAME.minus("codeready-workspaces-")
+  return LONG_NAME.minus("devspaces-")
 }
 
 // see http://hdn.corp.redhat.com/rhel7-csb-stage/repoview/redhat-internal-cert-install.html
@@ -300,7 +303,7 @@ done
 def updateRpms(String RPM_PATTERN, String BASE_URL, String dir="${WORKSPACE}/sources", String branch=MIDSTM_BRANCH, String ARCHES="x86_64 s390x ppc64le") {
   return sh(returnStdout: true, script: '''#!/bin/bash -xe
 if [[ ! -x getLatestRPM.sh ]]; then 
-  curl -sSLO https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/''' + branch + '''/product/getLatestRPM.sh && chmod +x getLatestRPM.sh
+  curl -sSLO https://raw.githubusercontent.com/redhat-developer/devspaces/''' + branch + '''/product/getLatestRPM.sh && chmod +x getLatestRPM.sh
 fi
 ./getLatestRPM.sh -r "''' + RPM_PATTERN + '''" -u "''' + BASE_URL + '''" -s "''' + dir + '''" -a "''' + ARCHES + '''" -q
   ''').trim()
@@ -499,12 +502,12 @@ def waitForNewBuild(String jobURL, int oldId, int checkInterval=120, int timeout
 def getLatestImageAndTag(String orgAndImage, String repo="quay", String tag=CRW_VERSION_F) {
   sh '''#!/bin/bash -xe
 if [[ ! -x getLatestImageTags.sh ]]; then 
-  curl -sSLO https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/''' + MIDSTM_BRANCH + '''/product/getLatestImageTags.sh && chmod +x getLatestImageTags.sh
+  curl -sSLO https://raw.githubusercontent.com/redhat-developer/devspaces/''' + MIDSTM_BRANCH + '''/product/getLatestImageTags.sh && chmod +x getLatestImageTags.sh
 fi
 '''
   return sh(
     returnStdout: true, 
-    // -b crw-2.8-rhel-8 -c crw/server-rhel8 --tag "2.8-" --quay
+    // -b devspaces-3.0-rhel-8 -c devspaces/server-rhel8 --tag "3.0-" --quay
     script: './getLatestImageTags.sh -b ' + MIDSTM_BRANCH + ' -c "' + orgAndImage + '" --tag "' + tag + '-" --' + repo
   ).trim()
 }

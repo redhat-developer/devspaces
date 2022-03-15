@@ -13,13 +13,13 @@ usage () {
 	echo -e "
 Usage:
 NVR1 NVR2 ...   | list of NVRs to query. If omitted, generate list from ${candidateTag}
--b              | branch of redhat-developer/codeready-workspaces-operator, eg., crw-2.y-rhel-8
--v              | CSV version, eg., 2.y.0; if not set, will be computed from codeready-workspaces.csv.yaml using branch
+-b              | branch of redhat-developer/devspaces-operator, eg., devspaces-3.y-rhel-8
+-v              | CSV version, eg., 3.y.0; if not set, will be computed from devspaces.csv.yaml using branch
 -h,     --help  | show this help menu
 -g \"regex\"      | if provided, grep resulting rpm logs for matching regex
 
 Examples:
-$0 codeready-workspaces-udi-container-2.16-12.1552519049 codeready-workspaces-udi-container
+$0 devspaces-udi-container-2.16-12.1552519049 devspaces-udi-container
 
 $0 udi -g \"/(libssh2|python|python-libs).x86_64\" # check one container for version of two rpms
 
@@ -43,7 +43,7 @@ if [[ ! ${MIDSTM_BRANCH} ]]; then usage; fi
 candidateTag="${MIDSTM_BRANCH}-container-candidate"
 
 if [[ ! ${CSV_VERSION} ]]; then 
-  CSV_VERSION=$(curl -sSLo - https://raw.githubusercontent.com/redhat-developer/codeready-workspaces-operator/${MIDSTM_BRANCH}/manifests/codeready-workspaces.csv.yaml | yq -r .spec.version)
+  CSV_VERSION=$(curl -sSLo - https://raw.githubusercontent.com/redhat-developer/devspaces-operator/${MIDSTM_BRANCH}/manifests/devspaces.csv.yaml | yq -r .spec.version)
 fi
 CRW_VERSION=$(echo $CSV_VERSION | sed -r -e "s#([0-9]+\.[0-9]+)[^0-9]+.+#\1#") # trim the x.y part from the x.y.z
 
@@ -70,7 +70,7 @@ function bth () {
 
 function loadNVRs() {
 	pushd /tmp >/dev/null || exit
-	curl -sSLO https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/${MIDSTM_BRANCH}/product/getLatestImageTags.sh
+	curl -sSLO https://raw.githubusercontent.com/redhat-developer/devspaces/${MIDSTM_BRANCH}/product/getLatestImageTags.sh
 	chmod +x getLatestImageTags.sh
 	mnf "[INFO] Latest image list for ${MIDSTM_BRANCH}"
 	/tmp/getLatestImageTags.sh -b ${MIDSTM_BRANCH} --nvr | tee /tmp/getLatestImageTags.sh.nvrs.txt
@@ -103,8 +103,8 @@ function loadNVRlog() {
 		fi
 		if [[ $collecting -eq 1 ]] && [[ $line ]]; then
 			# rh-maven35-maven-lib.noarch                               1:3.5.0-4.3.el7                @rhel-server-rhscl-7-rpms          
-			# NVR = codeready-workspaces-udi-container-2.16-8 (NVR notation)
-			# want  codeready-workspaces-udi-container:2.16-8 (prod:version notation)
+			# NVR = devspaces-udi-container-2.16-8 (NVR notation)
+			# want  devspaces-udi-container:2.16-8 (prod:version notation)
 			# shellcheck disable=SC2001,SC2086
 			echo "${NVR/-container-/-container:}/$(echo $line | sed -e "s#\(.\+\)[\ \t]\+\(.\+\)[\ \t]\+\@.\+#\1-\2#g")" >> ${MANIFEST_FILE}
 			# shellcheck disable=SC2001,SC2086
@@ -127,7 +127,7 @@ done
 
 log ""
 
-# allNVRs=codeready-workspaces-udi-container-2.16-6
+# allNVRs=devspaces-udi-container-2.16-6
 log "[INFO] Brew logs:"
 for NVR in ${allNVRs}; do
 	MANIFEST_FILE2="${WORKSPACE}/${CSV_VERSION}/rpms/manifest-rpms-${NVR}.txt"
@@ -151,7 +151,7 @@ fi
 ##################################
 
 # get uniq list of RPMs
-cat ${WORKSPACE}/${CSV_VERSION}/rpms/manifest-rpms-codeready-workspaces-* | sed -r -e "s#.+:${CRW_VERSION}-[0-9.]+/# #g" | sort | uniq > ${MANIFEST_UNIQ_FILE}
+cat ${WORKSPACE}/${CSV_VERSION}/rpms/manifest-rpms-devspaces-* | sed -r -e "s#.+:${CRW_VERSION}-[0-9.]+/# #g" | sort | uniq > ${MANIFEST_UNIQ_FILE}
 
 ##################################
 

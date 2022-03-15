@@ -5,7 +5,7 @@
 usage() {
     echo "
 Usage: $0 -b SOURCE_BRANCH -v CSV_VERSION
-Example: $0 -b crw-2-rhel-8 -v 2.yy
+Example: $0 -b devspaces-3-rhel-8 -v 3.yy
 "
     exit
 }
@@ -14,7 +14,7 @@ Example: $0 -b crw-2-rhel-8 -v 2.yy
 while [[ "$#" -gt 0 ]]; do
   case $1 in
     '-b') SOURCE_BRANCH="$2"; shift 1;; # this flag will create branches instead of using branches to create tags
-    '-v') CSV_VERSION="$2"; shift 1;; # 2.y.0
+    '-v') CSV_VERSION="$2"; shift 1;; # 3.y.0
   esac
   shift 1
 done
