@@ -1,6 +1,6 @@
 Links marked with this icon :door: are _internal to Red Hat_. This includes Jenkins servers, job configs in gitlab, and container sources in dist-git. 
 
-Because these services are internal, in the interest of making all things open, we've copied as much as possible into the link:https://github.com/redhat-developer/devspaces-images[codeready-workspaces-images] repo.
+Because these services are internal, in the interest of making all things open, we've copied as much as possible into the link:https://github.com/redhat-developer/devspaces-images[devspaces-images] repo.
 
 ## What's inside?
 
@@ -10,13 +10,13 @@ For the latest stable release, see the **devspaces-3.y-rhel-8** branch with the 
 
 ---
 
-This repository no longer hosts the CodeReady Workspaces Server assembly that mainly inherits Eclipse Che artifacts and repackages some of them. Server has moved to link:https://github.com/redhat-developer/devspaces-images/blob/devspaces-3-rhel-8/codeready-workspaces/README.adoc#how-to-build-locally[codeready-workspaces-images/codeready-workspaces].
+This repository no longer hosts the CodeReady Workspaces Server assembly that mainly inherits Eclipse Che artifacts and repackages some of them. Server has moved to link:https://github.com/redhat-developer/devspaces-images/blob/devspaces-3-rhel-8/devspaces-server/README.adoc#how-to-build-locally[devspaces-images/devspaces-server].
 
 ### How to Build CRW Containers Using casc Jenkins (REQUIRES VPN)
 
 See this document for how to use those build systems, in order to publish a container image to Red Hat Container Catalog:
 
-* https://github.com/redhat-developer/devtools-productization/tree/main/codeready-workspaces/processes
+* https://github.com/redhat-developer/devtools-productization/tree/main/devspaces/processes
 
 See also:
 
@@ -29,9 +29,9 @@ Folders under link:dependencies[/dependencies] are synced to https://github.com/
 
 The sync logic is in one of three places:
 
-* a Jenkins job - eg., link:https://github.com/redhat-developer/devspaces-images/blob/devspaces-3-rhel-8/crw-jenkins/jobs/CRW_CI/crw-theia-sources_2.x.jenkinsfile[crw-theia-sources_2.x.jenkinsfile], 
-* a get-sources-jenkins.sh script - eg., link:https://github.com/redhat-developer/devspaces-images/blob/devspaces-3-rhel-8/codeready-workspaces-plugin-java8/get-sources-jenkins.sh[plugin-java8 get-sources-jenkins.sh], or
-* a sync-*.sh script - eg., link:https://github.com/redhat-developer/devspaces-images/blob/devspaces-3-rhel-8/codeready-workspaces-devworkspace-controller/build/scripts/sync.sh[devworkspace controller build/scripts/sync.sh]. 
+* a Jenkins job - eg., link:https://github.com/redhat-developer/devspaces-images/blob/devspaces-3-rhel-8/crw-jenkins/jobs/CRW_CI/crw-dashboard_2.x.jenkinsfile[crw-dashboard_2.x.jenkinsfile], 
+* a get-sources-jenkins.sh script - eg., link:https://github.com/redhat-developer/devspaces-images/blob/devspaces-3-rhel-8/devspaces-dashboard/get-sources-jenkins.sh[dashboard get-sources-jenkins.sh], or
+* a sync-*.sh script - eg., link:https://github.com/redhat-developer/devspaces-images/blob/devspaces-3-rhel-8/devspaces-dashboard/build/scripts/sync.sh[dashboard/scripts/sync.sh]. 
 
 Note over time we're trying to move all sync logic out of Jenkinsfiles and into scripts that can be run locally, so during outages build process can still be orchestrated. Goal is to have Jenkins simply call sync.sh scripts to perform syncs, and get-sources.sh scripts to collect assets from Jenkins (or other places) in order to commit those source tarballs + trigger Brew builds.
 
@@ -45,7 +45,7 @@ Sync jobs:
 
 Branding is currently in two places.
 
-* To reskin link:https://github.com/eclipse-che/che-dashboard[Che Dashboard], see link:https://github.com/redhat-developer/devspaces-images/tree/devspaces-3-rhel-8/codeready-workspaces-dashboard/README.adoc[dashboard]
+* To reskin link:https://github.com/eclipse-che/che-dashboard[Che Dashboard], see link:https://github.com/redhat-developer/devspaces-images/tree/devspaces-3-rhel-8/devspaces-dashboard/README.adoc[dashboard]
 
 * To reskin link:https://github.com/eclipse-che/che-theia[Che Theia], see link:https://github.com/redhat-developer/devspaces-theia/tree/devspaces-3-rhel-8/conf/theia/branding[theia/conf/theia/branding]
 

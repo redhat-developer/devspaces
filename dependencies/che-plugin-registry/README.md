@@ -6,7 +6,7 @@ This repository holds ready-to-use plugins for different languages and technolog
 
 Any .vsix file used in CRW needs to be built from source and have sources published alongside it. This is a non-negotiable requirement, and means that .vsix files hosted on OpenVSX or elsewhere are not fit for use in CRW.
 
-Luckily there is an automatic way to build and publish .vsix files and their sources. Please raise a PR against the [codeready-workspaces-vscode-extensions repository](https://github.com/redhat-developer/devspaces-vscode-extensions).
+Luckily there is an automatic way to build and publish .vsix files and their sources. Please raise a PR against the [devspaces-vscode-extensions repository](https://github.com/redhat-developer/devspaces-vscode-extensions).
 
 ## Plugin Registry Build Process
 The CRW plugin registry is a fork of the upstream [Che plugin registry](https://github.com/eclipse-che/che-plugin-registry). While the build logic to build the actual registry is very similar to upstream, the steps required to actually build + publish the CRW plugin registry images is quite different.
@@ -16,27 +16,23 @@ A local build works just like upstream -- use the `build.sh` script. The only di
 
 ### CRW Plugin Registry Build/Publish
 All contributions to the CRW plugin registry should land in this repository. From there on, the following things happen:
-1. Code in this repository is synchronized from this repo to the [plugin registry directory in the codeready-workspaces-images repository](https://github.com/redhat-developer/devspaces-images/tree/devspaces-3-rhel-8/codeready-workspaces-pluginregistry) by a [Jenkins job](https://main-jenkins-csb-crwqe.apps.ocp-c1.prod.psi.redhat.com/job/CRW_CI/job/crw-pluginregistry_2.x).
-2. The job from step `1.` kicks off a subsequent [Jenkins job](https://main-jenkins-csb-crwqe.apps.ocp-c1.prod.psi.redhat.com/job/CRW_CI/job/sync-to-downstream_2.x) that then runs the bootstrap build, which uses the sync'd code in [codeready-workspaces-images repository](https://github.com/redhat-developer/devspaces-images/tree/devspaces-3-rhel-8/codeready-workspaces-pluginregistry). The boostrap build builds the plugin registry in offline mode, using tagged image references. The resulting binaries and meta.yaml files are placed in a .tar.gz archive and the archive is committed to rhpkg for later usage in Brew.
+1. Code in this repository is synchronized from this repo to the [plugin registry directory in the devspaces-images repository](https://github.com/redhat-developer/devspaces-images/tree/devspaces-3-rhel-8/devspaces-pluginregistry) by a [Jenkins job](https://main-jenkins-csb-crwqe.apps.ocp-c1.prod.psi.redhat.com/job/CRW_CI/job/crw-pluginregistry_2.x).
+2. The job from step `1.` kicks off a subsequent [Jenkins job](https://main-jenkins-csb-crwqe.apps.ocp-c1.prod.psi.redhat.com/job/CRW_CI/job/sync-to-downstream_2.x) that then runs the bootstrap build, which uses the sync'd code in [devspaces-images repository](https://github.com/redhat-developer/devspaces-images/tree/devspaces-3-rhel-8/devspaces-pluginregistry). The boostrap build builds the plugin registry in offline mode, using tagged image references. The resulting binaries and meta.yaml files are placed in a .tar.gz archive and the archive is committed to rhpkg for later usage in Brew.
 3. If step `2.` is successful then a Brew build is kicked off. The Brew build copies the generated content in the .tar.gz archive from step `2.` into the [Dockerfile](https://github.com/redhat-developer/devspaces/blob/devspaces-3-rhel-8/dependencies/che-plugin-registry/build/dockerfiles/Dockerfile) and completes the last stages of the plugin registry build.
 
 ## Building and Publishing Third Party Binaries for Plugin Registry Sidecar Containers
 
 Executables and language server dependencies needed in plugin sidecar containers can be built from this repo:
 
-* [redhat-developer/devspaces-deprecated](https://github.com/redhat-developer/devspaces-deprecated/blob/devspaces-3-rhel-8/)
+https://github.com/redhat-developer/devspaces-images
 
-For example, [kamel](https://github.com/redhat-developer/devspaces-deprecated/blob/devspaces-3-rhel-8/kamel/build.sh) binaries are used in the kubernetes sidecar:
+Sidecar image sources are then synced from the [devspaces-images](https://github.com/redhat-developer/devspaces-images) repo to a dist-git repo at Red Hat, and from built in Brew. 
 
-* [codeready-workspaces/plugin-kubernetes-rhel8](https://catalog.redhat.com/software/containers/codeready-workspaces/plugin-kubernetes-rhel8/5dae28895a13461646def87a)
-* [crw/plugin-kubernetes-rhel8](https://quay.io/repository/crw/plugin-kubernetes-rhel8?tag=latest&tab=tags)
+For example, the udi sidecar:
 
-Sidecar image sources are then synced from the [codeready-workspaces-images](https://github.com/redhat-developer/devspaces-images) repo to a dist-git repo at Red Hat, and from built in Brew. For example, the kubernetes sidecar:
-
-* [codeready-workspaces-images/codeready-workspaces-plugin-kubernetes](https://github.com/redhat-developer/devspaces-images/tree/devspaces-3-rhel-8/codeready-workspaces-plugin-kubernetes)
-* [containers/codeready-workspaces-plugin-kubernetes](http://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-plugin-kubernetes/tree/sources?h=devspaces-3-rhel-8)
-
+* [devspaces-images/devspaces-udi](https://github.com/redhat-developer/devspaces-images/tree/devspaces-3-rhel-8/devspacesudi)
+* [containers/devspaces-udi](http://pkgs.devel.redhat.com/cgit/containers/devspaces-udi/tree/sources?h=devspaces-3-rhel-8)
 
 ## License
 
-CodeReady Workspaces is open sourced under the Eclipse Public License 2.0.
+Red Hat OpenShift Dev Spaces is open sourced under the Eclipse Public License 2.0.

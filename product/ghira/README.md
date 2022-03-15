@@ -19,7 +19,7 @@ Or
 
 ```
 sudo dnf install -yq python3-virtualenv redhat-rpm-config gcc libffi-devel python3-devel openssl-devel cargo rust
-cd path/to/codeready-workspaces/product/ghira
+cd path/to/devspaces/product/ghira
 pip install -q --upgrade pip
 virtualenv-3 .
 . bin/activate

@@ -147,7 +147,7 @@ for d in $(cat dependencies/LATEST_IMAGES); do
 done
 
 if [[ ${COMMIT_CHANGES} -eq 1 ]]; then
-  # devspaces-operator-bundle1621 if any gz resources are larger than 10485760b, must use MaxFileSize to force dist-git to shut up and take my sources!
+  # CRW-1621 if any gz resources are larger than 10485760b, must use MaxFileSize to force dist-git to shut up and take my sources!
   if [[ $(git commit -s -m "chore: Update dependencies/LATEST_IMAGES, COMMITS, DIGESTS, INDEXES" dependencies/LATEST_IMAGES* || true) == *"nothing to commit, working tree clean"* ]]; then
     echo "[INFO] No changes to commit."
   else

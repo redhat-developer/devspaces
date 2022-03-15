@@ -395,7 +395,7 @@ for URLfrag in $CONTAINERS; do
 		fi
 
 		if [[ ${PUSHTOQUAY} -eq 1 ]] && [[ ${REGISTRY} != *"quay.io"* ]]; then
-			QUAYDEST="${REGISTRYPRE}${URLfrag}"; QUAYDEST=${QUAYDEST##*devspaces-} # plugin-java8 or operator
+			QUAYDEST="${REGISTRYPRE}${URLfrag}"; QUAYDEST=${QUAYDEST##*devspaces-} # udi or operator
 			# special case for the operator and bundle images, which don't follow the same pattern in osbs as quay
 			if [[ ${QUAYDEST} == "operator" ]] || [[ ${QUAYDEST} == "operator-"* ]]; then QUAYDEST="devspaces-3-rhel8-${QUAYDEST}"; fi
 			QUAYDEST="quay.io/devspaces/${QUAYDEST}"
