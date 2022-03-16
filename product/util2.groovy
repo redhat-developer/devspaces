@@ -2,7 +2,6 @@ import groovy.transform.Field
 
 @Field String CSV_VERSION_F = ""
 // Requires installYq()
-// TODO CRW-2637 for 2.16, change these to use operator-bundle as metadata won't exist
 def String getCSVVersion(String MIDSTM_BRANCH) {
   if (CSV_VERSION_F.equals("")) {
     CSV_VERSION_F = sh(script: '''#!/bin/bash -xe
@@ -368,55 +367,6 @@ def runJob(String jobPath, boolean doWait=false, boolean doPropagateStatus=true,
     println("<b style='color:blue'>Job <a href=${jobLink}/>" + (jobLink.replaceAll("/job/","/")) + "</a> launched</b>.")
   }
   return getLastSuccessfulBuildId(jenkinsURL + jobPath)
-}
-
-// @since 2.16 - method no longer used; shall we remove it?
-def runJobSyncToDownstream(String jobPath, String REPOS, boolean doWait=false, boolean doPropagateStatus=true, String jenkinsURL=JENKINS_URL) {
-  def int prevSuccessBuildId = getLastSuccessfulBuildId(jenkinsURL + jobPath) // eg., #5
-  println ("runJob(" + jobPath + "["+REPOS+"]) :: prevSuccessBuildId = " + prevSuccessBuildId)
-  final jobResult = build(
-    // convert jobPath /job/folder/job/jobname (used in json API in getLastSuccessfulBuildId() to /folder/jobname (used in build())
-    job: jobPath.replaceAll("/job/","/"),
-    wait: doWait,
-    propagate: doPropagateStatus,
-    quietPeriod: 0,
-    parameters: [
-      [
-        $class: 'StringParameterValue',
-        name: 'REPOS',
-        value: REPOS
-      ],
-      [
-        $class: 'BooleanParameterValue',
-        name: 'FORCE_BUILD',
-        value: true
-      ],
-      [
-        $class: 'BooleanParameterValue',
-        name: 'SCRATCH',
-        value: false
-      ]
-    ]
-  )
-  // wait until #5 -> #6
-  if (doWait) { 
-    jobLink=jobPath + "/" +  jobResult?.number?.toString()
-    println("waiting for runJob(" + jobPath + "["+REPOS+"]) :: prevSuccessBuildId = " + prevSuccessBuildId)
-    if (!waitForNewBuild(jenkinsURL + jobPath, prevSuccessBuildId)) { 
-      println("<b style='color:red'>Job <a href=${jobLink}/console>" + (jobLink.replaceAll("/job/","/")) + " ["+REPOS+"]</a> failed</b>.")
-      currentBuild.description+="<br/>* <b style='color:red'>FAILED: <a href=${jobLink}/console>" + (jobLink.replaceAll("/job/","/")) + " ["+REPOS+"]</a></b>"
-      currentBuild.result = 'FAILED'
-      notifyBuildFailed()
-    }
-    println("<b style='color:green'>Job <a href=${jobLink}/console>" + (jobLink.replaceAll("/job/","/")) + " ["+REPOS+"]</a> completed</b>.")
-  } else {
-    jobLink=jobPath + "/" +  (prevSuccessBuildId + 1).toString() + "/"
-    println("<b style='color:blue'>Job <a href=${jobLink}/>" + (jobLink.replaceAll("/job/","/")) + " ["+REPOS+"]</a> launched</b>.")
-  }
-
-  // rather than latest success, return the number of THIS build so we get the actual build (not just the latest one)
-  // return getLastSuccessfulBuildId(jenkinsURL + jobPath)
-  return (jobResult?.number?.toInteger() as int)
 }
 
 /* 

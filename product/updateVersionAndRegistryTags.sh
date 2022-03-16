@@ -257,12 +257,7 @@ updateVersion() {
     echo "DEVSPACES_VERSION = $DEVSPACES_VERSION"
     for op in "operator-bundle"; do
       for ver in "${DEVSPACES_VERSION}" "3.x"; do
-        # TODO CRW-2637 after we branch for 2.16, remove the .100 option
-        if [[ $DEVSPACES_VERSION == "2.14" ]] || [[ $DEVSPACES_VERSION == "2.15" ]]; then
-          replaceField "${WORKDIR}/dependencies/job-config.json" ".CSVs[\"${op}\"][\"${ver}\"][\"CSV_VERSION\"]" "\"${DEVSPACES_VERSION}.100\""
-        else
-          replaceField "${WORKDIR}/dependencies/job-config.json" ".CSVs[\"${op}\"][\"${ver}\"][\"CSV_VERSION\"]" "\"${DEVSPACES_VERSION}.0\""
-        fi
+        replaceField "${WORKDIR}/dependencies/job-config.json" ".CSVs[\"${op}\"][\"${ver}\"][\"CSV_VERSION\"]" "\"${DEVSPACES_VERSION}.0\""
       done
     done
 
