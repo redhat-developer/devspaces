@@ -19,7 +19,10 @@ fi
 pkgs_devel_branch=${devspaces_repos_branch}
 
 pduser=crw-build
+
+# TODO https://issues.redhat.com/browse/CRW-2817 move this to new devspaces-samples repo
 samplesRepo=crw-samples
+
 SOURCE_BRANCH="" # normally, use this script to create tags, not branches
 
 SCRIPT=$(readlink -f "$0"); SCRIPTPATH=$(dirname "$SCRIPT")
@@ -194,22 +197,18 @@ pushTagGH () {
 	popd >/dev/null || exit 1
 }
 
-org="redhat-developer"
 for d in \
 devspaces \
 devspaces-chectl \
 devspaces-images \
 devspaces-theia \
 ; do
-	pushTagGH $d $org
+	pushTagGH $d "redhat-developer"
 done
 
 # create branches for devspaces samples
 # all samples are located in https://github.com/${samplesRepo}/
 # the source branch is devfilev2
-
-# TODO https://issues.redhat.com/browse/CRW-2817 move this to new devspaces-samples repo
-org="${samplesRepo}"
 SOURCE_BRANCH="devfilev2"
 if [[ $CRW_VERSION ]]; then # don't do this if there's no CRW_VERSION set
 	echo "Publish new tags for ${CRW_VERSION}-devfilev2 ..."
@@ -236,7 +235,7 @@ if [[ $CRW_VERSION ]]; then # don't do this if there's no CRW_VERSION set
 	demo \
 	gradle-demo-project \
 	; do
-		pushTagGH $s $org
+		pushTagGH $s ${samplesRepo}
 	done
 fi
 
