@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2020-2021 Red Hat, Inc.
+# Copyright (c) 2020-2022 Red Hat, Inc.
 # This program and the accompanying materials are made
 # available under the terms of the Eclipse Public License 2.0
 # which is available at https://www.eclipse.org/legal/epl-2.0/
@@ -77,11 +77,11 @@ jobs:
         docker cp pluginRegistry:${EXPORTED_FOLDER} root-dir/v3
         docker rm -f pluginRegistry
         cp root-dir/v3/plugins/index.json root-dir/index.json
-        tar zcvf content-crw.tgz -C root-dir .
+        tar zcvf content-devspaces.tgz -C root-dir .
     - uses: actions/upload-artifact@v2
       with:
-        name: plugin-registry-content-crw
-        path: dependencies/che-plugin-registry/content-crw.tgz
+        name: plugin-registry-content-devspaces
+        path: dependencies/che-plugin-registry/content-devspaces.tgz
   pull-request-info:
     if: ${{ github.event_name == 'pull_request' }}
     runs-on: ubuntu-20.04

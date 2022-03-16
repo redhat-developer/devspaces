@@ -118,7 +118,7 @@ Usage:
   $0 -b ${DWNSTM_BRANCH} --stage --sort                   | use default list of CRW images in RHEC Stage, sorted alphabetically
   $0 -b ${DWNSTM_BRANCH} --arches                         | use default list of CRW images in RHEC Prod; show arches
 
-  $0 -c 'crw/theia-rhel8 crw/theia-endpoint-rhel8' --quay      | check latest tag for specific Quay images, with branch = ${DWNSTM_BRANCH}
+  $0 -c 'devspaces/theia-rhel8 devspaces/theia-endpoint-rhel8' --quay      | check latest tag for specific Quay images, with branch = ${DWNSTM_BRANCH}
   $0 -c devspaces-jwtproxy-rhel8 --osbs             | check an image from OSBS
   $0 -c devspaces-jwtproxy-rhel8 --nvr              | check an NVR from OSBS
   $0 -c 'rhoar-nodejs/nodejs-10 jboss-eap-7/eap72-openshift'   | check latest tags for specific RHEC images

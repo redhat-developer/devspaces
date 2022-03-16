@@ -78,7 +78,7 @@ for opmetbun in operator-bundle; do
     jq ".raw_messages[].msg.index | [.added_bundle_images[0], .index_image, .ocp_version] | @csv" -r | sort -uV | \
     grep "${BUNDLE_OSBS}" | sed -r -e "s#registry-proxy.engineering.redhat.com/rh-osbs/devspaces-##" | tr -d "\"")
     echo '        "'${opmetbun}'": {' >> dependencies/LATEST_IMAGES_INDEXES.json
-    echo '            "'${VERSION}'": {' >> dependencies/LATEST_IMAGES_INDEXES.json # crw version
+    echo '            "'${VERSION}'": {' >> dependencies/LATEST_IMAGES_INDEXES.json # devspaces version
     for row in $results; do
       IFS=',' read -r -a cols <<< "$row"
       # echo "operator-bundle[$VERSION][${cols[2]}] = { ${cols[0]}, ${cols[1]} }"
@@ -91,12 +91,8 @@ for opmetbun in operator-bundle; do
     echo '                "OSBSImage": "'registry-proxy.engineering.redhat.com/rh-osbs/devspaces-${BUNDLE_OSBS}'",' >> dependencies/LATEST_IMAGES_INDEXES.json # ocp version
     echo '                "quayImage": "'${d}'",' >> dependencies/LATEST_IMAGES_INDEXES.json # ocp version
     echo '                "tag": "'${BUNDLE_TAG}'"' >> dependencies/LATEST_IMAGES_INDEXES.json # ocp version
-    echo '            }' >> dependencies/LATEST_IMAGES_INDEXES.json # crw version
-    if [[ $opmetbun == "operator-metadata" ]]; then 
-      echo '        },' >> dependencies/LATEST_IMAGES_INDEXES.json # operator-bundle
-    else
-      echo '        }' >> dependencies/LATEST_IMAGES_INDEXES.json # operator-bundle
-    fi
+    echo '            }' >> dependencies/LATEST_IMAGES_INDEXES.json # devspaces version
+    echo '        }' >> dependencies/LATEST_IMAGES_INDEXES.json # operator-bundle
   done
 done
 { 

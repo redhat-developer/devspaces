@@ -2,11 +2,11 @@
 
 # simple utility script to delete tags from the CRW images, eg., to purge obsolete nightly tags
 
-# get ACCESS_TOKEN from https://quay.io/organization/crw/application/ZLH33ADU8A8PHC6N9UNM
+# get ACCESS_TOKEN from https://quay.io/organization/devspaces/application/ZLH33ADU8A8PHC6N9UNM
 
 # Thanks to https://gist.github.com/berendt/fca9bfae23d6462ffab6e861dee82707#file-delete-a-tag-on-all-repositories-in-an-organisation for inspiration!
 
-NAMESPACE=crw
+NAMESPACE=devspaces
 TAG=nightly
 # delete all tags in CRW images
 for d in $(cat ../dependencies/LATEST_IMAGES); do

@@ -94,7 +94,7 @@ if [[ $REPOS ]] && [[ ${VERBOSE} -eq 1 ]]; then echo "[INFO] #2 Console parser s
 # if [[ ! ${REPOS} ]] || [[ ${REPOS} == " " ]]; then
 #   # for scratch builds look for this line:
 #   # platform:- - atomic_reactor.plugins.tag_from_config - DEBUG - Using additional unique tag 
-#   # rh-osbs/devspaces-server-rhel8:crw-2.0-rhel-8-containers-candidate-89319-20191122035915
+#   # rh-osbs/devspaces-server-rhel8:devspaces-3.0-rhel-8-containers-candidate-89319-20191122035915
 #   echo "REPO_PATH=\"$(grep -E "platform:- - atomic_reactor.plugins.tag_from_config - DEBUG - Using additional unique tag " "${LOGFILE}" \
 #     | grep -v grep | sed -r -e "s@.+Using additional primary tag (.+)@registry-proxy.engineering.redhat.com/\1@" | tr "\n\r" " " )\"" \
 #     | tee "${WORKSPACE}"/build_desc.txt

@@ -15,7 +15,7 @@ Options:
     --registry, -r [REGISTRY]
         Docker registry to be used for image; default 'quay.io'
     --organization, -o [ORGANIZATION]
-        Docker image organization to be used for image; default: 'crw'
+        Docker image organization to be used for image; default: 'devspaces'
     --offline
         Build offline version of registry, with all artifacts included
         cached in the registry; disabled by default.

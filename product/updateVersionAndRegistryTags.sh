@@ -115,7 +115,7 @@ computeLatestCSV() {
   fi
   rm -fr /tmp/${SOURCE_CONTAINER//\//-}-${containerTag}-*/
   ${SCRIPTPATH}/containerExtract.sh ${SOURCE_CONTAINER}:${containerTag} --delete-before --delete-after 2>&1 >/dev/null || true
-  grep -E "crwoperator|replaces:" /tmp/${SOURCE_CONTAINER//\//-}-${containerTag}-*/manifests/devspaces.csv.yaml 
+  grep -E "devspacesoperator|replaces:" /tmp/${SOURCE_CONTAINER//\//-}-${containerTag}-*/manifests/devspaces.csv.yaml 
   CSV_VERSION_PREV=$(yq -r '.spec.version' /tmp/${SOURCE_CONTAINER//\//-}-${containerTag}-*/manifests/devspaces.csv.yaml 2>/dev/null | tr "+" "-")
   rm -fr /tmp/${SOURCE_CONTAINER//\//-}-${containerTag}-*/
   echo "Found CSV_VERSION_PREV = ${CSV_VERSION_PREV}"
@@ -257,12 +257,7 @@ updateVersion() {
     echo "DEVSPACES_VERSION = $DEVSPACES_VERSION"
     for op in "operator-bundle"; do
       for ver in "${DEVSPACES_VERSION}" "3.x"; do
-        # TODO CRW-2637 after we branch for 2.16, remove the .100 option
-        if [[ $DEVSPACES_VERSION == "2.14" ]] || [[ $DEVSPACES_VERSION == "2.15" ]]; then
-          replaceField "${WORKDIR}/dependencies/job-config.json" ".CSVs[\"${op}\"][\"${ver}\"][\"CSV_VERSION\"]" "\"${DEVSPACES_VERSION}.100\""
-        else
-          replaceField "${WORKDIR}/dependencies/job-config.json" ".CSVs[\"${op}\"][\"${ver}\"][\"CSV_VERSION\"]" "\"${DEVSPACES_VERSION}.0\""
-        fi
+        replaceField "${WORKDIR}/dependencies/job-config.json" ".CSVs[\"${op}\"][\"${ver}\"][\"CSV_VERSION\"]" "\"${DEVSPACES_VERSION}.0\""
       done
     done
 
