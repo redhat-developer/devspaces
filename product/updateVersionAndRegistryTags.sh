@@ -115,7 +115,7 @@ computeLatestCSV() {
   fi
   rm -fr /tmp/${SOURCE_CONTAINER//\//-}-${containerTag}-*/
   ${SCRIPTPATH}/containerExtract.sh ${SOURCE_CONTAINER}:${containerTag} --delete-before --delete-after 2>&1 >/dev/null || true
-  grep -E "crwoperator|replaces:" /tmp/${SOURCE_CONTAINER//\//-}-${containerTag}-*/manifests/devspaces.csv.yaml 
+  grep -E "devspacesoperator|replaces:" /tmp/${SOURCE_CONTAINER//\//-}-${containerTag}-*/manifests/devspaces.csv.yaml 
   CSV_VERSION_PREV=$(yq -r '.spec.version' /tmp/${SOURCE_CONTAINER//\//-}-${containerTag}-*/manifests/devspaces.csv.yaml 2>/dev/null | tr "+" "-")
   rm -fr /tmp/${SOURCE_CONTAINER//\//-}-${containerTag}-*/
   echo "Found CSV_VERSION_PREV = ${CSV_VERSION_PREV}"

@@ -1,13 +1,13 @@
 #!/bin/bash
 #
-# Copyright (c) 2021 Red Hat, Inc.
+# Copyright (c) 2021-22 Red Hat, Inc.
 # This program and the accompanying materials are made
 # available under the terms of the Eclipse Public License 2.0
 # which is available at https://www.eclipse.org/legal/epl-2.0/
 #
 # SPDX-License-Identifier: EPL-2.0
 #
-# use this script to update the deploy/openshift/crw-*-registry.yaml file
+# use this script to update the deploy/openshift/*-registry.yaml file
 # script is shared with both CRW devfile and plugin registries
 
 unset SOURCE_TEMPLATE

@@ -19,7 +19,7 @@ def String getCSVVersion(String MIDSTM_BRANCH) {
     println "This could mean that your VERSION file or CSV file update processes have not run correctly."
     println "Check these jobs:"
     println "* https://main-jenkins-csb-crwqe.apps.ocp-c1.prod.psi.redhat.com/job/CRW_CI/job/Releng/job/update-version-and-registry-tags/ "
-    println "* https://main-jenkins-csb-crwqe.apps.ocp-c1.prod.psi.redhat.com/job/CRW_CI/job/crw-operator-metadata_" + getJobBranch(MIDSTM_BRANCH)
+    println "* https://main-jenkins-csb-crwqe.apps.ocp-c1.prod.psi.redhat.com/job/CRW_CI/job/crw-operator-bundle_" + getJobBranch(MIDSTM_BRANCH)
     println "Check these files:"
     println "https://raw.githubusercontent.com/redhat-developer/devspaces/" + MIDSTM_BRANCH + "/dependencies/VERSION"
     println "https://github.com/redhat-developer/devspaces-images/blob/" + MIDSTM_BRANCH + "/devspaces-operator-bundle/manifests/devspaces.csv.yaml"
@@ -51,7 +51,7 @@ def String getJobBranch(String MIDSTM_BRANCH) {
       JOB_BRANCH=MIDSTM_BRANCH.replaceAll("devspaces-","").replaceAll("-rhel-8","")
       // for 3.y
       // TODO remove this after 3.1 is live
-      JOB_BRANCH=MIDSTM_BRANCH.replaceAll("crw-","").replaceAll("-rhel-8","")
+      JOB_BRANCH=MIDSTM_BRANCH.replaceAll("devspaces-","").replaceAll("-rhel-8","")
     }
   }
   return JOB_BRANCH
@@ -155,9 +155,9 @@ def updateBaseImages(String REPO_PATH, String SOURCES_BRANCH, String FLAGS="", S
     getCrwVersion(SOURCES_BRANCH)
   }
   if (!SCRIPTS_BRANCH?.trim() && CRW_BRANCH_F?.trim()) {
-    SCRIPTS_BRANCH = CRW_BRANCH_F // this should work for midstream/downstream branches like crw-2.6-rhel-8
+    SCRIPTS_BRANCH = CRW_BRANCH_F // this should work for midstream/downstream branches like devspaces-3.1-rhel-8
   } else if (!SCRIPTS_BRANCH?.trim() && MIDSTM_BRANCH?.trim()) {
-    SCRIPTS_BRANCH = MIDSTM_BRANCH // this should work for midstream/downstream branches like crw-2.6-rhel-8
+    SCRIPTS_BRANCH = MIDSTM_BRANCH // this should work for midstream/downstream branches like devspaces-3.1-rhel-8
   } else if (!SCRIPTS_BRANCH?.trim() && JOB_BRANCH?.trim()) {
     SCRIPTS_BRANCH = JOB_BRANCH // this might fail if the JOB_BRANCH is 2.6 and there's no such branch
   }
@@ -245,12 +245,12 @@ def sshMountRcmGuest() {
 export KRB5CCNAME=/var/tmp/crw-build_ccache
 
 # set up sshfs mount
-RCMG="''' + DESTHOST + ''':/mnt/rcm-guest/staging/crw"
+RCMG="''' + DESTHOST + ''':/mnt/rcm-guest/staging/devspaces"
 sshfs --version
 for mnt in RCMG; do 
   mkdir -p ${WORKSPACE}/${mnt}-ssh; 
   if [[ $(file ${WORKSPACE}/${mnt}-ssh 2>&1) == *"Transport endpoint is not connected"* ]]; then fusermount -uz ${WORKSPACE}/${mnt}-ssh; fi
-  if [[ ! -d ${WORKSPACE}/${mnt}-ssh/crw ]]; then  sshfs ${!mnt} ${WORKSPACE}/${mnt}-ssh; fi
+  if [[ ! -d ${WORKSPACE}/${mnt}-ssh/devspaces ]]; then  sshfs ${!mnt} ${WORKSPACE}/${mnt}-ssh; fi
 done
 ''')
   return DESTHOST

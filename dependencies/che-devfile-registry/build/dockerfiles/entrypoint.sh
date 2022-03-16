@@ -166,7 +166,7 @@ function extract_and_use_related_images_env_variables_with_image_digest_info() {
     # Try to read RELATED_IMAGES from devspaces.csv.yaml (this will not work in disconnected environment).
     # CRW_BRANCH env descries the branch where related csv.yaml is located; 
     # default value is devspaces-3-rhel-8 but should be overwritten when built from a stable branch like devspaces-3.1-rhel-8
-    curl -sSLo csv.yaml https://raw.githubusercontent.com/redhat-developer/devspaces-images/"${CRW_BRANCH}"/devspaces-operator-metadata-generated/manifests/devspaces.csv.yaml
+    curl -sSLo csv.yaml https://raw.githubusercontent.com/redhat-developer/devspaces-images/"${CRW_BRANCH}"/devspaces-operator-bundle-generated/manifests/devspaces.csv.yaml
     readarray -t images < <(grep "image:" csv.yaml | sed -r "s;.*image:[[:space:]]*'?\"?([._:a-zA-Z0-9-]*/?[._a-zA-Z0-9-]*/[._a-zA-Z0-9-]*(@sha256)?:?[._a-zA-Z0-9-]*)'?\"?[[:space:]]*;\1;")
 
     if [[ -n "${#images[@]}" ]]; then

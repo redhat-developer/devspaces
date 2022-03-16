@@ -29,7 +29,7 @@ jobs:
         uses: dawidd6/action-download-artifact@v2
         with:
           workflow: ${{ github.event.workflow_run.workflow_id }}
-          name: plugin-registry-content-crw
+          name: plugin-registry-content-devspaces
           path: content
       - name: PR number
         uses: dawidd6/action-download-artifact@v2
@@ -75,7 +75,7 @@ jobs:
                PARENT_DIR=$(dirname $file);
                cp ${PARENT_DIR}/meta.yaml ${PARENT_DIR}/index.html
              done
-           export DEPLOY_DOMAIN=https://pr-check-${PR_NUMBER}-crw-plugin-registry.surge.sh
+           export DEPLOY_DOMAIN=https://pr-check-${PR_NUMBER}-devspaces-plugin-registry.surge.sh
            echo "DEPLOY_DOMAIN=$DEPLOY_DOMAIN" >> $GITHUB_ENV
            surge ./unpacked --domain $DEPLOY_DOMAIN
       - name: 'Comment PR'

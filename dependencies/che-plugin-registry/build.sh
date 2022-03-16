@@ -13,7 +13,7 @@ set -e
 base_dir=$(cd "$(dirname "$0")"; pwd)
 
 REGISTRY="quay.io"
-ORGANIZATION="crw"
+ORGANIZATION="devspaces"
 TAG="next"
 DOCKERFILE="./build/dockerfiles/Dockerfile"
 SKIP_OCI_IMAGE="false"
