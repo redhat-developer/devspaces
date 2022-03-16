@@ -46,11 +46,8 @@ def String getJobBranch(String MIDSTM_BRANCH) {
     if (MIDSTM_BRANCH.equals("devspaces-3-rhel-8") || MIDSTM_BRANCH.equals("main")) {
       JOB_BRANCH="3.x"
     } else {
-      // for 3.y
-      JOB_BRANCH=MIDSTM_BRANCH.replaceAll("devspaces-","").replaceAll("-rhel-8","")
-      // for 3.y
-      // TODO remove this after 3.1 is live
-      JOB_BRANCH=MIDSTM_BRANCH.replaceAll("devspaces-","").replaceAll("-rhel-8","")
+      // for 3.y (and 2.y)
+      JOB_BRANCH=MIDSTM_BRANCH.replaceAll("devspaces-","").replaceAll("crw-","").replaceAll("-rhel-8","")
     }
   }
   return JOB_BRANCH
