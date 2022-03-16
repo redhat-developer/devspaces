@@ -235,18 +235,19 @@ def installRedHatInternalCerts() {
   ''')
 }
 
-def sshMountRcmGuest() {
+// TODO: for 3.yy, use path = devspaces
+def sshMountRcmGuest(String path="crw") {
   DESTHOST="crw-build/codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com@rcm-guest.app.eng.bos.redhat.com"
   sh('''#!/bin/bash -xe
 export KRB5CCNAME=/var/tmp/crw-build_ccache
 
 # set up sshfs mount
-RCMG="''' + DESTHOST + ''':/mnt/rcm-guest/staging/devspaces"
+RCMG="''' + DESTHOST + ''':/mnt/rcm-guest/staging/''' + path + '''"
 sshfs --version
 for mnt in RCMG; do 
   mkdir -p ${WORKSPACE}/${mnt}-ssh; 
   if [[ $(file ${WORKSPACE}/${mnt}-ssh 2>&1) == *"Transport endpoint is not connected"* ]]; then fusermount -uz ${WORKSPACE}/${mnt}-ssh; fi
-  if [[ ! -d ${WORKSPACE}/${mnt}-ssh/devspaces ]]; then  sshfs ${!mnt} ${WORKSPACE}/${mnt}-ssh; fi
+  if [[ ! -d ${WORKSPACE}/${mnt}-ssh/''' + path + ''' ]]; then  sshfs ${!mnt} ${WORKSPACE}/${mnt}-ssh; fi
 done
 ''')
   return DESTHOST
