@@ -104,7 +104,7 @@ replaceField()
 
 computeLatestCSV() {
   image=$1 # operator-bundle
-  SOURCE_CONTAINER=registry.redhat.io/devspaces/devspaces-3-rhel8-${image}
+  SOURCE_CONTAINER=registry.redhat.io/devspaces/devspaces-${image}
   containerTag=$(skopeo inspect docker://${SOURCE_CONTAINER} | jq -r '.Labels.url' | sed -r -e "s#.+/images/##")
   echo "Found containerTag = ${containerTag}"
 
