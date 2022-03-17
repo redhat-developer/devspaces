@@ -206,16 +206,10 @@ def getLastCommitSHA(String REPO_PATH) {
 }
 
 def getCRWLongName(String SHORT_NAME) {
-  if (SHORT_NAME == "server") {
-    return "devspaces"
-  }
   return "devspaces-" + SHORT_NAME
 }
 
 def getCRWShortName(String LONG_NAME) {
-  if (LONG_NAME == "devspaces") {
-    return "server"
-  }
   return LONG_NAME.minus("devspaces-")
 }
 
