@@ -119,8 +119,8 @@ Usage:
   $0 -b ${DWNSTM_BRANCH} --arches                         | use default list of CRW images in RHEC Prod; show arches
 
   $0 -c 'devspaces/theia-rhel8 devspaces/theia-endpoint-rhel8' --quay      | check latest tag for specific Quay images, with branch = ${DWNSTM_BRANCH}
-  $0 -c devspaces-jwtproxy-rhel8 --osbs             | check an image from OSBS
-  $0 -c devspaces-jwtproxy-rhel8 --nvr              | check an NVR from OSBS
+  $0 -c devspaces-operator --osbs                       | check an image from OSBS
+  $0 -c devspaces-devspaces-rhel8-operator --nvr        | check an NVR from OSBS
   $0 -c 'rhoar-nodejs/nodejs-10 jboss-eap-7/eap72-openshift'   | check latest tags for specific RHEC images
   $0 -c ubi7-minimal -c ubi8-minimal --osbs -n 3 --tag .       | check OSBS registry; show all tags; show 3 tags per container
   $0 -c 'devtools/go-toolset-rhel7 ubi7/go-toolset' --tag 1.1* | check RHEC prod registry; show 1.1* tags (exclude latest and -sources)
