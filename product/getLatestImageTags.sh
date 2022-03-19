@@ -198,7 +198,10 @@ if [[ ${REGISTRY} != "" ]]; then
 	REGISTRYPRE="${REGISTRY##*://}/"
 	if [[ ${REGISTRY} == *"registry-proxy.engineering.redhat.com"* ]]; then
 		if [[ ${CONTAINERS} == "" ]] || [[ ${CONTAINERS} == "${CRW_CONTAINERS}" ]]; then 
-			CONTAINERS="${CRW_CONTAINERS}"; CONTAINERS=${CONTAINERS//devspaces-3-rhel8-/}; CONTAINERS="${CONTAINERS//devspaces\//devspaces-}"; fi
+			CONTAINERS="${CRW_CONTAINERS}"; CONTAINERS=${CONTAINERS//devspaces-3-rhel8-/}; CONTAINERS="${CONTAINERS//devspaces\//devspaces-}"
+			CONTAINERS="${CONTAINERS//devspaces-devspaces/devspaces}"
+			CONTAINERS="${CONTAINERS/devspaces-rhel8-operator/devspaces-operator}"
+		fi
 	elif [[ ${REGISTRY} == *"quay.io"* ]]; then
 		searchTag=":${latestNext}"
 		if [[ ${CONTAINERS} == "${CRW_CONTAINERS}" ]] || [[ ${CONTAINERS} == "" ]]; then
@@ -393,9 +396,9 @@ for URLfrag in $CONTAINERS; do
 		if [[ ${PUSHTOQUAY} -eq 1 ]] && [[ ${REGISTRY} != *"quay.io"* ]]; then
 			QUAYDEST="${REGISTRYPRE}${URLfrag}"; QUAYDEST=${QUAYDEST##*devspaces-} # udi or operator
 			# special case for the operator and bundle images, which don't follow the same pattern in osbs as quay
-			if [[ ${QUAYDEST} == "operator" ]] || [[ ${QUAYDEST} == "operator-"* ]]; then QUAYDEST="devspaces-3-rhel8-${QUAYDEST}"; fi
+			if [[ ${QUAYDEST} == "operator-bundle" ]]; then QUAYDEST="devspaces-operator-bundle"; fi
+			if [[ ${QUAYDEST} == "operator" ]];        then QUAYDEST="devspaces-rhel8-operator"; fi
 			QUAYDEST="quay.io/devspaces/${QUAYDEST}"
-
 
 			if [[ $(skopeo --insecure-policy inspect docker://${QUAYDEST}:${LATESTTAG} 2>&1) == *"Error"* ]] || [[ ${PUSHTOQUAYFORCE} -eq 1 ]]; then 
 				# CRW-1914 copy latest tag ONLY if it doesn't already exist on the registry, to prevent re-timestamping it and making it look new
