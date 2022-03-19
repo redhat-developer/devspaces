@@ -105,16 +105,12 @@ if [[ ${pkgs_devel_branch} ]] && [[ ${CSV_VERSION} ]]; then
 	\
 	devspaces-idea \
 	devspaces-imagepuller \
-	devspaces-jwtproxy \
 	devspaces-machineexec \
-	devspaces-pluginbroker-artifacts \
-	\
-	devspaces-pluginbroker-metadata \
 	devspaces-pluginregistry \
 	devspaces-server \
+	\
 	devspaces-theia-dev \
 	devspaces-theia-endpoint \
-	\
 	devspaces-theia \
 	devspaces-traefik \
 	devspaces-udi \

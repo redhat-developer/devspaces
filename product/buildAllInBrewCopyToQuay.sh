@@ -84,11 +84,8 @@ if [[ $PHASES == *"1"* ]]; then
         devspaces-devfileregistry \
         devspaces-idea \
         devspaces-imagepuller \
-        devspaces-jwtproxy \
         devspaces-machineexec \
         devspaces-operator \
-        devspaces-pluginbroker-artifacts \
-        devspaces-pluginbroker-metadata \
         devspaces-pluginregistry \
         devspaces-server \
         devspaces-theia-dev \

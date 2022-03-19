@@ -72,16 +72,12 @@ devspaces/devfileregistry-rhel8 \
 \
 devspaces/idea-rhel8 \
 devspaces/imagepuller-rhel8 \
-devspaces/jwtproxy-rhel8 \
 devspaces/machineexec-rhel8 \
-devspaces/pluginbroker-artifacts-rhel8 \
-\
-devspaces/pluginbroker-metadata-rhel8 \
 devspaces/pluginregistry-rhel8 \
 devspaces/server-rhel8 \
+\
 devspaces/theia-dev-rhel8 \
 devspaces/theia-endpoint-rhel8 \
-\
 devspaces/theia-rhel8 \
 devspaces/traefik-rhel8 \
 devspaces/udi-rhel8 \
