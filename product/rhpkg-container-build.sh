@@ -1,4 +1,4 @@
-#!/bin/bash -e
+#!/bin/bash -xe
 # this script is called by jenkins job of a similar name, get-sources-rhpkg-container-build
 # 1. run the appropriate version of get-sources*.sh (which fetches or builds dependent binaries, then runs rhpkg container-build)
 # 2. collect log information to report on build status
@@ -48,10 +48,8 @@ if [[ ${doRhpkgContainerBuild} -eq 1 ]]; then
     # get latest from Jenkins, then trigger a new OSBS build. Note: do not wrap JOB_BRANCH in quotes in case it includes trailing \n
     if [[ -f get-sources.sh ]]; then 
       ./get-sources.sh --force-build ${JOB_BRANCH} | tee "${LOGFILE}"
-    elif [[ -f get-sources-jenkins.sh ]]; then # old name
-      ./get-sources-jenkins.sh --force-build ${JOB_BRANCH} | tee "${LOGFILE}"
     else 
-      echo "[ERROR] Could not run get-sources.sh or get-sources-jenkins.sh!"; exit 1
+      echo "[ERROR] Could not run get-sources.sh!"; exit 1
     fi
     wait
     cd ..
