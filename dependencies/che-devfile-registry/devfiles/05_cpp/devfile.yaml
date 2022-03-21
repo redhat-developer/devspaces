@@ -20,7 +20,7 @@ components:
 -
   type: dockerimage
   alias: cpp-dev
-  image: registry.redhat.io/devspaces/udi-rhel8:3.0
+  image: registry.redhat.io/devspaces/udi-rhel8:3.1
   memoryLimit: 512Mi
   mountSources: true
 commands:

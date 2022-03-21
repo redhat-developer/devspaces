@@ -19,7 +19,7 @@ components:
   -
     type: dockerimage
     alias: gradle
-    image: registry.redhat.io/devspaces/udi-rhel8:3.0
+    image: registry.redhat.io/devspaces/udi-rhel8:3.1
     env:
       - name: GRADLE_USER_HOME
         value: /home/jboss/.gradle
