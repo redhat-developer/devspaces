@@ -10,14 +10,14 @@ icon: /images/llvm-vs-code-extensions-vscode-clangd-icon.png
 category: Programming Languages
 repository: https://github.com/clangd/vscode-clangd.git
 firstPublicationDate: '2020-06-03'
-latestUpdateDate: '2022-03-08'
+latestUpdateDate: '2022-03-20'
 spec:
   containers:
-    - image: registry.redhat.io/codeready-workspaces/udi-rhel8:2.16
+    - image: registry.redhat.io/devspaces/udi-rhel8:3.0
       name: cpp-plugins
       memoryLimit: 512Mi
       memoryRequest: 20Mi
       cpuRequest: 30m
       cpuLimit: 500m
   extensions:
-    - relative:extension/resources/download_jboss_org/jbosstools/vscode/3rdparty/vscode-clangd/vscode-clangd-0.1.5-562d00.vsix
+    - relative:extension/resources/github_com/redhat-developer/devspaces-vscode-extensions/releases/download/7_44-che-assets/vscode-clangd-0.1.5-562d00.vsix

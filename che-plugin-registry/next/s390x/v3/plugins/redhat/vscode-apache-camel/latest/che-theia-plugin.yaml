@@ -12,7 +12,7 @@ metadata:
     - Linters
   icon: /images/redhat-vscode-apache-camel-icon.png
 sidecar:
-  image: registry.redhat.io/codeready-workspaces/udi-rhel8:2.16
+  image: registry.redhat.io/devspaces/udi-rhel8:3.0
   name: vscode-apache-camel
   memoryLimit: 768Mi
   memoryRequest: 20Mi
@@ -20,4 +20,4 @@ sidecar:
   cpuRequest: 30m
 dependencies: []
 extensions:
-  - relative:extension/resources/download_jboss_org/jbosstools/vscode/stable/vscode-apache-camel/vscode-apache-camel-0.1.5-1377.vsix
+  - relative:extension/resources/github_com/redhat-developer/devspaces-vscode-extensions/releases/download/7_44-che-assets/vscode-apache-camel-0.1.5-1377.vsix

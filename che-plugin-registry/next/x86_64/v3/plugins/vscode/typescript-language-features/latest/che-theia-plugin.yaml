@@ -11,7 +11,7 @@ metadata:
     - Programming Languages
   icon: /images/vscode-typescript-language-features-icon.png
 sidecar:
-  image: registry.redhat.io/codeready-workspaces/udi-rhel8:2.16
+  image: registry.redhat.io/devspaces/udi-rhel8:3.0
   memoryLimit: 512Mi
   name: vscode-node
   memoryRequest: 20Mi
@@ -19,4 +19,4 @@ sidecar:
   cpuRequest: 30m
 dependencies: []
 extensions:
-  - relative:extension/resources/github_com/redhat-developer/codeready-workspaces-vscode-extensions/releases/download/v2cebc1e/typescript-language-features-1.49.3.vsix
+  - relative:extension/resources/github_com/redhat-developer/devspaces-vscode-extensions/releases/download/v2cebc1e/typescript-language-features-1.49.3.vsix

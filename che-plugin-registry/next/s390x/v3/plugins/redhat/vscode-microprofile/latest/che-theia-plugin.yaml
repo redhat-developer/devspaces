@@ -13,7 +13,7 @@ metadata:
     - Other
   icon: /images/redhat-vscode-microprofile-icon.png
 sidecar:
-  image: registry.redhat.io/codeready-workspaces/udi-rhel8:2.16
+  image: registry.redhat.io/devspaces/udi-rhel8:3.0
   name: vscode-microp
   memoryLimit: 3500Mi
   memoryRequest: 20Mi
@@ -21,10 +21,10 @@ sidecar:
   cpuRequest: 30m
   volumeMounts:
     - name: m2
-      path: /home/jboss/.m2
+      path: /home/user/.m2
     - name: gradle
-      path: /home/jboss/.gradle
+      path: /home/user/.gradle
 dependencies:
   - redhat/java
 extensions:
-  - relative:extension/resources/download_jboss_org/jbosstools/vscode/stable/vscode-microprofile/vscode-microprofile-0.1.1-48.vsix
+  - relative:extension/resources/github_com/redhat-developer/devspaces-vscode-extensions/releases/download/7_44-che-assets/vscode-microprofile-0.1.1-48.vsix

@@ -9,11 +9,11 @@ description: Rich Go language support for Visual Studio Code
 icon: /images/golang-go-icon.png
 category: Programming Languages
 repository: https://github.com/golang/vscode-go
-firstPublicationDate: '2020-09-03'
-latestUpdateDate: '2022-03-08'
+firstPublicationDate: '2021-03-05'
+latestUpdateDate: '2022-03-20'
 spec:
   containers:
-    - image: registry.redhat.io/codeready-workspaces/udi-rhel8:2.16
+    - image: registry.redhat.io/devspaces/udi-rhel8:3.0
       name: vscode-go
       memoryLimit: 512Mi
       memoryRequest: 20Mi
@@ -21,6 +21,6 @@ spec:
       cpuLimit: 500m
       env:
         - name: GOPATH
-          value: /projects/.che/gopath:$(CHE_PROJECTS_ROOT)
+          value: /projects/.che/gopath:/go:$(CHE_PROJECTS_ROOT)
   extensions:
-    - relative:extension/resources/download_jboss_org/jbosstools/vscode/3rdparty/vscode-go/go-0.16.1.vsix
+    - relative:extension/resources/github_com/golang/vscode-go/releases/download/v0_23_0/go-0.23.0.vsix

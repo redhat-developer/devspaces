@@ -4,7 +4,7 @@ metadata:
 components:
   - name: intellij
     container:
-      image: registry.redhat.io/codeready-workspaces/idea-rhel8:2.16
+      image: registry.redhat.io/devspaces/idea-rhel8:3.0
       volumeMounts:
         - name: projector-user
           path: /home/projector-user

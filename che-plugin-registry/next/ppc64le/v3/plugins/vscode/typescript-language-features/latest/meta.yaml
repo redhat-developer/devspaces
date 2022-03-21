@@ -10,14 +10,14 @@ icon: /images/vscode-typescript-language-features-icon.png
 category: Programming Languages
 repository: https://github.com/theia-ide/vscode-builtin-extensions
 firstPublicationDate: '2021-03-19'
-latestUpdateDate: '2022-03-08'
+latestUpdateDate: '2022-03-20'
 spec:
   containers:
-    - image: registry.redhat.io/codeready-workspaces/udi-rhel8:2.16
+    - image: registry.redhat.io/devspaces/udi-rhel8:3.0
       name: vscode-node
       memoryLimit: 512Mi
       memoryRequest: 20Mi
       cpuRequest: 30m
       cpuLimit: 500m
   extensions:
-    - relative:extension/resources/github_com/redhat-developer/codeready-workspaces-vscode-extensions/releases/download/v2cebc1e/typescript-language-features-1.49.3.vsix
+    - relative:extension/resources/github_com/redhat-developer/devspaces-vscode-extensions/releases/download/v2cebc1e/typescript-language-features-1.49.3.vsix

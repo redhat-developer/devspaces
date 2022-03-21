@@ -20,7 +20,7 @@ metadata:
     - Notebooks
   icon: /images/ms-python-python-icon.png
 sidecar:
-  image: registry.redhat.io/codeready-workspaces/udi-rhel8:2.16
+  image: registry.redhat.io/devspaces/udi-rhel8:3.0
   name: vscode-python
   memoryLimit: 1Gi
   memoryRequest: 20Mi
@@ -28,7 +28,7 @@ sidecar:
   cpuRequest: 30m
   volumeMounts:
     - name: venv
-      path: /home/jboss/.venv
+      path: /home/user/.venv
 dependencies: []
 extensions:
-  - relative:extension/resources/github_com/redhat-developer/codeready-workspaces-vscode-extensions/releases/download/v34b6b7e/vscode-python-2020.7.94776.vsix
+  - relative:extension/resources/github_com/microsoft/vscode-python/releases/download/2020_7_94776/ms-python-release.vsix

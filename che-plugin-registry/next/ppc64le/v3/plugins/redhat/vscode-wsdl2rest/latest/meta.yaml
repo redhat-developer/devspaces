@@ -10,14 +10,14 @@ icon: /images/redhat-vscode-wsdl2rest-icon.png
 category: Other
 repository: https://github.com/camel-tooling/vscode-wsdl2rest
 firstPublicationDate: '2020-01-13'
-latestUpdateDate: '2022-03-08'
+latestUpdateDate: '2022-03-20'
 spec:
   containers:
-    - image: registry.redhat.io/codeready-workspaces/udi-rhel8:2.16
+    - image: registry.redhat.io/devspaces/udi-rhel8:3.0
       name: vscode-wsdl2rest
       memoryLimit: 256Mi
       memoryRequest: 20Mi
       cpuRequest: 30m
-      cpuLimit: 500m
+      cpuLimit: 800m
   extensions:
-    - relative:extension/resources/download_jboss_org/jbosstools/vscode/stable/vscode-wsdl2rest/vscode-wsdl2rest-0.0.11-106.vsix
+    - relative:extension/resources/github_com/redhat-developer/devspaces-vscode-extensions/releases/download/7_44-che-assets/vscode-wsdl2rest-0.0.11-106.vsix

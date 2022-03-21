@@ -13,7 +13,7 @@ metadata:
     - Formatters
   icon: /images/bmewburn-vscode-intelephense-client-icon.png
 sidecar:
-  image: registry.redhat.io/codeready-workspaces/udi-rhel8:2.16
+  image: registry.redhat.io/devspaces/udi-rhel8:3.0
   name: php-intelephense
   memoryLimit: 1Gi
   memoryRequest: 20Mi
@@ -21,4 +21,4 @@ sidecar:
   cpuRequest: 30m
 dependencies: []
 extensions:
-  - relative:extension/resources/download_jboss_org/jbosstools/vscode/3rdparty/vscode-intelephense/vscode-intelephense-client-1.3.11.vsix
+  - relative:extension/resources/github_com/redhat-developer/devspaces-vscode-extensions/releases/download/7_44-che-assets/vscode-intelephense-client-1.5.4.vsix

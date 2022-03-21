@@ -11,7 +11,7 @@ metadata:
     - Linters
   icon: /images/sonarsource-sonarlint-vscode-icon.png
 sidecar:
-  image: registry.redhat.io/codeready-workspaces/udi-rhel8:2.16
+  image: registry.redhat.io/devspaces/udi-rhel8:3.0
   name: vscode-sonarlint
   memoryLimit: 512Mi
   memoryRequest: 20Mi
@@ -19,8 +19,8 @@ sidecar:
   cpuRequest: 30m
   volumeMounts:
     - name: m2
-      path: /home/jboss/.m2
+      path: /home/user/.m2
 dependencies:
   - vscode/typescript-language-features
 extensions:
-  - relative:extension/resources/github_com/redhat-developer/codeready-workspaces-vscode-extensions/releases/download/v8521e74/vscode-sonarlint-1.20.1.vsix
+  - relative:extension/resources/github_com/redhat-developer/devspaces-vscode-extensions/releases/download/v8521e74/vscode-sonarlint-1.20.1.vsix

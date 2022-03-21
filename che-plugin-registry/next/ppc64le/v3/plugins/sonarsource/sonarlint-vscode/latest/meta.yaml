@@ -10,18 +10,18 @@ icon: /images/sonarsource-sonarlint-vscode-icon.png
 category: Linters
 repository: https://github.com/SonarSource/sonarlint-vscode.git
 firstPublicationDate: '2021-03-11'
-latestUpdateDate: '2022-03-08'
+latestUpdateDate: '2022-03-20'
 spec:
   containers:
-    - image: registry.redhat.io/codeready-workspaces/udi-rhel8:2.16
+    - image: registry.redhat.io/devspaces/udi-rhel8:3.0
       name: vscode-sonarlint
       volumes:
         - name: m2
-          mountPath: /home/jboss/.m2
+          mountPath: /home/user/.m2
       memoryLimit: 512Mi
       memoryRequest: 20Mi
       cpuRequest: 30m
       cpuLimit: 500m
   extensions:
-    - relative:extension/resources/github_com/redhat-developer/codeready-workspaces-vscode-extensions/releases/download/v8521e74/vscode-sonarlint-1.20.1.vsix
-    - relative:extension/resources/github_com/redhat-developer/codeready-workspaces-vscode-extensions/releases/download/v2cebc1e/typescript-language-features-1.49.3.vsix
+    - relative:extension/resources/github_com/redhat-developer/devspaces-vscode-extensions/releases/download/v8521e74/vscode-sonarlint-1.20.1.vsix
+    - relative:extension/resources/github_com/redhat-developer/devspaces-vscode-extensions/releases/download/v2cebc1e/typescript-language-features-1.49.3.vsix

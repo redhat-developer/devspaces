@@ -10,19 +10,19 @@ icon: /images/redhat-java-icon.png
 category: Programming Languages
 repository: https://github.com/redhat-developer/vscode-java
 firstPublicationDate: '2021-09-16'
-latestUpdateDate: '2022-03-08'
+latestUpdateDate: '2022-03-20'
 deprecate:
   automigrate: true
   migrateTo: redhat/java/latest
 spec:
   containers:
-    - image: registry.redhat.io/codeready-workspaces/udi-rhel8:2.16
+    - image: registry.redhat.io/devspaces/udi-rhel8:3.0
       name: vscode-java
       volumes:
         - name: m2
-          mountPath: /home/jboss/.m2
+          mountPath: /home/user/.m2
         - name: gradle
-          mountPath: /home/jboss/.gradle
+          mountPath: /home/user/.gradle
       memoryLimit: 1500Mi
       memoryRequest: 20Mi
       cpuRequest: 30m
@@ -33,5 +33,6 @@ spec:
         - name: CHE_THEIA_SIDECAR_PREFERENCES
           value: '{"java.server.launchMode":"Standard"}'
   extensions:
-    - relative:extension/resources/download_jboss_org/jbosstools/static/jdt_ls/stable/java-0.82.0-369.vsix
-    - relative:extension/resources/download_jboss_org/jbosstools/vscode/3rdparty/vscode-java-debug/vscode-java-debug-0.26.0.vsix
+    - relative:extension/resources/github_com/redhat-developer/devspaces-vscode-extensions/releases/download/7_44-che-assets/java-0.82.0-369.vsix
+    - relative:extension/resources/github_com/redhat-developer/devspaces-vscode-extensions/releases/download/7_44-che-assets/vscode-java-debug-0.26.0.vsix
+    - relative:extension/resources/open-vsx_org/api/vscjava/vscode-java-test/0_28_1/file/vscjava.vscode-java-test-0.28.1.vsix

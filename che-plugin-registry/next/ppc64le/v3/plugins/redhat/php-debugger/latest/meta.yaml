@@ -10,17 +10,17 @@ icon: /images/felixfbecker-php-debug-icon.png
 category: Debuggers
 repository: https://github.com/felixfbecker/vscode-php-debug.git
 firstPublicationDate: '2019-12-12'
-latestUpdateDate: '2022-03-08'
+latestUpdateDate: '2022-03-20'
 deprecate:
   automigrate: true
   migrateTo: felixfbecker/php-debug/latest
 spec:
   containers:
-    - image: registry.redhat.io/codeready-workspaces/udi-rhel8:2.16
+    - image: registry.redhat.io/devspaces/udi-rhel8:3.0
       name: php-debugger
       memoryLimit: 512Mi
       memoryRequest: 20Mi
       cpuRequest: 30m
       cpuLimit: 500m
   extensions:
-    - relative:extension/resources/download_jboss_org/jbosstools/vscode/3rdparty/vscode-php-debug/php-debug-1.13.0.vsix
+    - relative:extension/resources/github_com/redhat-developer/devspaces-vscode-extensions/releases/download/7_44-che-assets/php-debug-1.13.0.vsix

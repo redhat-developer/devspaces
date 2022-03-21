@@ -11,7 +11,7 @@ metadata:
     - Other
   icon: /images/default.png
 sidecar:
-  image: registry.redhat.io/codeready-workspaces/udi-rhel8:2.16
+  image: registry.redhat.io/devspaces/udi-rhel8:3.0
   name: theia-omnisharp
   memoryLimit: 1Gi
   memoryRequest: 20Mi
@@ -19,7 +19,7 @@ sidecar:
   cpuRequest: 30m
   volumeMounts:
     - name: nuget
-      path: /home/jboss/.nuget
+      path: /home/user/.nuget
 dependencies: []
 extensions:
   - relative:extension/resources/github_com/redhat-developer/omnisharp-theia-plugin/releases/download/v0_0_6/omnisharp_theia_plugin.theia

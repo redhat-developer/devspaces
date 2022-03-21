@@ -14,7 +14,7 @@ metadata:
     - Snippets
   icon: /images/redhat-vscode-xml-icon.png
 sidecar:
-  image: registry.redhat.io/codeready-workspaces/udi-rhel8:2.16
+  image: registry.redhat.io/devspaces/udi-rhel8:3.0
   name: vscode-xml
   memoryLimit: 768Mi
   memoryRequest: 20Mi
@@ -22,4 +22,4 @@ sidecar:
   cpuRequest: 30m
 dependencies: []
 extensions:
-  - relative:extension/resources/github_com/redhat-developer/codeready-workspaces-vscode-extensions/releases/download/v356aec7/vscode-xml-0.14.0.vsix
+  - relative:extension/resources/github_com/redhat-developer/devspaces-vscode-extensions/releases/download/v069c634/vscode-xml-0.17.0.vsix

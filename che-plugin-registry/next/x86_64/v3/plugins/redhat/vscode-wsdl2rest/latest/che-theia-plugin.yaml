@@ -11,12 +11,12 @@ metadata:
     - Other
   icon: /images/redhat-vscode-wsdl2rest-icon.png
 sidecar:
-  image: registry.redhat.io/codeready-workspaces/udi-rhel8:2.16
+  image: registry.redhat.io/devspaces/udi-rhel8:3.0
   memoryLimit: 256Mi
   name: vscode-wsdl2rest
   memoryRequest: 20Mi
-  cpuLimit: 500m
+  cpuLimit: 800m
   cpuRequest: 30m
 dependencies: []
 extensions:
-  - relative:extension/resources/download_jboss_org/jbosstools/vscode/stable/vscode-wsdl2rest/vscode-wsdl2rest-0.0.11-106.vsix
+  - relative:extension/resources/github_com/redhat-developer/devspaces-vscode-extensions/releases/download/7_44-che-assets/vscode-wsdl2rest-0.0.11-106.vsix
