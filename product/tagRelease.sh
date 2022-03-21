@@ -120,6 +120,7 @@ if [[ ${pkgs_devel_branch} ]] && [[ ${CSV_VERSION} ]]; then
 fi
 
 # for the devspaces main repo, update tech preview devfiles to point to the correct tag/branch
+# no longer used - TODO remove this if we consistently don't need it > 3.1
 updateTechPreviewDevfiles() {
     YAML_ROOT="tech-preview-devfiles"
 
@@ -180,7 +181,7 @@ pushTagGH () {
 
 		# for the devspaces main repo, update tech preview devfiles to point to the correct tag/branch
 		if [[ $d == "devspaces" ]]; then 
-			updateTechPreviewDevfiles;
+			# updateTechPreviewDevfiles; # no longer used
 			updateLinksToDevfiles;
 		fi
 
