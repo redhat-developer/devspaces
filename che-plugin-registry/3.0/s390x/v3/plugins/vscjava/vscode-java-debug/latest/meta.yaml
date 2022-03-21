@@ -1,0 +1,23 @@
+apiVersion: v2
+publisher: vscjava
+name: vscode-java-debug
+version: latest
+type: VS Code extension
+displayName: Debugger for Java
+title: Debugger for Java
+description: A lightweight Java debugger for Visual Studio Code
+icon: /images/vscjava-vscode-java-debug-icon.png
+category: Debuggers
+repository: https://github.com/Microsoft/vscode-java-debug.git
+firstPublicationDate: '2020-06-11'
+latestUpdateDate: '2022-03-21'
+spec:
+  containers:
+    - image: registry.redhat.io/devspaces/udi-rhel8:3.0
+      name: vscode-java
+      memoryLimit: 1500Mi
+      memoryRequest: 20Mi
+      cpuRequest: 30m
+      cpuLimit: 800m
+  extensions:
+    - relative:extension/resources/github_com/redhat-developer/devspaces-vscode-extensions/releases/download/7_44-che-assets/vscode-java-debug-0.26.0.vsix

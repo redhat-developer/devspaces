@@ -1,0 +1,31 @@
+apiVersion: v2
+publisher: redhat
+name: java8
+version: latest
+type: VS Code extension
+displayName: Language Support for Java(TM) by Red Hat
+title: Language Support for Java(TM) by Red Hat
+description: Java Linting, Intellisense, formatting, refactoring, Maven/Gradle support and more...
+icon: /images/redhat-java-icon.png
+category: Programming Languages
+repository: https://github.com/redhat-developer/vscode-java
+firstPublicationDate: '2020-06-17'
+latestUpdateDate: '2022-03-21'
+spec:
+  containers:
+    - image: registry.redhat.io/devspaces/udi-rhel8:3.0
+      name: vscode-java
+      volumes:
+        - name: m2
+          mountPath: /home/user/.m2
+      memoryLimit: 1500Mi
+      memoryRequest: 20Mi
+      cpuRequest: 30m
+      cpuLimit: 800m
+      env:
+        - name: CHE_THEIA_SIDECAR_PREFERENCES
+          value: '{"java.server.launchMode":"Standard"}'
+  extensions:
+    - relative:extension/resources/github_com/redhat-developer/devspaces-vscode-extensions/releases/download/7_44-che-assets/java-0.63.0-2222.vsix
+    - relative:extension/resources/github_com/redhat-developer/devspaces-vscode-extensions/releases/download/7_44-che-assets/vscode-java-debug-0.26.0.vsix
+    - relative:extension/resources/open-vsx_org/api/vscjava/vscode-java-test/0_28_1/file/vscjava.vscode-java-test-0.28.1.vsix

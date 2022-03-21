@@ -1,0 +1,23 @@
+apiVersion: v2
+publisher: redhat-developer
+name: netcoredbg-theia-plugin
+version: latest
+type: VS Code extension
+displayName: netcoredbg-theia-plugin
+title: netcoredbg-theia-plugin
+description: netcoredbg-theia-plugin
+icon: /images/default.png
+category: Other
+repository: https://github.com/redhat-developer/netcoredbg-theia-plugin
+firstPublicationDate: '2019-12-03'
+latestUpdateDate: '2022-03-21'
+spec:
+  containers:
+    - image: registry.redhat.io/devspaces/udi-rhel8:3.0
+      name: theia-netcoredbg
+      memoryLimit: 512Mi
+      memoryRequest: 20Mi
+      cpuRequest: 30m
+      cpuLimit: 500m
+  extensions:
+    - relative:extension/resources/github_com/redhat-developer/netcoredbg-theia-plugin/releases/download/v0_0_3/netcoredbg_theia_plugin.theia

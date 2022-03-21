@@ -1,0 +1,145 @@
+apiVersion: v2
+publisher: eclipse
+name: che-theia
+version: latest
+type: Che Editor
+displayName: theia-ide
+title: Eclipse Theia development version.
+description: Eclipse Theia, get the latest release each day.
+icon: /images/default.png
+category: Editor
+repository: https://github.com/eclipse-che/che-theia
+firstPublicationDate: '2019-03-07'
+latestUpdateDate: '2022-03-21'
+spec:
+  endpoints:
+    - name: theia
+      targetPort: 3100
+      attributes:
+        type: ide
+        cookiesAuthEnabled: true
+        discoverable: false
+        urlRewriteSupported: true
+        protocol: http
+        secure: true
+      public: true
+    - name: webviews
+      targetPort: 3100
+      attributes:
+        type: webview
+        cookiesAuthEnabled: true
+        discoverable: false
+        unique: true
+        urlRewriteSupported: true
+        protocol: http
+        secure: true
+      public: true
+    - name: mini-browser
+      targetPort: 3100
+      attributes:
+        type: mini-browser
+        cookiesAuthEnabled: true
+        discoverable: false
+        unique: true
+        urlRewriteSupported: true
+        protocol: http
+        secure: true
+      public: true
+    - name: theia-dev
+      targetPort: 3130
+      attributes:
+        type: ide-dev
+        discoverable: false
+        urlRewriteSupported: true
+        protocol: http
+      public: true
+    - name: theia-redirect-1
+      targetPort: 13131
+      attributes:
+        discoverable: false
+        urlRewriteSupported: true
+        protocol: http
+      public: true
+    - name: theia-redirect-2
+      targetPort: 13132
+      attributes:
+        discoverable: false
+        urlRewriteSupported: true
+        protocol: http
+      public: true
+    - name: theia-redirect-3
+      targetPort: 13133
+      attributes:
+        discoverable: false
+        urlRewriteSupported: true
+        protocol: http
+      public: true
+    - name: terminal
+      targetPort: 3333
+      attributes:
+        type: collocated-terminal
+        discoverable: false
+        cookiesAuthEnabled: true
+        urlRewriteSupported: true
+        protocol: ws
+        secure: true
+      public: true
+  containers:
+    - image: registry.redhat.io/devspaces/theia-rhel8:3.0
+      env:
+        - name: THEIA_PLUGINS
+          value: local-dir:///plugins
+        - name: HOSTED_PLUGIN_HOSTNAME
+          value: 0.0.0.0
+        - name: HOSTED_PLUGIN_PORT
+          value: '3130'
+        - name: THEIA_HOST
+          value: 127.0.0.1
+      mountSources: true
+      memoryLimit: 2Gi
+      cpuLimit: 1500m
+      cpuRequest: 100m
+      volumes:
+        - name: plugins
+          mountPath: /plugins
+        - name: theia-local
+          mountPath: /home/theia/.theia
+      name: theia-ide
+      ports:
+        - exposedPort: 3100
+        - exposedPort: 3130
+        - exposedPort: 13131
+        - exposedPort: 13132
+        - exposedPort: 13133
+    - image: registry.redhat.io/devspaces/machineexec-rhel8:3.0
+      memoryLimit: 2Gi
+      memoryRequest: 32Mi
+      cpuLimit: 500m
+      cpuRequest: 30m
+      command:
+        - /go/bin/che-machine-exec
+        - '--url'
+        - 127.0.0.1:3333
+        - '--idle-timeout'
+        - 15m
+      name: che-machine-exec
+      ports:
+        - exposedPort: 3333
+  initContainers:
+    - image: registry.redhat.io/devspaces/theia-endpoint-rhel8:3.0
+      memoryLimit: 128Mi
+      memoryRequest: 32Mi
+      cpuLimit: 500m
+      cpuRequest: 30m
+      env:
+        - name: PLUGIN_REMOTE_ENDPOINT_EXECUTABLE
+          value: /remote-endpoint/plugin-remote-endpoint
+        - name: REMOTE_ENDPOINT_VOLUME_NAME
+          value: remote-endpoint
+      volumes:
+        - name: plugins
+          mountPath: /plugins
+        - name: remote-endpoint
+          mountPath: /remote-endpoint
+          ephemeral: true
+      name: remote-runtime-injector

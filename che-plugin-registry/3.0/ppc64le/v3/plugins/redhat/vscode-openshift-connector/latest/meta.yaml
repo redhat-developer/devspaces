@@ -1,0 +1,28 @@
+apiVersion: v2
+publisher: redhat
+name: vscode-openshift-connector
+version: latest
+type: VS Code extension
+displayName: OpenShift Connector
+title: OpenShift Connector
+description: Simplified app dev for Kubernetes or Red Hat OpenShift
+icon: /images/redhat-vscode-openshift-connector-icon.png
+category: Other
+repository: https://github.com/redhat-developer/vscode-openshift-tools.git
+firstPublicationDate: '2021-11-04'
+latestUpdateDate: '2022-03-21'
+spec:
+  containers:
+    - image: registry.redhat.io/devspaces/udi-rhel8:3.0
+      name: vscode-openshift-connector
+      volumes:
+        - name: kube
+          mountPath: /home/theia/.kube
+      memoryLimit: 2.5Gi
+      memoryRequest: 20Mi
+      cpuRequest: 30m
+      cpuLimit: 800m
+  extensions:
+    - relative:extension/resources/github_com/redhat-developer/devspaces-vscode-extensions/releases/download/va21efef/vscode-openshift-connector-v0.2.11.vsix
+    - relative:extension/resources/github_com/redhat-developer/devspaces-vscode-extensions/releases/download/7_44-che-assets/vscode-kubernetes-tools-1.2.1.vsix
+    - relative:extension/resources/github_com/redhat-developer/devspaces-vscode-extensions/releases/download/ve96a2bb/vscode-yaml-0.14.0.vsix

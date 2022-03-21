@@ -1,0 +1,39 @@
+schemaVersion: 1.0.0
+metadata:
+  id: redhat/java11
+  publisher: redhat
+  name: java11
+  version: latest
+  displayName: Language Support for Java(TM) by Red Hat
+  description: Java Linting, Intellisense, formatting, refactoring, Maven/Gradle support and more...
+  repository: https://github.com/redhat-developer/vscode-java
+  categories:
+    - Programming Languages
+    - Linters
+    - Formatters
+    - Snippets
+  icon: /images/redhat-java-icon.png
+sidecar:
+  image: registry.redhat.io/devspaces/udi-rhel8:3.0
+  name: vscode-java
+  memoryLimit: 1500Mi
+  memoryRequest: 20Mi
+  cpuLimit: 800m
+  cpuRequest: 30m
+  env:
+    - name: GRADLE_HOME
+      value: /opt/gradle/
+    - name: CHE_THEIA_SIDECAR_PREFERENCES
+      value: '{"java.server.launchMode":"Standard"}'
+  volumeMounts:
+    - name: m2
+      path: /home/user/.m2
+    - name: gradle
+      path: /home/user/.gradle
+preferences:
+  java.server.launchMode: Standard
+dependencies:
+  - vscjava/vscode-java-debug
+  - vscjava/vscode-java-test
+extensions:
+  - relative:extension/resources/github_com/redhat-developer/devspaces-vscode-extensions/releases/download/7_44-che-assets/java-0.82.0-369.vsix
