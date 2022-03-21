@@ -110,27 +110,6 @@
           "7.41.x"
         ],
         "disabled": true
-      },
-      "3.0": {
-        "upstream_branch": [
-          "7.44.x",
-          "7.43.x"
-        ],
-        "disabled": false
-      },
-      "3.1": {
-        "upstream_branch": [
-          "7.46.x",
-          "7.45.x"
-        ],
-        "disabled": true
-      },
-      "3.x": {
-        "upstream_branch": [
-          "main",
-          "main"
-        ],
-        "disabled": false
       }
     },
     "machineexec": {
@@ -380,9 +359,7 @@
           "crw-2.15-rhel-8"
         ],
         "disabled": true
-      },
-      "3.1": null,
-      "3.x": null
+      }
     },
     "plugin-java8": {
       "2.15": {
@@ -391,9 +368,7 @@
           "crw-2.15-rhel-8"
         ],
         "disabled": true
-      },
-      "3.1": null,
-      "3.x": null
+      }
     },
     "plugin-kubernetes": {
       "2.15": {
@@ -402,9 +377,7 @@
           "crw-2.15-rhel-8"
         ],
         "disabled": true
-      },
-      "3.1": null,
-      "3.x": null
+      }
     },
     "plugin-openshift": {
       "2.15": {
@@ -413,9 +386,7 @@
           "crw-2.15-rhel-8"
         ],
         "disabled": true
-      },
-      "3.1": null,
-      "3.x": null
+      }
     },
     "stacks-cpp": {
       "2.15": {
@@ -424,27 +395,6 @@
           "crw-2.15-rhel-8"
         ],
         "disabled": true
-      },
-      "3.0": {
-        "upstream_branch": [
-          "devspaces-3.0-rhel-8",
-          "devspaces-3.0-rhel-8"
-        ],
-        "disabled": false
-      },
-      "3.1": {
-        "upstream_branch": [
-          "devspaces-3.1-rhel-8",
-          "devspaces-3.1-rhel-8"
-        ],
-        "disabled": true
-      },
-      "3.x": {
-        "upstream_branch": [
-          "devspaces-3-rhel-8",
-          "devspaces-3-rhel-8"
-        ],
-        "disabled": false
       }
     },
     "stacks-dotnet": {
@@ -454,27 +404,6 @@
           "crw-2.15-rhel-8"
         ],
         "disabled": true
-      },
-      "3.0": {
-        "upstream_branch": [
-          "devspaces-3.0-rhel-8",
-          "devspaces-3.0-rhel-8"
-        ],
-        "disabled": false
-      },
-      "3.1": {
-        "upstream_branch": [
-          "devspaces-3.1-rhel-8",
-          "devspaces-3.1-rhel-8"
-        ],
-        "disabled": true
-      },
-      "3.x": {
-        "upstream_branch": [
-          "devspaces-3-rhel-8",
-          "devspaces-3-rhel-8"
-        ],
-        "disabled": false
       }
     },
     "stacks-golang": {
@@ -484,27 +413,6 @@
           "crw-2.15-rhel-8"
         ],
         "disabled": true
-      },
-      "3.0": {
-        "upstream_branch": [
-          "devspaces-3.0-rhel-8",
-          "devspaces-3.0-rhel-8"
-        ],
-        "disabled": false
-      },
-      "3.1": {
-        "upstream_branch": [
-          "devspaces-3.1-rhel-8",
-          "devspaces-3.1-rhel-8"
-        ],
-        "disabled": true
-      },
-      "3.x": {
-        "upstream_branch": [
-          "devspaces-3-rhel-8",
-          "devspaces-3-rhel-8"
-        ],
-        "disabled": false
       }
     },
     "stacks-php": {
@@ -514,27 +422,6 @@
           "crw-2.15-rhel-8"
         ],
         "disabled": true
-      },
-      "3.0": {
-        "upstream_branch": [
-          "devspaces-3.0-rhel-8",
-          "devspaces-3.0-rhel-8"
-        ],
-        "disabled": false
-      },
-      "3.1": {
-        "upstream_branch": [
-          "devspaces-3.1-rhel-8",
-          "devspaces-3.1-rhel-8"
-        ],
-        "disabled": true
-      },
-      "3.x": {
-        "upstream_branch": [
-          "devspaces-3-rhel-8",
-          "devspaces-3-rhel-8"
-        ],
-        "disabled": false
       }
     },
     "pluginbroker-artifacts": {
@@ -544,27 +431,6 @@
           "v3.4.x"
         ],
         "disabled": true
-      },
-      "3.0": {
-        "upstream_branch": [
-          "v3.4.x",
-          "v3.4.x"
-        ],
-        "disabled": false
-      },
-      "3.1": {
-        "upstream_branch": [
-          "v3.4.x",
-          "v3.4.x"
-        ],
-        "disabled": true
-      },
-      "3.x": {
-        "upstream_branch": [
-          "v3.4.x",
-          "v3.4.x"
-        ],
-        "disabled": false
       }
     },
     "pluginbroker-metadata": {
@@ -574,27 +440,6 @@
           "v3.4.x"
         ],
         "disabled": true
-      },
-      "3.0": {
-        "upstream_branch": [
-          "v3.4.x",
-          "v3.4.x"
-        ],
-        "disabled": false
-      },
-      "3.1": {
-        "upstream_branch": [
-          "v3.4.x",
-          "v3.4.x"
-        ],
-        "disabled": true
-      },
-      "3.x": {
-        "upstream_branch": [
-          "v3.4.x",
-          "v3.4.x"
-        ],
-        "disabled": false
       }
     },
     "idea": {
@@ -781,9 +626,7 @@
           "7.41.x"
         ],
         "disabled": true
-      },
-      "3.1": null,
-      "3.x": null
+      }
     },
     "get-sources-rhpkg-container-build": {
       "2.15": {
