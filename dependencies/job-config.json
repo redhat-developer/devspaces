@@ -31,7 +31,7 @@
           "7.46.x",
           "7.45.x"
         ],
-        "disabled": true
+        "disabled": false
       },
       "3.x": {
         "upstream_branch": [
@@ -61,7 +61,7 @@
           "7.46.x",
           "7.45.x"
         ],
-        "disabled": true
+        "disabled": false
       },
       "3.x": {
         "upstream_branch": [
@@ -91,7 +91,7 @@
           "7.46.x",
           "7.45.x"
         ],
-        "disabled": true
+        "disabled": false
       },
       "3.x": {
         "upstream_branch": [
@@ -130,7 +130,7 @@
           "7.46.x",
           "7.45.x"
         ],
-        "disabled": true
+        "disabled": false
       },
       "3.x": {
         "upstream_branch": [
@@ -160,7 +160,7 @@
           "7.46.x",
           "7.45.x"
         ],
-        "disabled": true
+        "disabled": false
       },
       "3.x": {
         "upstream_branch": [
@@ -190,7 +190,7 @@
           "7.46.x",
           "7.45.x"
         ],
-        "disabled": true
+        "disabled": false
       },
       "3.x": {
         "upstream_branch": [
@@ -220,7 +220,7 @@
           "7.46.x",
           "7.45.x"
         ],
-        "disabled": true
+        "disabled": false
       },
       "3.x": {
         "upstream_branch": [
@@ -250,7 +250,7 @@
           "7.46.x",
           "7.45.x"
         ],
-        "disabled": true
+        "disabled": false
       },
       "3.x": {
         "upstream_branch": [
@@ -280,7 +280,7 @@
           "7.46.x",
           "7.45.x"
         ],
-        "disabled": true
+        "disabled": false
       },
       "3.x": {
         "upstream_branch": [
@@ -310,7 +310,7 @@
           "devspaces-3.1-rhel-8",
           "devspaces-3.1-rhel-8"
         ],
-        "disabled": true
+        "disabled": false
       },
       "3.x": {
         "upstream_branch": [
@@ -340,7 +340,7 @@
           "devspaces-3.1-rhel-8",
           "devspaces-3.1-rhel-8"
         ],
-        "disabled": true
+        "disabled": false
       },
       "3.x": {
         "upstream_branch": [
@@ -460,7 +460,7 @@
           "20210728",
           "20210728"
         ],
-        "disabled": true
+        "disabled": false
       },
       "3.x": {
         "upstream_branch": [
@@ -490,7 +490,7 @@
           "v2.5.0",
           "v2.5.0"
         ],
-        "disabled": true
+        "disabled": false
       },
       "3.x": {
         "upstream_branch": [
@@ -508,7 +508,7 @@
         "disabled": false
       },
       "3.1": {
-        "disabled": true
+        "disabled": false
       },
       "3.x": {
         "disabled": false
@@ -522,7 +522,7 @@
         "disabled": false
       },
       "3.1": {
-        "disabled": true
+        "disabled": false
       },
       "3.x": {
         "disabled": false
@@ -541,7 +541,7 @@
           "devspaces-3.1-rhel-8",
           "devspaces-3.1-rhel-8"
         ],
-        "disabled": true
+        "disabled": false
       },
       "3.x": {
         "upstream_branch": [
@@ -560,7 +560,7 @@
           "7.41.x"
         ],
         "node_version": "12.22.5",
-        "disabled": true
+        "disabled": false
       },
       "3.0": {
         "upstream_branch": [
@@ -576,7 +576,7 @@
           "7.45.x"
         ],
         "node_version": "16.13.2",
-        "disabled": true
+        "disabled": false
       },
       "3.x": {
         "upstream_branch": [
@@ -593,7 +593,7 @@
           "7.42.x",
           "7.41.x"
         ],
-        "disabled": true
+        "disabled": false
       },
       "3.0": {
         "upstream_branch": [
@@ -607,7 +607,7 @@
           "7.46.x",
           "7.45.x"
         ],
-        "disabled": true
+        "disabled": false
       },
       "3.x": {
         "upstream_branch": [
@@ -623,18 +623,18 @@
           "7.42.x",
           "7.41.x"
         ],
-        "disabled": true
+        "disabled": false
       }
     },
     "get-sources-rhpkg-container-build": {
       "2.15": {
-        "disabled": true
+        "disabled": false
       },
       "3.0": {
         "disabled": false
       },
       "3.1": {
-        "disabled": true
+        "disabled": false
       },
       "3.x": {
         "disabled": false
@@ -642,13 +642,13 @@
     },
     "push-latest-container-to-quay": {
       "2.15": {
-        "disabled": true
+        "disabled": false
       },
       "3.0": {
         "disabled": false
       },
       "3.1": {
-        "disabled": true
+        "disabled": false
       },
       "3.x": {
         "disabled": false
@@ -656,13 +656,13 @@
     },
     "sync-to-downstream": {
       "2.15": {
-        "disabled": true
+        "disabled": false
       },
       "3.0": {
         "disabled": false
       },
       "3.1": {
-        "disabled": true
+        "disabled": false
       },
       "3.x": {
         "disabled": false
@@ -670,13 +670,13 @@
     },
     "update-digests-in-metadata": {
       "2.15": {
-        "disabled": true
+        "disabled": false
       },
       "3.0": {
         "disabled": false
       },
       "3.1": {
-        "disabled": true
+        "disabled": false
       },
       "3.x": {
         "disabled": false
@@ -684,13 +684,13 @@
     },
     "send-email-qe-build-list": {
       "2.15": {
-        "disabled": true
+        "disabled": false
       },
       "3.0": {
         "disabled": false
       },
       "3.1": {
-        "disabled": true
+        "disabled": false
       },
       "3.x": {
         "disabled": true
