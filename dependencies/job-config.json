@@ -550,12 +550,12 @@
           "7.42.x",
           "7.41.x"
         ],
-        "disabled": false
+        "disabled": true
       }
     },
     "get-sources-rhpkg-container-build": {
       "2.15": {
-        "disabled": false
+        "disabled": true
       },
       "2.x": {
         "disabled": false
