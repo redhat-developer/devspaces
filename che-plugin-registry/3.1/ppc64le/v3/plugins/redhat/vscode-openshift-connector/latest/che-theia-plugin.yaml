@@ -12,7 +12,7 @@ metadata:
     - Debuggers
   icon: /images/redhat-vscode-openshift-connector-icon.png
 sidecar:
-  image: registry.redhat.io/devspaces/udi-rhel8:3.0
+  image: registry.redhat.io/devspaces/udi-rhel8:3.1
   name: vscode-openshift-connector
   memoryLimit: 1500Mi
   memoryRequest: 20Mi

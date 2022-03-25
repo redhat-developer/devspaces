@@ -10,10 +10,10 @@ icon: /images/ms-python-python-icon.png
 category: Programming Languages
 repository: https://github.com/Microsoft/vscode-python
 firstPublicationDate: '2020-07-16'
-latestUpdateDate: '2022-03-20'
+latestUpdateDate: '2022-03-22'
 spec:
   containers:
-    - image: registry.redhat.io/devspaces/udi-rhel8:3.0
+    - image: registry.redhat.io/devspaces/udi-rhel8:3.1
       name: vscode-python
       volumes:
         - name: venv

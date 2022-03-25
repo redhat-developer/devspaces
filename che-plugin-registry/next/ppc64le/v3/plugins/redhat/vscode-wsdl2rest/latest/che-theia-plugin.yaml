@@ -11,7 +11,7 @@ metadata:
     - Other
   icon: /images/redhat-vscode-wsdl2rest-icon.png
 sidecar:
-  image: registry.redhat.io/devspaces/udi-rhel8:3.0
+  image: registry.redhat.io/devspaces/udi-rhel8:3.1
   memoryLimit: 256Mi
   name: vscode-wsdl2rest
   memoryRequest: 20Mi
