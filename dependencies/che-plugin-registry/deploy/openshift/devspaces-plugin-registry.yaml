@@ -114,10 +114,10 @@ parameters:
   - name: IMAGE
     value: registry.redhat.io/devspaces/pluginregistry-rhel8
     displayName: Red Hat OpenShift Dev Spaces plugin registry image
-    description: Red Hat OpenShift Dev Spaces plugin registry container image. Defaults to
-      registry.redhat.io/devspaces/pluginregistry-rhel8
+    description: Red Hat OpenShift Dev Spaces plugin registry container image. Defaults
+      to registry.redhat.io/devspaces/pluginregistry-rhel8
   - name: IMAGE_TAG
-    value: '3.0'
+    value: '3.1'
     displayName: Red Hat OpenShift Dev Spaces plugin registry version
     description: Red Hat OpenShift Dev Spaces plugin registry version
   - name: MEMORY_LIMIT

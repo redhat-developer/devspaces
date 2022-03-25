@@ -113,10 +113,10 @@ parameters:
   - name: IMAGE
     value: registry.redhat.io/devspaces/devfileregistry-rhel8
     displayName: Red Hat OpenShift Dev Spaces devfile registry image
-    description: Red Hat OpenShift Dev Spaces devfile registry container image. Defaults to
-      registry.redhat.io/devspaces/devfileregistry-rhel8
+    description: Red Hat OpenShift Dev Spaces devfile registry container image. Defaults
+      to registry.redhat.io/devspaces/devfileregistry-rhel8
   - name: IMAGE_TAG
-    value: '3.0'
+    value: '3.1'
     displayName: Red Hat OpenShift Dev Spaces devfile registry version
     description: Red Hat OpenShift Dev Spaces devfile registry version
   - name: MEMORY_LIMIT
