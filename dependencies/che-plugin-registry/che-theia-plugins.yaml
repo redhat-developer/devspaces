@@ -8,7 +8,7 @@ plugins:
     extension: https://github.com/redhat-developer/devspaces-vscode-extensions/releases/download/v4c5e8c4/vscode-pull-request-github-0.21.1.vsix
   - repository:
       url: 'https://github.com/Microsoft/vscode-js-debug'
-      revision: v1.52.2
+      revision: v1.66.0
     sidecar:
       image: "registry.redhat.io/devspaces/udi-rhel8:3.1"
       name: vscode-node-debug
@@ -16,7 +16,7 @@ plugins:
       memoryRequest: 20Mi
       cpuLimit: 500m
       cpuRequest: 30m
-    extension: https://open-vsx.org/api/ms-vscode/js-debug/1.52.2/file/ms-vscode.js-debug-1.52.2.vsix
+    extension: https://open-vsx.org/api/ms-vscode/js-debug/1.66.0/file/ms-vscode.js-debug-1.66.0.vsix
   - repository:
       url: 'https://github.com/Microsoft/vscode'
       revision: 1.49.3
