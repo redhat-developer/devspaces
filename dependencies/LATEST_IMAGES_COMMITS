@@ -21,14 +21,14 @@ quay.io/crw/crw-2-rhel8-operator:2.15-22
    Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1968532
   Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-operator/commit?id=b539b1cf2a3dc04f93da7128c8878d2180259d5b
 
-quay.io/crw/crw-2-rhel8-operator-bundle:2.15-291
-     NVR: codeready-workspaces-operator-bundle-container-2.15-291
-   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1945772
+quay.io/crw/crw-2-rhel8-operator-bundle:2.15-294
+     NVR: codeready-workspaces-operator-bundle-container-2.15-294
+   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1968879
   Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-operator-bundle/commit?id=009dd0a1163e2ec84a9f713880d08452f5091724
 
-quay.io/crw/crw-2-rhel8-operator-metadata:2.15-86
-     NVR: codeready-workspaces-rhel8-operator-metadata-container-2.15-86
-   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1945732
+quay.io/crw/crw-2-rhel8-operator-metadata:2.15-89
+     NVR: codeready-workspaces-rhel8-operator-metadata-container-2.15-89
+   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1968890
   Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-operator-metadata/commit?id=da48e12dfe96dda214f9901da4d5ce986baedcfe
 
 quay.io/crw/dashboard-rhel8:2.15-32
@@ -140,9 +140,9 @@ quay.io/crw/pluginregistry-rhel8:2.15-14.1648471797
    Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1948792
   Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces-pluginregistry/commit?id=a91e2aac6fa0ba7b5d597aafda101e9a3dfc32da
 
-quay.io/crw/server-rhel8:2.15-20
-     NVR: codeready-workspaces-server-rhel8-container-2.15-20
-   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1910438
+quay.io/crw/server-rhel8:2.15-21
+     NVR: codeready-workspaces-server-rhel8-container-2.15-21
+   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=1968557
   Source: https://pkgs.devel.redhat.com/cgit/containers/codeready-workspaces/commit?id=38862f5c45195eb27ef378ab9c6d408d10d75723
 
 quay.io/crw/stacks-cpp-rhel8:2.15-11.1648464770
