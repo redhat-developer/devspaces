@@ -12,10 +12,16 @@
 
 SCRIPT=$(readlink -f "$0"); SCRIPTPATH=$(dirname "$SCRIPT")
 
+# by default resolve image tags / digests from RHEC or as stated in the CSV; with this override, check Quay if can't find in RHEC
+QUAY=0
+
 usage () {
   echo "
 Usage:   $0 bundle-image1 [bundle-image2...]
-Example: $0 quay.io/crw/crw-2-rhel8-operator-bundle:2.15-276.1647377069
+
+Examples:
+Check images in RHEC only: $0 quay.io/crw/crw-2-rhel8-operator-bundle:2.15-276.1647377069
+Check Quay if not in RHEC: $0 quay.io/devspaces/devspaces-operator-bundle:3.0 --quay
 "
 }
 
@@ -23,6 +29,7 @@ if [[ $# -lt 1 ]]; then usage; exit; fi
 
 while [[ "$#" -gt 0 ]]; do
   case $1 in
+    '--quay') QUAY=1; shift 0;;
     *) IMAGES="${IMAGES} $1"; shift 0;;
   esac
   shift 1
@@ -39,14 +46,22 @@ for imageAndTag in $IMAGES; do
     fi
     rm -fr /tmp/${SOURCE_CONTAINER//\//-}-${containerTag}-*/
     ${SCRIPTPATH}/containerExtract.sh ${SOURCE_CONTAINER}:${containerTag} --delete-before --delete-after 2>&1 >/dev/null || true
-    related_images=$(cat /tmp/${SOURCE_CONTAINER//\//-}-${containerTag}-*/manifests/codeready-workspaces.csv.yaml | grep sha256: | sed -re "s@.+(value|mage): @@" | sort -uV)
+    related_images=$(cat /tmp/${SOURCE_CONTAINER//\//-}-${containerTag}-*/manifests/*.csv.yaml | grep sha256: | sed -re "s@.+(value|mage): @@" | sort -uV)
     for related_image in $related_images; do 
         # check each image digest to compute matching tag
         jqdump="$(skopeo inspect docker://${related_image} 2>&1)"
         if [[ $jqdump == *"Labels"* ]]; then 
             tag=$(echo $jqdump | jq -r '.Labels.url' | sed -r -e "s#.+/images/##")
         else
-            tag="NOT FOUND!"
+            if [[ $QUAY -eq 1 ]]; then # check quay
+              related_image=${related_image//registry.redhat.io/quay.io}
+              jqdump="$(skopeo inspect docker://${related_image} 2>&1)"
+              if [[ $jqdump == *"Labels"* ]]; then 
+                  tag=$(echo $jqdump | jq -r '.Labels.url' | sed -r -e "s#.+/images/##")
+              fi
+            else 
+                tag="NOT FOUND!"
+            fi
         fi
         echo "$tag :: $related_image"
     done
