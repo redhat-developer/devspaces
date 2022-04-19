@@ -105,7 +105,7 @@ replaceField()
 computeLatestCSV() {
   image=$1 # operator-bundle
   SOURCE_CONTAINER=registry.redhat.io/devspaces/devspaces-${image}
-  containerTag=$(skopeo inspect docker://${SOURCE_CONTAINER} | jq -r '.Labels.url' | sed -r -e "s#.+/images/##")
+  containerTag=$(skopeo inspect docker://${SOURCE_CONTAINER} 2>/dev/null | jq -r '.Labels.url' | sed -r -e "s#.+/images/##")
   echo "Found containerTag = ${containerTag}"
 
   # extract the CSV version from the container as with CVE respins, the CSV version != the nominal container tag or JIRA version 2.13.1
@@ -115,9 +115,13 @@ computeLatestCSV() {
   fi
   rm -fr /tmp/${SOURCE_CONTAINER//\//-}-${containerTag}-*/
   ${SCRIPTPATH}/containerExtract.sh ${SOURCE_CONTAINER}:${containerTag} --delete-before --delete-after 2>&1 >/dev/null || true
-  grep -E "devspacesoperator|replaces:" /tmp/${SOURCE_CONTAINER//\//-}-${containerTag}-*/manifests/devspaces.csv.yaml 
-  CSV_VERSION_PREV=$(yq -r '.spec.version' /tmp/${SOURCE_CONTAINER//\//-}-${containerTag}-*/manifests/devspaces.csv.yaml 2>/dev/null | tr "+" "-")
-  rm -fr /tmp/${SOURCE_CONTAINER//\//-}-${containerTag}-*/
+  if [[ ! -f /tmp/${SOURCE_CONTAINER//\//-}-${containerTag}-*/manifests/devspaces.csv.yaml ]]; then
+    echo "[WARN] Container ${SOURCE_CONTAINER}:${containerTag} could not be extracted!"
+  else 
+    grep -E "devspacesoperator|replaces:" /tmp/${SOURCE_CONTAINER//\//-}-${containerTag}-*/manifests/devspaces.csv.yaml 
+    CSV_VERSION_PREV=$(yq -r '.spec.version' /tmp/${SOURCE_CONTAINER//\//-}-${containerTag}-*/manifests/devspaces.csv.yaml 2>/dev/null | tr "+" "-")
+    rm -fr /tmp/${SOURCE_CONTAINER//\//-}-${containerTag}-*/
+  fi
   echo "Found CSV_VERSION_PREV = ${CSV_VERSION_PREV}"
 
   # update CSVs["${image}"].$version.CSV_VERSION_PREV
@@ -130,7 +134,13 @@ computeLatestPackageVersion() {
     found=0
     BASE_VERSION="$1" # DEVSPACES version to use for computations
     packageName="$2"
-    THIS_Y_VALUE="${BASE_VERSION#*.}"; THIS_CHE_Y=$(( (${THIS_Y_VALUE} + 6) * 2 )); THIS_CHE_Y_LOWER=$(( ((${THIS_Y_VALUE} + 6) * 2) - 1 ))
+    if [[ $BASE_VERSION == "2.15" ]]; then 
+      # old mapping for CRW 2.15 = Che 7.42
+      THIS_Y_VALUE="${BASE_VERSION#*.}"; THIS_CHE_Y=$(( (${THIS_Y_VALUE} + 6) * 2 )); THIS_CHE_Y_LOWER=$(( ((${THIS_Y_VALUE} + 6) * 2) - 1 ))
+    else
+      # new mapping for DS 3.0 = Che 7.46
+      THIS_Y_VALUE="${BASE_VERSION#*.}"; THIS_CHE_Y=$(( (${THIS_Y_VALUE} + 23) * 2 )); THIS_CHE_Y_LOWER=$(( ((${THIS_Y_VALUE} + 23) * 2) - 1 ))
+    fi
     # check if .2, .1, .0 version exists in npmjs.com
     for y in $THIS_CHE_Y $THIS_CHE_Y_LOWER; do 
       for z in 2 1 0; do 
@@ -233,7 +243,12 @@ updateVersion() {
         replaceField "${WORKDIR}/dependencies/job-config.json" "(.Jobs[][\"${VERSION_DISABLE}\"][\"disabled\"]|select(.==false))" 'true'
         replaceField "${WORKDIR}/dependencies/job-config.json" "(.\"Management-Jobs\"[][\"${VERSION_DISABLE}\"][\"disabled\"]|select(.==false))" 'true'
         #set the previous 'latest' to be its own version
-        replaceField "${WORKDIR}/dependencies/job-config.json" ".Other[\"FLOATING_QUAY_TAGS\"][\"${VERSION_DISABLE}\"]" "\"${VERSION_DISABLE}\""
+
+        # don't switch to 2.15 for 2.15; use latest as it's the last latest for that stream
+        if [[ $VERSION_DISABLE != "2.15" ]]; then
+          replaceField "${WORKDIR}/dependencies/job-config.json" ".Other[\"FLOATING_QUAY_TAGS\"][\"${VERSION_DISABLE}\"]" "\"${VERSION_DISABLE}\""
+        fi
+
         # set .2 version of @eclipse-che/plugin-registry-generator if currently set to latest
         if [[ $(jq -r ".Other[\"@eclipse-che/plugin-registry-generator\"][\"${VERSION_DISABLE}\"]" "${WORKDIR}/dependencies/job-config.json") == "latest" ]]; then
           computeLatestPackageVersion $VERSION_DISABLE "@eclipse-che/plugin-registry-generator"
@@ -246,8 +261,10 @@ updateVersion() {
     replaceField "${WORKDIR}/dependencies/job-config.json" ".Other[\"FLOATING_QUAY_TAGS\"][\"3.x\"]" "\"next\""
 
     #the 'latest' tag should go on the previous/stable version, which would be version -1, or the index 3 form the end of the VERSION_KEYS array
-    LATEST_INDEX=$(( ${#VERSION_KEYS[@]} - 3 )); LATEST_VERSION="${VERSION_KEYS[$LATEST_INDEX]}"; # echo "LATEST_VERSION = $LATEST_VERSION"
+    LATEST_INDEX=$(( ${#VERSION_KEYS[@]} - 3 )); LATEST_VERSION="${VERSION_KEYS[$LATEST_INDEX]}";  echo "LATEST_VERSION = $LATEST_VERSION"
+
     replaceField "${WORKDIR}/dependencies/job-config.json" ".Other[\"FLOATING_QUAY_TAGS\"][\"${LATEST_VERSION}\"]" "\"latest\""
+
     # search for latest released tag to use for stable builds
     computeLatestPackageVersion $LATEST_VERSION "@eclipse-che/plugin-registry-generator"
     # or use "latest" release with replaceField "${WORKDIR}/dependencies/job-config.json" ".Other[\"@eclipse-che/plugin-registry-generator\"][\"${LATEST_VERSION}\"]" "\"latest\""
