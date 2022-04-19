@@ -19,12 +19,6 @@ for meta in "${metas[@]}"; do
 
     # Ignore double quotes warning for yq expression
     # shellcheck disable=SC2016,SC2094
-    cat <<< "$(yq -y --arg metadir "${META_DIR}" '.links |= . + {self: "/\($metadir)/devfile.yaml" }' "${meta}")"  > "${meta}"
-    if [ "$(yq '.links.v2' "${meta}")" != "null" ]; then
-      # Ignore double quotes warning for yq expression
-      # shellcheck disable=SC2016,SC2094
-      cat <<< "$(yq -y --arg metadir "${META_DIR}" '.links.devWorkspaces |= . +
-      {"eclipse/che-theia/latest": "/\($metadir)/devworkspace-che-theia-latest.yaml"}' "${meta}")" > "${meta}"
-    fi
+    cat <<< "$(yq --arg metadir "${META_DIR}" '.links |= . + {self: "/\($metadir)/devfile.yaml" }' "${meta}")"  > "${meta}"
 done
 yq -s 'map(.)' "${metas[@]}"
