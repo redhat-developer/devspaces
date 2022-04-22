@@ -77,3 +77,65 @@ export RELATED_IMAGE_devspaces_udi_devfile_registry_image_GIXDCNQK='registry.red
 source "${script_dir}/entrypoint.sh"
 extract_and_use_related_images_env_variables_with_image_digest_info
 assertFileContentEquals "${DEVFILES_DIR}/external_images.txt" "${expected_externalImagesTxt}"
+
+initTest "Should replace image references in devworkspace-che-theia-latest.yaml with RELATED_IMAGE env vars"
+
+externalImagesTxt=$(cat <<-END
+registry.redhat.io/devspaces/theia-rhel8:2.15
+END
+)
+expected_externalImagesTxt=$(cat <<-END
+registry.redhat.io/devspaces/theia-rhel8@sha256:833f332f1e7f9a669b658bd6d1bf7f236c52ecf141a7006637fbda9f86fc5369
+END
+)
+
+devworkspace=$(cat <<-END
+apiVersion: workspace.devfile.io/v1alpha2
+kind: DevWorkspaceTemplate
+metadata:
+  name: theia-ide-python-hello-world
+spec:
+  commands:
+    - id: init-container-command
+      apply:
+        component: remote-runtime-injector
+  events:
+    preStart:
+      - init-container-command
+  components:
+    - name: theia-ide
+      container:
+        image: registry.redhat.io/devspaces/theia-rhel8:2.15
+END
+)
+
+expected_devworkspace=$(cat <<-END
+apiVersion: workspace.devfile.io/v1alpha2
+kind: DevWorkspaceTemplate
+metadata:
+  name: theia-ide-python-hello-world
+spec:
+  commands:
+    - id: init-container-command
+      apply:
+        component: remote-runtime-injector
+  events:
+    preStart:
+      - init-container-command
+  components:
+    - name: theia-ide
+      container:
+        image: registry.redhat.io/devspaces/theia-rhel8@sha256:833f332f1e7f9a669b658bd6d1bf7f236c52ecf141a7006637fbda9f86fc5369
+END
+)
+
+echo "$externalImagesTxt" > "${DEVFILES_DIR}/external_images.txt"
+echo "$devworkspace" > "${DEVFILES_DIR}/devworkspace-che-theia-latest.yaml"
+
+# NOTE: GIXDCNQK | base 32 -d = 2.16; GIXDCMIK | base 32 -d = 2.11 
+export RELATED_IMAGE_devspaces_theia_devfile_registry_image_GIXDCNIK='registry.redhat.io/devspaces/theia-rhel8@sha256:833f332f1e7f9a669b658bd6d1bf7f236c52ecf141a7006637fbda9f86fc5369'
+
+# shellcheck disable=SC1090
+source "${script_dir}/entrypoint.sh"
+extract_and_use_related_images_env_variables_with_image_digest_info
+assertFileContentEquals "${DEVFILES_DIR}/devworkspace-che-theia-latest.yaml" "${expected_devworkspace}"

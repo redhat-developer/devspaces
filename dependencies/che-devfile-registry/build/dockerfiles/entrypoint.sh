@@ -59,7 +59,7 @@ function run_main() {
     sed -i "s|\"icon\": \"/images/|\"icon\": \"${PUBLIC_URL}/images/|" "$INDEX_JSON"
     sed -i "s|\"self\": \"/devfiles/|\"self\": \"${PUBLIC_URL}/devfiles/|" "$INDEX_JSON"
   else
-    if grep -q '{{ DEVFILE_REGISTRY_URL }}' "${devfiles[@]}" ${templates[@]}; then
+    if grep -q '{{ DEVFILE_REGISTRY_URL }}' "${devfiles[@]}" "${templates[@]}"; then
       echo "WARNING: environment variable 'CHE_DEVFILE_REGISTRY_URL' not configured" \
         "for an offline build of this registry. This may cause issues with importing" \
         "projects in a workspace."
@@ -135,7 +135,7 @@ function extract_and_use_related_images_env_variables_with_image_digest_info() {
       done
     fi
 
-    readarray -t devfiles < <(find "${DEVFILES_DIR}" -name 'devfile.yaml')
+    readarray -t devfiles < <(find "${DEVFILES_DIR}" -name 'devfile.yaml' -o -name 'devworkspace-*.yaml')
     for devfile in "${devfiles[@]}"; do
       readarray -t images < <(grep "image:" "${devfile}" | sed -r "s;.*image:[[:space:]]*'?\"?([._:a-zA-Z0-9-]*/?[._a-zA-Z0-9-]*/[._a-zA-Z0-9-]*(@sha256)?:?[._a-zA-Z0-9-]*)'?\"?[[:space:]]*;\1;")
       for image in "${images[@]}"; do
