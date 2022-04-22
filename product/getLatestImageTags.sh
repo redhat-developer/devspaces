@@ -30,7 +30,7 @@ if [[ $DWNSTM_BRANCH != "devspaces-3."*"-rhel-8" ]] && [[ $DWNSTM_BRANCH != "dev
 	fi
 else
 	CRW_VERSION=${DWNSTM_BRANCH/devspaces-/}; CRW_VERSION=${CRW_VERSION/-rhel-8/}
-	if [[ $CRW_VERSION == 2 ]]; then # invalid version
+	if [[ $CRW_VERSION == 2 ]] || [[ $CRW_VERSION == 3 ]]; then # invalid version
 		if [[ ${VERSION} ]]; then # use version from VERSION file
 			CRW_VERSION=${VERSION}
 		else # set placeholder version 3.y
@@ -276,12 +276,14 @@ if [[ ${SHOWNVR} -eq 1 ]]; then
 			echo $result
 			(( n = n + 1 ))
 			if [[ $ERRATA_NUM ]]; then
+				prodver="RHOSDS-3-RHEL-8"
+				if [[ $CRW_VERSION == "2"* ]]; then prodver="CRW-2.0-RHEL-8"; fi
 				cat <<EOT >> /tmp/errata-container-update-$result
 from errata_tool import Erratum
 e = Erratum(errata_id=$ERRATA_NUM)
 e.setState('NEW_FILES')
 e.commit()
-e.addBuilds('$result', release='CRW-2.0-RHEL-8', file_types={'$result': ['tar']})
+e.addBuilds('$result', release='$prodver', file_types={'$result': ['tar']})
 EOT
 				python /tmp/errata-container-update-$result
 				rm -f /tmp/errata-container-update-$result
