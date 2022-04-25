@@ -12,11 +12,11 @@
 
 # defaults
 # try to compute branches from currently checked out branch; else fall back to hard coded value
-devspaces_repos_branch="$(git rev-parse --abbrev-ref HEAD 2>/dev/null || true)"
-if [[ $devspaces_repos_branch != "devspaces-3."*"-rhel-8" ]]; then
-	devspaces_repos_branch="devspaces-3-rhel-8"
+TARGET_BRANCH="$(git rev-parse --abbrev-ref HEAD 2>/dev/null || true)"
+if [[ $TARGET_BRANCH != "devspaces-3."*"-rhel-8" ]]; then
+	TARGET_BRANCH="devspaces-3-rhel-8"
 fi
-pkgs_devel_branch=${devspaces_repos_branch}
+pkgs_devel_branch=${TARGET_BRANCH}
 
 pduser=crw-build
 
@@ -33,12 +33,12 @@ if [[ $# -lt 4 ]]; then
 To create tags (and push updated CSV content into operator-bundle repo):
   $0 -v CSV_VERSION -t CRW_VERSION -gh CRW_GH_BRANCH -ghtoken GITHUB_TOKEN -pd PKGS_DEVEL_BRANCH -pduser kerberos_user
 Example: 
-  $0 -v 3.y.0 -t 3.y -gh ${devspaces_repos_branch} -ghtoken \$GITHUB_TOKEN -pd ${pkgs_devel_branch} -pduser $pduser
+  $0 -v 3.y.0 -t 3.y -gh ${TARGET_BRANCH} -ghtoken \$GITHUB_TOKEN -pd ${pkgs_devel_branch} -pduser $pduser
 
 To create branches:
-  $0 --branchfrom PREVIOUS_CRW_GH_BRANCH -gh NEW_CRW_GH_BRANCH -ghtoken GITHUB_TOKEN
+  $0 -t CRW_VERSION --branchfrom SOURCE_GH_BRANCH -gh TARGET_GH_BRANCH -ghtoken GITHUB_TOKEN
 Example: 
-  $0 --branchfrom devspaces-3-rhel-8 -gh ${devspaces_repos_branch} -ghtoken \$GITHUB_TOKEN
+  $0 -t CRW_VERSION --branchfrom devspaces-3-rhel-8 -gh ${TARGET_BRANCH} -ghtoken \$GITHUB_TOKEN
 "
 	exit 1
 fi
@@ -49,7 +49,7 @@ while [[ "$#" -gt 0 ]]; do
     '--branchfrom') SOURCE_BRANCH="$2"; shift 1;; # this flag will create branches instead of using branches to create tags
     '-v') CSV_VERSION="$2"; shift 1;; # 3.y.0
     '-t') CRW_VERSION="$2"; shift 1;; # 3.y # used to get released bundle container's CSV contents
-    '-gh') devspaces_repos_branch="$2"; shift 1;;
+    '-gh') TARGET_BRANCH="$2"; shift 1;;
     '-ghtoken') GITHUB_TOKEN="$2"; shift 1;;
     '-pd') pkgs_devel_branch="$2"; shift 1;;
     '-pduser') pduser="$2"; shift 1;;
@@ -62,14 +62,14 @@ if [[ ! ${CRW_VERSION} ]]; then
   CRW_VERSION=${CSV_VERSION%.*} # given 3.y.0, want 3.y
 fi
 
-if [[ ${CLEAN} == "true" ]]; then 
+if [[ ${CLEAN} == "true" ]]; then
 	rm -fr /tmp/tmp-checkouts || true
 fi
 
 mkdir -p /tmp/tmp-checkouts
 cd /tmp/tmp-checkouts
 
-set -ex
+set -e
 
 pushTagPD () 
 {
@@ -94,8 +94,93 @@ pushTagPD ()
 	popd >/dev/null || exit 1
 }
 
+# for the devspaces main repo, update meta.yaml files to point to the correct branch of $samplesRepo
+# TODO https://issues.redhat.com/browse/CRW-2817 move to new devspaces-samples repo
+updateLinksToDevfiles() {
+    YAML_ROOT="dependencies/che-devfile-registry/devfiles"
+
+    # replace CRW meta.yaml files with links to current version of devfile v2
+    for meta in $(find ${YAML_ROOT} -name "meta.yaml"); do
+       sed -r -i "${meta}" \
+           -e "s|devfilev2|devspaces-${CRW_VERSION}-rhel-8|g"
+    done
+    git diff -q "${YAML_ROOT}" || true
+    git commit -a -s -m "chore(devfile) update link to devfiles v2"
+}
+
+# for the sample projects ONLY, commit changes to the devfile so it contains the correct image and tag
+updateSampleDevfileReferences () {
+	devfile=devfile.yaml
+	if [[ $CRW_VERSION ]]; then
+		CRW_TAG="$CRW_VERSION"
+	else 
+		CRW_TAG="${TARGET_BRANCH//-rhel-8}"; CRW_TAG="${CRW_TAG//devspaces-}"
+	fi
+	# echo "[DEBUG] update $devfile with CRW_TAG = $CRW_TAG"
+	# TODO we can remove the stacks/plugins replacement once it's no longer needed
+	sed -r -i $devfile \
+		-e "s#codeready-workspaces/(stacks|plugin)-[a-z0-9:@.-]+#devspaces/udi-rhel8:${CRW_TAG}#g" \
+		-e "s#devspaces/udi-[a-z0-9:@.-]+#devspaces/udi-rhel8:${CRW_TAG}#g"
+
+	# for 3.x builds, point image refs at quay instead of RHEC
+	if [[ $TARGET_BRANCH == "devspaces-3-rhel-8" ]]; then
+		sed -r -i $devfile -e "s#registry.redhat.io/devspaces/#quay.io/devspaces/#g"
+	fi
+    git diff -q "$devfile" || true
+    git commit -s -m "chore(devfile) update link in v2 devfile to :${CRW_TAG}" "$devfile" || echo "No change to commit"
+}
+
+# create branch or tag
+pushBranchAndOrTagGH () {
+	d="$1"
+	org="$2"
+	echo; echo "== $d =="
+	# if source_branch defined and target branch doesn't exist yet, check out the source branch
+	if [[ ${SOURCE_BRANCH} ]] && [[ $(git ls-remote --heads https://github.com/${org}/${d}.git ${TARGET_BRANCH}) == "" ]]; then
+		clone_branch=${SOURCE_BRANCH}
+	else # if source branch not set (tagging operation) or target branch already exists
+		clone_branch=${TARGET_BRANCH}
+	fi
+	if [[ ! -d /tmp/tmp-checkouts/projects_${d} ]]; then
+		git clone -q --depth 1 -b ${clone_branch} https://github.com/${org}/${d}.git projects_${d}
+		pushd /tmp/tmp-checkouts/projects_${d} >/dev/null || exit 1
+			export GITHUB_TOKEN="${GITHUB_TOKEN}"
+			git config user.email "nickboldt+devstudio-release@gmail.com"
+			git config user.name "Red Hat Devstudio Release Bot"
+			git config --global push.default matching
+			git config --global hub.protocol https
+			git remote set-url origin https://${GITHUB_TOKEN}:x-oauth-basic@github.com/${org}/${d}.git
+
+			git checkout --track origin/${clone_branch} -q || true
+			git pull -q
+		popd >/dev/null || exit 1
+	fi
+	pushd /tmp/tmp-checkouts/projects_${d} >/dev/null || exit 1
+	if [[ ${SOURCE_BRANCH} ]]; then # push a new branch (or no-op if exists)
+		# create a branch or use existing, should fail if we can't do either
+		git branch ${TARGET_BRANCH} || git checkout ${TARGET_BRANCH}
+
+		# for the devspaces main repo, update devfiles to point to the correct tag/branch
+		if [[ $d == "devspaces" ]]; then
+			updateLinksToDevfiles
+		fi
+
+		# for the devspaces sample repos, update devfiles to point to the correct tag/branch
+		if [[ $org == "${samplesRepo}" ]]; then
+			updateSampleDevfileReferences
+		fi
+
+		git push origin ${TARGET_BRANCH} || true
+	fi
+	if [[ $CSV_VERSION ]]; then # push a new tag (or no-op if exists)
+		git tag ${CSV_VERSION} || true
+		git push origin ${CSV_VERSION} || true
+	fi
+	popd >/dev/null || exit 1
+}
+
 # tag pkgs.devel repos only (branches are created by SPMM ticket, eg., https://projects.engineering.redhat.com/browse/SPMM-2517)
-if [[ ${pkgs_devel_branch} ]] && [[ ${CSV_VERSION} ]]; then 
+if [[ ${pkgs_devel_branch} ]] && [[ ${CSV_VERSION} ]]; then
 	for d in \
 	devspaces-configbump \
 	devspaces-operator \
@@ -119,123 +204,48 @@ if [[ ${pkgs_devel_branch} ]] && [[ ${CSV_VERSION} ]]; then
 	done
 fi
 
-# for the devspaces main repo, update tech preview devfiles to point to the correct tag/branch
-# no longer used - TODO remove this if we consistently don't need it > 3.1
-updateTechPreviewDevfiles() {
-    YAML_ROOT="tech-preview-devfiles"
-
-    # replace CRW devfiles with image references to current version tag instead of devspaces-3-rhel-8 and :latest tag
-    for devfile in $(find ${YAML_ROOT} -name "*.yaml" -o -name "*.yml"); do
-       sed -r -i "${devfile}" \
-           -e "s|(.*image: \"*?.*quay.io/devspaces/.*:).+|\1${CRW_VERSION}\"|g" \
-           -e "s|(.*image: \"*?.*registry.redhat.io/devspaces/.*:).+|\1${CRW_VERSION}\"|g" \
-           -e "s|devspaces/devspaces-3-rhel-8/|devspaces/devspaces-${CRW_VERSION}-rhel-8/|g"
-    done
-    git diff -q "${YAML_ROOT}" || true
-    git commit -a -s -m "chore(tech-preview-devfiles) update tag/branch to ${CRW_VERSION}"
-}
-
-# for the devspaces main repo, update meta.yaml files to point to the correct branch of $samplesRepo
-# TODO https://issues.redhat.com/browse/CRW-2817 move to new devspaces-samples repo
-updateLinksToDevfiles() {
-    YAML_ROOT="dependencies/che-devfile-registry/devfiles"
-
-    # replace CRW meta.yaml files with links to current version of devfile v2
-    for meta in $(find ${YAML_ROOT} -name "meta.yaml"); do
-       sed -r -i "${meta}" \
-           -e "s|devfilev2|${CRW_VERSION}-devfilev2|g"
-    done
-    git diff -q "${YAML_ROOT}" || true
-    git commit -a -s -m "chore(devfile) update link to devfiles v2"
-}
-
-pushTagGH () {
-	d="$1"
-	org="$2"
-	echo; echo "== $d =="
-	if [[ ${SOURCE_BRANCH} ]]; then clone_branch=${SOURCE_BRANCH}; else clone_branch=${devspaces_repos_branch}; fi
-	if [[ ! -d /tmp/tmp-checkouts/projects_${d} ]]; then
-		git clone --depth 1 -b ${clone_branch} https://github.com/${org}/${d}.git projects_${d}
-		pushd /tmp/tmp-checkouts/projects_${d} >/dev/null || exit 1
-			export GITHUB_TOKEN="${GITHUB_TOKEN}"
-			git config user.email "nickboldt+devstudio-release@gmail.com"
-			git config user.name "Red Hat Devstudio Release Bot"
-			git config --global push.default matching
-			git config --global hub.protocol https
-			git remote set-url origin https://${GITHUB_TOKEN}:x-oauth-basic@github.com/${org}/${d}.git
-
-			git checkout --track origin/${clone_branch} -q || true
-			git pull -q
-		popd >/dev/null || exit 1
-	fi
-	pushd /tmp/tmp-checkouts/projects_${d} >/dev/null || exit 1
-	if [[ ${SOURCE_BRANCH} ]]; then # push a new branch (or no-op if exists)
-		branch=${devspaces_repos_branch}
-		# TODO https://issues.redhat.com/browse/CRW-2817 move to new devspaces-samples repo
-		if [[ $org == "${samplesRepo}" ]]; then 
-			# new branch for samples should be 3.x-devfilev2
-			branch="$CRW_VERSION-$SOURCE_BRANCH";
-		fi
-		
-		git branch ${branch} || true
-
-		# for the devspaces main repo, update tech preview devfiles to point to the correct tag/branch
-		if [[ $d == "devspaces" ]]; then 
-			# updateTechPreviewDevfiles; # no longer used
-			updateLinksToDevfiles;
-		fi
-
-		git push origin ${branch} || true
-	fi
-	if [[ $CSV_VERSION ]]; then # push a new tag (or no-op if exists)
-		git tag ${CSV_VERSION} || true
-		git push origin ${CSV_VERSION} || true
-	fi
-	popd >/dev/null || exit 1
-}
-
 for d in \
 devspaces \
 devspaces-chectl \
 devspaces-images \
 devspaces-theia \
 ; do
-	pushTagGH $d "redhat-developer"
+	pushBranchAndOrTagGH $d "redhat-developer"
 done
+
+####### sample projects: branching and tagging
+sampleprojects="\
+c-plus-plus \
+cakephp-ex \
+camel-k \
+demo \
+dotnet-web-simple \
+fuse-rest-http-booster \
+golang-health-check \
+gradle-demo-project \
+gs-validating-form-input \
+jboss-eap-quickstarts \
+lombok-project-sample \
+microprofile-quickstart \
+microprofile-quickstart-bootable \
+nodejs-configmap \
+nodejs-mongodb-sample \
+python-hello-world \
+quarkus-quickstarts \
+rest-http-example \
+vertx-health-checks-example-redhat \
+vertx-http-example \
+web-nodejs-sample \
+"
 
 # create branches for devspaces samples
 # all samples are located in https://github.com/${samplesRepo}/
-# the source branch is devfilev2
-SOURCE_BRANCH="devfilev2"
-if [[ $CRW_VERSION ]]; then # don't do this if there's no CRW_VERSION set
-	echo "Publish new tags for ${CRW_VERSION}-devfilev2 ..."
-	for s in \
-	jboss-eap-quickstarts \
-	microprofile-quickstart-bootable \
-	microprofile-quickstart \
-	fuse-rest-http-booster \
-	camel-k \
-	rest-http-example \
-	gs-validating-form-input \
-	lombok-project-sample \
-	quarkus-quickstarts \
-	vertx-health-checks-example-redhat \
-	vertx-http-example \
-	nodejs-configmap \
-	nodejs-mongodb-sample \
-	web-nodejs-sample \
-	python-hello-world \
-	c-plus-plus \
-	dotnet-web-simple \
-	golang-health-check \
-	cakephp-ex \
-	demo \
-	gradle-demo-project \
-	; do
-		pushTagGH $s ${samplesRepo}
-	done
-fi
+# If we want to use source branch = devfilev2, uncomment this line; otherwise source_branch will be value input to script, eg., devspaces-3-rhel-8
+# SOURCE_BRANCH="devfilev2"
+for s in $sampleprojects; do
+	pushBranchAndOrTagGH $s ${samplesRepo}
+done
 
+# echo "Temporary checkouts are in /tmp/tmp-checkouts"
 # cleanup
-echo "Temporary checkouts are in /tmp/tmp-checkouts"
 rm -fr /tmp/tmp-checkouts
