@@ -142,8 +142,6 @@ plugins:
       volumeMounts:
         - name: m2
           path: /home/user/.m2
-        - name: gradle
-          path: /home/user/.gradle
     extension: https://github.com/redhat-developer/devspaces-vscode-extensions/releases/download/7.44-che-assets/vscode-microprofile-0.1.1-48.vsix
   - id: redhat/quarkus-java11
     repository:
@@ -161,8 +159,6 @@ plugins:
       volumeMounts:
         - name: m2
           path: /home/user/.m2
-        - name: gradle
-          path: /home/user/.gradle
     extension: https://github.com/redhat-developer/devspaces-vscode-extensions/releases/download/7.44-che-assets/vscode-quarkus-1.7.0-437.vsix
     metaYaml:
       skipDependencies:
@@ -274,14 +270,9 @@ plugins:
       memoryRequest: 20Mi
       cpuLimit: 800m
       cpuRequest: 30m
-      env:
-        - name: GRADLE_HOME
-          value: /opt/gradle/
       volumeMounts:
         - name: m2
           path: /home/user/.m2
-        - name: gradle
-          path: /home/user/.gradle
     extension: https://github.com/redhat-developer/devspaces-vscode-extensions/releases/download/7.44-che-assets/java-0.82.0-369.vsix
     metaYaml:
       extraDependencies:
