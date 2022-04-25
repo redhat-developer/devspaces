@@ -106,7 +106,7 @@ updateLinksToDevfiles() {
            -e "s|/tree/devspaces-[0-9.]-rhel-8|/tree/${TARGET_BRANCH}|g"
     done
     git diff -q "${YAML_ROOT}" || true
-    git commit -a -s -m "chore(devfile) update link to devfiles v2"
+    git commit -a -s -m "chore(devfile) update link to devfiles v2" || echo ""
 }
 
 # for the sample projects ONLY, commit changes to the devfile so it contains the correct image and tag
@@ -128,7 +128,7 @@ updateSampleDevfileReferences () {
 		sed -r -i $devfile -e "s#registry.redhat.io/devspaces/#quay.io/devspaces/#g"
 	fi
     git diff -q "$devfile" || true
-    git commit -s -m "chore(devfile) update link in v2 devfile to :${CRW_TAG}" "$devfile" || echo "No change to commit"
+    git commit -s -m "chore(devfile) update link in v2 devfile to :${CRW_TAG}" "$devfile" || echo ""
 }
 
 # create branch or tag
