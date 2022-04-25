@@ -22,7 +22,7 @@ components:
     image: registry.redhat.io/devspaces/udi-rhel8:3.1
     env:
       - name: GRADLE_USER_HOME
-        value: /home/jboss/.gradle
+        value: /home/user/.gradle
       - name: JAVA_OPTS
         value: "-XX:MaxRAMPercentage=50 -XX:+UseParallelGC -XX:MinHeapFreeRatio=10
           -XX:MaxHeapFreeRatio=20 -XX:GCTimeRatio=4 -XX:AdaptiveSizePolicyWeight=90
@@ -30,15 +30,15 @@ components:
       - name: JAVA_TOOL_OPTIONS
         value: $(JAVA_OPTS)
       - name: HOME
-        value: /home/jboss
+        value: /home/user
     memoryLimit: 640Mi
     volumes:
       - name: gradle
-        containerPath: /home/jboss/.gradle
+        containerPath: /home/user/.gradle
+    mountSources: true
     endpoints:
       - name: input-form-endpoint
         port: 8080
-    mountSources: true
 commands:
   - 
     name: 1. Build
