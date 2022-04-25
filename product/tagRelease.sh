@@ -205,7 +205,7 @@ if [[ ${pkgs_devel_branch} ]] && [[ ${CSV_VERSION} ]]; then
 	  pushTagPD $repo
 	done
 	# cleanup
-	rm -fr /tmp/tmp-checkouts
+	rm -fr /tmp/tmp-checkouts/*
 fi
 
 for repo in \
@@ -217,7 +217,7 @@ devspaces-theia \
 	pushBranchAndOrTagGH $repo "redhat-developer"
 done
 # cleanup
-rm -fr /tmp/tmp-checkouts
+rm -fr /tmp/tmp-checkouts/*
 
 ####### sample projects: branching and tagging
 sampleprojects="\
