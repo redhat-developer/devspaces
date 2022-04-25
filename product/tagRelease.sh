@@ -182,7 +182,7 @@ pushBranchAndOrTagGH () {
 
 # tag pkgs.devel repos only (branches are created by SPMM ticket, eg., https://projects.engineering.redhat.com/browse/SPMM-2517)
 if [[ ${pkgs_devel_branch} ]] && [[ ${CSV_VERSION} ]]; then
-	for d in \
+	for repo in \
 	devspaces-configbump \
 	devspaces-operator \
 	devspaces-operator-bundle \
@@ -201,17 +201,17 @@ if [[ ${pkgs_devel_branch} ]] && [[ ${CSV_VERSION} ]]; then
 	devspaces-traefik \
 	devspaces-udi \
 	; do
-	  pushTagPD $d
+	  pushTagPD $repo
 	done
 fi
 
-for d in \
+for repo in \
 devspaces \
 devspaces-chectl \
 devspaces-images \
 devspaces-theia \
 ; do
-	pushBranchAndOrTagGH $d "redhat-developer"
+	pushBranchAndOrTagGH $repo "redhat-developer"
 done
 
 ####### sample projects: branching and tagging
