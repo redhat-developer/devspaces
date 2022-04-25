@@ -203,6 +203,8 @@ if [[ ${pkgs_devel_branch} ]] && [[ ${CSV_VERSION} ]]; then
 	; do
 	  pushTagPD $repo
 	done
+	# cleanup
+	rm -fr /tmp/tmp-checkouts
 fi
 
 for repo in \
@@ -213,6 +215,8 @@ devspaces-theia \
 ; do
 	pushBranchAndOrTagGH $repo "redhat-developer"
 done
+# cleanup
+rm -fr /tmp/tmp-checkouts
 
 ####### sample projects: branching and tagging
 sampleprojects="\
@@ -239,14 +243,10 @@ vertx-http-example \
 web-nodejs-sample \
 "
 
-# create branches for devspaces samples
-# all samples are located in https://github.com/${samplesRepo}/
-# If we want to use source branch = devfilev2, uncomment this line; otherwise source_branch will be value input to script, eg., devspaces-3-rhel-8
-# SOURCE_BRANCH="devfilev2"
+# create branches for devspaces samples, located under https://github.com/${samplesRepo}/
 for s in $sampleprojects; do
 	pushBranchAndOrTagGH $s ${samplesRepo}
 done
 
-# echo "Temporary checkouts are in /tmp/tmp-checkouts"
 # cleanup
 rm -fr /tmp/tmp-checkouts
