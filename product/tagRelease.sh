@@ -102,7 +102,8 @@ updateLinksToDevfiles() {
     # replace CRW meta.yaml files with links to current version of devfile v2
     for meta in $(find ${YAML_ROOT} -name "meta.yaml"); do
        sed -r -i "${meta}" \
-           -e "s|devfilev2|${TARGET_BRANCH}|g"
+           -e "s|/tree/devfilev2|/tree/${TARGET_BRANCH}|g" \
+           -e "s|/tree/devspaces-[0-9.]-rhel-8|/tree/${TARGET_BRANCH}|g"
     done
     git diff -q "${YAML_ROOT}" || true
     git commit -a -s -m "chore(devfile) update link to devfiles v2"
