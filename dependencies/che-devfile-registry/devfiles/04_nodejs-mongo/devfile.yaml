@@ -15,7 +15,7 @@ components:
     id: ms-vscode/node-debug2/latest
   - type: dockerimage
     alias: nodejs
-    image: registry.redhat.io/devspaces/udi-rhel8:3.1
+    image: quay.io/devspaces/udi-rhel8:3.1
     env:
       # The values below are used to set up the environment for running the application
       - name: SECRET
