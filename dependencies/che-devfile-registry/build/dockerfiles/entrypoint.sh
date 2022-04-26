@@ -215,21 +215,21 @@ function update_container_image_references() {
   readarray -t devfiles < <(find "${DEVFILES_DIR}" -name 'devfile.yaml')
   readarray -t metas < <(find "${DEVFILES_DIR}" -name 'meta.yaml')
   readarray -t templates < <(find "${DEVFILES_DIR}" -name 'devworkspace-che-theia-latest.yaml')
-  for devfile in "${devfiles[@]}"; do
-    echo "Checking devfile $devfile"
+  for file in "${devfiles[@]}" "${metas[@]}" "${templates[@]}"; do
+    echo "Checking $file"
     # Need to update each field separately in case they are not defined.
     # Defaults don't work because registry and tags may be different.
     if [ -n "$REGISTRY" ]; then
-      echo "    Updating image registry to $REGISTRY"
-      sed -i -E "s|image:$IMAGE_REGEX|image:\1${REGISTRY}/\3/\4\5:\6\7|" "$devfile"
+      echo "    Update image registry to $REGISTRY"
+      sed -i -E "s|image:$IMAGE_REGEX|image:\1${REGISTRY}/\3/\4\5:\6\7|" "$file"
     fi
     if [ -n "$ORGANIZATION" ]; then
-      echo "    Updating image organization to $ORGANIZATION"
-      sed -i -E "s|image:$IMAGE_REGEX|image:\1\2/${ORGANIZATION}/\4\5:\6\7|" "$devfile"
+      echo "    Update image organization to $ORGANIZATION"
+      sed -i -E "s|image:$IMAGE_REGEX|image:\1\2/${ORGANIZATION}/\4\5:\6\7|" "$file"
     fi
     if [ -n "$TAG" ]; then
-      echo "    Updating image tag to $TAG"
-      sed -i -E "s|image:$IMAGE_REGEX|image:\1\2/\3/\4:${TAG}\7|" "$devfile"
+      echo "    Update image tag to $TAG"
+      sed -i -E "s|image:$IMAGE_REGEX|image:\1\2/\3/\4:${TAG}\7|" "$file"
     fi
   done
 }
