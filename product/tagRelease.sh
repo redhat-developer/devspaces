@@ -46,13 +46,13 @@ fi
 # commandline args
 while [[ "$#" -gt 0 ]]; do
   case $1 in
-    '--branchfrom') SOURCE_BRANCH="$2"; shift 1;; # this flag will create branches instead of using branches to create tags
-    '-v') CSV_VERSION="$2"; shift 1;; # 3.y.0
-    '-t') CRW_VERSION="$2"; shift 1;; # 3.y # used to get released bundle container's CSV contents
-    '-gh') TARGET_BRANCH="$2"; shift 1;;
-    '-ghtoken') GITHUB_TOKEN="$2"; shift 1;;
-    '-pd') pkgs_devel_branch="$2"; shift 1;;
-    '-pduser') pduser="$2"; shift 1;;
+	'--branchfrom') SOURCE_BRANCH="$2"; shift 1;; # this flag will create branches instead of using branches to create tags
+	'-v') CSV_VERSION="$2"; shift 1;; # 3.y.0
+	'-t') CRW_VERSION="$2"; shift 1;; # 3.y # used to get released bundle container's CSV contents
+	'-gh') TARGET_BRANCH="$2"; shift 1;;
+	'-ghtoken') GITHUB_TOKEN="$2"; shift 1;;
+	'-pd') pkgs_devel_branch="$2"; shift 1;;
+	'-pduser') pduser="$2"; shift 1;;
 	'--clean') CLEAN="true"; shift 0;; # if set true, delete existing folders and do fresh checkouts
   esac
   shift 1
@@ -94,19 +94,35 @@ pushTagPD ()
 	popd >/dev/null || exit 1
 }
 
+toggleQuayRHECReferences() {
+	YAML_ROOT="dependencies/"
+	# replace CRW meta.yaml files with links to current version of devfile v2
+	for yaml in $(find ${YAML_ROOT} -name "*.yaml"); do
+		if [[ $TARGET_BRANCH == "devspaces-3-rhel-8" ]]; then
+			sed -r -i $yaml -e "s#registry.redhat.io/devspaces/#quay.io/devspaces/#g"
+		else
+			sed -r -i $yaml -e "s#quay.io/devspaces/#registry.redhat.io/devspaces/#g"
+		fi
+	done
+	if [[ $TARGET_BRANCH == "devspaces-3-rhel-8" ]]; then
+		git commit -s -m "chore(yaml) set image refs to quay.io/devspaces/" $YAML_ROOT || echo ""
+	else
+		git commit -s -m "chore(yaml) set image refs to registry.redhat.io/devspaces/" $YAML_ROOT || echo ""
+	fi
+}
+
 # for the devspaces main repo, update meta.yaml files to point to the correct branch of $samplesRepo
 # TODO https://issues.redhat.com/browse/CRW-2817 move to new devspaces-samples repo
 updateLinksToDevfiles() {
-    YAML_ROOT="dependencies/che-devfile-registry/devfiles"
+	YAML_ROOT="dependencies/che-devfile-registry/devfiles"
 
-    # replace CRW meta.yaml files with links to current version of devfile v2
-    for meta in $(find ${YAML_ROOT} -name "meta.yaml"); do
-       sed -r -i "${meta}" \
-           -e "s|/tree/devfilev2|/tree/${TARGET_BRANCH}|g" \
-           -e "s|/tree/devspaces-[0-9.]-rhel-8|/tree/${TARGET_BRANCH}|g"
-    done
-    git diff -q "${YAML_ROOT}" || true
-    git commit -a -s -m "chore(devfile) update link to devfiles v2" || echo ""
+	# replace CRW meta.yaml files with links to current version of devfile v2
+	for meta in $(find ${YAML_ROOT} -name "meta.yaml"); do
+	   sed -r -i "${meta}" \
+		   -e "s|/tree/devfilev2|/tree/${TARGET_BRANCH}|g" \
+		   -e "s|/tree/devspaces-[0-9.]-rhel-8|/tree/${TARGET_BRANCH}|g"
+	done
+	git commit -s -m "chore(meta) link v2 devfiles to /tree/${TARGET_BRANCH}" $YAML_ROOT || echo ""
 }
 
 # for the sample projects ONLY, commit changes to the devfile so it contains the correct image and tag
@@ -114,7 +130,7 @@ updateSampleDevfileReferences () {
 	devfile=devfile.yaml
 	if [[ $CRW_VERSION ]]; then
 		CRW_TAG="$CRW_VERSION"
-	else 
+	else
 		CRW_TAG="${TARGET_BRANCH//-rhel-8}"; CRW_TAG="${CRW_TAG//devspaces-}"
 	fi
 	# echo "[DEBUG] update $devfile with CRW_TAG = $CRW_TAG"
@@ -126,9 +142,11 @@ updateSampleDevfileReferences () {
 	# for 3.x builds, point image refs at quay instead of RHEC
 	if [[ $TARGET_BRANCH == "devspaces-3-rhel-8" ]]; then
 		sed -r -i $devfile -e "s#registry.redhat.io/devspaces/#quay.io/devspaces/#g"
+		git commit -s -m "chore(devfile) link v2 devfile to :${CRW_TAG}; set image refs to quay.io/devspaces/" "$devfile" || echo ""
+	else
+		sed -r -i $devfile -e "s#quay.io/devspaces/#registry.redhat.io/devspaces/#g"
+		git commit -s -m "chore(devfile) link v2 devfile to :${CRW_TAG}; set image refs to registry.redhat.io/devspaces/" "$devfile" || echo ""
 	fi
-    git diff -q "$devfile" || true
-    git commit -s -m "chore(devfile) update link in v2 devfile to :${CRW_TAG}" "$devfile" || echo ""
 }
 
 # create branch or tag
@@ -164,6 +182,7 @@ pushBranchAndOrTagGH () {
 		# for the devspaces main repo, update devfiles to point to the correct tag/branch
 		if [[ $d == "devspaces" ]]; then
 			updateLinksToDevfiles
+			toggleQuayRHECReferences
 		fi
 
 		# for the devspaces sample repos, update devfiles to point to the correct tag/branch
