@@ -19,7 +19,7 @@ plugins:
           cookiesAuthEnabled: true
     containers:
       - name: che-machine-exec
-        image: 'registry.redhat.io/devspaces/machineexec-rhel8:3.1'
+        image: 'quay.io/devspaces/machineexec-rhel8:3.1'
         memoryLimit: 128Mi
         memoryRequest: 32Mi
         cpuLimit: 500m
