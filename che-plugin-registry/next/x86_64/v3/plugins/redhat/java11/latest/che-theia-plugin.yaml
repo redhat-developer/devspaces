@@ -20,16 +20,9 @@ sidecar:
   memoryRequest: 20Mi
   cpuLimit: 800m
   cpuRequest: 30m
-  env:
-    - name: GRADLE_HOME
-      value: /opt/gradle/
-    - name: CHE_THEIA_SIDECAR_PREFERENCES
-      value: '{"java.server.launchMode":"Standard"}'
   volumeMounts:
     - name: m2
       path: /home/user/.m2
-    - name: gradle
-      path: /home/user/.gradle
 preferences:
   java.server.launchMode: Standard
 dependencies:

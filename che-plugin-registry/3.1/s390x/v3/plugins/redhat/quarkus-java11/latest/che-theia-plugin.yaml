@@ -21,8 +21,6 @@ sidecar:
   volumeMounts:
     - name: m2
       path: /home/user/.m2
-    - name: gradle
-      path: /home/user/.gradle
 preferences:
   java.server.launchMode: Standard
 dependencies:
