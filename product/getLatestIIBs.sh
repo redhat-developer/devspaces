@@ -25,10 +25,13 @@ done
 
 if [[ -z ${CRW_VERSION} ]]; then usage; exit 1; fi
 
-CSVs="operator-bundle" # 2.16+
-if [[ $CRW_VERSION == "2.15" ]]; then CSVs="operator-metadata operator-bundle"; fi
+prodName="Dev Spaces"
+CSVs="operator-bundle"
 
-echo "Checking for latest IIBs for CRW ${CRW_VERSION} ..."; echo
+# override for old releases
+if [[ $CRW_VERSION == "2.15" ]]; then CSVs="operator-metadata operator-bundle"; prodName="CRW"; fi
+
+echo "Checking for latest IIBs for $prodName ${CRW_VERSION} ..."; echo
 for csv in $CSVs; do
   lastcsv=$(curl -sSLk "https://datagrepper.engineering.redhat.com/raw?topic=/topic/VirtualTopic.eng.ci.redhat-container-image.index.built&delta=1728000&rows_per_page=30&contains=devspaces" | \
 jq ".raw_messages[].msg.index | .added_bundle_images[0]" -r | sort -uV | grep "${csv}:${CRW_VERSION}" | tail -1 | \
