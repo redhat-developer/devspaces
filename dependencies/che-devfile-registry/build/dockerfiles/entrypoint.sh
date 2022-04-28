@@ -51,6 +51,8 @@ function run_main() {
 
   update_container_image_references
 
+  set_internal_url
+
   if [ -n "$PUBLIC_URL" ]; then
     echo "Updating devfiles to point at internal project zip files"
     PUBLIC_URL=${PUBLIC_URL%/}
@@ -235,11 +237,16 @@ function update_container_image_references() {
   done
 }
 
-if [ -n "$INTERNAL_URL" ]; then
-  INTERNAL_URL=${INTERNAL_URL%/}
-  echo "Updating internal URL in files to ${INTERNAL_URL}"
-  sed -i "s|{{ INTERNAL_URL }}|${INTERNAL_URL}|" "${devfiles[@]}" "${metas[@]}" "${templates[@]}" "$INDEX_JSON"
-fi
+function set_internal_url() {
+  readarray -t devfiles < <(find "${DEVFILES_DIR}" -name 'devfile.yaml')
+  readarray -t metas < <(find "${DEVFILES_DIR}" -name 'meta.yaml')
+  readarray -t templates < <(find "${DEVFILES_DIR}" -name 'devworkspace-che-theia-latest.yaml')
+  if [ -n "$INTERNAL_URL" ]; then
+    INTERNAL_URL=${INTERNAL_URL%/}
+    echo "Updating internal URL in files to ${INTERNAL_URL}"
+    sed -i "s|{{ INTERNAL_URL }}|${INTERNAL_URL}|" "${devfiles[@]}" "${metas[@]}" "${templates[@]}" "$INDEX_JSON"
+  fi
+}
 
 # do not execute the main function in unit tests
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]

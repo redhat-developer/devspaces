@@ -165,7 +165,6 @@ spec:
       - name: bash
         zip:
           location: '{{ INTERNAL_URL }}/resources/v2/bash.zip'
-  
 END
 )
 
@@ -194,11 +193,12 @@ END
 )
 
 echo "$devworkspace" > "${DEVFILES_DIR}/devworkspace-che-theia-latest.yaml"
+touch "${DEVFILES_DIR}/index.json"
 
 # NOTE: GIXDCNQK | base 32 -d = 2.16; GIXDCMIK | base 32 -d = 2.11 
 export CHE_DEVFILE_REGISTRY_INTERNAL_URL='http://devfile-registry.devspaces.svc:8080'
 
 # shellcheck disable=SC1090
 source "${script_dir}/entrypoint.sh"
-extract_and_use_related_images_env_variables_with_image_digest_info
+set_internal_url
 assertFileContentEquals "${DEVFILES_DIR}/devworkspace-che-theia-latest.yaml" "${expected_devworkspace}"
