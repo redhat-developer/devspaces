@@ -30,6 +30,7 @@ REGISTRY=${CHE_DEVFILE_IMAGES_REGISTRY_URL}
 ORGANIZATION=${CHE_DEVFILE_IMAGES_REGISTRY_ORGANIZATION}
 TAG=${CHE_DEVFILE_IMAGES_REGISTRY_TAG}
 PUBLIC_URL=${CHE_DEVFILE_REGISTRY_URL}
+INTERNAL_URL=${CHE_DEVFILE_REGISTRY_INTERNAL_URL}
 
 DEFAULT_DEVFILES_DIR="/var/www/html/devfiles"
 DEVFILES_DIR="${DEVFILES_DIR:-${DEFAULT_DEVFILES_DIR}}"
@@ -233,6 +234,12 @@ function update_container_image_references() {
     fi
   done
 }
+
+if [ -n "$INTERNAL_URL" ]; then
+  INTERNAL_URL=${INTERNAL_URL%/}
+  echo "Updating internal URL in files to ${INTERNAL_URL}"
+  sed -i "s|{{ INTERNAL_URL }}|${INTERNAL_URL}|" "${devfiles[@]}" "${metas[@]}" "${templates[@]}" "$INDEX_JSON"
+fi
 
 # do not execute the main function in unit tests
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]
