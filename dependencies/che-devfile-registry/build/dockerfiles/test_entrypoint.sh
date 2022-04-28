@@ -78,6 +78,7 @@ source "${script_dir}/entrypoint.sh"
 extract_and_use_related_images_env_variables_with_image_digest_info
 assertFileContentEquals "${DEVFILES_DIR}/external_images.txt" "${expected_externalImagesTxt}"
 
+#################################################################
 initTest "Should replace image references in devworkspace-che-theia-latest.yaml with RELATED_IMAGE env vars"
 
 externalImagesTxt=$(cat <<-END
@@ -134,6 +135,68 @@ echo "$devworkspace" > "${DEVFILES_DIR}/devworkspace-che-theia-latest.yaml"
 
 # NOTE: GIXDCNQK | base 32 -d = 2.16; GIXDCMIK | base 32 -d = 2.11 
 export RELATED_IMAGE_devspaces_theia_devfile_registry_image_GIXDCNIK='registry.redhat.io/devspaces/theia-rhel8@sha256:833f332f1e7f9a669b658bd6d1bf7f236c52ecf141a7006637fbda9f86fc5369'
+
+# shellcheck disable=SC1090
+source "${script_dir}/entrypoint.sh"
+extract_and_use_related_images_env_variables_with_image_digest_info
+assertFileContentEquals "${DEVFILES_DIR}/devworkspace-che-theia-latest.yaml" "${expected_devworkspace}"
+
+#######################################################################################
+initTest "Should replace INTERNAL_URL in devworkspace-che-theia-latest.yaml"
+
+devworkspace=$(cat <<-END
+apiVersion: workspace.devfile.io/v1alpha2
+kind: DevWorkspace
+metadata:
+  name: bash
+spec:
+  started: true
+  template:
+    components:
+      - name: tools
+        container:
+          image: quay.io/devfile/universal-developer-image:ubi8-0e189d9
+          memoryLimit: 3Gi
+      - name: theia-ide-bash
+        plugin:
+          kubernetes:
+            name: theia-ide-bash
+    projects:
+      - name: bash
+        zip:
+          location: '{{ INTERNAL_URL }}/resources/v2/bash.zip'
+  
+END
+)
+
+expected_devworkspace=$(cat <<-END
+apiVersion: workspace.devfile.io/v1alpha2
+kind: DevWorkspace
+metadata:
+  name: bash
+spec:
+  started: true
+  template:
+    components:
+      - name: tools
+        container:
+          image: quay.io/devfile/universal-developer-image:ubi8-0e189d9
+          memoryLimit: 3Gi
+      - name: theia-ide-bash
+        plugin:
+          kubernetes:
+            name: theia-ide-bash
+    projects:
+      - name: bash
+        zip:
+          location: 'http://devfile-registry.devspaces.svc:8080/resources/v2/bash.zip'
+END
+)
+
+echo "$devworkspace" > "${DEVFILES_DIR}/devworkspace-che-theia-latest.yaml"
+
+# NOTE: GIXDCNQK | base 32 -d = 2.16; GIXDCMIK | base 32 -d = 2.11 
+export CHE_DEVFILE_REGISTRY_INTERNAL_URL='http://devfile-registry.devspaces.svc:8080'
 
 # shellcheck disable=SC1090
 source "${script_dir}/entrypoint.sh"
