@@ -30,6 +30,7 @@ REGISTRY=${CHE_DEVFILE_IMAGES_REGISTRY_URL}
 ORGANIZATION=${CHE_DEVFILE_IMAGES_REGISTRY_ORGANIZATION}
 TAG=${CHE_DEVFILE_IMAGES_REGISTRY_TAG}
 PUBLIC_URL=${CHE_DEVFILE_REGISTRY_URL}
+INTERNAL_URL=${CHE_DEVFILE_REGISTRY_INTERNAL_URL}
 
 DEFAULT_DEVFILES_DIR="/var/www/html/devfiles"
 DEVFILES_DIR="${DEVFILES_DIR:-${DEFAULT_DEVFILES_DIR}}"
@@ -49,6 +50,8 @@ function run_main() {
   extract_and_use_related_images_env_variables_with_image_digest_info
 
   update_container_image_references
+
+  set_internal_url
 
   if [ -n "$PUBLIC_URL" ]; then
     echo "Updating devfiles to point at internal project zip files"
@@ -232,6 +235,17 @@ function update_container_image_references() {
       sed -i -E "s|image:$IMAGE_REGEX|image:\1\2/\3/\4:${TAG}\7|" "$file"
     fi
   done
+}
+
+function set_internal_url() {
+  readarray -t devfiles < <(find "${DEVFILES_DIR}" -name 'devfile.yaml')
+  readarray -t metas < <(find "${DEVFILES_DIR}" -name 'meta.yaml')
+  readarray -t templates < <(find "${DEVFILES_DIR}" -name 'devworkspace-che-theia-latest.yaml')
+  if [ -n "$INTERNAL_URL" ]; then
+    INTERNAL_URL=${INTERNAL_URL%/}
+    echo "Updating internal URL in files to ${INTERNAL_URL}"
+    sed -i "s|{{ INTERNAL_URL }}|${INTERNAL_URL}|" "${devfiles[@]}" "${metas[@]}" "${templates[@]}" "$INDEX_JSON"
+  fi
 }
 
 # do not execute the main function in unit tests

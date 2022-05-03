@@ -23,7 +23,7 @@ components:
       - name: m2
         containerPath: /home/jboss/.m2
     alias: maven
-    image: registry.redhat.io/devspaces/udi-rhel8:3.1
+    image: quay.io/devspaces/udi-rhel8:3.1
     env:
       - value: >-
           -XX:MaxRAMPercentage=50.0 -XX:+UseParallelGC -XX:MinHeapFreeRatio=10

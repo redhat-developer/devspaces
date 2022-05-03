@@ -111,10 +111,10 @@ objects:
       CRW_DEVFILE_IMAGES_REGISTRY_TAG: ${CRW_DEVFILE_IMAGES_REGISTRY_TAG}
 parameters:
   - name: IMAGE
-    value: registry.redhat.io/devspaces/devfileregistry-rhel8
+    value: quay.io/devspaces/devfileregistry-rhel8
     displayName: Red Hat OpenShift Dev Spaces devfile registry image
     description: Red Hat OpenShift Dev Spaces devfile registry container image. Defaults
-      to registry.redhat.io/devspaces/devfileregistry-rhel8
+      to quay.io/devspaces/devfileregistry-rhel8
   - name: IMAGE_TAG
     value: '3.1'
     displayName: Red Hat OpenShift Dev Spaces devfile registry version
