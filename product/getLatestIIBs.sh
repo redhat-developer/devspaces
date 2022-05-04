@@ -25,10 +25,12 @@ Options:
   --dwo                Sets PRODUCT_NAME to 'DevWorkspace Operator' and IMAGE_PREFIX to 'devworkspace'
   --wto                Sets PRODUCT_NAME to 'Web Terminal Operator' and IMAGE_PREFIX to 'web-terminal'
 
+  -v                   Verbose output
   -q                   Quieter output
 "
 }
 
+VERBOSE=0
 QUIET=0
 OCP_VERSION="" # if not set, check for all
 
@@ -66,7 +68,8 @@ while [[ "$#" -gt 0 ]]; do
     '-p') PRODUCT_NAME="$2"; shift 1;;
     '-c') CSVs="$2"; shift 1;;
     '-i') IMAGE_PREFIX="$2"; shift 1;;
-    '-q') QUIET=1; shift 0;;
+    '-v') VERBOSE=1; QUIET=0; shift 0;;
+    '-q') VERBOSE=0; QUIET=1; shift 0;;
     '--crw') crwDefaults;;
     '--ds')   dsDefaults;;
     '--dwo') dwoDefaults;;
@@ -80,7 +83,7 @@ if [[ -z ${PROD_VERSION} ]]; then usage; exit 1; fi
 # override for old releases
 if [[ $PROD_VERSION == "2.15" ]]; then crwDefaults; fi
 
-if [[ $QUIET -eq 0 ]]; then
+if [[ $VERBOSE -eq 1 ]]; then
   echo "Checking for latest IIBs for $PRODUCT_NAME ${PROD_VERSION} ..."; echo
 fi
 for csv in $CSVs; do
@@ -89,14 +92,23 @@ jq ".raw_messages[].msg.index | .added_bundle_images[0]" -r | sort -uV | grep "$
 sed -r -e "s#registry-proxy.engineering.redhat.com/rh-osbs/${IMAGE_PREFIX}-##");
 
   if [[ $OCP_VERSION == "" ]]; then
-    curl -sSLk "https://datagrepper.engineering.redhat.com/raw?topic=/topic/VirtualTopic.eng.ci.redhat-container-image.index.built&delta=1728000&rows_per_page=30&contains=${IMAGE_PREFIX}" | \
-      jq ".raw_messages[].msg.index | [.added_bundle_images[0], .index_image, .ocp_version] | @tsv" -r | sort -uV | \
-      grep "${lastcsv}" | sed -r -e "s#registry-proxy.engineering.redhat.com/rh-osbs/${IMAGE_PREFIX}-#  #";
-    echo;
+    line="$(curl -sSLk "https://datagrepper.engineering.redhat.com/raw?topic=/topic/VirtualTopic.eng.ci.redhat-container-image.index.built&delta=1728000&rows_per_page=30&contains=${IMAGE_PREFIX}" | \
+        jq ".raw_messages[].msg.index | [.added_bundle_images[0], .index_image, .ocp_version] | @tsv" -r | sort -uV | \
+        grep "${lastcsv}" | sed -r -e "s#registry-proxy.engineering.redhat.com/rh-osbs/${IMAGE_PREFIX}-#  #")"
+    if [[ $QUIET -eq 1 ]]; then # show only the index images
+      echo "$line" | sed -r -e "s#[^\t]+\t([^\t]+)\tv.+#\1#"
+    else
+      echo "$line"
+    fi
   else
-    curl -sSLk "https://datagrepper.engineering.redhat.com/raw?topic=/topic/VirtualTopic.eng.ci.redhat-container-image.index.built&delta=1728000&rows_per_page=30&contains=${IMAGE_PREFIX}" | \
+    line="$(curl -sSLk "https://datagrepper.engineering.redhat.com/raw?topic=/topic/VirtualTopic.eng.ci.redhat-container-image.index.built&delta=1728000&rows_per_page=30&contains=${IMAGE_PREFIX}" | \
       jq ".raw_messages[].msg.index | [.added_bundle_images[0], .index_image, .ocp_version] | @tsv" -r | sort -uV | \
-      grep "${lastcsv}" | grep "v${OCP_VERSION}" | sed -r -e "s#registry-proxy.engineering.redhat.com/rh-osbs/${IMAGE_PREFIX}-.+\t([^\t]+)\tv${OCP_VERSION}#\1#";
+      grep "${lastcsv}" | grep "v${OCP_VERSION}" | sed -r -e "s#registry-proxy.engineering.redhat.com/rh-osbs/${IMAGE_PREFIX}-#  #")"
+    if [[ $QUIET -eq 1 ]]; then # show only the index images
+      echo "$line" | sed -r -e "s#[^\t]+\t([^\t]+)\tv.+#\1#"
+    else
+      echo "$line"
+    fi
   fi
 done
 
