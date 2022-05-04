@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Copyright (c) 2018-2021 Red Hat, Inc.
+# Copyright (c) 2022 Red Hat, Inc.
 # This program and the accompanying materials are made
 # available under the terms of the Eclipse Public License 2.0
 # which is available at https://www.eclipse.org/legal/epl-2.0/
@@ -28,19 +28,31 @@ errorf() {
 usage() {
   cat <<EOF
 This script streamlines testing IIB images by configuring an OpenShift cluster to enable it to use the specified IIB image 
-in a catalog. The CatalogSource is created in the openshift-operators namespaces unless '-n', '--namespace' is specified, and
-is named iib-testing-catalog.
+in a catalog. The CatalogSource is created in the openshift-operators namespaces unless '--namespace' is specified, and
+is named 'iib-testing-catalog'.
+
+Note: to compute the latest IIB image for a given operator, use ./getLatestIIBs.sh.
+
+If IIB installation fails, see https://docs.engineering.redhat.com/display/CFC/Test and
+follow steps in section "Adding Brew Pull Secret"
 
 Usage: 
-  $0 [args...]
+  $0 [OPTIONS]
 
-Arguments:
-  --iib <IIB_IMAGE>            : IIB image to install on the cluster, e.g. registry-proxy.engineering.redhat.com/rh-osbs/iib:225370
+Options:
+  --iib <IIB_IMAGE>            : IIB image to install on the cluster, e.g. registry-proxy.engineering.redhat.com/rh-osbs/iib:987654
   --install-operator <NAME>    : install operator named $NAME after creating CatalogSource
   --channel <CHANNEL>          : channel to use for operator subscription if installing operator. Default: "fast"
   --manual-updates             : use "manual" InstallPlanApproval for the CatalogSource instead of "automatic" if installing operator
   --disable-default-sources    : disable default CatalogSources. Default: false 
   -n, --namespace <NAMESPACE>  : namespace to install CatalogSource into. Default: openshift-operators
+
+Example:
+  $0 \\
+  --iib registry-proxy.engineering.redhat.com/rh-osbs/iib:987654 \\
+  --install-operator devspaces \\
+  --channel stable
+
 EOF
 }
 

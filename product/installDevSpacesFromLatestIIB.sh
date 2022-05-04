@@ -1,13 +1,13 @@
 #!/bin/bash
 #
-# Copyright (c) 2018-2021 Red Hat, Inc.
+# Copyright (c) 2022 Red Hat, Inc.
 # This program and the accompanying materials are made
 # available under the terms of the Eclipse Public License 2.0
 # which is available at https://www.eclipse.org/legal/epl-2.0/
 #
 # SPDX-License-Identifier: EPL-2.0
 #
-# script to automatically install DevSpaces from the latest IIB image
+# script to automatically install Dev Spaces from the latest IIB image
 # Basically a wrapper on getLatestIIBs.sh and installCatalogSourceFromIIB.sh
 # Note: this script requires
 # 1. You are logged into an OpenShift cluster (with cluster-admin permissions)
@@ -30,26 +30,26 @@ errorf() {
 usage() {
   cat <<EOF
 This script will
-1. Get the latest IIB image for a specified OpenShift and DevSpaces version
+1. Get the latest IIB image for a specified OpenShift and Dev Spaces version
 2. Create a CatalogSource in an OpenShift Cluster
-3. Install the DevSpaces Operator from the new CatalogSource
-4. Create a CheCluster to install DevSpaces
+3. Install the Dev Spaces Operator from the new CatalogSource
+4. Create a CheCluster to install Dev Spaces
 
 Usage: $0 [args...]
 
 Arguments:
-  -t <DS_VERSION>     : DevSpaces version to test, e.g. '3.0'. Required.
+  -t <DS_VERSION>     : Dev Spaces version to test, e.g. '3.0'. Required.
   -n <NAMESPACE>      : Namespace to install everything into. Default: openshift-operators
   --checluster <PATH> : use CheCluster yaml defined at path instead of default. Optional
   --no-checluster     : Do not create CheCluster (use dsctl later to create a custom one)
-  --get-url           : Wait for DevSpaces to install and print URL for dashboard.
+  --get-url           : Wait for Dev Spaces to install and print URL for dashboard.
 EOF
 }
 
 # Check we're logged into everything we need
 preflight() {
   if [ -z "$DS_VERSION" ]; then
-    errorf "DevSpaces version is required (see '-t' parameter)"
+    errorf "Dev Spaces version is required (see '-t' parameter)"
     usage
     exit 1
   fi
@@ -103,7 +103,7 @@ done
 echo ""
 
 if ! oc get crd checlusters.org.eclipse.che > /dev/null 2>&1; then
-  errorf "DevSpaces operator install not completed within 3 minutes; giving up"
+  errorf "Dev Spaces operator install not completed within 3 minutes; giving up"
   exit 1
 fi
 
@@ -126,7 +126,7 @@ if [[ $GET_URL != "true" ]]; then
   exit 0
 fi
 
-echo "Waiting for DevSpaces to install in the cluster. Timeout is 15 minutes."
+echo "Waiting for Dev Spaces to install in the cluster. Timeout is 15 minutes."
 for _ in {1..300}; do
   echo -n '.'
   STATUS=$(oc get checlusters devspaces -n "$NAMESPACE" -o json | jq -r '.status.cheClusterRunning')
@@ -138,9 +138,9 @@ done
 echo ""
 
 if [[ "$STATUS" != "Available" ]]; then
-  echo "DevSpaces did not become available before timeout expired"
+  echo "Dev Spaces did not become available before timeout expired"
 else
-  echo "DevSpaces is installed"
+  echo "Dev Spaces is installed"
 fi
 
 CHECLUSTER_JSON=$(oc get checlusters devspaces -n "$NAMESPACE" -o json)
