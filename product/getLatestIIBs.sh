@@ -7,7 +7,7 @@
 #
 # SPDX-License-Identifier: EPL-2.0
 #
-# script to query latest IIBs (one per OCP version) for a given version of CRW
+# script to query latest IIBs (one per OCP version) for a given version of CRW, Dev Spaces, DevWorkspace, or Web Terminal operators
 
 usage () {
 	echo "
