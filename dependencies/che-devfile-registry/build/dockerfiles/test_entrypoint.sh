@@ -164,7 +164,7 @@ spec:
     projects:
       - name: bash
         zip:
-          location: '{{ INTERNAL_URL }}/resources/v2/bash.zip'
+          location: '{{INTERNAL_URL}}/resources/v2/bash.zip'
 END
 )
 
