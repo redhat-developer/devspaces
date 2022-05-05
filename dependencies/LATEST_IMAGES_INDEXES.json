@@ -2,16 +2,40 @@
     "Indexes": {
         "operator-metadata": {
             "2.15": {
-                "OSBSImage": "registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-operator-metadata:2.15-90",
-                "quayImage": "quay.io/crw/crw-2-rhel8-operator-metadata:2.15-90",
-                "tag": "2.15-90"
+                "v4.8": {
+                    "iibURL": "registry-proxy.engineering.redhat.com/rh-osbs/iib:226688",
+                    "iibTag": "226688"
+                },
+                "v4.9": {
+                    "iibURL": "registry-proxy.engineering.redhat.com/rh-osbs/iib:226691",
+                    "iibTag": "226691"
+                },
+                "v4.10": {
+                    "iibURL": "registry-proxy.engineering.redhat.com/rh-osbs/iib:226693",
+                    "iibTag": "226693"
+                },
+                "OSBSImage": "registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-operator-metadata:2.15-92",
+                "quayImage": "quay.io/crw/crw-2-rhel8-operator-metadata:2.15-92",
+                "tag": "2.15-92"
             }
         },
         "operator-bundle": {
             "2.15": {
-                "OSBSImage": "registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-operator-bundle:2.15-295",
-                "quayImage": "quay.io/crw/crw-2-rhel8-operator-bundle:2.15-295",
-                "tag": "2.15-295"
+                "v4.8": {
+                    "iibURL": "registry-proxy.engineering.redhat.com/rh-osbs/iib:226687",
+                    "iibTag": "226687"
+                },
+                "v4.9": {
+                    "iibURL": "registry-proxy.engineering.redhat.com/rh-osbs/iib:226690",
+                    "iibTag": "226690"
+                },
+                "v4.10": {
+                    "iibURL": "registry-proxy.engineering.redhat.com/rh-osbs/iib:226692",
+                    "iibTag": "226692"
+                },
+                "OSBSImage": "registry-proxy.engineering.redhat.com/rh-osbs/codeready-workspaces-operator-bundle:2.15-297",
+                "quayImage": "quay.io/crw/crw-2-rhel8-operator-bundle:2.15-297",
+                "tag": "2.15-297"
             }
         }
     }
