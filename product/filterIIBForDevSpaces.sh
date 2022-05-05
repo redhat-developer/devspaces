@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Copyright (c) 2018-2022 Red Hat, Inc.
+# Copyright (c) 2022 Red Hat, Inc.
 # This program and the accompanying materials are made
 # available under the terms of the Eclipse Public License 2.0
 # which is available at https://www.eclipse.org/legal/epl-2.0/
@@ -15,26 +15,34 @@ set -e
 
 usage() {
   cat <<EOF
-Collect relevant operators from an IIB image and build a new index image to include only those operators.
-Depends on podman and opm v1.19.5 or higher
+Collect relevant operators from an IIB image into a new, smaller IIB image.
 
-Usage: $0 [args...]
+Requires:
+* podman version 1.9.3+ (version 2.0+ recommended)
+* glibc version 2.28+
+* opm v1.19.5 or higher (see https://docs.openshift.com/container-platform/4.10/cli_reference/opm/cli-opm-install.html#cli-opm-install )
 
-Arguments:
-  --iib <IMAGE>   : IIB image to pull operators from. Required.
-  --tag <TAG>     : Repo + tag to use for new index image.
-  --include-crw   : Include CodeReady Workspaces in new index.
-  --push          : Push new index image remotely.
-  --no-temp-dir   : Work in current directory instead of a temporary one.
+Usage: $0 [OPTIONS]
+
+Options:
+  -s, --iib <source_index>   : Source registry, org, index image and tag from which to pull operators. Required.
+  -t, --image <target_index> : Target registry, org, index image and tag to create. Generated if not provided.
+  -p, --push                 : Push new index image to <target_index> on remote server.
+  --include-crw              : Include CodeReady Workspaces in new index. Useful for testing migration from 2.15 -> 3.x.
+  --no-temp-dir              : Work in current directory instead of a temporary one.
+
+Example:
+  $0 -s registry-proxy.engineering.redhat.com/rh-osbs/iib:226720
+
 EOF
 }
 
 while [[ "$#" -gt 0 ]]; do
   case $1 in
-    '--iib') IIB_IMAGE="$2"; shift 1;;
-    '--tag') TAG="$2"; shift 1;;
+    '-s'|'--iib') sourceIndexImage="$2"; shift 1;;
+    '-t'|'--image') targetIndexImage="$2"; shift 1;;
+    '-p'|'--push') PUSH="true";;
     '--include-crw') INCLUDE_CRW="true";;
-    '--push') PUSH="true";;
     '--no-temp-dir') USE_TMP="false";;
     '-h'|'--help') usage; exit 0;;
     *) echo "Unknown parameter used: $1."; usage; exit 1;;
@@ -42,16 +50,14 @@ while [[ "$#" -gt 0 ]]; do
   shift 1
 done
 
-if [ -z $IIB_IMAGE ]; then
-  echo "IIB image required"
-  usage
-  exit 1
-fi
+PODMAN=$(command -v podman)
+if [[ ! -x $PODMAN ]]; then echo "[ERROR] podman is not installed. Aborting."; echo; usage; exit 1; fi
 
-if [ -z $TAG ]; then
-  echo "Image must be specified with --tag"
-  usage
-  exit 1
+if [ -z $sourceIndexImage ]; then echo "IIB image required"; echo; usage; exit 1; fi
+
+if [ -z $targetIndexImage ]; then 
+  targetIndexImage="quay.io/devspaces/${sourceIndexImage##*/}"
+  echo "No target image specified: using ${targetIndexImage}"
 fi
 
 if [ "$USE_TMP" != "false" ]; then
@@ -61,8 +67,8 @@ if [ "$USE_TMP" != "false" ]; then
 fi
 
 if [ ! -f ./render.json ]; then
-  echo "Rendering $IIB_IMAGE. This can take awhile."
-  opm render "$IIB_IMAGE" > render.json
+  echo "Rendering $sourceIndexImage. This will take several minutes."
+  time opm render "$sourceIndexImage" > render.json
 fi
 
 rm -rf olm-catalog
@@ -106,9 +112,9 @@ if [ -f ./olm-catalog.Dockerfile ]; then
 fi
 opm alpha generate dockerfile ./olm-catalog
 
-podman build -t $TAG -f olm-catalog.Dockerfile .
+$PODMAN build -t $targetIndexImage -f olm-catalog.Dockerfile .
 
 if [[ "$PUSH" == "true" ]]; then
-  podman push $TAG
+  $PODMAN push $targetIndexImage
 fi
-echo "Index image $TAG is built and ready for use"
+echo "Index image $targetIndexImage is built and ready for use"
