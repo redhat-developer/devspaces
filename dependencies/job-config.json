@@ -560,7 +560,7 @@
           "7.41.x"
         ],
         "node_version": "12.22.5",
-        "disabled": true
+        "disabled": false
       }
     },
     "dsc": {
@@ -595,7 +595,7 @@
           "7.42.x",
           "7.41.x"
         ],
-        "disabled": true
+        "disabled": false
       },
       "3.0": {
         "upstream_branch": [
@@ -625,12 +625,12 @@
           "7.42.x",
           "7.41.x"
         ],
-        "disabled": true
+        "disabled": false
       }
     },
     "get-sources-rhpkg-container-build": {
       "2.15": {
-        "disabled": true
+        "disabled": false
       },
       "3.0": {
         "disabled": false
@@ -644,7 +644,7 @@
     },
     "push-latest-container-to-quay": {
       "2.15": {
-        "disabled": true
+        "disabled": false
       },
       "3.0": {
         "disabled": false
@@ -658,7 +658,7 @@
     },
     "sync-to-downstream": {
       "2.15": {
-        "disabled": true
+        "disabled": false
       },
       "3.0": {
         "disabled": false
@@ -672,7 +672,7 @@
     },
     "update-digests-in-metadata": {
       "2.15": {
-        "disabled": true
+        "disabled": false
       },
       "3.0": {
         "disabled": false
@@ -702,8 +702,8 @@
   "CSVs": {
     "operator-bundle": {
       "2.15": {
-        "CSV_VERSION": "2.15.103",
-        "CSV_VERSION_PREV": "2.15.102"
+        "CSV_VERSION": "2.15.104",
+        "CSV_VERSION_PREV": "2.15.103"
       },
       "3.0": {
         "CSV_VERSION": "3.0.0",
@@ -720,20 +720,20 @@
     },
     "operator-metadata": {
       "2.15": {
-        "CSV_VERSION": "2.15.3",
-        "CSV_VERSION_PREV": "2.15.2"
+        "CSV_VERSION": "2.15.4",
+        "CSV_VERSION_PREV": "2.15.3"
       }
     }
   },
   "Other": {
     "Errata": {
-      "2.15": "90619",
+      "2.15": "94671",
       "3.0": "89695",
       "3.1": "",
       "3.x": "n/a"
     },
     "Epic": {
-      "2.15": "CRW-2766",
+      "2.15": "CRW-2962",
       "3.0": "CRW-2475",
       "3.1": "CRW-2746",
       "3.x": "n/a"
