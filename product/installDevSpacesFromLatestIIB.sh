@@ -35,9 +35,9 @@ This script will
 3. Install the Dev Spaces Operator from the new CatalogSource
 4. Create a CheCluster to install Dev Spaces
 
-Usage: $0 [args...]
+Usage: $0 [OPTIONS]
 
-Arguments:
+Options:
   -t <DS_VERSION>     : Dev Spaces version to test, e.g. '3.0'. Required.
   -n <NAMESPACE>      : Namespace to install everything into. Default: openshift-operators
   --checluster <PATH> : use CheCluster yaml defined at path instead of default. Optional
