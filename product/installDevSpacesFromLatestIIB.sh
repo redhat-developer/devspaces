@@ -24,11 +24,12 @@ NAMESPACE="openshift-operators"
 CREATE_CHECLUSTER="true"
 
 errorf() {
-  echo -e "${RED}$1${NC}"
+  echo -e "${RED}Error: $1${NC}"
 }
 
 usage() {
   cat <<EOF
+
 This script will
 1. Get the latest IIB image for a specified OpenShift and Dev Spaces version
 2. Create a CatalogSource in an OpenShift Cluster
@@ -76,6 +77,8 @@ while [[ "$#" -gt 0 ]]; do
   esac
   shift 1
 done
+
+preflight
 
 OPENSHIFT_VER=$(oc version -o json | jq -r '.openshiftVersion | scan("^[0-9].[0-9]+")')
 echo "Detected OpenShift version v$OPENSHIFT_VER"
