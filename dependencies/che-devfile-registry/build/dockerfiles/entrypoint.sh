@@ -244,7 +244,7 @@ function set_internal_url() {
   if [ -n "$INTERNAL_URL" ]; then
     INTERNAL_URL=${INTERNAL_URL%/}
     echo "Updating internal URL in files to ${INTERNAL_URL}"
-    sed -i "s|{{ INTERNAL_URL }}|${INTERNAL_URL}|" "${devfiles[@]}" "${metas[@]}" "${templates[@]}" "$INDEX_JSON"
+    sed -i "s|{{INTERNAL_URL}}|${INTERNAL_URL}|" "${devfiles[@]}" "${metas[@]}" "${templates[@]}" "$INDEX_JSON"
   fi
 }
 

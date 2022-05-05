@@ -31,7 +31,7 @@ do
     --editor:eclipse/che-theia/latest \
     --plugin-registry-url:https://redhat-developer.github.io/devspaces/che-plugin-registry/"${VERSION}"/"${arch}"/v3 \
     --output-file:"${dir}"devworkspace-che-theia-latest.yaml \
-    "--project.${name}={{ INTERNAL_URL }}/resources/v2/${name}.zip"
+    "--project.${name}={{INTERNAL_URL}}/resources/v2/${name}.zip"
     clone_and_zip "${devfile_repo}" "${devfile_url##*/}" "$(pwd)/resources/v2/$name.zip"
   fi
 done
