@@ -798,3 +798,68 @@ export RELATED_IMAGE_devspaces_udi_plugin_registry_image_GIXDCNQK='registry.redh
 source "${script_dir}/entrypoint.sh"
 extract_and_use_related_images_env_variables_with_image_digest_info
 assertFileContentEquals "${METAS_DIR}/external_images.txt" "${expected_externalImagesTxt}"
+
+#################################################################
+initTest "Should replace relative:extension with internal URL in che-theia-plugin.yaml "
+
+cheTheiaPluginYaml=$(cat <<-END
+schemaVersion: 1.0.0
+metadata:
+  id: redhat/java11
+  publisher: redhat
+  name: java11
+  version: latest
+  displayName: Language Support for Java(TM) by Red Hat
+  description: 'Java Linting, Intellisense, formatting, refactoring, Maven/Gradle support and more...'
+  repository: 'https://github.com/redhat-developer/vscode-java'
+  categories:
+    - Programming Languages
+    - Linters
+    - Formatters
+    - Snippets
+  icon: /images/redhat-java-icon.png
+sidecar:
+  image: 'registry.redhat.io/devspaces/udi-rhel8:2.16'
+  name: vscode-java
+  memoryLimit: 1500Mi
+  cpuLimit: 500m
+  cpuRequest: 30m
+extensions:
+  - 'relative:extension/resources/download_jboss_org/jbosstools/static/jdt_ls/stable/java-0.75.0-60.vsix'
+END
+)
+expected_cheTheiaPluginYaml=$(cat <<-END
+schemaVersion: 1.0.0
+metadata:
+  id: redhat/java11
+  publisher: redhat
+  name: java11
+  version: latest
+  displayName: Language Support for Java(TM) by Red Hat
+  description: 'Java Linting, Intellisense, formatting, refactoring, Maven/Gradle support and more...'
+  repository: 'https://github.com/redhat-developer/vscode-java'
+  categories:
+    - Programming Languages
+    - Linters
+    - Formatters
+    - Snippets
+  icon: /images/redhat-java-icon.png
+sidecar:
+  image: 'registry.redhat.io/devspaces/udi-rhel8:2.16'
+  name: vscode-java
+  memoryLimit: 1500Mi
+  cpuLimit: 500m
+  cpuRequest: 30m
+extensions:
+  - 'http://che-plugin-registry/v3/resources/download_jboss_org/jbosstools/static/jdt_ls/stable/java-0.75.0-60.vsix'
+END
+)
+
+echo "$cheTheiaPluginYaml" > "${METAS_DIR}/che-theia-plugin.yaml"
+
+export CHE_PLUGIN_REGISTRY_INTERNAL_URL=http://che-plugin-registry/v3
+
+# shellcheck disable=SC1090
+source "${script_dir}/entrypoint.sh"
+update_extension_vsx_references
+assertFileContentEquals "${METAS_DIR}/che-theia-plugin.yaml" "${expected_cheTheiaPluginYaml}"
