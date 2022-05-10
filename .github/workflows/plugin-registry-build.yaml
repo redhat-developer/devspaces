@@ -36,8 +36,8 @@ jobs:
         uses: docker/login-action@v1
         with:
           registry: quay.io
-          username: ${{ secrets.QUAY_USERNAME }}
-          password: ${{ secrets.QUAY_PASSWORD }}
+          username: ${{ secrets.DS_QUAY_USERNAME }}
+          password: ${{ secrets.DS_QUAY_PASSWORD }}
 
       - name: Get yarn cache directory path
         id: yarn-cache-dir-path

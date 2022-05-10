@@ -59,8 +59,8 @@ jobs:
       uses: azure/docker-login@v1
       with:
         login-server: quay.io
-        username: ${{ secrets.QUAY_USERNAME }}
-        password: ${{ secrets.QUAY_PASSWORD }}
+        username: ${{ secrets.DS_QUAY_USERNAME }}
+        password: ${{ secrets.DS_QUAY_PASSWORD }}
 
     - name: image-build
       run: |
