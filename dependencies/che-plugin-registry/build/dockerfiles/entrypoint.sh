@@ -70,7 +70,6 @@ function run_main() {
     fi
 
     exec "${@}"
-
 }
 
 function extract_and_use_related_images_env_variables_with_image_digest_info() {
