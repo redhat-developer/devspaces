@@ -10,7 +10,7 @@ icon: /images/default.png
 category: Editor
 repository: https://github.com/che-incubator/jetbrains-editor-images
 firstPublicationDate: '2020-09-29'
-latestUpdateDate: '2022-04-25'
+latestUpdateDate: '2022-05-08'
 spec:
   endpoints:
     - name: intellij
@@ -25,7 +25,7 @@ spec:
         secure: true
       public: true
   containers:
-    - image: registry.redhat.io/devspaces/idea-rhel8:3.1
+    - image: quay.io/devspaces/idea-rhel8:3.1
       mountSources: true
       memoryLimit: 5120Mi
       memoryRequest: 2048Mi

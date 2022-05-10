@@ -14,7 +14,7 @@ metadata:
     - Snippets
   icon: /images/redhat-java-icon.png
 sidecar:
-  image: registry.redhat.io/devspaces/udi-rhel8:3.1
+  image: quay.io/devspaces/udi-rhel8:3.1
   name: vscode-java
   memoryLimit: 1500Mi
   memoryRequest: 20Mi

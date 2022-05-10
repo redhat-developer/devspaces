@@ -10,10 +10,10 @@ icon: /images/redhat-vscode-camelk-icon.png
 category: Other
 repository: https://github.com/camel-tooling/vscode-camelk
 firstPublicationDate: '2021-07-21'
-latestUpdateDate: '2022-04-25'
+latestUpdateDate: '2022-05-08'
 spec:
   containers:
-    - image: registry.redhat.io/devspaces/udi-rhel8:3.1
+    - image: quay.io/devspaces/udi-rhel8:3.1
       name: vscode-camelk
       memoryLimit: 1.5Gi
       memoryRequest: 20Mi
