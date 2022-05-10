@@ -10,7 +10,7 @@ icon: /images/redhat-vscode-quarkus-icon.png
 category: Programming Languages
 repository: https://github.com/redhat-developer/vscode-quarkus
 firstPublicationDate: '2020-09-21'
-latestUpdateDate: '2022-04-23'
+latestUpdateDate: '2022-05-07'
 spec:
   containers:
     - image: registry.redhat.io/devspaces/udi-rhel8:3.0
@@ -18,8 +18,6 @@ spec:
       volumes:
         - name: m2
           mountPath: /home/user/.m2
-        - name: gradle
-          mountPath: /home/user/.gradle
       memoryLimit: 3500Mi
       memoryRequest: 20Mi
       cpuRequest: 30m

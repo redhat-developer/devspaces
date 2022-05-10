@@ -10,7 +10,7 @@ icon: /images/redhat-java-icon.png
 category: Programming Languages
 repository: https://github.com/redhat-developer/vscode-java
 firstPublicationDate: '2021-09-16'
-latestUpdateDate: '2022-04-23'
+latestUpdateDate: '2022-05-07'
 spec:
   containers:
     - image: registry.redhat.io/devspaces/udi-rhel8:3.0
@@ -18,15 +18,11 @@ spec:
       volumes:
         - name: m2
           mountPath: /home/user/.m2
-        - name: gradle
-          mountPath: /home/user/.gradle
       memoryLimit: 1500Mi
       memoryRequest: 20Mi
       cpuRequest: 30m
       cpuLimit: 800m
       env:
-        - name: GRADLE_HOME
-          value: /opt/gradle/
         - name: CHE_THEIA_SIDECAR_PREFERENCES
           value: '{"java.server.launchMode":"Standard"}'
   extensions:
