@@ -23,6 +23,7 @@ set -e
 REGISTRY=${CHE_SIDECAR_CONTAINERS_REGISTRY_URL}
 ORGANIZATION=${CHE_SIDECAR_CONTAINERS_REGISTRY_ORGANIZATION}
 TAG=${CHE_SIDECAR_CONTAINERS_REGISTRY_TAG}
+INTERNAL_URL=${CHE_PLUGIN_REGISTRY_INTERNAL_URL}
 
 DEFAULT_METAS_DIR="/var/www/html/v3"
 METAS_DIR="${METAS_DIR:-${DEFAULT_METAS_DIR}}"
@@ -42,6 +43,8 @@ function run_main() {
     extract_and_use_related_images_env_variables_with_image_digest_info
 
     update_container_image_references
+
+    update_extension_vsx_references
 
     # For testing, the images used for the che-theia, theia runtime, and machine-exec
     # plugins can be overridden via the environment variables
@@ -67,7 +70,6 @@ function run_main() {
     fi
 
     exec "${@}"
-
 }
 
 function extract_and_use_related_images_env_variables_with_image_digest_info() {
@@ -223,6 +225,15 @@ function update_container_image_references() {
     fi
     done
 
+}
+
+function update_extension_vsx_references() {
+    readarray -t metas < <(find "${METAS_DIR}" -name 'meta.yaml' -o -name 'devfile.yaml' -o -name 'che-theia-plugin.yaml')
+    if [ -n "$INTERNAL_URL" ]; then
+        INTERNAL_URL=${INTERNAL_URL%/}
+        echo "Updating relative:extension in files to ${INTERNAL_URL}"
+        sed -i "s|relative:extension|${INTERNAL_URL}|" "${metas[@]}"
+    fi
 }
 
 # do not execute the main function in unit tests
