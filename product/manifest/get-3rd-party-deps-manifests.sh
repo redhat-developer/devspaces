@@ -437,8 +437,8 @@ done
 
 # merge logs
 touch ${MANIFEST_FILE/.txt/-all.txt}
-if [[ ${phases} == *"6"* ]] || [[ ${phases} == *"7"* ]] || [[ ${phases} == *"8"* ] || [[ ${phases} == *"9"* ]]; then
-	for d in rpms mvn theia; do 
+if [[ ${phases} == *"6"* ]] || [[ ${phases} == *"7"* ]] || [[ ${phases} == *"8"* ]] || [[ ${phases} == *"9"* ]]; then
+	for d in rpms mvn npm theia; do 
 		cat ${WORKSPACE}/${CSV_VERSION}/${d}/manifest-${d}.txt >> ${MANIFEST_FILE/.txt/-all.txt}
 	done
 fi
