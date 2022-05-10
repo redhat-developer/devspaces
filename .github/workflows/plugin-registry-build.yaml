@@ -65,7 +65,6 @@ jobs:
 
       - name: image-build
         run: |
-          docker pull quay.io/devspaces/pluginregistry-rhel8:next-gh-action
           BUILDER=docker SKIP_FORMAT=true SKIP_LINT=true SKIP_TEST=true ./build.sh --tag next-gh-action --offline
 
       - name: push plugin registry image
