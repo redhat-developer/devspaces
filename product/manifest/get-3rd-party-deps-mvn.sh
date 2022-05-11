@@ -63,7 +63,7 @@ function clone_and_generate_dep_tree () {
 	GITTAG=$2
 	rm -fr ${GITREPO##*/}
 	# echo "$1 :: $2 ... "
-	git clone -q ${GITREPO} ${GITREPO##*/} && cd ${GITREPO##*/} && git checkout -q ${GITTAG} && \
+	git clone --depth 1 --branch ${GITTAG} -q ${GITREPO} ${GITREPO##*/} && cd ${GITREPO##*/} && git checkout -q ${GITTAG} && \
 	mvn dependency:tree | tee ${WORKSPACE}/${CSV_VERSION}/mvn/${GITREPO##*/}_log.txt
 	cat ${WORKSPACE}/${CSV_VERSION}/mvn/${GITREPO##*/}_log.txt | grep -E "\+\-|\\\-" \
 		| sed \
