@@ -411,16 +411,22 @@ fi
 
 ##################################
 
-# append theia and mvn logs to the short manifest
-for d in mvn theia; do
-	cat ${WORKSPACE}/${CSV_VERSION}/${d}/manifest-${d}.txt >> ${MANIFEST_FILE}
-done
+# append mvn, npm, and theia logs to the short manifest
+if [[ ${phases} == *"7"* ]] || [[ ${phases} == *"8"* ]] || [[ ${phases} == *"9"* ]]; then
+	for d in mvn npm theia; do
+		if [[ -f ${WORKSPACE}/${CSV_VERSION}/${d}/manifest-${d}.txt ]]; then
+			cat ${WORKSPACE}/${CSV_VERSION}/${d}/manifest-${d}.txt >> ${MANIFEST_FILE}
+		fi
+	done
+fi
 
-# merge logs
+# append mvn, npm, and theia logs to the long manifest
 touch ${MANIFEST_FILE/.txt/-all.txt}
 if [[ ${phases} == *"6"* ]] || [[ ${phases} == *"7"* ]] || [[ ${phases} == *"8"* ]] || [[ ${phases} == *"9"* ]]; then
-	for d in rpms mvn npm theia; do 
-		cat ${WORKSPACE}/${CSV_VERSION}/${d}/manifest-${d}.txt >> ${MANIFEST_FILE/.txt/-all.txt}
+	for d in rpms mvn npm theia; do
+		if [[ -f ${WORKSPACE}/${CSV_VERSION}/${d}/manifest-${d}.txt ]]; then
+			cat ${WORKSPACE}/${CSV_VERSION}/${d}/manifest-${d}.txt >> ${MANIFEST_FILE/.txt/-all.txt}
+		fi
 	done
 fi
 cat ${MANIFEST_FILE} >> ${MANIFEST_FILE/.txt/-all.txt}
