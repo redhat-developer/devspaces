@@ -169,36 +169,74 @@ editors:
       icon: https://resources.jetbrains.com/storage/products/intellij-idea/img/meta/intellij-idea_logo_300x300.png
       attributes:
         publisher: che-incubator
-        version: 2020.3.3
+        version: 2022.1
         title: IntelliJ IDEA Community as Editor for Eclipse Che
         repository: 'https://github.com/che-incubator/jetbrains-editor-images'
-        firstPublicationDate: '2020-09-29'
+        firstPublicationDate: '2022-01-11'
+        skipMetaYaml: true
+    commands:
+      - id: init-container-command
+        apply:
+          component: idea-rhel8-injector
+    events:
+      preStart:
+        - init-container-command
     components:
-      - name: intellij
+      - name: idea-rhel8
         container:
-          image: 'quay.io/devspaces/idea-rhel8:3.1'
+          image: 'quay.io/devspaces/udi-rhel8:3.1'
+          command:
+            - /projector/entrypoint-volume.sh
+          env:
+            - name: PROJECTOR_ASSEMBLY_DIR
+              value: /projector
+            - name: PROJECTOR_CONFIG_DIR
+              value: /home/user/.jetbrains
           volumeMounts:
-            - name: projector-user
-              path: /home/projector-user
-          mountSources: true
-          memoryLimit: 5120Mi
+            - name: projector-volume
+              path: /projector
+            - name: projector-configuration
+              path: /home/user/.jetbrains
+            - name: projector-java-configuration
+              path: /home/user/.java
+          memoryLimit: 6144Mi
           memoryRequest: 2048Mi
           cpuLimit: 2000m
           cpuRequest: 1500m
           endpoints:
             - name: intellij
-              targetPort: 8887
-              exposure: public
-              protocol: http
-              secure: true
               attributes:
                 type: main
                 cookiesAuthEnabled: true
-                urlRewriteSupported: true
                 discoverable: false
-                path: /?backgroundColor=434343&wss
+                urlRewriteSupported: true
+              targetPort: 8887
+              exposure: public
+              path: '/?backgroundColor=434343&wss'
+              secure: false
+              protocol: http
         attributes:
-          ports:
-            - exposedPort: 8887
-      - name: projector-user
+          app.kubernetes.io/component: idea-rhel8-injector
+          app.kubernetes.io/part-of: idea-rhel8.eclipse.org
+      - name: projector-volume
         volume: { }
+      - name: projector-configuration
+        volume: { }
+      - name: projector-java-configuration
+        volume: { }
+      - name: idea-rhel8-injector
+        container:
+          image: 'quay.io/devspaces/idea-rhel8:3.1'
+          command: ["/projector/entrypoint-init-container.sh"]
+          env:
+            - name: PROJECTOR_VOLUME_MOUNT
+              value: /projector-volume
+            - name: PROJECTOR_ASSEMBLY_DIR
+              value: /projector
+          volumeMounts:
+            - name: projector-volume
+              path: /projector-volume
+          memoryLimit: 128Mi
+          memoryRequest: 32Mi
+          cpuLimit: 500m
+          cpuRequest: 30m
