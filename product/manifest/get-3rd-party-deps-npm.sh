@@ -29,11 +29,11 @@ CRW_VERSION=$(curl -sSLo - https://raw.githubusercontent.com/redhat-developer/co
 cd /tmp || exit
 if [[ ! ${WORKSPACE} ]]; then WORKSPACE=${SCRIPT_DIR}; fi
 mkdir -p ${WORKSPACE}/${CSV_VERSION}/npm
-MANIFEST_FILE="${WORKSPACE}/${CSV_VERSION}/npm/manifest-npmjs.txt"
+MANIFEST_FILE="${WORKSPACE}/${CSV_VERSION}/npm/manifest-npm.txt"
 
 rm -fr ${MANIFEST_FILE} ${MANIFEST_FILE/.txt/-raw-unsorted.txt}
 
-git clone -q https://$GITHUB_TOKEN:x-oauth-basic@github.com/redhat-developer/devspaces-images.git
+git clone --depth 1 --branch ${MIDSTM_BRANCH} https://$GITHUB_TOKEN:x-oauth-basic@github.com/redhat-developer/devspaces-images.git
 cd devspaces-images || exit
 	git config --global push.default matching
 	git config --global hub.protocol https
@@ -83,7 +83,7 @@ codeready-workspaces-traefik \
 	LOCK_FILE="$(pwd)/${d}/yarn.lock"
 	if [[ -f $LOCK_FILE ]]; then
 		cd $d
-		SINGLE_MANIFEST="${WORKSPACE}/${CSV_VERSION}/npm/manifest-npmjs-${d}.txt"
+		SINGLE_MANIFEST="${WORKSPACE}/${CSV_VERSION}/npm/manifest-npm-${d}.txt"
 		rm -fr ${SINGLE_MANIFEST}
 		yarn list --depth=0 | sed \
 			-e '/Done in/d' \
@@ -92,6 +92,7 @@ codeready-workspaces-traefik \
 			-e 's/^[ \t]*//' \
 			-e 's/^@//' \
 			-e "s/@/:/g" \
+			-e "s#^#${d}-container:${CRW_VERSION}/#g"	\
 		| sort -uV > ${SINGLE_MANIFEST}
 
 		cat ${SINGLE_MANIFEST} >> ${MANIFEST_FILE/.txt/-raw-unsorted.txt}
@@ -103,7 +104,7 @@ done
 cd .. && rm -fr devspaces-images
 
 echo "Sort and dedupe deps across the repos:"
-cat ${MANIFEST_FILE/.txt/-raw-unsorted.txt} | sort | uniq >> ${MANIFEST_FILE}
+cat ${MANIFEST_FILE/.txt/-raw-unsorted.txt} | sort -uV >> ${MANIFEST_FILE}
 echo "" >> ${MANIFEST_FILE}
 rm -rf ${MANIFEST_FILE/.txt/-raw-unsorted.txt}
 
