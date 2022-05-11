@@ -63,7 +63,7 @@ done
 cd /tmp || exit
 
 if [[ ! ${MIDSTM_BRANCH} ]]; then usage; fi
-if [[ ! ${phases} ]]; then phases=" 1 2 3 4 5 6 7 8 "; fi
+if [[ ! ${phases} ]]; then phases=" 1 2 3 4 5 6 7 8 9 "; fi
 
 if [[ ! ${CSV_VERSION} ]]; then 
   CSV_VERSION=$(curl -sSLo - https://raw.githubusercontent.com/redhat-developer/codeready-workspaces-operator/${MIDSTM_BRANCH}/manifests/codeready-workspaces.csv.yaml | yq -r .spec.version)
@@ -153,7 +153,7 @@ if [[ ${phases} == *"1"* ]] || [[ ${phases} == *"2"* ]] || [[ ${phases} == *"3"*
 	log "1a. Check out 3rd party language server dependencies builder repo (will collect variables later)" 
 	cd /tmp
 	if [[ ! -d codeready-workspaces-images ]]; then
-		git clone https://$GITHUB_TOKEN:x-oauth-basic@github.com/redhat-developer/codeready-workspaces-images.git
+		git clone --depth 1 --branch "${CRW_BRANCH_TAG}" https://$GITHUB_TOKEN:x-oauth-basic@github.com/redhat-developer/codeready-workspaces-images.git
 	fi
 	pushd codeready-workspaces-images>/dev/null
 		git config --global push.default matching
@@ -412,7 +412,17 @@ fi
 
 if [[ ${phases} == *"8"* ]]; then
 	log ""
-	log "8. Collect Theia deps"
+	log "8. Collect NPM deps"
+	log ""
+	cd /tmp
+	${SCRIPTPATH}/${0/manifests/npm} -v "${CSV_VERSION}" -b "${MIDSTM_BRANCH}"
+fi
+
+##################################
+
+if [[ ${phases} == *"9"* ]]; then
+	log ""
+	log "9. Collect Theia deps"
 	log ""
 	cd /tmp
 	${SCRIPTPATH}/${0/manifests/theia} -v "${CSV_VERSION}" -b "${MIDSTM_BRANCH}"
@@ -420,16 +430,22 @@ fi
 
 ##################################
 
-# append theia and mvn logs to the short manifest
-for d in mvn theia; do
-	cat ${WORKSPACE}/${CSV_VERSION}/${d}/manifest-${d}.txt >> ${MANIFEST_FILE}
-done
+# append mvn, npm, and theia logs to the short manifest
+if [[ ${phases} == *"7"* ]] || [[ ${phases} == *"8"* ]] || [[ ${phases} == *"9"* ]]; then
+	for d in mvn npm theia; do
+		if [[ -f ${WORKSPACE}/${CSV_VERSION}/${d}/manifest-${d}.txt ]]; then
+			cat ${WORKSPACE}/${CSV_VERSION}/${d}/manifest-${d}.txt >> ${MANIFEST_FILE}
+		fi
+	done
+fi
 
-# merge logs
+# append mvn, npm, and theia logs to the long manifest
 touch ${MANIFEST_FILE/.txt/-all.txt}
-if [[ ${phases} == *"6"* ]] || [[ ${phases} == *"7"* ]] || [[ ${phases} == *"8"* ]]; then
-	for d in rpms mvn theia; do 
-		cat ${WORKSPACE}/${CSV_VERSION}/${d}/manifest-${d}.txt >> ${MANIFEST_FILE/.txt/-all.txt}
+if [[ ${phases} == *"6"* ]] || [[ ${phases} == *"7"* ]] || [[ ${phases} == *"8"* ]] || [[ ${phases} == *"9"* ]]; then
+	for d in rpms mvn npm theia; do
+		if [[ -f ${WORKSPACE}/${CSV_VERSION}/${d}/manifest-${d}.txt ]]; then
+			cat ${WORKSPACE}/${CSV_VERSION}/${d}/manifest-${d}.txt >> ${MANIFEST_FILE/.txt/-all.txt}
+		fi
 	done
 fi
 cat ${MANIFEST_FILE} >> ${MANIFEST_FILE/.txt/-all.txt}
