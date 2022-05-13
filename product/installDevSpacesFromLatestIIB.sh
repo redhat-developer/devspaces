@@ -22,6 +22,7 @@ NC='\033[0m'
 SCRIPT_DIR=$(cd "$(dirname "$0")" || exit; pwd)
 NAMESPACE="openshift-operators"
 CREATE_CHECLUSTER="true"
+GET_URL="true"
 
 errorf() {
   echo -e "${RED}Error: $1${NC}"
@@ -39,11 +40,12 @@ This script will
 Usage: $0 [OPTIONS]
 
 Options:
-  -t <DS_VERSION>     : Dev Spaces version to test, e.g. '3.0'. Required.
+  -t <DS_VERSION>     : Dev Spaces version to test, e.g. '3.0'. Required
   -n <NAMESPACE>      : Namespace to install everything into. Default: openshift-operators
   --checluster <PATH> : use CheCluster yaml defined at path instead of default. Optional
   --no-checluster     : Do not create CheCluster (use dsctl later to create a custom one)
-  --get-url           : Wait for Dev Spaces to install and print URL for dashboard.
+  --get-url           : Wait for Dev Spaces to install and print URL for dashboard (default)
+  --no-get-url        : Don't wait for Dev Spaces to install and print URL for dashboard
 EOF
 }
 
@@ -73,6 +75,7 @@ while [[ "$#" -gt 0 ]]; do
     '--checluster') CHECLUSTER_PATH="$2"; shift 1;;
     '--no-checluster') CREATE_CHECLUSTER="false";;
     '--get-url') GET_URL="true";;
+    '--no-get-url') GET_URL="false";;
     '-h'|'--help') usage; exit 0;;
   esac
   shift 1
