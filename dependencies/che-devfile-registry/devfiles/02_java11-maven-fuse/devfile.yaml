@@ -12,7 +12,7 @@ projects:
 components:
   -
     type: chePlugin
-    id: redhat/java8/latest
+    id: redhat/java11/latest
   -
     type: chePlugin
     id: redhat/vscode-apache-camel/latest
@@ -24,14 +24,6 @@ components:
     type: dockerimage
     alias: maven
     image: quay.io/devspaces/udi-rhel8:3.1
-    env:
-      - name: JAVA_OPTS
-        value: "-XX:MaxRAMPercentage=50.0 -XX:+UseParallelGC -XX:MinHeapFreeRatio=10
-          -XX:MaxHeapFreeRatio=20 -XX:GCTimeRatio=4 -XX:AdaptiveSizePolicyWeight=90
-          -Dsun.zip.disableMemoryMapping=true -Xms20m -Djava.security.egd=file:/dev/./urandom
-          -Duser.home=/home/jboss"
-      - name: MAVEN_OPTS
-        value: $(JAVA_OPTS)
     memoryLimit: 768Mi
     endpoints:
       - name: '8080'
@@ -43,7 +35,7 @@ components:
     mountSources: true
     volumes:
       - name: m2
-        containerPath: /home/jboss/.m2
+        containerPath: /home/user/.m2
 commands:
   -
     name: 1. Build
@@ -51,7 +43,7 @@ commands:
       -
         type: exec
         component: maven
-        command: "MAVEN_OPTS='-Xmx200m' && mvn clean package"
+        command: "mvn clean package"
         workdir: "${CHE_PROJECTS_ROOT}/java-fuse"
   -
     name: 2. Run
