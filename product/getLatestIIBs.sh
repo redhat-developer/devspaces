@@ -26,12 +26,13 @@ Options:
   --wto               Sets PROD_NAME to 'Web Terminal Operator' and IMAGE_PREFIX to 'web-terminal'
 
   -v                  Verbose output: include additional information about what's happening
-  -q                  Quieter output: instead of default tabbed table with operator bundle, IIB URL + OCP version; show IIB URL only
+  -q, -qi             Quiet Index  output: instead of default tabbed table with operator bundle, IIB URL + OCP version; show IIB URL only
+  -qb                 Quiet Bundle output: instead of default tabbed table with operator bundle, IIB URL + OCP version; show bundle only
 "
 }
 
 VERBOSE=0
-QUIET=0
+QUIET="none"
 OCP_VER="" # if not set, check for all available versions, and return multiple results
 
 crwDefaults () {
@@ -68,8 +69,9 @@ while [[ "$#" -gt 0 ]]; do
     '-p') PROD_NAME="$2"; shift 1;;
     '-c') CSVs="$2"; shift 1;;
     '-i') IMAGE_PREFIX="$2"; shift 1;;
-    '-v') VERBOSE=1; QUIET=0; shift 0;;
-    '-q') VERBOSE=0; QUIET=1; shift 0;;
+    '-v') VERBOSE=1; QUIET="none"; shift 0;;
+    '-q'|'-qi') VERBOSE=0; QUIET="index"; shift 0;;
+    '-qb') VERBOSE=0; QUIET="bundle"; shift 0;;
     '--crw') crwDefaults;;
     '--ds')   dsDefaults;;
     '--dwo') dwoDefaults;;
@@ -95,20 +97,17 @@ sed -r -e "s#registry-proxy.engineering.redhat.com/rh-osbs/${IMAGE_PREFIX}-##");
     line="$(curl -sSLk "https://datagrepper.engineering.redhat.com/raw?topic=/topic/VirtualTopic.eng.ci.redhat-container-image.index.built&delta=1728000&rows_per_page=30&contains=${IMAGE_PREFIX}" | \
         jq ".raw_messages[].msg.index | [.added_bundle_images[0], .index_image, .ocp_version] | @tsv" -r | sort -uV | \
         grep "${lastcsv}" | sed -r -e "s#registry-proxy.engineering.redhat.com/rh-osbs/${IMAGE_PREFIX}-#  #")"
-    if [[ $QUIET -eq 1 ]]; then # show only the index images
-      echo "$line" | sed -r -e "s#[^\t]+\t([^\t]+)\tv.+#\1#"
-    else
-      echo "$line"
-    fi
   else
     line="$(curl -sSLk "https://datagrepper.engineering.redhat.com/raw?topic=/topic/VirtualTopic.eng.ci.redhat-container-image.index.built&delta=1728000&rows_per_page=30&contains=${IMAGE_PREFIX}" | \
       jq ".raw_messages[].msg.index | [.added_bundle_images[0], .index_image, .ocp_version] | @tsv" -r | sort -uV | \
-      grep "${lastcsv}" | grep "v${OCP_VER}" | sed -r -e "s#registry-proxy.engineering.redhat.com/rh-osbs/${IMAGE_PREFIX}-#  #")"
-    if [[ $QUIET -eq 1 ]]; then # show only the index images
-      echo "$line" | sed -r -e "s#[^\t]+\t([^\t]+)\tv.+#\1#"
-    else
-      echo "$line"
-    fi
+      grep "${lastcsv}" | grep "v${OCP_VER}")"
+  fi
+  if [[ $QUIET == "index" ]]; then # show only the index image
+    echo "$line" | sed -r -e "s#registry-proxy.engineering.redhat.com/rh-osbs/${IMAGE_PREFIX}-##" -e "s#([^\t]+)\t([^\t]+)\tv.+#\2#"
+  elif [[ $QUIET == "bundle" ]]; then # show only the bundle image
+    echo "$line" | sed -r -e "s#\ *([^\t]+)\t([^\t]+)\tv.+#\1#"
+  else
+    echo "$line" # | sed -r -e "s#registry-proxy.engineering.redhat.com/rh-osbs/${IMAGE_PREFIX}-#  #" 
   fi
 done
 

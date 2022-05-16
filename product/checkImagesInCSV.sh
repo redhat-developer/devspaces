@@ -19,14 +19,25 @@ QUIET=0
 # by default show all images; optionally filter for one or more, eg 'devfile|plugin|udi'
 REGEX_FILTER=""
 
+# defaults to pass to getLatestIIBs.sh
+PROD_VER=""
+OCP_VER=""
+GLI_FLAG=""
+
 usage () {
   echo "
-Usage:   $0 bundle-image1 [bundle-image2...] [OPTIONS]
+Usage:
+  Using a specific bundle: $0 bundle-image1 [bundle-image2...] [OPTIONS]
+  Using the latest bundle: $0 -t 3.0 -o 4.10 [OPTIONS]
 
 Options:
-  -y, --quay     If image not resolved from RH Ecosystem Catalog, check equivalent image on Quay
-  -i, --filter   Rather than return ALL images in the build, include a subset using grep -E
-  -q             Quieter output: show 'image:tag' instead of default 'tag :: image@sha'
+  -t <product tag>     Use getLatestIIBs.sh to fetch latest IIB's contained bundle image, 
+  -o <OCP version>     and check that bundle's CSV; BOTH these are required.
+  --ds, --dwo, --wto   Define which product defaults to use; if not set, assume --ds.
+
+  -y, --quay           If image not resolved from RH Ecosystem Catalog, check equivalent image on Quay
+  -i, --filter         Rather than return ALL images in the build, include a subset using grep -E
+  -q                   Quieter output: show 'image:tag' instead of default 'tag :: image@sha'
 
 Examples:
   $0 quay.io/crw/crw-2-rhel8-operator-bundle:2.15-276.1647377069
@@ -38,13 +49,22 @@ if [[ $# -lt 1 ]]; then usage; exit; fi
 
 while [[ "$#" -gt 0 ]]; do
   case $1 in
-    '-q') QUIET=1; shift 0;;
+    '--crw'|'--ds'|'--dwo'|'--wto') GLI_FLAG="$1"; shift 0;;
+    '-t') PROD_VER="$2"; shift 1;;
+    '-o') OCP_VER="$2"; shift 1;;
     '-y'|'--quay') QUAY=1; shift 0;;
     '-i'|'--filter') REGEX_FILTER="$2"; shift 1;;
+    '-q') QUIET=1; shift 0;;
     *) IMAGES="${IMAGES} $1"; shift 0;;
   esac
   shift 1
 done
+
+if [[ $PROD_VER ]] && [[ $OCP_VER ]] && [[ ! $IMAGES ]]; then # compute latest IIB -> bundle
+  echo "Checking for latest OCP v${OCP_VER} IIB for ${GLI_FLAG//--} ${PROD_VER}"
+  ${SCRIPTPATH}/getLatestIIBs.sh -t ${PROD_VER} -o ${OCP_VER} ${GLI_FLAG}; echo "----------"
+  IMAGES=$(${SCRIPTPATH}/getLatestIIBs.sh -t ${PROD_VER} -o ${OCP_VER} -qb)
+fi
 
 for imageAndTag in $IMAGES; do 
     SOURCE_CONTAINER=${imageAndTag%%:*}
