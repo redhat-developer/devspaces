@@ -29,7 +29,7 @@ components:
     mountSources: true
     volumes:
       - name: nuget
-        containerPath: "/home/jboss/.nuget"
+        containerPath: "/home/user/.nuget"
 commands:
   -
     name: 1. Update dependencies

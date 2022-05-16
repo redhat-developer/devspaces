@@ -32,7 +32,7 @@ components:
     mountSources: true
     volumes:
       - name: m2
-        containerPath: /home/jboss/.m2
+        containerPath: /home/user/.m2
     endpoints:
       - name: 'health-checks-endpoint'
         port: 8080 

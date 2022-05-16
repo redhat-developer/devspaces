@@ -23,7 +23,7 @@ components:
     mountSources: true
     volumes:
       - name: venv
-        containerPath: /home/jboss/.venv
+        containerPath: /home/user/.venv
 commands:
   -
     name: 1. Run
