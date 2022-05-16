@@ -75,7 +75,7 @@ commands:
         command: |
           echo
           echo "Before you can deploy this application to an openshift cluster,"
-          echo "you must run 'oc login ...' in the maven terminal."
+          echo "you must run 'oc login ...' in the tools terminal."
           echo
         component: maven
   - 
