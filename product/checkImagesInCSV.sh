@@ -46,9 +46,11 @@ Examples:
 
 To compare latest image in Quay to latest CSV in bundle in latest IIB:
   TAG=3.0; IMG=devspaces/dashboard-rhel8; \\
-  img_quay=\$(./getLatestImageTags.sh -b devspaces-\${TAG}-rhel-8 --quay --tag \"\${TAG}-\" -c \${IMG}); echo \$img_quay; \\
-  img_iib=\$(./checkImagesInCSV.sh --ds -t \${TAG} -o 4.10 -y -qq -i \${IMG}); echo \$img_iib; \\
-  if [[ \$img_quay != \$img_iib ]]; then ./checkImagesInCSV.sh --ds -t \${TAG} -o 4.10 -y -i \${IMG}; fi
+  img_quay=\$(${SCRIPTPATH}/getLatestImageTags.sh -b devspaces-\${TAG}-rhel-8 --quay --tag \"\${TAG}-\" -c \${IMG}); echo \$img_quay; \\
+  img_iib=\$(${SCRIPTPATH}/checkImagesInCSV.sh --ds -t \${TAG} -o 4.10 -y -qq -i \${IMG}); echo \$img_iib; \\
+  if [[ \$img_quay != \$img_iib ]]; then \\
+    ${SCRIPTPATH}/checkImagesInCSV.sh --ds -t \${TAG} -o 4.10 -y -i \${IMG}; \\
+  fi
 "
 }
 
