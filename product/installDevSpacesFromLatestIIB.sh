@@ -85,6 +85,7 @@ preflight() {
   fi
   if [[ ! $(command -v htpasswd) ]] || [[ ! $(command -v bcrypt) ]]; then 
     errorf "Please install htpasswd and bcrypt to create users on the cluster"
+    exit 1
   fi
 }
 
@@ -209,19 +210,21 @@ done
 echo " $elapsed s elapsed"
 
 # check if new user logins can be initialized
-for user in admin; do oc login -u $user -p "${adminPwd}" 2>&1 | grep "Login successful" -q || echo "Error: could not log in as $user"; done
-for user in user{1..5}; do oc login -u $user -p "${userPwd}" 2>&1 | grep "Login successful" -q || echo "Error: could not log in as $user"; done
+for user in user{1..5}; do oc login -u $user -p "${userPwd}" 2>&1 | grep "Login successful" -q || errorf "could not log in as $user"; done
+for user in admin; do      oc login -u $user -p "${adminPwd}" 2>&1 | grep "Login successful" -q || errorf "could not log in as $user"; done
 
 if [[ "$STATUS" != "Available" ]]; then
-  echo "Error: Dev Spaces did not become available before timeout expired"
+  errorf "Dev Spaces did not become available before timeout expired"
 else
-  echo "Dev Spaces is installed"
+  echo "Dev Spaces is installed \o/"
+  echo
 fi
 
 CHECLUSTER_JSON=$(oc get checlusters devspaces -n "$NAMESPACE" -o json)
 cat <<EOF
-Dashboard URL..............$(echo "$CHECLUSTER_JSON" | jq -r '.status.cheURL')
-Devfile registry URL.......$(echo "$CHECLUSTER_JSON" | jq -r '.status.devfileRegistryURL')
-Plugin registry URL........$(echo "$CHECLUSTER_JSON" | jq -r '.status.pluginRegistryURL')
-Workspaces base domain.....$(echo "$CHECLUSTER_JSON" | jq -r '.status.devworkspaceStatus.workspaceBaseDomain')
+Dashboard URL.............. $(echo "$CHECLUSTER_JSON" | jq -r '.status.cheURL')
+Devfile registry URL....... $(echo "$CHECLUSTER_JSON" | jq -r '.status.devfileRegistryURL')
+Plugin registry URL........ $(echo "$CHECLUSTER_JSON" | jq -r '.status.pluginRegistryURL')
+Workspace base domain...... $(echo "$CHECLUSTER_JSON" | jq -r '.status.devworkspaceStatus.workspaceBaseDomain')
 EOF
+echo
