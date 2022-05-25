@@ -45,7 +45,7 @@ Options:
   -t <DS_VERSION>     : Dev Spaces version to test, e.g. '3.0'. Required
   -n <NAMESPACE>      : Namespace to install everything into. Default: openshift-operators
   --checluster <PATH> : use CheCluster yaml defined at path instead of default. Optional
-  --no-checluster     : Do not create CheCluster (use dsctl later to create a custom one)
+  --no-checluster     : Do not create CheCluster (use dsc later to create a custom one)
   --get-url           : Wait for Dev Spaces to install and print URL for dashboard (default)
   --no-get-url        : Don't wait for Dev Spaces to install and print URL for dashboard
 
