@@ -22,7 +22,10 @@ NC='\033[0m'
 SCRIPT_DIR=$(cd "$(dirname "$0")" || exit; pwd)
 NAMESPACE="openshift-devspaces"
 OLM_NAMESPACE="openshift-operators"
-# TODO add options for using latest dsc, or using existing installed dsc
+# options for fetching GA or CI version of dsc for installation, or to use existing install (on path or not)
+DSC_OPTION="" # commandline options include version, existing install path, or 'local' to search PATH
+DSC="" # path to dsc binary, if being used
+DELETE_BEFORE="false" # delete any existing installed Dev Spaces using dsc server:delete -y
 CREATE_CHECLUSTER="true"
 GET_URL="true"
 
@@ -56,11 +59,53 @@ Options:
   -os, --openshift    : If not already connected to an OCP instance, use this api.my-cluster-here.com:6443 URL
                       : For example, given https://console-openshift-console.apps.my-cluster-here.com instance,
                       : use 'my-cluster-here.com' (or longer format: 'api.my-cluster-here.com:6443')
+
+  --dsc               : Optional. To install with dsc, use '--dsc 3.1.0-CI' or '--dsc 3.0.0-GA'
+                      : Use '--dsc local' to search PATH for installed dsc, or use '--dsc /path/to/dsc/bin/'
+  --delete-before     : Before installing with dsc, delete using server:delete -y. Will not delete namespaces.
+
 EOF
 }
 
 # Check we're logged into everything we need
 preflight() {
+  # Download specified dsc version to /tmp and use that
+  if [[ "$DSC_OPTION" =~ ^3\..*-(GA|CI)$ ]]; then 
+    DSC_VER="${DSC_OPTION}"
+    rm -fr /tmp/dsc-${DSC_VER}/; mkdir -p /tmp/dsc-${DSC_VER}/
+    pushd /tmp/dsc-${DSC_VER}/ >/dev/null
+      asset_dir="${DSC_VER}-dsc-assets"
+      # old folder format
+      if [[ $(curl -sSIk https://github.com/redhat-developer/devspaces-chectl/releases/download/${asset_dir}/devspaces-${DSC_VER}-quay-dsc-linux-x64.tar.gz | grep HTTP/ | grep 404) ]]; then 
+        # https://github.com/redhat-developer/devspaces-chectl/releases/download/2.15.4-crwctl-assets/codeready-workspaces-2.15.4-GA-quay-crwctl-linux-x64.tar.gz
+        asset_dir="${asset_dir/-GA/}" 
+        # https://github.com/redhat-developer/devspaces-chectl/releases/download/2.15.4-crwctl-CI-assets/codeready-workspaces-2.15.4-CI-quay-crwctl-linux-x64.tar.gz
+        asset_dir="${asset_dir/CI-dsc/dsc-CI}"
+      fi
+      if [[ ! $(curl -sSIk https://github.com/redhat-developer/devspaces-chectl/releases/download/${asset_dir}/devspaces-${DSC_VER}-quay-dsc-linux-x64.tar.gz | grep HTTP/ | grep 404) ]]; then 
+        curl -sSLko- https://github.com/redhat-developer/devspaces-chectl/releases/download/${asset_dir}/devspaces-${DSC_VER}-quay-dsc-linux-x64.tar.gz | tar xz || true
+        DSC=/tmp/dsc-${DSC_VER}/dsc/bin/dsc
+        echo "dsc installed to ${DSC}"
+      else
+        errorf "Could not download dsc from https://github.com/redhat-developer/devspaces-chectl/releases/download/${asset_dir}/devspaces-${DSC_VER}-quay-dsc-linux-x64.tar.gz !"
+        if [[ -d /tmp/dsc-${DSC_VER} ]]; then popd >/dev/null; rm -fr /tmp/dsc-${DSC_VER}; fi
+        exit 2
+      fi
+    popd >/dev/null
+  # Or, use dsc in ${DSC_OPTION}/dsc; error if not found
+  elif [[ ! -z $DSC_OPTION ]] && [[ $DSC_OPTION != "local" ]]; then 
+    if [[ ! -d $DSC_OPTION ]] || [[ ! $(command -v ${DSC_OPTION}/dsc) ]]; then 
+      errorf "Can't find dsc in folder $DSC_OPTION. Please install dsc to your PATH, or use '--dsc /path/to/dsc/bin/'"
+      exit 1
+    fi
+    DSC="$(command -v ${DSC_OPTION}/dsc)"
+  fi
+
+  if [[ ! $(command -v htpasswd) ]] || [[ ! $(command -v bcrypt) ]]; then 
+    errorf "Please install htpasswd and bcrypt to create users on the cluster"
+    exit 1
+  fi
+
   if [ -z "$DS_VERSION" ]; then
     errorf "Dev Spaces version is required (use '-t' parameter)"
     usage
@@ -89,10 +134,6 @@ preflight() {
       exit 1
     fi
   fi
-  if [[ ! $(command -v htpasswd) ]] || [[ ! $(command -v bcrypt) ]]; then 
-    errorf "Please install htpasswd and bcrypt to create users on the cluster"
-    exit 1
-  fi
 }
 
 while [[ "$#" -gt 0 ]]; do
@@ -104,6 +145,16 @@ while [[ "$#" -gt 0 ]]; do
     '-os'|'--openshift')   OCP_URL="$2"; shift 1;;
     '--checluster') CHECLUSTER_PATH="$2"; shift 1;;
     '--no-checluster') CREATE_CHECLUSTER="false";;
+    '--dsc') DSC_OPTION="$2";
+      if [[ $DSC_OPTION == "" ]] || [[ $DSC_OPTION == "local" ]]; then # can omit "local" and still check PATH for dsc binary
+        if [[ ! $(command -v dsc) ]]; then 
+          errorf "Can't find dsc on your PATH. Please install dsc or use '--dsc /path/to/dsc/bin/'"
+          exit 1
+        else 
+          DSC=$(command -v dsc)
+        fi
+      fi; shift 1;;
+    '--delete-before') DELETE_BEFORE="true";;
     '--get-url') GET_URL="true";;
     '--no-get-url') GET_URL="false";;
     '-h'|'--help') usage; exit 0;;
@@ -119,6 +170,7 @@ echo "Detected OpenShift version v$OPENSHIFT_VER"
 LATEST_IIB=$("$SCRIPT_DIR"/getLatestIIBs.sh -t "$DS_VERSION" -o "$OPENSHIFT_VER" -q)
 echo "Found latest IIB $LATEST_IIB"
 
+# catalog is installed as "iib-testing-catalog"
 "$SCRIPT_DIR"/installCatalogSourceFromIIB.sh \
   --iib "$LATEST_IIB" \
   --install-operator "devspaces" \
@@ -144,24 +196,6 @@ fi
 if [[ "$CREATE_CHECLUSTER" == "false" ]]; then
   echo "Not creating CheCluster -- all done"
   exit 0
-fi
-
-# TODO add option to curl, unpack, and use dsc
-# TODO add option to use locally-installed existing dsc
-
-# TODO: add support for custom patch YAML
-if [ -z "$CHECLUSTER_PATH" ]; then
-  oc create namespace $NAMESPACE || true
-  cat <<EOF | oc apply -f -
-apiVersion: org.eclipse.che/v1
-kind: CheCluster
-metadata:
-  name: devspaces
-  namespace: $NAMESPACE
-spec: {}
-EOF
-else
-  oc apply -f "$CHECLUSTER_PATH"
 fi
 
 # add admin user + user{1..5} to cluster
@@ -199,6 +233,40 @@ spec:
         fileData:
           name: htpass-secret
 '
+if [[ $(command -v ${DSC}) ]]; then # use dsc
+  if [[ $DELETE_BEFORE == "true" ]]; then 
+    echo
+    echo "Using dsc from ${DSC}"
+    ${DSC} server:delete -y -n "${NAMESPACE}" --listr-renderer=verbose --telemetry=off
+    sleep 30s
+  fi
+  echo
+  echo "Using dsc from ${DSC}"
+  ${DSC} server:deploy --catalog-source-name=iib-testing-catalog --olm-channel=stable --package-manifest-name=devspaces -n "${NAMESPACE}" --listr-renderer=verbose --telemetry=off
+else
+  # TODO: add support for custom patch YAML
+  if [ -z "$CHECLUSTER_PATH" ]; then
+    oc create namespace $NAMESPACE || true
+    cat <<EOF | oc apply -f -
+apiVersion: org.eclipse.che/v1
+kind: CheCluster
+metadata:
+  name: devspaces
+  namespace: $NAMESPACE
+spec: {}
+EOF
+  else
+    oc apply -f "$CHECLUSTER_PATH"
+  fi
+
+cat <<EOF | oc apply -f - 
+apiVersion: operators.coreos.com/v1
+kind: OperatorGroup
+metadata:
+  name: devspaces-operator
+  namespace: ${NAMESPACE}
+EOF
+fi
 
 if [[ $GET_URL != "true" ]]; then
   echo "All done"
