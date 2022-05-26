@@ -20,7 +20,9 @@ RED='\033[0;31m'
 NC='\033[0m'
 
 SCRIPT_DIR=$(cd "$(dirname "$0")" || exit; pwd)
-NAMESPACE="openshift-operators"
+NAMESPACE="openshift-devspaces"
+OLM_NAMESPACE="openshift-operators"
+# TODO add options for using latest dsc, or using existing installed dsc
 CREATE_CHECLUSTER="true"
 GET_URL="true"
 
@@ -43,16 +45,17 @@ Usage: $0 [OPTIONS]
 
 Options:
   -t <DS_VERSION>     : Dev Spaces version to test, e.g. '3.0'. Required
-  -n <NAMESPACE>      : Namespace to install everything into. Default: openshift-operators
+  -o <OLM_NAMESPACE>  : Namespace into which to install catalog source and operator. Default: $OLM_NAMESPACE
+  -n <NAMESPACE>      : Namespace into which to install CheCluster + Dev Spaces. Default: $NAMESPACE
   --checluster <PATH> : use CheCluster yaml defined at path instead of default. Optional
   --no-checluster     : Do not create CheCluster (use dsc later to create a custom one)
   --get-url           : Wait for Dev Spaces to install and print URL for dashboard (default)
   --no-get-url        : Don't wait for Dev Spaces to install and print URL for dashboard
 
   -kp, --kubepwd      : If not already connected to an OCP instance, use this kubeadmin password
-  -os, --openshift    : If not already connected to an OCP instance, use this api.cluster:6443 url
-                      : for https://console-openshift-console.apps.cluster-here.com instance,
-                      : use api.cluster-here.com:6443
+  -os, --openshift    : If not already connected to an OCP instance, use this api.my-cluster-here.com:6443 URL
+                      : For example, given https://console-openshift-console.apps.my-cluster-here.com instance,
+                      : use 'my-cluster-here.com' (or longer format: 'api.my-cluster-here.com:6443')
 EOF
 }
 
@@ -64,6 +67,9 @@ preflight() {
     exit 1
   fi
   if [[ $KUBE_PWD ]] && [[ $OCP_URL ]]; then
+    # check OCP_URL for "api." prefix and ":portnum" suffix; if missing, prepend/append defaults
+    if [[ $OCP_URL == ${OCP_URL%:*} ]]; then OCP_URL="${OCP_URL}:6443"; fi
+    if [[ $OCP_URL == ${OCP_URL#api.} ]]; then OCP_URL="api.${OCP_URL}"; fi
     oc login ${OCP_URL} --username=kubeadmin --password=${KUBE_PWD}
   fi
   if ! oc whoami > /dev/null 2>&1; then
@@ -93,6 +99,7 @@ while [[ "$#" -gt 0 ]]; do
   case $1 in
     '-t') DS_VERSION="$2"; shift 1;;
     '-n') NAMESPACE="$2"; shift 1;;
+    '-o') OLM_NAMESPACE="$2"; shift 1;;
     '-kp'|'--kubepwd') KUBE_PWD="$2"; shift 1;;
     '-os'|'--openshift')   OCP_URL="$2"; shift 1;;
     '--checluster') CHECLUSTER_PATH="$2"; shift 1;;
@@ -116,13 +123,7 @@ echo "Found latest IIB $LATEST_IIB"
   --iib "$LATEST_IIB" \
   --install-operator "devspaces" \
   --channel "stable" \
-  --namespace "$NAMESPACE"
-
-if [[ "$CREATE_CHECLUSTER" == "false" ]]; then
-  echo "Not creating CheCluster -- all done"
-  exit 0
-fi
-
+  --namespace "$OLM_NAMESPACE"
 
 elapsed=0
 inc=3
@@ -140,8 +141,17 @@ if ! oc get crd checlusters.org.eclipse.che > /dev/null 2>&1; then
   exit 1
 fi
 
+if [[ "$CREATE_CHECLUSTER" == "false" ]]; then
+  echo "Not creating CheCluster -- all done"
+  exit 0
+fi
+
+# TODO add option to curl, unpack, and use dsc
+# TODO add option to use locally-installed existing dsc
+
 # TODO: add support for custom patch YAML
 if [ -z "$CHECLUSTER_PATH" ]; then
+  oc create namespace $NAMESPACE || true
   cat <<EOF | oc apply -f -
 apiVersion: org.eclipse.che/v1
 kind: CheCluster
