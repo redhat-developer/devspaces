@@ -30,7 +30,7 @@ components:
     mountSources: true
     volumes:
       - name: m2
-        containerPath: /home/jboss/.m2
+        containerPath: /home/user/.m2
     endpoints:
       - name: 'quarkus-development-server'
         port: 8080    

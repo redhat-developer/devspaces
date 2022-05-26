@@ -27,7 +27,7 @@ components:
       port: 8000
   volumes:
     - name: composer
-      containerPath: "/home/jboss/.composer"
+      containerPath: "/home/user/.composer"
 commands:
 -
   name: 1. Install dependencies (with composer)

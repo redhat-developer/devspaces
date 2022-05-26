@@ -59,15 +59,14 @@ jobs:
       uses: azure/docker-login@v1
       with:
         login-server: quay.io
-        username: ${{ secrets.QUAY_USERNAME }}
-        password: ${{ secrets.QUAY_PASSWORD }}
+        username: ${{ secrets.DS_QUAY_USERNAME }}
+        password: ${{ secrets.DS_QUAY_PASSWORD }}
 
     - name: image-build
       run: |
         export SKIP_FORMAT=true
         export SKIP_LINT=true
         export SKIP_TEST=true
-        docker pull quay.io/devspaces/pluginregistry-rhel8:next-gh-action
         BUILDER=docker ./build.sh --tag pr-check --offline
         EXPORTED_FOLDER=/var/www/html/v3
         ls -la output/
