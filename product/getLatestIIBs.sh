@@ -18,6 +18,7 @@ Options:
   -o OCP_VER          To limit results to a single OCP version, use this flag
   -p PROD_NAME        Defaults to 'Dev Spaces'; label on output when multiple OCP versions specified
   -i IMAGE_PREFIX     Defaults to 'devspaces'; used in registry-proxy.engineering.redhat.com/rh-osbs/IMAGE_PREFIX to filter results
+                      For example, to check if specific bundle exists in the index, use 'bundle:3.1-123'
   -c 'csv1 csv2 ...'  Defaults to 'operator-bundle'; used to filter results
 
   --ds                Sets PROD_NAME to 'Dev Spaces' and IMAGE_PREFIX to 'devspaces' (default behaviour)
