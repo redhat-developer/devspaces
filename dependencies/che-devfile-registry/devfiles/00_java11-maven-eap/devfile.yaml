@@ -22,7 +22,7 @@ components:
   -
     type: dockerimage
     alias: maven
-    image: registry.redhat.io/jboss-eap-7/eap74-openjdk8-openshift-rhel7:7.4.0
+    image: registry.redhat.io/jboss-eap-7/eap74-openjdk11-openshift-rhel8:7.4.4
     env:
       - name: MAVEN_OPTS
         value: "-Xmx200m -XX:+UseParallelGC -XX:MinHeapFreeRatio=10 -XX:MaxHeapFreeRatio=20 -XX:GCTimeRatio=4 -XX:AdaptiveSizePolicyWeight=90 -Dsun.zip.disableMemoryMapping=true -Xms20m -Djava.security.egd=file:/dev/./urandom -Duser.home=/home/jboss"
