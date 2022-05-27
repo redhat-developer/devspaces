@@ -229,8 +229,7 @@ def installRedHatInternalCerts() {
   ''')
 }
 
-// TODO: for 3.yy, use path = devspaces
-def sshMountRcmGuest(String path="crw") {
+def sshMountRcmGuest(String path="devspaces") {
   DESTHOST="crw-build/codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com@rcm-guest.app.eng.bos.redhat.com"
   sh('''#!/bin/bash -xe
 export KRB5CCNAME=/var/tmp/crw-build_ccache
