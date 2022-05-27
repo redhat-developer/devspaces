@@ -230,12 +230,13 @@ def installRedHatInternalCerts() {
 }
 
 def sshMountRcmGuest(String path="devspaces") {
-  DESTHOST="crw-build/codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com@rcm-guest.app.eng.bos.redhat.com"
+  DESTHOST="rcm-guest.app.eng.bos.redhat.com"
+  DESTHOSTMOUNT="crw-build/codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com@" + DESTHOST
   sh('''#!/bin/bash -xe
 export KRB5CCNAME=/var/tmp/crw-build_ccache
 
 # set up sshfs mount
-RCMG="''' + DESTHOST + ''':/mnt/rcm-guest/staging/''' + path + '''"
+RCMG="''' + DESTHOSTMOUNT + ''':/mnt/rcm-guest/staging/''' + path + '''"
 sshfs --version
 for mnt in RCMG; do 
   mkdir -p ${WORKSPACE}/${mnt}-ssh; 
@@ -246,6 +247,7 @@ done
 # CRW-2869 copy keytab to remote
 rsync -q crw_crw-build-keytab rcm-guest.app.eng.bos.redhat.com:~/
 ''')
+  // don't include the user, since that's set in ~/.ssh/config file now
   return DESTHOST
 }
 def notifyBuildFailed() {
