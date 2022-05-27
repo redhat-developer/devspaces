@@ -243,6 +243,9 @@ for mnt in RCMG; do
   if [[ $(file ${WORKSPACE}/${mnt}-ssh 2>&1) == *"Transport endpoint is not connected"* ]]; then fusermount -uz ${WORKSPACE}/${mnt}-ssh; fi
   if [[ ! -d ${WORKSPACE}/${mnt}-ssh/''' + path + ''' ]]; then  sshfs ${!mnt} ${WORKSPACE}/${mnt}-ssh; fi
 done
+
+# CRW-2869 copy keytab to remote
+rsync -q crw_crw-build-keytab rcm-guest.app.eng.bos.redhat.com:~/
 ''')
   return DESTHOST
 }
