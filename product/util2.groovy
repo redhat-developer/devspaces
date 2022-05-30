@@ -244,8 +244,8 @@ for mnt in RCMG; do
   if [[ ! -d ${WORKSPACE}/${mnt}-ssh/''' + path + ''' ]]; then  sshfs ${!mnt} ${WORKSPACE}/${mnt}-ssh; fi
 done
 
-# CRW-2869 copy keytab to remote
-rsync -q crw_crw-build-keytab rcm-guest.app.eng.bos.redhat.com:~/
+# CRW-2869 copy keytab from home dir to remote
+rsync -q ~/crw_crw-build-keytab rcm-guest.app.eng.bos.redhat.com:~/
 ''')
   // don't include the user, since that's set in ~/.ssh/config file now
   return DESTHOST
