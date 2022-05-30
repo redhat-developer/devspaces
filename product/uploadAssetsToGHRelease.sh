@@ -17,6 +17,7 @@ set -e
 TARGETDIR=$(pwd)
 
 # defaults
+ASSET_TYPE="Container build asset files"
 GITHUB_REPO_DEFAULT="redhat-developer/devspaces-images" # or redhat-developer/devspaces-chectl
 CSV_VERSION="3.y.0" # csv 3.y.0
 ASSET_NAME=""
@@ -44,6 +45,9 @@ Usage:
   $0 -v CRW_CSV_VERSION -n ASSET_NAME file1.tar.gz [file2.tar.gz ...]
 
 Options:
+
+  -n, --asset-name        name of the assets to publish, eg., traefik or dsc
+  --asset-type            type of the asset to publish, default: '$ASSET_TYPE'
 
   -d, --delete-assets     delete release + asset file(s) defined by CSV_VERSION and ASSET_NAME; 
                             used to prepare for creating a new release with fresh timestamp + assets
@@ -76,6 +80,7 @@ while [[ "$#" -gt 0 ]]; do
     '-b') MIDSTM_BRANCH="$2"; shift 1;;
     '-ght') GITHUB_TOKEN="$2"; export GITHUB_TOKEN="${GITHUB_TOKEN}"; shift 1;;
     '-n'|'--asset-name')       ASSET_NAME="$2"; shift 1;;
+    '--asset-type')            ASSET_TYPE="$2"; shift 1;;
 
     '-d'|'--delete-assets')    DELETE_ASSETS=1;;
     '-a'|'--publish-assets')   PUBLISH_ASSETS=1;;
@@ -122,7 +127,7 @@ if [[ $PUBLISH_ASSETS -eq 1 ]]; then
   if [[ ! $(hub release | grep ${CSV_VERSION}-${ASSET_NAME}-assets) ]]; then
     #no existing release, create it
     hub release create -t "${MIDSTM_BRANCH}" \
-      -m "Assets for the ${CSV_VERSION} ${ASSET_NAME} release" -m "Container build asset files for ${CSV_VERSION}" \
+      -m "Assets for the ${CSV_VERSION} ${ASSET_NAME} release" -m "${ASSET_TYPE} for ${CSV_VERSION}" \
       ${PRE_RELEASE} "${CSV_VERSION}-${ASSET_NAME}-assets"
   fi
 
@@ -131,31 +136,31 @@ if [[ $PUBLISH_ASSETS -eq 1 ]]; then
     # attempt to upload a new file
     echo "[INFO] Upload new asset $fileToPush (1/3)"
     try=$(hub release edit -a ${fileToPush} "${CSV_VERSION}-${ASSET_NAME}-assets" \
-      -m "Assets for the ${CSV_VERSION} ${ASSET_NAME} release" -m "Container build asset files for ${CSV_VERSION}" 2>&1 || true)
+      -m "Assets for the ${CSV_VERSION} ${ASSET_NAME} release" -m "${ASSET_TYPE} for ${CSV_VERSION}" 2>&1 || true)
     echo "[INFO] $try"
 
     # if release doesn't exist, create it
     if [[ $try == *"nable to find release with tag name"* ]]; then
       echo "[WARNING] GH release 'Assets for the ${CSV_VERSION} ${ASSET_NAME} release' does not exist: create it (1)"
       hub release create -t "${MIDSTM_BRANCH}" \
-        -m "Assets for the ${CSV_VERSION} ${ASSET_NAME} release" -m "Container build asset files for ${CSV_VERSION}" \
+        -m "Assets for the ${CSV_VERSION} ${ASSET_NAME} release" -m "${ASSET_TYPE} for ${CSV_VERSION}" \
         ${PRE_RELEASE} "${CSV_VERSION}-${ASSET_NAME}-assets" || true
       sleep 10s
       echo "[INFO] Upload new asset $fileToPush (2/3)"
       tryAgain=$(hub release edit -a ${fileToPush} "${CSV_VERSION}-${ASSET_NAME}-assets" \
-      -m "Assets for the ${CSV_VERSION} ${ASSET_NAME} release" -m "Container build asset files for ${CSV_VERSION}"  2>&1 || true)
+      -m "Assets for the ${CSV_VERSION} ${ASSET_NAME} release" -m "${ASSET_TYPE} for ${CSV_VERSION}"  2>&1 || true)
       echo "[INFO] $tryAgain"
     fi
     # if release STILL doesn't exist, create it again (?)
     if [[ $tryAgain == *"nable to find release with tag name"* ]]; then
       echo "[WARNING] GH release 'Assets for the ${CSV_VERSION} ${ASSET_NAME} release' does not exist: create it (2)"
       hub release create -t "${MIDSTM_BRANCH}" \
-        -m "Assets for the ${CSV_VERSION} ${ASSET_NAME} release" -m "Container build asset files for ${CSV_VERSION}" \
+        -m "Assets for the ${CSV_VERSION} ${ASSET_NAME} release" -m "${ASSET_TYPE} for ${CSV_VERSION}" \
         ${PRE_RELEASE} "${CSV_VERSION}-${ASSET_NAME}-assets" || true
       sleep 10s
       echo "[INFO] Upload new asset $fileToPush (3/3)"
       hub release edit -a ${fileToPush} "${CSV_VERSION}-${ASSET_NAME}-assets" \
-      -m "Assets for the ${CSV_VERSION} ${ASSET_NAME} release" -m "Container build asset files for ${CSV_VERSION}" || \
+      -m "Assets for the ${CSV_VERSION} ${ASSET_NAME} release" -m "${ASSET_TYPE} for ${CSV_VERSION}" || \
       { echo "[ERROR] Failed to push ${fileToPush} to '${CSV_VERSION}-${ASSET_NAME}-assets' release!"; exit 1; }
     fi
   done
