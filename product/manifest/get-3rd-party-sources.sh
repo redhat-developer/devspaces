@@ -120,7 +120,7 @@ if [[ ${phases} == *"1"* ]]; then
     pushd ${WORKSPACE}/NVR_CHECKOUTS >/dev/null
         for d in $(cat ${WORKSPACE}/NVRs.txt | sort); do
             NVR=${d}
-            SOURCES_DIR=${d%-container-*}; SOURCES_DIR=${SOURCES_DIR/-rhel8}; SOURCES_DIR=${SOURCES_DIR/-server}; # echo $SOURCES_DIR
+            SOURCES_DIR=${d%-container-*}; SOURCES_DIR=${SOURCES_DIR/-rhel8}; # echo $SOURCES_DIR
             echo "git clone --depth=1 --branch ${MIDSTM_BRANCH} to ${SOURCES_DIR} ..."
             git clone --depth=1 --branch ${MIDSTM_BRANCH} ssh://${PKGS_DEVEL_USER}@pkgs.devel.redhat.com/containers/${SOURCES_DIR} ${SOURCES_DIR} || true
             cd ${SOURCES_DIR} && git checkout ${MIDSTM_BRANCH} -q && cd ..
