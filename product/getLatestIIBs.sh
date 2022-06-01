@@ -32,6 +32,50 @@ Options:
 "
 }
 
+runCommandWithTimeout() {
+  this_timeout=$1
+  count=1
+  (( timeout_intervals=this_timeout/5 ))
+  while [[ $count -le $timeout_intervals ]]; do # echo $count
+    set +e
+    if [[ $VERBOSE -eq 1 ]]; then
+      echo; echo "Checking for latest IIBs for $PROD_NAME (${IMAGE_PREFIX}) ${PROD_VER} ${csv}  ... [$count/$timeout_intervals]"; echo
+    fi
+    lastcsv=$(curl -sSLk "https://datagrepper.engineering.redhat.com/raw?topic=/topic/VirtualTopic.eng.ci.redhat-container-image.index.built&delta=1728000&rows_per_page=30&contains=${IMAGE_PREFIX}" | \
+    jq ".raw_messages[].msg.index | .added_bundle_images[0]" -r | sort -uV | grep "${csv}:${PROD_VER}" | tail -1 | \
+    sed -r -e "s#registry-proxy.engineering.redhat.com/rh-osbs/${IMAGE_PREFIX}-##");
+
+    if [[ "${lastcsv}" ]]; then
+      if [[ $OCP_VER == "" ]]; then
+        line="$(curl -sSLk "https://datagrepper.engineering.redhat.com/raw?topic=/topic/VirtualTopic.eng.ci.redhat-container-image.index.built&delta=1728000&rows_per_page=30&contains=${IMAGE_PREFIX}" | \
+            jq ".raw_messages[].msg.index | [.added_bundle_images[0], .index_image, .ocp_version] | @tsv" -r | sort -uV | \
+            grep "${lastcsv}" | sed -r -e "s#registry-proxy.engineering.redhat.com/rh-osbs/${IMAGE_PREFIX}-#  #")"
+      else
+        line="$(curl -sSLk "https://datagrepper.engineering.redhat.com/raw?topic=/topic/VirtualTopic.eng.ci.redhat-container-image.index.built&delta=1728000&rows_per_page=30&contains=${IMAGE_PREFIX}" | \
+          jq ".raw_messages[].msg.index | [.added_bundle_images[0], .index_image, .ocp_version] | @tsv" -r | sort -uV | \
+          grep "${lastcsv}" | grep "v${OCP_VER}")"
+      fi
+      if [[ $line ]]; then
+        if [[ $QUIET == "index" ]]; then # show only the index image
+          echo "$line" | sed -r -e "s#registry-proxy.engineering.redhat.com/rh-osbs/${IMAGE_PREFIX}-##" -e "s#([^\t]+)\t([^\t]+)\tv.+#\2#"
+        elif [[ $QUIET == "bundle" ]]; then # show only the bundle image
+          echo "$line" | sed -r -e "s#\ *([^\t]+)\t([^\t]+)\tv.+#\1#"
+        else
+          echo "$line" # | sed -r -e "s#registry-proxy.engineering.redhat.com/rh-osbs/${IMAGE_PREFIX}-#  #" 
+        fi 
+        break;
+      fi
+    fi
+    (( count=count+1 ))
+    sleep 300s
+  done
+    # or report an error
+    if [[ !$? -eq 0 ]]; then
+        echo "[ERROR] Did not get IIBs after ${this_timeout} minutes - script must exit!"
+        exit 1;
+    fi
+}
+
 VERBOSE=0
 QUIET="none"
 OCP_VER="" # if not set, check for all available versions, and return multiple results
@@ -87,28 +131,6 @@ if [[ -z ${PROD_VER} ]]; then usage; exit 1; fi
 if [[ $PROD_VER == "2.15" ]]; then crwDefaults; fi
 
 for csv in $CSVs; do
-  if [[ $VERBOSE -eq 1 ]]; then
-    echo; echo "Checking for latest IIBs for $PROD_NAME ${PROD_VER} ${csv} ..."; echo
-  fi
-  lastcsv=$(curl -sSLk "https://datagrepper.engineering.redhat.com/raw?topic=/topic/VirtualTopic.eng.ci.redhat-container-image.index.built&delta=1728000&rows_per_page=30&contains=${IMAGE_PREFIX}" | \
-jq ".raw_messages[].msg.index | .added_bundle_images[0]" -r | sort -uV | grep "${csv}:${PROD_VER}" | tail -1 | \
-sed -r -e "s#registry-proxy.engineering.redhat.com/rh-osbs/${IMAGE_PREFIX}-##");
-
-  if [[ $OCP_VER == "" ]]; then
-    line="$(curl -sSLk "https://datagrepper.engineering.redhat.com/raw?topic=/topic/VirtualTopic.eng.ci.redhat-container-image.index.built&delta=1728000&rows_per_page=30&contains=${IMAGE_PREFIX}" | \
-        jq ".raw_messages[].msg.index | [.added_bundle_images[0], .index_image, .ocp_version] | @tsv" -r | sort -uV | \
-        grep "${lastcsv}" | sed -r -e "s#registry-proxy.engineering.redhat.com/rh-osbs/${IMAGE_PREFIX}-#  #")"
-  else
-    line="$(curl -sSLk "https://datagrepper.engineering.redhat.com/raw?topic=/topic/VirtualTopic.eng.ci.redhat-container-image.index.built&delta=1728000&rows_per_page=30&contains=${IMAGE_PREFIX}" | \
-      jq ".raw_messages[].msg.index | [.added_bundle_images[0], .index_image, .ocp_version] | @tsv" -r | sort -uV | \
-      grep "${lastcsv}" | grep "v${OCP_VER}")"
-  fi
-  if [[ $QUIET == "index" ]]; then # show only the index image
-    echo "$line" | sed -r -e "s#registry-proxy.engineering.redhat.com/rh-osbs/${IMAGE_PREFIX}-##" -e "s#([^\t]+)\t([^\t]+)\tv.+#\2#"
-  elif [[ $QUIET == "bundle" ]]; then # show only the bundle image
-    echo "$line" | sed -r -e "s#\ *([^\t]+)\t([^\t]+)\tv.+#\1#"
-  else
-    echo "$line" # | sed -r -e "s#registry-proxy.engineering.redhat.com/rh-osbs/${IMAGE_PREFIX}-#  #" 
-  fi
+  runCommandWithTimeout 30
 done
 
