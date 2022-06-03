@@ -18,18 +18,11 @@ yamlfiles=$("$SCRIPT_DIR"/list_yaml.sh "$YAML_ROOT")
 
 # shellcheck disable=SC2086
 for yamlfile in $yamlfiles ; do
-  if [[ -e ${yamlfile}.${arch} ]] ; then
-      mv ${yamlfile} ${yamlfile}.orig
-      mv ${yamlfile}.${arch} ${yamlfile}
-      echo "[INFO] swapped to $arch version of ${yamlfile}.${arch}"
-  fi
-
-  # remove empty
-  if [[ ! -s ${yamlfile} ]] ; then
+  if [[ -e "$(dirname $yamlfile)/devfile.yaml.${arch}" ]] ; then
     mv ${yamlfile} ${yamlfile}.removed
     if [[ -e "$(dirname $yamlfile)/meta.yaml" ]] ; then
       mv "$(dirname $yamlfile)/meta.yaml" "$(dirname $yamlfile)/meta.yaml.removed"
     fi
-    echo "[INFO] removed empty yamlfile ${yamlfile}"
+    echo "[INFO] removed yamlfile ${yamlfile}"
   fi
 done
