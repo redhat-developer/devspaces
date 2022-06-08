@@ -244,8 +244,8 @@ for mnt in RCMG; do
   if [[ ! -d ${WORKSPACE}/${mnt}-ssh/''' + path + ''' ]]; then  sshfs ${!mnt} ${WORKSPACE}/${mnt}-ssh; fi
 done
 
-# CRW-2869 copy keytab to remote
-rsync -q crw_crw-build-keytab rcm-guest.app.eng.bos.redhat.com:~/
+# CRW-2869 copy keytab from home dir to remote
+rsync -q ~/crw_crw-build-keytab rcm-guest.app.eng.bos.redhat.com:~/
 ''')
   // don't include the user, since that's set in ~/.ssh/config file now
   return DESTHOST
@@ -294,7 +294,7 @@ done
 }
 
 // call getLatestRPM.sh -s SOURCE_DIR -r RPM_PATTERN  -u BASE_URL -a 'ARCH1 ... ARCHN' -q
-// TODO update content_sets.* files too, if ocp version has changed
+// will also update content_sets.* files too, if ocp version has changed
 def updateRpms(String RPM_PATTERN, String BASE_URL, String dir="${WORKSPACE}/sources", String branch=MIDSTM_BRANCH, String ARCHES="x86_64 s390x ppc64le") {
   return sh(returnStdout: true, script: '''#!/bin/bash -xe
 if [[ ! -x getLatestRPM.sh ]]; then 
