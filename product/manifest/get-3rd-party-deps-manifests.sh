@@ -92,7 +92,7 @@ function bth () {
 
 function getBashVars () {
 	dir="$1" # script dir
-	buildsh="${2:-build.sh}" #the build.sh
+	buildsh="${2:-build.sh}" # collect vars from a specific build_*.sh script
 	# parse the specific file and export the correct variables
 	pushd /tmp/devspaces-images >/dev/null || exit 1
 		for p in ${dir}/build/${buildsh}; do 
@@ -215,7 +215,7 @@ if [[ ${phases} == *"2"* ]]; then
 	log "2a. Install golang go deps: go-language-server@${GOLANG_LS_VERSION}"
 	if [[ ! -x /usr/bin/go ]]; then sudo yum -y -q install golang || true; fi
 	if [[ ! -x /usr/bin/go ]]; then echo "Error: install golang to run this script: sudo yum -y install golang"; exit 1; fi
-	getBashVars devspaces-udi
+	getBashVars devspaces-udi build_golang.sh
 	for d in \
 		"GOLANG_IMAGE" \
 		"GOLANG_LINT_VERSION" \
@@ -230,8 +230,8 @@ if [[ ${phases} == *"2"* ]]; then
 	sudo rm -fr /tmp/go-deps-tmp
 	mkdir -p go-deps-tmp && cd go-deps-tmp
 
-	# run the same set of go get -v commands in the build.sh script:
-	grep -E "go get -v|go build -o" /tmp/devspaces-images/devspaces-udi/build/build.sh > todos.txt
+	# run the same set of go get -v commands in the build_*.sh script:
+	grep -E "go get -v|go build -o" /tmp/devspaces-images/devspaces-udi/build/build_golang.sh > todos.txt
 	while read p; do
 		# if you want more detailed output and logging, comment the next 1 line and uncomment the following 4 lines
 		log "  ${p%%;*}"; ${p%%;*} || true
@@ -240,7 +240,7 @@ if [[ ${phases} == *"2"* ]]; then
 		#log "<== ${p%%;*} =="
 		#log ""
 	done <todos.txt
-	grep -E "GOLANG_LINT_VERSION" /tmp/devspaces-images/devspaces-udi/build/build.sh > todos.txt
+	grep -E "GOLANG_LINT_VERSION" /tmp/devspaces-images/devspaces-udi/build/build_golang.sh > todos.txt
 	. todos.txt
 	rm -f todos.txt
 
@@ -296,7 +296,7 @@ if [[ ${phases} == *"4"* ]]; then
 	log "4. Install php deps: "
 	if [[ ! $(which php) ]]; then sudo yum -y -q install php-devel php-json || true; fi
 	if [[ ! $(which php) ]]; then echo "Error: install php to run this script: sudo yum -y install php-devel php-json"; exit 1; fi
-	getBashVars devspaces-udi
+	getBashVars devspaces-udi build_php.sh
 	for d in \
 		"PHP_LS_VERSION" \
 		"PHP_LS_IMAGE" \
