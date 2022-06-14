@@ -167,19 +167,6 @@ plugins:
         - vscjava/vscode-java-debug
         - vscjava/vscode-java-test
   - repository:
-      url: 'https://github.com/camel-tooling/vscode-wsdl2rest'
-      revision: 0.0.11
-    sidecar:
-      image: "quay.io/devspaces/udi-rhel8:3.1"
-      memoryLimit: 256Mi
-      name: vscode-wsdl2rest
-      memoryRequest: 20Mi
-      cpuLimit: 800m
-      cpuRequest: 30m
-    extension: https://github.com/redhat-developer/devspaces-vscode-extensions/releases/download/7.44-che-assets/vscode-wsdl2rest-0.0.11-106.vsix
-    deprecate:
-      automigrate: false
-  - repository:
       url: 'https://github.com/fabric8-analytics/fabric8-analytics-vscode-extension'
       revision: 0.2.1
     aliases:
