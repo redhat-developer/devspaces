@@ -65,7 +65,7 @@ pushd "$TMPDIR" >/dev/null || exit
 	fi
 	chmod +x containerExtract.sh
 
-	git clone https://$GITHUB_TOKEN:x-oauth-basic@github.com/eclipse-che/che-theia.git 
+	git clone --depth 1 --branch "${CHE_THEIA_BRANCH}" https://$GITHUB_TOKEN:x-oauth-basic@github.com/eclipse-che/che-theia.git 
 	cd che-theia || exit
 		git config --global push.default matching
 		git config --global hub.protocol https
