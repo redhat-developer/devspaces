@@ -149,7 +149,7 @@ function logDockerDetails ()
 
 rm -f ${LOG_FILE} ${MANIFEST_FILE}
 
-if [[ ${phases} == *"1"* ]] || [[ ${phases} == *"2"* ]] || [[ ${phases} == *"3"* ]] || [[ ${phases} == *"4"* ]] || [[ ${phases} == *"5"* ]] || [[ ${phases} == *"6"* ]]; then
+if [[ ${phases} == *"1"* ]] || [[ ${phases} == *"2"* ]] || [[ ${phases} == *"4"* ]] || [[ ${phases} == *"5"* ]] || [[ ${phases} == *"6"* ]]; then
 	log "1a. Check out 3rd party language server dependencies builder repo (will collect variables later)" 
 	cd /tmp
 	if [[ ! -d devspaces-images ]]; then

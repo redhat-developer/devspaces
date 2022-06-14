@@ -42,13 +42,13 @@ function log () {
 
 rm -f "${MANIFEST_FILE}" "${MANIFEST_FILE}".2 "${MANIFEST_FILE}".3 "${LOG_FILE}"
 [[ "${MIDSTM_BRANCH}" == "devspaces-3-rhel-8" ]] && JOB_BRANCH="2.x" || JOB_BRANCH="${CRW_VERSION}"
-echo "Parsing ${JENKINS}/crw-theia-sources_${JOB_BRANCH}/lastSuccessfulBuild/consoleText ..."
-curl -sSL -o "${MANIFEST_FILE}".2 "${JENKINS}/crw-theia-sources_${JOB_BRANCH}/lastSuccessfulBuild/consoleText"
+echo "Parsing ${JENKINS}/theia-sources_${JOB_BRANCH}/lastSuccessfulBuild/consoleText ..."
+curl -sSL -o "${MANIFEST_FILE}".2 "${JENKINS}/theia-sources_${JOB_BRANCH}/lastSuccessfulBuild/consoleText"
 CHE_THEIA_BRANCH=$(grep "echo SOURCE_BRANCH=" "${MANIFEST_FILE}".2 | sed -r -e "s#.+echo SOURCE_BRANCH=(.+)#\1#") # 7.yy.x
 rm -f "${MANIFEST_FILE}.2"
 
 if [[ -z $CHE_THEIA_BRANCH ]]; then 
-	echo "[INFO] Could not obtain theia source branch from ${JENKINS}/crw-theia-sources_${JOB_BRANCH}/lastSuccessfulBuild/consoleText - checking BUILD_PARAMS:"
+	echo "[INFO] Could not obtain theia source branch from ${JENKINS}/theia-sources_${JOB_BRANCH}/lastSuccessfulBuild/consoleText - checking BUILD_PARAMS:"
 	export $(curl -sSLo- https://raw.githubusercontent.com/redhat-developer/devspaces-theia/${MIDSTM_BRANCH}/BUILD_PARAMS | grep SOURCE_BRANCH | sed -r -e "s@SOURCE_BRANCH@CHE_THEIA_BRANCH@")
 	if [[ -z $CHE_THEIA_BRANCH ]]; then
 		echo "[ERROR] Could not compute CHE_THEIA_BRANCH from https://raw.githubusercontent.com/redhat-developer/devspaces-theia/${MIDSTM_BRANCH}/BUILD_PARAMS"
@@ -88,7 +88,7 @@ pushd "$TMPDIR" >/dev/null || exit
 
 		# copy plugin directories into the filesystem, in order to execute yarn commands to obtain yarn.lock file, and list dependencies from it
 		"${TMPDIR}/containerExtract.sh" quay.io/devspaces/theia-rhel8:${CRW_VERSION} --tar-flags home/theia/plugins/**
-		find /tmp/quay.io-crw-theia-rhel8-${CRW_VERSION}-* -path '*extension/node_modules' -exec sh -c "cd {}/.. && yarn --silent && yarn list --depth=0" \; >> ${MANIFEST_FILE}.plugin-extensions
+		find /tmp/quay.io-devspaces-theia-rhel8-${CRW_VERSION}-* -path '*extension/node_modules' -exec sh -c "cd {}/.. && yarn --silent && yarn list --depth=0" \; >> ${MANIFEST_FILE}.plugin-extensions
 		sed \
 				-e '/Done in/d' \
 				-e '/yarn list/d ' \
@@ -128,7 +128,7 @@ pushd "$TMPDIR" >/dev/null || exit
 	cd ..
 popd >/dev/null || exit
 rm -f "${MANIFEST_FILE}.yarn" "${MANIFEST_FILE}.globalyarn" "${MANIFEST_FILE}.plugin-extensions"
-rm -fr "$TMPDIR" /tmp/quay.io-crw-theia-rhel8-${CRW_VERSION}-*
+rm -fr "$TMPDIR" /tmp/quay.io-devspaces-theia-rhel8-${CRW_VERSION}-*
 
 ##################################
 
