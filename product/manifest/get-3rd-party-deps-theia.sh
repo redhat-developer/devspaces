@@ -87,8 +87,17 @@ pushd "$TMPDIR" >/dev/null || exit
 		podman pull quay.io/devspaces/theia-rhel8:${CRW_VERSION}
 
 		# copy plugin directories into the filesystem, in order to execute yarn commands to obtain yarn.lock file, and list dependencies from it
-		"${TMPDIR}/containerExtract.sh" quay.io/devspaces/theia-rhel8:${CRW_VERSION} --tar-flags home/theia/plugins/**
-		find /tmp/quay.io-devspaces-theia-rhel8-${CRW_VERSION}-* -path '*extension/node_modules' -exec sh -c "cd {}/.. && yarn --silent && yarn list --depth=0" \; >> ${MANIFEST_FILE}.plugin-extensions
+		"${TMPDIR}/containerExtract.sh" quay.io/devspaces/theia-rhel8:${CRW_VERSION} --tar-flags home/theia/**
+		push /tmp/quay.io-devspaces-theia-rhel8-${CRW_VERSION}-*/home/theia/ >/dev/null
+			mv package.json{,.orig}
+			# sort keys so eclipse-che stuff is listed first
+			jq package.json.orig '.' --sort-keys > package.json
+			# remove the eclipse-che stuff we can't resolve as they're not published to npmjs; this could be done with jq but lazy
+			sed -i package.json -e "/@eclipse-che\// d"
+			# this might fail due to missing libsecret
+			yarn install || cp ../../usr/local/share/.config/yarn/global/yarn.lock yarn.lock
+			yarn list --depth=0 >> ${MANIFEST_FILE}.plugin-extensions
+		popd >/dev/null
 		sed \
 				-e '/Done in/d' \
 				-e '/yarn list/d ' \
@@ -98,7 +107,6 @@ pushd "$TMPDIR" >/dev/null || exit
 				-e "s/@/:/g" \
 				-e "s#^#devspaces-theia-rhel8-container:${CRW_VERSION}/#g"	\
 		${MANIFEST_FILE}.plugin-extensions | sort -uV >> ${MANIFEST_FILE}
-		
 		echo >> ${MANIFEST_FILE}
 
 		# collect global yarn dependencies, obtained from yarn.lock file in the theia-container yarn installation
