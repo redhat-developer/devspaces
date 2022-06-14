@@ -21,7 +21,7 @@ pkgs_devel_branch=${TARGET_BRANCH}
 pduser=crw-build
 
 # TODO https://issues.redhat.com/browse/CRW-2817 move this to new devspaces-samples repo
-samplesRepo=crw-samples
+samplesRepo=devspaces-samples
 
 SOURCE_BRANCH="" # normally, use this script to create tags, not branches
 
