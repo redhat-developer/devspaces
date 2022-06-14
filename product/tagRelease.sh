@@ -155,20 +155,20 @@ pushBranchAndOrTagGH () {
 	org="$2"
 	echo; echo "== $d =="
 	# if source_branch defined and target branch doesn't exist yet, check out the source branch
-	if [[ ${SOURCE_BRANCH} ]] && [[ $(git ls-remote --heads https://github.com/${org}/${d}.git ${TARGET_BRANCH}) == "" ]]; then
+	if [[ ${SOURCE_BRANCH} ]] && [[ $(git ls-remote --heads https://github.com/${org}/${d} ${TARGET_BRANCH}) == "" ]]; then
 		clone_branch=${SOURCE_BRANCH}
 	else # if source branch not set (tagging operation) or target branch already exists
 		clone_branch=${TARGET_BRANCH}
 	fi
 	if [[ ! -d /tmp/tmp-checkouts/projects_${d} ]]; then
-		git clone -q --depth 1 -b ${clone_branch} https://github.com/${org}/${d}.git projects_${d}
+		git clone -q --depth 1 -b ${clone_branch} https://github.com/${org}/${d} projects_${d}
 		pushd /tmp/tmp-checkouts/projects_${d} >/dev/null || exit 1
 			export GITHUB_TOKEN="${GITHUB_TOKEN}"
 			git config user.email "nickboldt+devstudio-release@gmail.com"
 			git config user.name "Red Hat Devstudio Release Bot"
 			git config --global push.default matching
 			git config --global hub.protocol https
-			git remote set-url origin https://${GITHUB_TOKEN}:x-oauth-basic@github.com/${org}/${d}.git
+			git remote set-url origin https://${GITHUB_TOKEN}:x-oauth-basic@github.com/${org}/${d}
 
 			git checkout --track origin/${clone_branch} -q || true
 			git pull -q
