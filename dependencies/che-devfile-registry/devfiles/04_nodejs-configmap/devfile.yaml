@@ -5,7 +5,7 @@ metadata:
 projects:
   - name: nodejs-configmap
     source:
-      location: "https://github.com/crw-samples/nodejs-configmap.git"
+      location: "https://github.com/devspaces-samples/nodejs-configmap.git"
       branch: 12.x
       type: git
 components:
