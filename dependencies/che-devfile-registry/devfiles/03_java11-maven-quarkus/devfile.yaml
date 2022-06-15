@@ -6,7 +6,7 @@ projects:
   -
     name: quarkus-quickstarts
     source:
-      location: "https://github.com/crw-samples/quarkus-quickstarts"
+      location: "https://github.com/devspaces-samples/quarkus-quickstarts"
       branch: "main"
       type: git
       sparseCheckoutDir: "getting-started"
