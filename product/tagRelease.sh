@@ -20,7 +20,6 @@ pkgs_devel_branch=${TARGET_BRANCH}
 
 pduser=crw-build
 
-# TODO https://issues.redhat.com/browse/CRW-2817 move this to new devspaces-samples repo
 samplesRepo=devspaces-samples
 
 SOURCE_BRANCH="" # normally, use this script to create tags, not branches
@@ -112,7 +111,6 @@ toggleQuayRHECReferences() {
 }
 
 # for the devspaces main repo, update meta.yaml files to point to the correct branch of $samplesRepo
-# TODO https://issues.redhat.com/browse/CRW-2817 move to new devspaces-samples repo
 updateLinksToDevfiles() {
 	YAML_ROOT="dependencies/che-devfile-registry/devfiles"
 
@@ -134,9 +132,7 @@ updateSampleDevfileReferences () {
 		CRW_TAG="${TARGET_BRANCH//-rhel-8}"; CRW_TAG="${CRW_TAG//devspaces-}"
 	fi
 	# echo "[DEBUG] update $devfile with CRW_TAG = $CRW_TAG"
-	# TODO we can remove the stacks/plugins replacement once it's no longer needed
 	sed -r -i $devfile \
-		-e "s#codeready-workspaces/(stacks|plugin)-[a-z0-9:@.-]+#devspaces/udi-rhel8:${CRW_TAG}#g" \
 		-e "s#devspaces/udi-[a-z0-9:@.-]+#devspaces/udi-rhel8:${CRW_TAG}#g"
 
 	# for 3.x builds, point image refs at quay instead of RHEC
