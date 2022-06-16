@@ -68,5 +68,5 @@ docker run -it --rm -p 8080:8080 quay.io/devspaces/devfileregistry-rhel8:next
 
 ### License
 
-CodeReady Workspaces is open sourced under the Eclipse Public License 2.0.
+OpenShift Dev Spaces is open sourced under the Eclipse Public License 2.0.
 

@@ -10,7 +10,7 @@ For the latest stable release, see the **devspaces-3.y-rhel-8** branch with the 
 
 ---
 
-This repository no longer hosts the CodeReady Workspaces Server assembly that mainly inherits Eclipse Che artifacts and repackages some of them. Server has moved to link:https://github.com/redhat-developer/devspaces-images/blob/devspaces-3-rhel-8/devspaces-server/README.adoc#how-to-build-locally[devspaces-images/devspaces-server].
+This repository no longer hosts the OpenShift Dev Spaces Server assembly that mainly inherits Eclipse Che artifacts and repackages some of them. Server has moved to link:https://github.com/redhat-developer/devspaces-images/blob/devspaces-3-rhel-8/devspaces-server/README.adoc#how-to-build-locally[devspaces-images/devspaces-server].
 
 ### How to Build CRW Containers Using casc Jenkins (REQUIRES VPN)
 
