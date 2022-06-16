@@ -42,7 +42,7 @@ usage () {
     echo "
 Usage:
 
-  $0 -v CRW_CSV_VERSION -n ASSET_NAME file1.tar.gz [file2.tar.gz ...]
+  $0 -v DS_CSV_VERSION -n ASSET_NAME file1.tar.gz [file2.tar.gz ...]
 
 Options:
 

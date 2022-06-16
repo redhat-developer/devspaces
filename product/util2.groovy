@@ -7,18 +7,18 @@ def String getCSVVersion(String MIDSTM_BRANCH) {
     CSV_VERSION_F = sh(script: '''#!/bin/bash -xe
     curl -sSLo- https://raw.githubusercontent.com/redhat-developer/devspaces-images/''' + MIDSTM_BRANCH + '''/devspaces-operator-bundle/manifests/devspaces.csv.yaml | yq -r .spec.version''', returnStdout: true).trim()
   }
-  // CRW-2039 check that CSV version is aligned to CRW version, and throw warning w/ call to action to avoid surprises
-  if (CRW_VERSION_F.equals("")) {
-    CRW_VERSION_F = getCrwVersion(MIDSTM_BRANCH)
+  // CRW-2039 check that CSV version is aligned to DS version, and throw warning w/ call to action to avoid surprises
+  if (DS_VERSION_F.equals("")) {
+    DS_VERSION_F = getDsVersion(MIDSTM_BRANCH)
   }
   CSV_VERSION_BASE=CSV_VERSION_F.replaceAll("([0-9]+\\.[0-9]+)\\.[0-9]+","\$1"); // extract 3.yy from 3.yy.z
-  if (!CSV_VERSION_BASE.equals(CRW_VERSION_F)) {
+  if (!CSV_VERSION_BASE.equals(DS_VERSION_F)) {
     println "[WARNING] CSV version (from getCSVVersion() -> csv.yaml = " + CSV_VERSION_F + 
-      ") does not match CRW version (from getCrwVersion() -> VERSION = " + CRW_VERSION_F + ") !"
+      ") does not match DS version (from getDsVersion() -> VERSION = " + DS_VERSION_F + ") !"
     println "This could mean that your VERSION file or CSV file update processes have not run correctly."
     println "Check these jobs:"
-    println "* https://main-jenkins-csb-crwqe.apps.ocp-c1.prod.psi.redhat.com/job/CRW_CI/job/Releng/job/update-version-and-registry-tags/ "
-    println "* https://main-jenkins-csb-crwqe.apps.ocp-c1.prod.psi.redhat.com/job/CRW_CI/job/crw-operator-bundle_" + getJobBranch(MIDSTM_BRANCH)
+    println "* https://main-jenkins-csb-crwqe.apps.ocp-c1.prod.psi.redhat.com/job/DS_CI/job/Releng/job/update-version-and-registry-tags/ "
+    println "* https://main-jenkins-csb-crwqe.apps.ocp-c1.prod.psi.redhat.com/job/DS_CI/job/operator-bundle_" + getJobBranch(MIDSTM_BRANCH)
     println "Check these files:"
     println "https://raw.githubusercontent.com/redhat-developer/devspaces/" + MIDSTM_BRANCH + "/dependencies/VERSION"
     println "https://github.com/redhat-developer/devspaces-images/blob/" + MIDSTM_BRANCH + "/devspaces-operator-bundle/manifests/devspaces.csv.yaml"
@@ -28,15 +28,15 @@ def String getCSVVersion(String MIDSTM_BRANCH) {
   return CSV_VERSION_F
 }
 
-@Field String CRW_VERSION_F = ""
-@Field String CRW_BRANCH_F = ""
-def String getCrwVersion(String MIDSTM_BRANCH) {
-  if (CRW_VERSION_F.equals("")) {
-    CRW_BRANCH_F = MIDSTM_BRANCH
-    CRW_VERSION_F = sh(script: '''#!/bin/bash -xe
+@Field String DS_VERSION_F = ""
+@Field String DS_BRANCH_F = ""
+def String getDsVersion(String MIDSTM_BRANCH) {
+  if (DS_VERSION_F.equals("")) {
+    DS_BRANCH_F = MIDSTM_BRANCH
+    DS_VERSION_F = sh(script: '''#!/bin/bash -xe
     curl -sSLo- https://raw.githubusercontent.com/redhat-developer/devspaces/''' + MIDSTM_BRANCH + '''/dependencies/VERSION''', returnStdout: true).trim()
   }
-  return CRW_VERSION_F
+  return DS_VERSION_F
 }
 
 @Field String JOB_BRANCH
@@ -144,21 +144,21 @@ git config --global pull.rebase true
   }
 }
 
-// Requires getCrwVersion() to set CRW_BRANCH_F in order to install correct version of the script; or, if JOB_BRANCH is defined by .groovy param or in .jenkinsfile, will use that version
+// Requires getDsVersion() to set DS_BRANCH_F in order to install correct version of the script; or, if JOB_BRANCH is defined by .groovy param or in .jenkinsfile, will use that version
 def updateBaseImages(String REPO_PATH, String SOURCES_BRANCH, String FLAGS="", String SCRIPTS_BRANCH="") {
   def String updateBaseImages_bin="${WORKSPACE}/updateBaseImages.sh"
-  if (SOURCES_BRANCH?.trim() && !CRW_BRANCH_F?.trim()) {
-    getCrwVersion(SOURCES_BRANCH)
+  if (SOURCES_BRANCH?.trim() && !DS_BRANCH_F?.trim()) {
+    getDsVersion(SOURCES_BRANCH)
   }
-  if (!SCRIPTS_BRANCH?.trim() && CRW_BRANCH_F?.trim()) {
-    SCRIPTS_BRANCH = CRW_BRANCH_F // this should work for midstream/downstream branches like devspaces-3.1-rhel-8
+  if (!SCRIPTS_BRANCH?.trim() && DS_BRANCH_F?.trim()) {
+    SCRIPTS_BRANCH = DS_BRANCH_F // this should work for midstream/downstream branches like devspaces-3.1-rhel-8
   } else if (!SCRIPTS_BRANCH?.trim() && MIDSTM_BRANCH?.trim()) {
     SCRIPTS_BRANCH = MIDSTM_BRANCH // this should work for midstream/downstream branches like devspaces-3.1-rhel-8
   } else if (!SCRIPTS_BRANCH?.trim() && JOB_BRANCH?.trim()) {
     SCRIPTS_BRANCH = JOB_BRANCH // this might fail if the JOB_BRANCH is 2.6 and there's no such branch
   }
   // fail build if not true
-  assert (CRW_BRANCH_F?.trim()) : "ERROR: execute getCrwVersion() before calling updateBaseImages()"
+  assert (DS_BRANCH_F?.trim()) : "ERROR: execute getDsVersion() before calling updateBaseImages()"
 
   if (!fileExists(updateBaseImages_bin)) {
     // otherwise continue
@@ -205,11 +205,11 @@ def getLastCommitSHA(String REPO_PATH) {
     git rev-parse --short=4 HEAD''', returnStdout: true).trim()
 }
 
-def getCRWLongName(String SHORT_NAME) {
+def getDSLongName(String SHORT_NAME) {
   return "devspaces-" + SHORT_NAME
 }
 
-def getCRWShortName(String LONG_NAME) {
+def getDSShortName(String LONG_NAME) {
   return LONG_NAME.minus("devspaces-")
 }
 
@@ -282,15 +282,15 @@ fi
 }
 
 // ensure static Dockerfiles have the correct version encoded in them, then commit changes
-def updateDockerfileVersions(String dir="${WORKSPACE}/sources", String branch=MIDSTM_BRANCH, String CRW_VERSION=CRW_VERSION_F) {
+def updateDockerfileVersions(String dir="${WORKSPACE}/sources", String branch=MIDSTM_BRANCH, String DS_VERSION=DS_VERSION_F) {
   sh('''#!/bin/bash -e
-echo "[INFO] Run util.updateDockerfileVersions('''+dir+''', '''+branch+''', '''+CRW_VERSION+''')"
+echo "[INFO] Run util.updateDockerfileVersions('''+dir+''', '''+branch+''', '''+DS_VERSION+''')"
 cd ''' + dir + ''' || exit 1
 for d in $(find . -name "*ockerfile*" -type f); do
-  sed -i $d -r -e 's#version="[0-9.]+"#version="''' + CRW_VERSION + '''"#g' || true
+  sed -i $d -r -e 's#version="[0-9.]+"#version="''' + DS_VERSION + '''"#g' || true
 done
   ''')
-  commitChanges(dir, "[sync] Update Dockerfiles to latest version = " + CRW_VERSION, branch)
+  commitChanges(dir, "[sync] Update Dockerfiles to latest version = " + DS_VERSION, branch)
 }
 
 // call getLatestRPM.sh -s SOURCE_DIR -r RPM_PATTERN  -u BASE_URL -a 'ARCH1 ... ARCHN' -q
@@ -445,7 +445,7 @@ def waitForNewBuild(String jobURL, int oldId, int checkInterval=120, int timeout
 
 // requires brew, skopeo, jq, yq
 // for a given image, return latest image tag in quay
-def getLatestImageAndTag(String orgAndImage, String repo="quay", String tag=CRW_VERSION_F) {
+def getLatestImageAndTag(String orgAndImage, String repo="quay", String tag=DS_VERSION_F) {
   sh '''#!/bin/bash -xe
 if [[ ! -x getLatestImageTags.sh ]]; then 
   curl -sSLO https://raw.githubusercontent.com/redhat-developer/devspaces/''' + MIDSTM_BRANCH + '''/product/getLatestImageTags.sh && chmod +x getLatestImageTags.sh
@@ -488,7 +488,7 @@ def waitForNewQuayImage(String orgAndImage, String oldImage, int checkInterval=1
 }
 
 // depends on rpm perl-Digest-SHA for 'shasum -a ZZZ', or rpm coreutils for 'shaZZZsum'
-// createSums("${CRW_path}/*/target/", "*.tar.*")
+// createSums("${DS_path}/*/target/", "*.tar.*")
 def createSums(String filePath, String filePattern, String algorithm=512) {
   sh '''#!/bin/bash -xe
 suffix=".sha''' + algorithm + '''"

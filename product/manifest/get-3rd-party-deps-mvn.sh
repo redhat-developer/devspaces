@@ -24,8 +24,8 @@ if [[ ! ${CSV_VERSION} ]]; then
 fi
 
 # use x.y (not x.y.z) version, eg., 2.3
-CRW_VERSION=$(curl -sSLo - https://raw.githubusercontent.com/redhat-developer/devspaces/${MIDSTM_BRANCH}/dependencies/VERSION)
-CRW_TAG_OR_BRANCH=${MIDSTM_BRANCH}
+DS_VERSION=$(curl -sSLo - https://raw.githubusercontent.com/redhat-developer/devspaces/${MIDSTM_BRANCH}/dependencies/VERSION)
+DS_TAG_OR_BRANCH=${MIDSTM_BRANCH}
 
 # load SOURCE_BRANCH from theia BUILD_PARAMS
 for d in $(curl -sSLo - https://raw.githubusercontent.com/redhat-developer/devspaces-theia/${MIDSTM_BRANCH}/BUILD_PARAMS); do
@@ -72,7 +72,7 @@ function clone_and_generate_dep_tree () {
 			-e "s#^\(org.eclipse.che\|org.apache.maven\).\+##g" \
 			-e "s#\(.\+\):\(.\+\):jar:#\1_\2.jar:#g" \
 			-e 's/^[ \t]*//' \
-			-e "s#^#devspaces-server-container:${CRW_VERSION}/#g" \
+			-e "s#^#devspaces-server-container:${DS_VERSION}/#g" \
 		| sort | uniq >> ${MANIFEST_FILE/.txt/-raw-unsorted.txt}
 	cd .. && rm -fr ${GITREPO##*/}
 }

@@ -106,9 +106,9 @@ objects:
     metadata:
       name: devfile-registry
     data:
-      CRW_DEVFILE_IMAGES_REGISTRY_URL: ${CRW_DEVFILE_IMAGES_REGISTRY_URL}
-      CRW_DEVFILE_IMAGES_REGISTRY_ORGANIZATION: ${CRW_DEVFILE_IMAGES_REGISTRY_ORGANIZATION}
-      CRW_DEVFILE_IMAGES_REGISTRY_TAG: ${CRW_DEVFILE_IMAGES_REGISTRY_TAG}
+      DS_DEVFILE_IMAGES_REGISTRY_URL: ${DS_DEVFILE_IMAGES_REGISTRY_URL}
+      DS_DEVFILE_IMAGES_REGISTRY_ORGANIZATION: ${DS_DEVFILE_IMAGES_REGISTRY_ORGANIZATION}
+      DS_DEVFILE_IMAGES_REGISTRY_TAG: ${DS_DEVFILE_IMAGES_REGISTRY_TAG}
 parameters:
   - name: IMAGE
     value: registry.redhat.io/devspaces/devfileregistry-rhel8
@@ -127,15 +127,15 @@ parameters:
     value: Always
     displayName: Red Hat OpenShift Dev Spaces devfile registry image pull policy
     description: Always pull by default. Can be IfNotPresent
-  - name: CRW_DEVFILE_IMAGES_REGISTRY_URL
+  - name: DS_DEVFILE_IMAGES_REGISTRY_URL
     displayName: Devfile image registry URL
     description: URL of docker registry containing base images referred in devfiles;
       used to override base images in devfiles
-  - name: CRW_DEVFILE_IMAGES_REGISTRY_ORGANIZATION
+  - name: DS_DEVFILE_IMAGES_REGISTRY_ORGANIZATION
     displayName: Devfile image registry organization
     description: Organization containing images referenced in devfiles; used to override
       base images in devfiles
-  - name: CRW_DEVFILE_IMAGES_REGISTRY_TAG
+  - name: DS_DEVFILE_IMAGES_REGISTRY_TAG
     displayName: Devfile image registry tag
     description: Tag used for custom devfile images; used to override base images
       in devfiles

@@ -2,7 +2,7 @@
 
 # script to generate a manifest of all the 3rd party deps not built in OSBS, but built in Jenkins or imported from upstream community.
 
-JENKINS=https://main-jenkins-csb-crwqe.apps.ocp-c1.prod.psi.redhat.com/job/CRW_CI/job
+JENKINS=https://main-jenkins-csb-crwqe.apps.ocp-c1.prod.psi.redhat.com/job/DS_CI/job
 
 MIDSTM_BRANCH=""
 SCRIPT_DIR=$(dirname $(readlink -f "${BASH_SOURCE[0]}"))
@@ -24,7 +24,7 @@ if [[ ! ${MIDSTM_BRANCH} ]]; then usage; fi
 if [[ ! ${CSV_VERSION} ]]; then 
   CSV_VERSION=$(curl -sSLo - https://raw.githubusercontent.com/redhat-developer/devspaces-operator/${MIDSTM_BRANCH}/manifests/devspaces.csv.yaml | yq -r .spec.version)
 fi
-CRW_VERSION=$(curl -sSLo - https://raw.githubusercontent.com/redhat-developer/devspaces/${MIDSTM_BRANCH}/dependencies/VERSION)
+DS_VERSION=$(curl -sSLo - https://raw.githubusercontent.com/redhat-developer/devspaces/${MIDSTM_BRANCH}/dependencies/VERSION)
 
 EXCLUDE_FILES="e2e|kubernetes"
 EXCLUDE_LINES="eclipse-che/che-theia|redhat-developer/devspaces/|redhat-developer/devspaces-theia|SHASUMS256.txt|CDN_PREFIX|cdn.stage.redhat.com|api.github.com|GITHUB_LIMIT|GITHUB_TOKEN|THEIA_GITHUB_REPO|.git$|.asc|/debian$|/debian/$|APKINDEX.tar.gz|get-pip|=http"
@@ -41,7 +41,7 @@ function log () {
 }
 
 rm -f "${MANIFEST_FILE}" "${MANIFEST_FILE}".2 "${MANIFEST_FILE}".3 "${LOG_FILE}"
-[[ "${MIDSTM_BRANCH}" == "devspaces-3-rhel-8" ]] && JOB_BRANCH="2.x" || JOB_BRANCH="${CRW_VERSION}"
+[[ "${MIDSTM_BRANCH}" == "devspaces-3-rhel-8" ]] && JOB_BRANCH="2.x" || JOB_BRANCH="${DS_VERSION}"
 echo "Parsing ${JENKINS}/theia-sources_${JOB_BRANCH}/lastSuccessfulBuild/consoleText ..."
 curl -sSL -o "${MANIFEST_FILE}".2 "${JENKINS}/theia-sources_${JOB_BRANCH}/lastSuccessfulBuild/consoleText"
 CHE_THEIA_BRANCH=$(grep "echo SOURCE_BRANCH=" "${MANIFEST_FILE}".2 | sed -r -e "s#.+echo SOURCE_BRANCH=(.+)#\1#") # 7.yy.x
@@ -81,14 +81,14 @@ pushd "$TMPDIR" >/dev/null || exit
 				-e 's/^[ \t]*//' \
 				-e 's/^@//' \
 				-e "s/@/:/g" \
-				-e "s#^#devspaces-theia-rhel8-container:${CRW_VERSION}/#g"	\
+				-e "s#^#devspaces-theia-rhel8-container:${DS_VERSION}/#g"	\
 		| sort -uV > ${MANIFEST_FILE}.yarn
 
-		podman pull quay.io/devspaces/theia-rhel8:${CRW_VERSION}
+		podman pull quay.io/devspaces/theia-rhel8:${DS_VERSION}
 
 		# copy plugin directories into the filesystem, in order to execute yarn commands to obtain yarn.lock file, and list dependencies from it
-		"${TMPDIR}/containerExtract.sh" quay.io/devspaces/theia-rhel8:${CRW_VERSION} --tar-flags default-theia-plugins/**
-		find /tmp/quay.io-devspaces-theia-rhel8-${CRW_VERSION}-* -path '*extension/node_modules' -exec sh -c "cd {}/.. && yarn --silent && yarn list --depth=0" \; >> ${MANIFEST_FILE}.plugin-extensions
+		"${TMPDIR}/containerExtract.sh" quay.io/devspaces/theia-rhel8:${DS_VERSION} --tar-flags default-theia-plugins/**
+		find /tmp/quay.io-devspaces-theia-rhel8-${DS_VERSION}-* -path '*extension/node_modules' -exec sh -c "cd {}/.. && yarn --silent && yarn list --depth=0" \; >> ${MANIFEST_FILE}.plugin-extensions
 		sed \
 				-e '/Done in/d' \
 				-e '/yarn list/d ' \
@@ -96,13 +96,13 @@ pushd "$TMPDIR" >/dev/null || exit
 				-e 's/^[ \t]*//' \
 				-e 's/^@//' \
 				-e "s/@/:/g" \
-				-e "s#^#devspaces-theia-rhel8-container:${CRW_VERSION}/#g"	\
+				-e "s#^#devspaces-theia-rhel8-container:${DS_VERSION}/#g"	\
 		${MANIFEST_FILE}.plugin-extensions | sort -uV >> ${MANIFEST_FILE}
 		
 		echo >> ${MANIFEST_FILE}
 
 		# collect global yarn dependencies, obtained from yarn.lock file in the theia-container yarn installation
-		podman run --rm  --entrypoint /bin/sh "quay.io/devspaces/theia-rhel8:${CRW_VERSION}" \
+		podman run --rm  --entrypoint /bin/sh "quay.io/devspaces/theia-rhel8:${DS_VERSION}" \
 			-c "cat /usr/local/share/.config/yarn/global/yarn.lock" | grep -e 'version "' -B1 | \
 			sed -r -e '/^--$/d' \
 			-e 's/^"@//' > "${MANIFEST_FILE}.globalyarn"
@@ -111,7 +111,7 @@ pushd "$TMPDIR" >/dev/null || exit
 			read -r version
 			dependency=$(echo ${dependency} | tr -d '"' | cut -f1 -d"@")
 			version=$(echo ${version} | cut -f2 -d" " | tr -d '"')
-			echo "devspaces-theia-rhel8-container:${CRW_VERSION}/${dependency}:${version}" >> "${MANIFEST_FILE}.yarn"
+			echo "devspaces-theia-rhel8-container:${DS_VERSION}/${dependency}:${version}" >> "${MANIFEST_FILE}.yarn"
 		done < "${MANIFEST_FILE}.globalyarn"
 		
 		cat ${MANIFEST_FILE}.yarn | sort -uV >> ${MANIFEST_FILE}
@@ -120,7 +120,7 @@ pushd "$TMPDIR" >/dev/null || exit
 		cat generator/src/templates/theiaPlugins.json | jq -r '. | to_entries[] | " \(.value)"' | sed \
 				-e 's/^[ \t]*//' \
 				-e 's#.*/##'  \
-				-e "s#^#devspaces-theia-rhel8-container:${CRW_VERSION}/#g"	\
+				-e "s#^#devspaces-theia-rhel8-container:${DS_VERSION}/#g"	\
 		| sort -uV >> ${MANIFEST_FILE}
 
 		# re-sort uniquely after adding more content
@@ -128,7 +128,7 @@ pushd "$TMPDIR" >/dev/null || exit
 	cd ..
 popd >/dev/null || exit
 rm -f "${MANIFEST_FILE}.yarn" "${MANIFEST_FILE}.globalyarn" "${MANIFEST_FILE}.plugin-extensions"
-rm -fr "$TMPDIR" /tmp/quay.io-devspaces-theia-rhel8-${CRW_VERSION}-*
+rm -fr "$TMPDIR" /tmp/quay.io-devspaces-theia-rhel8-${DS_VERSION}-*
 
 ##################################
 

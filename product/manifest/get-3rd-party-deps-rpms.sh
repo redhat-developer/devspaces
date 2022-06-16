@@ -45,7 +45,7 @@ candidateTag="${MIDSTM_BRANCH}-container-candidate"
 if [[ ! ${CSV_VERSION} ]]; then 
   CSV_VERSION=$(curl -sSLo - https://raw.githubusercontent.com/redhat-developer/devspaces-operator/${MIDSTM_BRANCH}/manifests/devspaces.csv.yaml | yq -r .spec.version)
 fi
-CRW_VERSION=$(echo $CSV_VERSION | sed -r -e "s#([0-9]+\.[0-9]+)[^0-9]+.+#\1#") # trim the x.y part from the x.y.z
+DS_VERSION=$(echo $CSV_VERSION | sed -r -e "s#([0-9]+\.[0-9]+)[^0-9]+.+#\1#") # trim the x.y part from the x.y.z
 
 cd /tmp || exit
 if [[ ! ${WORKSPACE} ]]; then WORKSPACE=${SCRIPT_DIR}; fi
@@ -151,7 +151,7 @@ fi
 ##################################
 
 # get uniq list of RPMs
-cat ${WORKSPACE}/${CSV_VERSION}/rpms/manifest-rpms-devspaces-* | sed -r -e "s#.+:${CRW_VERSION}-[0-9.]+/# #g" | sort | uniq > ${MANIFEST_UNIQ_FILE}
+cat ${WORKSPACE}/${CSV_VERSION}/rpms/manifest-rpms-devspaces-* | sed -r -e "s#.+:${DS_VERSION}-[0-9.]+/# #g" | sort | uniq > ${MANIFEST_UNIQ_FILE}
 
 ##################################
 
