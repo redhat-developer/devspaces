@@ -28,7 +28,7 @@ usage () {
   echo "
 Usage:
   Using a specific bundle: $0 bundle-image1 [bundle-image2...] [OPTIONS]
-  Using the latest bundle: $0 -t 3.0 -o 4.10 [OPTIONS]
+  Using the latest bundle: $0 -t 3.1 -o 4.10 [OPTIONS]
 
 Options:
   -t <product tag>     Use getLatestIIBs.sh to fetch latest IIB's contained bundle image, 
@@ -42,14 +42,16 @@ Options:
 
 Examples:
   $0 quay.io/crw/crw-2-rhel8-operator-bundle:2.15-276.1647377069
-  $0 quay.io/devspaces/devspaces-operator-bundle:3.0 -y -i 'devfile|plugin|udi'
+  $0 quay.io/devspaces/devspaces-operator-bundle:3.1 -y -i 'devfile|plugin|udi'
 
 To compare latest image in Quay to latest CSV in bundle in latest IIB:
-  TAG=3.0; IMG=devspaces/dashboard-rhel8; \\
+  TAG=3.1; \\
+  IMG=devspaces/dashboard-rhel8; \\
+  IMG=devspaces/devfileregistry-rhel8; \\
   img_quay=\$(${SCRIPTPATH}/getLatestImageTags.sh -b devspaces-\${TAG}-rhel-8 --quay --tag \"\${TAG}-\" -c \${IMG}); echo \$img_quay; \\
-  img_iib=\$(${SCRIPTPATH}/checkImagesInCSV.sh --ds -t \${TAG} -o 4.10 -y -qq -i \${IMG}); echo \$img_iib; \\
+  img_iib=\$(${SCRIPTPATH}/checkImagesInCSV.sh --ds -t \${TAG} -o 4.11 -y -qq -i \${IMG}); echo \$img_iib; \\
   if [[ \$img_quay != \$img_iib ]]; then \\
-    ${SCRIPTPATH}/checkImagesInCSV.sh --ds -t \${TAG} -o 4.10 -y -i \${IMG}; \\
+    ${SCRIPTPATH}/checkImagesInCSV.sh --ds -t \${TAG} -o 4.11 -y -i \${IMG}; \\
   fi
 "
 }
