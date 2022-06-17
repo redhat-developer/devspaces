@@ -12,7 +12,7 @@ For the latest stable release, see the **devspaces-3.y-rhel-8** branch with the 
 
 This repository no longer hosts the OpenShift Dev Spaces Server assembly that mainly inherits Eclipse Che artifacts and repackages some of them. Server has moved to link:https://github.com/redhat-developer/devspaces-images/blob/devspaces-3-rhel-8/devspaces-server/README.adoc#how-to-build-locally[devspaces-images/devspaces-server].
 
-### How to Build CRW Containers Using casc Jenkins (REQUIRES VPN)
+### How to Build DS Containers Using casc Jenkins (REQUIRES VPN)
 
 See this document for how to use those build systems, in order to publish a container image to Red Hat Container Catalog:
 
@@ -20,16 +20,16 @@ See this document for how to use those build systems, in order to publish a cont
 
 See also:
 
-* https://main-jenkins-csb-crwqe.apps.ocp-c1.prod.psi.redhat.com/job/CRW_CI/ (crw-dashboard_*) :door:
+* https://main-jenkins-csb-crwqe.apps.ocp-c1.prod.psi.redhat.com/job/DS_CI/ (dashboard_*) :door:
 * https://github.com/redhat-developer/devspaces-images#jenkins-jobs
 
-### Keeping CRW dependencies in sync with upstream and downstream
+### Keeping DS dependencies in sync with upstream and downstream
 
 Folders under link:dependencies[/dependencies] are synced to https://github.com/redhat-developer/devspaces-images. If no matching project exists under the link:dependencies[/dependencies] folder, sync occurs directly from an upstream Che project. 
 
 The sync logic is in one of three places:
 
-* a Jenkins job - eg., link:https://github.com/redhat-developer/devspaces-images/blob/devspaces-3-rhel-8/crw-jenkins/jobs/CRW_CI/crw-dashboard_2.x.jenkinsfile[crw-dashboard_2.x.jenkinsfile], 
+* a Jenkins job - eg., link:https://github.com/redhat-developer/devspaces-images/blob/devspaces-3-rhel-8/crw-jenkins/jobs/DS_CI/dashboard_3.x.jenkinsfile[dashboard_3.x.jenkinsfile], 
 * a get-sources-jenkins.sh script - eg., link:https://github.com/redhat-developer/devspaces-images/blob/devspaces-3-rhel-8/devspaces-dashboard/get-sources-jenkins.sh[dashboard get-sources-jenkins.sh], or
 * a sync-*.sh script - eg., link:https://github.com/redhat-developer/devspaces-images/blob/devspaces-3-rhel-8/devspaces-dashboard/build/scripts/sync.sh[dashboard/scripts/sync.sh]. 
 
@@ -37,8 +37,8 @@ Note over time we're trying to move all sync logic out of Jenkinsfiles and into 
 
 Sync jobs:
 
-* https://main-jenkins-csb-crwqe.apps.ocp-c1.prod.psi.redhat.com/job/CRW_CI/ (jobs) :door:
-* https://gitlab.cee.redhat.com/codeready-workspaces/crw-jenkins/-/tree/master/jobs/CRW_CI (sources) :door:
+* https://main-jenkins-csb-crwqe.apps.ocp-c1.prod.psi.redhat.com/job/DS_CI/ (jobs) :door:
+* https://gitlab.cee.redhat.com/codeready-workspaces/crw-jenkins/-/tree/master/jobs/DS_CI (sources) :door:
 * https://github.com/redhat-developer/devspaces-images#jenkins-jobs (copied sources)
 
 ## Branding

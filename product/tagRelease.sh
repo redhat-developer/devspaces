@@ -30,14 +30,14 @@ CLEAN="false" #  if set true, delete existing folders and do fresh checkouts
 if [[ $# -lt 4 ]]; then
 	echo "
 To create tags (and push updated CSV content into operator-bundle repo):
-  $0 -v CSV_VERSION -t CRW_VERSION -gh CRW_GH_BRANCH -ghtoken GITHUB_TOKEN -pd PKGS_DEVEL_BRANCH -pduser kerberos_user
+  $0 -v CSV_VERSION -t DS_VERSION -gh DS_GH_BRANCH -ghtoken GITHUB_TOKEN -pd PKGS_DEVEL_BRANCH -pduser kerberos_user
 Example: 
   $0 -v 3.y.0 -t 3.y -gh ${TARGET_BRANCH} -ghtoken \$GITHUB_TOKEN -pd ${pkgs_devel_branch} -pduser $pduser
 
 To create branches:
-  $0 -t CRW_VERSION --branchfrom SOURCE_GH_BRANCH -gh TARGET_GH_BRANCH -ghtoken GITHUB_TOKEN
+  $0 -t DS_VERSION --branchfrom SOURCE_GH_BRANCH -gh TARGET_GH_BRANCH -ghtoken GITHUB_TOKEN
 Example: 
-  $0 -t CRW_VERSION --branchfrom devspaces-3-rhel-8 -gh ${TARGET_BRANCH} -ghtoken \$GITHUB_TOKEN
+  $0 -t DS_VERSION --branchfrom devspaces-3-rhel-8 -gh ${TARGET_BRANCH} -ghtoken \$GITHUB_TOKEN
 "
 	exit 1
 fi
@@ -47,7 +47,7 @@ while [[ "$#" -gt 0 ]]; do
   case $1 in
 	'--branchfrom') SOURCE_BRANCH="$2"; shift 1;; # this flag will create branches instead of using branches to create tags
 	'-v') CSV_VERSION="$2"; shift 1;; # 3.y.0
-	'-t') CRW_VERSION="$2"; shift 1;; # 3.y # used to get released bundle container's CSV contents
+	'-t') DS_VERSION="$2"; shift 1;; # 3.y # used to get released bundle container's CSV contents
 	'-gh') TARGET_BRANCH="$2"; shift 1;;
 	'-ghtoken') GITHUB_TOKEN="$2"; shift 1;;
 	'-pd') pkgs_devel_branch="$2"; shift 1;;
@@ -57,8 +57,8 @@ while [[ "$#" -gt 0 ]]; do
   shift 1
 done
 
-if [[ ! ${CRW_VERSION} ]]; then
-  CRW_VERSION=${CSV_VERSION%.*} # given 3.y.0, want 3.y
+if [[ ! ${DS_VERSION} ]]; then
+  DS_VERSION=${CSV_VERSION%.*} # given 3.y.0, want 3.y
 fi
 
 if [[ ${CLEAN} == "true" ]]; then
@@ -95,7 +95,7 @@ pushTagPD ()
 
 toggleQuayRHECReferences() {
 	YAML_ROOT="dependencies/"
-	# replace CRW meta.yaml files with links to current version of devfile v2
+	# replace DS meta.yaml files with links to current version of devfile v2
 	for yaml in $(find ${YAML_ROOT} -name "*.yaml"); do
 		if [[ $TARGET_BRANCH == "devspaces-3-rhel-8" ]]; then
 			sed -r -i $yaml -e "s#registry.redhat.io/devspaces/#quay.io/devspaces/#g"
@@ -114,7 +114,7 @@ toggleQuayRHECReferences() {
 updateLinksToDevfiles() {
 	YAML_ROOT="dependencies/che-devfile-registry/devfiles"
 
-	# replace CRW meta.yaml files with links to current version of devfile v2
+	# replace DS meta.yaml files with links to current version of devfile v2
 	for meta in $(find ${YAML_ROOT} -name "meta.yaml"); do
 	   sed -r -i "${meta}" \
 		   -e "s|/tree/devfilev2|/tree/${TARGET_BRANCH}|g" \
@@ -126,22 +126,22 @@ updateLinksToDevfiles() {
 # for the sample projects ONLY, commit changes to the devfile so it contains the correct image and tag
 updateSampleDevfileReferences () {
 	devfile=devfile.yaml
-	if [[ $CRW_VERSION ]]; then
-		CRW_TAG="$CRW_VERSION"
+	if [[ $DS_VERSION ]]; then
+		DS_TAG="$DS_VERSION"
 	else
-		CRW_TAG="${TARGET_BRANCH//-rhel-8}"; CRW_TAG="${CRW_TAG//devspaces-}"
+		DS_TAG="${TARGET_BRANCH//-rhel-8}"; DS_TAG="${DS_TAG//devspaces-}"
 	fi
-	# echo "[DEBUG] update $devfile with CRW_TAG = $CRW_TAG"
+	# echo "[DEBUG] update $devfile with DS_TAG = $DS_TAG"
 	sed -r -i $devfile \
-		-e "s#devspaces/udi-[a-z0-9:@.-]+#devspaces/udi-rhel8:${CRW_TAG}#g"
+		-e "s#devspaces/udi-[a-z0-9:@.-]+#devspaces/udi-rhel8:${DS_TAG}#g"
 
 	# for 3.x builds, point image refs at quay instead of RHEC
 	if [[ $TARGET_BRANCH == "devspaces-3-rhel-8" ]]; then
 		sed -r -i $devfile -e "s#registry.redhat.io/devspaces/#quay.io/devspaces/#g"
-		git commit -s -m "chore(devfile) link v2 devfile to :${CRW_TAG}; set image refs to quay.io/devspaces/" "$devfile" || echo ""
+		git commit -s -m "chore(devfile) link v2 devfile to :${DS_TAG}; set image refs to quay.io/devspaces/" "$devfile" || echo ""
 	else
 		sed -r -i $devfile -e "s#quay.io/devspaces/#registry.redhat.io/devspaces/#g"
-		git commit -s -m "chore(devfile) link v2 devfile to :${CRW_TAG}; set image refs to registry.redhat.io/devspaces/" "$devfile" || echo ""
+		git commit -s -m "chore(devfile) link v2 devfile to :${DS_TAG}; set image refs to registry.redhat.io/devspaces/" "$devfile" || echo ""
 	fi
 }
 

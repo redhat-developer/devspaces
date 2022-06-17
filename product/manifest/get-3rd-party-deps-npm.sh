@@ -72,7 +72,7 @@ devspaces-udi \
 			-e 's/^[ \t]*//' \
 			-e 's/^@//' \
 			-e "s/@/:/g" \
-			-e "s#^#${d}-container:${CRW_VERSION}/#g"	\
+			-e "s#^#${d}-container:${DS_VERSION}/#g"	\
 		| sort -uV > ${SINGLE_MANIFEST}
 
 		cat ${SINGLE_MANIFEST} >> ${MANIFEST_FILE/.txt/-raw-unsorted.txt}

@@ -36,7 +36,7 @@ Note that the Dockerfiles in this repository utilize multi-stage builds, so Dock
 
 The Jenkinsfile in this repo has moved. See:
 
-* https://gitlab.cee.redhat.com/codeready-workspaces/crw-jenkins/-/tree/master/jobs/CRW_CI
+* https://gitlab.cee.redhat.com/codeready-workspaces/crw-jenkins/-/tree/master/jobs/DS_CI
 * https://github.com/redhat-developer/devspaces-images#jenkins-jobs
 
 

@@ -107,9 +107,9 @@ objects:
     metadata:
       name: plugin-registry
     data:
-      CRW_SIDECAR_CONTAINERS_REGISTRY_URL: ${CRW_SIDECAR_CONTAINERS_REGISTRY_URL}
-      CRW_SIDECAR_CONTAINERS_REGISTRY_ORGANIZATION: ${CRW_SIDECAR_CONTAINERS_REGISTRY_ORGANIZATION}
-      CRW_SIDECAR_CONTAINERS_REGISTRY_TAG: ${CRW_SIDECAR_CONTAINERS_REGISTRY_TAG}
+      DS_SIDECAR_CONTAINERS_REGISTRY_URL: ${DS_SIDECAR_CONTAINERS_REGISTRY_URL}
+      DS_SIDECAR_CONTAINERS_REGISTRY_ORGANIZATION: ${DS_SIDECAR_CONTAINERS_REGISTRY_ORGANIZATION}
+      DS_SIDECAR_CONTAINERS_REGISTRY_TAG: ${DS_SIDECAR_CONTAINERS_REGISTRY_TAG}
 parameters:
   - name: IMAGE
     value: quay.io/devspaces/pluginregistry-rhel8
@@ -128,15 +128,15 @@ parameters:
     value: Always
     displayName: Red Hat OpenShift Dev Spaces plugin registry image pull policy
     description: Always pull by default. Can be IfNotPresent
-  - name: CRW_SIDECAR_CONTAINERS_REGISTRY_URL
+  - name: DS_SIDECAR_CONTAINERS_REGISTRY_URL
     displayName: Sidecar image registry URL
     description: URL of docker registry containing plugin sidecar images; used to
       override sidecars in plugins
-  - name: CRW_SIDECAR_CONTAINERS_REGISTRY_ORGANIZATION
+  - name: DS_SIDECAR_CONTAINERS_REGISTRY_ORGANIZATION
     displayName: Sidecar image registry organization
     description: Organization containing plugin sidecar images; used to override base
       images in plugins
-  - name: CRW_SIDECAR_CONTAINERS_REGISTRY_TAG
+  - name: DS_SIDECAR_CONTAINERS_REGISTRY_TAG
     displayName: Plugin sidecar images tag
     description: Tag used for overridden sidecar images; used to override base images
       in plugins

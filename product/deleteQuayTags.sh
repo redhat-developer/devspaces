@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# simple utility script to delete tags from the CRW images, eg., to purge obsolete nightly tags
+# simple utility script to delete tags from the DS images, eg., to purge obsolete nightly tags
 
 # get ACCESS_TOKEN from https://quay.io/organization/devspaces/application/ZLH33ADU8A8PHC6N9UNM
 
@@ -8,7 +8,7 @@
 
 NAMESPACE=devspaces
 TAG=nightly
-# delete all tags in CRW images
+# delete all tags in DS images
 for d in $(cat ../dependencies/LATEST_IMAGES); do
     image=${d%:*}:${TAG}
     repo=${d%:*}; repo=${repo##*/}

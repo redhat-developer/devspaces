@@ -29,12 +29,12 @@ if [[ $DWNSTM_BRANCH != "devspaces-3."*"-rhel-8" ]] && [[ $DWNSTM_BRANCH != "dev
 		DWNSTM_BRANCH="devspaces-${VERSION}-rhel-8"
 	fi
 else
-	CRW_VERSION=${DWNSTM_BRANCH/devspaces-/}; CRW_VERSION=${CRW_VERSION/-rhel-8/}
-	if [[ $CRW_VERSION == 2 ]] || [[ $CRW_VERSION == 3 ]]; then # invalid version
+	DS_VERSION=${DWNSTM_BRANCH/devspaces-/}; DS_VERSION=${DS_VERSION/-rhel-8/}
+	if [[ $DS_VERSION == 2 ]] || [[ $DS_VERSION == 3 ]]; then # invalid version
 		if [[ ${VERSION} ]]; then # use version from VERSION file
-			CRW_VERSION=${VERSION}
+			DS_VERSION=${VERSION}
 		else # set placeholder version 3.y
-			CRW_VERSION="3.y"
+			DS_VERSION="3.y"
 		fi
 	fi
 fi
@@ -63,7 +63,7 @@ checkVersion() {
 }
 checkVersion 1.1 "$(skopeo --version | sed -e "s/skopeo version //")" skopeo
 
-CRW_CONTAINERS="\
+DS_CONTAINERS="\
 devspaces/configbump-rhel8 \
 devspaces/devspaces-rhel8-operator \
 devspaces/devspaces-operator-bundle \
@@ -100,19 +100,19 @@ SHOWLOG=0 	# show URL of the console log
 PUSHTOQUAY=0 # utility method to pull then push to quay
 PUSHTOQUAYTAGS="" # utility method to pull then push to quay (extra tags to push)
 PUSHTOQUAYFORCE=0 # normally, don't repush a tag if it's already in the registry (to avoid re-timestamping it and updating tag history)
-SORTED=0 # if 0, use the order of containers in the CRW*_CONTAINERS_* strings above; if 1, sort alphabetically
-latestNext="latest"; if [[ $CRW_VERSION == "3.y" ]] || [[ $DWNSTM_BRANCH = "devspaces-3-rhel-8" ]]; then latestNext="next  "; fi
+SORTED=0 # if 0, use the order of containers in the DS*_CONTAINERS_* strings above; if 1, sort alphabetically
+latestNext="latest"; if [[ $DS_VERSION == "3.y" ]] || [[ $DWNSTM_BRANCH = "devspaces-3-rhel-8" ]]; then latestNext="next  "; fi
 usage () {
 	echo "
 Usage: 
   $0 -b ${DWNSTM_BRANCH} --nvr --log                      | check images in brew; output NVRs can be copied to Errata; show Brew builds/logs
   $0 -b ${DWNSTM_BRANCH} --errata $DEFAULT_ERRATA_NUM                   | check images in brew; output NVRs + update builds in specified Errata (implies --nvr --hide)
 
-  $0 -b ${DWNSTM_BRANCH} --quay --tag \"${CRW_VERSION}-\" --hide       | use default list of CRW images in quay.io/devspaces, for tag 3.y-; show nothing if tag umatched
+  $0 -b ${DWNSTM_BRANCH} --quay --tag \"${DS_VERSION}-\" --hide       | use default list of DS images in quay.io/devspaces, for tag 3.y-; show nothing if tag umatched
   $0 -b ${DWNSTM_BRANCH} --osbs                           | check images in OSBS ( registry-proxy.engineering.redhat.com/rh-osbs )
-  $0 -b ${DWNSTM_BRANCH} --osbs --pushtoquay='${CRW_VERSION} ${latestNext}' | pull images from OSBS, push ${CRW_VERSION}-z tag + 2 extras to quay
-  $0 -b ${DWNSTM_BRANCH} --stage --sort                   | use default list of CRW images in RHEC Stage, sorted alphabetically
-  $0 -b ${DWNSTM_BRANCH} --arches                         | use default list of CRW images in RHEC Prod; show arches
+  $0 -b ${DWNSTM_BRANCH} --osbs --pushtoquay='${DS_VERSION} ${latestNext}' | pull images from OSBS, push ${DS_VERSION}-z tag + 2 extras to quay
+  $0 -b ${DWNSTM_BRANCH} --stage --sort                   | use default list of DS images in RHEC Stage, sorted alphabetically
+  $0 -b ${DWNSTM_BRANCH} --arches                         | use default list of DS images in RHEC Prod; show arches
 
   $0 -c 'devspaces/theia-rhel8 devspaces/theia-endpoint-rhel8' --quay      | check latest tag for specific Quay images, with branch = ${DWNSTM_BRANCH}
   $0 -c devspaces-operator --osbs                       | check an image from OSBS
@@ -130,7 +130,7 @@ REGISTRY="https://registry.redhat.io" # or http://brew-pulp-docker01.web.prod.ex
 CONTAINERS=""
 while [[ "$#" -gt 0 ]]; do
   case $1 in
-    '-j') CRW_VERSION="$2"; DWNSTM_BRANCH="devspaces-${CRW_VERSION}-rhel-8"; shift 1;;
+    '-j') DS_VERSION="$2"; DWNSTM_BRANCH="devspaces-${DS_VERSION}-rhel-8"; shift 1;;
     '-b') DWNSTM_BRANCH="$2"; shift 1;; 
     '-c') CONTAINERS="${CONTAINERS} $2"; shift 1;;
     '-x') EXCLUDES="$2"; shift 1;;
@@ -153,8 +153,8 @@ while [[ "$#" -gt 0 ]]; do
     '--dockerfile') SHOWHISTORY=1;;
     '--tag') BASETAG="$2"; shift 1;;
     '--candidatetag') candidateTag="$2"; shift 1;;
-    '--nvr')    if [[ ! $CONTAINERS ]]; then CONTAINERS="${CRW_CONTAINERS}"; fi; SHOWNVR=1;;
-    '--errata') if [[ ! $CONTAINERS ]]; then CONTAINERS="${CRW_CONTAINERS}"; fi; SHOWNVR=1; ERRATA_NUM="$2"; HIDE_MISSING=1; shift 1;;
+    '--nvr')    if [[ ! $CONTAINERS ]]; then CONTAINERS="${DS_CONTAINERS}"; fi; SHOWNVR=1;;
+    '--errata') if [[ ! $CONTAINERS ]]; then CONTAINERS="${DS_CONTAINERS}"; fi; SHOWNVR=1; ERRATA_NUM="$2"; HIDE_MISSING=1; shift 1;;
     '--tagonly') TAGONLY=1;;
     '--log') SHOWLOG=1;;
     '--sort') SORTED=1;;
@@ -185,7 +185,7 @@ else
 fi
 
 if [[ $VERBOSE -eq 1 ]]; then 
-	echo "[DEBUG] CRW_VERSION=${CRW_VERSION}"
+	echo "[DEBUG] DS_VERSION=${DS_VERSION}"
 	echo "[DEBUG] DWNSTM_BRANCH = ${DWNSTM_BRANCH}"
 	echo "[DEBUG] BASETAG = $BASETAG"
 	echo "[DEBUG] candidateTag = $candidateTag"
@@ -197,18 +197,18 @@ if [[ ${REGISTRY} != "" ]]; then
 	REGISTRYSTRING="--registry ${REGISTRY}"
 	REGISTRYPRE="${REGISTRY##*://}/"
 	if [[ ${REGISTRY} == *"registry-proxy.engineering.redhat.com"* ]]; then
-		if [[ ${CONTAINERS} == "" ]] || [[ ${CONTAINERS} == "${CRW_CONTAINERS}" ]]; then 
-			CONTAINERS="${CRW_CONTAINERS}"; CONTAINERS=${CONTAINERS//devspaces-3-rhel8-/}; CONTAINERS="${CONTAINERS//devspaces\//devspaces-}"
+		if [[ ${CONTAINERS} == "" ]] || [[ ${CONTAINERS} == "${DS_CONTAINERS}" ]]; then 
+			CONTAINERS="${DS_CONTAINERS}"; CONTAINERS=${CONTAINERS//devspaces-3-rhel8-/}; CONTAINERS="${CONTAINERS//devspaces\//devspaces-}"
 			CONTAINERS="${CONTAINERS//devspaces-devspaces/devspaces}"
 			CONTAINERS="${CONTAINERS/devspaces-rhel8-operator/devspaces-operator}"
 		fi
 	elif [[ ${REGISTRY} == *"quay.io"* ]]; then
 		searchTag=":${latestNext}"
-		if [[ ${CONTAINERS} == "${CRW_CONTAINERS}" ]] || [[ ${CONTAINERS} == "" ]]; then
-			CONTAINERS="${CRW_CONTAINERS}"; 
+		if [[ ${CONTAINERS} == "${DS_CONTAINERS}" ]] || [[ ${CONTAINERS} == "" ]]; then
+			CONTAINERS="${DS_CONTAINERS}"; 
 		fi
 	elif [[ ! ${CONTAINERS} ]]; then
-		CONTAINERS="${CRW_CONTAINERS}"
+		CONTAINERS="${DS_CONTAINERS}"
 	fi
 else
 	REGISTRYSTRING=""
@@ -277,7 +277,7 @@ if [[ ${SHOWNVR} -eq 1 ]]; then
 			(( n = n + 1 ))
 			if [[ $ERRATA_NUM ]]; then
 				prodver="RHOSDS-3-RHEL-8"
-				if [[ $CRW_VERSION == "2"* ]]; then prodver="CRW-2.0-RHEL-8"; fi
+				if [[ $DS_VERSION == "2"* ]]; then prodver="CRW-2.0-RHEL-8"; fi
 				cat <<EOT >> /tmp/errata-container-update-$result
 from errata_tool import Erratum
 e = Erratum(errata_id=$ERRATA_NUM)

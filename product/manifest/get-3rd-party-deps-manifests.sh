@@ -8,8 +8,8 @@ SCRIPT_DIR=$(dirname $(readlink -f "${BASH_SOURCE[0]}"))
 
 checkdependencies ()
 {
-# see also https://gitlab.cee.redhat.com/codeready-workspaces/crw-jenkins/-/blob/master/jobs/CRW_CI/Releng/get-3rd-party-deps-manifests.jenkinsfile (live sources)
-# or https://github.com/redhat-developer/devspaces-images/blob/devspaces-3-rhel-8/crw-jenkins/jobs/CRW_CI/Releng/get-3rd-party-deps-manifests.jenkinsfile (external copy)
+# see also https://gitlab.cee.redhat.com/codeready-workspaces/crw-jenkins/-/blob/master/jobs/DS_CI/Releng/get-3rd-party-deps-manifests.jenkinsfile (live sources)
+# or https://github.com/redhat-developer/devspaces-images/blob/devspaces-3-rhel-8/crw-jenkins/jobs/DS_CI/Releng/get-3rd-party-deps-manifests.jenkinsfile (external copy)
 
 # rpm installed dependencies
 # rhpkg krb5-workstation tree golang php-devel php-json python3-six python3-pip
@@ -69,7 +69,7 @@ if [[ ! ${CSV_VERSION} ]]; then
   CSV_VERSION=$(curl -sSLo - https://raw.githubusercontent.com/redhat-developer/devspaces-operator/${MIDSTM_BRANCH}/manifests/devspaces.csv.yaml | yq -r .spec.version)
 fi
 
-CRW_BRANCH_TAG=${CSV_VERSION}
+DS_BRANCH_TAG=${CSV_VERSION}
 
 if [[ ! ${WORKSPACE} ]]; then WORKSPACE=${SCRIPT_DIR}; fi
 mkdir -p "${WORKSPACE}/${CSV_VERSION}"
@@ -158,7 +158,7 @@ if [[ ${phases} == *"1"* ]] || [[ ${phases} == *"2"* ]] || [[ ${phases} == *"4"*
 	pushd devspaces-images>/dev/null
 		git config --global push.default matching
 		git config --global hub.protocol https
-		git checkout ${CRW_BRANCH_TAG} || { echo "Tag or branch ${CRW_BRANCH_TAG} does not exist! Create it before running this script."; exit 1; }
+		git checkout ${DS_BRANCH_TAG} || { echo "Tag or branch ${DS_BRANCH_TAG} does not exist! Create it before running this script."; exit 1; }
 	popd >/dev/null
 	log ""
 	# NOTE: don't delete this checkout yet, we need it for later.
