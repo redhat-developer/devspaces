@@ -28,13 +28,12 @@ cleanup () {
 # commandline args
 while [[ "$#" -gt 0 ]]; do
   case $1 in
-    '-b') MIDSTM_BRANCH="$2"; shift 1;;
-    '--keep-temp') CLEAN=0;;
-    '--clean') cleanup;;
-    '--debug') DEBUG=1;;
+    '-b') MIDSTM_BRANCH="$2"; shift 2;;
+    '--keep-temp') CLEAN=0; shift 1;;
+    '--clean') cleanup; shift 1;;
+    '--debug') DEBUG=1; shift 1;;
     *) phases="${phases} $1 ";;
   esac
-  shift 1
 done
 
 if [[ ! ${MIDSTM_BRANCH} ]]; then usage; fi

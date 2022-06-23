@@ -100,27 +100,26 @@ BASETAG="."
 EXCLUDES="latest|-source"
 while [[ "$#" -gt 0 ]]; do
   case $1 in
-	'-w') WORKDIR="$2"; shift 1;;
-	'-b'|'--sources-branch') SOURCES_BRANCH="$2"; shift 1;;
-	'-sb'|'--scripts-branch') SCRIPTS_BRANCH="$2"; shift 1;;
-	'--tag') BASETAG="$2"; shift 1;; # rather than fetching latest tag, grab latest tag matching a pattern like "1.13"
-	'-x') EXCLUDES="$2"; shift 1;;
-	'-f') DOCKERFILE="$2"; shift 1;;
-	'-maxdepth') MAXDEPTH="$2"; shift 1;;
-	'-c') buildCommand="rhpkg container-build"; shift 0;; # NOTE: will trigger a new build for each commit, rather than for each change set (eg., Dockefiles with more than one FROM)
-	'-s') buildCommand="rhpkg container-build --scratch"; shift 0;;
-	'-n'|'--nocommit'|'--no-commit') docommit=0; dopush=0; shift 0;;
-	'-p'|'--nopush'|'--no-push') dopush=0; shift 0;;
-	'--pr') dopronly=1; dopush=0; shift 0;;
-	'-prb') PR_BRANCH="$2"; shift 1;;
-	'-o') OPENBROWSERFLAG="-o"; shift 0;;
-	'-q') QUIET=1; shift 0;;
-	'--verbose') QUIET=0; VERBOSE=1; shift 0;;
-	'--check-recent-updates-only') QUIET=0; VERBOSE=1; checkrecentupdates; shift 0; exit;;
+	'-w') WORKDIR="$2"; shift 2;;
+	'-b'|'--sources-branch') SOURCES_BRANCH="$2"; shift 2;;
+	'-sb'|'--scripts-branch') SCRIPTS_BRANCH="$2"; shift 2;;
+	'--tag') BASETAG="$2"; shift 2;; # rather than fetching latest tag, grab latest tag matching a pattern like "1.13"
+	'-x') EXCLUDES="$2"; shift 2;;
+	'-f') DOCKERFILE="$2"; shift 2;;
+	'-maxdepth') MAXDEPTH="$2"; shift 2;;
+	'-c') buildCommand="rhpkg container-build"; shift 1;; # NOTE: will trigger a new build for each commit, rather than for each change set (eg., Dockefiles with more than one FROM)
+	'-s') buildCommand="rhpkg container-build --scratch"; shift 1;;
+	'-n'|'--nocommit'|'--no-commit') docommit=0; dopush=0; shift 1;;
+	'-p'|'--nopush'|'--no-push') dopush=0; shift 1;;
+	'--pr') dopronly=1; dopush=0; shift 1;;
+	'-prb') PR_BRANCH="$2"; shift 2;;
+	'-o') OPENBROWSERFLAG="-o"; shift 1;;
+	'-q') QUIET=1; shift 1;;
+	'--verbose') QUIET=0; VERBOSE=1; shift 1;;
+	'--check-recent-updates-only') QUIET=0; VERBOSE=1; checkrecentupdates; shift 1; exit;;
 	'--help'|'-h') usage; exit;;
-	*) OTHER="${OTHER} $1"; shift 0;; 
+	*) OTHER="${OTHER} $1"; shift 1;; 
   esac
-  shift 1
 done
 
 # as seen on https://stackoverflow.com/questions/4023830/how-to-compare-two-strings-in-dot-separated-version-format-in-bash

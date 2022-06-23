@@ -26,14 +26,13 @@ SOURCE_CONTAINER=quay.io/devspaces/devspaces-operator-bundle
 # commandline args
 while [[ "$#" -gt 0 ]]; do
   case $1 in
-    '-s') SOURCEDIR="$2"; shift 1;; # dir to update from
-    '-t') TARGETDIR="$2"; shift 1;; # dir to update to
-    '-c') SOURCE_CONTAINER="$2"; shift 1;; # container from which to pull generated CSV data
-    '-b') MIDSTM_BRANCH="$2"; shift 1;;
-    '-v') DS_VERSION="$2"; shift 1;;
+    '-s') SOURCEDIR="$2"; shift 2;; # dir to update from
+    '-t') TARGETDIR="$2"; shift 2;; # dir to update to
+    '-c') SOURCE_CONTAINER="$2"; shift 2;; # container from which to pull generated CSV data
+    '-b') MIDSTM_BRANCH="$2"; shift 2;;
+    '-v') DS_VERSION="$2"; shift 2;;
     '-h') usage;;
   esac
-  shift 1
 done
 
 if [[ ! ${MIDSTM_BRANCH} ]]; then usage; fi

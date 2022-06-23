@@ -76,25 +76,24 @@ Examples:
 
 while [[ "$#" -gt 0 ]]; do
   case $1 in
-    '-v') CSV_VERSION="$2"; shift 1;;
-    '-b') MIDSTM_BRANCH="$2"; shift 1;;
-    '-ght') GITHUB_TOKEN="$2"; export GITHUB_TOKEN="${GITHUB_TOKEN}"; shift 1;;
-    '-n'|'--asset-name')       ASSET_NAME="$2"; shift 1;;
-    '--asset-type')            ASSET_TYPE="$2"; shift 1;;
+    '-v') CSV_VERSION="$2"; shift 2;;
+    '-b') MIDSTM_BRANCH="$2"; shift 2;;
+    '-ght') GITHUB_TOKEN="$2"; export GITHUB_TOKEN="${GITHUB_TOKEN}"; shift 2;;
+    '-n'|'--asset-name')       ASSET_NAME="$2"; shift 2;;
+    '--asset-type')            ASSET_TYPE="$2"; shift 2;;
 
-    '-d'|'--delete-assets')    DELETE_ASSETS=1;;
-    '-a'|'--publish-assets')   PUBLISH_ASSETS=1;;
-    '-p'|'--pull-assets')      PULL_ASSETS=1;;
-    '--repo')                  PULL_ASSETS=1; GITHUB_REPO="$2"; shift 1;;      # if not checked out, specify from which GH repo to find the release files
-    '--repo-path')             PULL_ASSETS=1; GITHUB_REPO_PATH="$2"; shift 1;; # if checked out, specify which GH folder to use to pull release files
-    '--target')                PULL_ASSETS=1; TARGETDIR="$2"; shift 1;;
+    '-d'|'--delete-assets')    DELETE_ASSETS=1; shift 1;;
+    '-a'|'--publish-assets')   PUBLISH_ASSETS=1; shift 1;;
+    '-p'|'--pull-assets')      PULL_ASSETS=1; shift 1;;
+    '--repo')                  PULL_ASSETS=1; GITHUB_REPO="$2"; shift 2;;      # if not checked out, specify from which GH repo to find the release files
+    '--repo-path')             PULL_ASSETS=1; GITHUB_REPO_PATH="$2"; shift 2;; # if checked out, specify which GH folder to use to pull release files
+    '--target')                PULL_ASSETS=1; TARGETDIR="$2"; shift 2;;
 
-    '--prerelease')            PRE_RELEASE="$1";; # --prerelease
-    '--release')               PRE_RELEASE="";;   # not a prerelease
+    '--prerelease')            PRE_RELEASE="$1"; shift 1;; # --prerelease
+    '--release')               PRE_RELEASE=""; shift 1;;   # not a prerelease
     '-h'|'--help') usageGHT; exit 0;;
     *) fileList="${fileList} $1";;
   esac
-  shift 1
 done
 
 if [[ ! "${GITHUB_TOKEN}" ]]; then usageGHT; exit 1; fi

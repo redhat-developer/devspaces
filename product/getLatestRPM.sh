@@ -18,14 +18,13 @@ QUIET=0 # if 0, echo what's happening; if 1, echo only the new version found and
 # collect params
 while [[ "$#" -gt 0 ]]; do
   case $1 in
-  '-r') RPM_PATTERN="$2"; shift 1;; # eg., openshift-clients or helm
-  '-s') SOURCE_DIR="$2"; shift 1;; # dir to search for Dockerfiles
-  '-a') ARCHES="$ARCHES $2"; shift 1;; # use space-separated list of arches, or use multiple -a flags
-  '-u') BASE_URL="$2"; shift 1;; # eg., http://rhsm-pulp.corp.redhat.com/content/dist/layered/rhel8/basearch/rhocp/4.8
-  '-q') QUIET=1; shift 0;;
+  '-r') RPM_PATTERN="$2"; shift 2;; # eg., openshift-clients or helm
+  '-s') SOURCE_DIR="$2"; shift 2;; # dir to search for Dockerfiles
+  '-a') ARCHES="$ARCHES $2"; shift 2;; # use space-separated list of arches, or use multiple -a flags
+  '-u') BASE_URL="$2"; shift 2;; # eg., http://rhsm-pulp.corp.redhat.com/content/dist/layered/rhel8/basearch/rhocp/4.8
+  '-q') QUIET=1; shift 1;;
   '-h') usage;;
   esac
-  shift 1
 done
 
 usage () {

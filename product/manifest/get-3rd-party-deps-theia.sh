@@ -14,10 +14,9 @@ usage ()
 # commandline args
 while [[ "$#" -gt 0 ]]; do
   case $1 in
-    '-b') MIDSTM_BRANCH="$2"; shift 1;;
-    '-v') CSV_VERSION="$2"; shift 1;;
+    '-b') MIDSTM_BRANCH="$2"; shift 2;;
+    '-v') CSV_VERSION="$2"; shift 2;;
   esac
-  shift 1
 done
 
 if [[ ! ${MIDSTM_BRANCH} ]]; then usage; fi

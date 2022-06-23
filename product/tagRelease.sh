@@ -45,15 +45,14 @@ fi
 # commandline args
 while [[ "$#" -gt 0 ]]; do
   case $1 in
-	'--branchfrom') SOURCE_BRANCH="$2"; shift 1;; # this flag will create branches instead of using branches to create tags
-	'-v') CSV_VERSION="$2"; DS_VERSION="${CSV_VERSION%.*}"; shift 1;; # 3.y.0
-	'-b') MIDSTM_BRANCH="$2"; shift 1;;
-	'-ght') GITHUB_TOKEN="$2"; shift 1;;
-	'-pd') pkgs_devel_branch="$2"; shift 1;;
-	'-pduser') pduser="$2"; shift 1;;
-	'--clean') CLEAN="true"; shift 0;; # if set true, delete existing folders and do fresh checkouts
+	'--branchfrom') SOURCE_BRANCH="$2"; shift ;; # this flag will create branches instead of using branches to create tags
+	'-v') CSV_VERSION="$2"; DS_VERSION="${CSV_VERSION%.*}"; shift 2;; # 3.y.0
+	'-b') MIDSTM_BRANCH="$2"; shift 2;;
+	'-ght') GITHUB_TOKEN="$2"; shift 2;;
+	'-pd') pkgs_devel_branch="$2"; shift 2;;
+	'-pduser') pduser="$2"; shift 2;;
+	'--clean') CLEAN="true"; shift 1;; # if set true, delete existing folders and do fresh checkouts
   esac
-  shift 1
 done
 
 if [[ ${CLEAN} == "true" ]]; then

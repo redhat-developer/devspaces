@@ -46,29 +46,12 @@ function parse_arguments() {
     while [[ $# -gt 0 ]]; do
         key="$1"
         case $key in
-            -t|--tag)
-            TAG="$2"
-            shift; shift;
-            ;;
-            -r|--registry)
-            REGISTRY="$2"
-            shift; shift;
-            ;;
-            -o|--organization)
-            ORGANIZATION="$2"
-            shift; shift;
-            ;;
-            --offline)
-            BUILD_FLAGS_ARRAY+=("--embed-vsix:true")
-            shift;
-            ;;
-            --skip-oci-image)
-            SKIP_OCI_IMAGE="true"
-            shift;
-            ;;
-            *)
-            print_usage
-            exit 0
+            -t|--tag) TAG="$2"; shift 2;;
+            -r|--registry) REGISTRY="$2"; shift 2;;
+            -o|--organization) ORGANIZATION="$2"; shift 2;;
+            --offline) BUILD_FLAGS_ARRAY+=("--embed-vsix:true"); shift 1;;
+            --skip-oci-image) SKIP_OCI_IMAGE="true"; shift 1;;
+            *) print_usage; exit 0;;
         esac
     done
 }

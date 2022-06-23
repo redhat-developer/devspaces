@@ -51,23 +51,22 @@ if [[ $# -lt 1 ]]; then usage; exit; fi
 
 while [[ "$#" -gt 0 ]]; do
   case $1 in
-    '-w') WORKDIR="$2"; shift 1;;
-    '-b') MIDSTM_BRANCH="$2"; shift 1;;
-    '-v') CSV_VERSION="$2"; DS_VERSION="${CSV_VERSION%.*}"; shift 1;; # 3.y.0
-    '-dsv') DEVSPACES_VERSION="$2"; shift 1;; # 3.y
-    '-n'|'--no-commit') docommit=0; dopush=0; shift 0;;
-    '-p'|'--no-push') dopush=0; shift 0;;
-    '-prb') PR_BRANCH="$2"; shift 1;;
-    '-o') OPENBROWSERFLAG="-o"; shift 0;;
-    '--remove') REMOVE_DS_VERSION="$2"; shift 1;;
-    '--enable-jobs') ENABLE_DS_JOBS_VERSION="$2"; shift 1;;
-    '--enable-management-jobs') ENABLE_DS_MGMTJOBS_VERSION="$2"; shift 1;;
-    '--disable-jobs') DISABLE_DS_JOBS_VERSION="$2"; shift 1;;
-    '--disable-management-jobs') DISABLE_DS_MGMTJOBS_VERSION="$2"; shift 1;;
+    '-w') WORKDIR="$2"; shift 2;;
+    '-b') MIDSTM_BRANCH="$2"; shift 2;;
+    '-v') CSV_VERSION="$2"; DS_VERSION="${CSV_VERSION%.*}"; shift 2;; # 3.y.0
+    '-dsv') DEVSPACES_VERSION="$2"; shift 2;; # 3.y
+    '-n'|'--no-commit') docommit=0; dopush=0; shift 1;;
+    '-p'|'--no-push') dopush=0; shift 1;;
+    '-prb') PR_BRANCH="$2"; shift 2;;
+    '-o') OPENBROWSERFLAG="-o"; shift 1;;
+    '--remove') REMOVE_DS_VERSION="$2"; shift 2;;
+    '--enable-jobs') ENABLE_DS_JOBS_VERSION="$2"; shift 2;;
+    '--enable-management-jobs') ENABLE_DS_MGMTJOBS_VERSION="$2"; shift 2;;
+    '--disable-jobs') DISABLE_DS_JOBS_VERSION="$2"; shift 2;;
+    '--disable-management-jobs') DISABLE_DS_MGMTJOBS_VERSION="$2"; shift 2;;
     '--help'|'-h') usage; exit;;
-    *) OTHER="${OTHER} $1"; shift 0;;
+    *) OTHER="${OTHER} $1"; shift 1;;
   esac
-  shift 1
 done
 
 if [ "${CSV_VERSION}" == "2.y.0" ]; then usage; fi

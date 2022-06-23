@@ -17,11 +17,10 @@ if [[ $# -lt 1 ]]; then usage; fi
 showContainer=0 # don't show the container, just the tag
 for key in "$@"; do
   case $key in
-    '-h') usage;;
-    '-s') showContainer=1;;
+    '-h') usage; shift 1;;
+    '-s') showContainer=1; shift 1;;
     *) images="${images} $1";;
   esac
-  shift 1
 done
 
 declare -A TAGS

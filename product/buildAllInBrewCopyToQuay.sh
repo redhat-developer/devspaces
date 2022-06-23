@@ -37,13 +37,12 @@ if [[ ${DWNSTM_BRANCH} == "devspaces-3-rhel-8" ]]; then latestNext="--next"; fi
 PHASES="1 2"
 while [[ "$#" -gt 0 ]]; do
   case $1 in
-    '-v') DS_VERSION="$2"; shift 1;;
-    '-b') DWNSTM_BRANCH="$2"; shift 1;;
-    '--phases'|'-p') PHASES="$2"; shift 1;;
-    '-s') SOURCEDIR="$2"; shift 1;;
+    '-v') DS_VERSION="$2"; shift 2;;
+    '-b') DWNSTM_BRANCH="$2"; shift 2;;
+    '-s') SOURCEDIR="$2"; shift 2;;
+    '--phases'|'-p') PHASES="$2"; shift 2;;
     '-h') usage;;
   esac
-  shift 1
 done
 
 if [[ ${DS_VERSION} == "3.y" ]]; then echo "DS version / tag cannot be 3.y; please set a real version like 2.7"; usage; fi

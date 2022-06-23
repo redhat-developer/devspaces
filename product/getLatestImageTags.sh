@@ -130,37 +130,36 @@ REGISTRY="https://registry.redhat.io" # or http://brew-pulp-docker01.web.prod.ex
 CONTAINERS=""
 while [[ "$#" -gt 0 ]]; do
   case $1 in
-    '-v') DS_VERSION="$2"; DWNSTM_BRANCH="devspaces-${DS_VERSION}-rhel-8"; shift 1;;
-    '-b') DWNSTM_BRANCH="$2"; shift 1;; 
-    '-c') CONTAINERS="${CONTAINERS} $2"; shift 1;;
-    '-x') EXCLUDES="$2"; shift 1;;
-    '-q') QUIET=1;;
-    '--verbose') QUIET=0; VERBOSE=1;;
-    '--hide') HIDE_MISSING=1;;
-    '--freshmaker') EXCLUDES_FRESHMAKER="";; # CRW-2499 by default, exclude freshmaker-built images
-    '-a'|'--arches') ARCHES=1;;
-    '-r') REGISTRY="$2"; shift 1;;
-    '--rhec'|'--rhcc') REGISTRY="http://registry.redhat.io";;
-    '--stage') REGISTRY="http://registry.stage.redhat.io";;
-    '--pulp-old') REGISTRY="http://brew-pulp-docker01.web.prod.ext.phx2.redhat.com:8888"; EXCLUDES="latest|candidate|guest|containers";;
-    '-p'|'--osbs') REGISTRY="http://registry-proxy.engineering.redhat.com/rh-osbs"; EXCLUDES="latest|candidate|guest|containers";;
-    '-d'|'--docker') REGISTRY="http://docker.io";;
-    '--quay') REGISTRY="http://quay.io";;
-    '--pushtoquay') PUSHTOQUAY=1; PUSHTOQUAYTAGS="";;
-    --pushtoquay=*) PUSHTOQUAY=1; PUSHTOQUAYTAGS="$(echo "${1#*=}")";;
-    '--pushtoquayforce') PUSHTOQUAYFORCE=1;;
-    '-n') NUMTAGS="$2"; shift 1;;
-    '--dockerfile') SHOWHISTORY=1;;
-    '--tag') BASETAG="$2"; shift 1;;
-    '--candidatetag') candidateTag="$2"; shift 1;;
-    '--nvr')    if [[ ! $CONTAINERS ]]; then CONTAINERS="${DS_CONTAINERS}"; fi; SHOWNVR=1;;
-    '--errata') if [[ ! $CONTAINERS ]]; then CONTAINERS="${DS_CONTAINERS}"; fi; SHOWNVR=1; ERRATA_NUM="$2"; HIDE_MISSING=1; shift 1;;
-    '--tagonly') TAGONLY=1;;
-    '--log') SHOWLOG=1;;
-    '--sort') SORTED=1;;
+    '-v') DS_VERSION="$2"; DWNSTM_BRANCH="devspaces-${DS_VERSION}-rhel-8"; shift 2;;
+    '-b') DWNSTM_BRANCH="$2"; shift 2;; 
+    '-c') CONTAINERS="${CONTAINERS} $2"; shift 2;;
+    '-x') EXCLUDES="$2"; shift 2;;
+    '-q') QUIET=1; shift 1;;
+    '--verbose') QUIET=0; VERBOSE=1; shift 1;;
+    '--hide') HIDE_MISSING=1; shift 1;;
+    '--freshmaker') EXCLUDES_FRESHMAKER=""; shift 1;; # CRW-2499 by default, exclude freshmaker-built images
+    '-a'|'--arches') ARCHES=1; shift 1;;
+    '-r') REGISTRY="$2"; shift 2;;
+    '--rhec'|'--rhcc') REGISTRY="http://registry.redhat.io"; shift 1;;
+    '--stage') REGISTRY="http://registry.stage.redhat.io"; shift 1;;
+    '--pulp-old') REGISTRY="http://brew-pulp-docker01.web.prod.ext.phx2.redhat.com:8888"; EXCLUDES="latest|candidate|guest|containers"; shift 1;;
+    '-p'|'--osbs') REGISTRY="http://registry-proxy.engineering.redhat.com/rh-osbs"; EXCLUDES="latest|candidate|guest|containers"; shift 1;;
+    '-d'|'--docker') REGISTRY="http://docker.io"; shift 1;;
+    '--quay') REGISTRY="http://quay.io"; shift 1;;
+    '--pushtoquay') PUSHTOQUAY=1; PUSHTOQUAYTAGS=""; shift 1;;
+    --pushtoquay=*) PUSHTOQUAY=1; PUSHTOQUAYTAGS="$(echo "${1#*=}")"; shift 1;;
+    '--pushtoquayforce') PUSHTOQUAYFORCE=1; shift 1;
+    '-n') NUMTAGS="$2"; shift 2;;
+    '--dockerfile') SHOWHISTORY=1; shift 1;;
+    '--tag') BASETAG="$2"; shift 2;;
+    '--candidatetag') candidateTag="$2"; shift 2;;
+    '--nvr')    if [[ ! $CONTAINERS ]]; then CONTAINERS="${DS_CONTAINERS}"; fi; SHOWNVR=1; shift 1;;
+    '--errata') if [[ ! $CONTAINERS ]]; then CONTAINERS="${DS_CONTAINERS}"; fi; SHOWNVR=1; ERRATA_NUM="$2"; HIDE_MISSING=1; shift 2;;
+    '--tagonly') TAGONLY=1; shift 1;;
+    '--log') SHOWLOG=1; shift 1;;
+    '--sort') SORTED=1; shift 1;;
     '-h') usage; exit 1;;
   esac
-  shift 1
 done
 
 # null for osbs and others; only need this for quay repo when we might not have a :latest tag (but do have a :next one)

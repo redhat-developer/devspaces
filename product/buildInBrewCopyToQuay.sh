@@ -42,15 +42,14 @@ if [[ ${DWNSTM_BRANCH} == "devspaces-3-rhel-8" ]]; then latestNext="next"; fi
 pullAssets=0
 while [[ "$#" -gt 0 ]]; do
   case $1 in
-    '-v') DS_VERSION="$2"; shift 1;;
-    '-b') DWNSTM_BRANCH="$2"; shift 1;;
-    '--latest') latestNext="latest";;
-    '--next') latestNext="next";;
-    '-p'|'--pull-assets') pullAssets=1; shift 0;;
+    '-v') DS_VERSION="$2"; shift 2;;
+    '-b') DWNSTM_BRANCH="$2"; shift 2;;
+    '--latest') latestNext="latest"; shift 1;;
+    '--next') latestNext="next"; shift 1;;
+    '-p'|'--pull-assets') pullAssets=1; shift 1;;
     '-h') usage;;
     *) IMG=$1;;
   esac
-  shift 1
 done
 
 if [[ ! ${IMG} ]]; then usage; fi

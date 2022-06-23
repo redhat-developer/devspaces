@@ -20,14 +20,13 @@ if [[ $# -lt 1 ]]; then usage; fi
 
 while [[ "$#" -gt 0 ]]; do
   case $1 in
-    '--override-arch') ARCH_OVERRIDE="--override-arch $2"; shift 1;;
-    '--delete-after') DELETE_LOCAL_IMAGE="${DELETE_LOCAL_IMAGE} after";;
-    '--delete-before') DELETE_LOCAL_IMAGE="${DELETE_LOCAL_IMAGE} before";;
-    '--tar-flags'   ) TAR_FLAGS="$2"; shift 1;;
+    '--override-arch') ARCH_OVERRIDE="--override-arch $2"; shift 2;;
+    '--delete-after') DELETE_LOCAL_IMAGE="${DELETE_LOCAL_IMAGE} after"; shift 1;;
+    '--delete-before') DELETE_LOCAL_IMAGE="${DELETE_LOCAL_IMAGE} before"; shift 1;;
+    '--tar-flags'   ) TAR_FLAGS="$2"; shift 2;;
     '-h') usage;;
     *) container="$1";;
   esac
-  shift 1
 done
 # echo "ARCH_OVERRIDE = $ARCH_OVERRIDE"
 # echo "TAR_FLAGS = $TAR_FLAGS"

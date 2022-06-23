@@ -43,33 +43,13 @@ function parse_arguments() {
     while [[ $# -gt 0 ]]; do
         key="$1"
         case $key in
-            -t|--tag)
-            TAG="$2"
-            shift 2
-            ;;
-            -r|--registry)
-            REGISTRY="$2"
-            shift 2
-            ;;
-            -o|--organization)
-            ORGANIZATION="$2"
-            shift 2
-            ;;
-            -c|--container)
-            CONTAINERNAME="$2"
-            shift 2
-            ;;
-            --offline)
-            TARGET="offline-registry"
-            shift
-            ;;
-            --builder)
-            TARGET="builder"
-            shift
-            ;;
-            *)
-            print_usage
-            exit 0
+            -t|--tag) TAG="$2"; shift 2;;
+            -r|--registry) REGISTRY="$2"; shift 2;;
+            -o|--organization) ORGANIZATION="$2"; shift 2;;
+            -c|--container) CONTAINERNAME="$2"; shift 2;;
+            --offline) TARGET="offline-registry"; shift 1;;
+            --builder) TARGET="builder"; shift 1;;
+            *) print_usage; exit 0;;
         esac
     done
 }

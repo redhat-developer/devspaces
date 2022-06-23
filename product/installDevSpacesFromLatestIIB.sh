@@ -138,13 +138,13 @@ preflight() {
 
 while [[ "$#" -gt 0 ]]; do
   case $1 in
-    '-v') DS_VERSION="$2"; shift 1;;
-    '-n') NAMESPACE="$2"; shift 1;;
-    '-o') OLM_NAMESPACE="$2"; shift 1;;
-    '-kp'|'--kubepwd') KUBE_PWD="$2"; shift 1;;
-    '-os'|'--openshift')   OCP_URL="$2"; shift 1;;
-    '--checluster') CHECLUSTER_PATH="$2"; shift 1;;
-    '--no-checluster') CREATE_CHECLUSTER="false";;
+    '-v') DS_VERSION="$2"; shift 2;;
+    '-n') NAMESPACE="$2"; shift 2;;
+    '-o') OLM_NAMESPACE="$2"; shift 2;;
+    '-kp'|'--kubepwd') KUBE_PWD="$2"; shift 2;;
+    '-os'|'--openshift')   OCP_URL="$2"; shift 2;;
+    '--checluster') CHECLUSTER_PATH="$2"; shift 2;;
+    '--no-checluster') CREATE_CHECLUSTER="false"; shift 1;;
     '--dsc') DSC_OPTION="$2";
       if [[ $DSC_OPTION == "" ]] || [[ $DSC_OPTION == "local" ]]; then # can omit "local" and still check PATH for dsc binary
         if [[ ! $(command -v dsc) ]]; then 
@@ -153,13 +153,12 @@ while [[ "$#" -gt 0 ]]; do
         else 
           DSC=$(command -v dsc)
         fi
-      fi; shift 1;;
-    '--delete-before') DELETE_BEFORE="true";;
-    '--get-url') GET_URL="true";;
-    '--no-get-url') GET_URL="false";;
+      fi; shift 2;;
+    '--delete-before') DELETE_BEFORE="true"; shift 1;;
+    '--get-url') GET_URL="true"; shift 1;;
+    '--no-get-url') GET_URL="false"; shift 1;;
     '-h'|'--help') usage; exit 0;;
   esac
-  shift 1
 done
 
 preflight

@@ -18,13 +18,12 @@ DOCKER_IMAGE="registry.redhat.io/devspaces/REG_NAMEregistry-rhel8"
 
 while [[ "$#" -gt 0 ]]; do
   case $1 in
-    '-rn') REG_NAME="$2"; shift 1;;
-    '-s') SOURCE_TEMPLATE="$2"; shift 1;;
-    '-v') DS_VERSION="$2"; shift 1;; # 3.y
-    '-i') DOCKER_IMAGE="$2"; shift 1;; # registry.redhat.io/devspaces/*registry-rhel8
-    '--help'|'-h') usage; shift 1;;
+    '-rn') REG_NAME="$2"; shift 2;;
+    '-s') SOURCE_TEMPLATE="$2"; shift 2;;
+    '-v') DS_VERSION="$2"; shift 2;; # 3.y
+    '-i') DOCKER_IMAGE="$2"; shift 2;; # registry.redhat.io/devspaces/*registry-rhel8
+    '--help'|'-h') usage;;
   esac
-  shift 1
 done
 
 if [[ ${DOCKER_IMAGE} == *"REG_NAMEregistry"* ]] && [[ ${REG_NAME} ]]; then

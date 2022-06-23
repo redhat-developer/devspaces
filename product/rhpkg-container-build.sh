@@ -21,14 +21,13 @@ LOGFILE=${WORKSPACE}/get-sources.log.txt
 
 while [[ "$#" -gt 0 ]]; do
   case $1 in
-  '-v') DS_VERSION="$1"; shift 0;;
-  '-s') SOURCEDIR="$2"; SOURCEDIR="${SOURCEDIR%/}"; shift 1;;
-  '-l') LOGFILE="$2"; shift 1;;
-  '-n'|'--nobuild') doRhpkgContainerBuild=0; shift 0;;
-  '--noclean') CLEANUP=0; shift 0;;
-  '--verbose') VERBOSE=1; shift 0;;
+  '-v') DS_VERSION="$1"; shift 1;;
+  '-s') SOURCEDIR="$2"; SOURCEDIR="${SOURCEDIR%/}"; shift 2;;
+  '-l') LOGFILE="$2"; shift 2;;
+  '-n'|'--nobuild') doRhpkgContainerBuild=0; shift 1;;
+  '--noclean') CLEANUP=0; shift 1;;
+  '--verbose') VERBOSE=1; shift 1;;
   esac
-  shift 1
 done
 
 if [[ ! -d ${SOURCEDIR} ]] && [[ doRhpkgContainerBuild -eq 1 ]]; then usage; fi

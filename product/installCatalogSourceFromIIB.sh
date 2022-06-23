@@ -58,16 +58,15 @@ EOF
 
 while [[ "$#" -gt 0 ]]; do
   case $1 in
-    '--iib') UPSTREAM_IIB="$2"; shift 1;;
-    '--install-operator') TO_INSTALL="$2"; shift 1;;
-    '--channel') OLM_CHANNEL="$2"; shift 1;;
-    '--manual-updates') INSTALL_PLAN_APPROVAL="Manual";;
-    '--disable-default-sources') DISABLE_CATALOGSOURCES="true";;
-    '-n'|'--namespace') NAMESPACE="$2"; shift 1;;
+    '--iib') UPSTREAM_IIB="$2"; shift 2;;
+    '--install-operator') TO_INSTALL="$2"; shift 2;;
+    '--channel') OLM_CHANNEL="$2"; shift 2;;
+    '--manual-updates') INSTALL_PLAN_APPROVAL="Manual"; shift 1;;
+    '--disable-default-sources') DISABLE_CATALOGSOURCES="true"; shift 1;;
+    '-n'|'--namespace') NAMESPACE="$2"; shift 2;;
     '-h'|'--help') usage; exit 0;;
     *) echo "[ERROR] Unknown parameter is used: $1."; usage; exit 1;;
   esac
-  shift 1
 done
 
 # Check that we have IIB image and use Brew mirror

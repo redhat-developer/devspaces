@@ -13,10 +13,9 @@ Example: $0 -b devspaces-3-rhel-8 -v 3.yy
 # commandline args
 while [[ "$#" -gt 0 ]]; do
   case $1 in
-    '-b') MIDSTM_BRANCH="$2"; shift 1;; # this flag will create branches instead of using branches to create tags
-    '-v') CSV_VERSION="$2"; shift 1;; # 3.y.0
+    '-b') MIDSTM_BRANCH="$2"; shift 2;; # this flag will create branches instead of using branches to create tags
+    '-v') CSV_VERSION="$2"; shift 2;; # 3.y.0
   esac
-  shift 1
 done
 
 if [[ ! $CSV_VERSION ]]; then usage; fi

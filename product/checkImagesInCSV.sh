@@ -60,16 +60,15 @@ if [[ $# -lt 1 ]]; then usage; exit; fi
 
 while [[ "$#" -gt 0 ]]; do
   case $1 in
-    '--crw'|'--ds'|'--dwo'|'--wto') GLI_FLAG="$1"; shift 0;;
-    '-v') PROD_VERSION="$2"; shift 1;;
-    '-o') OCP_VERSION="$2"; shift 1;;
-    '-y'|'--quay') QUAY=1; shift 0;;
-    '-i'|'--filter') REGEX_FILTER="$2"; shift 1;;
-    '-q') QUIET=1; shift 0;;
-    '-qq') QUIET=2; shift 0;;
-    *) IMAGES="${IMAGES} $1"; shift 0;;
+    '--crw'|'--ds'|'--dwo'|'--wto') GLI_FLAG="$1"; shift 1;;
+    '-v') PROD_VERSION="$2"; shift 2;;
+    '-o') OCP_VERSION="$2"; shift 2;;
+    '-y'|'--quay') QUAY=1; shift 1;;
+    '-i'|'--filter') REGEX_FILTER="$2"; shift 2;;
+    '-q') QUIET=1; shift 1;;
+    '-qq') QUIET=2; shift 1;;
+    *) IMAGES="${IMAGES} $1"; shift 1;;
   esac
-  shift 1
 done
 
 if [[ $PROD_VERSION ]] && [[ $OCP_VERSION ]] && [[ ! $IMAGES ]]; then # compute latest IIB -> bundle

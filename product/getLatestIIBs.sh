@@ -109,20 +109,19 @@ dsDefaults
 
 while [[ "$#" -gt 0 ]]; do
   case $1 in
-    '-v') PROD_VERSION="$2"; shift 1;;
-    '-o') OCP_VERSION="$2"; shift 1;;
-    '-p') PROD_NAME="$2"; shift 1;;
-    '-c') CSVs="$2"; shift 1;;
-    '-i') IMAGE_PREFIX="$2"; shift 1;;
-    '--verbose') VERBOSE=1; QUIET="none"; shift 0;;
-    '-q'|'-qi') VERBOSE=0; QUIET="index"; shift 0;;
-    '-qb') VERBOSE=0; QUIET="bundle"; shift 0;;
-    '--crw') crwDefaults;;
-    '--ds')   dsDefaults;;
-    '--dwo') dwoDefaults;;
-    '--wto') wtoDefaults;;
+    '-v') PROD_VERSION="$2"; shift 2;;
+    '-o') OCP_VERSION="$2"; shift 2;;
+    '-p') PROD_NAME="$2"; shift 2;;
+    '-c') CSVs="$2"; shift 2;;
+    '-i') IMAGE_PREFIX="$2"; shift 2;;
+    '--verbose') VERBOSE=1; QUIET="none"; shift 1;;
+    '-q'|'-qi') VERBOSE=0; QUIET="index"; shift 1;;
+    '-qb') VERBOSE=0; QUIET="bundle"; shift 1;;
+    '--crw') crwDefaults; shift 1;;
+    '--ds')   dsDefaults; shift 1;;
+    '--dwo') dwoDefaults; shift 1;;
+    '--wto') wtoDefaults; shift 1;;
   esac
-  shift 1
 done
 
 if [[ -z ${PROD_VERSION} ]]; then usage; exit 1; fi

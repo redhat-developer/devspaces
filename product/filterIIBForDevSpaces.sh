@@ -39,15 +39,14 @@ EOF
 
 while [[ "$#" -gt 0 ]]; do
   case $1 in
-    '-s'|'--iib') sourceIndexImage="$2"; shift 1;;
-    '-t'|'--image') targetIndexImage="$2"; shift 1;;
-    '-p'|'--push') PUSH="true";;
-    '--include-crw') INCLUDE_CRW="true";;
-    '--no-temp-dir') USE_TMP="false";;
+    '-s'|'--iib') sourceIndexImage="$2"; shift 2;;
+    '-t'|'--image') targetIndexImage="$2"; shift 2;;
+    '-p'|'--push') PUSH="true"; shift 1;;
+    '--include-crw') INCLUDE_CRW="true"; shift 1;;
+    '--no-temp-dir') USE_TMP="false"; shift 1;;
     '-h'|'--help') usage; exit 0;;
     *) echo "Unknown parameter used: $1."; usage; exit 1;;
   esac
-  shift 1
 done
 
 PODMAN=$(command -v podman)
