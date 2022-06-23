@@ -20,7 +20,7 @@ while [[ "$#" -gt 0 ]]; do
   case $1 in
     '-rn') REG_NAME="$2"; shift 1;;
     '-s') SOURCE_TEMPLATE="$2"; shift 1;;
-    '-t') DS_VERSION="$2"; shift 1;; # 3.y
+    '-v') DS_VERSION="$2"; shift 1;; # 3.y
     '-i') DOCKER_IMAGE="$2"; shift 1;; # registry.redhat.io/devspaces/*registry-rhel8
     '--help'|'-h') usage; shift 1;;
   esac
@@ -33,12 +33,12 @@ fi
 
 usage () {
 	echo
-    echo "Usage:     ${0##*/} -rn REG_NAME -s /path/to/devspaces-REG_NAME-registry.yaml -i DOCKER_IMAGE -t 3.y"
+    echo "Usage:     ${0##*/} -rn REG_NAME -s /path/to/devspaces-REG_NAME-registry.yaml -i DOCKER_IMAGE -v 3.y"
     echo "Example:   ${0##*/} -rn devfile -s /path/to/deploy/openshift/devspaces-devfile-registry.yaml"
     echo "Example:   ${0##*/} -rn plugin -s /path/to/deploy/openshift/devspaces-plugin-registry.yaml"
     echo "Options:
     -rn Red Hat OpenShift Dev Spaces registry name (plugin or devfile); must be set
-    -t Red Hat OpenShift Dev Spaces ${REG_NAME} registry image tag (compute from MIDSTM_BRANCH if not set)
+    -v Red Hat OpenShift Dev Spaces ${REG_NAME} registry image tag (also DS_VERSION, compute from MIDSTM_BRANCH if not set)
     -i Red Hat OpenShift Dev Spaces ${REG_NAME} registry image (default to ${DOCKER_IMAGE})
     --help, -h            help
       "
@@ -68,7 +68,7 @@ if [[ ! ${DS_VERSION} ]]; then
   usage
 fi
 DEFAULT_TAG=${DS_VERSION}
-[[ ${DEFAULT_TAG} == "2" ]] && DEFAULT_TAG="next"
+[[ ${DEFAULT_TAG} == "3" ]] && DEFAULT_TAG="next"
 
 set -e
 

@@ -86,8 +86,8 @@ RUN sed -i /etc/httpd/conf/httpd.conf \
     chmod a+rwX /etc/httpd/conf /run/httpd /etc/httpd/logs/
 STOPSIGNAL SIGWINCH
 
-ARG DS_BRANCH=devspaces-3-rhel-8
-ENV DS_BRANCH=${DS_BRANCH}
+ARG MIDSTM_BRANCH=devspaces-3-rhel-8
+ENV MIDSTM_BRANCH=${MIDSTM_BRANCH}
 
 WORKDIR /var/www/html
 

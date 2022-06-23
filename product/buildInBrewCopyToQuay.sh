@@ -25,8 +25,8 @@ usage() {
 Build a container in Brew with rhpkg container-build (not get-sources*.sh), 
 watch the log, and if successful, copy that container to quay.
 
-Usage: $0 image-name [-b ${DWNSTM_BRANCH}] [-t ${DS_VERSION}] [--latest] [--next]
-Example: $0 configbump -t ${DS_VERSION}
+Usage: $0 image-name [-b ${DWNSTM_BRANCH}] [-v ${DS_VERSION}] [--latest] [--next]
+Example: $0 configbump -v ${DS_VERSION}
 
 Options: 
     --next             in addition to the :${DS_VERSION} tag, also update :next tag
@@ -42,7 +42,7 @@ if [[ ${DWNSTM_BRANCH} == "devspaces-3-rhel-8" ]]; then latestNext="next"; fi
 pullAssets=0
 while [[ "$#" -gt 0 ]]; do
   case $1 in
-    '-t') DS_VERSION="$2"; shift 1;;
+    '-v') DS_VERSION="$2"; shift 1;;
     '-b') DWNSTM_BRANCH="$2"; shift 1;;
     '--latest') latestNext="latest";;
     '--next') latestNext="next";;

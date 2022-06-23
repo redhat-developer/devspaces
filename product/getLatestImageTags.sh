@@ -130,12 +130,12 @@ REGISTRY="https://registry.redhat.io" # or http://brew-pulp-docker01.web.prod.ex
 CONTAINERS=""
 while [[ "$#" -gt 0 ]]; do
   case $1 in
-    '-j') DS_VERSION="$2"; DWNSTM_BRANCH="devspaces-${DS_VERSION}-rhel-8"; shift 1;;
+    '-v') DS_VERSION="$2"; DWNSTM_BRANCH="devspaces-${DS_VERSION}-rhel-8"; shift 1;;
     '-b') DWNSTM_BRANCH="$2"; shift 1;; 
     '-c') CONTAINERS="${CONTAINERS} $2"; shift 1;;
     '-x') EXCLUDES="$2"; shift 1;;
     '-q') QUIET=1;;
-    '-v') QUIET=0; VERBOSE=1;;
+    '--verbose') QUIET=0; VERBOSE=1;;
     '--hide') HIDE_MISSING=1;;
     '--freshmaker') EXCLUDES_FRESHMAKER="";; # CRW-2499 by default, exclude freshmaker-built images
     '-a'|'--arches') ARCHES=1;;

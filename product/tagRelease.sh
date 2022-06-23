@@ -12,11 +12,11 @@
 
 # defaults
 # try to compute branches from currently checked out branch; else fall back to hard coded value
-TARGET_BRANCH="$(git rev-parse --abbrev-ref HEAD 2>/dev/null || true)"
-if [[ $TARGET_BRANCH != "devspaces-3."*"-rhel-8" ]]; then
-	TARGET_BRANCH="devspaces-3-rhel-8"
+MIDSTM_BRANCH="$(git rev-parse --abbrev-ref HEAD 2>/dev/null || true)"
+if [[ $MIDSTM_BRANCH != "devspaces-3."*"-rhel-8" ]]; then
+	MIDSTM_BRANCH="devspaces-3-rhel-8"
 fi
-pkgs_devel_branch=${TARGET_BRANCH}
+pkgs_devel_branch=${MIDSTM_BRANCH}
 
 pduser=crw-build
 
@@ -30,14 +30,14 @@ CLEAN="false" #  if set true, delete existing folders and do fresh checkouts
 if [[ $# -lt 4 ]]; then
 	echo "
 To create tags (and push updated CSV content into operator-bundle repo):
-  $0 -v CSV_VERSION -t DS_VERSION -gh DS_GH_BRANCH -ghtoken GITHUB_TOKEN -pd PKGS_DEVEL_BRANCH -pduser kerberos_user
+  $0 -v CSV_VERSION -b DS_BRANCH -ght GITHUB_TOKEN -pd PKGS_DEVEL_BRANCH -pduser kerberos_user
 Example: 
-  $0 -v 3.y.0 -t 3.y -gh ${TARGET_BRANCH} -ghtoken \$GITHUB_TOKEN -pd ${pkgs_devel_branch} -pduser $pduser
+  $0 -v 3.y.0 -b ${MIDSTM_BRANCH} -ght \$GITHUB_TOKEN -pd ${pkgs_devel_branch} -pduser $pduser
 
 To create branches:
-  $0 -t DS_VERSION --branchfrom SOURCE_GH_BRANCH -gh TARGET_GH_BRANCH -ghtoken GITHUB_TOKEN
+  $0 -v CSV_VERSION --branchfrom SOURCE_GH_BRANCH -b TARGET_GH_BRANCH -ght GITHUB_TOKEN
 Example: 
-  $0 -t DS_VERSION --branchfrom devspaces-3-rhel-8 -gh ${TARGET_BRANCH} -ghtoken \$GITHUB_TOKEN
+  $0 -v CSV_VERSION --branchfrom devspaces-3-rhel-8 -b ${MIDSTM_BRANCH} -ght \$GITHUB_TOKEN
 "
 	exit 1
 fi
@@ -46,20 +46,15 @@ fi
 while [[ "$#" -gt 0 ]]; do
   case $1 in
 	'--branchfrom') SOURCE_BRANCH="$2"; shift 1;; # this flag will create branches instead of using branches to create tags
-	'-v') CSV_VERSION="$2"; shift 1;; # 3.y.0
-	'-t') DS_VERSION="$2"; shift 1;; # 3.y # used to get released bundle container's CSV contents
-	'-gh') TARGET_BRANCH="$2"; shift 1;;
-	'-ghtoken') GITHUB_TOKEN="$2"; shift 1;;
+	'-v') CSV_VERSION="$2"; DS_VERSION="${CSV_VERSION%.*}"; shift 1;; # 3.y.0
+	'-b') MIDSTM_BRANCH="$2"; shift 1;;
+	'-ght') GITHUB_TOKEN="$2"; shift 1;;
 	'-pd') pkgs_devel_branch="$2"; shift 1;;
 	'-pduser') pduser="$2"; shift 1;;
 	'--clean') CLEAN="true"; shift 0;; # if set true, delete existing folders and do fresh checkouts
   esac
   shift 1
 done
-
-if [[ ! ${DS_VERSION} ]]; then
-  DS_VERSION=${CSV_VERSION%.*} # given 3.y.0, want 3.y
-fi
 
 if [[ ${CLEAN} == "true" ]]; then
 	rm -fr /tmp/tmp-checkouts || true
@@ -97,13 +92,13 @@ toggleQuayRHECReferences() {
 	YAML_ROOT="dependencies/"
 	# replace DS meta.yaml files with links to current version of devfile v2
 	for yaml in $(find ${YAML_ROOT} -name "*.yaml"); do
-		if [[ $TARGET_BRANCH == "devspaces-3-rhel-8" ]]; then
+		if [[ $MIDSTM_BRANCH == "devspaces-3-rhel-8" ]]; then
 			sed -r -i $yaml -e "s#registry.redhat.io/devspaces/#quay.io/devspaces/#g"
 		else
 			sed -r -i $yaml -e "s#quay.io/devspaces/#registry.redhat.io/devspaces/#g"
 		fi
 	done
-	if [[ $TARGET_BRANCH == "devspaces-3-rhel-8" ]]; then
+	if [[ $MIDSTM_BRANCH == "devspaces-3-rhel-8" ]]; then
 		git commit -s -m "chore(yaml) set image refs to quay.io/devspaces/" $YAML_ROOT || echo ""
 	else
 		git commit -s -m "chore(yaml) set image refs to registry.redhat.io/devspaces/" $YAML_ROOT || echo ""
@@ -117,10 +112,10 @@ updateLinksToDevfiles() {
 	# replace DS meta.yaml files with links to current version of devfile v2
 	for meta in $(find ${YAML_ROOT} -name "meta.yaml"); do
 	   sed -r -i "${meta}" \
-		   -e "s|/tree/devfilev2|/tree/${TARGET_BRANCH}|g" \
-		   -e "s|/tree/devspaces-[0-9.]-rhel-8|/tree/${TARGET_BRANCH}|g"
+		   -e "s|/tree/devfilev2|/tree/${MIDSTM_BRANCH}|g" \
+		   -e "s|/tree/devspaces-[0-9.]-rhel-8|/tree/${MIDSTM_BRANCH}|g"
 	done
-	git commit -s -m "chore(meta) link v2 devfiles to /tree/${TARGET_BRANCH}" $YAML_ROOT || echo ""
+	git commit -s -m "chore(meta) link v2 devfiles to /tree/${MIDSTM_BRANCH}" $YAML_ROOT || echo ""
 }
 
 # for the sample projects ONLY, commit changes to the devfile so it contains the correct image and tag
@@ -129,14 +124,14 @@ updateSampleDevfileReferences () {
 	if [[ $DS_VERSION ]]; then
 		DS_TAG="$DS_VERSION"
 	else
-		DS_TAG="${TARGET_BRANCH//-rhel-8}"; DS_TAG="${DS_TAG//devspaces-}"
+		DS_TAG="${MIDSTM_BRANCH//-rhel-8}"; DS_TAG="${DS_TAG//devspaces-}"
 	fi
 	# echo "[DEBUG] update $devfile with DS_TAG = $DS_TAG"
 	sed -r -i $devfile \
 		-e "s#devspaces/udi-[a-z0-9:@.-]+#devspaces/udi-rhel8:${DS_TAG}#g"
 
 	# for 3.x builds, point image refs at quay instead of RHEC
-	if [[ $TARGET_BRANCH == "devspaces-3-rhel-8" ]]; then
+	if [[ $MIDSTM_BRANCH == "devspaces-3-rhel-8" ]]; then
 		sed -r -i $devfile -e "s#registry.redhat.io/devspaces/#quay.io/devspaces/#g"
 		git commit -s -m "chore(devfile) link v2 devfile to :${DS_TAG}; set image refs to quay.io/devspaces/" "$devfile" || echo ""
 	else
@@ -151,10 +146,10 @@ pushBranchAndOrTagGH () {
 	org="$2"
 	echo; echo "== $d =="
 	# if source_branch defined and target branch doesn't exist yet, check out the source branch
-	if [[ ${SOURCE_BRANCH} ]] && [[ $(git ls-remote --heads https://github.com/${org}/${d} ${TARGET_BRANCH}) == "" ]]; then
+	if [[ ${SOURCE_BRANCH} ]] && [[ $(git ls-remote --heads https://github.com/${org}/${d} ${MIDSTM_BRANCH}) == "" ]]; then
 		clone_branch=${SOURCE_BRANCH}
 	else # if source branch not set (tagging operation) or target branch already exists
-		clone_branch=${TARGET_BRANCH}
+		clone_branch=${MIDSTM_BRANCH}
 	fi
 	if [[ ! -d /tmp/tmp-checkouts/projects_${d} ]]; then
 		git clone -q --depth 1 -b ${clone_branch} https://github.com/${org}/${d} projects_${d}
@@ -173,7 +168,7 @@ pushBranchAndOrTagGH () {
 	pushd /tmp/tmp-checkouts/projects_${d} >/dev/null || exit 1
 	if [[ ${SOURCE_BRANCH} ]]; then # push a new branch (or no-op if exists)
 		# create a branch or use existing, should fail if we can't do either
-		git branch ${TARGET_BRANCH} || git checkout ${TARGET_BRANCH}
+		git branch ${MIDSTM_BRANCH} || git checkout ${MIDSTM_BRANCH}
 
 		# for the devspaces main repo, update devfiles to point to the correct tag/branch
 		if [[ $d == "devspaces" ]]; then
@@ -186,8 +181,8 @@ pushBranchAndOrTagGH () {
 			updateSampleDevfileReferences
 		fi
 
-		git pull origin ${TARGET_BRANCH} || true
-		git push origin ${TARGET_BRANCH} || true
+		git pull origin ${MIDSTM_BRANCH} || true
+		git push origin ${MIDSTM_BRANCH} || true
 	fi
 	if [[ $CSV_VERSION ]]; then # push a new tag (or no-op if exists)
 		git tag ${CSV_VERSION} || true

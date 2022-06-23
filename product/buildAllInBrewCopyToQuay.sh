@@ -25,8 +25,8 @@ usage() {
 Build all DS containers in Brew with rhpkg container-build (not get-sources*.sh), 
 watch the log, and if successful, copy that container to quay.
 
-Usage: $0 [-b ${DWNSTM_BRANCH}] [-t ${DS_VERSION}] --sources [root dir where projects are checked out; if not set, generate /tmp/tmp.* dir]
-Example: $0 -t ${DS_VERSION} --sources /path/to/pkgs.devel/projects/
+Usage: $0 [-b ${DWNSTM_BRANCH}] [-v ${DS_VERSION}] -s [root dir where projects are checked out; if not set, generate /tmp/tmp.* dir]
+Example: $0 -v ${DS_VERSION} -s /path/to/pkgs.devel/projects/
 "
   exit
 }
@@ -37,10 +37,10 @@ if [[ ${DWNSTM_BRANCH} == "devspaces-3-rhel-8" ]]; then latestNext="--next"; fi
 PHASES="1 2"
 while [[ "$#" -gt 0 ]]; do
   case $1 in
-    '-t') DS_VERSION="$2"; shift 1;;
+    '-v') DS_VERSION="$2"; shift 1;;
     '-b') DWNSTM_BRANCH="$2"; shift 1;;
     '--phases'|'-p') PHASES="$2"; shift 1;;
-    '--sources'|'-s') SOURCEDIR="$2"; shift 1;;
+    '-s') SOURCEDIR="$2"; shift 1;;
     '-h') usage;;
   esac
   shift 1
@@ -68,7 +68,7 @@ doBuild () {
             git checkout ${DWNSTM_BRANCH} || exit 1
             git pull
             # build
-            "${SCRIPTPATH}"/buildInBrewCopyToQuay.sh ${projname} ${latestNext} -t ${DS_VERSION} &
+            "${SCRIPTPATH}"/buildInBrewCopyToQuay.sh ${projname} ${latestNext} -v ${DS_VERSION} &
         popd >/dev/null || exit 1
     done
     wait

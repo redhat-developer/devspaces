@@ -4,9 +4,9 @@
 # 2. collect log information to report on build status
 
 usage () {
-  echo "Usage:   $0 JOB_BRANCH -s [SOURCEDIR] [--nobuild] [-l /path/to/log.txt] [-v (verbose)] [--noclean]"
+  echo "Usage:   $0 -v DS_VERSION -s [SOURCEDIR] [--nobuild] [-l /path/to/log.txt] [--verbose] [--noclean]"
   echo "Example (run build and parse log): $0 2.9 -s /path/to/sources"
-  echo "Example (parse an existing log):   $0 2.9 -l /tmp/consoleText --nobuild --noclean -v"
+  echo "Example (parse an existing log):   $0 2.9 -l /tmp/consoleText --nobuild --noclean --verbose"
   exit 1
 }
 
@@ -21,12 +21,12 @@ LOGFILE=${WORKSPACE}/get-sources.log.txt
 
 while [[ "$#" -gt 0 ]]; do
   case $1 in
-  '-n'|'--nobuild') doRhpkgContainerBuild=0; shift 0;;
-  '--noclean') CLEANUP=0; shift 0;;
+  '-v') DS_VERSION="$1"; shift 0;;
   '-s') SOURCEDIR="$2"; SOURCEDIR="${SOURCEDIR%/}"; shift 1;;
   '-l') LOGFILE="$2"; shift 1;;
-  '-v') VERBOSE=1; shift 0;;
-    *) JOB_BRANCH="$1"; shift 0;;
+  '-n'|'--nobuild') doRhpkgContainerBuild=0; shift 0;;
+  '--noclean') CLEANUP=0; shift 0;;
+  '--verbose') VERBOSE=1; shift 0;;
   esac
   shift 1
 done
@@ -39,15 +39,15 @@ export KRB5CCNAME=/var/tmp/crw-build_ccache
 
 if [[ ${doRhpkgContainerBuild} -eq 1 ]]; then
   # if not set, compute from current branch
-  if [[ ! ${JOB_BRANCH} ]]; then 
-    JOB_BRANCH=$(git rev-parse --abbrev-ref HEAD || true); JOB_BRANCH=${JOB_BRANCH//devspaces-}; JOB_BRANCH=${JOB_BRANCH%%-rhel*}
-    if [[ ${JOB_BRANCH} == "3" ]]; then JOB_BRANCH="3.x"; fi
+  if [[ ! ${DS_VERSION} ]]; then 
+    DS_VERSION=$(git rev-parse --abbrev-ref HEAD || true); DS_VERSION=${DS_VERSION//devspaces-}; DS_VERSION=${DS_VERSION%%-rhel*}
+    if [[ ${DS_VERSION} == "3" ]]; then DS_VERSION="3.x"; fi
   fi
   pushd ${SOURCEDIR} >/dev/null
     # REQUIRE: rhpkg
-    # get latest from Jenkins, then trigger a new OSBS build. Note: do not wrap JOB_BRANCH in quotes in case it includes trailing \n
+    # get latest from Jenkins, then trigger a new OSBS build. Note: do not wrap DS_VERSION in quotes in case it includes trailing \n
     if [[ -f get-sources.sh ]]; then 
-      ./get-sources.sh --force-build ${JOB_BRANCH} | tee "${LOGFILE}"
+      ./get-sources.sh --force-build ${DS_VERSION} | tee "${LOGFILE}"
     else 
       echo "[ERROR] Could not run get-sources.sh!"; exit 1
     fi

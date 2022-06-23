@@ -17,34 +17,33 @@ OPENBROWSERFLAG="" # if a PR is generated, open it in a browser
 docommit=1 # by default DO commit the change
 dopush=1 # by default DO push the change
 WORKDIR="$(pwd)"
-REMOVE_DEVSPACES_VERSION=""
-ENABLE_DEVSPACES_JOBS_VERSION=""
-ENABLE_DEVSPACES_MGMTJOBS_VERSION=""
-DISABLE_DEVSPACES_JOBS_VERSION=""
-DISABLE_DEVSPACES_MGMTJOBS_VERSION=""
-BRANCH="devspaces-3-rhel-8"
+REMOVE_DS_VERSION=""
+ENABLE_DS_JOBS_VERSION=""
+ENABLE_DS_MGMTJOBS_VERSION=""
+DISABLE_DS_JOBS_VERSION=""
+DISABLE_DS_MGMTJOBS_VERSION=""
+MIDSTM_BRANCH="devspaces-3-rhel-8"
 
 usage () {
   echo "
-Usage:   $0 -v [DEVSPACES CSV_VERSION] [-t DEVSPACES_VERSION]
+Usage:   $0 -v [DS CSV_VERSION]
 Example: $0 -v 3.yy.0 # use CSV version
-Example: $0 -t 3.yy   # use tag version
 
 Options:
   --help, -h              help
   -w WORKDIR              work in a differnt dir than $(pwd)
-  -b BRANCH               commit to a different branch than $BRANCH
-  -t DEVSPACES_VERSION          use a specific tag; by default, compute from CSV_VERSION
-  --no-commit, -n         do not commit to BRANCH
-  --no-push, -p           do not push to BRANCH
+  -b MIDSTM_BRANCH               commit to a different branch than $MIDSTM_BRANCH
+  -dsv DS_VERSION          use a specific tag; by default, compute from CSV_VERSION
+  --no-commit, -n         do not commit to MIDSTM_BRANCH
+  --no-push, -p           do not push to MIDSTM_BRANCH
   -prb                    set a PR_BRANCH; default: pr-update-version-and-registry-tags-(timestamp)
   -o                      open browser if PR generated
   
-  --remove [DEVSPACES_VERSION]                  remove data for [DEVSPACES_VERSION] (Example: for .Version = 3.yy, delete 3.yy-2)
-  --enable-jobs [DEVSPACES_VERSION]             enable [DEVSPACES_VERSION] jobs in job-config.json, but leave bundle + management jobs alone
-  --enable-management-jobs [DEVSPACES_VERSION]  enable ALL [DEVSPACES_VERSION] jobs in job-config.json
-  --disable-jobs [DEVSPACES_VERSION]            disable [DEVSPACES_VERSION] jobs in job-config.json, but leave bundle + management jobs alone
-  --disable-management-jobs [DEVSPACES_VERSION] disable ALL [DEVSPACES_VERSION] jobs in job-config.json (implement code freeze)
+  --remove [DS_VERSION]                  remove data for [DS_VERSION] (Example: for .Version = 3.yy, delete 3.yy-2)
+  --enable-jobs [DS_VERSION]             enable [DS_VERSION] jobs in job-config.json, but leave bundle + management jobs alone
+  --enable-management-jobs [DS_VERSION]  enable ALL [DS_VERSION] jobs in job-config.json
+  --disable-jobs [DS_VERSION]            disable [DS_VERSION] jobs in job-config.json, but leave bundle + management jobs alone
+  --disable-management-jobs [DS_VERSION] disable ALL [DS_VERSION] jobs in job-config.json (implement code freeze)
   "
 }
 
@@ -53,27 +52,25 @@ if [[ $# -lt 1 ]]; then usage; exit; fi
 while [[ "$#" -gt 0 ]]; do
   case $1 in
     '-w') WORKDIR="$2"; shift 1;;
-    '-b') BRANCH="$2"; shift 1;;
-    '-v') CSV_VERSION="$2"; shift 1;; # 3.y.0
-    '-t') DEVSPACES_VERSION="$2"; shift 1;; # 3.y
+    '-b') MIDSTM_BRANCH="$2"; shift 1;;
+    '-v') CSV_VERSION="$2"; DS_VERSION="${CSV_VERSION%.*}"; shift 1;; # 3.y.0
+    '-dsv') DEVSPACES_VERSION="$2"; shift 1;; # 3.y
     '-n'|'--no-commit') docommit=0; dopush=0; shift 0;;
     '-p'|'--no-push') dopush=0; shift 0;;
     '-prb') PR_BRANCH="$2"; shift 1;;
     '-o') OPENBROWSERFLAG="-o"; shift 0;;
-    '--remove') REMOVE_DEVSPACES_VERSION="$2"; shift 1;;
-    '--enable-jobs') ENABLE_DEVSPACES_JOBS_VERSION="$2"; shift 1;;
-    '--enable-management-jobs') ENABLE_DEVSPACES_MGMTJOBS_VERSION="$2"; shift 1;;
-    '--disable-jobs') DISABLE_DEVSPACES_JOBS_VERSION="$2"; shift 1;;
-    '--disable-management-jobs') DISABLE_DEVSPACES_MGMTJOBS_VERSION="$2"; shift 1;;
+    '--remove') REMOVE_DS_VERSION="$2"; shift 1;;
+    '--enable-jobs') ENABLE_DS_JOBS_VERSION="$2"; shift 1;;
+    '--enable-management-jobs') ENABLE_DS_MGMTJOBS_VERSION="$2"; shift 1;;
+    '--disable-jobs') DISABLE_DS_JOBS_VERSION="$2"; shift 1;;
+    '--disable-management-jobs') DISABLE_DS_MGMTJOBS_VERSION="$2"; shift 1;;
     '--help'|'-h') usage; exit;;
     *) OTHER="${OTHER} $1"; shift 0;;
   esac
   shift 1
 done
 
-if [[ ! ${DEVSPACES_VERSION} ]]; then
-  DEVSPACES_VERSION=${CSV_VERSION%.*} # given 3.y.0, want 3.y
-fi
+if [ "${CSV_VERSION}" == "2.y.0" ]; then usage; fi
 
 COPYRIGHT="#
 # Copyright (c) 2018-$(date +%Y) Red Hat, Inc.
@@ -125,14 +122,14 @@ computeLatestCSV() {
   echo "Found CSV_VERSION_PREV = ${CSV_VERSION_PREV}"
 
   # update CSVs["${image}"].$version.CSV_VERSION_PREV
-  replaceField "${WORKDIR}/dependencies/job-config.json" "(.CSVs[\"${image}\"][\"${DEVSPACES_VERSION}\"].CSV_VERSION_PREV)" "\"${CSV_VERSION_PREV}\""
+  replaceField "${WORKDIR}/dependencies/job-config.json" "(.CSVs[\"${image}\"][\"${DS_VERSION}\"].CSV_VERSION_PREV)" "\"${CSV_VERSION_PREV}\""
   replaceField "${WORKDIR}/dependencies/job-config.json" "(.CSVs[\"${image}\"][\"3.x\"].CSV_VERSION_PREV)" "\"${CSV_VERSION_PREV}\""
 }
 
-# for a given DEVSPACES version, compute the equivalent Che versions that could be compatible 
+# for a given DS version, compute the equivalent Che versions that could be compatible 
 computeLatestPackageVersion() {
     found=0
-    BASE_VERSION="$1" # DEVSPACES version to use for computations
+    BASE_VERSION="$1" # DS version to use for computations
     packageName="$2"
     if [[ $BASE_VERSION == "2.15" ]]; then 
       # old mapping for CRW 2.15 = Che 7.42
@@ -164,35 +161,35 @@ computeLatestPackageVersion() {
 COMMIT_MSG=""
 updateVersion() {
     # deprecated, @since 2.11
-    echo "${DEVSPACES_VERSION}" > "${WORKDIR}/dependencies/VERSION"
+    echo "${DS_VERSION}" > "${WORKDIR}/dependencies/VERSION"
     # @since 2.11
-    replaceField "${WORKDIR}/dependencies/job-config.json" '.Version' "${DEVSPACES_VERSION}"
+    replaceField "${WORKDIR}/dependencies/job-config.json" '.Version' "${DS_VERSION}"
     replaceField "${WORKDIR}/dependencies/job-config.json" '.Copyright' "[\"${COPYRIGHT}\"]"
 
-    DEVSPACES_Y_VALUE="${DEVSPACES_VERSION#*.}"
-    UPPER_CHE_Y=$(( (${DEVSPACES_Y_VALUE} * 2 ) + 44 ))
-    LOWER_CHE_Y=$(( ((${DEVSPACES_Y_VALUE} * 2 ) + 44 ) - 1 ))
+    DS_Y_VALUE="${DS_VERSION#*.}"
+    UPPER_CHE_Y=$(( (${DS_Y_VALUE} * 2 ) + 44 ))
+    LOWER_CHE_Y=$(( ((${DS_Y_VALUE} * 2 ) + 44 ) - 1 ))
     
     # CRW-2155, if version is in the json update it for che and devspaces branches
     # otherwise inject new version.
-    check=$(cat ${WORKDIR}/dependencies/job-config.json | jq '.Jobs[] | keys' | grep "\"${DEVSPACES_VERSION}\"")
+    check=$(cat ${WORKDIR}/dependencies/job-config.json | jq '.Jobs[] | keys' | grep "\"${DS_VERSION}\"")
     if [[ ${check} ]]; then #just updating
-      COMMIT_MSG="ci: update ${DEVSPACES_VERSION}"
-      replaceField "${WORKDIR}/dependencies/job-config.json" "(.Jobs[][\"${DEVSPACES_VERSION}\"][\"upstream_branch\"]|select(.[]?==\"main\"))" "[\"7.${UPPER_CHE_Y}.x\",\"7.${LOWER_CHE_Y}.x\"]"
-      replaceField "${WORKDIR}/dependencies/job-config.json" "(.Jobs[][\"${DEVSPACES_VERSION}\"][\"upstream_branch\"]|select(.[]?==\"devspaces-3-rhel-8\"))" "[\"devspaces-${DEVSPACES_VERSION}-rhel-8\",\"devspaces-${DEVSPACES_VERSION}-rhel-8\"]"
+      COMMIT_MSG="ci: update ${DS_VERSION}"
+      replaceField "${WORKDIR}/dependencies/job-config.json" "(.Jobs[][\"${DS_VERSION}\"][\"upstream_branch\"]|select(.[]?==\"main\"))" "[\"7.${UPPER_CHE_Y}.x\",\"7.${LOWER_CHE_Y}.x\"]"
+      replaceField "${WORKDIR}/dependencies/job-config.json" "(.Jobs[][\"${DS_VERSION}\"][\"upstream_branch\"]|select(.[]?==\"devspaces-3-rhel-8\"))" "[\"devspaces-${DS_VERSION}-rhel-8\",\"devspaces-${DS_VERSION}-rhel-8\"]"
 
-      replaceField "${WORKDIR}/dependencies/job-config.json" "(.\"Management-Jobs\"[][\"${DEVSPACES_VERSION}\"][\"upstream_branch\"]|select(.[]?==\"main\"))" "[\"7.${UPPER_CHE_Y}.x\",\"7.${LOWER_CHE_Y}.x\"]"
-      replaceField "${WORKDIR}/dependencies/job-config.json" "(.\"Management-Jobs\"[][\"${DEVSPACES_VERSION}\"][\"upstream_branch\"]|select(.[]?==\"devspaces-3-rhel-8\"))" "[\"devspaces-${DEVSPACES_VERSION}-rhel-8\",\"devspaces-${DEVSPACES_VERSION}-rhel-8\"]"
+      replaceField "${WORKDIR}/dependencies/job-config.json" "(.\"Management-Jobs\"[][\"${DS_VERSION}\"][\"upstream_branch\"]|select(.[]?==\"main\"))" "[\"7.${UPPER_CHE_Y}.x\",\"7.${LOWER_CHE_Y}.x\"]"
+      replaceField "${WORKDIR}/dependencies/job-config.json" "(.\"Management-Jobs\"[][\"${DS_VERSION}\"][\"upstream_branch\"]|select(.[]?==\"devspaces-3-rhel-8\"))" "[\"devspaces-${DS_VERSION}-rhel-8\",\"devspaces-${DS_VERSION}-rhel-8\"]"
 
       #make sure jobs are enabled
-      replaceField "${WORKDIR}/dependencies/job-config.json" "(.Jobs[][\"${DEVSPACES_VERSION}\"][\"disabled\"]|select(.==true))" 'false'
-      replaceField "${WORKDIR}/dependencies/job-config.json" "(.\"Management-Jobs\"[][\"${DEVSPACES_VERSION}\"][\"disabled\"]|select(.==true))" 'false'
+      replaceField "${WORKDIR}/dependencies/job-config.json" "(.Jobs[][\"${DS_VERSION}\"][\"disabled\"]|select(.==true))" 'false'
+      replaceField "${WORKDIR}/dependencies/job-config.json" "(.\"Management-Jobs\"[][\"${DS_VERSION}\"][\"disabled\"]|select(.==true))" 'false'
       #remove version if desired
-      if [[ $REMOVE_DEVSPACES_VERSION ]]; then
-        replaceField "${WORKDIR}/dependencies/job-config.json" "." "del(..|.[\"${REMOVE_DEVSPACES_VERSION}\"]?)"
+      if [[ $REMOVE_DS_VERSION ]]; then
+        replaceField "${WORKDIR}/dependencies/job-config.json" "." "del(..|.[\"${REMOVE_DS_VERSION}\"]?)"
       fi
     else
-      COMMIT_MSG="ci: add new ${DEVSPACES_VERSION}"
+      COMMIT_MSG="ci: add new ${DS_VERSION}"
       # Get top level keys to start (Jobs, CSVs, Other, etc)
       TOP_KEYS=($(cat ${WORKDIR}/dependencies/job-config.json | jq -r 'keys[]'))
 
@@ -206,32 +203,32 @@ updateVersion() {
           do
             #save content of 3.x
             content=$(cat ${WORKDIR}/dependencies/job-config.json | jq ".\"${TOP_KEY}\"[\"${KEY}\"][\"3.x\"]")
-            #Add DEVSPACES_VERSION from 3.x then delete 3.x
+            #Add DS_VERSION from 3.x then delete 3.x
             #then append 3.x so the general order remains the same
-            replaceField "${WORKDIR}/dependencies/job-config.json" ".\"${TOP_KEY}\"[\"${KEY}\"]" "(. + {\"${DEVSPACES_VERSION}\": .\"3.x\"} | del(.\"3.x\"))"
+            replaceField "${WORKDIR}/dependencies/job-config.json" ".\"${TOP_KEY}\"[\"${KEY}\"]" "(. + {\"${DS_VERSION}\": .\"3.x\"} | del(.\"3.x\"))"
             replaceField "${WORKDIR}/dependencies/job-config.json" ".\"${TOP_KEY}\"[\"${KEY}\"]" ". + {\"3.x\": ${content}}"
 
             #while in here remove version if desired
-            if [[ $REMOVE_DEVSPACES_VERSION ]]; then
-              replaceField "${WORKDIR}/dependencies/job-config.json" ".\"${TOP_KEY}\"[\"${KEY}\"]" "del(.\"${REMOVE_DEVSPACES_VERSION}\")"
+            if [[ $REMOVE_DS_VERSION ]]; then
+              replaceField "${WORKDIR}/dependencies/job-config.json" ".\"${TOP_KEY}\"[\"${KEY}\"]" "del(.\"${REMOVE_DS_VERSION}\")"
             fi
           done
         fi
       done
 
-      replaceField "${WORKDIR}/dependencies/job-config.json" "(.Jobs[][\"${DEVSPACES_VERSION}\"][\"upstream_branch\"]|select(.[]?==\"main\"))" "[\"7.${UPPER_CHE_Y}.x\",\"7.${LOWER_CHE_Y}.x\"]"
-      replaceField "${WORKDIR}/dependencies/job-config.json" "(.Jobs[][\"${DEVSPACES_VERSION}\"][\"upstream_branch\"]|select(.[]?==\"devspaces-3-rhel-8\"))" "[\"devspaces-${DEVSPACES_VERSION}-rhel-8\",\"devspaces-${DEVSPACES_VERSION}-rhel-8\"]"
+      replaceField "${WORKDIR}/dependencies/job-config.json" "(.Jobs[][\"${DS_VERSION}\"][\"upstream_branch\"]|select(.[]?==\"main\"))" "[\"7.${UPPER_CHE_Y}.x\",\"7.${LOWER_CHE_Y}.x\"]"
+      replaceField "${WORKDIR}/dependencies/job-config.json" "(.Jobs[][\"${DS_VERSION}\"][\"upstream_branch\"]|select(.[]?==\"devspaces-3-rhel-8\"))" "[\"devspaces-${DS_VERSION}-rhel-8\",\"devspaces-${DS_VERSION}-rhel-8\"]"
 
-      replaceField "${WORKDIR}/dependencies/job-config.json" "(.\"Management-Jobs\"[][\"${DEVSPACES_VERSION}\"][\"upstream_branch\"]|select(.[]?==\"main\"))" "[\"7.${UPPER_CHE_Y}.x\",\"7.${LOWER_CHE_Y}.x\"]"
-      replaceField "${WORKDIR}/dependencies/job-config.json" "(.\"Management-Jobs\"[][\"${DEVSPACES_VERSION}\"][\"upstream_branch\"]|select(.[]?==\"devspaces-3-rhel-8\"))" "[\"devspaces-${DEVSPACES_VERSION}-rhel-8\",\"devspaces-${DEVSPACES_VERSION}-rhel-8\"]"
+      replaceField "${WORKDIR}/dependencies/job-config.json" "(.\"Management-Jobs\"[][\"${DS_VERSION}\"][\"upstream_branch\"]|select(.[]?==\"main\"))" "[\"7.${UPPER_CHE_Y}.x\",\"7.${LOWER_CHE_Y}.x\"]"
+      replaceField "${WORKDIR}/dependencies/job-config.json" "(.\"Management-Jobs\"[][\"${DS_VERSION}\"][\"upstream_branch\"]|select(.[]?==\"devspaces-3-rhel-8\"))" "[\"devspaces-${DS_VERSION}-rhel-8\",\"devspaces-${DS_VERSION}-rhel-8\"]"
 
       #make sure new builds are enabled
-      replaceField "${WORKDIR}/dependencies/job-config.json" "(.Jobs[][\"${DEVSPACES_VERSION}\"][\"disabled\"]|select(.==true))" 'false'
-      replaceField "${WORKDIR}/dependencies/job-config.json" "(.\"Management-Jobs\"[][\"${DEVSPACES_VERSION}\"][\"disabled\"]|select(.==true))" 'false'
+      replaceField "${WORKDIR}/dependencies/job-config.json" "(.Jobs[][\"${DS_VERSION}\"][\"disabled\"]|select(.==true))" 'false'
+      replaceField "${WORKDIR}/dependencies/job-config.json" "(.\"Management-Jobs\"[][\"${DS_VERSION}\"][\"disabled\"]|select(.==true))" 'false'
     fi 
 
     #find and disable version-2
-    #start by gathering all DEVSPACES_VERSIONs that have data in the json
+    #start by gathering all DS_VERSIONs that have data in the json
     VERSION_KEYS=($(cat ${WORKDIR}/dependencies/job-config.json | jq -r '.Jobs'[\"dashboard\"]' | keys[]'))
     #get the array index of version -2. length -1 is 3.x, -2 is the version that was added, so the old version that needs to get disabled is length - 4
     DISABLE_VERSION_INDEX=$(( ${#VERSION_KEYS[@]} - 4 )) 
@@ -257,7 +254,7 @@ updateVersion() {
     done
 
     #update tags
-    replaceField "${WORKDIR}/dependencies/job-config.json" ".Other[\"FLOATING_QUAY_TAGS\"][\"${DEVSPACES_VERSION}\"]" "\"next\""
+    replaceField "${WORKDIR}/dependencies/job-config.json" ".Other[\"FLOATING_QUAY_TAGS\"][\"${DS_VERSION}\"]" "\"next\""
     replaceField "${WORKDIR}/dependencies/job-config.json" ".Other[\"FLOATING_QUAY_TAGS\"][\"3.x\"]" "\"next\""
 
     #the 'latest' tag should go on the previous/stable version, which would be version -1, or the index 3 form the end of the VERSION_KEYS array
@@ -271,10 +268,10 @@ updateVersion() {
     # debug: # cat "${WORKDIR}/dependencies/job-config.json" | grep -E -A5 "FLOATING_QUAY_TAGS|plugin-registry-gen"; exit
 
     # update CSV versions for 3.yy latest and 3.x too
-    echo "DEVSPACES_VERSION = $DEVSPACES_VERSION"
+    echo "DS_VERSION = $DS_VERSION"
     for op in "operator-bundle"; do
-      for ver in "${DEVSPACES_VERSION}" "3.x"; do
-        replaceField "${WORKDIR}/dependencies/job-config.json" ".CSVs[\"${op}\"][\"${ver}\"][\"CSV_VERSION\"]" "\"${DEVSPACES_VERSION}.0\""
+      for ver in "${DS_VERSION}" "3.x"; do
+        replaceField "${WORKDIR}/dependencies/job-config.json" ".CSVs[\"${op}\"][\"${ver}\"][\"CSV_VERSION\"]" "\"${DS_VERSION}.0\""
       done
     done
 
@@ -282,30 +279,30 @@ updateVersion() {
     computeLatestCSV operator-bundle
 
     # TODO CRW-2637 remove this block when we're officially done with 2.15.z
-    if [[ $DEVSPACES_VERSION == "2.14" ]] || [[ $DEVSPACES_VERSION == "2.15" ]]; then
+    if [[ $DS_VERSION == "2.14" ]] || [[ $DS_VERSION == "2.15" ]]; then
       # set operator-bundle CSV_VERSION = 2.15.100
       replaceField "${WORKDIR}/dependencies/job-config.json" \
-        ".CSVs[\"operator-bundle\"][\"${DEVSPACES_VERSION}\"][\"CSV_VERSION\"]" \
-        "\"${DEVSPACES_VERSION}.100\""
+        ".CSVs[\"operator-bundle\"][\"${DS_VERSION}\"][\"CSV_VERSION\"]" \
+        "\"${DS_VERSION}.100\""
       replaceField "${WORKDIR}/dependencies/job-config.json" \
-        ".CSVs[\"operator-metadata\"][\"${DEVSPACES_VERSION}\"][\"CSV_VERSION\"]" \
-        "\"${DEVSPACES_VERSION}.0\""
+        ".CSVs[\"operator-metadata\"][\"${DS_VERSION}\"][\"CSV_VERSION\"]" \
+        "\"${DS_VERSION}.0\""
       computeLatestCSV operator-metadata
     fi
     # TODO CRW-2637 remove this block when we're officially done with 2.15.z
 
     # optionally, can enable/disable specific job sets for a given version
-    if [[ $ENABLE_DEVSPACES_MGMTJOBS_VERSION ]]; then 
-        replaceField "${WORKDIR}/dependencies/job-config.json" "(.\"Management-Jobs\"[][\"$ENABLE_DEVSPACES_MGMTJOBS_VERSION\"][\"disabled\"]|select(.==true))" 'false'
+    if [[ $ENABLE_DS_MGMTJOBS_VERSION ]]; then 
+        replaceField "${WORKDIR}/dependencies/job-config.json" "(.\"Management-Jobs\"[][\"$ENABLE_DS_MGMTJOBS_VERSION\"][\"disabled\"]|select(.==true))" 'false'
     fi
-    if [[ $ENABLE_DEVSPACES_JOBS_VERSION ]]; then 
-        replaceField "${WORKDIR}/dependencies/job-config.json" "(.Jobs[][\"$ENABLE_DEVSPACES_JOBS_VERSION\"][\"disabled\"]|select(.==true))" 'false'
+    if [[ $ENABLE_DS_JOBS_VERSION ]]; then 
+        replaceField "${WORKDIR}/dependencies/job-config.json" "(.Jobs[][\"$ENABLE_DS_JOBS_VERSION\"][\"disabled\"]|select(.==true))" 'false'
     fi
-    if [[ $DISABLE_DEVSPACES_MGMTJOBS_VERSION ]]; then 
-        replaceField "${WORKDIR}/dependencies/job-config.json" "(.\"Management-Jobs\"[][\"$DISABLE_DEVSPACES_MGMTJOBS_VERSION\"][\"disabled\"]|select(.==false))" 'true'
+    if [[ $DISABLE_DS_MGMTJOBS_VERSION ]]; then 
+        replaceField "${WORKDIR}/dependencies/job-config.json" "(.\"Management-Jobs\"[][\"$DISABLE_DS_MGMTJOBS_VERSION\"][\"disabled\"]|select(.==false))" 'true'
     fi
-    if [[ $DISABLE_DEVSPACES_JOBS_VERSION ]]; then 
-        replaceField "${WORKDIR}/dependencies/job-config.json" "(.Jobs[][\"$DISABLE_DEVSPACES_JOBS_VERSION\"][\"disabled\"]|select(.==false))" 'true'
+    if [[ $DISABLE_DS_JOBS_VERSION ]]; then 
+        replaceField "${WORKDIR}/dependencies/job-config.json" "(.Jobs[][\"$DISABLE_DS_JOBS_VERSION\"][\"disabled\"]|select(.==false))" 'true'
     fi
 }
 
@@ -317,11 +314,11 @@ updateDevfileRegistry() {
 
     # replace DEVSPACES devfiles with image references to current version tag
     for devfile in $("$SCRIPT_DIR"/list_yaml.sh "$YAML_ROOT"); do
-       sed -E -e "s|(.*image: *?.*registry.redhat.io/devspaces/.*:).+|\1${DEVSPACES_VERSION}|g" \
+       sed -E -e "s|(.*image: *?.*registry.redhat.io/devspaces/.*:).+|\1${DS_VERSION}|g" \
            -i "${devfile}"
     done
 
-    "${SCRIPT_DIR}/update_template.sh" -rn devfile -s "${TEMPLATE_FILE}" -t "${DEVSPACES_VERSION}"
+    "${SCRIPT_DIR}/update_template.sh" -rn devfile -s "${TEMPLATE_FILE}" -t "${DS_VERSION}"
     git diff -q "${YAML_ROOT}" "${TEMPLATE_FILE}" || true
 }
 
@@ -334,12 +331,12 @@ updatePluginRegistry() {
 
     for yaml in $("$SCRIPT_DIR"/list_che_yaml.sh "$YAML_ROOT"); do
         sed -E \
-            -e "s|(.*image: (['\"]*)registry.redhat.io/devspaces/.*:)[0-9.]+(['\"]*)|\1${DEVSPACES_VERSION}\2|g" \
+            -e "s|(.*image: (['\"]*)registry.redhat.io/devspaces/.*:)[0-9.]+(['\"]*)|\1${DS_VERSION}\2|g" \
             -i "${yaml}"
     done
 
     # update '.parameters[]|select(.name=="IMAGE_TAG")|.value' ==> 3.yy
-    yq -ryiY "(.parameters[] | select(.name == \"IMAGE_TAG\") | .value ) = \"${DEVSPACES_VERSION}\"" "${TEMPLATE_FILE}"
+    yq -ryiY "(.parameters[] | select(.name == \"IMAGE_TAG\") | .value ) = \"${DS_VERSION}\"" "${TEMPLATE_FILE}"
     echo "${COPYRIGHT}$(cat "${TEMPLATE_FILE}")" > "${TEMPLATE_FILE}".2; mv "${TEMPLATE_FILE}".2 "${TEMPLATE_FILE}"
 
     git diff -q "${YAML_ROOT}" "${TEMPLATE_FILE}" || true
@@ -347,28 +344,28 @@ updatePluginRegistry() {
 
 commitChanges() {
     if [[ ${docommit} -eq 1 ]]; then
-        if [[ $DISABLE_DEVSPACES_JOBS_VERSION ]]; then 
-          COMMIT_MSG="${COMMIT_MSG}; disable $DISABLE_DEVSPACES_JOBS_VERSION jobs"
+        if [[ $DISABLE_DS_JOBS_VERSION ]]; then 
+          COMMIT_MSG="${COMMIT_MSG}; disable $DISABLE_DS_JOBS_VERSION jobs"
         fi
-        if [[ $DISABLE_DEVSPACES_MGMTJOBS_VERSION ]]; then 
-          COMMIT_MSG="${COMMIT_MSG}; disable $DISABLE_DEVSPACES_MGMTJOBS_VERSION mgmt jobs"
+        if [[ $DISABLE_DS_MGMTJOBS_VERSION ]]; then 
+          COMMIT_MSG="${COMMIT_MSG}; disable $DISABLE_DS_MGMTJOBS_VERSION mgmt jobs"
         fi
-        if [[ $ENABLE_DEVSPACES_JOBS_VERSION ]]; then 
-          COMMIT_MSG="${COMMIT_MSG}; enable $ENABLE_DEVSPACES_JOBS_VERSION jobs"
+        if [[ $ENABLE_DS_JOBS_VERSION ]]; then 
+          COMMIT_MSG="${COMMIT_MSG}; enable $ENABLE_DS_JOBS_VERSION jobs"
         fi
-        if [[ $ENABLE_DEVSPACES_MGMTJOBS_VERSION ]]; then 
-          COMMIT_MSG="${COMMIT_MSG}; enable $ENABLE_DEVSPACES_MGMTJOBS_VERSION mgmt jobs"
+        if [[ $ENABLE_DS_MGMTJOBS_VERSION ]]; then 
+          COMMIT_MSG="${COMMIT_MSG}; enable $ENABLE_DS_MGMTJOBS_VERSION mgmt jobs"
         fi
-        if [[ $REMOVE_DEVSPACES_VERSION ]]; then 
-          COMMIT_MSG="${COMMIT_MSG}; remove $REMOVE_DEVSPACES_VERSION jobs"
+        if [[ $REMOVE_DS_VERSION ]]; then 
+          COMMIT_MSG="${COMMIT_MSG}; remove $REMOVE_DS_VERSION jobs"
         fi
         git commit -a -s -m "${COMMIT_MSG}"
-        git pull origin "${BRANCH}"
+        git pull origin "${MIDSTM_BRANCH}"
         if [[ ${dopush} -eq 1 ]]; then
-            PUSH_TRY="$(git push origin "${BRANCH}" 2>&1 || git push origin "${PR_BRANCH}" || true)"
+            PUSH_TRY="$(git push origin "${MIDSTM_BRANCH}" 2>&1 || git push origin "${PR_BRANCH}" || true)"
             # shellcheck disable=SC2181
             if [[ $? -gt 0 ]] || [[ $PUSH_TRY == *"protected branch hook declined"* ]]; then
-                # if cannot push directly, create pull request for ${BRANCH}
+                # if cannot push directly, create pull request for ${MIDSTM_BRANCH}
                 git branch "${PR_BRANCH}" || true
                 git checkout "${PR_BRANCH}" || true
                 git pull origin "${PR_BRANCH}" || true
@@ -378,7 +375,7 @@ commitChanges() {
                     # collect additional commits in the same PR if it already exists
                     { hub pull-request -f -m "${lastCommitComment}
 
-${lastCommitComment}" -b "${BRANCH}" -h "${PR_BRANCH}" "${OPENBROWSERFLAG}"; } || { git merge ${BRANCH}; git push origin "${PR_BRANCH}"; }
+${lastCommitComment}" -b "${MIDSTM_BRANCH}" -h "${PR_BRANCH}" "${OPENBROWSERFLAG}"; } || { git merge ${MIDSTM_BRANCH}; git push origin "${PR_BRANCH}"; }
                 else
                     echo "# Warning: hub is required to generate pull requests. See https://hub.github.com/ to install it."
                     echo -n "# To manually create a pull request, go here: "
@@ -389,7 +386,7 @@ ${lastCommitComment}" -b "${BRANCH}" -h "${PR_BRANCH}" "${OPENBROWSERFLAG}"; } |
     fi
 }
 
-if [[ -z ${DEVSPACES_VERSION} ]]; then
+if [[ -z ${DS_VERSION} ]]; then
     usage
     exit 1
 fi

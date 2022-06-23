@@ -22,21 +22,21 @@ usage () {
 	echo "
 Usage: for 1 or more containes in quay or Pulp, compute the NVR, Build URL, and Source commit for that build. eg., 
   $0  quay.io/devspaces/udi-rhel8:3.y-1 quay.io/devspaces/udi-rhel8:3.y-1 ...
-  $0  registry-proxy.engineering.redhat.com/rh-osbs/devspaces-udi-rhel8 -j 3.y -n 2      | show last 2 tags
+  $0  registry-proxy.engineering.redhat.com/rh-osbs/devspaces-udi-rhel8 -v 3.y -n 2      | show last 2 tags
 "
 exit
 }
 
 if [[ $# -lt 1 ]]; then usage; fi
 
-# JOB_BRANCH=3.y
+# DS_VERSION=3.y
 # # could this be computed from $(git rev-parse --abbrev-ref HEAD) ?
-# DWNSTM_BRANCH="devspaces-${JOB_BRANCH}-rhel-8"
+# DWNSTM_BRANCH="devspaces-${DS_VERSION}-rhel-8"
 NUMTAGS=1 # by default show only the latest tag for each container; or show n latest ones
 CONTAINERS=""
 while [[ "$#" -gt 0 ]]; do
   case $1 in
-    '-j') JOB_BRANCH="$2"; DWNSTM_BRANCH="devspaces-${JOB_BRANCH}-rhel-8"; shift 2;; 
+    '-v') DS_VERSION="$2"; DWNSTM_BRANCH="devspaces-${DS_VERSION}-rhel-8"; shift 2;; 
     '-b') DWNSTM_BRANCH="$2"; shift 2;; 
     '--tag') BASETAG="$2"; shift 2;;
     '--candidatetag') candidateTag="$2"; shift 2;;

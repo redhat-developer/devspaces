@@ -47,7 +47,7 @@ This script will
 Usage: $0 [OPTIONS]
 
 Options:
-  -t <DS_VERSION>     : Dev Spaces version to test, e.g. '3.0'. Required
+  -v <DS_VERSION>     : Dev Spaces version to test, e.g. '3.0'. Required
   -o <OLM_NAMESPACE>  : Namespace into which to install catalog source and operator. Default: $OLM_NAMESPACE
   -n <NAMESPACE>      : Namespace into which to install CheCluster + Dev Spaces. Default: $NAMESPACE
   --checluster <PATH> : use CheCluster yaml defined at path instead of default. Optional
@@ -138,7 +138,7 @@ preflight() {
 
 while [[ "$#" -gt 0 ]]; do
   case $1 in
-    '-t') DS_VERSION="$2"; shift 1;;
+    '-v') DS_VERSION="$2"; shift 1;;
     '-n') NAMESPACE="$2"; shift 1;;
     '-o') OLM_NAMESPACE="$2"; shift 1;;
     '-kp'|'--kubepwd') KUBE_PWD="$2"; shift 1;;
@@ -167,7 +167,7 @@ preflight
 OPENSHIFT_VER=$(oc version -o json | jq -r '.openshiftVersion | scan("^[0-9].[0-9]+")')
 echo "Detected OpenShift version v$OPENSHIFT_VER"
 
-LATEST_IIB=$("$SCRIPT_DIR"/getLatestIIBs.sh -t "$DS_VERSION" -o "$OPENSHIFT_VER" -q)
+LATEST_IIB=$("$SCRIPT_DIR"/getLatestIIBs.sh -v "$DS_VERSION" -o "$OPENSHIFT_VER" -q)
 echo "Found latest IIB $LATEST_IIB"
 
 # catalog is installed as "iib-testing-catalog"

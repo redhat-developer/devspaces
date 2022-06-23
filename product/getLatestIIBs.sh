@@ -12,10 +12,10 @@
 usage () {
 	echo "
 Usage: 
-  $0 -t PROD_VER [OPTIONS]
+  $0 -v PROD_VERSION [OPTIONS]
 
 Options:
-  -o OCP_VER          To limit results to a single OCP version, use this flag
+  -o OCP_VERSION          To limit results to a single OCP version, use this flag
   -p PROD_NAME        Defaults to 'Dev Spaces'; label on output when multiple OCP versions specified
   -i IMAGE_PREFIX     Defaults to 'devspaces'; used in registry-proxy.engineering.redhat.com/rh-osbs/IMAGE_PREFIX to filter results
                       For example, to check if specific bundle exists in the index, use 'bundle:3.1-123'
@@ -26,7 +26,7 @@ Options:
   --dwo               Sets PROD_NAME to 'DevWorkspace Operator' and IMAGE_PREFIX to 'devworkspace'
   --wto               Sets PROD_NAME to 'Web Terminal Operator' and IMAGE_PREFIX to 'web-terminal'
 
-  -v                  Verbose output: include additional information about what's happening
+  --verbose                  Verbose output: include additional information about what's happening
   -q, -qi             Quiet Index  output: instead of default tabbed table with operator bundle, IIB URL + OCP version; show IIB URL only
   -qb                 Quiet Bundle output: instead of default tabbed table with operator bundle, IIB URL + OCP version; show bundle only
 "
@@ -39,21 +39,21 @@ runCommandWithTimeout() {
   while [[ $count -le $timeout_intervals ]]; do # echo $count
     set +e
     if [[ $VERBOSE -eq 1 ]]; then
-      echo; echo "Checking for latest IIBs for $PROD_NAME (${IMAGE_PREFIX}) ${PROD_VER} ${csv}  ... [$count/$timeout_intervals]"; echo
+      echo; echo "Checking for latest IIBs for $PROD_NAME (${IMAGE_PREFIX}) ${PROD_VERSION} ${csv}  ... [$count/$timeout_intervals]"; echo
     fi
     lastcsv=$(curl -sSLk "https://datagrepper.engineering.redhat.com/raw?topic=/topic/VirtualTopic.eng.ci.redhat-container-image.index.built&delta=1728000&rows_per_page=30&contains=${IMAGE_PREFIX}" | \
-    jq ".raw_messages[].msg.index | .added_bundle_images[0]" -r | sort -uV | grep "${csv}:${PROD_VER}" | tail -1 | \
+    jq ".raw_messages[].msg.index | .added_bundle_images[0]" -r | sort -uV | grep "${csv}:${PROD_VERSION}" | tail -1 | \
     sed -r -e "s#registry-proxy.engineering.redhat.com/rh-osbs/${IMAGE_PREFIX}-##");
 
     if [[ "${lastcsv}" ]]; then
-      if [[ $OCP_VER == "" ]]; then
+      if [[ $OCP_VERSION == "" ]]; then
         line="$(curl -sSLk "https://datagrepper.engineering.redhat.com/raw?topic=/topic/VirtualTopic.eng.ci.redhat-container-image.index.built&delta=1728000&rows_per_page=30&contains=${IMAGE_PREFIX}" | \
             jq ".raw_messages[].msg.index | [.added_bundle_images[0], .index_image, .ocp_version] | @tsv" -r | sort -uV | \
             grep "${lastcsv}" | sed -r -e "s#registry-proxy.engineering.redhat.com/rh-osbs/${IMAGE_PREFIX}-#  #")"
       else
         line="$(curl -sSLk "https://datagrepper.engineering.redhat.com/raw?topic=/topic/VirtualTopic.eng.ci.redhat-container-image.index.built&delta=1728000&rows_per_page=30&contains=${IMAGE_PREFIX}" | \
           jq ".raw_messages[].msg.index | [.added_bundle_images[0], .index_image, .ocp_version] | @tsv" -r | sort -uV | \
-          grep "${lastcsv}" | grep "v${OCP_VER}")"
+          grep "${lastcsv}" | grep "v${OCP_VERSION}")"
       fi
       if [[ $line ]]; then
         if [[ $QUIET == "index" ]]; then # show only the index image
@@ -78,10 +78,10 @@ runCommandWithTimeout() {
 
 VERBOSE=0
 QUIET="none"
-OCP_VER="" # if not set, check for all available versions, and return multiple results
+OCP_VERSION="" # if not set, check for all available versions, and return multiple results
 
 crwDefaults () {
-  PROD_VER="2.15"
+  PROD_VERSION="2.15"
   PROD_NAME="CodeReady Workspaces"
   IMAGE_PREFIX="codeready-workspaces"
   CSVs="operator-metadata operator-bundle"
@@ -109,12 +109,12 @@ dsDefaults
 
 while [[ "$#" -gt 0 ]]; do
   case $1 in
-    '-t') PROD_VER="$2"; shift 1;;
-    '-o') OCP_VER="$2"; shift 1;;
+    '-v') PROD_VERSION="$2"; shift 1;;
+    '-o') OCP_VERSION="$2"; shift 1;;
     '-p') PROD_NAME="$2"; shift 1;;
     '-c') CSVs="$2"; shift 1;;
     '-i') IMAGE_PREFIX="$2"; shift 1;;
-    '-v') VERBOSE=1; QUIET="none"; shift 0;;
+    '--verbose') VERBOSE=1; QUIET="none"; shift 0;;
     '-q'|'-qi') VERBOSE=0; QUIET="index"; shift 0;;
     '-qb') VERBOSE=0; QUIET="bundle"; shift 0;;
     '--crw') crwDefaults;;
@@ -125,10 +125,10 @@ while [[ "$#" -gt 0 ]]; do
   shift 1
 done
 
-if [[ -z ${PROD_VER} ]]; then usage; exit 1; fi
+if [[ -z ${PROD_VERSION} ]]; then usage; exit 1; fi
 
 # override for old releases
-if [[ $PROD_VER == "2.15" ]]; then crwDefaults; fi
+if [[ $PROD_VERSION == "2.15" ]]; then crwDefaults; fi
 
 for csv in $CSVs; do
   runCommandWithTimeout 30

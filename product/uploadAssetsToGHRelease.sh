@@ -107,8 +107,6 @@ if [[ $DELETE_ASSETS -eq 0 ]] && [[ $PUBLISH_ASSETS -eq 0 ]] && [[ $PULL_ASSETS 
   --pull-assets"; echo; usage; exit 1
 fi
 
-export GITHUB_TOKEN=${GITHUB_TOKEN}
-
 # this also deletes the release in which the assets are stored
 if [[ $DELETE_ASSETS -eq 1 ]]; then
   #check if release exists

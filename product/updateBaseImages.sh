@@ -78,15 +78,15 @@ $0 -b 7.yy.x -w \$(pwd) -f Dockerfile      -maxdepth 1 --tag '1\.13|8\.[0-9]-' -
 
 "
 	echo "Options: 
-	--sources-branch, -b  set sources branch (project to update), eg., 7.yy.x
-	--scripts-branch, -sb set scripts branch (project with helper scripts), eg., devspaces-3.y-rhel-8
+	-b, --sources-branch  set sources branch (project to update), eg., 7.yy.x
+	-sb, --scripts-branch 	set scripts branch (project with helper scripts), eg., devspaces-3.y-rhel-8
 	--no-commit, -n	do not commit to BRANCH
 	--no-push, -p	do not push to BRANCH
 	--tag			regex match to restrict results, eg., '1\.13|8\.[0-9]-' to find golang 1.13 (not 1.14) and any ubi 8-x- tag
 	--pr			do not attempt to push directly; generate PR against BRANCH
 	-prb			set a PR_BRANCH; default: pr-new-base-images-(timestamp)
 	-o				open browser if PR generated
-	-q, -v			quiet, verbose output
+	-q, --verbose	quiet, verbose output
 	--help, -h		help
 	--check-recent-updates-only   
 		don't poll for new base images; just report on 
@@ -115,7 +115,7 @@ while [[ "$#" -gt 0 ]]; do
 	'-prb') PR_BRANCH="$2"; shift 1;;
 	'-o') OPENBROWSERFLAG="-o"; shift 0;;
 	'-q') QUIET=1; shift 0;;
-	'-v') QUIET=0; VERBOSE=1; shift 0;;
+	'--verbose') QUIET=0; VERBOSE=1; shift 0;;
 	'--check-recent-updates-only') QUIET=0; VERBOSE=1; checkrecentupdates; shift 0; exit;;
 	'--help'|'-h') usage; exit;;
 	*) OTHER="${OTHER} $1"; shift 0;; 
