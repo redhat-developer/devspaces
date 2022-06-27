@@ -76,20 +76,29 @@ preflight() {
     pushd /tmp/dsc-${DSC_VER}/ >/dev/null
       asset_dir="${DSC_VER}-dsc-assets"
       # old folder format
-      if [[ $(curl -sSIk https://github.com/redhat-developer/devspaces-chectl/releases/download/${asset_dir}/devspaces-${DSC_VER}-quay-dsc-linux-x64.tar.gz | grep HTTP/ | grep 404) ]]; then 
+      # echo "curl https://github.com/redhat-developer/devspaces-chectl/releases/download/${asset_dir}/devspaces-${DSC_VER/-CI/}-quay-dsc-linux-x64.tar.gz ... "
+      if [[ $(curl -sSIk https://github.com/redhat-developer/devspaces-chectl/releases/download/${asset_dir}/devspaces-${DSC_VER/-CI/}-quay-dsc-linux-x64.tar.gz | grep HTTP/ | grep 404) ]]; then 
         # https://github.com/redhat-developer/devspaces-chectl/releases/download/2.15.4-crwctl-assets/codeready-workspaces-2.15.4-GA-quay-crwctl-linux-x64.tar.gz
-        asset_dir="${asset_dir/-GA/}" 
+        asset_dir="${asset_dir/-GA/}"
         # https://github.com/redhat-developer/devspaces-chectl/releases/download/2.15.4-crwctl-CI-assets/codeready-workspaces-2.15.4-CI-quay-crwctl-linux-x64.tar.gz
         asset_dir="${asset_dir/CI-dsc/dsc-CI}"
       fi
-      if [[ ! $(curl -sSIk https://github.com/redhat-developer/devspaces-chectl/releases/download/${asset_dir}/devspaces-${DSC_VER}-quay-dsc-linux-x64.tar.gz | grep HTTP/ | grep 404) ]]; then 
-        curl -sSLko- https://github.com/redhat-developer/devspaces-chectl/releases/download/${asset_dir}/devspaces-${DSC_VER}-quay-dsc-linux-x64.tar.gz | tar xz || true
+      # echo "curl https://github.com/redhat-developer/devspaces-chectl/releases/download/${asset_dir}/devspaces-${DSC_VER/-CI/}-quay-dsc-linux-x64.tar.gz ... "
+      if [[ ! $(curl -sSIk https://github.com/redhat-developer/devspaces-chectl/releases/download/${asset_dir}/devspaces-${DSC_VER/-CI/}-quay-dsc-linux-x64.tar.gz | grep HTTP/ | grep 404) ]]; then 
+        curl -sSLko- https://github.com/redhat-developer/devspaces-chectl/releases/download/${asset_dir}/devspaces-${DSC_VER/-CI/}-quay-dsc-linux-x64.tar.gz | tar xz || true
         DSC=/tmp/dsc-${DSC_VER}/dsc/bin/dsc
         echo "dsc installed to ${DSC}"
       else
-        errorf "Could not download dsc from https://github.com/redhat-developer/devspaces-chectl/releases/download/${asset_dir}/devspaces-${DSC_VER}-quay-dsc-linux-x64.tar.gz !"
-        if [[ -d /tmp/dsc-${DSC_VER} ]]; then popd >/dev/null; rm -fr /tmp/dsc-${DSC_VER}; fi
-        exit 2
+        echo "Could not download dsc from https://github.com/redhat-developer/devspaces-chectl/releases/download/${asset_dir}/devspaces-${DSC_VER/-CI/}-quay-dsc-linux-x64.tar.gz !"
+        if [[ ! $(curl -sSIk https://github.com/redhat-developer/devspaces-chectl/releases/download/${asset_dir}/devspaces-${DSC_VER}-quay-dsc-linux-x64.tar.gz | grep HTTP/ | grep 404) ]]; then 
+          curl -sSLko- https://github.com/redhat-developer/devspaces-chectl/releases/download/${asset_dir}/devspaces-${DSC_VER}-quay-dsc-linux-x64.tar.gz | tar xz || true
+          DSC=/tmp/dsc-${DSC_VER}/dsc/bin/dsc
+          echo "dsc installed to ${DSC}"
+        else
+          errorf "Could not download dsc from https://github.com/redhat-developer/devspaces-chectl/releases/download/${asset_dir}/devspaces-${DSC_VER}-quay-dsc-linux-x64.tar.gz !"
+          if [[ -d /tmp/dsc-${DSC_VER} ]]; then popd >/dev/null; rm -fr /tmp/dsc-${DSC_VER}; fi
+          exit 2
+        fi
       fi
     popd >/dev/null
   # Or, use dsc in ${DSC_OPTION}/dsc; error if not found
