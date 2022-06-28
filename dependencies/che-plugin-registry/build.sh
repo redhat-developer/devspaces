@@ -75,9 +75,6 @@ function parse_arguments() {
 
 parse_arguments "$@"
 
-echo "Update yarn dependencies..."
-yarn
-
 # load VERSION.json file from ./ or  ../, or fall back to the internet if no local copy
 if [[ -f "${base_dir}/job-config.json" ]]; then
     versionjson="${base_dir}/job-config.json"
