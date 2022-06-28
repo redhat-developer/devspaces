@@ -63,7 +63,7 @@ RUN TAG=${PATCHED_IMAGES_TAG} \
     REGISTRY=${PATCHED_IMAGES_REG} \
     ./update_devfile_patched_image_tags.sh
 RUN ./check_mandatory_fields.sh devfiles
-# Cache projects in CRW 
+# Cache projects in DS 
 RUN ./index.sh > /build/devfiles/index.json
 RUN ./list_referenced_images.sh devfiles > /build/devfiles/external_images.txt
 RUN chmod -R g+rwX /build/devfiles
@@ -102,8 +102,8 @@ RUN sed -i /etc/httpd/conf/httpd.conf \
     chmod a+rwX /etc/httpd/conf /run/httpd /etc/httpd/logs/
 STOPSIGNAL SIGWINCH
 
-ARG CRW_BRANCH=devspaces-3-rhel-8
-ENV CRW_BRANCH=${CRW_BRANCH}
+ARG DS_BRANCH=devspaces-3-rhel-8
+ENV DS_BRANCH=${DS_BRANCH}
 
 WORKDIR /var/www/html
 
