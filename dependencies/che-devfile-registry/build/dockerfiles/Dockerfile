@@ -63,7 +63,7 @@ RUN TAG=${PATCHED_IMAGES_TAG} \
     REGISTRY=${PATCHED_IMAGES_REG} \
     ./update_devfile_patched_image_tags.sh
 RUN ./check_mandatory_fields.sh devfiles
-# Cache projects in CRW 
+# Cache projects in DS 
 RUN ./index.sh > /build/devfiles/index.json
 RUN ./list_referenced_images.sh devfiles > /build/devfiles/external_images.txt
 RUN chmod -R g+rwX /build/devfiles
