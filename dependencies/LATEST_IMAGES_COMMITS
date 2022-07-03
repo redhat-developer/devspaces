@@ -1,17 +1,17 @@
 
-quay.io/devspaces/configbump-rhel8:3.1-8
-     NVR: devspaces-configbump-rhel8-container-3.1-8
-   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=2069012
-  Source: https://pkgs.devel.redhat.com/cgit/containers/devspaces-configbump/commit?id=482f106f29afbfa81171ad03ae80705d804faf0d
+quay.io/devspaces/configbump-rhel8:3.1-9
+     NVR: devspaces-configbump-rhel8-container-3.1-9
+   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=2074186
+  Source: https://pkgs.devel.redhat.com/cgit/containers/devspaces-configbump/commit?id=f9ff7ff6da8ec23b57962488ec56386c9f81120c
 
 quay.io/devspaces/devspaces-rhel8-operator:3.1-18
      NVR: devspaces-rhel8-operator-container-3.1-18
    Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=2074162
   Source: https://pkgs.devel.redhat.com/cgit/containers/devspaces-operator/commit?id=81d4d75eb6d0d406df0c05388019ca50b7559f18
 
-quay.io/devspaces/devspaces-operator-bundle:3.1-144
-     NVR: devspaces-operator-bundle-container-3.1-144
-   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=2074169
+quay.io/devspaces/devspaces-operator-bundle:3.1-145
+     NVR: devspaces-operator-bundle-container-3.1-145
+   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=2074193
   Source: https://pkgs.devel.redhat.com/cgit/containers/devspaces-operator-bundle/commit?id=7f95ab7d2db98676c2045582f925d16150fe762d
 
 quay.io/devspaces/dashboard-rhel8:3.1-45
@@ -64,10 +64,10 @@ quay.io/devspaces/theia-rhel8:3.1-18
    Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=2071449
   Source: https://pkgs.devel.redhat.com/cgit/containers/devspaces-theia/commit?id=f590e4a773595e24a3fd20c6c2c024ed97c90626
 
-quay.io/devspaces/traefik-rhel8:3.1-8
-     NVR: devspaces-traefik-rhel8-container-3.1-8
-   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=2069050
-  Source: https://pkgs.devel.redhat.com/cgit/containers/devspaces-traefik/commit?id=15e476a1fe8fcdb5278df9d9e405bbe3d2f430ac
+quay.io/devspaces/traefik-rhel8:3.1-9
+     NVR: devspaces-traefik-rhel8-container-3.1-9
+   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=2074185
+  Source: https://pkgs.devel.redhat.com/cgit/containers/devspaces-traefik/commit?id=9fdb0b9ebdf9be585252b8970e8863ccc778641b
 
 quay.io/devspaces/udi-rhel8:3.1-16
      NVR: devspaces-udi-rhel8-container-3.1-16
