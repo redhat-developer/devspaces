@@ -115,7 +115,7 @@ computeLatestCSV() {
   fi
   rm -fr /tmp/${SOURCE_CONTAINER//\//-}-${containerTag}-*/
   ${SCRIPTPATH}/containerExtract.sh ${SOURCE_CONTAINER}:${containerTag} --delete-before --delete-after 2>&1 >/dev/null || true
-  if [[ ! -f /tmp/${SOURCE_CONTAINER//\//-}-${containerTag}-*/manifests/devspaces.csv.yaml ]]; then
+  if [[ ! -f $(find /tmp/${SOURCE_CONTAINER//\//-}-${containerTag}-*/manifests -name devspaces.csv.yaml) ]]; then
     echo "[WARN] Container ${SOURCE_CONTAINER}:${containerTag} could not be extracted!"
   else 
     grep -E "devspacesoperator|replaces:" /tmp/${SOURCE_CONTAINER//\//-}-${containerTag}-*/manifests/devspaces.csv.yaml 
