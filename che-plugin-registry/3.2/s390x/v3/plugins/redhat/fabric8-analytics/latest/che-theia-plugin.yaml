@@ -1,0 +1,22 @@
+schemaVersion: 1.0.0
+metadata:
+  id: redhat/fabric8-analytics
+  publisher: redhat
+  name: fabric8-analytics
+  version: latest
+  displayName: Dependency Analytics
+  description: 'Insights about your application dependencies: Security, License compatibility and AI based guidance to choose appropriate dependencies for your application.'
+  repository: https://github.com/fabric8-analytics/fabric8-analytics-vscode-extension
+  categories:
+    - Other
+  icon: /images/redhat-fabric8-analytics-icon.png
+sidecar:
+  image: quay.io/devspaces/udi-rhel8:3.1
+  name: dependency-analytics
+  memoryLimit: 1Gi
+  memoryRequest: 20Mi
+  cpuLimit: 500m
+  cpuRequest: 30m
+dependencies: []
+extensions:
+  - relative:extension/resources/github_com/fabric8-analytics/fabric8-analytics-vscode-extension/releases/download/0_2_1/fabric8-analytics-0.2.1.vsix

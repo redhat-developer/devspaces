@@ -1,0 +1,91 @@
+schemaVersion: 2.1.0
+metadata:
+  name: IntelliJ IDEA Community Edition
+commands:
+  - id: init-container-command
+    apply:
+      component: idea-rhel8-injector
+events:
+  preStart:
+    - init-container-command
+components:
+  - name: idea-rhel8
+    container:
+      image: quay.io/devspaces/udi-rhel8:3.1
+      command:
+        - /projector/entrypoint-volume.sh
+      env:
+        - name: PROJECTOR_ASSEMBLY_DIR
+          value: /projector
+        - name: PROJECTOR_CONFIG_DIR
+          value: /home/user/.jetbrains
+      volumeMounts:
+        - name: projector-volume
+          path: /projector
+        - name: projector-configuration
+          path: /home/user/.jetbrains
+        - name: projector-java-configuration
+          path: /home/user/.java
+      memoryLimit: 6144Mi
+      memoryRequest: 2048Mi
+      cpuLimit: 2000m
+      cpuRequest: 1500m
+      endpoints:
+        - name: intellij
+          attributes:
+            type: main
+            cookiesAuthEnabled: true
+            discoverable: false
+            urlRewriteSupported: true
+            secure: false
+          targetPort: 8887
+          exposure: public
+          path: /?backgroundColor=434343&wss
+          protocol: http
+        - name: intellij-redirect-1
+          attributes:
+            discoverable: false
+            urlRewriteSupported: true
+          targetPort: 13131
+          exposure: public
+          protocol: http
+        - name: intellij-redirect-2
+          attributes:
+            discoverable: false
+            urlRewriteSupported: true
+          targetPort: 13132
+          exposure: public
+          protocol: http
+        - name: intellij-redirect-3
+          attributes:
+            discoverable: false
+            urlRewriteSupported: true
+          targetPort: 13133
+          exposure: public
+          protocol: http
+    attributes:
+      app.kubernetes.io/component: idea-rhel8-injector
+      app.kubernetes.io/part-of: idea-rhel8.eclipse.org
+  - name: projector-volume
+    volume: {}
+  - name: projector-configuration
+    volume: {}
+  - name: projector-java-configuration
+    volume: {}
+  - name: idea-rhel8-injector
+    container:
+      image: quay.io/devspaces/idea-rhel8:3.1
+      command:
+        - /projector/entrypoint-init-container.sh
+      env:
+        - name: PROJECTOR_VOLUME_MOUNT
+          value: /projector-volume
+        - name: PROJECTOR_ASSEMBLY_DIR
+          value: /projector
+      volumeMounts:
+        - name: projector-volume
+          path: /projector-volume
+      memoryLimit: 128Mi
+      memoryRequest: 32Mi
+      cpuLimit: 500m
+      cpuRequest: 30m

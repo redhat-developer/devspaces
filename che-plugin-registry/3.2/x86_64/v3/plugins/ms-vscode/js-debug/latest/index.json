@@ -1,0 +1,23 @@
+apiVersion: v2
+publisher: ms-vscode
+name: js-debug
+version: latest
+type: VS Code extension
+displayName: JavaScript Debugger
+title: JavaScript Debugger
+description: An extension for debugging Node.js programs and Chrome.
+icon: /images/ms-vscode-js-debug-icon.png
+category: Debuggers
+repository: https://github.com/Microsoft/vscode-pwa.git
+firstPublicationDate: '2022-03-04'
+latestUpdateDate: '2022-06-26'
+spec:
+  containers:
+    - image: quay.io/devspaces/udi-rhel8:3.1
+      name: vscode-node-debug
+      memoryLimit: 512Mi
+      memoryRequest: 20Mi
+      cpuRequest: 30m
+      cpuLimit: 500m
+  extensions:
+    - relative:extension/resources/open-vsx_org/api/ms-vscode/js-debug/1_66_0/file/ms-vscode.js-debug-1.66.0.vsix
