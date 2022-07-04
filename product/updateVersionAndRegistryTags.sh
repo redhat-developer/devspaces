@@ -139,7 +139,8 @@ computeLatestPackageVersion() {
       THIS_Y_VALUE="${BASE_VERSION#*.}"; THIS_CHE_Y=$(( (${THIS_Y_VALUE} + 6) * 2 )); THIS_CHE_Y_LOWER=$(( ((${THIS_Y_VALUE} + 6) * 2) - 1 ))
     else
       # new mapping for DS 3.0 = Che 7.46
-      THIS_Y_VALUE="${BASE_VERSION#*.}"; THIS_CHE_Y=$(( (${THIS_Y_VALUE} + 23) * 2 )); THIS_CHE_Y_LOWER=$(( ((${THIS_Y_VALUE} + 23) * 2) - 1 ))
+      # new mapping for DS 3.1 = Che 7.50, DS 3.2 = 7.52...
+      THIS_Y_VALUE="${BASE_VERSION#*.}"; THIS_CHE_Y=$(( (${THIS_Y_VALUE} + 24) * 2 )); THIS_CHE_Y_LOWER=$(( ((${THIS_Y_VALUE} + 24) * 2) - 1 ))
     fi
     # check if .2, .1, .0 version exists in npmjs.com
     for y in $THIS_CHE_Y $THIS_CHE_Y_LOWER; do 
@@ -282,7 +283,7 @@ updateVersion() {
     computeLatestCSV operator-bundle
 
     # TODO CRW-2637 remove this block when we're officially done with 2.15.z
-    if [[ $DEVSPACES_VERSION == "2.14" ]] || [[ $DEVSPACES_VERSION == "2.15" ]]; then
+    if [[ $DEVSPACES_VERSION == "2.15" ]]; then
       # set operator-bundle CSV_VERSION = 2.15.100
       replaceField "${WORKDIR}/dependencies/job-config.json" \
         ".CSVs[\"operator-bundle\"][\"${DEVSPACES_VERSION}\"][\"CSV_VERSION\"]" \
