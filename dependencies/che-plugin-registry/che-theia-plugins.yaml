@@ -143,10 +143,12 @@ plugins:
         - name: m2
           path: /home/user/.m2
     extension: https://github.com/redhat-developer/devspaces-vscode-extensions/releases/download/7.44-che-assets/vscode-microprofile-0.1.1-48.vsix
-  - id: redhat/quarkus-java11
+  - id: redhat/vscode-quarkus
     repository:
       url: 'https://github.com/redhat-developer/vscode-quarkus'
       revision: v1.7.0
+    aliases:
+      - redhat/quarkus-java11
     preferences:
       java.server.launchMode: Standard
     sidecar:
