@@ -11,6 +11,29 @@
         "disabled": true
       }
     },
+    "code": {
+      "3.1": {
+        "upstream_branch": [
+          "main",
+          "main"
+        ],
+        "disabled": false
+      },
+      "3.2": {
+        "upstream_branch": [
+          "main",
+          "main"
+        ],
+        "disabled": false
+      },
+      "3.x": {
+        "upstream_branch": [
+          "main",
+          "main"
+        ],
+        "disabled": false
+      }
+    },
     "configbump": {
       "2.15": {
         "upstream_branch": [
