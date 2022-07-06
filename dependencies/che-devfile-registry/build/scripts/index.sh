@@ -13,13 +13,6 @@ set -e
 readarray -d '' metas < <(find devfiles -name 'meta.yaml' -print0 | sort -z)
 for meta in "${metas[@]}"; do
     META_DIR=$(dirname "${meta}")
-    # Workaround to include self-links, since it's not possible to
-    # get filename in yq easily
-    # Extra links may already be there, so just update with self link
-
-    # Ignore double quotes warning for yq expression
-    # shellcheck disable=SC2016,SC2094
-    cat <<< "$(yq -y --arg metadir "${META_DIR}" '.links |= . + {self: "/\($metadir)/devfile.yaml" }' "${meta}")"  > "${meta}"
     if [ "$(yq '.links.v2' "${meta}")" != "null" ]; then
       # Ignore double quotes warning for yq expression
       # shellcheck disable=SC2016,SC2094

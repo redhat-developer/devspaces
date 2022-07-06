@@ -56,13 +56,13 @@ function run_main() {
   if [ -n "$PUBLIC_URL" ]; then
     echo "Updating devfiles to point at internal project zip files"
     PUBLIC_URL=${PUBLIC_URL%/}
-    sed -i "s|{{ DEVFILE_REGISTRY_URL }}|${PUBLIC_URL}|" "${devfiles[@]}" "${metas[@]}" "${templates[@]}" "$INDEX_JSON"
+    sed -i "s|{{ DEVFILE_REGISTRY_URL }}|${PUBLIC_URL}|" "${metas[@]}" "${templates[@]}" "$INDEX_JSON"
 
     # Add PUBLIC_URL at the begining of 'icon' and 'self' fields
     sed -i "s|\"icon\": \"/images/|\"icon\": \"${PUBLIC_URL}/images/|" "$INDEX_JSON"
     sed -i "s|\"self\": \"/devfiles/|\"self\": \"${PUBLIC_URL}/devfiles/|" "$INDEX_JSON"
   else
-    if grep -q '{{ DEVFILE_REGISTRY_URL }}' "${devfiles[@]}" "${templates[@]}"; then
+    if grep -q '{{ DEVFILE_REGISTRY_URL }}' "${templates[@]}"; then
       echo "WARNING: environment variable 'CHE_DEVFILE_REGISTRY_URL' not configured" \
         "for an offline build of this registry. This may cause issues with importing" \
         "projects in a workspace."
@@ -72,7 +72,7 @@ function run_main() {
       SERVICE_HOST=$(env | grep DEVFILE_REGISTRY_SERVICE_HOST= | cut -d '=' -f 2)
       SERVICE_PORT=$(env | grep DEVFILE_REGISTRY_SERVICE_PORT= | cut -d '=' -f 2)
       URL="http://${SERVICE_HOST}:${SERVICE_PORT}"
-      sed -i "s|{{ DEVFILE_REGISTRY_URL }}|${URL}|" "${devfiles[@]}" "${metas[@]}" "${templates[@]}" "$INDEX_JSON"
+      sed -i "s|{{ DEVFILE_REGISTRY_URL }}|${URL}|" "${metas[@]}" "${templates[@]}" "$INDEX_JSON"
 
       # Add URL at the begining of 'icon' and 'self' fields
       sed -i "s|\"icon\": \"/images/|\"icon\": \"${URL}/images/|" "$INDEX_JSON"
@@ -138,9 +138,9 @@ function extract_and_use_related_images_env_variables_with_image_digest_info() {
       done
     fi
 
-    readarray -t devfiles < <(find "${DEVFILES_DIR}" -name 'devfile.yaml' -o -name 'devworkspace-*.yaml')
-    for devfile in "${devfiles[@]}"; do
-      readarray -t images < <(grep "image:" "${devfile}" | sed -r "s;.*image:[[:space:]]*'?\"?([._:a-zA-Z0-9-]*/?[._a-zA-Z0-9-]*/[._a-zA-Z0-9-]*(@sha256)?:?[._a-zA-Z0-9-]*)'?\"?[[:space:]]*;\1;")
+    readarray -t devworkspaces < <(find "${DEVFILES_DIR}" -name 'devworkspace-*.yaml')
+    for devworkspace in "${devworkspaces[@]}"; do
+      readarray -t images < <(grep "image:" "${devworkspace}" | sed -r "s;.*image:[[:space:]]*'?\"?([._:a-zA-Z0-9-]*/?[._a-zA-Z0-9-]*/[._a-zA-Z0-9-]*(@sha256)?:?[._a-zA-Z0-9-]*)'?\"?[[:space:]]*;\1;")
       for image in "${images[@]}"; do
         separators="${image//[^\/]}"
         # Warning, keep in mind: image without registry name is it possible case. It's mean, that image comes from private registry, where is we have organization name, but no registry name...
@@ -160,7 +160,7 @@ function extract_and_use_related_images_env_variables_with_image_digest_info() {
           fi
 
           REGEX="([[:space:]]*\"?'?)(${imageWithoutTag}):?(${tag})(\"?'?)"
-          sed -i -E "s|image:${REGEX}|image:\1\2${digest}\4|" "${devfile}"
+          sed -i -E "s|image:${REGEX}|image:\1\2${digest}\4|" "${devworkspace}"
         fi
       done
     done
@@ -186,9 +186,9 @@ function extract_and_use_related_images_env_variables_with_image_digest_info() {
       done
       echo "--------------------------------------------------------------"
 
-      readarray -t devfiles < <(find "${DEVFILES_DIR}" -name 'devfile.yaml')
-      for devfile in "${devfiles[@]}"; do
-        readarray -t images < <(grep "image:" "${devfile}" | sed -r "s;.*image:[[:space:]]*'?\"?([._:a-zA-Z0-9-]*/?[._a-zA-Z0-9-]*/[._a-zA-Z0-9-]*(@sha256)?:?[._a-zA-Z0-9-]*)'?\"?[[:space:]]*;\1;")
+      readarray -t devworkspaces < <(find "${DEVFILES_DIR}" -name 'devworkspace-*.yaml')
+      for devworkspace in "${devworkspaces[@]}"; do
+        readarray -t images < <(grep "image:" "${devworkspace}" | sed -r "s;.*image:[[:space:]]*'?\"?([._:a-zA-Z0-9-]*/?[._a-zA-Z0-9-]*/[._a-zA-Z0-9-]*(@sha256)?:?[._a-zA-Z0-9-]*)'?\"?[[:space:]]*;\1;")
         for image in "${images[@]}"; do
           separators="${image//[^\/]}"
           # Warning, keep in mind: image without registry name is it possible case. It's mean, that image comes from private registry, where is we have organization name, but no registry name...
@@ -203,7 +203,7 @@ function extract_and_use_related_images_env_variables_with_image_digest_info() {
               fi
 
               REGEX="([[:space:]]*\"?'?)(${imageWithoutTag}):?(${tag})(\"?'?)"
-              sed -i -E "s|image:${REGEX}|image:\1\2@${digest}\4|" "${devfile}"
+              sed -i -E "s|image:${REGEX}|image:\1\2@${digest}\4|" "${devworkspace}"
             fi
         done
       done
@@ -215,10 +215,9 @@ function update_container_image_references() {
   # We can't use the `-d` option for readarray because
   # registry.centos.org/centos/httpd-24-centos7 ships with Bash 4.2
   # The below command will fail if any path contains whitespace
-  readarray -t devfiles < <(find "${DEVFILES_DIR}" -name 'devfile.yaml')
   readarray -t metas < <(find "${DEVFILES_DIR}" -name 'meta.yaml')
-  readarray -t templates < <(find "${DEVFILES_DIR}" -name 'devworkspace-che-theia-latest.yaml')
-  for file in "${devfiles[@]}" "${metas[@]}" "${templates[@]}"; do
+  readarray -t templates < <(find "${DEVFILES_DIR}" -name 'devworkspace-*.yaml')
+  for file in "${metas[@]}" "${templates[@]}"; do
     echo "Checking $file"
     # Need to update each field separately in case they are not defined.
     # Defaults don't work because registry and tags may be different.
@@ -238,13 +237,12 @@ function update_container_image_references() {
 }
 
 function set_internal_url() {
-  readarray -t devfiles < <(find "${DEVFILES_DIR}" -name 'devfile.yaml')
   readarray -t metas < <(find "${DEVFILES_DIR}" -name 'meta.yaml')
   readarray -t templates < <(find "${DEVFILES_DIR}" -name 'devworkspace-che-theia-latest.yaml')
   if [ -n "$INTERNAL_URL" ]; then
     INTERNAL_URL=${INTERNAL_URL%/}
     echo "Updating internal URL in files to ${INTERNAL_URL}"
-    sed -i "s|{{INTERNAL_URL}}|${INTERNAL_URL}|" "${devfiles[@]}" "${metas[@]}" "${templates[@]}" "$INDEX_JSON"
+    sed -i "s|{{INTERNAL_URL}}|${INTERNAL_URL}|" "${metas[@]}" "${templates[@]}" "$INDEX_JSON"
   fi
 }
 
