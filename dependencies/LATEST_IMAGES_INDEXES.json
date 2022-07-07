@@ -6,6 +6,10 @@
                     "iibURL": "registry-proxy.engineering.redhat.com/rh-osbs/iib:269456",
                     "iibTag": "269456"
                 },
+                "v4.11": {
+                    "iibURL": "registry-proxy.engineering.redhat.com/rh-osbs/iib:269461",
+                    "iibTag": "269461"
+                },
                 "OSBSImage": "registry-proxy.engineering.redhat.com/rh-osbs/devspaces-devspaces-operator-bundle:3.2-15",
                 "quayImage": "quay.io/devspaces/devspaces-operator-bundle:3.2-15",
                 "tag": "3.2-15"
