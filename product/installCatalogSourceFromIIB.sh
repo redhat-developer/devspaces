@@ -29,7 +29,7 @@ usage() {
   cat <<EOF
 This script streamlines testing IIB images by configuring an OpenShift cluster to enable it to use the specified IIB image 
 in a catalog. The CatalogSource is created in the openshift-operators namespaces unless '--namespace' is specified, and
-is named 'iib-testing-operatorName', eg., iib-testing-devspaces or iib-testing-devworkspace
+is named 'iib-testingoperatorName', eg., iib-testingdevspaces or iib-testingdevworkspace-operator
 
 Note: to compute the latest IIB image for a given operator, use ./getLatestIIBs.sh.
 
@@ -143,13 +143,13 @@ cat <<EOF | oc apply -f -
 apiVersion: operators.coreos.com/v1alpha1
 kind: CatalogSource
 metadata:
-  name: iib-testing-${TO_INSTALL}
+  name: iib-testing${TO_INSTALL}
   namespace: $NAMESPACE
 spec:
   sourceType: grpc
   image: ${IIB_IMAGE}
   publisher: IIB testing ${TO_INSTALL}
-  displayName: IIB testing catalog for ${TO_INSTALL}
+  displayName: IIB testing catalog ${TO_INSTALL} 
 EOF
 
 if [ -z "$TO_INSTALL" ]; then
@@ -180,6 +180,6 @@ spec:
   channel: $OLM_CHANNEL
   installPlanApproval: $INSTALL_PLAN_APPROVAL
   name: $TO_INSTALL
-  source: iib-testing-${TO_INSTALL}
+  source: iib-testing${TO_INSTALL}
   sourceNamespace: $NAMESPACE
 EOF

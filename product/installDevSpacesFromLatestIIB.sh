@@ -30,6 +30,10 @@ CREATE_CHECLUSTER="true"
 GET_URL="true"
 DWO_VERSION="" # by default, install from latest release
 
+# subscription channels
+CHANNEL_DWO="fast"
+CHANNEL_DS="stable"
+
 errorf() {
   echo -e "${RED}Error: $1${NC}"
 }
@@ -61,7 +65,10 @@ Options:
                       : For example, given https://console-openshift-console.apps.my-cluster-here.com instance,
                       : use 'my-cluster-here.com' (or longer format: 'api.my-cluster-here.com:6443')
 
-  --dwo <DWO_VERSION> : Dev Workspace Operator version to test, e.g. '0.15'. Optional
+  --dwo <DWO_VERSION>  : Dev Workspace Operator version to test, e.g. '0.15'. Optional
+
+  --dwo-chan <DWO_CHANNEL> : Dev Workspace Operator channel to install; default: $CHANNEL_DWO
+  --ds-chan <DS_CHANNEL>   : Dev Spaces channel to install; default: $CHANNEL_DS
 
   --dsc               : Optional. To install with dsc, use '--dsc 3.1.0-CI' or '--dsc 3.0.0-GA'
                       : Use '--dsc local' to search PATH for installed dsc, or use '--dsc /path/to/dsc/bin/'
@@ -152,6 +159,8 @@ while [[ "$#" -gt 0 ]]; do
   case $1 in
     '-t') DS_VERSION="$2"; shift 1;;
     '--dwo') DWO_VERSION="$2"; shift 1;;
+    '--dwo-chan') CHANNEL_DWO="$2"; shift 1;;
+    '--ds-chan') CHANNEL_DS="$2"; shift 1;;
     '-n') NAMESPACE="$2"; shift 1;;
     '-o') OLM_NAMESPACE="$2"; shift 1;;
     '-kp'|'--kubepwd') KUBE_PWD="$2"; shift 1;;
@@ -183,12 +192,12 @@ echo "Detected OpenShift version v$OPENSHIFT_VER"
 if [[ $DWO_VERSION ]]; then
   LATEST_IIB_DWO=$("$SCRIPT_DIR"/getLatestIIBs.sh --dwo -t "$DWO_VERSION" -o "$OPENSHIFT_VER" -q)
   if [[ $LATEST_IIB_DWO ]]; then
-    echo "[INFO] Found latest DevWorkspace IIB $LATEST_IIB_DWO"
-    # catalog is installed as "iib-testing-devworkspace"
+    echo "[INFO] Found latest DevWorkspace IIB $LATEST_IIB_DWO - installing from $CHANNEL_DWO channel..."
+    # catalog is installed as "iib-testingdevworkspace-operator"
     "$SCRIPT_DIR"/installCatalogSourceFromIIB.sh \
       --iib "$LATEST_IIB_DWO" \
-      --install-operator "devworkspace" \
-      --channel "stable" \
+      --install-operator "devworkspace-operator" \
+      --channel "$CHANNEL_DWO" \
       --namespace "$OLM_NAMESPACE"
   else
     echo "[WARNING] Dev Workspace Operator IIB could not be found for version $DWO_VERSION! Will install latest release instead."
@@ -196,13 +205,13 @@ if [[ $DWO_VERSION ]]; then
 fi
 
 LATEST_IIB_DS=$("$SCRIPT_DIR"/getLatestIIBs.sh   --ds -t "$DS_VERSION"  -o "$OPENSHIFT_VER" -q)
-echo "[INFO] Found latest Dev Spaces IIB $LATEST_IIB_DS"
+echo "[INFO] Found latest Dev Spaces IIB $LATEST_IIB_DS - installing from $CHANNEL_DS channel..."
 
-# catalog is installed as "iib-testing-devspaces"
+# catalog is installed as "iib-testingdevspaces"
 "$SCRIPT_DIR"/installCatalogSourceFromIIB.sh \
   --iib "$LATEST_IIB_DS" \
   --install-operator "devspaces" \
-  --channel "stable" \
+  --channel "$CHANNEL_DS" \
   --namespace "$OLM_NAMESPACE"
 
 elapsed=0
@@ -266,11 +275,15 @@ if [[ $(command -v ${DSC}) ]]; then # use dsc
     echo
     echo "Using dsc from ${DSC}"
     ${DSC} server:delete -y -n "${NAMESPACE}" --listr-renderer=verbose --telemetry=off
-    sleep 30s
+    echo -n "Sleeping for 30s "
+    for _ in {1..6}; do
+      echo -n '.'
+      sleep 5s
+    done
   fi
   echo
   echo "Using dsc from ${DSC}"
-  ${DSC} server:deploy --catalog-source-name=iib-testing-catalog --olm-channel=stable --package-manifest-name=devspaces -n "${NAMESPACE}" --listr-renderer=verbose --telemetry=off
+  ${DSC} server:deploy --catalog-source-name=iib-testingdevspaces --olm-channel=stable --package-manifest-name=devspaces -n "${NAMESPACE}" --listr-renderer=verbose --telemetry=off
 else
   # TODO: add support for custom patch YAML
   if [ -z "$CHECLUSTER_PATH" ]; then
@@ -302,12 +315,23 @@ if [[ $GET_URL != "true" ]]; then
 fi
 
 echo "Waiting for Dev Spaces to install in the cluster. Timeout is 15 minutes."
+# .status = 
+# {
+#   "chePhase": "Active",
+#   "cheURL": "https://devspaces.apps.ci-ln-13tgpm2-72292.origin-ci-int-gce.dev.rhcloud.com",
+#   "cheVersion": "3.1.0",
+#   "devfileRegistryURL": "https://devspaces.apps.ci-ln-13tgpm2-72292.origin-ci-int-gce.dev.rhcloud.com/devfile-registry",
+#   "gatewayPhase": "Established",
+#   "pluginRegistryURL": "https://devspaces.apps.ci-ln-13tgpm2-72292.origin-ci-int-gce.dev.rhcloud.com/plugin-registry/v3",
+#   "postgresVersion": "13.7",
+#   "workspaceBaseDomain": "apps.ci-ln-13tgpm2-72292.origin-ci-int-gce.dev.rhcloud.com"
+# }
 elapsed=0
 inc=5
 for _ in {1..180}; do
   echo -n '.'
-  STATUS=$(oc get checlusters devspaces -n "$NAMESPACE" -o json | jq -r '.status.cheClusterRunning')
-  if [[ "$STATUS" == "Available" ]]; then
+  STATUS=$(oc get checlusters devspaces -n "$NAMESPACE" -o json | jq -r '.status.gatewayPhase')
+  if [[ "$STATUS" == "Established" ]]; then
     break
   fi
   sleep $inc
@@ -319,7 +343,7 @@ echo " $elapsed s elapsed"
 for user in user{1..5}; do oc login -u $user -p "${userPwd}" 2>&1 | grep "Login successful" -q || errorf "could not log in as $user"; done
 for user in admin; do      oc login -u $user -p "${adminPwd}" 2>&1 | grep "Login successful" -q || errorf "could not log in as $user"; done
 
-if [[ "$STATUS" != "Available" ]]; then
+if [[ "$STATUS" != "Established" ]]; then
   errorf "Dev Spaces did not become available before timeout expired"
 else
   echo "Dev Spaces is installed \o/"
