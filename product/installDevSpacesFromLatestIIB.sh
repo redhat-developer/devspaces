@@ -46,7 +46,7 @@ This script will
 1. Get the latest IIB image for specified Dev Spaces version and detected OpenShift version
 2. Create a CatalogSource in an OpenShift Cluster
 3. Install the Dev Spaces Operator from the new CatalogSource
-4. Create 10 dummy OpenShift users from user1 to user10
+4. Create 10 dummy OpenShift users from user1 to user5
 5. Create a CheCluster to install Dev Spaces
 
 Usage: $0 [OPTIONS]
@@ -235,21 +235,22 @@ if [[ "$CREATE_CHECLUSTER" == "false" ]]; then
   exit 0
 fi
 
-# add admin user + user{1..5} to cluster
-export HTPASSWD_FILE=/tmp/htpasswd
-adminPwd="crw4ever!"
-userPwd="openshift"
-if [[ $(command -v htpasswd) ]] && [[ $(command -v bcrypt) ]]; then
-  # using htpasswd + bcrypt hash (-B)
-  for user in admin; do htpasswd -c   -bB $HTPASSWD_FILE "${user}" "${adminPwd}" 2>/dev/null; done
-  for user in user{1..5}; do htpasswd -bB $HTPASSWD_FILE "${user}" "${userPwd}" 2>/dev/null; done
-else
-  errorf "Install htpasswd and bcrypt to create users"
-fi
-htpwd_encoded="$(cat $HTPASSWD_FILE | base64 -w 0)"
-rm -f $HTPASSWD_FILE
+addUsers() {
+  # add admin user + user{1..5} to cluster
+  export HTPASSWD_FILE=/tmp/htpasswd
+  adminPwd="crw4ever!"
+  userPwd="openshift"
+  if [[ $(command -v htpasswd) ]] && [[ $(command -v bcrypt) ]]; then
+    # using htpasswd + bcrypt hash (-B)
+    for user in admin; do htpasswd -c   -bB $HTPASSWD_FILE "${user}" "${adminPwd}" 2>/dev/null; done
+    for user in user{1..5}; do htpasswd -bB $HTPASSWD_FILE "${user}" "${userPwd}" 2>/dev/null; done
+  else
+    errorf "Install htpasswd and bcrypt to create users"
+  fi
+  htpwd_encoded="$(cat $HTPASSWD_FILE | base64 -w 0)"
+  rm -f $HTPASSWD_FILE
 
-cat <<EOF | oc apply -f -
+  cat <<EOF | oc apply -f -
 apiVersion: v1
 kind: Secret
 metadata:
@@ -260,7 +261,7 @@ data:
   htpasswd: ${htpwd_encoded}
 EOF
 
-oc patch oauths cluster --type merge -p '
+  oc patch oauths cluster --type merge -p '
 spec:
   identityProviders:
     - name: htpasswd
@@ -270,6 +271,12 @@ spec:
         fileData:
           name: htpass-secret
 '
+}
+
+if [[ $DELETE_BEFORE != "true" ]] || [[ ! $(command -v ${DSC}) ]]; then 
+  addUsers
+fi
+
 if [[ $(command -v ${DSC}) ]]; then # use dsc
   if [[ $DELETE_BEFORE == "true" ]]; then 
     echo
@@ -284,6 +291,10 @@ if [[ $(command -v ${DSC}) ]]; then # use dsc
   echo
   echo "Using dsc from ${DSC}"
   ${DSC} server:deploy --catalog-source-name=iib-testingdevspaces --olm-channel=stable --package-manifest-name=devspaces -n "${NAMESPACE}" --listr-renderer=verbose --telemetry=off
+
+  if [[ $DELETE_BEFORE == "true" ]]; then 
+    addUsers
+  fi
 else
   # TODO: add support for custom patch YAML
   if [ -z "$CHECLUSTER_PATH" ]; then
