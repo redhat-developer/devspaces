@@ -10,7 +10,10 @@ icon: /images/redhat-vscode-quarkus-icon.png
 category: Programming Languages
 repository: https://github.com/redhat-developer/vscode-quarkus
 firstPublicationDate: '2020-09-21'
-latestUpdateDate: '2022-07-04'
+latestUpdateDate: '2022-07-09'
+deprecate:
+  automigrate: true
+  migrateTo: redhat/vscode-quarkus/latest
 spec:
   containers:
     - image: quay.io/devspaces/udi-rhel8:3.1
