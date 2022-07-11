@@ -202,7 +202,10 @@ if [[ $DWO_VERSION ]]; then
       echo "[ERROR] could not find Dev Workspace Operator IIB for DWO $DWO_VERSION -- use '--iib-dwo' flag to specify an IIB URL from which to install CatalogSource"
       exit 1
     fi
+  elif [[ $IIB_DWO ]]; then
+    echo "[INFO] Requested Dev Workspace Operator IIB $IIB_DWO - installing from $CHANNEL_DWO channel..."
   fi
+fi
 if [[ $IIB_DWO ]]; then
   # catalog is installed as "iib-testingdevworkspace-operator"
   "$SCRIPT_DIR"/installCatalogSourceFromIIB.sh \

@@ -79,7 +79,7 @@ if [ -z "$UPSTREAM_IIB" ]; then
   exit 1
 fi
 IIB_IMAGE="brew.registry.redhat.io/rh-osbs/iib:${UPSTREAM_IIB##*:}"
-echo "Using iib image $IIB_IMAGE mirrored from $UPSTREAM_IIB"
+echo "[INFO] Using iib $TO_INSTALL image $IIB_IMAGE mirrored from $UPSTREAM_IIB"
 
 # Check we're logged into a cluster
 if ! oc whoami > /dev/null 2>&1; then
