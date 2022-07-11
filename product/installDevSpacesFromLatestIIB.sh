@@ -28,6 +28,7 @@ DSC="" # path to dsc binary, if being used
 DELETE_BEFORE="false" # delete any existing installed Dev Spaces using dsc server:delete -y
 CREATE_CHECLUSTER="true"
 GET_URL="true"
+DWO_VERSION="" # by default, install from latest release
 
 errorf() {
   echo -e "${RED}Error: $1${NC}"
@@ -59,6 +60,8 @@ Options:
   -os, --openshift    : If not already connected to an OCP instance, use this api.my-cluster-here.com:6443 URL
                       : For example, given https://console-openshift-console.apps.my-cluster-here.com instance,
                       : use 'my-cluster-here.com' (or longer format: 'api.my-cluster-here.com:6443')
+
+  --dwo <DWO_VERSION> : Dev Workspace Operator version to test, e.g. '0.15'. Optional
 
   --dsc               : Optional. To install with dsc, use '--dsc 3.1.0-CI' or '--dsc 3.0.0-GA'
                       : Use '--dsc local' to search PATH for installed dsc, or use '--dsc /path/to/dsc/bin/'
@@ -148,6 +151,7 @@ preflight() {
 while [[ "$#" -gt 0 ]]; do
   case $1 in
     '-t') DS_VERSION="$2"; shift 1;;
+    '--dwo') DWO_VERSION="$2"; shift 1;;
     '-n') NAMESPACE="$2"; shift 1;;
     '-o') OLM_NAMESPACE="$2"; shift 1;;
     '-kp'|'--kubepwd') KUBE_PWD="$2"; shift 1;;
@@ -176,12 +180,27 @@ preflight
 OPENSHIFT_VER=$(oc version -o json | jq -r '.openshiftVersion | scan("^[0-9].[0-9]+")')
 echo "Detected OpenShift version v$OPENSHIFT_VER"
 
-LATEST_IIB=$("$SCRIPT_DIR"/getLatestIIBs.sh -t "$DS_VERSION" -o "$OPENSHIFT_VER" -q)
-echo "Found latest IIB $LATEST_IIB"
+if [[ $DWO_VERSION ]]; then
+  LATEST_IIB_DWO=$("$SCRIPT_DIR"/getLatestIIBs.sh --dwo -t "$DWO_VERSION" -o "$OPENSHIFT_VER" -q)
+  if [[ $LATEST_IIB_DWO ]]; then
+    echo "[INFO] Found latest DevWorkspace IIB $LATEST_IIB_DWO"
+    # catalog is installed as "iib-testing-devworkspace"
+    "$SCRIPT_DIR"/installCatalogSourceFromIIB.sh \
+      --iib "$LATEST_IIB_DWO" \
+      --install-operator "devworkspace" \
+      --channel "stable" \
+      --namespace "$OLM_NAMESPACE"
+  else
+    echo "[WARNING] Dev Workspace Operator IIB could not be found for version $DWO_VERSION! Will install latest release instead."
+  fi
+fi
 
-# catalog is installed as "iib-testing-catalog"
+LATEST_IIB_DS=$("$SCRIPT_DIR"/getLatestIIBs.sh   --ds -t "$DS_VERSION"  -o "$OPENSHIFT_VER" -q)
+echo "[INFO] Found latest Dev Spaces IIB $LATEST_IIB_DS"
+
+# catalog is installed as "iib-testing-devspaces"
 "$SCRIPT_DIR"/installCatalogSourceFromIIB.sh \
-  --iib "$LATEST_IIB" \
+  --iib "$LATEST_IIB_DS" \
   --install-operator "devspaces" \
   --channel "stable" \
   --namespace "$OLM_NAMESPACE"
