@@ -49,7 +49,7 @@ Options:
 
 DevWorkspace Operator Example:
   $0 \\
-  --iib registry-proxy.engineering.redhat.com/rh-osbs/iib:998765 --install-operator devworkspace --channel stable
+  --iib registry-proxy.engineering.redhat.com/rh-osbs/iib:998765 --install-operator devworkspace-operator --channel fast
 
 Dev Spaces Example:
   $0 \\
