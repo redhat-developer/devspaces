@@ -65,10 +65,12 @@ Options:
                       : For example, given https://console-openshift-console.apps.my-cluster-here.com instance,
                       : use 'my-cluster-here.com' (or longer format: 'api.my-cluster-here.com:6443')
 
-  --dwo <DWO_VERSION>  : Dev Workspace Operator version to test, e.g. '0.15'. Optional
+  --dwo <VERSION>     : Dev Workspace Operator version to test, e.g. '0.15'. Optional
+  --dwo-chan <CHANNEL>: Dev Workspace Operator channel to install; default: $CHANNEL_DWO
+  --iib-dwo <IIB_URL> : Dev Workspace Operator IIB from which to install; default: computed from DWO version
 
-  --dwo-chan <DWO_CHANNEL> : Dev Workspace Operator channel to install; default: $CHANNEL_DWO
-  --ds-chan <DS_CHANNEL>   : Dev Spaces channel to install; default: $CHANNEL_DS
+  --ds-chan <CHANNEL> : Dev Spaces channel to install; default: $CHANNEL_DS
+  --iib-ds <IIB_URL>  : Dev Spaces IIB from which to install; default: computed from DWO version
 
   --dsc               : Optional. To install with dsc, use '--dsc 3.1.0-CI' or '--dsc 3.0.0-GA'
                       : Use '--dsc local' to search PATH for installed dsc, or use '--dsc /path/to/dsc/bin/'
@@ -176,6 +178,8 @@ while [[ "$#" -gt 0 ]]; do
           DSC=$(command -v dsc)
         fi
       fi; shift 1;;
+    '--iib-dwo') IIB_DWO="$2"; shift 1;;
+    '--iib-ds') IIB_DS="$2"; shift 1;;
     '--delete-before') DELETE_BEFORE="true";;
     '--get-url') GET_URL="true";;
     '--no-get-url') GET_URL="false";;
@@ -190,26 +194,39 @@ OPENSHIFT_VER=$(oc version -o json | jq -r '.openshiftVersion | scan("^[0-9].[0-
 echo "Detected OpenShift version v$OPENSHIFT_VER"
 
 if [[ $DWO_VERSION ]]; then
-  LATEST_IIB_DWO=$("$SCRIPT_DIR"/getLatestIIBs.sh --dwo -t "$DWO_VERSION" -o "$OPENSHIFT_VER" -q)
-  if [[ $LATEST_IIB_DWO ]]; then
-    echo "[INFO] Found latest DevWorkspace IIB $LATEST_IIB_DWO - installing from $CHANNEL_DWO channel..."
-    # catalog is installed as "iib-testingdevworkspace-operator"
-    "$SCRIPT_DIR"/installCatalogSourceFromIIB.sh \
-      --iib "$LATEST_IIB_DWO" \
-      --install-operator "devworkspace-operator" \
-      --channel "$CHANNEL_DWO" \
-      --namespace "$OLM_NAMESPACE"
-  else
-    echo "[WARNING] Dev Workspace Operator IIB could not be found for version $DWO_VERSION! Will install latest release instead."
+  if [[ ! $IIB_DWO ]] && [[ $DWO_VERSION ]]; then # compute the latest IIB for the DWO version passed in
+    IIB_DWO=$("$SCRIPT_DIR"/getLatestIIBs.sh --dwo -t "$DWO_VERSION" -o "$OPENSHIFT_VER" -q)
+    if [[ $IIB_DWO ]]; then
+      echo "[INFO] Found latest Dev Workspace Operator IIB $IIB_DWO - installing from $CHANNEL_DWO channel..."
+    else
+      echo "[ERROR] could not find Dev Workspace Operator IIB for DWO $DWO_VERSION -- use '--iib-dwo' flag to specify an IIB URL from which to install CatalogSource"
+      exit 1
+    fi
   fi
+if [[ $IIB_DWO ]]; then
+  # catalog is installed as "iib-testingdevworkspace-operator"
+  "$SCRIPT_DIR"/installCatalogSourceFromIIB.sh \
+    --iib "$IIB_DWO" \
+    --install-operator "devworkspace-operator" \
+    --channel "$CHANNEL_DWO" \
+    --namespace "$OLM_NAMESPACE"
 fi
 
-LATEST_IIB_DS=$("$SCRIPT_DIR"/getLatestIIBs.sh   --ds -t "$DS_VERSION"  -o "$OPENSHIFT_VER" -q)
-echo "[INFO] Found latest Dev Spaces IIB $LATEST_IIB_DS - installing from $CHANNEL_DS channel..."
+if [[ ! $IIB_DS ]]; then
+  IIB_DS=$("$SCRIPT_DIR"/getLatestIIBs.sh   --ds -t "$DS_VERSION"  -o "$OPENSHIFT_VER" -q)
+  if [[ $IIB_DS ]]; then 
+    echo "[INFO] Found latest Dev Spaces IIB $IIB_DS - installing from $CHANNEL_DS channel..."
+  else
+    echo "[ERROR] could not find Dev Spaces IIB -- use '--iib-ds' flag to specify an IIB URL from which to install CatalogSource"
+    exit 1
+  fi
+else
+  echo "[INFO] Requested Dev Spaces IIB $IIB_DS - installing from $CHANNEL_DS channel..."
+fi
 
 # catalog is installed as "iib-testingdevspaces"
 "$SCRIPT_DIR"/installCatalogSourceFromIIB.sh \
-  --iib "$LATEST_IIB_DS" \
+  --iib "$IIB_DS" \
   --install-operator "devspaces" \
   --channel "$CHANNEL_DS" \
   --namespace "$OLM_NAMESPACE"
