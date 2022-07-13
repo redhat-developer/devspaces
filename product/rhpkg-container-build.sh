@@ -27,12 +27,7 @@ while [[ "$#" -gt 0 ]]; do
   '-s') SOURCEDIR="$2"; SOURCEDIR="${SOURCEDIR%/}"; shift 1;;
   '-l') LOGFILE="$2"; shift 1;;
   '-v') VERBOSE=1; shift 0;;
-  '--scratch') SCRATCH_FLAGS="--scratch"; SCRATCH_BRANCH="$(git rev-parse --abbrev-ref HEAD)"
-    if [[ $SCRATCH_BRANCH == "*devspaces-"*"rhel-"* ]]; then
-      SCRATCH_FLAGS="${SCRATCH_FLAGS} --target $SCRATCH_BRANCH"
-    else
-      SCRATCH_FLAGS="${SCRATCH_FLAGS} --target devspaces-3-rhel-8"
-    fi; shift 0;;
+  '--scratch') SCRATCH_FLAGS="--scratch"; shift 0;;
   *) JOB_BRANCH="$1"; shift 0;;
   esac
   shift 1
@@ -49,6 +44,14 @@ if [[ ${doRhpkgContainerBuild} -eq 1 ]]; then
   if [[ ! ${JOB_BRANCH} ]]; then 
     JOB_BRANCH=$(git rev-parse --abbrev-ref HEAD || true); JOB_BRANCH=${JOB_BRANCH//devspaces-}; JOB_BRANCH=${JOB_BRANCH%%-rhel*}
     if [[ ${JOB_BRANCH} == "3" ]]; then JOB_BRANCH="3.x"; fi
+  fi
+
+  if [[ $SCRATCH_FLAGS ]]; then
+    if [[ $JOB_BRANCH == "3.x" ]]; then 
+      SCRATCH_FLAGS="${SCRATCH_FLAGS} --target devspaces-3-rhel-8"
+    else
+      SCRATCH_FLAGS="${SCRATCH_FLAGS} --target devspaces-${JOB_BRANCH}-rhel-8"
+    fi
   fi
 
   pushd ${SOURCEDIR} >/dev/null
