@@ -12,6 +12,7 @@ usage () {
 
 VERBOSE=0
 CLEANUP=1
+SCRATCH_FLAGS=""
 doRhpkgContainerBuild=1
 
 if [[ ! $WORKSPACE ]]; then
@@ -26,6 +27,7 @@ while [[ "$#" -gt 0 ]]; do
   '-s') SOURCEDIR="$2"; SOURCEDIR="${SOURCEDIR%/}"; shift 1;;
   '-l') LOGFILE="$2"; shift 1;;
   '-v') VERBOSE=1; shift 0;;
+  '--scratch') SCRATCH_FLAGS="--scratch --target $(git rev-parse --abbrev-ref HEAD || "devspaces-3-rhel-8")"; shift 0;;
     *) JOB_BRANCH="$1"; shift 0;;
   esac
   shift 1
@@ -43,11 +45,12 @@ if [[ ${doRhpkgContainerBuild} -eq 1 ]]; then
     JOB_BRANCH=$(git rev-parse --abbrev-ref HEAD || true); JOB_BRANCH=${JOB_BRANCH//devspaces-}; JOB_BRANCH=${JOB_BRANCH%%-rhel*}
     if [[ ${JOB_BRANCH} == "3" ]]; then JOB_BRANCH="3.x"; fi
   fi
+
   pushd ${SOURCEDIR} >/dev/null
     # REQUIRE: rhpkg
     # get latest from Jenkins, then trigger a new OSBS build. Note: do not wrap JOB_BRANCH in quotes in case it includes trailing \n
     if [[ -f get-sources.sh ]]; then 
-      ./get-sources.sh --force-build ${JOB_BRANCH} | tee "${LOGFILE}"
+      ./get-sources.sh ${SCRATCH_FLAGS} --force-build ${JOB_BRANCH} | tee "${LOGFILE}"
     else 
       echo "[ERROR] Could not run get-sources.sh!"; exit 1
     fi
