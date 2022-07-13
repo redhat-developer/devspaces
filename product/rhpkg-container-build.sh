@@ -27,8 +27,13 @@ while [[ "$#" -gt 0 ]]; do
   '-s') SOURCEDIR="$2"; SOURCEDIR="${SOURCEDIR%/}"; shift 1;;
   '-l') LOGFILE="$2"; shift 1;;
   '-v') VERBOSE=1; shift 0;;
-  '--scratch') SCRATCH_FLAGS="--scratch --target $(git rev-parse --abbrev-ref HEAD || "devspaces-3-rhel-8")"; shift 0;;
-    *) JOB_BRANCH="$1"; shift 0;;
+  '--scratch') SCRATCH_FLAGS="--scratch"; SCRATCH_BRANCH="$(git rev-parse --abbrev-ref HEAD)"
+    if [[ $SCRATCH_BRANCH == "*devspaces-"*"rhel-"* ]]; then
+      SCRATCH_FLAGS="${SCRATCH_FLAGS} --target $SCRATCH_BRANCH"
+    else
+      SCRATCH_FLAGS="${SCRATCH_FLAGS} --target devspaces-3-rhel-8"
+    fi; shift 0;;
+  *) JOB_BRANCH="$1"; shift 0;;
   esac
   shift 1
 done
