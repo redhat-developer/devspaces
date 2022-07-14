@@ -48,9 +48,9 @@ if [[ ${doRhpkgContainerBuild} -eq 1 ]]; then
 
   if [[ $SCRATCH_FLAGS ]]; then
     if [[ $JOB_BRANCH == "3.x" ]]; then 
-      SCRATCH_FLAGS="${SCRATCH_FLAGS} --target devspaces-3-rhel-8"
+      SCRATCH_FLAGS="${SCRATCH_FLAGS} --target devspaces-3-rhel-8-containers-candidate"
     else
-      SCRATCH_FLAGS="${SCRATCH_FLAGS} --target devspaces-${JOB_BRANCH}-rhel-8"
+      SCRATCH_FLAGS="${SCRATCH_FLAGS} --target devspaces-${JOB_BRANCH}-rhel-8-containers-candidate"
     fi
   fi
 
