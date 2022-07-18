@@ -27,6 +27,7 @@ DSC_OPTION="" # commandline options include version, existing install path, or '
 DSC="" # path to dsc binary, if being used
 DELETE_BEFORE="false" # delete any existing installed Dev Spaces using dsc server:delete -y
 CREATE_CHECLUSTER="true"
+CREATE_USERS="false"
 GET_URL="true"
 DWO_VERSION="" # by default, install from latest release
 
@@ -57,6 +58,8 @@ Options:
   -n <NAMESPACE>      : Namespace into which to install CheCluster + Dev Spaces. Default: $NAMESPACE
   --checluster <PATH> : use CheCluster yaml defined at path instead of default. Optional
   --no-checluster     : Do not create CheCluster (use dsc later to create a custom one)
+  --create-users      : Add admin user + user{1..5} to cluster
+  --no-create-users   : Do not add admin user + user{1..5} to cluster (default)
   --get-url           : Wait for Dev Spaces to install and print URL for dashboard (default)
   --no-get-url        : Don't wait for Dev Spaces to install and print URL for dashboard
 
@@ -169,6 +172,8 @@ while [[ "$#" -gt 0 ]]; do
     '-os'|'--openshift')   OCP_URL="$2"; shift 1;;
     '--checluster') CHECLUSTER_PATH="$2"; shift 1;;
     '--no-checluster') CREATE_CHECLUSTER="false";;
+    '--create-users') CREATE_USERS="true";;
+    '--no-create-users') CREATE_USERS="false";;
     '--dsc') DSC_OPTION="$2";
       if [[ $DSC_OPTION == "" ]] || [[ $DSC_OPTION == "local" ]]; then # can omit "local" and still check PATH for dsc binary
         if [[ ! $(command -v dsc) ]]; then 
@@ -255,22 +260,23 @@ if [[ "$CREATE_CHECLUSTER" == "false" ]]; then
   exit 0
 fi
 
-addUsers() {
-  # add admin user + user{1..5} to cluster
-  export HTPASSWD_FILE=/tmp/htpasswd
-  adminPwd="crw4ever!"
-  userPwd="openshift"
-  if [[ $(command -v htpasswd) ]] && [[ $(command -v bcrypt) ]]; then
-    # using htpasswd + bcrypt hash (-B)
-    for user in admin; do htpasswd -c   -bB $HTPASSWD_FILE "${user}" "${adminPwd}" 2>/dev/null; done
-    for user in user{1..5}; do htpasswd -bB $HTPASSWD_FILE "${user}" "${userPwd}" 2>/dev/null; done
-  else
-    errorf "Install htpasswd and bcrypt to create users"
-  fi
-  htpwd_encoded="$(cat $HTPASSWD_FILE | base64 -w 0)"
-  rm -f $HTPASSWD_FILE
+# add admin user + user{1..5} to cluster
+createUsers() {
+  if [[ $CREATE_USERS == "true" ]]; then
+    export HTPASSWD_FILE=/tmp/htpasswd
+    adminPwd="crw4ever!"
+    userPwd="openshift"
+    if [[ $(command -v htpasswd) ]] && [[ $(command -v bcrypt) ]]; then
+      # using htpasswd + bcrypt hash (-B)
+      for user in admin; do htpasswd -c   -bB $HTPASSWD_FILE "${user}" "${adminPwd}" 2>/dev/null; done
+      for user in user{1..5}; do htpasswd -bB $HTPASSWD_FILE "${user}" "${userPwd}" 2>/dev/null; done
+    else
+      errorf "Install htpasswd and bcrypt to create users"
+    fi
+    htpwd_encoded="$(cat $HTPASSWD_FILE | base64 -w 0)"
+    rm -f $HTPASSWD_FILE
 
-  cat <<EOF | oc apply -f -
+    cat <<EOF | oc apply -f -
 apiVersion: v1
 kind: Secret
 metadata:
@@ -281,7 +287,7 @@ data:
   htpasswd: ${htpwd_encoded}
 EOF
 
-  oc patch oauths cluster --type merge -p '
+    oc patch oauths cluster --type merge -p '
 spec:
   identityProviders:
     - name: htpasswd
@@ -291,10 +297,11 @@ spec:
         fileData:
           name: htpass-secret
 '
+  fi
 }
 
 if [[ $DELETE_BEFORE != "true" ]] || [[ ! $(command -v ${DSC}) ]]; then 
-  addUsers
+  createUsers
 fi
 
 if [[ $(command -v ${DSC}) ]]; then # use dsc
@@ -313,7 +320,7 @@ if [[ $(command -v ${DSC}) ]]; then # use dsc
   ${DSC} server:deploy --catalog-source-name=iib-testingdevspaces --olm-channel=stable --package-manifest-name=devspaces -n "${NAMESPACE}" --listr-renderer=verbose --telemetry=off
 
   if [[ $DELETE_BEFORE == "true" ]]; then 
-    addUsers
+    createUsers
   fi
 else
   # TODO: add support for custom patch YAML
