@@ -47,7 +47,7 @@ This script will
 1. Get the latest IIB image for specified Dev Spaces version and detected OpenShift version
 2. Create a CatalogSource in an OpenShift Cluster
 3. Install the Dev Spaces Operator from the new CatalogSource
-4. Create 10 dummy OpenShift users from user1 to user5
+4. Create 5 dummy OpenShift users from user1 to user5
 5. Create a CheCluster to install Dev Spaces
 
 Usage: $0 [OPTIONS]
