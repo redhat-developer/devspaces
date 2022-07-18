@@ -12,7 +12,7 @@ components:
     id: redhat/vscode-yaml/latest
   - alias: registry-dev
     type: dockerimage
-    image: 'quay.io/devspaces/devfileregistry-dev:latest'
+    image: 'registry.redhat.io/devspaces/devfileregistry-dev:latest'
     mountSources: true
     memoryLimit: 1Gi
 commands:
