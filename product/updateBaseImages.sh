@@ -272,39 +272,43 @@ for d in $(find "${WORKDIR}/" -maxdepth "${MAXDEPTH}" -name "${DOCKERFILE}" | so
 					fi
 					# TODO: try using testvercomp against the full tag versions w/ suffixes, eg., 8.16.0-0 ">" 8.15.1-1.1554788812
 					if [[ "${LATE_TAGver}" != "${CURR_TAGver}" ]] || [[ ${LATE_TAGrevbase} -gt ${CURR_TAGrevbase} ]] || [[ ${LATE_TAGrevsuf} -gt ${CURR_TAGrevsuf} ]]; then
-						testvercomp "${LATE_TAGver}" ">" "${CURR_TAGver}"
-						if [[ "${testvercomp_return}" == "true" ]] || [[ ${LATE_TAGrevsuf} -ge ${CURR_TAGrevsuf} ]] || [[ ${LATE_TAGrevbase} -gt ${CURR_TAGrevbase} ]]; then # fix the ${DOCKERFILE}
-							echo "++ $d "
-							# only replace the URL if padded with a prefix space or slash, and ending with a space or newline; this avoids doing the same replacement twice in the same file
-							# which would result in ubi8/nodejs-12:1-102.1638363923.1638363923 instead of ubi8/nodejs-12:1-102.1638363923
-							sed -r -i -e "s#( |/)${URL}( |$)#\1${FROMPREFIX}:${LATESTTAG}\2#g" "$d"
+						if [[ $LATE_TAGver != "???" ]]; then
+							testvercomp "${LATE_TAGver}" ">" "${CURR_TAGver}"
+							if [[ "${testvercomp_return}" == "true" ]] || [[ ${LATE_TAGrevsuf} -ge ${CURR_TAGrevsuf} ]] || [[ ${LATE_TAGrevbase} -gt ${CURR_TAGrevbase} ]]; then # fix the ${DOCKERFILE}
+								echo "++ $d "
+								# only replace the URL if padded with a prefix space or slash, and ending with a space or newline; this avoids doing the same replacement twice in the same file
+								# which would result in ubi8/nodejs-12:1-102.1638363923.1638363923 instead of ubi8/nodejs-12:1-102.1638363923
+								sed -r -i -e "s#( |/)${URL}( |$)#\1${FROMPREFIX}:${LATESTTAG}\2#g" "$d"
 
-							# commit change and push it
-							if [[ -d ${d%%/${DOCKERFILE}} ]]; then pushd "${d%%/${DOCKERFILE}}" >/dev/null; pushedIn=1; fi
-							if [[ ${docommit} -eq 1 ]]; then 
-								git add "${DOCKERFILE}" || true
-								git commit -s -m "chore: Update from ${URL} to ${FROMPREFIX}:${LATESTTAG}" "${DOCKERFILE}"
-								if [[ ${dopronly} -eq 1 ]]; then
-									createPr "${PR_BRANCH}" "${BRANCHUSED}"
-								else
-									if [[ ${dopush} -eq 1 ]]; then
-										git pull origin "${BRANCHUSED}"
-										PUSH_TRY="$(git push origin "${BRANCHUSED}" 2>&1 || true)"
-										# shellcheck disable=SC2181
-										if [[ $? -gt 0 ]] || [[ $PUSH_TRY == *"protected branch hook declined"* ]]; then
-											# create pull request if target branch is restricted access
-											createPr "${PR_BRANCH}" "${BRANCHUSED}"
+								# commit change and push it
+								if [[ -d ${d%%/${DOCKERFILE}} ]]; then pushd "${d%%/${DOCKERFILE}}" >/dev/null; pushedIn=1; fi
+								if [[ ${docommit} -eq 1 ]]; then 
+									git add "${DOCKERFILE}" || true
+									git commit -s -m "chore: Update from ${URL} to ${FROMPREFIX}:${LATESTTAG}" "${DOCKERFILE}"
+									if [[ ${dopronly} -eq 1 ]]; then
+										createPr "${PR_BRANCH}" "${BRANCHUSED}"
+									else
+										if [[ ${dopush} -eq 1 ]]; then
+											git pull origin "${BRANCHUSED}"
+											PUSH_TRY="$(git push origin "${BRANCHUSED}" 2>&1 || true)"
+											# shellcheck disable=SC2181
+											if [[ $? -gt 0 ]] || [[ $PUSH_TRY == *"protected branch hook declined"* ]]; then
+												# create pull request if target branch is restricted access
+												createPr "${PR_BRANCH}" "${BRANCHUSED}"
+											fi
 										fi
 									fi
 								fi
+								if [[ ${buildCommand} != "echo" ]] || [[ $VERBOSE -eq 1 ]]; then echo "# ${buildCommand}"; fi
+								${buildCommand} &
+								echo
+								if [[ ${pushedIn} -eq 1 ]]; then popd >/dev/null; pushedIn=0; fi
+								fixedFiles="${fixedFiles} $d"
+							else
+								echo "# No change applied for ${URL} -> ${LATESTTAG}"
 							fi
-							if [[ ${buildCommand} != "echo" ]] || [[ $VERBOSE -eq 1 ]]; then echo "# ${buildCommand}"; fi
-							${buildCommand} &
-							echo
-							if [[ ${pushedIn} -eq 1 ]]; then popd >/dev/null; pushedIn=0; fi
-							fixedFiles="${fixedFiles} $d"
 						else
-							echo "# No change applied for ${URL} -> ${LATESTTAG}"
+							echo "# Error reading registry from: $GLIT"
 						fi
 					fi
 				fi
