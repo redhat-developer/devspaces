@@ -176,12 +176,12 @@ fi
     ''')
   }
   // NOTE: b = sources branch, sb = scripts branch
-  // TODO CRW-1511 sometimes updateBaseImages gets a 404 instead of a valid script for getLatestImageTags. Why? 
+  // TODO - https://issues.redhat.com/browse/CRW-3153 connection on x86_64-rhel8-3640 OK, fails on cpt-ppc-006, so enable -v (verbose) flag so we can see what's happening more clearly
   updateBaseImages_cmd='''
 echo "[INFO] util.groovy :: updateBaseImages :: SOURCES_BRANCH = ''' + SOURCES_BRANCH + '''"
 echo "[INFO] util.groovy :: updateBaseImages :: SCRIPTS_BRANCH = ''' + SCRIPTS_BRANCH + '''"
 cd ''' + REPO_PATH + '''
-''' + updateBaseImages_bin + ''' --sources-branch ''' + SOURCES_BRANCH + ''' --scripts-branch ''' + SCRIPTS_BRANCH + ''' ''' + FLAGS + ''' || true
+''' + updateBaseImages_bin + ''' -v --sources-branch ''' + SOURCES_BRANCH + ''' --scripts-branch ''' + SCRIPTS_BRANCH + ''' ''' + FLAGS + ''' || true
 '''
   is_pkgsdevel = sh(script: '''#!/bin/bash -xe
 cd ''' + REPO_PATH + '''; git remote -v | grep pkgs.devel.redhat.com || true''', returnStdout: true).trim()
