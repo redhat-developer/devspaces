@@ -171,9 +171,10 @@ pushBranchAndOrTagGH () {
 		popd >/dev/null || exit 1
 	fi
 	pushd /tmp/tmp-checkouts/projects_${d} >/dev/null || exit 1
-	if [[ ${SOURCE_BRANCH} ]]; then # push a new branch (or no-op if exists)
-		# create a branch or use existing, should fail if we can't do either
-		git branch ${TARGET_BRANCH} || git checkout ${TARGET_BRANCH}
+	if [[ ${SOURCE_BRANCH} ]]; then 
+		# create a branch or use existing
+		git branch ${TARGET_BRANCH} || true
+		git checkout ${TARGET_BRANCH}
 
 		# for the devspaces main repo, update devfiles to point to the correct tag/branch
 		if [[ $d == "devspaces" ]]; then
