@@ -64,6 +64,7 @@ checkVersion() {
 checkVersion 1.1 "$(skopeo --version | sed -e "s/skopeo version //")" skopeo
 
 DS_CONTAINERS="\
+devspaces/code-rhel8 \
 devspaces/configbump-rhel8 \
 devspaces/devspaces-rhel8-operator \
 devspaces/devspaces-operator-bundle \
@@ -71,7 +72,6 @@ devspaces/dashboard-rhel8 \
 devspaces/devfileregistry-rhel8 \
 \
 devspaces/idea-rhel8 \
-devspaces/code-rhel8 \
 devspaces/imagepuller-rhel8 \
 devspaces/machineexec-rhel8 \
 devspaces/pluginregistry-rhel8 \

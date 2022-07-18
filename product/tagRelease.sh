@@ -199,16 +199,16 @@ pushBranchAndOrTagGH () {
 # tag pkgs.devel repos only (branches are created by SPMM ticket, eg., https://projects.engineering.redhat.com/browse/SPMM-2517)
 if [[ ${pkgs_devel_branch} ]] && [[ ${CSV_VERSION} ]]; then
 	for repo in \
+	devspaces-code \
 	devspaces-configbump \
-	devspaces-operator \
-	devspaces-operator-bundle \
 	devspaces-dashboard \
 	devspaces-devfileregistry \
-	\
 	devspaces-idea \
-	devspaces-code \
+	\
 	devspaces-imagepuller \
 	devspaces-machineexec \
+	devspaces-operator \
+	devspaces-operator-bundle \
 	devspaces-pluginregistry \
 	devspaces-server \
 	\

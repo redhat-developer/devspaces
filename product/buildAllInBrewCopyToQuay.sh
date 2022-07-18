@@ -79,11 +79,11 @@ doBuild () {
 }
 
 if [[ $PHASES == *"1"* ]]; then 
-    doBuild "devspaces-configbump \
+    doBuild "devspaces-code \
+        devspaces-configbump \
         devspaces-dashboard \
         devspaces-devfileregistry \
         devspaces-idea \
-        devspaces-code \
         devspaces-imagepuller \
         devspaces-machineexec \
         devspaces-operator \
