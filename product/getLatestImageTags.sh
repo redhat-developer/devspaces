@@ -71,6 +71,7 @@ devspaces/dashboard-rhel8 \
 devspaces/devfileregistry-rhel8 \
 \
 devspaces/idea-rhel8 \
+devspaces/code-rhel8 \
 devspaces/imagepuller-rhel8 \
 devspaces/machineexec-rhel8 \
 devspaces/pluginregistry-rhel8 \

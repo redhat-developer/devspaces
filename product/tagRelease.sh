@@ -206,6 +206,7 @@ if [[ ${pkgs_devel_branch} ]] && [[ ${CSV_VERSION} ]]; then
 	devspaces-devfileregistry \
 	\
 	devspaces-idea \
+	devspaces-code \
 	devspaces-imagepuller \
 	devspaces-machineexec \
 	devspaces-pluginregistry \

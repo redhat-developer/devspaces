@@ -174,6 +174,7 @@ if [[ ${phases} == *"1"* ]]; then
 	devspaces-devfileregistry \
 	\
 	devspaces-idea \
+	devspaces-code \
 	devspaces-imagepuller \
 	devspaces-machineexec \
 	devspaces-pluginregistry \
