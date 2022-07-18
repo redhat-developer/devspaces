@@ -175,6 +175,7 @@ pushBranchAndOrTagGH () {
 		# create a branch or use existing
 		git branch ${TARGET_BRANCH} || true
 		git checkout ${TARGET_BRANCH}
+		git pull origin ${TARGET_BRANCH} || true
 
 		# for the devspaces main repo, update devfiles to point to the correct tag/branch
 		if [[ $d == "devspaces" ]]; then
