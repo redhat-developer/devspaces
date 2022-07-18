@@ -402,6 +402,19 @@
     "version": "latest"
   },
   {
+    "id": "redhat/vscode-quarkus/latest",
+    "description": "Quarkus Tools for Visual Studio Code",
+    "displayName": "Quarkus",
+    "links": {
+      "self": "/v3/plugins/redhat/vscode-quarkus/latest",
+      "plugin": "/v3/plugins/redhat/vscode-quarkus/latest/che-theia-plugin.yaml"
+    },
+    "name": "vscode-quarkus",
+    "publisher": "redhat",
+    "type": "VS Code extension",
+    "version": "latest"
+  },
+  {
     "id": "redhat/vscode-xml/latest",
     "description": "XML Language Support by Red Hat",
     "displayName": "XML",
