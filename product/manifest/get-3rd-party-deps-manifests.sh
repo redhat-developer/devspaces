@@ -167,15 +167,16 @@ fi
 if [[ ${phases} == *"1"* ]]; then
 	log "1b. Define list of upstream containers & RPMs pulled into them from https://pkgs.devel.redhat.com/cgit/?q=devspaces "
 	for d in \
+	devspaces-code \
 	devspaces-configbump \
-	devspaces-operator \
-	devspaces-operator-bundle \
 	devspaces-dashboard \
 	devspaces-devfileregistry \
-	\
 	devspaces-idea \
+	\
 	devspaces-imagepuller \
 	devspaces-machineexec \
+	devspaces-operator \
+	devspaces-operator-bundle \
 	devspaces-pluginregistry \
 	devspaces-server \
 	\
