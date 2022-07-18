@@ -11,7 +11,7 @@ events:
 components:
   - name: theia-ide
     container:
-      image: quay.io/devspaces/theia-rhel8:3.1
+      image: registry.redhat.io/devspaces/theia-rhel8:3.1
       env:
         - name: THEIA_PLUGINS
           value: local-dir:///plugins
@@ -109,7 +109,7 @@ components:
     volume: {}
   - name: che-machine-exec
     container:
-      image: quay.io/devspaces/machineexec-rhel8:3.1
+      image: registry.redhat.io/devspaces/machineexec-rhel8:3.1
       command:
         - /go/bin/che-machine-exec
         - '--url'
@@ -123,7 +123,7 @@ components:
     attributes: {}
   - name: remote-runtime-injector
     container:
-      image: quay.io/devspaces/theia-endpoint-rhel8:3.1
+      image: registry.redhat.io/devspaces/theia-endpoint-rhel8:3.1
       env:
         - name: PLUGIN_REMOTE_ENDPOINT_EXECUTABLE
           value: /remote-endpoint/plugin-remote-endpoint

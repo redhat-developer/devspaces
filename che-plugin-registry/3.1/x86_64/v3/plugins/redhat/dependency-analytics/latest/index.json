@@ -16,7 +16,7 @@ deprecate:
   migrateTo: redhat/fabric8-analytics/latest
 spec:
   containers:
-    - image: quay.io/devspaces/udi-rhel8:3.1
+    - image: registry.redhat.io/devspaces/udi-rhel8:3.1
       name: dependency-analytics
       memoryLimit: 1Gi
       memoryRequest: 20Mi

@@ -12,7 +12,7 @@ metadata:
     - Other
   icon: /images/redhat-vscode-quarkus-icon.png
 sidecar:
-  image: quay.io/devspaces/udi-rhel8:3.1
+  image: registry.redhat.io/devspaces/udi-rhel8:3.1
   name: vscode-quarkus
   memoryLimit: 3500Mi
   memoryRequest: 20Mi

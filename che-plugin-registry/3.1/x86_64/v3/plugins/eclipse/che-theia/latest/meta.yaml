@@ -85,7 +85,7 @@ spec:
         secure: true
       public: true
   containers:
-    - image: quay.io/devspaces/theia-rhel8:3.1
+    - image: registry.redhat.io/devspaces/theia-rhel8:3.1
       env:
         - name: THEIA_PLUGINS
           value: local-dir:///plugins
@@ -111,7 +111,7 @@ spec:
         - exposedPort: 13131
         - exposedPort: 13132
         - exposedPort: 13133
-    - image: quay.io/devspaces/machineexec-rhel8:3.1
+    - image: registry.redhat.io/devspaces/machineexec-rhel8:3.1
       memoryLimit: 128Mi
       memoryRequest: 32Mi
       cpuLimit: 500m
@@ -126,7 +126,7 @@ spec:
       ports:
         - exposedPort: 3333
   initContainers:
-    - image: quay.io/devspaces/theia-endpoint-rhel8:3.1
+    - image: registry.redhat.io/devspaces/theia-endpoint-rhel8:3.1
       memoryLimit: 128Mi
       memoryRequest: 32Mi
       cpuLimit: 500m

@@ -13,7 +13,7 @@ firstPublicationDate: '2021-07-21'
 latestUpdateDate: '2022-07-18'
 spec:
   containers:
-    - image: quay.io/devspaces/udi-rhel8:3.1
+    - image: registry.redhat.io/devspaces/udi-rhel8:3.1
       name: vscode-camelk
       memoryLimit: 1.5Gi
       memoryRequest: 20Mi

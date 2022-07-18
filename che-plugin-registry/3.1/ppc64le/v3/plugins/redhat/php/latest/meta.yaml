@@ -16,7 +16,7 @@ deprecate:
   migrateTo: bmewburn/vscode-intelephense-client/latest
 spec:
   containers:
-    - image: quay.io/devspaces/udi-rhel8:3.1
+    - image: registry.redhat.io/devspaces/udi-rhel8:3.1
       name: php-intelephense
       memoryLimit: 1Gi
       memoryRequest: 20Mi

@@ -11,7 +11,7 @@ metadata:
     - Debuggers
   icon: /images/felixfbecker-php-debug-icon.png
 sidecar:
-  image: quay.io/devspaces/udi-rhel8:3.1
+  image: registry.redhat.io/devspaces/udi-rhel8:3.1
   name: php-debugger
   memoryLimit: 512Mi
   memoryRequest: 20Mi
