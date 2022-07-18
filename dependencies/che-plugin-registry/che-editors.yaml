@@ -126,7 +126,7 @@ editors:
             - '--url'
             - '127.0.0.1:3333'
             - '--idle-timeout'
-            - '15m'
+            - '30m'
           endpoints:
             - name: terminal
               targetPort: 3333
