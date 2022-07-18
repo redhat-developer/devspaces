@@ -27,7 +27,7 @@ checkVersion() {
 	exit 1
   fi
 }
-checkVersion 0.40 "$(skopeo --version | sed -e "s/skopeo version //")" skopeo
+checkVersion 1.1 "$(skopeo --version | sed -e "s/skopeo version //")" skopeo
 
 QUIET=0	 # less output - omit container tag URLs
 VERBOSE=0	# more output
@@ -233,7 +233,10 @@ for d in $(find "${WORKDIR}/" -maxdepth "${MAXDEPTH}" -name "${DOCKERFILE}" | so
 					curl -sSLO "$glit" && chmod +x getLatestImageTags.sh
 					popd >/dev/null || exit 1
 				fi
-				LATESTTAG=$(/tmp/getLatestImageTags.sh -c "${FROMPREFIX}" -x "${EXCLUDES}" --tag "${BASETAG}")
+				GLIT="/tmp/getLatestImageTags.sh"
+				if [[ $QUIET -eq 1 ]];then GLIT="${GLIT} -q"; fi
+				if [[ $VERBOSE -eq 1 ]];then GLIT="${GLIT} -v"; fi
+				LATESTTAG=$(${GLIT} -c "${FROMPREFIX}" -x "${EXCLUDES}" --tag "${BASETAG}")
 				LATESTTAG=${LATESTTAG##*:}
 
 				LATE_TAGver=${LATESTTAG%%-*} # 1.0
