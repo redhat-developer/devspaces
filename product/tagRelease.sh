@@ -171,11 +171,13 @@ pushBranchAndOrTagGH () {
 		popd >/dev/null || exit 1
 	fi
 	pushd /tmp/tmp-checkouts/projects_${d} >/dev/null || exit 1
-	if [[ ${SOURCE_BRANCH} ]]; then 
+	if [[ ${SOURCE_BRANCH} ]]; then
+		set -x
 		# create a branch or use existing
 		git branch ${TARGET_BRANCH} || true
 		git checkout ${TARGET_BRANCH}
 		git pull origin ${TARGET_BRANCH} || true
+		set +x 
 
 		# for the devspaces main repo, update devfiles to point to the correct tag/branch
 		if [[ $d == "devspaces" ]]; then
@@ -188,8 +190,10 @@ pushBranchAndOrTagGH () {
 			updateSampleDevfileReferences
 		fi
 
+		set -x
 		git pull origin ${TARGET_BRANCH} || true
 		git push origin ${TARGET_BRANCH} || true
+		set -x
 	fi
 	if [[ $CSV_VERSION ]]; then # push a new tag (or no-op if exists)
 		git tag ${CSV_VERSION} || true
