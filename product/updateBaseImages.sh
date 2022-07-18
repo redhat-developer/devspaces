@@ -236,7 +236,9 @@ for d in $(find "${WORKDIR}/" -maxdepth "${MAXDEPTH}" -name "${DOCKERFILE}" | so
 				GLIT="/tmp/getLatestImageTags.sh"
 				if [[ $QUIET -eq 1 ]];then GLIT="${GLIT} -q"; fi
 				if [[ $VERBOSE -eq 1 ]];then GLIT="${GLIT} -v"; fi
-				LATESTTAG=$(${GLIT} -c "${FROMPREFIX}" -x "${EXCLUDES}" --tag "${BASETAG}")
+				GLIT="${GLIT} -c \"${FROMPREFIX}\" -x \"${EXCLUDES}\" --tag \"${BASETAG}\""
+				if [[ $VERBOSE -eq 1 ]]; then echo "[DEBUG] $GLIT"; fi
+				LATESTTAG=$(${GLIT})
 				LATESTTAG=${LATESTTAG##*:}
 
 				LATE_TAGver=${LATESTTAG%%-*} # 1.0
