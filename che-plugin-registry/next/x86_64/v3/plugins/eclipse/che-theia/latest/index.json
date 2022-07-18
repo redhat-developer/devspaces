@@ -10,7 +10,7 @@ icon: /images/default.png
 category: Editor
 repository: https://github.com/eclipse-che/che-theia
 firstPublicationDate: '2019-03-07'
-latestUpdateDate: '2022-07-10'
+latestUpdateDate: '2022-07-18'
 spec:
   endpoints:
     - name: theia
@@ -121,7 +121,7 @@ spec:
         - '--url'
         - 127.0.0.1:3333
         - '--idle-timeout'
-        - 15m
+        - 30m
       name: che-machine-exec
       ports:
         - exposedPort: 3333

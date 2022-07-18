@@ -115,7 +115,7 @@ components:
         - '--url'
         - 127.0.0.1:3333
         - '--idle-timeout'
-        - 15m
+        - 30m
       memoryLimit: 128Mi
       memoryRequest: 32Mi
       cpuLimit: 500m
