@@ -27,6 +27,9 @@ fi
 if [[ $DWNSTM_BRANCH != "devspaces-3."*"-rhel-8" ]] && [[ $DWNSTM_BRANCH != "devspaces-3-rhel-8" ]]; then
 	if [[ ${VERSION} != "" ]]; then
 		DWNSTM_BRANCH="devspaces-${VERSION}-rhel-8"
+	else 
+		DWNSTM_BRANCH="devspaces-3-rhel-8"
+		VERSION="3.x"
 	fi
 else
 	DS_VERSION=${DWNSTM_BRANCH/devspaces-/}; DS_VERSION=${DS_VERSION/-rhel-8/}
