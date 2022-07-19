@@ -236,9 +236,10 @@ for d in $(find "${WORKDIR}/" -maxdepth "${MAXDEPTH}" -name "${DOCKERFILE}" | so
 				GLIT="/tmp/getLatestImageTags.sh -b ${SCRIPTS_BRANCH}"
 				if [[ $QUIET -eq 1 ]];then GLIT="${GLIT} -q"; fi
 				if [[ $VERBOSE -eq 1 ]];then GLIT="${GLIT} -v"; fi
-				GLIT="${GLIT} -c \"${FROMPREFIX}\" -x \"${EXCLUDES}\" --tag \"${BASETAG}\""
+				GLIT="${GLIT} -c ${FROMPREFIX} -x ${EXCLUDES} --tag ${BASETAG}"
 				if [[ $VERBOSE -eq 1 ]]; then echo "[DEBUG] $GLIT"; fi
 				LATESTTAG=$(${GLIT})
+				if [[ $VERBOSE -eq 1 ]]; then echo "[DEBUG] ============>"; echo "$LATESTTAG"; echo "[DEBUG] <============"; fi
 				LATESTTAG=${LATESTTAG##*:}
 
 				LATE_TAGver=${LATESTTAG%%-*} # 1.0
@@ -272,7 +273,7 @@ for d in $(find "${WORKDIR}/" -maxdepth "${MAXDEPTH}" -name "${DOCKERFILE}" | so
 					fi
 					# TODO: try using testvercomp against the full tag versions w/ suffixes, eg., 8.16.0-0 ">" 8.15.1-1.1554788812
 					if [[ "${LATE_TAGver}" != "${CURR_TAGver}" ]] || [[ ${LATE_TAGrevbase} -gt ${CURR_TAGrevbase} ]] || [[ ${LATE_TAGrevsuf} -gt ${CURR_TAGrevsuf} ]]; then
-						if [[ $LATE_TAGver != "???" ]]; then
+						if [[ $LATE_TAGver != "???" ]] && [[ $LATE_TAGrev != *"container. Is the container public and populated"* ]]; then
 							testvercomp "${LATE_TAGver}" ">" "${CURR_TAGver}"
 							if [[ "${testvercomp_return}" == "true" ]] || [[ ${LATE_TAGrevsuf} -ge ${CURR_TAGrevsuf} ]] || [[ ${LATE_TAGrevbase} -gt ${CURR_TAGrevbase} ]]; then # fix the ${DOCKERFILE}
 								echo "++ $d "
@@ -309,6 +310,7 @@ for d in $(find "${WORKDIR}/" -maxdepth "${MAXDEPTH}" -name "${DOCKERFILE}" | so
 							fi
 						else
 							echo "# Error reading registry from: $GLIT"
+							exit 1
 						fi
 					fi
 				fi
