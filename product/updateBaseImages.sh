@@ -233,7 +233,7 @@ for d in $(find "${WORKDIR}/" -maxdepth "${MAXDEPTH}" -name "${DOCKERFILE}" | so
 					curl -sSLO "$glit" && chmod +x getLatestImageTags.sh
 					popd >/dev/null || exit 1
 				fi
-				GLIT="/tmp/getLatestImageTags.sh"
+				GLIT="/tmp/getLatestImageTags.sh -b ${SCRIPTS_BRANCH}"
 				if [[ $QUIET -eq 1 ]];then GLIT="${GLIT} -q"; fi
 				if [[ $VERBOSE -eq 1 ]];then GLIT="${GLIT} -v"; fi
 				GLIT="${GLIT} -c \"${FROMPREFIX}\" -x \"${EXCLUDES}\" --tag \"${BASETAG}\""
