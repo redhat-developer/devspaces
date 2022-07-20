@@ -22,7 +22,7 @@ editors:
     components:
       - name: theia-ide
         container:
-          image: 'quay.io/devspaces/theia-rhel8:3.1'
+          image: 'quay.io/devspaces/theia-rhel8:3.2'
           env:
             - name: THEIA_PLUGINS
               value: 'local-dir:///plugins'
@@ -116,7 +116,7 @@ editors:
         volume: {}
       - name: che-machine-exec
         container:
-          image: 'quay.io/devspaces/machineexec-rhel8:3.1'
+          image: 'quay.io/devspaces/machineexec-rhel8:3.2'
           memoryLimit: 128Mi
           memoryRequest: 32Mi
           cpuLimit: 500m
@@ -143,7 +143,7 @@ editors:
             - exposedPort: 3333
       - name: remote-runtime-injector
         container:
-          image: 'quay.io/devspaces/theia-endpoint-rhel8:3.1'
+          image: 'quay.io/devspaces/theia-endpoint-rhel8:3.2'
           memoryLimit: 128Mi
           memoryRequest: 32Mi
           cpuLimit: 500m
@@ -184,7 +184,7 @@ editors:
     components:
       - name: idea-rhel8
         container:
-          image: 'quay.io/devspaces/udi-rhel8:3.1'
+          image: 'quay.io/devspaces/udi-rhel8:3.2'
           command:
             - /projector/entrypoint-volume.sh
           env:
@@ -284,7 +284,7 @@ editors:
     components:
       - name: che-code-injector
         container:
-          image: 'quay.io/devspaces/code-rhel8:3.1'
+          image: 'quay.io/devspaces/code-rhel8:3.2'
           command: ["/entrypoint-init-container.sh"]
           volumeMounts:
             - name: checode
@@ -295,7 +295,7 @@ editors:
           cpuRequest: 30m
       - name: che-code-runtime-description
         container:
-          image: 'quay.io/devspaces/udi-rhel8:3.1'
+          image: 'quay.io/devspaces/udi-rhel8:3.2'
           memoryLimit: 1024Mi
           memoryRequest: 256Mi
           cpuLimit: 500m
