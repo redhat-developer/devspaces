@@ -10,13 +10,13 @@ icon: /images/eclipse-cdt-cdt-vscode-icon.png
 category: Other
 repository: https://github.com/eclipse-cdt/cdt-vscode.git
 firstPublicationDate: '2019-12-18'
-latestUpdateDate: '2022-07-18'
+latestUpdateDate: '2022-07-20'
 deprecate:
   automigrate: true
   migrateTo: eclipse-cdt/cdt-vscode/latest
 spec:
   containers:
-    - image: quay.io/devspaces/udi-rhel8:3.1
+    - image: quay.io/devspaces/udi-rhel8:3.2
       name: cpp-plugins
       memoryLimit: 512Mi
       memoryRequest: 20Mi

@@ -11,7 +11,7 @@ metadata:
     - Linters
   icon: /images/sonarsource-sonarlint-vscode-icon.png
 sidecar:
-  image: quay.io/devspaces/udi-rhel8:3.1
+  image: quay.io/devspaces/udi-rhel8:3.2
   name: vscode-sonarlint
   memoryLimit: 512Mi
   memoryRequest: 20Mi
