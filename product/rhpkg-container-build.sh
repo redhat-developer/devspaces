@@ -28,7 +28,7 @@ while [[ "$#" -gt 0 ]]; do
   '-l') LOGFILE="$2"; shift 1;;
   '-v') VERBOSE=1; shift 0;;
   '--scratch') SCRATCH_FLAGS="--scratch"; shift 0;;
-  *) JOB_BRANCH="$1"; shift 0;;
+  *) CSV_VERSION="$1"; shift 0;;
   esac
   shift 1
 done
@@ -58,7 +58,7 @@ if [[ ${doRhpkgContainerBuild} -eq 1 ]]; then
     # REQUIRE: rhpkg
     # get latest from Jenkins, then trigger a new OSBS build. Note: do not wrap JOB_BRANCH in quotes in case it includes trailing \n
     if [[ -f get-sources.sh ]]; then 
-      ./get-sources.sh ${SCRATCH_FLAGS} --force-build ${JOB_BRANCH} | tee "${LOGFILE}"
+      ./get-sources.sh ${SCRATCH_FLAGS} --force-build -v ${CSV_VERSION} | tee "${LOGFILE}"
     else 
       echo "[ERROR] Could not run get-sources.sh!"; exit 1
     fi
