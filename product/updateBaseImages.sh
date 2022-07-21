@@ -96,8 +96,12 @@ $0 -b 7.yy.x -w \$(pwd) -f Dockerfile      -maxdepth 1 --tag '1\.13|8\.[0-9]-' -
 
 if [[ $# -lt 1 ]]; then usage; exit; fi
 
+# by default match anything; override to ^7\. for quay.io/eclipse images
+# can set a different override with a comment line above the FROM like this, where the string after the # is the regex to use for BASETAG searches
+# # https://quay.io/eclipse/che-machine-exec#^7\.
 BASETAG="."
-EXCLUDES="latest|-source"
+# suppress latest and -source (RHEC); suppress next and nightly (quay)
+EXCLUDES="latest|-source|next|nightly"
 while [[ "$#" -gt 0 ]]; do
   case $1 in
 	'-w') WORKDIR="$2"; shift 1;;
@@ -216,14 +220,23 @@ for d in $(find "${WORKDIR}/" -maxdepth "${MAXDEPTH}" -name "${DOCKERFILE}" | so
 		for URL in $URLs; do
 			URL=${URL#registry.access.redhat.com/}
 			URL=${URL#registry.redhat.io/}
-			if [[ $VERBOSE -eq 1 ]]; then echo "[DEBUG] URL=$URL"; fi
+			if [[ $VERBOSE -eq 1 ]]; then echo "[DEBUG] URL=$URL // $FROMPREFIX"; fi
+			# comment line above the FROM must include https://container-registry-repo/organization/image-name
 			if [[ $URL == "https"* ]]; then 
 				# QUERY="$(echo $URL | sed -e "s#.\+\(registry.redhat.io\|registry.access.redhat.com\)/#skopeo inspect docker://registry.redhat.io/#g")"
 				# if [[ ${QUIET} -eq 0 ]]; then echo "# $QUERY| jq .RepoTags| grep -E -v \"\[|\]|latest|-source\"|sed -e 's#.*\"\(.\+\)\",*#- \1#'|sort -V|tail -5"; fi
 				# LATESTTAG=$(${QUERY} 2>/dev/null| jq .RepoTags|grep -E -v "\[|\]|latest|-source"|sed -e 's#.*\"\(.\+\)\",*#\1#'|sort -V|tail -1)
 				# shellcheck disable=SC2001
-				FROMPREFIX=$(echo "$URL" | sed -e "s#.\+registry.access.redhat.com/##g")
-
+				FROMPREFIX=$(echo "$URL" | sed -r -e "s#.+registry.access.redhat.com/##g" -e "s#.+(quay.io/.+)#\1#g")
+				GLIT_REPOFLAG=""
+				GLIT_TAG="${BASETAG}"
+				if [[ $FROMPREFIX == "quay.io/"* ]]; then
+					GLIT_REPOFLAG=" --quay"
+					FROMPREFIX="${FROMPREFIX#*quay.io/}" # trim off the quay.io/ prefix
+					GLIT_TAG="${FROMPREFIX#*#}" # collect the special filter, if present, eg., ^7\. to get ONLY the released versions (not the sha-tagged nightlies)
+					FROMPREFIX="${FROMPREFIX%#*}"
+					# echo "GLIT_TAG=${GLIT_TAG}"
+				fi
 				# get getLatestImageTags script
 				# TODO CRW-1511 sometimes this returns a 404 instead of a valid script. Why?
 				if [[ ! -x /tmp/getLatestImageTags.sh ]]; then 
@@ -236,7 +249,7 @@ for d in $(find "${WORKDIR}/" -maxdepth "${MAXDEPTH}" -name "${DOCKERFILE}" | so
 				GLIT="/tmp/getLatestImageTags.sh -b ${SCRIPTS_BRANCH}"
 				if [[ $QUIET -eq 1 ]];then GLIT="${GLIT} -q"; fi
 				if [[ $VERBOSE -eq 1 ]];then GLIT="${GLIT} -v"; fi
-				GLIT="${GLIT} -c ${FROMPREFIX} -x ${EXCLUDES} --tag ${BASETAG}"
+				GLIT="${GLIT} ${GLIT_REPOFLAG} -c ${FROMPREFIX} -x ${EXCLUDES} --tag ${GLIT_TAG}"
 				if [[ $VERBOSE -eq 1 ]]; then echo "[DEBUG] $GLIT"; fi
 				LATESTTAG=$(${GLIT})
 				if [[ $VERBOSE -eq 1 ]]; then echo "[DEBUG] ============>"; echo "$LATESTTAG"; echo "[DEBUG] <============"; fi
@@ -248,7 +261,12 @@ for d in $(find "${WORKDIR}/" -maxdepth "${MAXDEPTH}" -name "${DOCKERFILE}" | so
 				LATE_TAGrevsuf=${LATE_TAGrev##*.} # 1553789946 or 15
 				if [[ $VERBOSE -eq 1 ]]; then echo "[DEBUG] LATE_TAGver=$LATE_TAGver; LATE_TAGrev=$LATE_TAGrev; LATE_TAGrevbase=$LATE_TAGrevbase; LATE_TAGrevsuf=$LATE_TAGrevsuf"; fi
 				echo "+ ${FROMPREFIX}:${LATESTTAG}" # jboss-eap-7/eap72-openshift:1.0-15
+				# put the prefix back on to compare with the next line, if we removed it above for quay.io/ images
+				if [[ ${GLIT_REPOFLAG} == " --quay" ]]; then 
+					FROMPREFIX="quay.io/${FROMPREFIX}"
+				fi
 			elif [[ $URL ]] && [[ $URL == "${FROMPREFIX}:"* ]]; then
+				# echo "****** PROCESSING NEXT LINE..."
 				if [[ ${LATESTTAG} ]]; then
 					# CRW-205 Support using unpublished freshmaker builds
 					# Do not replace 1.0-15.1553789946 with "newer" 1.0-15; instead, keep 1.0-15.1553789946 version
