@@ -261,3 +261,85 @@ editors:
           memoryRequest: 32Mi
           cpuLimit: 500m
           cpuRequest: 30m
+  - schemaVersion: 2.1.0
+    metadata:
+      name: che-incubator/che-code/insiders
+      displayName: che-code
+      description: Code OSS integration in Eclipse Che.
+      icon: https://raw.githubusercontent.com/che-incubator/che-code/main/code/resources/server/code-512.png?sanitize=true
+      attributes:
+        publisher: che-incubator
+        version: insiders
+        title: CheCode Insiders.
+        repository: https://github.com/che-incubator/che-code
+        firstPublicationDate: '2022-07-19'
+        skipMetaYaml: true
+    commands:
+      - id: init-container-command
+        apply:
+          component: che-code-injector
+    events:
+      preStart:
+        - init-container-command
+    components:
+      - name: che-code-injector
+        container:
+          image: 'quay.io/devspaces/code-rhel8:3.2'
+          command: ["/entrypoint-init-container.sh"]
+          volumeMounts:
+            - name: checode
+              path: /checode
+          memoryLimit: 128Mi
+          memoryRequest: 32Mi
+          cpuLimit: 500m
+          cpuRequest: 30m
+      - name: che-code-runtime-description
+        container:
+          image: 'quay.io/devspaces/udi-rhel8:3.2'
+          memoryLimit: 1024Mi
+          memoryRequest: 256Mi
+          cpuLimit: 500m
+          cpuRequest: 30m
+          command:
+            - /checode/entrypoint-volume.sh
+          volumeMounts:
+            - name: checode
+              path: /checode
+          endpoints:
+            - name: che-code
+              attributes:
+                type: main
+                cookiesAuthEnabled: true
+                discoverable: false
+                urlRewriteSupported: true
+              path: '?tkn=eclipse-che'
+              targetPort: 3100
+              exposure: public
+              secure: true
+              protocol: http
+            - name: code-redirect-1
+              targetPort: 13131
+              exposure: public
+              protocol: http
+              attributes:
+                discoverable: false
+                urlRewriteSupported: true
+            - name: code-redirect-2
+              targetPort: 13132
+              exposure: public
+              protocol: http
+              attributes:
+                discoverable: false
+                urlRewriteSupported: true
+            - name: code-redirect-3
+              targetPort: 13133
+              exposure: public
+              protocol: http
+              attributes:
+                discoverable: false
+                urlRewriteSupported: true
+        attributes:
+          app.kubernetes.io/component: che-code-runtime
+          app.kubernetes.io/part-of: che-code.eclipse.org
+      - name: checode
+        volume: {}
