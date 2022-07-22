@@ -4,7 +4,7 @@ metadata:
 components:
   - name: che-machine-exec
     container:
-      image: quay.io/devspaces/machineexec-rhel8:3.1
+      image: quay.io/devspaces/machineexec-rhel8:3.2
       command:
         - /go/bin/che-machine-exec
         - '--url'
