@@ -284,7 +284,7 @@ editors:
     components:
       - name: che-code-injector
         container:
-          image: 'quay.io/devspaces/code-rhel8:3.1'
+          image: 'registry.redhat.io/devspaces/code-rhel8:3.1'
           command: ["/entrypoint-init-container.sh"]
           volumeMounts:
             - name: checode
@@ -295,7 +295,7 @@ editors:
           cpuRequest: 30m
       - name: che-code-runtime-description
         container:
-          image: 'quay.io/devspaces/udi-rhel8:3.1'
+          image: 'registry.redhat.io/devspaces/udi-rhel8:3.1'
           memoryLimit: 1024Mi
           memoryRequest: 256Mi
           cpuLimit: 500m
