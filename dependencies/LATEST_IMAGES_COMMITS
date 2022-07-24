@@ -14,10 +14,10 @@ quay.io/devspaces/devspaces-rhel8-operator:3.2-7
    Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=2089719
   Source: https://pkgs.devel.redhat.com/cgit/containers/devspaces-operator/commit?id=937cdc69ac17a9998a3c800679602e0ea8e617b8
 
-quay.io/devspaces/devspaces-operator-bundle:3.2-39
-     NVR: devspaces-operator-bundle-container-3.2-39
-   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=2095770
-  Source: https://pkgs.devel.redhat.com/cgit/containers/devspaces-operator-bundle/commit?id=460479958d1d971943ef589235e54c5fcc3d494d
+quay.io/devspaces/devspaces-operator-bundle:3.2-40
+     NVR: devspaces-operator-bundle-container-3.2-40
+   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=2097061
+  Source: https://pkgs.devel.redhat.com/cgit/containers/devspaces-operator-bundle/commit?id=0c05c6ae4c6e63cd628acab9609092e2cf91faf9
 
 quay.io/devspaces/dashboard-rhel8:3.2-7
      NVR: devspaces-dashboard-rhel8-container-3.2-7
@@ -29,30 +29,30 @@ quay.io/devspaces/devfileregistry-rhel8:3.2-8
    Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=2094143
   Source: https://pkgs.devel.redhat.com/cgit/containers/devspaces-devfileregistry/commit?id=b56a58c0f5b8f4387e019dcaadf0cefc796abf8a
 
-quay.io/devspaces/idea-rhel8:3.2-5
-     NVR: devspaces-idea-rhel8-container-3.2-5
-   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=2095297
-  Source: https://pkgs.devel.redhat.com/cgit/containers/devspaces-idea/commit?id=2eb1bdc70d77a565b063ef7c5c41a40123df7977
+quay.io/devspaces/idea-rhel8:3.2-6
+     NVR: devspaces-idea-rhel8-container-3.2-6
+   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=2097051
+  Source: https://pkgs.devel.redhat.com/cgit/containers/devspaces-idea/commit?id=961cac6a0c4f54c32172744b16797606c86cae47
 
-quay.io/devspaces/imagepuller-rhel8:3.2-2
-     NVR: devspaces-imagepuller-rhel8-container-3.2-2
-   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=2082317
-  Source: https://pkgs.devel.redhat.com/cgit/containers/devspaces-imagepuller/commit?id=20885cc1e4c938d241232faef8fe5726a6ac117a
+quay.io/devspaces/imagepuller-rhel8:3.2-3
+     NVR: devspaces-imagepuller-rhel8-container-3.2-3
+   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=2097046
+  Source: https://pkgs.devel.redhat.com/cgit/containers/devspaces-imagepuller/commit?id=d713e8aeb527784d4d5c80e00beb345d8b517836
 
 quay.io/devspaces/machineexec-rhel8:3.2-8
      NVR: devspaces-machineexec-rhel8-container-3.2-8
    Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=2093305
   Source: https://pkgs.devel.redhat.com/cgit/containers/devspaces-machineexec/commit?id=fef5ba8d96a101ebbc61a8b88b1b57b64ca13fac
 
-quay.io/devspaces/pluginregistry-rhel8:3.2-9
-     NVR: devspaces-pluginregistry-rhel8-container-3.2-9
-   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=2095765
-  Source: https://pkgs.devel.redhat.com/cgit/containers/devspaces-pluginregistry/commit?id=68c3b85d269a947b67f4091ee035817f94c4f07f
+quay.io/devspaces/pluginregistry-rhel8:3.2-10
+     NVR: devspaces-pluginregistry-rhel8-container-3.2-10
+   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=2097049
+  Source: https://pkgs.devel.redhat.com/cgit/containers/devspaces-pluginregistry/commit?id=193938299003a0ae7421d22aab6dde0f25f0417e
 
-quay.io/devspaces/server-rhel8:3.2-7
-     NVR: devspaces-server-rhel8-container-3.2-7
-   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=2093933
-  Source: https://pkgs.devel.redhat.com/cgit/containers/devspaces-server/commit?id=84e6e520dde3d93c3a699a4fb089ddf0cf22f62f
+quay.io/devspaces/server-rhel8:3.2-8
+     NVR: devspaces-server-rhel8-container-3.2-8
+   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=2097050
+  Source: https://pkgs.devel.redhat.com/cgit/containers/devspaces-server/commit?id=4cf596d726db983ae087d3e8311c46b3558bc78f
 
 quay.io/devspaces/theia-dev-rhel8:3.2-5
      NVR: devspaces-theia-dev-rhel8-container-3.2-5
