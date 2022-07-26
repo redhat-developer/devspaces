@@ -14,8 +14,14 @@ set -e
 source ./build/scripts/clone_and_zip.sh
 VERSION=$(cat ../VERSION)
 arch="$(uname -m)"
-lib_name="che-theia-devworkspace-handler"
-npm install -g @eclipse-che/"${lib_name}"@"$(jq -r --arg v $lib_name '.[$v]' versions.json)"
+
+# Install che-theia-devworkspace-handler
+theia_devworkspace_handler="che-theia-devworkspace-handler"
+npm install -g @eclipse-che/"${theia_devworkspace_handler}"@"$(jq -r --arg v $theia_devworkspace_handler '.[$v]' versions.json)"
+# Install che-code-devworkspace-handler
+code_devworkspace_handler="che-code-devworkspace-handler"
+npm install -g @eclipse-che/"${code_devworkspace_handler}"@"$(jq -r --arg v $code_devworkspace_handler '.[$v]' versions.json)"
+
 mkdir -p ./resources/v2/
 for dir in ./devfiles/*/
 do
@@ -27,11 +33,20 @@ do
     devfile_repo=${devfile_url%/tree*}
     name=$(basename "${devfile_repo}")
 
-    npm_config_yes=true npx @eclipse-che/che-theia-devworkspace-handler --devfile-url:"${devfile_url}" \
+    # Generate devworkspace-che-theia-latest.yaml  
+    npm_config_yes=true npx @eclipse-che/${theia_devworkspace_handler} --devfile-url:"${devfile_url}" \
     --editor:eclipse/che-theia/latest \
     --plugin-registry-url:https://redhat-developer.github.io/devspaces/che-plugin-registry/"${VERSION}"/"${arch}"/v3 \
     --output-file:"${dir}"devworkspace-che-theia-latest.yaml \
     "--project.${name}={{INTERNAL_URL}}/resources/v2/${name}.zip"
+
+    # Generate devworkspace-che-code-insiders.yaml
+    npm_config_yes=true npx @eclipse-che/${code_devworkspace_handler} --devfile-url:"${devfile_url}" \
+    --editor-entry:che-incubator/che-code/insiders \
+    --plugin-registry-url:https://redhat-developer.github.io/devspaces/che-plugin-registry/"${VERSION}"/"${arch}"/v3 \
+    --output-file:"${dir}"devworkspace-che-code-insiders.yaml \
+    "--project.${name}={{INTERNAL_URL}}/resources/v2/${name}.zip"
+
     clone_and_zip "${devfile_repo}" "${devfile_url##*/}" "$(pwd)/resources/v2/$name.zip"
   fi
 done
