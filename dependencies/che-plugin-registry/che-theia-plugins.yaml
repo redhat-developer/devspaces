@@ -102,7 +102,7 @@ plugins:
       volumeMounts:
         - name: venv
           path: /home/user/.venv
-    extension: https://github.com/microsoft/vscode-python/releases/download/2020.7.94776/ms-python-release.vsix
+    extension: https://open-vsx.org/api/ms-python/python/2022.10.1/file/ms-python.python-2022.10.1.vsix
   - repository:
       url: 'https://github.com/golang/vscode-go'
       revision: v0.23.0
