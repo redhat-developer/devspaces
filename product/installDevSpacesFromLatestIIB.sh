@@ -373,7 +373,7 @@ inc=5
 for _ in {1..180}; do
   echo -n '.'
   STATUS=$(oc get checlusters devspaces -n "$NAMESPACE" -o json | jq -r '.status.gatewayPhase')
-  if [[ "$STATUS" == "Established" ]]; then
+  if [[ "$STATUS" == *"Established"* ]]; then
     break
   fi
   sleep $inc
@@ -391,6 +391,10 @@ else
   echo "Dev Spaces is installed \o/"
   echo
 fi
+
+# patch CheCluster so we can run up to 30 workspaces in parallel (instead of default 1)
+echo -n "Allow up to 30 concurrent workspace starts... " && \
+oc patch checluster/devspaces -n "${NAMESPACE}" --type='merge' -p '{"spec":{"components":{"devWorkspace":{"runningLimit":"30"}}}}'
 
 CHECLUSTER_JSON=$(oc get checlusters devspaces -n "$NAMESPACE" -o json)
 # note due to redirection bug https://github.com/eclipse/che/issues/21416 append trailing slashes just in case
