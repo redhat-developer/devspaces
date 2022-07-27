@@ -80,9 +80,13 @@ function clear_generated_data() {
     rm -rf ./resources
     for dir in ./devfiles/*/
     do
-      FILE="${dir}/devworkspace-che-theia-latest.yaml"
-      if [[ -f "$FILE" ]]; then
-        rm "${FILE}"
+      CHE_THEIA_DW="${dir}/devworkspace-che-theia-latest.yaml"
+      if [[ -f "$CHE_THEIA_DW" ]]; then
+        rm "${CHE_THEIA_DW}"
+      fi
+      CHE_CODE_DW="${dir}/devworkspace-che-code-insiders.yaml"
+      if [[ -f "$CHE_CODE_DW" ]]; then
+        rm "${CHE_CODE_DW}"
       fi
     done
 }
