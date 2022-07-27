@@ -114,9 +114,6 @@ plugins:
       memoryRequest: 20Mi
       cpuLimit: 500m
       cpuRequest: 30m
-      env:
-        - name: GOPATH
-          value: /projects/.che/gopath:/go:$(CHE_PROJECTS_ROOT)
     extension: https://github.com/golang/vscode-go/releases/download/v0.23.0/go-0.23.0.vsix
   - repository:
       url: 'https://github.com/camel-tooling/vscode-camelk'
