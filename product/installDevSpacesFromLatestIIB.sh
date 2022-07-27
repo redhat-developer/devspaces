@@ -317,7 +317,11 @@ if [[ $(command -v ${DSC}) ]]; then # use dsc
   fi
   echo
   echo "Using dsc from ${DSC}"
-  ${DSC} server:deploy --catalog-source-name=iib-testingdevspaces --olm-channel=stable --package-manifest-name=devspaces -n "${NAMESPACE}" --listr-renderer=verbose --telemetry=off
+  ${DSC} server:deploy \
+    --catalog-source-namespace=openshift-operators \
+    --catalog-source-name=iib-testingdevspaces --olm-channel=stable \
+    --package-manifest-name="devspaces" -n "${NAMESPACE}" \
+    --listr-renderer=verbose --telemetry=off
 
   if [[ $DELETE_BEFORE == "true" ]]; then 
     createUsers
