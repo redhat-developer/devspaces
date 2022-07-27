@@ -5,16 +5,14 @@ metadata:
   name: python
   version: latest
   displayName: Python
-  description: Linting, Debugging (multi-threaded, remote), Intellisense, Jupyter Notebooks, code formatting, refactoring, unit tests, snippets, and more.
+  description: IntelliSense (Pylance), Linting, Debugging (multi-threaded, remote), Jupyter Notebooks, code formatting, refactoring, unit tests, and more.
   repository: https://github.com/Microsoft/vscode-python
   categories:
     - Programming Languages
     - Debuggers
     - Linters
-    - Snippets
     - Formatters
     - Other
-    - Extension Packs
     - Data Science
     - Machine Learning
     - Notebooks
@@ -31,4 +29,4 @@ sidecar:
       path: /home/user/.venv
 dependencies: []
 extensions:
-  - relative:extension/resources/github_com/microsoft/vscode-python/releases/download/2020_7_94776/ms-python-release.vsix
+  - relative:extension/resources/open-vsx_org/api/ms-python/python/2022_10_1/file/ms-python.python-2022.10.1.vsix
