@@ -12,7 +12,7 @@
 #
 
 # Builder: check meta.yamls and create index.json
-# https://access.redhat.com/containers/?tab=tags#/registry.access.redhat.com/ubi8/python-38
+# https://registry.access.redhat.com/ubi8/python-38
 FROM registry.access.redhat.com/ubi8/python-38:1-100 as builder
 USER 0
 
@@ -58,7 +58,7 @@ RUN ./list_referenced_images.sh ./output/v3 --use-generated-content > /build/out
 RUN chmod -R g+rwX /build
 
 # Build registry, copying meta.yamls and index.json from builder
-# https://access.redhat.com/containers/?tab=tags#/registry.access.redhat.com/ubi8/httpd-24
+# https://registry.access.redhat.com/ubi8/httpd-24
 FROM registry.access.redhat.com/ubi8/httpd-24:1-199 AS registry
 USER 0
 
