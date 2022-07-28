@@ -46,72 +46,72 @@
     {
       "id": "ms-python/python",
       "onLanguages": [
-        "python"
+        "python",
+        "jupyter"
       ],
       "workspaceContains": [
         "mspythonconfig.json",
-        "pyproject.toml",
-        "Pipfile",
-        "setup.py",
-        "requirements.txt",
-        "manage.py",
-        "app.py"
+        "pyproject.toml"
       ],
       "contributes": {
         "languages": [
           {
-            "aliases": [
-              "Jinja"
-            ],
-            "id": "jinja"
-          },
-          {
+            "id": "pip-requirements",
             "aliases": [
               "pip requirements",
               "requirements.txt"
             ],
-            "filenamePatterns": [
-              "**/*-requirements.{txt, in}",
-              "**/*-constraints.txt",
-              "**/requirements-*.{txt, in}",
-              "**/constraints-*.txt",
-              "**/requirements/*.{txt,in}",
-              "**/constraints/*.txt"
-            ],
             "filenames": [
+              "requirements.txt",
               "constraints.txt",
-              "requirements.in",
-              "requirements.txt"
+              "requirements.in"
             ],
-            "id": "pip-requirements"
+            "filenamePatterns": [
+              "*-requirements.txt",
+              "requirements-*.txt",
+              "constraints-*.txt",
+              "*-constraints.txt",
+              "*-requirements.in",
+              "requirements-*.in"
+            ]
           },
           {
+            "id": "yaml",
             "filenames": [
               ".condarc"
-            ],
-            "id": "yaml"
+            ]
           },
           {
+            "id": "toml",
             "filenames": [
-              ".flake8",
-              ".pep8",
-              ".pylintrc",
-              ".pypirc"
-            ],
-            "id": "ini"
+              "poetry.lock",
+              "Pipfile"
+            ]
           },
           {
-            "filenames": [
-              "Pipfile",
-              "poetry.lock"
-            ],
-            "id": "toml"
-          },
-          {
+            "id": "json",
             "filenames": [
               "Pipfile.lock"
-            ],
-            "id": "json"
+            ]
+          },
+          {
+            "id": "ini",
+            "filenames": [
+              ".flake8"
+            ]
+          },
+          {
+            "id": "jinja",
+            "aliases": [
+              "Jinja"
+            ]
+          },
+          {
+            "id": "jupyter",
+            "aliases": [
+              "Jupyter",
+              "Notebook"
+            ]
           }
         ]
       }

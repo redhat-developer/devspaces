@@ -10,7 +10,7 @@ icon: /images/golang-go-icon.png
 category: Programming Languages
 repository: https://github.com/golang/vscode-go
 firstPublicationDate: '2021-03-05'
-latestUpdateDate: '2022-07-26'
+latestUpdateDate: '2022-07-27'
 spec:
   containers:
     - image: quay.io/devspaces/udi-rhel8:3.2
@@ -19,8 +19,5 @@ spec:
       memoryRequest: 20Mi
       cpuRequest: 30m
       cpuLimit: 500m
-      env:
-        - name: GOPATH
-          value: /projects/.che/gopath:/go:$(CHE_PROJECTS_ROOT)
   extensions:
     - relative:extension/resources/github_com/golang/vscode-go/releases/download/v0_23_0/go-0.23.0.vsix

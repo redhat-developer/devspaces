@@ -21,9 +21,6 @@ sidecar:
   memoryRequest: 20Mi
   cpuLimit: 500m
   cpuRequest: 30m
-  env:
-    - name: GOPATH
-      value: /projects/.che/gopath:/go:$(CHE_PROJECTS_ROOT)
 dependencies: []
 extensions:
   - relative:extension/resources/github_com/golang/vscode-go/releases/download/v0_23_0/go-0.23.0.vsix
