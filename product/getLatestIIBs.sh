@@ -53,7 +53,7 @@ runCommandWithTimeout() {
       else
         line="$(curl -sSLk "https://datagrepper.engineering.redhat.com/raw?topic=/topic/VirtualTopic.eng.ci.redhat-container-image.index.built&delta=1728000&rows_per_page=30&contains=${IMAGE_PREFIX}" | \
           jq ".raw_messages[].msg.index | [.added_bundle_images[0], .index_image, .ocp_version] | @tsv" -r | sort -uV | \
-          grep "${lastcsv}" | grep "v${OCP_VER}")"
+          grep "${lastcsv}" | grep "${OCP_VER}")"
       fi
       if [[ $line ]]; then
         if [[ $QUIET == "index" ]]; then # show only the index image
@@ -110,7 +110,7 @@ dsDefaults
 while [[ "$#" -gt 0 ]]; do
   case $1 in
     '-t') PROD_VER="$2"; shift 1;;
-    '-o') OCP_VER="$2"; shift 1;;
+    '-o') OCP_VER="$2"; if [[ $OCP_VER != "v"* ]]; then OCP_VER="v${OCP_VER}"; fi; shift 1;;
     '-p') PROD_NAME="$2"; shift 1;;
     '-c') CSVs="$2"; shift 1;;
     '-i') IMAGE_PREFIX="$2"; shift 1;;
