@@ -26,6 +26,7 @@ Usage:
 
 Options:
   -p, --push                 : Push IIB(s) to quay registry; default is to show commands but not copy anything
+  --force                    : If target image exists, will re-filter and re-push it; otherwise skip to avoid updating image timestamps
   -t PROD_VER                : If x.y version/tag not set, will compute from dependencies/job-config.json file
   -o 'OCP_VER1 OCP_VER2 ...' : Space-separated list of OCP version(s) to query and publish; defaults to job-config.json values
   -e, --extra-tags           : Extra tags to create, such as 3.2.0.RC-08-04
@@ -41,6 +42,7 @@ command -v jq >/dev/null 2>&1     || which jq >/dev/null 2>&1     || { echo "jq 
 
 VERBOSE=0
 EXTRA_TAGS="" # extra tags to set in target image, eg., 3.2.0.RC-08-04-v4.10
+PUSHTOQUAYFORCE=0
 
 MIDSTM_BRANCH=$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "devspaces-3-rhel-8")
 if [[ ${MIDSTM_BRANCH} != "devspaces-"*"-rhel-"* ]]; then MIDSTM_BRANCH="devspaces-3-rhel-8"; fi
@@ -77,6 +79,7 @@ while [[ "$#" -gt 0 ]]; do
     '-e'|'--extra-tags') EXTRA_TAGS="${EXTRA_TAGS} ${2}"; shift 1;;
     '-v') VERBOSE=1; shift 0;;
     '-p'|'--push') PUSH="true";;
+    '--force') PUSHTOQUAYFORCE=1;;
     '-h'|'--help') usage; exit 0;;
     *) echo "Unknown parameter used: $1."; usage; exit 1;;
   esac
@@ -154,8 +157,14 @@ for OCP_VER in ${OCP_VERSIONS}; do
     fi
 
     if [[ "$PUSH" == "true" ]]; then
-        # filter and publish to a new name
-        ${FIIB} -s ${LATEST_IIB} -t quay.io/devspaces/iib:${DS_VERSION}-${OCP_VER}-${LATEST_IIB_NUM} --push
+        # check if destination already exists in quay
+        if [[ $(skopeo --insecure-policy inspect docker://quay.io/devspaces/iib:${DS_VERSION}-${OCP_VER}-${LATEST_IIB_NUM} 2>&1) == *"Error"* ]] || [[ ${PUSHTOQUAYFORCE} -eq 1 ]]; then 
+            # filter and publish to a new name
+            ${FIIB} -s ${LATEST_IIB} -t quay.io/devspaces/iib:${DS_VERSION}-${OCP_VER}-${LATEST_IIB_NUM} --push
+            PUSHTOQUAYFORCE=1
+        else
+            if [[ $VERBOSE -eq 1 ]]; then echo "Copy quay.io/devspaces/iib:${DS_VERSION}-${OCP_VER}-${LATEST_IIB_NUM} - already exists, nothing to do"; fi
+        fi
     else
         echo "${FIIB} -s ${LATEST_IIB} -t quay.io/devspaces/iib:${DS_VERSION}-${OCP_VER}-${LATEST_IIB_NUM} --push"
     fi
@@ -169,10 +178,14 @@ for OCP_VER in ${OCP_VERSIONS}; do
         ALL_TAGS="${ALL_TAGS} ${atag}-${OCP_VER}"
     done
     for qtag in ${ALL_TAGS}; do
-        CMD="skopeo --insecure-policy copy --all docker://quay.io/devspaces/iib:${DS_VERSION}-${OCP_VER}-${LATEST_IIB_NUM} docker://quay.io/devspaces/iib:${qtag}"
-        echo $CMD
-        if [[ "$PUSH" == "true" ]]; then
-            $CMD
+        if [[ $(skopeo --insecure-policy inspect docker://quay.io/devspaces/iib:${qtag} 2>&1) == *"Error"* ]] || [[ ${PUSHTOQUAYFORCE} -eq 1 ]]; then 
+            CMD="skopeo --insecure-policy copy --all docker://quay.io/devspaces/iib:${DS_VERSION}-${OCP_VER}-${LATEST_IIB_NUM} docker://quay.io/devspaces/iib:${qtag}"
+            echo $CMD
+            if [[ "$PUSH" == "true" ]]; then
+                $CMD
+            fi
+        else
+            if [[ $VERBOSE -eq 1 ]]; then echo "Copy quay.io/devspaces/iib:${qtag} - already exists, nothing to do"; fi
         fi
     done
 
