@@ -11,6 +11,9 @@
 # from an IIB image and build an index image that contains only those images.
 #
 
+# required to run filterIIBForDevSpaces.sh
+OPM_VER="-4.10.25" # set to "" to just install latest
+
 set -e
 
 usage() {
@@ -18,9 +21,9 @@ usage() {
 Collect relevant operators from an IIB image into a new, smaller IIB image.
 
 Requires:
-* podman version 1.9.3+ (version 2.0+ recommended)
+* podman version 2.0+
 * glibc version 2.28+
-* opm v1.19.5 or higher (see https://docs.openshift.com/container-platform/4.10/cli_reference/opm/cli-opm-install.html#cli-opm-install )
+* opm v1.19.5+ (see https://docs.openshift.com/container-platform/4.10/cli_reference/opm/cli-opm-install.html#cli-opm-install )
 
 Usage: $0 [OPTIONS]
 
@@ -49,6 +52,18 @@ while [[ "$#" -gt 0 ]]; do
   esac
   shift 1
 done
+
+# install opm if not installed from https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp/latest-4.10/
+if [[ ! -x /usr/local/bin/opm ]] && [[ ! -x ${HOME}/.local/bin/opm ]]; then 
+    pushd /tmp >/dev/null
+    curl -sSLo- https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp/latest-4.10/opm-linux${OPM_VER}.tar.gz | tar xz; chmod +x opm
+    sudo cp opm /usr/local/bin/ || cp opm ${HOME}/.local/bin/
+    if [[ ! -x /usr/local/bin/opm ]] && [[ ! -x ${HOME}/.local/bin/opm ]]; then 
+        echo "Error: could not install opm v1.19.5 or higher (see https://docs.openshift.com/container-platform/4.10/cli_reference/opm/cli-opm-install.html#cli-opm-install )";
+        exit 1
+    fi
+    popd >/dev/null
+fi
 
 PODMAN=$(command -v podman)
 if [[ ! -x $PODMAN ]]; then echo "[ERROR] podman is not installed. Aborting."; echo; usage; exit 1; fi
