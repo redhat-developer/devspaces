@@ -164,4 +164,10 @@ for OCP_VER in ${OCP_VERSIONS}; do
             $CMD
         fi
     done
+
+    # cleanup images
+    $PODMAN rmi ${LATEST_IIB} $targetIndexImage
 done
+
+# cleanup temp space 
+rm -fr /tmp/render-registry* /tmp/tmp.*

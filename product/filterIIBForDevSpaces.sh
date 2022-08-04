@@ -135,3 +135,6 @@ if [[ "$PUSH" == "true" ]]; then
   $PODMAN push $targetIndexImage
 fi
 echo "Index image $targetIndexImage is built and ready for use"
+
+# cleanup source IIB image; don't delete the target image as we might need to copy it again to a new tag
+# $PODMAN rmi $sourceIndexImage
