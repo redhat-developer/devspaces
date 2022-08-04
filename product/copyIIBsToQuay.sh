@@ -124,7 +124,7 @@ if [[ -x ${SCRIPT_DIR}/getLatestIIBs.sh ]]; then
     GLIB=${SCRIPT_DIR}/getLatestIIBs.sh
 else 
     pushd /tmp >/dev/null 
-    curl -sSLO https://raw.githubusercontent.com/redhat-developer/devspaces/${MIDSTM_BRANCH}/product/getLatestIIBs.sh
+    curl -sSLO https://raw.githubusercontent.com/redhat-developer/devspaces/${MIDSTM_BRANCH}/product/getLatestIIBs.sh && chmod +x getLatestIIBs.sh
     GLIB=/tmp/getLatestIIBs.sh
     popd >/dev/null
 fi
@@ -133,7 +133,7 @@ if [[ -x ${SCRIPT_DIR}/filterIIBForDevSpaces.sh ]]; then
     FIIB=${SCRIPT_DIR}/filterIIBForDevSpaces.sh
 else 
     pushd /tmp >/dev/null 
-    curl -sSLO https://raw.githubusercontent.com/redhat-developer/devspaces/${MIDSTM_BRANCH}/product/filterIIBForDevSpaces.sh
+    curl -sSLO https://raw.githubusercontent.com/redhat-developer/devspaces/${MIDSTM_BRANCH}/product/filterIIBForDevSpaces.sh && chmod +x filterIIBForDevSpaces.sh
     FIIB=/tmp/filterIIBForDevSpaces.sh
     popd >/dev/null
 fi
