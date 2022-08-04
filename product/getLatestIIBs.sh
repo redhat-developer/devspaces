@@ -67,7 +67,10 @@ runCommandWithTimeout() {
       fi
     fi
     (( count=count+1 ))
-    sleep 300s
+    if [[ $VERBOSE -eq 1 ]]; then
+      echo "Sleeping for 5 mins..."
+    fi
+    sleep 300s # sleep for 5 min intervals
   done
     # or report an error
     if [[ !$? -eq 0 ]]; then
