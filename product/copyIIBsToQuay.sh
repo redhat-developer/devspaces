@@ -15,24 +15,28 @@ SCRIPT_DIR=$(cd "$(dirname "$0")" || exit; pwd)
 OPM_VER="-4.10.25" # set to "" to just install latest
 
 usage () {
-	echo "
+	echo "Query latest IIBs for a Dev Spaces version and optional list of OCP versions, then filter and copy those IIBs to Quay
+
 Requires:
-* jq 1.6+
-* skopeo 1.1.1+
-* podman version 2.0+
-* glibc version 2.28+
+* jq 1.6+, skopeo 1.1.1+, podman 2.0+, glibc 2.28+
 * opm v1.19.5+ (see https://docs.openshift.com/container-platform/4.10/cli_reference/opm/cli-opm-install.html#cli-opm-install )
 
 Usage: 
   $0 [OPTIONS]
 
 Options:
-  -p, --push                  Push IIB(s) to quay registry
-  -t PROD_VER                 If x.y version/tag not set, will compute from dependencies/job-config.json file
-  -o 'OCP_VER1 OCP_VER2 ...'  Space-separated list of OCP version(s) to query and publish
-  -v                          Verbose output: include additional information 
+  -p, --push                 : Push IIB(s) to quay registry; default is to show commands but not copy anything
+  -t PROD_VER                : If x.y version/tag not set, will compute from dependencies/job-config.json file
+  -o 'OCP_VER1 OCP_VER2 ...' : Space-separated list of OCP version(s) to query and publish; defaults to job-config.json values
+  -v                         : Verbose output: include additional information
+  -h, --help                 : Show this help
 "
 }
+
+PODMAN=$(command -v podman)
+if [[ ! -x $PODMAN ]]; then echo "[ERROR] podman is not installed. Aborting."; echo; usage; exit 1; fi
+command -v skopeo >/dev/null 2>&1 || which skopeo >/dev/null 2>&1 || { echo "skopeo is not installed. Aborting."; exit 1; }
+command -v jq >/dev/null 2>&1     || which jq >/dev/null 2>&1     || { echo "jq is not installed. Aborting."; exit 1; }
 
 VERBOSE=0
 
@@ -101,11 +105,6 @@ if [[ ! -x /usr/local/bin/opm ]] && [[ ! -x ${HOME}/.local/bin/opm ]]; then
     popd >/dev/null
 fi
 
-PODMAN=$(command -v podman)
-if [[ ! -x $PODMAN ]]; then echo "[ERROR] podman is not installed. Aborting."; echo; usage; exit 1; fi
-
-command -v skopeo >/dev/null 2>&1 || which skopeo >/dev/null 2>&1 || { echo "skopeo is not installed. Aborting."; exit 1; }
-command -v jq >/dev/null 2>&1     || which jq >/dev/null 2>&1     || { echo "jq is not installed. Aborting."; exit 1; }
 checkVersion() {
   if [[  "$1" = "$(echo -e "$1\n$2" | sort -V | head -n1)" ]]; then
     # echo "[INFO] $3 version $2 >= $1, can proceed."

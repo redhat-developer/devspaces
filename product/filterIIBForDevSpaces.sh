@@ -18,11 +18,11 @@ set -e
 
 usage() {
   cat <<EOF
-Collect relevant operators from an IIB image into a new, smaller IIB image.
+Collect Dev Spaces, Web Terminal, DevWorkspace operators from an IIB image into a new, smaller IIB image.
+Optionally publish the resulting image to Quay.
 
 Requires:
-* podman version 2.0+
-* glibc version 2.28+
+* jq 1.6+, podman 2.0+, glibc 2.28+
 * opm v1.19.5+ (see https://docs.openshift.com/container-platform/4.10/cli_reference/opm/cli-opm-install.html#cli-opm-install )
 
 Usage: $0 [OPTIONS]
@@ -33,6 +33,7 @@ Options:
   -p, --push                 : Push new index image to <target_index> on remote server.
   --include-crw              : Include CodeReady Workspaces in new index. Useful for testing migration from 2.15 -> 3.x.
   --no-temp-dir              : Work in current directory instead of a temporary one.
+  -h, --help                 : Show this help
 
 Example:
   $0 -s registry-proxy.engineering.redhat.com/rh-osbs/iib:226720
@@ -67,6 +68,7 @@ fi
 
 PODMAN=$(command -v podman)
 if [[ ! -x $PODMAN ]]; then echo "[ERROR] podman is not installed. Aborting."; echo; usage; exit 1; fi
+command -v jq >/dev/null 2>&1     || which jq >/dev/null 2>&1     || { echo "jq is not installed. Aborting."; exit 1; }
 
 if [ -z $sourceIndexImage ]; then echo "IIB image required"; echo; usage; exit 1; fi
 
