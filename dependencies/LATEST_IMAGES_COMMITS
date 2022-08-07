@@ -14,9 +14,9 @@ quay.io/devspaces/devspaces-rhel8-operator:3.2-16
    Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=2113847
   Source: https://pkgs.devel.redhat.com/cgit/containers/devspaces-operator/commit?id=410487bec75ba102aaf0a0f3fd18ffe91c2d98d7
 
-quay.io/devspaces/devspaces-operator-bundle:3.2-64
-     NVR: devspaces-operator-bundle-container-3.2-64
-   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=2113912
+quay.io/devspaces/devspaces-operator-bundle:3.2-65
+     NVR: devspaces-operator-bundle-container-3.2-65
+   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=2113930
   Source: https://pkgs.devel.redhat.com/cgit/containers/devspaces-operator-bundle/commit?id=1ae3efb78b98ce68b18d0a0c189604b8cddc0039
 
 quay.io/devspaces/dashboard-rhel8:3.2-11
@@ -74,7 +74,7 @@ quay.io/devspaces/traefik-rhel8:3.2-5
    Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=2113901
   Source: https://pkgs.devel.redhat.com/cgit/containers/devspaces-traefik/commit?id=9e5aac7f6a9127e598fad5de934252f8ad74887f
 
-quay.io/devspaces/udi-rhel8:3.2-10
-     NVR: devspaces-udi-rhel8-container-3.2-10
-   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=2113900
-  Source: https://pkgs.devel.redhat.com/cgit/containers/devspaces-udi/commit?id=c9f50b7c1e422fb6eb09d1455f0eb026ae30626f
+quay.io/devspaces/udi-rhel8:3.2-11
+     NVR: devspaces-udi-rhel8-container-3.2-11
+   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=2113913
+  Source: https://pkgs.devel.redhat.com/cgit/containers/devspaces-udi/commit?id=16fce115d593b085b413161a84f8a2cf032c5bb6
