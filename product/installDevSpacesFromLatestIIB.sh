@@ -331,12 +331,35 @@ else
   if [ -z "$CHECLUSTER_PATH" ]; then
     oc create namespace $NAMESPACE || true
     cat <<EOF | oc apply -f -
-apiVersion: org.eclipse.che/v1
+apiVersion: org.eclipse.che/v2
 kind: CheCluster
 metadata:
   name: devspaces
   namespace: $NAMESPACE
-spec: {}
+spec:
+  components:
+    cheServer:
+      debug: false
+      logLevel: INFO
+    database:
+      credentialsSecretName: postgres-credentials
+      externalDb: false
+      postgresDb: dbche
+      postgresHostName: postgres
+      postgresPort: '5432'
+      pvc:
+        claimSize: 1Gi
+    metrics:
+      enable: true
+  containerRegistry: {}
+  devEnvironments:
+    secondsOfRunBeforeIdling: -1
+    defaultNamespace:
+      template: <username>-devspaces
+    secondsOfInactivityBeforeIdling: 1800
+    storage:
+      pvcStrategy: common
+  networking: {}
 EOF
   else
     oc apply -f "$CHECLUSTER_PATH"
@@ -381,9 +404,11 @@ for _ in {1..180}; do
 done
 echo " $elapsed s elapsed"
 
-# check if new user logins can be initialized
-for user in user{1..5}; do oc login -u $user -p "${userPwd}" 2>&1 | grep "Login successful" -q || errorf "could not log in as $user"; done
-for user in admin; do      oc login -u $user -p "${adminPwd}" 2>&1 | grep "Login successful" -q || errorf "could not log in as $user"; done
+if [[ $CREATE_USERS == "true" ]]; then
+  # check if new user logins can be initialized
+  for user in user{1..5}; do oc login -u $user -p "${userPwd}" 2>&1 | grep "Login successful" -q || errorf "could not log in as $user"; done
+  for user in admin; do      oc login -u $user -p "${adminPwd}" 2>&1 | grep "Login successful" -q || errorf "could not log in as $user"; done
+fi
 
 if [[ "$STATUS" != "Established" ]]; then
   errorf "Dev Spaces did not become available before timeout expired"

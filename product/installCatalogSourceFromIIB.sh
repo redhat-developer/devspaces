@@ -40,7 +40,10 @@ Usage:
   $0 [OPTIONS]
 
 Options:
-  --iib <IIB_IMAGE>            : IIB image to install on the cluster, e.g. registry-proxy.engineering.redhat.com/rh-osbs/iib:987654
+  --iib <IIB_IMAGE>            : IIB image to install on the cluster; could be in the form:
+                               : * registry-proxy.engineering.redhat.com/rh-osbs/iib:987654 [RH internal],
+                               : * brew.registry.redhat.io/rh-osbs/iib:987654 [RH public, but authentication required], or
+                               : * quay.io/devspaces/iib:3.2-v4.11-987654 or quay.io/devspaces/iib:next-v4.10 [public]
   --install-operator <NAME>    : install operator named $NAME after creating CatalogSource
   --channel <CHANNEL>          : channel to use for operator subscription if installing operator. Default: "fast"
   --manual-updates             : use "manual" InstallPlanApproval for the CatalogSource instead of "automatic" if installing operator
@@ -78,8 +81,13 @@ if [ -z "$UPSTREAM_IIB" ]; then
   usage
   exit 1
 fi
-IIB_IMAGE="brew.registry.redhat.io/rh-osbs/iib:${UPSTREAM_IIB##*:}"
-echo "[INFO] Using iib $TO_INSTALL image $IIB_IMAGE mirrored from $UPSTREAM_IIB"
+if [[ $UPSTREAM_IIB == "registry-proxy.engineering.redhat.com/rh-osbs/iib:"* ]]; then 
+  IIB_IMAGE="brew.registry.redhat.io/rh-osbs/iib:${UPSTREAM_IIB##*:}"
+  echo "[INFO] Using iib $TO_INSTALL image $IIB_IMAGE mirrored from $UPSTREAM_IIB"
+else
+  echo "[INFO] Using iib $TO_INSTALL image $UPSTREAM_IIB"
+  IIB_IMAGE="${UPSTREAM_IIB}"
+fi
 
 # Check we're logged into a cluster
 if ! oc whoami > /dev/null 2>&1; then
