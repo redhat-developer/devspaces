@@ -73,7 +73,10 @@ Options:
   --iib-dwo <IIB_URL> : Dev Workspace Operator IIB from which to install; default: computed from DWO version
 
   --ds-chan <CHANNEL> : Dev Spaces channel to install; default: $CHANNEL_DS
-  --iib-ds <IIB_URL>  : Dev Spaces IIB from which to install; default: computed from DWO version
+  --iib-ds <IIB_URL>  : Dev Spaces IIB from which to install; default: computed from DS version; options:
+                      : * registry-proxy.engineering.redhat.com/rh-osbs/iib:987654 [RH internal],
+                      : * brew.registry.redhat.io/rh-osbs/iib:987654 [RH public, auth required], or
+                      : * quay.io/devspaces/iib:3.2-v4.11-987654 or quay.io/devspaces/iib:next-v4.10 [public]
 
   --dsc               : Optional. To install with dsc, use '--dsc 3.1.0-CI' or '--dsc 3.0.0-GA'
                       : Use '--dsc local' to search PATH for installed dsc, or use '--dsc /path/to/dsc/bin/'
