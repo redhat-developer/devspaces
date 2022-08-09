@@ -7,12 +7,11 @@
 #
 # SPDX-License-Identifier: EPL-2.0
 #
-
 # script to query latest IIBs for a given list of OCP versions, then copy those to Quay
-SCRIPT_DIR=$(cd "$(dirname "$0")" || exit; pwd)
+# OPM 4.10 is required to run filterIIBForDevSpaces.sh
+# 
 
-# required to run filterIIBForDevSpaces.sh
-OPM_VER="-4.10.25" # set to "" to just install latest
+SCRIPT_DIR=$(cd "$(dirname "$0")" || exit; pwd)
 
 usage () {
 	echo "Query latest IIBs for a Dev Spaces version and optional list of OCP versions, then filter and copy those IIBs to Quay
@@ -40,7 +39,7 @@ if [[ ! -x $PODMAN ]]; then echo "[ERROR] podman is not installed. Aborting."; e
 command -v skopeo >/dev/null 2>&1 || which skopeo >/dev/null 2>&1 || { echo "skopeo is not installed. Aborting."; exit 1; }
 command -v jq >/dev/null 2>&1     || which jq >/dev/null 2>&1     || { echo "jq is not installed. Aborting."; exit 1; }
 
-VERBOSE=0
+VERBOSEFLAG=""
 EXTRA_TAGS="" # extra tags to set in target image, eg., 3.2.0.RC-08-04-v4.10
 PUSHTOQUAYFORCE=0
 
@@ -77,7 +76,7 @@ while [[ "$#" -gt 0 ]]; do
     '-t') DS_VERSION="$2"; setDefaults; shift 1;;
     '-o') if [[ "$2" != "v"* ]]; then OCP_VERSIONS="${OCP_VERSIONS} v${2}"; else OCP_VERSIONS="${OCP_VERSIONS} ${2}"; fi; shift 1;;
     '-e'|'--extra-tags') EXTRA_TAGS="${EXTRA_TAGS} ${2}"; shift 1;;
-    '-v') VERBOSE=1; shift 0;;
+    '-v') VERBOSEFLAG="-v"; shift 0;;
     '-p'|'--push') PUSH="true";;
     '--force') PUSHTOQUAYFORCE=1;;
     '-h'|'--help') usage; exit 0;;
@@ -92,7 +91,7 @@ if [[ $DS_VERSION == "" ]] || [[ $DS_VERSION == "null" ]]; then
     exit 1
 fi
 
-if [[ $VERBOSE -eq 1 ]]; then 
+if [[ $VERBOSEFLAG == "-v" ]]; then 
 	echo "[DEBUG] DS_VERSION=${DS_VERSION}"
 	echo "[DEBUG] MIDSTM_BRANCH = $MIDSTM_BRANCH"
 	echo "[DEBUG] OCP_VERSIONS = ${OCP_VERSIONS}"
@@ -103,7 +102,11 @@ fi
 # install opm if not installed from https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp/latest-4.10/
 if [[ ! -x /usr/local/bin/opm ]] && [[ ! -x ${HOME}/.local/bin/opm ]]; then 
     pushd /tmp >/dev/null
-    curl -sSLo- https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp/latest-4.10/opm-linux${OPM_VER}.tar.gz | tar xz; chmod +x opm
+    OPM_TAR=$(curl -sSLo- https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp/latest-4.10/sha256sum.txt | grep opm-linux | sed -r -e "s#.+  ##")
+    if [[ $VERBOSEFLAG == "-v" ]]; then 
+	    echo "[DEBUG] Installing $OPM_TAR ..."
+    fi
+    curl -sSLo- https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp/latest-4.10/${OPM_TAR} | tar xz; chmod +x opm
     sudo cp opm /usr/local/bin/ || cp opm ${HOME}/.local/bin/
     if [[ ! -x /usr/local/bin/opm ]] && [[ ! -x ${HOME}/.local/bin/opm ]]; then 
         echo "Error: could not install opm v1.19.5 or higher (see https://docs.openshift.com/container-platform/4.10/cli_reference/opm/cli-opm-install.html#cli-opm-install )";
@@ -151,7 +154,7 @@ for OCP_VER in ${OCP_VERSIONS}; do
     # registry-proxy.engineering.redhat.com/rh-osbs/iib:286641
     LATEST_IIB=$(${GLIB} --ds -t ${DS_VERSION} -o ${OCP_VER} -qi) # return quietly, just the index bundle
     LATEST_IIB_NUM=${LATEST_IIB##*:}
-    if [[ $VERBOSE -eq 1 ]]; then 
+    if [[ $VERBOSEFLAG == "-v" ]]; then 
         echo "[DEBUG] OPERATOR_BUNDLE=$(${GLIB} --ds -t ${DS_VERSION} -o ${OCP_VER} -qb)"
         echo "[DEBUG]  IIB FOR BUNDLE=${LATEST_IIB}"
     fi
@@ -160,10 +163,10 @@ for OCP_VER in ${OCP_VERSIONS}; do
         # check if destination already exists in quay
         if [[ $(skopeo --insecure-policy inspect docker://quay.io/devspaces/iib:${DS_VERSION}-${OCP_VER}-${LATEST_IIB_NUM} 2>&1) == *"Error"* ]] || [[ ${PUSHTOQUAYFORCE} -eq 1 ]]; then 
             # filter and publish to a new name
-            ${FIIB} -s ${LATEST_IIB} -t quay.io/devspaces/iib:${DS_VERSION}-${OCP_VER}-${LATEST_IIB_NUM} --push
+            ${FIIB} -s ${LATEST_IIB} -t quay.io/devspaces/iib:${DS_VERSION}-${OCP_VER}-${LATEST_IIB_NUM} ${VERBOSEFLAG} --push
             PUSHTOQUAYFORCE=1
         else
-            if [[ $VERBOSE -eq 1 ]]; then echo "Copy quay.io/devspaces/iib:${DS_VERSION}-${OCP_VER}-${LATEST_IIB_NUM} - already exists, nothing to do"; fi
+            if [[ $VERBOSEFLAG == "-v" ]]; then echo "Copy quay.io/devspaces/iib:${DS_VERSION}-${OCP_VER}-${LATEST_IIB_NUM} - already exists, nothing to do"; fi
         fi
     else
         echo "${FIIB} -s ${LATEST_IIB} -t quay.io/devspaces/iib:${DS_VERSION}-${OCP_VER}-${LATEST_IIB_NUM} --push"
@@ -185,7 +188,7 @@ for OCP_VER in ${OCP_VERSIONS}; do
                 $CMD
             fi
         else
-            if [[ $VERBOSE -eq 1 ]]; then echo "Copy quay.io/devspaces/iib:${qtag} - already exists, nothing to do"; fi
+            if [[ $VERBOSEFLAG == "-v" ]]; then echo "Copy quay.io/devspaces/iib:${qtag} - already exists, nothing to do"; fi
         fi
     done
 

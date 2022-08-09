@@ -9,10 +9,8 @@
 #
 # Utility script to pull the Dev Spaces, Web Terminal, DevWorkspace (and optionally CodeReady Workspaces) operators
 # from an IIB image and build an index image that contains only those images.
+# OPM 4.10 is required to run filterIIBForDevSpaces.sh
 #
-
-# required to run filterIIBForDevSpaces.sh
-OPM_VER="-4.10.25" # set to "" to just install latest
 
 set -e
 
@@ -33,6 +31,7 @@ Options:
   -p, --push                 : Push new index image to <target_index> on remote server.
   --include-crw              : Include CodeReady Workspaces in new index. Useful for testing migration from 2.15 -> 3.x.
   --no-temp-dir              : Work in current directory instead of a temporary one.
+  -v                         : Verbose output: include additional information
   -h, --help                 : Show this help
 
 Example:
@@ -41,6 +40,8 @@ Example:
 EOF
 }
 
+VERBOSE=0
+
 while [[ "$#" -gt 0 ]]; do
   case $1 in
     '-s'|'--iib') sourceIndexImage="$2"; shift 1;;
@@ -48,6 +49,7 @@ while [[ "$#" -gt 0 ]]; do
     '-p'|'--push') PUSH="true";;
     '--include-crw') INCLUDE_CRW="true";;
     '--no-temp-dir') USE_TMP="false";;
+    '-v') VERBOSE=1; shift 0;;
     '-h'|'--help') usage; exit 0;;
     *) echo "Unknown parameter used: $1."; usage; exit 1;;
   esac
@@ -57,7 +59,11 @@ done
 # install opm if not installed from https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp/latest-4.10/
 if [[ ! -x /usr/local/bin/opm ]] && [[ ! -x ${HOME}/.local/bin/opm ]]; then 
     pushd /tmp >/dev/null
-    curl -sSLo- https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp/latest-4.10/opm-linux${OPM_VER}.tar.gz | tar xz; chmod +x opm
+    OPM_TAR=$(curl -sSLo- https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp/latest-4.10/sha256sum.txt | grep opm-linux | sed -r -e "s#.+  ##")
+    if [[ $VERBOSE -eq 1 ]]; then 
+	    echo "[DEBUG] Installing $OPM_TAR ..."
+    fi
+    curl -sSLo- https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp/latest-4.10/${OPM_TAR} | tar xz; chmod +x opm
     sudo cp opm /usr/local/bin/ || cp opm ${HOME}/.local/bin/
     if [[ ! -x /usr/local/bin/opm ]] && [[ ! -x ${HOME}/.local/bin/opm ]]; then 
         echo "Error: could not install opm v1.19.5 or higher (see https://docs.openshift.com/container-platform/4.10/cli_reference/opm/cli-opm-install.html#cli-opm-install )";
