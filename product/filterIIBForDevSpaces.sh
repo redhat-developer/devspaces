@@ -12,8 +12,6 @@
 # OPM 4.10 is required to run filterIIBForDevSpaces.sh
 #
 
-set -e
-
 usage() {
   cat <<EOF
 Collect Dev Spaces, Web Terminal, DevWorkspace operators from an IIB image into a new, smaller IIB image.
@@ -50,9 +48,9 @@ while [[ "$#" -gt 0 ]]; do
     '-p'|'--push') PUSH="true";;
     '--include-crw') INCLUDE_CRW="true";;
     '--no-temp-dir') USE_TMP="false";;
-    '-v') VERBOSE=1; shift 0;;
-    '--list-copies-only') LIST_COPIES_ONLY=1; shift 0;;
-    '-h'|'--help') usage; exit 0;;
+    '-v')                 VERBOSE=1; LIST_COPIES_ONLY=0;;
+    '--list-copies-only') LIST_COPIES_ONLY=1; VERBOSE=0;;
+    '-h'|'--help') usage;;
     *) echo "Unknown parameter used: $1."; usage; exit 1;;
   esac
   shift 1
@@ -95,14 +93,14 @@ if [ "$USE_TMP" != "false" ]; then
   pushd $TEMP_DIR >/dev/null
 fi
 
-if [ ! -f ./render.json ]; then
-  if [[ $LIST_COPIES_ONLY -eq 0 ]] || [[ $VERBOSE -eq 1 ]]; then
-    echo "Rendering $sourceIndexImage. This will take several minutes."
-    time opm render "$sourceIndexImage" > render.json
-  else
-    opm render "$sourceIndexImage" > render.json 2>/dev/null
-  fi
+if [ -f ./render.json ]; then rm -f ./render.json; fi
+if [[ $LIST_COPIES_ONLY -eq 0 ]] || [[ $VERBOSE -eq 1 ]]; then
+  echo "Rendering $sourceIndexImage. This will take several minutes."
+  time opm render "$sourceIndexImage" > render.json
+else
+  opm render "$sourceIndexImage" > render.json
 fi
+# ls -la render.json
 
 rm -rf olm-catalog
 mkdir -p olm-catalog/devspaces
@@ -140,24 +138,16 @@ for bundle in $(jq -r 'select(.package == "devworkspace-operator") | select(.sch
   jq --arg bundle $bundle 'select(.name == $bundle) | select(.schema == "olm.bundle")' render.json > "olm-catalog/devworkspace-operator/$bundle.bundle.json"
 done
 
-if [ -f ./olm-catalog.Dockerfile ]; then
-  rm -f ./olm-catalog.Dockerfile
-fi
-
-if [[ $LIST_COPIES_ONLY -eq 0 ]] || [[ $VERBOSE -eq 1 ]]; then
-  opm alpha generate dockerfile ./olm-catalog
-  $PODMAN build -t $targetIndexImage -f olm-catalog.Dockerfile .
-  if [[ "$PUSH" == "true" ]]; then $PODMAN push $targetIndexImage; fi
-else
-  opm alpha generate dockerfile ./olm-catalog 2>/dev/null
-  $PODMAN build -t $targetIndexImage -f olm-catalog.Dockerfile . 2>/dev/null
-  if [[ "$PUSH" == "true" ]]; then $PODMAN push $targetIndexImage 2>/dev/null; fi
-fi
+if [ -f ./olm-catalog.Dockerfile ]; then rm -f ./olm-catalog.Dockerfile; fi
+$PODMAN rmi -f $targetIndexImage || true
+opm alpha generate dockerfile ./olm-catalog
+$PODMAN build -t $targetIndexImage -f olm-catalog.Dockerfile . -q
+if [[ "$PUSH" == "true" ]]; then $PODMAN push $targetIndexImage -q; fi
 
 if [[ $LIST_COPIES_ONLY -eq 0 ]] || [[ $VERBOSE -eq 1 ]]; then
   echo "Index image $targetIndexImage is built and ready for use"
 else
-  echo "* $targetIndexImage"
+  echo "[IMG] $targetIndexImage"
 fi
 
 if [ "$USE_TMP" != "false" ]; then

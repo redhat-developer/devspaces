@@ -63,8 +63,8 @@ DS_VERSION=$(jq -r '.Version' ${jobconfigjson})
 
 setDefaults() {
     # list of OCP versions 
-    OCP_VERSIONS="$(jq -r --arg VERSION "${DS_VERSION}" '.Other.OPENSHIFT_VERSIONS_SUPPORTED[$VERSION]|@tsv' ${jobconfigjson} | tr "\t" " ")"
-    if [[ $OCP_VERSIONS == "null" ]]; then OCP_VERSIONS=""; fi
+    OCP_VERSIONS_DEFAULT="$(jq -r --arg VERSION "${DS_VERSION}" '.Other.OPENSHIFT_VERSIONS_SUPPORTED[$VERSION]|@tsv' ${jobconfigjson} | tr "\t" " ")"
+    if [[ $OCP_VERSIONS_DEFAULT == "null" ]]; then OCP_VERSIONS_DEFAULT=""; fi
     # next or latest tag to set
     FLOATING_QUAY_TAGS="$(jq -r --arg VERSION "${DS_VERSION}" '.Other.FLOATING_QUAY_TAGS[$VERSION]' ${jobconfigjson})" 
     if [[ $FLOATING_QUAY_TAGS == "null" ]]; then FLOATING_QUAY_TAGS=""; fi
@@ -84,6 +84,8 @@ while [[ "$#" -gt 0 ]]; do
   esac
   shift 1
 done
+
+if [[ ! $OCP_VERSIONS ]]; then OCP_VERSIONS="${OCP_VERSIONS_DEFAULT}"; fi
 
 # fail if DS_VERSION is not set
 if [[ $DS_VERSION == "" ]] || [[ $DS_VERSION == "null" ]]; then 
@@ -109,7 +111,7 @@ if [[ ! -x /usr/local/bin/opm ]] && [[ ! -x ${HOME}/.local/bin/opm ]]; then
     curl -sSLo- https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp/latest-4.10/${OPM_TAR} | tar xz; chmod +x opm
     sudo cp opm /usr/local/bin/ || cp opm ${HOME}/.local/bin/
     if [[ ! -x /usr/local/bin/opm ]] && [[ ! -x ${HOME}/.local/bin/opm ]]; then 
-        echo "Error: could not install opm v1.19.5 or higher (see https://docs.openshift.com/container-platform/4.10/cli_reference/opm/cli-opm-install.html#cli-opm-install )";
+        echo "[ERROR] Could not install opm v1.19.5 or higher (see https://docs.openshift.com/container-platform/4.10/cli_reference/opm/cli-opm-install.html#cli-opm-install )";
         exit 1
     fi
     popd >/dev/null
@@ -151,6 +153,7 @@ fi
 
 # compute list of IIBs for a given operator bundle
 for OCP_VER in ${OCP_VERSIONS}; do
+    PUSHTOQUAYFORCE_LOCAL=${PUSHTOQUAYFORCE}
     # registry-proxy.engineering.redhat.com/rh-osbs/iib:286641
     LATEST_IIB=$(${GLIB} --ds -t ${DS_VERSION} -o ${OCP_VER} -qi) # return quietly, just the index bundle
     LATEST_IIB_NUM=${LATEST_IIB##*:}
@@ -163,13 +166,20 @@ for OCP_VER in ${OCP_VERSIONS}; do
         # check if destination already exists in quay
         if [[ $(skopeo --insecure-policy inspect docker://quay.io/devspaces/iib:${DS_VERSION}-${OCP_VER}-${LATEST_IIB_NUM} 2>&1) == *"Error"* ]] || [[ ${PUSHTOQUAYFORCE} -eq 1 ]]; then 
             # filter and publish to a new name
-            ${FIIB} -s ${LATEST_IIB} -t quay.io/devspaces/iib:${DS_VERSION}-${OCP_VER}-${LATEST_IIB_NUM} ${VERBOSEFLAG} --push --list-copies-only
-            PUSHTOQUAYFORCE=1
+            ${FIIB} -s ${LATEST_IIB} -t quay.io/devspaces/iib:${DS_VERSION}-${OCP_VER}-${LATEST_IIB_NUM} --push --list-copies-only ${VERBOSEFLAG}
         else
             if [[ $VERBOSEFLAG == "-v" ]]; then echo "Copy quay.io/devspaces/iib:${DS_VERSION}-${OCP_VER}-${LATEST_IIB_NUM} - already exists, nothing to do"; fi
         fi
+        PUSHTOQUAYFORCE_LOCAL=1
     else
         echo "${FIIB} -s ${LATEST_IIB} -t quay.io/devspaces/iib:${DS_VERSION}-${OCP_VER}-${LATEST_IIB_NUM} --push"
+    fi
+
+    if [[ $(skopeo --insecure-policy inspect docker://quay.io/devspaces/iib:${DS_VERSION}-${OCP_VER}-${LATEST_IIB_NUM} 2>&1) == *"Error"* ]]; then 
+        echo "[ERROR] Cannot find image quay.io/devspaces/iib:${DS_VERSION}-${OCP_VER}-${LATEST_IIB_NUM} to copy!"
+        echo "[ERROR] Check output of this command for an idea of what went wrong:"
+        echo "[ERROR] ${FIIB} -s ${LATEST_IIB} -t quay.io/devspaces/iib:${DS_VERSION}-${OCP_VER}-${LATEST_IIB_NUM} -v --push"
+        exit 1
     fi
 
     # skopeo copy to additional tags
@@ -180,16 +190,16 @@ for OCP_VER in ${OCP_VERSIONS}; do
     for atag in $EXTRA_TAGS; do 
         ALL_TAGS="${ALL_TAGS} ${atag}-${OCP_VER}"
     done
+
     for qtag in ${ALL_TAGS}; do
-        if [[ $(skopeo --insecure-policy inspect docker://quay.io/devspaces/iib:${qtag} 2>&1) == *"Error"* ]] || [[ ${PUSHTOQUAYFORCE} -eq 1 ]]; then 
+        if [[ $(skopeo --insecure-policy inspect docker://quay.io/devspaces/iib:${qtag} 2>&1) == *"Error"* ]] || [[ ${PUSHTOQUAYFORCE_LOCAL} -eq 1 ]]; then 
             CMD="skopeo --insecure-policy copy --all docker://quay.io/devspaces/iib:${DS_VERSION}-${OCP_VER}-${LATEST_IIB_NUM} docker://quay.io/devspaces/iib:${qtag}"
             if [[ $VERBOSE -eq 1 ]]; then
                 echo $CMD
+                if [[ "$PUSH" == "true" ]]; then $CMD; fi
             else
-                echo "quay.io/devspaces/iib:${qtag}"
-            fi
-            if [[ "$PUSH" == "true" ]]; then
-                $CMD
+                if [[ "$PUSH" == "true" ]]; then $CMD -q; fi
+                echo "[IMG] quay.io/devspaces/iib:${qtag}"
             fi
         else
             if [[ $VERBOSEFLAG == "-v" ]]; then echo "Copy quay.io/devspaces/iib:${qtag} - already exists, nothing to do"; fi
