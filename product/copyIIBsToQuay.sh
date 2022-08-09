@@ -207,7 +207,7 @@ for OCP_VER in ${OCP_VERSIONS}; do
     done
 
     # cleanup images
-    $PODMAN rmi ${LATEST_IIB} $targetIndexImage 2>/dev/null || true
+    $PODMAN rmi --ignore --force ${LATEST_IIB} $targetIndexImage 2>/dev/null || true
 done
 
 # cleanup temp space 
