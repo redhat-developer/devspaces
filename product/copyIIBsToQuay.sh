@@ -163,7 +163,7 @@ for OCP_VER in ${OCP_VERSIONS}; do
         # check if destination already exists in quay
         if [[ $(skopeo --insecure-policy inspect docker://quay.io/devspaces/iib:${DS_VERSION}-${OCP_VER}-${LATEST_IIB_NUM} 2>&1) == *"Error"* ]] || [[ ${PUSHTOQUAYFORCE} -eq 1 ]]; then 
             # filter and publish to a new name
-            ${FIIB} -s ${LATEST_IIB} -t quay.io/devspaces/iib:${DS_VERSION}-${OCP_VER}-${LATEST_IIB_NUM} ${VERBOSEFLAG} --push
+            ${FIIB} -s ${LATEST_IIB} -t quay.io/devspaces/iib:${DS_VERSION}-${OCP_VER}-${LATEST_IIB_NUM} ${VERBOSEFLAG} --push --list-copies-only
             PUSHTOQUAYFORCE=1
         else
             if [[ $VERBOSEFLAG == "-v" ]]; then echo "Copy quay.io/devspaces/iib:${DS_VERSION}-${OCP_VER}-${LATEST_IIB_NUM} - already exists, nothing to do"; fi
@@ -183,7 +183,11 @@ for OCP_VER in ${OCP_VERSIONS}; do
     for qtag in ${ALL_TAGS}; do
         if [[ $(skopeo --insecure-policy inspect docker://quay.io/devspaces/iib:${qtag} 2>&1) == *"Error"* ]] || [[ ${PUSHTOQUAYFORCE} -eq 1 ]]; then 
             CMD="skopeo --insecure-policy copy --all docker://quay.io/devspaces/iib:${DS_VERSION}-${OCP_VER}-${LATEST_IIB_NUM} docker://quay.io/devspaces/iib:${qtag}"
-            echo $CMD
+            if [[ $VERBOSE -eq 1 ]]; then
+                echo $CMD
+            else
+                echo "quay.io/devspaces/iib:${qtag}"
+            fi
             if [[ "$PUSH" == "true" ]]; then
                 $CMD
             fi

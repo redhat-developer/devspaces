@@ -41,6 +41,7 @@ EOF
 }
 
 VERBOSE=0
+LIST_COPIES_ONLY=0 # only list the copied images, nothing more
 
 while [[ "$#" -gt 0 ]]; do
   case $1 in
@@ -50,6 +51,7 @@ while [[ "$#" -gt 0 ]]; do
     '--include-crw') INCLUDE_CRW="true";;
     '--no-temp-dir') USE_TMP="false";;
     '-v') VERBOSE=1; shift 0;;
+    '--list-copies-only') LIST_COPIES_ONLY=1; shift 0;;
     '-h'|'--help') usage; exit 0;;
     *) echo "Unknown parameter used: $1."; usage; exit 1;;
   esac
@@ -60,7 +62,7 @@ done
 if [[ ! -x /usr/local/bin/opm ]] && [[ ! -x ${HOME}/.local/bin/opm ]]; then 
     pushd /tmp >/dev/null
     OPM_TAR=$(curl -sSLo- https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp/latest-4.10/sha256sum.txt | grep opm-linux | sed -r -e "s#.+  ##")
-    if [[ $VERBOSE -eq 1 ]]; then 
+    if [[ $LIST_COPIES_ONLY -eq 0 ]] || [[ $VERBOSE -eq 1 ]]; then
 	    echo "[DEBUG] Installing $OPM_TAR ..."
     fi
     curl -sSLo- https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp/latest-4.10/${OPM_TAR} | tar xz; chmod +x opm
@@ -80,18 +82,26 @@ if [ -z $sourceIndexImage ]; then echo "IIB image required"; echo; usage; exit 1
 
 if [ -z $targetIndexImage ]; then 
   targetIndexImage="quay.io/devspaces/${sourceIndexImage##*/}"
-  echo "No target image specified: using ${targetIndexImage}"
+  if [[ $LIST_COPIES_ONLY -eq 0 ]] || [[ $VERBOSE -eq 1 ]]; then
+    echo "No target image specified: using ${targetIndexImage}"
+  fi
 fi
 
 if [ "$USE_TMP" != "false" ]; then
   TEMP_DIR=$(mktemp -d)
-  echo "Working in $TEMP_DIR"
-  cd $TEMP_DIR
+  if [[ $LIST_COPIES_ONLY -eq 0 ]] || [[ $VERBOSE -eq 1 ]]; then
+    echo -n "Working in $TEMP_DIR. "
+  fi
+  pushd $TEMP_DIR >/dev/null
 fi
 
 if [ ! -f ./render.json ]; then
-  echo "Rendering $sourceIndexImage. This will take several minutes."
-  time opm render "$sourceIndexImage" > render.json
+  if [[ $LIST_COPIES_ONLY -eq 0 ]] || [[ $VERBOSE -eq 1 ]]; then
+    echo "Rendering $sourceIndexImage. This will take several minutes."
+    time opm render "$sourceIndexImage" > render.json
+  else
+    opm render "$sourceIndexImage" > render.json 2>/dev/null
+  fi
 fi
 
 rm -rf olm-catalog
@@ -133,14 +143,27 @@ done
 if [ -f ./olm-catalog.Dockerfile ]; then
   rm -f ./olm-catalog.Dockerfile
 fi
-opm alpha generate dockerfile ./olm-catalog
 
-$PODMAN build -t $targetIndexImage -f olm-catalog.Dockerfile .
-
-if [[ "$PUSH" == "true" ]]; then
-  $PODMAN push $targetIndexImage
+if [[ $LIST_COPIES_ONLY -eq 0 ]] || [[ $VERBOSE -eq 1 ]]; then
+  opm alpha generate dockerfile ./olm-catalog
+  $PODMAN build -t $targetIndexImage -f olm-catalog.Dockerfile .
+  if [[ "$PUSH" == "true" ]]; then $PODMAN push $targetIndexImage; fi
+else
+  opm alpha generate dockerfile ./olm-catalog 2>/dev/null
+  $PODMAN build -t $targetIndexImage -f olm-catalog.Dockerfile . 2>/dev/null
+  if [[ "$PUSH" == "true" ]]; then $PODMAN push $targetIndexImage 2>/dev/null; fi
 fi
-echo "Index image $targetIndexImage is built and ready for use"
+
+if [[ $LIST_COPIES_ONLY -eq 0 ]] || [[ $VERBOSE -eq 1 ]]; then
+  echo "Index image $targetIndexImage is built and ready for use"
+else
+  echo "* $targetIndexImage"
+fi
+
+if [ "$USE_TMP" != "false" ]; then
+  popd >/dev/null
+  rm -fr $TEMP_DIR
+fi
 
 # cleanup source IIB image; don't delete the target image as we might need to copy it again to a new tag
 # $PODMAN rmi $sourceIndexImage
