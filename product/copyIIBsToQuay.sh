@@ -170,6 +170,7 @@ for OCP_VER in ${OCP_VERSIONS}; do
             ${FIIB} -s ${LATEST_IIB} -t quay.io/devspaces/iib:${DS_VERSION}-${OCP_VER}-${LATEST_IIB_NUM} --push ${VERBOSEFLAG}
         else
             if [[ $VERBOSEFLAG == "-v" ]]; then echo "Copy quay.io/devspaces/iib:${DS_VERSION}-${OCP_VER}-${LATEST_IIB_NUM} - already exists, nothing to do"; fi
+            echo "[IMG] quay.io/devspaces/iib:${DS_VERSION}-${OCP_VER}-${LATEST_IIB_NUM}"
         fi
         PUSHTOQUAYFORCE_LOCAL=1
     else
