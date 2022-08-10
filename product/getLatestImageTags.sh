@@ -118,13 +118,14 @@ Usage:
   $0 -b ${DWNSTM_BRANCH} --stage --sort                   | use default list of DS images in RHEC Stage, sorted alphabetically
   $0 -b ${DWNSTM_BRANCH} --arches                         | use default list of DS images in RHEC Prod; show arches
 
-  $0 -c 'devspaces/theia-rhel8 devspaces/theia-endpoint-rhel8' --quay      | check latest tag for specific Quay images, with branch = ${DWNSTM_BRANCH}
-  $0 -c devspaces-operator --osbs                       | check an image from OSBS
-  $0 -c devspaces-devspaces-rhel8-operator --nvr        | check an NVR from OSBS
-  $0 -c 'rhoar-nodejs/nodejs-10 jboss-eap-7/eap72-openshift'   | check latest tags for specific RHEC images
+  $0 -b ${DWNSTM_BRANCH} --quay -c devspaces/iib -o v4.11 --tag 3.2-v4.10
+                                                                                 | search for latest Dev Spaces IIBs in quay for a given OCP version
+
+  $0 -c devspaces/code-rhel8 --quay                            | check latest tag for specific Quay image(s), with branch = ${DWNSTM_BRANCH}
+  $0 -c devspaces-operator --osbs                              | check an image from OSBS
+  $0 -c devspaces-devspaces-rhel8-operator --nvr               | check an NVR from OSBS
   $0 -c ubi7-minimal -c ubi8-minimal --osbs -n 3 --tag .       | check OSBS registry; show all tags; show 3 tags per container
   $0 -c 'devtools/go-toolset-rhel7 ubi7/go-toolset' --tag 1.1* | check RHEC prod registry; show 1.1* tags (exclude latest and -sources)
-
   $0 -c pivotaldata/centos --docker --dockerfile               | check docker registry; show Dockerfile contents (requires dfimage)
 "
 }
@@ -153,6 +154,9 @@ while [[ "$#" -gt 0 ]]; do
     '--pushtoquay') PUSHTOQUAY=1; PUSHTOQUAYTAGS="";;
     --pushtoquay=*) PUSHTOQUAY=1; PUSHTOQUAYTAGS="$(echo "${1#*=}")";;
     '--pushtoquayforce') PUSHTOQUAYFORCE=1;;
+	'--latestNext') latestNext="$2"; shift 1;;
+	# since we have no next or latest tags for IIB images, append an OCP version and filter for those by default
+	'-o') latestNext="${latestNext// /}-$2"; BASETAG="$2"; shift 1;;
     '-n') NUMTAGS="$2"; shift 1;;
     '--dockerfile') SHOWHISTORY=1;;
     '--tag') BASETAG="$2"; shift 1;;
@@ -166,6 +170,12 @@ while [[ "$#" -gt 0 ]]; do
   esac
   shift 1
 done
+
+if [[ $CONTAINERS == *"devspaces/iib"* ]]; then
+	if [[ $latestNext == "latest" ]] || [[ $latestNext == "next  " ]]; then
+		echo "[ERROR] For Quay IIB searches, must specify OCP version. For example: '-o v4.11'"; usage; exit 1
+	fi
+fi
 
 # null for osbs and others; only need this for quay repo when we might not have a :latest tag (but do have a :next one)
 searchTag=""
