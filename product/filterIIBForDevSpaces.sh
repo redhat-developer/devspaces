@@ -139,7 +139,7 @@ for bundle in $(jq -r 'select(.package == "devworkspace-operator") | select(.sch
 done
 
 if [ -f ./olm-catalog.Dockerfile ]; then rm -f ./olm-catalog.Dockerfile; fi
-$PODMAN rmi --ignore --force $targetIndexImage 2>/dev/null || true
+$PODMAN rmi --ignore --force $targetIndexImage >/dev/null 2>&1 || true
 opm alpha generate dockerfile ./olm-catalog
 $PODMAN build -t $targetIndexImage -f olm-catalog.Dockerfile . -q
 if [[ "$PUSH" == "true" ]]; then $PODMAN push $targetIndexImage -q; fi
