@@ -56,15 +56,14 @@ while [[ "$#" -gt 0 ]]; do
   shift 1
 done
 
-# install opm if not installed from https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp/latest-4.10/
+# install opm if not installed from https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp/latest-4.11/opm-linux.tar.gz
+# note, this won't run on s390x or ppc64le, only on amd64
 if [[ ! -x /usr/local/bin/opm ]] && [[ ! -x ${HOME}/.local/bin/opm ]]; then 
     pushd /tmp >/dev/null
-    OPM_TAR=$(curl -sSLo- https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp/latest-4.10/sha256sum.txt | grep opm-linux | sed -r -e "s#.+  ##")
-    if [[ $LIST_COPIES_ONLY -eq 0 ]] || [[ $VERBOSE -eq 1 ]]; then
-	    echo "[DEBUG] Installing $OPM_TAR ..."
-    fi
-    curl -sSLo- https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp/latest-4.10/${OPM_TAR} | tar xz; chmod +x opm
+    echo "[INFO] Installing latest opm from https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp/latest-4.11/opm-linux.tar.gz ..."
+    curl -sSLo- https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp/latest-4.11/opm-linux.tar.gz | tar xz; chmod 755 opm
     sudo cp opm /usr/local/bin/ || cp opm ${HOME}/.local/bin/
+    sudo chmod 755 /usr/local/bin/opm || chmod 755 ${HOME}/.local/bin/opm
     if [[ ! -x /usr/local/bin/opm ]] && [[ ! -x ${HOME}/.local/bin/opm ]]; then 
         echo "[ERROR] Could not install opm v1.19.5 or higher (see https://docs.openshift.com/container-platform/4.10/cli_reference/opm/cli-opm-install.html#cli-opm-install )";
         exit 1
