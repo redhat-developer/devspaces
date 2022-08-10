@@ -77,6 +77,7 @@ Options:
                       : * registry-proxy.engineering.redhat.com/rh-osbs/iib:987654 [RH internal],
                       : * brew.registry.redhat.io/rh-osbs/iib:987654 [RH public, auth required], or
                       : * quay.io/devspaces/iib:3.2-v4.11-987654 or quay.io/devspaces/iib:next-v4.10 [public]
+  --quay              : Install from quay.io/devspaces/iib:<DS_VERSION>-v4.yy (detected OCP version)
 
   --dsc               : Optional. To install with dsc, use '--dsc 3.1.0-CI' or '--dsc 3.0.0-GA'
                       : Use '--dsc local' to search PATH for installed dsc, or use '--dsc /path/to/dsc/bin/'
@@ -188,6 +189,7 @@ while [[ "$#" -gt 0 ]]; do
       fi; shift 1;;
     '--iib-dwo') IIB_DWO="$2"; shift 1;;
     '--iib-ds') IIB_DS="$2"; shift 1;;
+    '--quay') IIB_DS="quay.io/devspaces/iib";;
     '--delete-before') DELETE_BEFORE="true";;
     '--get-url') GET_URL="true";;
     '--no-get-url') GET_URL="false";;
@@ -232,6 +234,9 @@ if [[ ! $IIB_DS ]]; then
     exit 1
   fi
 else
+  if [[ $IIB_DS == "quay.io/devspaces/iib" ]]; then 
+    IIB_DS="${IIB_DS}:${DS_VERSION}-v${OPENSHIFT_VER}"
+  fi
   echo "[INFO] Requested Dev Spaces IIB $IIB_DS - installing from $CHANNEL_DS channel..."
 fi
 
