@@ -144,10 +144,9 @@ $PODMAN build -t $targetIndexImage -f olm-catalog.Dockerfile . -q
 if [[ "$PUSH" == "true" ]]; then $PODMAN push $targetIndexImage -q; fi
 
 if [[ $LIST_COPIES_ONLY -eq 0 ]] || [[ $VERBOSE -eq 1 ]]; then
-  echo "Index image $targetIndexImage is built and ready for use"
-else
-  echo "[IMG] $targetIndexImage"
+  echo "Index image built and ready for use"
 fi
+echo "[IMG] $targetIndexImage"
 
 if [ "$USE_TMP" != "false" ]; then
   popd >/dev/null
