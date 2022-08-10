@@ -86,6 +86,8 @@ while [[ "$#" -gt 0 ]]; do
 done
 
 if [[ ! $OCP_VERSIONS ]]; then OCP_VERSIONS="${OCP_VERSIONS_DEFAULT}"; fi
+for o in $OCP_VERSIONS; do if [[ $OCP_UNIQ != *" $o"* ]];then OCP_UNIQ="${OCP_UNIQ} $o"; fi; done
+OCP_VERSIONS="$OCP_UNIQ"
 
 # fail if DS_VERSION is not set
 if [[ $DS_VERSION == "" ]] || [[ $DS_VERSION == "null" ]]; then 
