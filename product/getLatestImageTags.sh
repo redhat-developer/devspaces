@@ -118,7 +118,7 @@ Usage:
   $0 -b ${DWNSTM_BRANCH} --stage --sort                   | use default list of DS images in RHEC Stage, sorted alphabetically
   $0 -b ${DWNSTM_BRANCH} --arches                         | use default list of DS images in RHEC Prod; show arches
 
-  $0 -b ${DWNSTM_BRANCH} --quay -c devspaces/iib -o v4.11 --tag 3.2-v4.10
+  $0 -b ${DWNSTM_BRANCH} --quay -c devspaces/iib -o v4.11 --tag 3.2-v4.11
                                                                                  | search for latest Dev Spaces IIBs in quay for a given OCP version
 
   $0 -c devspaces/code-rhel8 --quay                            | check latest tag for specific Quay image(s), with branch = ${DWNSTM_BRANCH}
