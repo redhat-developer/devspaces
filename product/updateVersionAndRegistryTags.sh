@@ -171,8 +171,8 @@ updateVersion() {
     replaceField "${WORKDIR}/dependencies/job-config.json" '.Copyright' "[\"${COPYRIGHT}\"]"
 
     DEVSPACES_Y_VALUE="${DEVSPACES_VERSION#*.}"
-    UPPER_CHE_Y=$(( (${DEVSPACES_Y_VALUE} * 2 ) + 44 ))
-    LOWER_CHE_Y=$(( ((${DEVSPACES_Y_VALUE} * 2 ) + 44 ) - 1 ))
+    UPPER_CHE_Y=$(( (${DEVSPACES_Y_VALUE} + 24) * 2 ))
+    LOWER_CHE_Y=$(( ((${DEVSPACES_Y_VALUE} + 24) * 2) - 1 ))
     
     # CRW-2155, if version is in the json update it for che and devspaces branches
     # otherwise inject new version.
