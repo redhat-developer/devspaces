@@ -1,0 +1,32 @@
+schemaVersion: 1.0.0
+metadata:
+  id: redhat/quarkus-java11
+  publisher: redhat
+  name: quarkus-java11
+  version: latest
+  displayName: Quarkus
+  description: Quarkus Tools for Visual Studio Code
+  repository: https://github.com/redhat-developer/vscode-quarkus
+  categories:
+    - Programming Languages
+    - Other
+  icon: /images/redhat-vscode-quarkus-icon.png
+sidecar:
+  image: quay.io/devspaces/udi-rhel8:3.2
+  name: vscode-quarkus
+  memoryLimit: 3500Mi
+  memoryRequest: 20Mi
+  cpuLimit: 800m
+  cpuRequest: 30m
+  volumeMounts:
+    - name: m2
+      path: /home/user/.m2
+preferences:
+  java.server.launchMode: Standard
+dependencies:
+  - redhat/java
+  - redhat/vscode-microprofile
+  - vscjava/vscode-java-debug
+  - vscjava/vscode-java-test
+extensions:
+  - relative:extension/resources/github_com/redhat-developer/devspaces-vscode-extensions/releases/download/7_44-che-assets/vscode-quarkus-1.7.0-437.vsix
