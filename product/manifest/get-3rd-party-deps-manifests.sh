@@ -140,8 +140,15 @@ function logDockerDetails ()
 	theFile=/tmp/curl.tmp
 	curl -sSL $theFileURL > $theFile
 	prefix="$2" # echo prefix="$2"
-	log "$(cat $theFile | grep -E -i "FROM|yum|rh-|INSTALL|COPY|ADD|curl|_VERSION" | grep -E -v "opt/rh|yum clean all|yum-config-manager|^( *)#|useradd|entrypoint.sh|gopath")"
-	mnf "$(cat $theFile | grep -E "^FROM" | sed -e "s#^FROM #${prefix}#g")"
+	echo "$(cat $theFile | grep -E "^FROM" | sed -e "s#^FROM #${prefix}#g")" \
+		| tee -a ${MANIFEST_FILE/.txt/-containers-base-images-only.txt}
+
+	echo "$(cat $theFile | grep -E "^FROM" | sed -e "s#^FROM #${prefix}#g")" \
+		| tee -a ${MANIFEST_FILE/.txt/-containers-binaries-extras.txt}
+	echo "$(cat $theFile | grep -E -i "FROM|yum|rh-|INSTALL|COPY|ADD|curl|_VERSION" | grep -E -v "opt/rh|yum clean all|yum-config-manager|^( *)#|useradd|entrypoint.sh|gopath")" \
+		| tee -a ${MANIFEST_FILE/.txt/-containers-binaries-extras.txt}
+	echo \
+		| tee -a ${MANIFEST_FILE/.txt/-containers-binaries-extras.txt}
 	rm -f $theFile
 }
 
@@ -153,7 +160,7 @@ if [[ ${phases} == *"1"* ]] || [[ ${phases} == *"2"* ]] || [[ ${phases} == *"4"*
 	log "1a. Check out 3rd party language server dependencies builder repo (will collect variables later)" 
 	cd /tmp
 	if [[ ! -d devspaces-images ]]; then
-		git clone https://$GITHUB_TOKEN:x-oauth-basic@github.com/redhat-developer/devspaces-images.git
+		git clone -b ${DS_BRANCH_TAG} --depth 1 --single-branch https://$GITHUB_TOKEN:x-oauth-basic@github.com/redhat-developer/devspaces-images.git
 	fi
 	pushd devspaces-images>/dev/null
 		git config --global push.default matching
@@ -165,6 +172,8 @@ if [[ ${phases} == *"1"* ]] || [[ ${phases} == *"2"* ]] || [[ ${phases} == *"4"*
 fi
 
 if [[ ${phases} == *"1"* ]]; then
+
+	rm -fr ${MANIFEST_FILE/.txt/-containers-binaries-extras.txt} ${MANIFEST_FILE/.txt/-containers-base-images-only.txt}
 	log "1b. Define list of upstream containers & RPMs pulled into them from https://pkgs.devel.redhat.com/cgit/?q=devspaces "
 	for d in \
 	devspaces-code \
@@ -198,6 +207,9 @@ if [[ ${phases} == *"1"* ]]; then
 	done
 	bth ""
 
+	log "Short container list (base images only):        ${MANIFEST_FILE/.txt/-containers-base-images-only.txt}"
+	log "Long container list (with dockerfile snippets): ${MANIFEST_FILE/.txt/-containers-binaries-extras.txt}"
+	log ""
 	log "1c. Other than the above, all artifacts used in Red Hat OpenShift Dev Spaces (formerly "
 	log "    Red Hat CodeReady Workspaces) Workspaces are now built in RH Central CI Jenkins:"
 	log "https://main-jenkins-csb-crwqe.apps.ocp-c1.prod.psi.redhat.com/"
@@ -421,10 +433,10 @@ if [[ ${phases} == *"7"* ]] || [[ ${phases} == *"8"* ]] || [[ ${phases} == *"9"*
 	done
 fi
 
-# append mvn, npm, and theia logs to the long manifest
+# append mvn, npm, and theia logs to the long manifest, but NOT the RPMs (See CRW-3250)
 touch ${MANIFEST_FILE/.txt/-all.txt}
 if [[ ${phases} == *"6"* ]] || [[ ${phases} == *"7"* ]] || [[ ${phases} == *"8"* ]] || [[ ${phases} == *"9"* ]]; then
-	for d in rpms mvn npm theia; do
+	for d in mvn npm theia; do
 		if [[ -f ${WORKSPACE}/${CSV_VERSION}/${d}/manifest-${d}.txt ]]; then
 			cat ${WORKSPACE}/${CSV_VERSION}/${d}/manifest-${d}.txt >> ${MANIFEST_FILE/.txt/-all.txt}
 		fi
