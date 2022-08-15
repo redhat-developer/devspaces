@@ -9,7 +9,9 @@
           "7.41.x"
         ],
         "disabled": true
-      }
+      },
+      "3.3": null,
+      "3.x": null
     },
     "code": {
       "3.1": {
@@ -180,7 +182,9 @@
           "7.41.x"
         ],
         "disabled": true
-      }
+      },
+      "3.3": null,
+      "3.x": null
     },
     "machineexec": {
       "2.15": {
@@ -335,7 +339,9 @@
           "7.49.x"
         ],
         "disabled": true
-      }
+      },
+      "3.3": null,
+      "3.x": null
     },
     "theia": {
       "2.15": {
@@ -402,7 +408,9 @@
           "7.49.x"
         ],
         "disabled": true
-      }
+      },
+      "3.3": null,
+      "3.x": null
     },
     "devfileregistry": {
       "2.15": {
@@ -499,7 +507,9 @@
           "crw-2.15-rhel-8"
         ],
         "disabled": true
-      }
+      },
+      "3.3": null,
+      "3.x": null
     },
     "plugin-java8": {
       "2.15": {
@@ -508,7 +518,9 @@
           "crw-2.15-rhel-8"
         ],
         "disabled": true
-      }
+      },
+      "3.3": null,
+      "3.x": null
     },
     "plugin-kubernetes": {
       "2.15": {
@@ -517,7 +529,9 @@
           "crw-2.15-rhel-8"
         ],
         "disabled": true
-      }
+      },
+      "3.3": null,
+      "3.x": null
     },
     "plugin-openshift": {
       "2.15": {
@@ -526,7 +540,9 @@
           "crw-2.15-rhel-8"
         ],
         "disabled": true
-      }
+      },
+      "3.3": null,
+      "3.x": null
     },
     "stacks-cpp": {
       "2.15": {
@@ -535,7 +551,9 @@
           "crw-2.15-rhel-8"
         ],
         "disabled": true
-      }
+      },
+      "3.3": null,
+      "3.x": null
     },
     "stacks-dotnet": {
       "2.15": {
@@ -544,7 +562,9 @@
           "crw-2.15-rhel-8"
         ],
         "disabled": true
-      }
+      },
+      "3.3": null,
+      "3.x": null
     },
     "stacks-golang": {
       "2.15": {
@@ -553,7 +573,9 @@
           "crw-2.15-rhel-8"
         ],
         "disabled": true
-      }
+      },
+      "3.3": null,
+      "3.x": null
     },
     "stacks-php": {
       "2.15": {
@@ -562,7 +584,9 @@
           "crw-2.15-rhel-8"
         ],
         "disabled": true
-      }
+      },
+      "3.3": null,
+      "3.x": null
     },
     "pluginbroker-artifacts": {
       "2.15": {
@@ -571,7 +595,9 @@
           "v3.4.x"
         ],
         "disabled": true
-      }
+      },
+      "3.3": null,
+      "3.x": null
     },
     "pluginbroker-metadata": {
       "2.15": {
@@ -580,7 +606,9 @@
           "v3.4.x"
         ],
         "disabled": true
-      }
+      },
+      "3.3": null,
+      "3.x": null
     },
     "idea": {
       "2.15": {
@@ -679,7 +707,9 @@
       },
       "3.1": {
         "disabled": true
-      }
+      },
+      "3.3": null,
+      "3.x": null
     },
     "build-all-images": {
       "2.15": {
@@ -748,7 +778,9 @@
         ],
         "node_version": "12.22.5",
         "disabled": true
-      }
+      },
+      "3.3": null,
+      "3.x": null
     },
     "dsc": {
       "3.0": {
@@ -843,7 +875,9 @@
           "7.41.x"
         ],
         "disabled": true
-      }
+      },
+      "3.3": null,
+      "3.x": null
     },
     "get-sources-rhpkg-container-build": {
       "2.15": {
@@ -911,7 +945,9 @@
       },
       "3.0": {
         "disabled": true
-      }
+      },
+      "3.3": null,
+      "3.x": null
     },
     "update-digests": {
       "3.1": {
@@ -979,7 +1015,9 @@
       "2.15": {
         "CSV_VERSION": "2.15.4",
         "CSV_VERSION_PREV": "2.15.3"
-      }
+      },
+      "3.3": null,
+      "3.x": null
     }
   },
   "Other": {
