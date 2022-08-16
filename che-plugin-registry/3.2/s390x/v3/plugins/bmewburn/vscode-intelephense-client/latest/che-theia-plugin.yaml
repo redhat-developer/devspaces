@@ -13,7 +13,7 @@ metadata:
     - Formatters
   icon: /images/bmewburn-vscode-intelephense-client-icon.png
 sidecar:
-  image: quay.io/devspaces/udi-rhel8:3.2
+  image: registry.redhat.io/devspaces/udi-rhel8:3.2
   name: php-intelephense
   memoryLimit: 1Gi
   memoryRequest: 20Mi

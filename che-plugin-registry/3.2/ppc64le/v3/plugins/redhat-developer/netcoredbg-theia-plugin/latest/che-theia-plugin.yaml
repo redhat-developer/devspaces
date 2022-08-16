@@ -11,7 +11,7 @@ metadata:
     - Other
   icon: /images/default.png
 sidecar:
-  image: quay.io/devspaces/udi-rhel8:3.2
+  image: registry.redhat.io/devspaces/udi-rhel8:3.2
   name: theia-netcoredbg
   memoryLimit: 512Mi
   memoryRequest: 20Mi

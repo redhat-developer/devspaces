@@ -13,7 +13,7 @@ metadata:
     - Other
   icon: /images/vscjava-vscode-java-debug-icon.png
 sidecar:
-  image: quay.io/devspaces/udi-rhel8:3.2
+  image: registry.redhat.io/devspaces/udi-rhel8:3.2
   name: vscode-java
   memoryLimit: 1500Mi
   memoryRequest: 20Mi

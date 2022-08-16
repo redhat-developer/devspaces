@@ -11,7 +11,7 @@ events:
 components:
   - name: idea-rhel8
     container:
-      image: quay.io/devspaces/udi-rhel8:3.2
+      image: registry.redhat.io/devspaces/udi-rhel8:3.2
       command:
         - /projector/entrypoint-volume.sh
       env:
@@ -74,7 +74,7 @@ components:
     volume: {}
   - name: idea-rhel8-injector
     container:
-      image: quay.io/devspaces/idea-rhel8:3.2
+      image: registry.redhat.io/devspaces/idea-rhel8:3.2
       command:
         - /projector/entrypoint-init-container.sh
       env:
