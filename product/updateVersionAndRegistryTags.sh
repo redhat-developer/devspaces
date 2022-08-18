@@ -209,14 +209,16 @@ updateVersion() {
           do
             #save content of 3.x
             content=$(cat ${WORKDIR}/dependencies/job-config.json | jq ".\"${TOP_KEY}\"[\"${KEY}\"][\"3.x\"]")
-            #Add DEVSPACES_VERSION from 3.x then delete 3.x
-            #then append 3.x so the general order remains the same
-            replaceField "${WORKDIR}/dependencies/job-config.json" ".\"${TOP_KEY}\"[\"${KEY}\"]" "(. + {\"${DEVSPACES_VERSION}\": .\"3.x\"} | del(.\"3.x\"))"
-            replaceField "${WORKDIR}/dependencies/job-config.json" ".\"${TOP_KEY}\"[\"${KEY}\"]" ". + {\"3.x\": ${content}}"
+            if [[ $(echo $content | grep "\"") ]]; then #is there a 3.x version
+              #Add DEVSPACES_VERSION from 3.x then delete 3.x
+              #then append 3.x so the general order remains the same
+              replaceField "${WORKDIR}/dependencies/job-config.json" ".\"${TOP_KEY}\"[\"${KEY}\"]" "(. + {\"${DEVSPACES_VERSION}\": .\"3.x\"} | del(.\"3.x\"))"
+              replaceField "${WORKDIR}/dependencies/job-config.json" ".\"${TOP_KEY}\"[\"${KEY}\"]" ". + {\"3.x\": ${content}}"
 
-            #while in here remove version if desired
-            if [[ $REMOVE_DEVSPACES_VERSION ]]; then
-              replaceField "${WORKDIR}/dependencies/job-config.json" ".\"${TOP_KEY}\"[\"${KEY}\"]" "del(.\"${REMOVE_DEVSPACES_VERSION}\")"
+              #while in here remove version if desired
+              if [[ $REMOVE_DEVSPACES_VERSION ]]; then
+                replaceField "${WORKDIR}/dependencies/job-config.json" ".\"${TOP_KEY}\"[\"${KEY}\"]" "del(.\"${REMOVE_DEVSPACES_VERSION}\")"
+              fi
             fi
           done
         fi
