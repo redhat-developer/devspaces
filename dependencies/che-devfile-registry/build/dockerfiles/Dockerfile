@@ -59,16 +59,13 @@ ARG PATCHED_IMAGES_REG="quay.io"
 ARG PATCHED_IMAGES_ORG="eclipse"
 ARG PATCHED_IMAGES_TAG="next"
 
+# validate devfile content
 RUN ./check_mandatory_fields.sh devfiles
-# Cache projects in DS 
-RUN ./index.sh > /build/devfiles/index.json
-RUN ./list_referenced_images.sh devfiles > /build/devfiles/external_images.txt
-RUN chmod -R g+rwX /build/devfiles
-RUN chmod -R g+rwX /build/resources
 
-RUN ./index.sh > /build/devfiles/index.json
-RUN ./list_referenced_images.sh devfiles > /build/devfiles/external_images.txt
-RUN chmod -R g+rwX /build/devfiles
+# Cache projects in DS 
+RUN ./index.sh > /build/devfiles/index.json && \
+    ./list_referenced_images.sh devfiles > /build/devfiles/external_images.txt && \
+    chmod -R g+rwX /build/devfiles /build/resources
 
 ################# 
 # PHASE TWO: configure registry image
