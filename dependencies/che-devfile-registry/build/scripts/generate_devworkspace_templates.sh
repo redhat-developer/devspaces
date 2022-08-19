@@ -17,10 +17,10 @@ arch="$(uname -m)"
 
 # Install che-theia-devworkspace-handler
 theia_devworkspace_handler="che-theia-devworkspace-handler"
-npm install -g @eclipse-che/"${theia_devworkspace_handler}"@"$(jq -r --arg v $theia_devworkspace_handler '.[$v]' versions.json)"
+npm install @eclipse-che/"${theia_devworkspace_handler}"@"$(jq -r --arg v $theia_devworkspace_handler '.[$v]' versions.json)"
 # Install che-code-devworkspace-handler
 code_devworkspace_handler="che-code-devworkspace-handler"
-npm install -g @eclipse-che/"${code_devworkspace_handler}"@"$(jq -r --arg v $code_devworkspace_handler '.[$v]' versions.json)"
+npm install @eclipse-che/"${code_devworkspace_handler}"@"$(jq -r --arg v $code_devworkspace_handler '.[$v]' versions.json)"
 
 mkdir -p ./resources/v2/
 for dir in ./devfiles/*/
