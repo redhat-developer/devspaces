@@ -111,6 +111,16 @@ toggleQuayRHECReferences() {
 }
 
 # for the devspaces main repo, update meta.yaml files to point to the correct branch of $samplesRepo
+updateImageTags() {
+	YAML_ROOT="dependencies/che-plugin-registry/"
+	for cheyaml in $(find ${YAML_ROOT} -name "che-*.yaml"); do
+	   sed -r -i "${cheyaml}" \
+		   -e "s|(image: .+/devspaces/.+):[0-9.]+|\1:${DS_VERSION}|g"
+	done
+	git commit -s -m "chore(che-*.yaml) update devspaces image tags to :${DS_VERSION}" $YAML_ROOT || echo ""
+}
+
+# for the devspaces main repo, update meta.yaml files to point to the correct branch of $samplesRepo
 updateLinksToDevfiles() {
 	YAML_ROOT="dependencies/che-devfile-registry/devfiles"
 
@@ -181,6 +191,7 @@ pushBranchAndOrTagGH () {
 		if [[ $d == "devspaces" ]]; then
 			updateLinksToDevfiles
 			toggleQuayRHECReferences
+			updateImageTags
 		fi
 
 		# for the devspaces sample repos, update devfiles to point to the correct tag/branch
