@@ -31,7 +31,7 @@ if [[ $ALLOWED_REGISTRIES ]] || [[ $ALLOWED_TAGS ]]; then
 fi
 
 # if no registries set, then all registries are allowed
-if [[ $ALLOWED_REGISTRIES ]]; then 
+if [[ $ALLOWED_REGISTRIES ]] && [[ $ALLOWED_REGISTRIES != " " ]]; then 
     for container in $containers; do
         check_passed=""
         for registry in $ALLOWED_REGISTRIES; do
@@ -49,7 +49,7 @@ if [[ $ALLOWED_REGISTRIES ]]; then
 fi
 
 # if no tags set, then all tags are allowed
-if [[ $ALLOWED_TAGS ]]; then
+if [[ $ALLOWED_TAGS ]] && [[ $ALLOWED_TAGS != " " ]]; then
     for container in $containers; do
         check_passed=""
         for tag in $ALLOWED_TAGS; do
