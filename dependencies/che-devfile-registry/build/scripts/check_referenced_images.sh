@@ -14,31 +14,60 @@ set -e
 
 target_dir=""
 ALLOWED_REGISTRIES=""
+ALLOWED_TAGS=""
 while [[ "$#" -gt 0 ]]; do
 	case $1 in
-		*) if [[ $target_dir == "" ]]; then target_dir="$1"; else ALLOWED_REGISTRIES="${ALLOWED_REGISTRIES} $1"; fi;;
+		'--registries') ALLOWED_REGISTRIES="${ALLOWED_REGISTRIES} $2"; shift 1;;
+		'--tags') ALLOWED_TAGS="${ALLOWED_TAGS} $2"; shift 1;;
+		*) if [[ $target_dir == "" ]]; then target_dir="$1"; fi;;
 	esac
 	shift 1
 done
 
-# if no registries set, then all registries are allowed
-if [[ $ALLOWED_REGISTRIES ]]; then 
+if [[ $ALLOWED_REGISTRIES ]] || [[ $ALLOWED_TAGS ]]; then 
     had_failure=0
     script_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
     containers=$(${script_dir}/list_referenced_images.sh $target_dir)
+fi
+
+# if no registries set, then all registries are allowed
+if [[ $ALLOWED_REGISTRIES ]]; then 
     for container in $containers; do
-        registry_passed=""
+        check_passed=""
         for registry in $ALLOWED_REGISTRIES; do
             if [[ $container == "$registry/"* ]]; then
-                registry_passed="$registry"
+                check_passed="$registry"
             fi
         done
-        if [[ $registry_passed != "" ]]; then
-            echo " + $container PASS - $registry_passed allowed"
+        if [[ $check_passed != "" ]]; then
+            echo " + $container PASS - $check_passed allowed"
         else
             echo " - $container FAIL - not in allowed registries: '$ALLOWED_REGISTRIES'"
-            had_failure=1
+            let had_failure=had_failure+1
         fi
     done
-    if [[ $had_failure -eq 1 ]]; then exit 1; fi
 fi
+
+# if no tags set, then all tags are allowed
+if [[ $ALLOWED_TAGS ]]; then
+    for container in $containers; do
+        check_passed=""
+        for tag in $ALLOWED_TAGS; do
+            if [[ $container == *"/devspaces/"*":$tag" ]]; then
+                check_passed="$tag"
+            elif [[ $container == *"/jboss-eap"* ]] || [[ $container == *"/mongodb"* ]]; then
+                check_passed="$container"
+            fi
+        done
+        if [[ $check_passed == "$container" ]]; then
+            echo " = $container PASS"
+        elif [[ $check_passed != "" ]]; then
+            echo " + $container PASS - $check_passed allowed"
+        else
+            echo " - $container FAIL - not in allowed tags: '$ALLOWED_TAGS'"
+            let had_failure=had_failure+1
+        fi
+    done
+fi
+
+if [[ $had_failure -gt 0 ]]; then exit $had_failure; fi

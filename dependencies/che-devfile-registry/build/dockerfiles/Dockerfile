@@ -64,12 +64,13 @@ ARG PATCHED_IMAGES_ORG="eclipse"
 ARG PATCHED_IMAGES_TAG="next"
 
 # validate devfile content
-RUN ./check_referenced_images.sh devfiles "${ALLOWED_REGISTRIES}"
+RUN ./check_referenced_images.sh devfiles --registries "${ALLOWED_REGISTRIES}" --tags "${ALLOWED_TAGS}"
 RUN ./check_mandatory_fields.sh devfiles
 
 # Cache projects in DS 
 RUN ./index.sh > /build/devfiles/index.json && \
     ./list_referenced_images.sh devfiles > /build/devfiles/external_images.txt && \
+    ./list_referenced_images_by_file.sh devfiles > /build/devfiles/external_images.txt && \
     chmod -R g+rwX /build/devfiles /build/resources
 
 ################# 
