@@ -1,0 +1,27 @@
+containers/devspaces-code-rhel8-container:3.1.0/ubi8:8.6-855 as ubi-builder
+containers/devspaces-code-rhel8-container:3.1.0/ubi8-minimal:8.6-854
+containers/devspaces-configbump-rhel8-container:3.1.0/ubi8-minimal:8.6-854
+containers/devspaces-dashboard-rhel8-container:3.1.0/ubi8/nodejs-16:1-42 as builder
+containers/devspaces-dashboard-rhel8-container:3.1.0/ubi8/nodejs-16:1-18
+containers/devspaces-devfileregistry-rhel8-container:3.1.0/ubi8/python-38:1-100 as builder
+containers/devspaces-devfileregistry-rhel8-container:3.1.0/rhel8/httpd-24:1-199 AS registry
+containers/devspaces-idea-rhel8-container:3.1.0/ubi8:8.6-855 as ubi-builder
+containers/devspaces-idea-rhel8-container:3.1.0/ubi8-minimal:8.6-854
+containers/devspaces-imagepuller-rhel8-container:3.1.0/rhel8/go-toolset:1.17.10-4 as builder
+containers/devspaces-imagepuller-rhel8-container:3.1.0/ubi8-minimal:8.6-854
+containers/devspaces-machineexec-rhel8-container:3.1.0/rhel8/go-toolset:1.17.10-4 as builder
+containers/devspaces-machineexec-rhel8-container:3.1.0/scratch
+containers/devspaces-operator-rhel8-container:3.1.0/rhel8/go-toolset:1.17.12-3 as builder
+containers/devspaces-operator-rhel8-container:3.1.0/ubi8-minimal:8.6-902
+containers/devspaces-operator-bundle-rhel8-container:3.1.0/scratch
+containers/devspaces-pluginregistry-rhel8-container:3.1.0/ubi8/python-38:1-100 as builder
+containers/devspaces-pluginregistry-rhel8-container:3.1.0/rhel8/httpd-24:1-199 AS registry
+containers/devspaces-server-rhel8-container:3.1.0/ubi8-minimal:8.6-854
+containers/devspaces-theia-dev-rhel8-container:3.1.0/ubi8/nodejs-14:1-79
+containers/devspaces-theia-endpoint-rhel8-container:3.1.0/registry-proxy.engineering.redhat.com/rh-osbs/devspaces-theia-rhel8:3.1 as builder
+containers/devspaces-theia-endpoint-rhel8-container:3.1.0/ubi8-minimal:8.6-854 as runtime
+containers/devspaces-theia-rhel8-container:3.1.0/registry-proxy.engineering.redhat.com/rh-osbs/devspaces-theia-dev-rhel8:3.1 as builder
+containers/devspaces-theia-rhel8-container:3.1.0/ubi8/nodejs-14:1-79 as build-result
+containers/devspaces-theia-rhel8-container:3.1.0/ubi8/nodejs-14:1-79 as runtime
+containers/devspaces-traefik-rhel8-container:3.1.0/ubi8-minimal:8.6-854 
+containers/devspaces-udi-rhel8-container:3.1.0/ubi8-minimal:8.6-902
