@@ -435,6 +435,6 @@ cat <<EOF
 Dashboard URL.............. $(echo "$CHECLUSTER_JSON" | jq -r '.status.cheURL')/
 Devfile registry URL....... $(echo "$CHECLUSTER_JSON" | jq -r '.status.devfileRegistryURL')/
 Plugin registry URL........ $(echo "$CHECLUSTER_JSON" | jq -r '.status.pluginRegistryURL')/
-Workspace base domain...... $(echo "$CHECLUSTER_JSON" | jq -r '.status.devworkspaceStatus.workspaceBaseDomain')
+Workspace base domain...... $(echo "$CHECLUSTER_JSON" | jq -r '.status.workspaceBaseDomain')
 EOF
 echo
