@@ -28,6 +28,7 @@ if [[ $ALLOWED_REGISTRIES ]] || [[ $ALLOWED_TAGS ]]; then
     had_failure=0
     script_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
     containers=$(${script_dir}/list_referenced_images.sh $target_dir)
+    containers_all=$(${script_dir}/list_referenced_images_by_file.sh $target_dir)
 fi
 
 # if no registries set, then all registries are allowed
@@ -43,6 +44,7 @@ if [[ $ALLOWED_REGISTRIES ]] && [[ $ALLOWED_REGISTRIES != " " ]]; then
             echo " + $container PASS - $check_passed allowed"
         else
             echo " - $container FAIL - not in allowed registries: '$ALLOWED_REGISTRIES'"
+            echo "$containers_all" | grep -E "$container"
             let had_failure=had_failure+1
         fi
     done
@@ -65,6 +67,7 @@ if [[ $ALLOWED_TAGS ]] && [[ $ALLOWED_TAGS != " " ]]; then
             echo " + $container PASS - $check_passed allowed"
         else
             echo " - $container FAIL - not in allowed tags: '$ALLOWED_TAGS'"
+            echo "$containers_all" | grep -E "$container"
             let had_failure=had_failure+1
         fi
     done
