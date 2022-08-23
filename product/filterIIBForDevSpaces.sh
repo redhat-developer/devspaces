@@ -56,12 +56,11 @@ while [[ "$#" -gt 0 ]]; do
   shift 1
 done
 
-# install opm if not installed from https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp/latest-4.11/opm-linux.tar.gz
-# note, this won't run on s390x or ppc64le, only on amd64
+# install opm if not installed from https://mirror.openshift.com/pub/openshift-v4/$(uname -m)/clients/ocp/latest-4.11/opm-linux.tar.gz
 if [[ ! -x /usr/local/bin/opm ]] && [[ ! -x ${HOME}/.local/bin/opm ]]; then 
     pushd /tmp >/dev/null
-    echo "[INFO] Installing latest opm from https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp/latest-4.11/opm-linux.tar.gz ..."
-    curl -sSLo- https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp/latest-4.11/opm-linux.tar.gz | tar xz; chmod 755 opm
+    echo "[INFO] Installing latest opm from https://mirror.openshift.com/pub/openshift-v4/$(uname -m)/clients/ocp/latest-4.11/opm-linux.tar.gz ..."
+    curl -sSLo- https://mirror.openshift.com/pub/openshift-v4/$(uname -m)/clients/ocp/latest-4.11/opm-linux.tar.gz | tar xz; chmod 755 opm
     sudo cp opm /usr/local/bin/ || cp opm ${HOME}/.local/bin/
     sudo chmod 755 /usr/local/bin/opm || chmod 755 ${HOME}/.local/bin/opm
     if [[ ! -x /usr/local/bin/opm ]] && [[ ! -x ${HOME}/.local/bin/opm ]]; then 
