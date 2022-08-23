@@ -10,9 +10,24 @@
 
 set -e
 
+script_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
 # shellcheck disable=SC1091
-source ./build/scripts/clone_and_zip.sh
-VERSION=$(cat ../VERSION)
+source ${script_dir}/clone_and_zip.sh
+if [[ -f VERSION ]]; then 
+  VERSION=$(cat VERSION)
+elif [[ -f ../VERSION ]]; then 
+  VERSION=$(cat ../VERSION)
+elif [[ -f ../../VERSION ]]; then 
+  VERSION=$(cat ../../VERSION)
+else
+  VERSION="$1"
+fi
+if [[ -z $VERSION ]]; then 
+  echo "Error: could not find VERSION, ../VERSION, or ../../VERSION file; set version on commandline, eg., $0 3.y"
+  exit 1
+fi
+
 arch="$(uname -m)"
 
 # Install che-theia-devworkspace-handler

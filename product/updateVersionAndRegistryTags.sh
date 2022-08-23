@@ -338,10 +338,9 @@ updatePluginRegistry() {
     SCRIPT_DIR="${REG_ROOT}/build/scripts"
     YAML_ROOT="${REG_ROOT}"
     TEMPLATE_FILE="${REG_ROOT}/deploy/openshift/devspaces-plugin-registry.yaml"
-
     for yaml in $("$SCRIPT_DIR"/list_che_yaml.sh "$YAML_ROOT"); do
-        sed -E \
-            -e "s|(.*image: (['\"]*)registry.redhat.io/devspaces/.*:)[0-9.]+(['\"]*)|\1${DEVSPACES_VERSION}\2|g" \
+        sed -r \
+            -e "s#(.*image: (['\"]*)(registry.redhat.io|quay.io)/devspaces/.*:)[0-9.]+(['\"]*)#\1${DEVSPACES_VERSION}\2#g" \
             -i "${yaml}"
     done
 
