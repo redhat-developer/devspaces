@@ -10,17 +10,32 @@
 
 set -e
 
+script_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
 # shellcheck disable=SC1091
-source ./build/scripts/clone_and_zip.sh
-VERSION=$(cat ../VERSION)
+source ${script_dir}/clone_and_zip.sh
+if [[ -f VERSION ]]; then 
+  VERSION=$(cat VERSION)
+elif [[ -f ../VERSION ]]; then 
+  VERSION=$(cat ../VERSION)
+elif [[ -f ../../VERSION ]]; then 
+  VERSION=$(cat ../../VERSION)
+else
+  VERSION="$1"
+fi
+if [[ -z $VERSION ]]; then 
+  echo "Error: could not find VERSION, ../VERSION, or ../../VERSION file; set version on commandline, eg., $0 3.y"
+  exit 1
+fi
+
 arch="$(uname -m)"
 
 # Install che-theia-devworkspace-handler
 theia_devworkspace_handler="che-theia-devworkspace-handler"
-npm install -g @eclipse-che/"${theia_devworkspace_handler}"@"$(jq -r --arg v $theia_devworkspace_handler '.[$v]' versions.json)"
+npm install @eclipse-che/"${theia_devworkspace_handler}"@"$(jq -r --arg v $theia_devworkspace_handler '.[$v]' versions.json)"
 # Install che-code-devworkspace-handler
 code_devworkspace_handler="che-code-devworkspace-handler"
-npm install -g @eclipse-che/"${code_devworkspace_handler}"@"$(jq -r --arg v $code_devworkspace_handler '.[$v]' versions.json)"
+npm install @eclipse-che/"${code_devworkspace_handler}"@"$(jq -r --arg v $code_devworkspace_handler '.[$v]' versions.json)"
 
 mkdir -p ./resources/v2/
 for dir in ./devfiles/*/
