@@ -171,8 +171,8 @@ updateVersion() {
     replaceField "${WORKDIR}/dependencies/job-config.json" '.Copyright' "[\"${COPYRIGHT}\"]"
 
     DEVSPACES_Y_VALUE="${DEVSPACES_VERSION#*.}"
-    UPPER_CHE_Y=$(( (${DEVSPACES_Y_VALUE} * 2 ) + 44 ))
-    LOWER_CHE_Y=$(( ((${DEVSPACES_Y_VALUE} * 2 ) + 44 ) - 1 ))
+    UPPER_CHE_Y=$(( (${DEVSPACES_Y_VALUE} + 24) * 2 ))
+    LOWER_CHE_Y=$(( ((${DEVSPACES_Y_VALUE} + 24) * 2) - 1 ))
     
     # CRW-2155, if version is in the json update it for che and devspaces branches
     # otherwise inject new version.
@@ -181,6 +181,8 @@ updateVersion() {
       COMMIT_MSG="ci: update ${DEVSPACES_VERSION}"
       replaceField "${WORKDIR}/dependencies/job-config.json" "(.Jobs[][\"${DEVSPACES_VERSION}\"][\"upstream_branch\"]|select(.[]?==\"main\"))" "[\"7.${UPPER_CHE_Y}.x\",\"7.${LOWER_CHE_Y}.x\"]"
       replaceField "${WORKDIR}/dependencies/job-config.json" "(.Jobs[][\"${DEVSPACES_VERSION}\"][\"upstream_branch\"]|select(.[]?==\"devspaces-3-rhel-8\"))" "[\"devspaces-${DEVSPACES_VERSION}-rhel-8\",\"devspaces-${DEVSPACES_VERSION}-rhel-8\"]"
+      # special case for code builds which have a main branch upstream and don't use che 7.yy.x convention
+      replaceField "${WORKDIR}/dependencies/job-config.json" "(.Jobs[\"code\"][\"${DEVSPACES_VERSION}\"][\"upstream_branch\"]|select(.[]|contains(\"7.\")))" "[\"devspaces-${DEVSPACES_VERSION}-rhel-8\",\"devspaces-${DEVSPACES_VERSION}-rhel-8\"]"
 
       replaceField "${WORKDIR}/dependencies/job-config.json" "(.\"Management-Jobs\"[][\"${DEVSPACES_VERSION}\"][\"upstream_branch\"]|select(.[]?==\"main\"))" "[\"7.${UPPER_CHE_Y}.x\",\"7.${LOWER_CHE_Y}.x\"]"
       replaceField "${WORKDIR}/dependencies/job-config.json" "(.\"Management-Jobs\"[][\"${DEVSPACES_VERSION}\"][\"upstream_branch\"]|select(.[]?==\"devspaces-3-rhel-8\"))" "[\"devspaces-${DEVSPACES_VERSION}-rhel-8\",\"devspaces-${DEVSPACES_VERSION}-rhel-8\"]"
@@ -207,21 +209,25 @@ updateVersion() {
           do
             #save content of 3.x
             content=$(cat ${WORKDIR}/dependencies/job-config.json | jq ".\"${TOP_KEY}\"[\"${KEY}\"][\"3.x\"]")
-            #Add DEVSPACES_VERSION from 3.x then delete 3.x
-            #then append 3.x so the general order remains the same
-            replaceField "${WORKDIR}/dependencies/job-config.json" ".\"${TOP_KEY}\"[\"${KEY}\"]" "(. + {\"${DEVSPACES_VERSION}\": .\"3.x\"} | del(.\"3.x\"))"
-            replaceField "${WORKDIR}/dependencies/job-config.json" ".\"${TOP_KEY}\"[\"${KEY}\"]" ". + {\"3.x\": ${content}}"
+            if [[ $(echo $content | grep "\"") ]]; then #is there a 3.x version
+              #Add DEVSPACES_VERSION from 3.x then delete 3.x
+              #then append 3.x so the general order remains the same
+              replaceField "${WORKDIR}/dependencies/job-config.json" ".\"${TOP_KEY}\"[\"${KEY}\"]" "(. + {\"${DEVSPACES_VERSION}\": .\"3.x\"} | del(.\"3.x\"))"
+              replaceField "${WORKDIR}/dependencies/job-config.json" ".\"${TOP_KEY}\"[\"${KEY}\"]" ". + {\"3.x\": ${content}}"
 
-            #while in here remove version if desired
-            if [[ $REMOVE_DEVSPACES_VERSION ]]; then
-              replaceField "${WORKDIR}/dependencies/job-config.json" ".\"${TOP_KEY}\"[\"${KEY}\"]" "del(.\"${REMOVE_DEVSPACES_VERSION}\")"
+              #while in here remove version if desired
+              if [[ $REMOVE_DEVSPACES_VERSION ]]; then
+                replaceField "${WORKDIR}/dependencies/job-config.json" ".\"${TOP_KEY}\"[\"${KEY}\"]" "del(.\"${REMOVE_DEVSPACES_VERSION}\")"
+              fi
             fi
           done
         fi
       done
-
       replaceField "${WORKDIR}/dependencies/job-config.json" "(.Jobs[][\"${DEVSPACES_VERSION}\"][\"upstream_branch\"]|select(.[]?==\"main\"))" "[\"7.${UPPER_CHE_Y}.x\",\"7.${LOWER_CHE_Y}.x\"]"
       replaceField "${WORKDIR}/dependencies/job-config.json" "(.Jobs[][\"${DEVSPACES_VERSION}\"][\"upstream_branch\"]|select(.[]?==\"devspaces-3-rhel-8\"))" "[\"devspaces-${DEVSPACES_VERSION}-rhel-8\",\"devspaces-${DEVSPACES_VERSION}-rhel-8\"]"
+
+      # special case for code builds which have a main branch upstream and don't use che 7.yy.x convention
+      replaceField "${WORKDIR}/dependencies/job-config.json" "(.Jobs[\"code\"][\"${DEVSPACES_VERSION}\"][\"upstream_branch\"]|select(.[]|contains(\"7.\")))" "[\"devspaces-${DEVSPACES_VERSION}-rhel-8\",\"devspaces-${DEVSPACES_VERSION}-rhel-8\"]"
 
       replaceField "${WORKDIR}/dependencies/job-config.json" "(.\"Management-Jobs\"[][\"${DEVSPACES_VERSION}\"][\"upstream_branch\"]|select(.[]?==\"main\"))" "[\"7.${UPPER_CHE_Y}.x\",\"7.${LOWER_CHE_Y}.x\"]"
       replaceField "${WORKDIR}/dependencies/job-config.json" "(.\"Management-Jobs\"[][\"${DEVSPACES_VERSION}\"][\"upstream_branch\"]|select(.[]?==\"devspaces-3-rhel-8\"))" "[\"devspaces-${DEVSPACES_VERSION}-rhel-8\",\"devspaces-${DEVSPACES_VERSION}-rhel-8\"]"
@@ -332,10 +338,9 @@ updatePluginRegistry() {
     SCRIPT_DIR="${REG_ROOT}/build/scripts"
     YAML_ROOT="${REG_ROOT}"
     TEMPLATE_FILE="${REG_ROOT}/deploy/openshift/devspaces-plugin-registry.yaml"
-
     for yaml in $("$SCRIPT_DIR"/list_che_yaml.sh "$YAML_ROOT"); do
-        sed -E \
-            -e "s|(.*image: (['\"]*)registry.redhat.io/devspaces/.*:)[0-9.]+(['\"]*)|\1${DEVSPACES_VERSION}\2|g" \
+        sed -r \
+            -e "s#(.*image: (['\"]*)(registry.redhat.io|quay.io)/devspaces/.*:)[0-9.]+(['\"]*)#\1${DEVSPACES_VERSION}\2#g" \
             -i "${yaml}"
     done
 
