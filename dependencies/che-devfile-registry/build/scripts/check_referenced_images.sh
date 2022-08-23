@@ -44,7 +44,8 @@ if [[ $ALLOWED_REGISTRIES ]] && [[ $ALLOWED_REGISTRIES != " " ]]; then
             echo " + $container PASS - $check_passed allowed"
         else
             echo " - $container FAIL - not in allowed registries: '$ALLOWED_REGISTRIES'"
-            echo "$containers_all" | grep -E "$container"
+            echo -n " - "
+            echo "$containers_all" | sed -r -e "s#\tdevworkspace-.+\.yaml##" -e "s#${container}\t#Devfile: #" | sort -uV | grep -E "$container"
             let had_failure=had_failure+1
         fi
     done
@@ -67,7 +68,8 @@ if [[ $ALLOWED_TAGS ]] && [[ $ALLOWED_TAGS != " " ]]; then
             echo " + $container PASS - $check_passed allowed"
         else
             echo " - $container FAIL - not in allowed tags: '$ALLOWED_TAGS'"
-            echo "$containers_all" | grep -E "$container"
+            echo -n " - "
+            echo "$containers_all" | sed -r -e "s#\tdevworkspace-.+\.yaml##" -e "s#${container}\t#Devfile: #" | sort -uV | grep -E "$container"
             let had_failure=had_failure+1
         fi
     done
