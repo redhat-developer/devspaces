@@ -9,7 +9,7 @@
 #
 # Utility script to pull the Dev Spaces, Web Terminal, DevWorkspace (and optionally CodeReady Workspaces) operators
 # from an IIB image and build an index image that contains only those images.
-# OPM 4.10 is required to run filterIIBForDevSpaces.sh
+# OPM 4.11 is required to run filterIIBForDevSpaces.sh
 #
 
 usage() {
@@ -19,7 +19,7 @@ Optionally publish the resulting image to Quay.
 
 Requires:
 * jq 1.6+, podman 2.0+, glibc 2.28+
-* opm v1.19.5+ (see https://docs.openshift.com/container-platform/4.10/cli_reference/opm/cli-opm-install.html#cli-opm-install )
+* opm v1.19.5+ (see https://docs.openshift.com/container-platform/4.11/cli_reference/opm/cli-opm-install.html#cli-opm-install )
 
 Usage: $0 [OPTIONS]
 
@@ -64,7 +64,7 @@ if [[ ! -x /usr/local/bin/opm ]] && [[ ! -x ${HOME}/.local/bin/opm ]]; then
     sudo cp opm /usr/local/bin/ || cp opm ${HOME}/.local/bin/
     sudo chmod 755 /usr/local/bin/opm || chmod 755 ${HOME}/.local/bin/opm
     if [[ ! -x /usr/local/bin/opm ]] && [[ ! -x ${HOME}/.local/bin/opm ]]; then 
-        echo "[ERROR] Could not install opm v1.19.5 or higher (see https://docs.openshift.com/container-platform/4.10/cli_reference/opm/cli-opm-install.html#cli-opm-install )";
+        echo "[ERROR] Could not install opm v1.19.5 or higher (see https://docs.openshift.com/container-platform/4.11/cli_reference/opm/cli-opm-install.html#cli-opm-install )";
         exit 1
     fi
     popd >/dev/null
@@ -138,7 +138,36 @@ done
 
 if [ -f ./olm-catalog.Dockerfile ]; then rm -f ./olm-catalog.Dockerfile; fi
 $PODMAN rmi --ignore --force $targetIndexImage >/dev/null 2>&1 || true
-opm alpha generate dockerfile ./olm-catalog
+
+# old way for olm 4.10
+# opm alpha generate dockerfile ./olm-catalog
+
+# new way for old 4.11 - see https://docs.openshift.com/container-platform/4.11/operators/admin/olm-managing-custom-catalogs.html#olm-creating-fb-catalog-image_olm-managing-custom-catalogs
+ocpver=${targetIndexImage##*:} ; ocpver=${ocpver#*-}; ocpver=${ocpver%-*}
+cat <<EOF > olm-catalog.Dockerfile
+# The base image is expected to contain
+# /bin/opm (with a serve subcommand) and /bin/grpc_health_probe
+FROM registry.redhat.io/openshift4/ose-operator-registry:${ocpver}
+
+# Configure the entrypoint and command
+ENTRYPOINT ["/bin/opm"]
+CMD ["serve", "/configs"]
+
+# Copy declarative config root into image at /configs
+ADD olm-catalog /configs
+
+# Set DC-specific label for the location of the DC root directory
+# in the image
+LABEL operators.operatorframework.io.index.configs.v1=/configs
+EOF
+if [[ $LIST_COPIES_ONLY -eq 0 ]] || [[ $VERBOSE -eq 1 ]]; then
+  echo "Generated dockerfile for OCP $ocpver: "
+  cat olm-catalog.Dockerfile
+fi
+
+validation=$(opm validate olm-catalog && echo $?)
+if [[ $validation -ne 0 ]]; then echo "[ERROR] 'opm validate olm-catalog' returned exit code: $validation"; exit $validation; fi
+
 $PODMAN build -t $targetIndexImage -f olm-catalog.Dockerfile . -q
 if [[ "$PUSH" == "true" ]]; then $PODMAN push $targetIndexImage -q; fi
 
