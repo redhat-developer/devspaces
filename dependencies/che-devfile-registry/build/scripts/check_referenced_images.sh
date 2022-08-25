@@ -45,7 +45,7 @@ if [[ $ALLOWED_REGISTRIES ]] && [[ $ALLOWED_REGISTRIES != " " ]]; then
         else
             echo " - $container FAIL - not in allowed registries: '$ALLOWED_REGISTRIES'"
             echo -n " - "
-            echo "$containers_all" | grep -E "$container" | sed -r -e "s#\tdevworkspace-.+\.yaml##" -e "s#${container}\t##" \
+            echo "$containers_all" | grep -E "$container" | sed -r -e "s#\t# :: #g" \
                 -e "s#(http.+github.com/)(.+)(/devfile.yaml)#<a href=\1\2\3>\2</a>#" | sort -uV || true
             let had_failure=had_failure+1
         fi
@@ -70,7 +70,7 @@ if [[ $ALLOWED_TAGS ]] && [[ $ALLOWED_TAGS != " " ]]; then
         else
             echo " - $container FAIL - not in allowed tags: '$ALLOWED_TAGS'"
             echo -n " - "
-            echo "$containers_all" | grep -E "$container" | sed -r -e "s#\tdevworkspace-.+\.yaml##" -e "s#${container}\t##" \
+            echo "$containers_all" | grep -E "$container" | sed -r -e "s#\t# :: #g" \
                 -e "s#(http.+github.com/)(.+)(/devfile.yaml)#<a href=\1\2\3>\2</a>#" | sort -uV || true
             let had_failure=had_failure+1
         fi
