@@ -24,13 +24,15 @@ Requires:
 Usage: $0 [OPTIONS]
 
 Options:
-  -s, --iib <source_index>   : Source registry, org, index image and tag from which to pull operators. Required.
-  -t, --image <target_index> : Target registry, org, index image and tag to create. Generated if not provided.
-  -p, --push                 : Push new index image to <target_index> on remote server.
-  --include-crw              : Include CodeReady Workspaces in new index. Useful for testing migration from 2.15 -> 3.x.
-  --no-temp-dir              : Work in current directory instead of a temporary one.
-  -v                         : Verbose output: include additional information
-  -h, --help                 : Show this help
+  -s, --iib <source_index>     : Source registry, org, index image and tag from which to pull operators. Required.
+  -t, --image <target_index>   : Target registry, org, index image and tag to create. Generated if not provided.
+  --channel-ds  <channel_name> : Target channel to use when publishing Dev Spaces; if not set, use same channel in source IIB image (eg., stable)
+  --channel-all <channel_name> : Target channel to use when publishing all operators
+  -p, --push                   : Push new index image to <target_index> on remote server.
+  --include-crw                : Include CodeReady Workspaces in new index. Useful for testing migration from 2.15 -> 3.x.
+  --no-temp-dir                : Work in current directory instead of a temporary one.
+  -v                           : Verbose output: include additional information
+  -h, --help                   : Show this help
 
 Example:
   $0 -s registry-proxy.engineering.redhat.com/rh-osbs/iib:226720
@@ -45,6 +47,8 @@ while [[ "$#" -gt 0 ]]; do
   case $1 in
     '-s'|'--iib') sourceIndexImage="$2"; shift 1;;
     '-t'|'--image') targetIndexImage="$2"; shift 1;;
+    '--channel-ds') targetChannelDS="$2"; shift 1;;
+    '--channel-all') targetChannelAll="$2"; shift 1;;
     '-p'|'--push') PUSH="true";;
     '--include-crw') INCLUDE_CRW="true";;
     '--no-temp-dir') USE_TMP="false";;
@@ -138,6 +142,38 @@ done
 
 if [ -f ./olm-catalog.Dockerfile ]; then rm -f ./olm-catalog.Dockerfile; fi
 $PODMAN rmi --ignore --force $targetIndexImage >/dev/null 2>&1 || true
+
+replaceField()
+{
+  theFile="$1"
+  updateName="$2"
+  updateVal="$3"
+  echo "    ${0##*/} rF :: * ${updateName}: ${updateVal}"
+  # shellcheck disable=SC2016 disable=SC2002 disable=SC2086
+  changed=$(jq --arg updateName "${updateName}" --arg updateVal "${updateVal}" ${updateName}' = $updateVal' "${theFile}")
+  echo "${header}${changed}" > "${theFile}"
+}
+
+replaceChannelName()
+{
+  if [[ -d ${1} ]]; then 
+    replaceField "${1}/channel.json" ".name" "${2}"
+    replaceField "${1}/package.json" ".defaultChannel" "${2}"
+  fi
+}
+# optionally, override the channels from the IIBs with a targetChannel (for all operators or for the devspaces operator only)
+# olm-catalog/devspaces/channel.json # "name": "stable"
+# olm-catalog/devspaces/package.json # "defaultChannel": "stable"
+pushd olm-catalog/ >/dev/null
+if [[ ! -z $targetChannelDS ]]; then
+  replaceChannelName "devspaces" "$targetChannelDS"
+elif [[ ! -z $targetChannelAll ]]; then
+  if [[ "$INCLUDE_CRW" == "true" ]]; then replaceChannelName "codeready-workspaces" "$targetChannelAll"; fi
+  for d in devspaces web-terminal devworkspace-operator; do
+      replaceChannelName "${d}" "$targetChannelAll"
+  done
+fi
+popd >/dev/null
 
 # old way for olm 4.10
 # opm alpha generate dockerfile ./olm-catalog
