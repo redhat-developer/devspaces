@@ -8,7 +8,7 @@
 # SPDX-License-Identifier: EPL-2.0
 #
 # script to query latest IIBs for a given list of OCP versions, then copy those to Quay
-# OPM 4.10 is required to run filterIIBForDevSpaces.sh
+# OPM 4.11 is required to run filterIIBForDevSpaces.sh
 # 
 
 SCRIPT_DIR=$(cd "$(dirname "$0")" || exit; pwd)
@@ -18,7 +18,7 @@ usage () {
 
 Requires:
 * jq 1.6+, skopeo 1.1.1+, podman 2.0+, glibc 2.28+
-* opm v1.19.5+ (see https://docs.openshift.com/container-platform/4.10/cli_reference/opm/cli-opm-install.html#cli-opm-install )
+* opm v1.19.5+ (see https://docs.openshift.com/container-platform/4.11/cli_reference/opm/cli-opm-install.html#cli-opm-install )
 
 Usage: 
   $0 [OPTIONS]
@@ -40,7 +40,7 @@ command -v skopeo >/dev/null 2>&1 || which skopeo >/dev/null 2>&1 || { echo "sko
 command -v jq >/dev/null 2>&1     || which jq >/dev/null 2>&1     || { echo "jq is not installed. Aborting."; exit 1; }
 
 VERBOSEFLAG=""
-EXTRA_TAGS="" # extra tags to set in target image, eg., 3.2.0.RC-08-04-v4.10
+EXTRA_TAGS="" # extra tags to set in target image, eg., 3.2.0.RC-08-04-v4.11
 PUSHTOQUAYFORCE=0
 
 MIDSTM_BRANCH=$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "devspaces-3-rhel-8")
@@ -111,7 +111,7 @@ if [[ ! -x /usr/local/bin/opm ]] && [[ ! -x ${HOME}/.local/bin/opm ]]; then
     sudo cp opm /usr/local/bin/ || cp opm ${HOME}/.local/bin/
     sudo chmod 755 /usr/local/bin/opm || chmod 755 ${HOME}/.local/bin/opm
     if [[ ! -x /usr/local/bin/opm ]] && [[ ! -x ${HOME}/.local/bin/opm ]]; then 
-        echo "[ERROR] Could not install opm v1.19.5 or higher (see https://docs.openshift.com/container-platform/4.10/cli_reference/opm/cli-opm-install.html#cli-opm-install )";
+        echo "[ERROR] Could not install opm v1.19.5 or higher (see https://docs.openshift.com/container-platform/4.11/cli_reference/opm/cli-opm-install.html#cli-opm-install )";
         exit 1
     fi
     popd >/dev/null
@@ -165,8 +165,8 @@ for OCP_VER in ${OCP_VERSIONS}; do
     if [[ "$PUSH" == "true" ]]; then
         # check if destination already exists in quay
         if [[ $(skopeo --insecure-policy inspect docker://quay.io/devspaces/iib:${DS_VERSION}-${OCP_VER}-${LATEST_IIB_NUM} 2>&1) == *"Error"* ]] || [[ ${PUSHTOQUAYFORCE} -eq 1 ]]; then 
-            # filter and publish to a new name
-            ${FIIB} -s ${LATEST_IIB} -t quay.io/devspaces/iib:${DS_VERSION}-${OCP_VER}-${LATEST_IIB_NUM} --push ${VERBOSEFLAG}
+            # filter and publish to a new name, putting all operators in the fast channel
+            ${FIIB} -s ${LATEST_IIB} -t quay.io/devspaces/iib:${DS_VERSION}-${OCP_VER}-${LATEST_IIB_NUM} --channel-all fast --push ${VERBOSEFLAG}
         else
             if [[ $VERBOSEFLAG == "-v" ]]; then echo "Copy quay.io/devspaces/iib:${DS_VERSION}-${OCP_VER}-${LATEST_IIB_NUM} - already exists, nothing to do"; fi
             echo "[IMG] quay.io/devspaces/iib:${DS_VERSION}-${OCP_VER}-${LATEST_IIB_NUM}"
