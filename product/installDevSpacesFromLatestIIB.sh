@@ -50,10 +50,17 @@ This script will
 4. Create 5 dummy OpenShift users from user1 to user5
 5. Create a CheCluster to install Dev Spaces
 
-Usage: $0 [OPTIONS]
+Quick usage:
+
+To install the latest Dev Spaces 3.3 CI build from fast channel to your connected OCP instance:
+
+$0 -t 3.3 --fast
+
+
+Full usage: $0 [OPTIONS]
 
 Options:
-  -t <DS_VERSION>     : Dev Spaces version to test, e.g. '3.0'. Required
+  -t <DS_VERSION>     : Dev Spaces version to install, e.g. '3.3'. Required
   -o <OLM_NAMESPACE>  : Namespace into which to install catalog source and operator. Default: $OLM_NAMESPACE
   -n <NAMESPACE>      : Namespace into which to install CheCluster + Dev Spaces. Default: $NAMESPACE
   --checluster <PATH> : use CheCluster yaml defined at path instead of default. Optional
