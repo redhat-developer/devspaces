@@ -148,7 +148,7 @@ replaceField()
   theFile="$1"
   updateName="$2"
   updateVal="$3"
-  echo "    ${0##*/} rF :: * ${updateName}: ${updateVal}"
+  # echo "    ${0##*/} rF :: * ${updateName}: ${updateVal}"
   # shellcheck disable=SC2016 disable=SC2002 disable=SC2086
   changed=$(jq --arg updateName "${updateName}" --arg updateVal "${updateVal}" ${updateName}' = $updateVal' "${theFile}")
   echo "${header}${changed}" > "${theFile}"
@@ -179,7 +179,8 @@ popd >/dev/null
 # opm alpha generate dockerfile ./olm-catalog
 
 # new way for old 4.11 - see https://docs.openshift.com/container-platform/4.11/operators/admin/olm-managing-custom-catalogs.html#olm-creating-fb-catalog-image_olm-managing-custom-catalogs
-ocpver=${targetIndexImage##*:} ; ocpver=${ocpver#*-}; ocpver=${ocpver%-*}
+# for targetIndexImage=quay.io/devspaces/iib:3.3-v4.11-302848-s390x, just want the v4.yy version
+ocpver=${targetIndexImage##*:} ; ocpver=${ocpver#*-}; ocpver=${ocpver%%-*}
 cat <<EOF > olm-catalog.Dockerfile
 # The base image is expected to contain
 # /bin/opm (with a serve subcommand) and /bin/grpc_health_probe
