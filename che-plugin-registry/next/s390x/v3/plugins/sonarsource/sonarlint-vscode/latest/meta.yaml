@@ -10,10 +10,10 @@ icon: /images/sonarsource-sonarlint-vscode-icon.png
 category: Linters
 repository: https://github.com/SonarSource/sonarlint-vscode.git
 firstPublicationDate: '2021-03-11'
-latestUpdateDate: '2022-08-16'
+latestUpdateDate: '2022-08-20'
 spec:
   containers:
-    - image: quay.io/devspaces/udi-rhel8:3.2
+    - image: quay.io/devspaces/udi-rhel8:3.3
       name: vscode-sonarlint
       volumes:
         - name: m2

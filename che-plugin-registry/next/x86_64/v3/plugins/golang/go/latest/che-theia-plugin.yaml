@@ -15,7 +15,7 @@ metadata:
     - Formatters
   icon: /images/golang-go-icon.png
 sidecar:
-  image: quay.io/devspaces/udi-rhel8:3.2
+  image: quay.io/devspaces/udi-rhel8:3.3
   name: vscode-go
   memoryLimit: 512Mi
   memoryRequest: 20Mi

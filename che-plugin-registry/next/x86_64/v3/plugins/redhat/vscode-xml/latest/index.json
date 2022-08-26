@@ -10,10 +10,10 @@ icon: /images/redhat-vscode-xml-icon.png
 category: Programming Languages
 repository: https://github.com/redhat-developer/vscode-xml
 firstPublicationDate: '2021-11-05'
-latestUpdateDate: '2022-08-16'
+latestUpdateDate: '2022-08-20'
 spec:
   containers:
-    - image: quay.io/devspaces/udi-rhel8:3.2
+    - image: quay.io/devspaces/udi-rhel8:3.3
       name: vscode-xml
       memoryLimit: 768Mi
       memoryRequest: 20Mi

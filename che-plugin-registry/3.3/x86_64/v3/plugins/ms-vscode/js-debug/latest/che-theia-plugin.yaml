@@ -11,7 +11,7 @@ metadata:
     - Debuggers
   icon: /images/ms-vscode-js-debug-icon.png
 sidecar:
-  image: quay.io/devspaces/udi-rhel8:3.2
+  image: quay.io/devspaces/udi-rhel8:3.3
   name: vscode-node-debug
   memoryLimit: 512Mi
   memoryRequest: 20Mi

@@ -10,10 +10,10 @@ icon: /images/vscode-typescript-language-features-icon.png
 category: Programming Languages
 repository: https://github.com/theia-ide/vscode-builtin-extensions
 firstPublicationDate: '2021-03-19'
-latestUpdateDate: '2022-08-16'
+latestUpdateDate: '2022-08-20'
 spec:
   containers:
-    - image: quay.io/devspaces/udi-rhel8:3.2
+    - image: quay.io/devspaces/udi-rhel8:3.3
       name: vscode-node
       memoryLimit: 512Mi
       memoryRequest: 20Mi

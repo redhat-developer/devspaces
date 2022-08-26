@@ -10,10 +10,10 @@ icon: /images/redhat-vscode-apache-camel-icon.png
 category: Programming Languages
 repository: https://github.com/camel-tooling/camel-lsp-client-vscode.git
 firstPublicationDate: '2022-02-11'
-latestUpdateDate: '2022-08-16'
+latestUpdateDate: '2022-08-20'
 spec:
   containers:
-    - image: quay.io/devspaces/udi-rhel8:3.2
+    - image: quay.io/devspaces/udi-rhel8:3.3
       name: vscode-apache-camel
       memoryLimit: 768Mi
       memoryRequest: 20Mi
