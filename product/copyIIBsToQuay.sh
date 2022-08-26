@@ -157,29 +157,33 @@ for OCP_VER in ${OCP_VERSIONS}; do
     # registry-proxy.engineering.redhat.com/rh-osbs/iib:286641
     LATEST_IIB=$(${GLIB} --ds -t ${DS_VERSION} -o ${OCP_VER} -qi) # return quietly, just the index bundle
     LATEST_IIB_NUM=${LATEST_IIB##*:}
+    # NOTE: this is NOT OCP server arch, but the arch of the local build machine!
+    # must build on multiple arches to get per-arch IIBs
+    LATEST_IIB_QUAY="quay.io/devspaces/iib:${DS_VERSION}-${OCP_VER}-${LATEST_IIB_NUM}-$(uname -m)"
     if [[ $VERBOSEFLAG == "-v" ]]; then 
         echo "[DEBUG] OPERATOR_BUNDLE=$(${GLIB} --ds -t ${DS_VERSION} -o ${OCP_VER} -qb)"
         echo "[DEBUG]  IIB FOR BUNDLE=${LATEST_IIB}"
+        echo "[DEBUG] QUAY IIB BUNDLE=${LATEST_IIB_QUAY}"
     fi
 
     if [[ "$PUSH" == "true" ]]; then
         # check if destination already exists in quay
-        if [[ $(skopeo --insecure-policy inspect docker://quay.io/devspaces/iib:${DS_VERSION}-${OCP_VER}-${LATEST_IIB_NUM} 2>&1) == *"Error"* ]] || [[ ${PUSHTOQUAYFORCE} -eq 1 ]]; then 
+        if [[ $(skopeo --insecure-policy inspect docker://${LATEST_IIB_QUAY} 2>&1) == *"Error"* ]] || [[ ${PUSHTOQUAYFORCE} -eq 1 ]]; then 
             # filter and publish to a new name, putting all operators in the fast channel
-            ${FIIB} -s ${LATEST_IIB} -t quay.io/devspaces/iib:${DS_VERSION}-${OCP_VER}-${LATEST_IIB_NUM} --channel-all fast --push ${VERBOSEFLAG}
+            ${FIIB} -s ${LATEST_IIB} -t ${LATEST_IIB_QUAY} --channel-all fast --push ${VERBOSEFLAG}
         else
-            if [[ $VERBOSEFLAG == "-v" ]]; then echo "Copy quay.io/devspaces/iib:${DS_VERSION}-${OCP_VER}-${LATEST_IIB_NUM} - already exists, nothing to do"; fi
-            echo "[IMG] quay.io/devspaces/iib:${DS_VERSION}-${OCP_VER}-${LATEST_IIB_NUM}"
+            if [[ $VERBOSEFLAG == "-v" ]]; then echo "Copy ${LATEST_IIB_QUAY} - already exists, nothing to do"; fi
+            echo "[IMG] ${LATEST_IIB_QUAY}"
         fi
         PUSHTOQUAYFORCE_LOCAL=1
     else
-        echo "${FIIB} -s ${LATEST_IIB} -t quay.io/devspaces/iib:${DS_VERSION}-${OCP_VER}-${LATEST_IIB_NUM} --push"
+        echo "${FIIB} -s ${LATEST_IIB} -t ${LATEST_IIB_QUAY} --push"
     fi
 
-    if [[ $(skopeo --insecure-policy inspect docker://quay.io/devspaces/iib:${DS_VERSION}-${OCP_VER}-${LATEST_IIB_NUM} 2>&1) == *"Error"* ]]; then 
-        echo "[ERROR] Cannot find image quay.io/devspaces/iib:${DS_VERSION}-${OCP_VER}-${LATEST_IIB_NUM} to copy!"
+    if [[ $(skopeo --insecure-policy inspect docker://${LATEST_IIB_QUAY} 2>&1) == *"Error"* ]]; then 
+        echo "[ERROR] Cannot find image ${LATEST_IIB_QUAY} to copy!"
         echo "[ERROR] Check output of this command for an idea of what went wrong:"
-        echo "[ERROR] ${FIIB} -s ${LATEST_IIB} -t quay.io/devspaces/iib:${DS_VERSION}-${OCP_VER}-${LATEST_IIB_NUM} -v --push"
+        echo "[ERROR] ${FIIB} -s ${LATEST_IIB} -t ${LATEST_IIB_QUAY} -v --push"
         exit 1
     fi
 
@@ -194,7 +198,7 @@ for OCP_VER in ${OCP_VERSIONS}; do
 
     for qtag in ${ALL_TAGS}; do
         if [[ $(skopeo --insecure-policy inspect docker://quay.io/devspaces/iib:${qtag} 2>&1) == *"Error"* ]] || [[ ${PUSHTOQUAYFORCE_LOCAL} -eq 1 ]]; then 
-            CMD="skopeo --insecure-policy copy --all docker://quay.io/devspaces/iib:${DS_VERSION}-${OCP_VER}-${LATEST_IIB_NUM} docker://quay.io/devspaces/iib:${qtag}"
+            CMD="skopeo --insecure-policy copy --all docker://${LATEST_IIB_QUAY} docker://quay.io/devspaces/iib:${qtag}"
             if [[ $VERBOSE -eq 1 ]]; then
                 echo $CMD
                 if [[ "$PUSH" == "true" ]]; then $CMD; fi
