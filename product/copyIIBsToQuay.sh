@@ -188,12 +188,12 @@ for OCP_VER in ${OCP_VERSIONS}; do
     fi
 
     # skopeo copy to additional tags
-    ALL_TAGS="${DS_VERSION}-${OCP_VER}"
+    ALL_TAGS="${DS_VERSION}-${OCP_VER}-$(uname -m)"
     for atag in $FLOATING_QUAY_TAGS; do 
-        ALL_TAGS="${ALL_TAGS} ${atag}-${OCP_VER}"
+        ALL_TAGS="${ALL_TAGS} ${atag}-${OCP_VER}-$(uname -m)"
     done
     for atag in $EXTRA_TAGS; do 
-        ALL_TAGS="${ALL_TAGS} ${atag}-${OCP_VER}"
+        ALL_TAGS="${ALL_TAGS} ${atag}-${OCP_VER}-$(uname -m)"
     done
 
     for qtag in ${ALL_TAGS}; do
