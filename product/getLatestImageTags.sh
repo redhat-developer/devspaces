@@ -105,7 +105,7 @@ PUSHTOQUAY=0 # utility method to pull then push to quay
 PUSHTOQUAYTAGS="" # utility method to pull then push to quay (extra tags to push)
 PUSHTOQUAYFORCE=0 # normally, don't repush a tag if it's already in the registry (to avoid re-timestamping it and updating tag history)
 SORTED=0 # if 0, use the order of containers in the DS*_CONTAINERS_* strings above; if 1, sort alphabetically
-latestNext="latest"; if [[ $DS_VERSION == "3.y" ]] || [[ $DWNSTM_BRANCH = "devspaces-3-rhel-8" ]]; then latestNext="next  "; fi
+latestNext="latest"; if [[ $DS_VERSION == "3.y" ]] || [[ $DWNSTM_BRANCH == "devspaces-3-rhel-8" ]]; then latestNext="next  "; fi
 usage () {
 	echo "
 Usage: 
@@ -155,8 +155,14 @@ while [[ "$#" -gt 0 ]]; do
     --pushtoquay=*) PUSHTOQUAY=1; PUSHTOQUAYTAGS="$(echo "${1#*=}")";;
     '--pushtoquayforce') PUSHTOQUAYFORCE=1;;
 	'--latestNext') latestNext="$2"; shift 1;;
-	# since we have no next or latest tags for IIB images, append an OCP version and filter for those by default
-	'-o') latestNext="${latestNext// /}-$2"; BASETAG="$2"; shift 1;;
+	# since we have no next or latest tags for IIB images, append an OCP version and arch and filter for those by default
+	'-o')
+		if [[ $DWNSTM_BRANCH != "devspaces-3-rhel-8" ]] || [[ $DS_VERSION != "3.y" ]]; then 
+			latestNext="latest-$2-$(uname -m)"
+		else
+			latestNext="next-$2-$(uname -m)"
+		fi
+		BASETAG="$2"; shift 1;;
     '-n') NUMTAGS="$2"; shift 1;;
     '--dockerfile') SHOWHISTORY=1;;
     '--tag') BASETAG="$2"; shift 1;;
