@@ -3,16 +3,16 @@
         "operator-bundle": {
             "3.2": {
                 "v4.10": {
-                    "iibURL": "registry-proxy.engineering.redhat.com/rh-osbs/iib:303300",
-                    "iibTag": "303300"
+                    "iibURL": "registry-proxy.engineering.redhat.com/rh-osbs/iib:303930",
+                    "iibTag": "303930"
                 },
                 "v4.11": {
-                    "iibURL": "registry-proxy.engineering.redhat.com/rh-osbs/iib:303302",
-                    "iibTag": "303302"
+                    "iibURL": "registry-proxy.engineering.redhat.com/rh-osbs/iib:303932",
+                    "iibTag": "303932"
                 },
-                "OSBSImage": "registry-proxy.engineering.redhat.com/rh-osbs/devspaces-devspaces-operator-bundle:3.2-103",
-                "quayImage": "quay.io/devspaces/devspaces-operator-bundle:3.2-103",
-                "tag": "3.2-103"
+                "OSBSImage": "registry-proxy.engineering.redhat.com/rh-osbs/devspaces-devspaces-operator-bundle:3.2-104",
+                "quayImage": "quay.io/devspaces/devspaces-operator-bundle:3.2-104",
+                "tag": "3.2-104"
             }
         }
     }
