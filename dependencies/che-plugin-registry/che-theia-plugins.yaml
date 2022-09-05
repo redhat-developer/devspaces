@@ -336,33 +336,6 @@ plugins:
       cpuLimit: 500m
       cpuRequest: 30m
     extension: https://github.com/redhat-developer/devspaces-vscode-extensions/releases/download/7.44-che-assets/vscode-kubernetes-tools-1.2.1.vsix
-  - id: redhat-developer/netcoredbg-theia-plugin
-    repository:
-      url: 'https://github.com/redhat-developer/netcoredbg-theia-plugin'
-      revision: v0.0.3
-    sidecar:
-      image: "quay.io/devspaces/udi-rhel8:3.3"
-      name: theia-netcoredbg
-      memoryLimit: 512Mi
-      memoryRequest: 20Mi
-      cpuLimit: 500m
-      cpuRequest: 30m
-    extension: https://github.com/redhat-developer/netcoredbg-theia-plugin/releases/download/v0.0.3/netcoredbg_theia_plugin.theia
-  - id: redhat-developer/che-omnisharp-plugin
-    repository:
-      url: 'https://github.com/redhat-developer/omnisharp-theia-plugin'
-      revision: v0.0.6
-    sidecar:
-      image: "quay.io/devspaces/udi-rhel8:3.3"
-      name: theia-omnisharp
-      memoryLimit: 1Gi
-      memoryRequest: 20Mi
-      cpuLimit: 500m
-      cpuRequest: 30m
-      volumeMounts:
-        - name: nuget
-          path: /home/user/.nuget
-    extension: https://github.com/redhat-developer/omnisharp-theia-plugin/releases/download/v0.0.6/omnisharp_theia_plugin.theia
   - repository:
       url: 'https://github.com/SonarSource/sonarlint-vscode'
       revision: 1.20.1
