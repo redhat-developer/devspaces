@@ -199,10 +199,11 @@ export GITHUB_TOKEN="''' + GITHUB_TOKEN + '''"
   }
 }
 
-def getLastCommitSHA(String REPO_PATH) {
+// return a short SHA by default (4-char if possible, longer if required for uniqueness); or use num_digits=40 for a full length SHA
+def getLastCommitSHA(String REPO_PATH, int num_digits=4) {
   return sh(script: '''#!/bin/bash -xe
     cd ''' + REPO_PATH + '''
-    git rev-parse --short=4 HEAD''', returnStdout: true).trim()
+    git rev-parse --short=''' + num_digits + ''' HEAD''', returnStdout: true).trim()
 }
 
 def getDSLongName(String SHORT_NAME) {
