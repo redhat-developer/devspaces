@@ -206,32 +206,6 @@
     "version": "latest"
   },
   {
-    "id": "redhat-developer/che-omnisharp-plugin/latest",
-    "description": "omnisharp-theia-plugin",
-    "displayName": "omnisharp-theia-plugin",
-    "links": {
-      "self": "/v3/plugins/redhat-developer/che-omnisharp-plugin/latest",
-      "plugin": "/v3/plugins/redhat-developer/che-omnisharp-plugin/latest/che-theia-plugin.yaml"
-    },
-    "name": "che-omnisharp-plugin",
-    "publisher": "redhat-developer",
-    "type": "VS Code extension",
-    "version": "latest"
-  },
-  {
-    "id": "redhat-developer/netcoredbg-theia-plugin/latest",
-    "description": "netcoredbg-theia-plugin",
-    "displayName": "netcoredbg-theia-plugin",
-    "links": {
-      "self": "/v3/plugins/redhat-developer/netcoredbg-theia-plugin/latest",
-      "plugin": "/v3/plugins/redhat-developer/netcoredbg-theia-plugin/latest/che-theia-plugin.yaml"
-    },
-    "name": "netcoredbg-theia-plugin",
-    "publisher": "redhat-developer",
-    "type": "VS Code extension",
-    "version": "latest"
-  },
-  {
     "id": "redhat/dependency-analytics/latest",
     "description": "Insights about your application dependencies: Security, License compatibility and AI based guidance to choose appropriate dependencies for your application.",
     "displayName": "Dependency Analytics",
