@@ -158,17 +158,19 @@ preflight() {
     errorf "Not logged into an OpenShift cluster"
     exit 1
   fi
-  TOKENS=$(curl --negotiate -u : https://employee-token-manager.registry.redhat.com/v1/tokens -s)
-  if [[ $TOKENS == *"no authorization context provided"* ]]; then 
-    errorf "No registry token configured -- make sure you've run kinit and have a token set up according to"
-    errorf "the 'Adding Brew Pull Secret' section in https://docs.engineering.redhat.com/display/CFC/Test"
-    exit 1
-  else
-    BREW_TOKENS_NUM="$(echo "$TOKENS" | jq -r 'length')"
-    if [[ "$BREW_TOKENS_NUM" == "0" ]]; then
+  if [[ "${ICSP_FLAG}" == "--icsp brew.registry.redhat.io" ]]; then 
+    TOKENS=$(curl --negotiate -u : https://employee-token-manager.registry.redhat.com/v1/tokens -s)
+    if [[ $TOKENS == *"no authorization context provided"* ]]; then 
       errorf "No registry token configured -- make sure you've run kinit and have a token set up according to"
       errorf "the 'Adding Brew Pull Secret' section in https://docs.engineering.redhat.com/display/CFC/Test"
       exit 1
+    else
+      BREW_TOKENS_NUM="$(echo "$TOKENS" | jq -r 'length')"
+      if [[ "$BREW_TOKENS_NUM" == "0" ]]; then
+        errorf "No registry token configured -- make sure you've run kinit and have a token set up according to"
+        errorf "the 'Adding Brew Pull Secret' section in https://docs.engineering.redhat.com/display/CFC/Test"
+        exit 1
+      fi
     fi
   fi
 }

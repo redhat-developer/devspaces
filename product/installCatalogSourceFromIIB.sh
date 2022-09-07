@@ -103,24 +103,25 @@ if [ "$DISABLE_CATALOGSOURCES" == "true" ]; then
 "value": true}]'
 fi
 
-# Grab Brew registry token and verify we can use it
-BREW_TOKENS="$(curl --negotiate -u : https://employee-token-manager.registry.redhat.com/v1/tokens -s)"
-if [[ $(echo "$BREW_TOKENS" | jq -r 'length') == "0" ]]; then
-  errorf "No registry token configured -- make sure you've run kinit and have a token set up according to"
-  errorf "the 'Adding Brew Pull Secret' section in https://docs.engineering.redhat.com/display/CFC/Test"
-  exit 1
+if [[ "${IIB_IMAGE}" == "brew.registry"* ]]; then 
+  # Grab Brew registry token and verify we can use it
+  BREW_TOKENS="$(curl --negotiate -u : https://employee-token-manager.registry.redhat.com/v1/tokens -s)"
+  if [[ $(echo "$BREW_TOKENS" | jq -r 'length') == "0" ]]; then
+    errorf "No registry token configured -- make sure you've run kinit and have a token set up according to"
+    errorf "the 'Adding Brew Pull Secret' section in https://docs.engineering.redhat.com/display/CFC/Test"
+    exit 1
+  fi
+  if [[ $(echo "$BREW_TOKENS" | jq -r 'length') != "1" ]]; then
+    echo "Multiple tokens found, using the first one"
+  fi
+  # Add image pull secret to cluster to allow pulling from brew.registry.redhat.io
+  TOKEN_USERNAME=$(echo "$BREW_TOKENS" | jq -r '.[0].credentials.username')
+  PASSWORD=$(echo "$BREW_TOKENS" | jq -r '.[0].credentials.password')
+  oc get secret/pull-secret -n openshift-config -o json | jq -r '.data.".dockerconfigjson"' | base64 -d > authfile
+  echo "$PASSWORD" | podman login --authfile authfile --username "$TOKEN_USERNAME" --password-stdin brew.registry.redhat.io
+  oc set data secret/pull-secret -n openshift-config --from-file=.dockerconfigjson=authfile
+  rm authfile
 fi
-if [[ $(echo "$BREW_TOKENS" | jq -r 'length') != "1" ]]; then
-  echo "Multiple tokens found, using the first one"
-fi
-
-# Add image pull secret to cluster to allow pulling from brew.registry.redhat.io
-TOKEN_USERNAME=$(echo "$BREW_TOKENS" | jq -r '.[0].credentials.username')
-PASSWORD=$(echo "$BREW_TOKENS" | jq -r '.[0].credentials.password')
-oc get secret/pull-secret -n openshift-config -o json | jq -r '.data.".dockerconfigjson"' | base64 -d > authfile
-echo "$PASSWORD" | podman login --authfile authfile --username "$TOKEN_USERNAME" --password-stdin brew.registry.redhat.io
-oc set data secret/pull-secret -n openshift-config --from-file=.dockerconfigjson=authfile
-rm authfile
 
 # Create project if necessary
 if ! oc get project "$NAMESPACE" > /dev/null 2>&1; then
