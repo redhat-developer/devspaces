@@ -138,6 +138,9 @@ metadata:
   name: ${ICSP_URL//./-}
 spec:
   repositoryDigestMirrors:
+
+  ## 0. general repo mappings
+
   - mirrors:
     - ${ICSP_URL}
     source: registry.redhat.io
@@ -147,6 +150,75 @@ spec:
   - mirrors:
     - ${ICSP_URL}
     source: registry-proxy.engineering.redhat.com
+
+  ### now add mappings to resolve internal references
+  - mirrors:
+    - registry.redhat.io
+    source: registry.stage.redhat.io
+  - mirrors:
+    - registry.stage.redhat.io
+    source: registry-proxy.engineering.redhat.com
+  - mirrors:
+    - registry.redhat.io
+    source: registry-proxy.engineering.redhat.com
+
+  ## 1. add mappings for DevWorkspace Operator (DWO)
+
+  ### note that in quay, the org is /devfile/ but on redhat.io, it's /devworkspace/ ... so just in case, add both mappings
+  - mirrors:
+    - ${ICSP_URL}/devfile/devworkspace-operator-bundle
+    source: registry.redhat.io/devworkspace/devworkspace-operator-bundle
+  - mirrors:
+    - ${ICSP_URL}/devfile/devworkspace-operator-bundle
+    source: registry.stage.redhat.io/devworkspace/devworkspace-operator-bundle
+  - mirrors:
+    - ${ICSP_URL}/devfile/devworkspace-operator-bundle
+    source: registry-proxy.engineering.redhat.com/rh-osbs/devworkspace-operator-bundle
+
+  ### note that in quay, the org is /devfile/ but on redhat.io, it's /devworkspace/ ... so just in case, add both mappings
+  - mirrors:
+    - ${ICSP_URL}/devworkspace/devworkspace-operator-bundle
+    source: registry.redhat.io/devworkspace/devworkspace-operator-bundle
+  - mirrors:
+    - ${ICSP_URL}/devworkspace/devworkspace-operator-bundle
+    source: registry.stage.redhat.io/devworkspace/devworkspace-operator-bundle
+  - mirrors:
+    - ${ICSP_URL}/devworkspace/devworkspace-operator-bundle
+    source: registry-proxy.engineering.redhat.com/rh-osbs/devworkspace-operator-bundle
+
+  ### now add mappings to resolve internal references
+  - mirrors:
+    - registry.redhat.io/devworkspace/devworkspace-operator-bundle
+    source: registry.stage.redhat.io/devworkspace/devworkspace-operator-bundle
+  - mirrors:
+    - registry.stage.redhat.io/devworkspace/devworkspace-operator-bundle
+    source: registry-proxy.engineering.redhat.com/rh-osbs/devworkspace-operator-bundle
+  - mirrors:
+    - registry.redhat.io/devworkspace/devworkspace-operator-bundle
+    source: registry-proxy.engineering.redhat.com/rh-osbs/devworkspace-operator-bundle
+
+  ## 2. add mappings for Dev Spaces Operator (DS)
+
+  - mirrors:
+    - ${ICSP_URL}/devspaces/devspaces-operator-bundle
+    source: registry.redhat.io/devspaces/devspaces-operator-bundle
+  - mirrors:
+    - ${ICSP_URL}/devspaces/devspaces-operator-bundle
+    source: registry.stage.redhat.io/devspaces/devspaces-operator-bundle
+  - mirrors:
+    - ${ICSP_URL}/devspaces/devspaces-operator-bundle
+    source: registry-proxy.engineering.redhat.com/rh-osbs/devspaces-operator-bundle
+
+  ### now add mappings to resolve internal references
+  - mirrors:
+    - registry.redhat.io/devspaces/devspaces-operator-bundle
+    source: registry.stage.redhat.io/devspaces/devspaces-operator-bundle
+  - mirrors:
+    - registry.stage.redhat.io/devspaces/devspaces-operator-bundle
+    source: registry-proxy.engineering.redhat.com/rh-osbs/devspaces-operator-bundle
+  - mirrors:
+    - registry.redhat.io/devspaces/devspaces-operator-bundle
+    source: registry-proxy.engineering.redhat.com/rh-osbs/devspaces-operator-bundle
 EOF
 fi
 
