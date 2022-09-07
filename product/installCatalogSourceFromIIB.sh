@@ -44,11 +44,12 @@ Options:
                                : * registry-proxy.engineering.redhat.com/rh-osbs/iib:987654 [RH internal],
                                : * brew.registry.redhat.io/rh-osbs/iib:987654 [RH public, auth required], or
                                : * quay.io/devspaces/iib:3.2-v4.11-987654 or quay.io/devspaces/iib:next-v4.10 [public]
-  --install-operator <NAME>    : install operator named $NAME after creating CatalogSource
-  --channel <CHANNEL>          : channel to use for operator subscription if installing operator. Default: "fast"
-  --manual-updates             : use "manual" InstallPlanApproval for the CatalogSource instead of "automatic" if installing operator
-  --disable-default-sources    : disable default CatalogSources. Default: false 
-  -n, --namespace <NAMESPACE>  : namespace to install CatalogSource into. Default: openshift-operators
+  --install-operator <NAME>    : Install operator named $NAME after creating CatalogSource
+  --channel <CHANNEL>          : Channel to use for operator subscription if installing operator. Default: "fast"
+  --manual-updates             : Use "manual" InstallPlanApproval for the CatalogSource instead of "automatic" if installing operator
+  --disable-default-sources    : Disable default CatalogSources. Default: false 
+  --icsp                       : Install using specified registry in ImageContentSourcePolicy, eg., quay.io, brew.registry.redhat.io, or custom
+  -n, --namespace <NAMESPACE>  : Namespace to install CatalogSource into. Default: openshift-operators
 
 DevWorkspace Operator Example:
   $0 \\
@@ -68,6 +69,7 @@ while [[ "$#" -gt 0 ]]; do
     '--channel') OLM_CHANNEL="$2"; shift 1;;
     '--manual-updates') INSTALL_PLAN_APPROVAL="Manual";;
     '--disable-default-sources') DISABLE_CATALOGSOURCES="true";;
+    '--icsp') ICSP_URL="$2"; shift 1;;
     '-n'|'--namespace') NAMESPACE="$2"; shift 1;;
     '-h'|'--help') usage; exit 0;;
     *) echo "[ERROR] Unknown parameter is used: $1."; usage; exit 1;;
@@ -127,23 +129,25 @@ if ! oc get project "$NAMESPACE" > /dev/null 2>&1; then
 fi
 
 # Add ImageContentSourcePolicy to let us pull the IIB
-cat <<EOF | oc apply -f -
+if [[ $ICSP_URL ]]; then
+  cat <<EOF | oc apply -f -
 apiVersion: operator.openshift.io/v1alpha1
 kind: ImageContentSourcePolicy
 metadata:
-  name: brew-registry
+  name: ${ICSP_URL//./-}
 spec:
   repositoryDigestMirrors:
   - mirrors:
-    - brew.registry.redhat.io
+    - ${ICSP_URL}
     source: registry.redhat.io
   - mirrors:
-    - brew.registry.redhat.io
+    - ${ICSP_URL}
     source: registry.stage.redhat.io
   - mirrors:
-    - brew.registry.redhat.io
+    - ${ICSP_URL}
     source: registry-proxy.engineering.redhat.com
 EOF
+fi
 
 # Add CatalogSource for the IIB
 # Throw it in openshift-operators to make life a little easier for now

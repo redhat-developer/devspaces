@@ -35,6 +35,12 @@ DWO_VERSION="" # by default, install from latest release
 CHANNEL_DWO="fast"
 CHANNEL_DS="stable"
 
+# default ICSP to use to resolve unreleased images
+# if using --fast or --quay flag, this will be changed to quay.io
+# if using --brew flag, this will be changed to brew.registry.redhat.io
+# if you want your own registry here, use --icsp flag to specify it
+ICSP_FLAG=""
+
 errorf() {
   echo -e "${RED}Error: $1${NC}"
 }
@@ -79,6 +85,9 @@ Options:
                       : * quay.io/devspaces/iib:3.3-v4.11-987654-x86_64 [public], or 
                       : * quay.io/devspaces/iib:next-v4.10-ppc64le [public]
   --quay, --fast      : Install from quay.io/devspaces/iib:<DS_VERSION>-v4.yy-<OS_ARCH> (detected OCP version + arch) from fast channel
+                      : Resolve images from quay.io using ImageContentSourcePolicy
+  --brew              : Resolve images from brew.registry.redhat.io using ImageContentSourcePolicy
+  --icsp <REGISTRY>   : Resolve images from specified registry URL using ImageContentSourcePolicy
   --dsc               : Optional. To install with dsc, use '--dsc 3.1.0-CI' or '--dsc 3.0.0-GA'
                       : Use '--dsc local' to search PATH for installed dsc, or use '--dsc /path/to/dsc/bin/'
   --delete-before     : Before installing with dsc, delete using server:delete -y. Will not delete namespaces.
@@ -189,7 +198,9 @@ while [[ "$#" -gt 0 ]]; do
       fi; shift 1;;
     '--iib-dwo') IIB_DWO="$2"; shift 1;;
     '--iib-ds') IIB_DS="$2"; shift 1;;
-    '--quay'|'--fast') IIB_DS="quay.io/devspaces/iib"; CHANNEL_DS="fast"; CHANNEL_DWO="fast";;
+    '--quay'|'--fast') IIB_DS="quay.io/devspaces/iib"; CHANNEL_DS="fast"; CHANNEL_DWO="fast"; ICSP_FLAG="--icsp quay.io";;
+    '--brew') ICSP_FLAG="--icsp brew.registry.redhat.io";;
+    '--icsp') ICSP_FLAG="--icsp $2"; shift 1;;
     '--delete-before') DELETE_BEFORE="true";;
     '--get-url') GET_URL="true";;
     '--no-get-url') GET_URL="false";;
@@ -208,6 +219,7 @@ echo "Detected OpenShift: v$OPENSHIFT_VER $OPENSHIFT_ARCH"
 if [[ $DWO_VERSION ]]; then
   if [[ ! $IIB_DWO ]] && [[ $DWO_VERSION ]]; then # compute the latest IIB for the DWO version passed in
     IIB_DWO=$("$SCRIPT_DIR"/getLatestIIBs.sh --dwo -t "$DWO_VERSION" -o "$OPENSHIFT_VER" -q)
+    if [[ ! $ICSP_FLAG ]]; then ICSP_FLAG="--icsp brew.registry.redhat.io"; fi
     if [[ $IIB_DWO ]]; then
       echo "[INFO] Found latest Dev Workspace Operator IIB $IIB_DWO - installing from $CHANNEL_DWO channel..."
     else
@@ -224,11 +236,12 @@ if [[ $IIB_DWO ]]; then
     --iib "$IIB_DWO" \
     --install-operator "devworkspace-operator" \
     --channel "$CHANNEL_DWO" \
-    --namespace "$OLM_NAMESPACE"
+    --namespace "$OLM_NAMESPACE" ${ICSP_FLAG}
 fi
 
 if [[ ! $IIB_DS ]]; then
-  IIB_DS=$("$SCRIPT_DIR"/getLatestIIBs.sh   --ds -t "$DS_VERSION"  -o "$OPENSHIFT_VER" -q)
+  IIB_DS=$("$SCRIPT_DIR"/getLatestIIBs.sh --ds -t "$DS_VERSION"  -o "$OPENSHIFT_VER" -q)
+  if [[ ! $ICSP_FLAG ]]; then ICSP_FLAG="--icsp brew.registry.redhat.io"; fi
   if [[ $IIB_DS ]]; then 
     echo "[INFO] Found latest Dev Spaces IIB $IIB_DS - installing from $CHANNEL_DS channel..."
   else
@@ -247,7 +260,7 @@ fi
   --iib "$IIB_DS" \
   --install-operator "devspaces" \
   --channel "$CHANNEL_DS" \
-  --namespace "$OLM_NAMESPACE"
+  --namespace "$OLM_NAMESPACE" ${ICSP_FLAG}
 
 elapsed=0
 inc=3
