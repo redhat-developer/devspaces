@@ -11,6 +11,16 @@
 #   IBM Corporation - implementation
 #
 
+# open-vsx builder
+FROM registry.access.redhat.com/ubi8/openjdk-11:1.14-3.1661798377 as openvsx-builder
+USER 0
+
+RUN microdnf --setopt=install_weak_deps=0 --setopt=tsflags=nodocs install -y git
+
+# It uses gradlew that downloads gradle to build sources
+COPY ./build/scripts/build_openvsx.sh /tmp
+RUN /tmp/build_openvsx.sh && rm /tmp/build_openvsx.sh
+
 # Builder: check meta.yamls and create index.json
 # https://registry.access.redhat.com/ubi8/python-38
 FROM registry.access.redhat.com/ubi8/python-38:1-100 as builder
@@ -62,6 +72,18 @@ RUN chmod -R g+rwX /build
 FROM registry.access.redhat.com/ubi8/httpd-24:1-199 AS registry
 USER 0
 
+# Install postgresql and jdk
+RUN yum install -y https://download.postgresql.org/pub/repos/yum/reporpms/EL-8-x86_64/pgdg-redhat-repo-latest.noarch.rpm
+RUN yum install postgresql14-libs postgresql14 postgresql14-server java-11-openjdk jq\
+    --releasever 8 --nodocs -y
+RUN chmod g+rw /var/lib/pgsql
+
+# change permissions for pgsql
+RUN for f in "/etc/passwd" "/etc/group" "/var/lib/pgsql" "/usr/pgsql-14" "/var/run/postgresql"; do\
+           chgrp -R 0 ${f} && \
+           chmod -R g+rwX ${f}; \
+    done
+
 # latest httpd container doesn't include ssl cert, so generate one
 RUN chmod +x /usr/share/container-scripts/httpd/pre-init/40-ssl-certs.sh && \
     /usr/share/container-scripts/httpd/pre-init/40-ssl-certs.sh
@@ -87,7 +109,26 @@ RUN sed -i /etc/httpd/conf/httpd.conf \
 STOPSIGNAL SIGWINCH
 
 ARG DS_BRANCH=devspaces-3-rhel-8
-ENV DS_BRANCH=${DS_BRANCH}
+
+# Add UTF-8 for the database
+RUN localedef -f UTF-8 -i en_US en_US.UTF-8 && \
+    usermod -a -G apache,root,postgres postgres
+
+ENV DS_BRANCH=${DS_BRANCH} \
+    LC_ALL=en_US.UTF-8 \
+    LANG=en_US.UTF-8 \
+    LANGUAGE=en_US.UTF-8 \
+    PGDATA=/var/lib/pgsql/14/data/database
+
+RUN mkdir -m 777 /openvsx-server
+# Copy OpenVSX server files
+COPY --from=openvsx-builder /tmp/openvsx-lib/ /openvsx-server
+# Copy OpenVSX configuration files
+COPY ./build/dockerfiles/application.yaml /openvsx-server/config/
+COPY ./build/dockerfiles/openvsx.conf /etc/httpd/conf.d/
+COPY ./build/dockerfiles/openvsx-sync.json /
+COPY ./build/dockerfiles/start-services.sh /
+COPY ./build/dockerfiles/import-vsix.sh /
 
 WORKDIR /var/www/html
 
@@ -97,8 +138,23 @@ COPY --from=builder /build/output/v3 /var/www/html/v3
 COPY --from=builder /build/v3/plugins/ /var/www/html/v3/plugins/
 COPY --from=builder /build/v3/images/ /var/www/html/v3/images/
 COPY ./build/dockerfiles/rhel.entrypoint.sh ./build/dockerfiles/entrypoint.sh /usr/local/bin/
+
 RUN chmod g+rwX /usr/local/bin/entrypoint.sh /usr/local/bin/rhel.entrypoint.sh && \
     chgrp -R 0 /var/www/html && chmod -R g+rw /var/www/html
+
+USER postgres
+
+RUN /usr/pgsql-14/bin/initdb && \
+    # Add all vsix files to the database
+    /import-vsix.sh && \
+    # add permissions for anyuserid
+    chgrp -R 0 /var/lib/pgsql/14/data/database && \
+    #cleanup postgresql pid
+    rm /var/lib/pgsql/14/data/database/postmaster.pid && \
+    rm /var/run/postgresql/.s.PGSQL* && \
+    rm /tmp/.s.PGSQL* && \
+    chmod -R g+rwX /var/lib/pgsql/14/data/database && mv /var/lib/pgsql/14/data/database /var/lib/pgsql/14/data/old
+
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 CMD ["/usr/local/bin/rhel.entrypoint.sh"]
 

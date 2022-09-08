@@ -1,0 +1,44 @@
+server:
+  port: 9000
+
+spring:
+  profiles:
+    include: ovsx
+  datasource:
+    url: jdbc:postgresql://localhost:5432/postgres
+    username: postgres
+    password: 
+  flyway:
+    baseline-on-migrate: true
+    baseline-version: 0.1.0
+    baseline-description: JobRunr tables    
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: none
+  session:
+    store-type: jdbc
+    jdbc:
+      initialize-schema: never
+
+  security:
+      oauth2:
+        client:
+          registration:
+            github:
+              client-id: foo
+              client-secret: foo
+
+management:
+  health:
+    probes:
+      enabled: true
+
+ovsx:
+  elasticsearch:
+    enabled: false
+    clear-on-start: true
+  databasesearch:
+    enabled: true
