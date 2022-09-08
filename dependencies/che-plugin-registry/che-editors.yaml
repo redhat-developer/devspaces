@@ -3,13 +3,13 @@ editors:
   - schemaVersion: 2.1.0
     metadata:
       name: eclipse/che-theia/latest
-      displayName: theia-ide
-      description: Eclipse Theia, get the latest release each day.
+      displayName: Eclipse Theia
+      description: Red Hat OpenShift Dev Spaces with Eclipse Theia IDE
       icon: https://raw.githubusercontent.com/theia-ide/theia/master/logo/theia-logo-no-text-black.svg?sanitize=true
       attributes:
         publisher: eclipse
         version: latest
-        title: Eclipse Theia development version.
+        title: Red Hat OpenShift Dev Spaces with Eclipse Theia IDE
         repository: https://github.com/eclipse-che/che-theia
         firstPublicationDate: '2019-03-07'
     commands:
@@ -162,13 +162,13 @@ editors:
   - schemaVersion: 2.1.0
     metadata:
       name: che-incubator/che-idea/latest
-      displayName: IntelliJ IDEA Community Edition
-      description: IntelliJ IDEA Community running using Projector
+      displayName: IntelliJ IDEA Community
+      description: Red Hat OpenShift Dev Spaces with JetBrains IntelliJ IDEA Community IDE
       icon: https://resources.jetbrains.com/storage/products/intellij-idea/img/meta/intellij-idea_logo_300x300.png
       attributes:
         publisher: che-incubator
         version: 2022.1
-        title: IntelliJ IDEA Community as Editor for Eclipse Che
+        title: Red Hat OpenShift Dev Spaces with JetBrains IntelliJ IDEA Community IDE
         repository: 'https://github.com/che-incubator/jetbrains-editor-images'
         firstPublicationDate: '2022-01-11'
         skipMetaYaml: true
@@ -262,13 +262,13 @@ editors:
   - schemaVersion: 2.1.0
     metadata:
       name: che-incubator/che-code/insiders
-      displayName: che-code
-      description: Code OSS integration in Eclipse Che.
+      displayName: VS Code - Open Source
+      description: Red Hat OpenShift Dev Spaces with Microsoft Visual Studio Code - Open Source IDE
       icon: https://raw.githubusercontent.com/che-incubator/che-code/main/code/resources/server/code-512.png?sanitize=true
       attributes:
         publisher: che-incubator
         version: insiders
-        title: CheCode Insiders.
+        title: Red Hat OpenShift Dev Spaces with Microsoft Visual Studio Code - Open Source IDE
         repository: https://github.com/che-incubator/che-code
         firstPublicationDate: '2022-07-19'
         skipMetaYaml: true
