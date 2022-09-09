@@ -145,4 +145,4 @@ if [ "${SKIP_OCI_IMAGE}" != "true" ]; then
     ${BUILDER} ${BUILD_COMMAND} -t "${IMAGE}" -f ./builder.Dockerfile .
     # Remove copied Dockerfile and tarred zip
     rm ./builder.Dockerfile resources.tgz
-fi
+fi 
