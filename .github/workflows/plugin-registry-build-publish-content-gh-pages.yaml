@@ -85,11 +85,14 @@ jobs:
           git clone -b gh-pages "https://github.com/$GITHUB_REPOSITORY.git"
           cd "$GITHUB_REPO_NAME"
           for arch in $(cat /tmp/devspaces-plugin-registry/architectures.json); do
+            set +x
             TARGET_DIR="$VERSION_DIR"/"$arch"
+            echo "Delete and recreate $TARGET_DIR ..."
             [ -d "$TARGET_DIR" ] && git rm -r "$TARGET_DIR"
             [ ! -d "$VERSION_DIR" ] && mkdir -p "$VERSION_DIR"
             rm -rf "$BUILD_DIR"/"$arch"/v3/resources
             cp -r "$BUILD_DIR"/"$arch" "$TARGET_DIR"
+            set -x
           done
           # Check if the branch is devspaces-3-rhel-8 = next
           if [[ "$GITHUB_REF_NAME" == "devspaces-3-rhel-8" ]] || [[ ${{ env.TAG }} == "next" ]]; then
