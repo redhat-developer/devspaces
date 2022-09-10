@@ -94,7 +94,7 @@ jobs:
           # Check if the branch is devspaces-3-rhel-8 = next
           if [[ "$GITHUB_REF_NAME" == "devspaces-3-rhel-8" ]] || [[ ${{ env.TAG }} == "next" ]]; then
             NEXT_VERSION_DIR="che-plugin-registry/next"
-            [ -d "$NEXT_VERSION_DIR" ] && git rm -r "$NEXT_VERSION_DIR"
+            [ -d "$NEXT_VERSION_DIR" ] && git rm -q -r "$NEXT_VERSION_DIR"
             mkdir -p "$NEXT_VERSION_DIR"
             cp -r "$BUILD_DIR"/. "$NEXT_VERSION_DIR"
           fi
