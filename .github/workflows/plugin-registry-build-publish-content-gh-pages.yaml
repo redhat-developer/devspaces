@@ -34,6 +34,13 @@ jobs:
     name: publish
     runs-on: ubuntu-20.04
     steps:
+      - name: Set defaults (for use in crontab or workflow_dispatch)
+        id: SETUP_TAG
+        shell: bash
+        env:
+          DEFAULT_TAG: 'next'
+        run: |
+            echo "TAG=${{ github.event.inputs.TAG || env.DEFAULT_TAG }}" >> $GITHUB_ENV
       - name: Clone source code
         uses: actions/checkout@v2
         with:
@@ -43,8 +50,8 @@ jobs:
           export BUILD_DIR="$PWD/content"
           mkdir -p /tmp/devspaces-plugin-registry
           touch /tmp/devspaces-plugin-registry/architectures.json
-          if [[ ${{ github.event.inputs.TAG }} == "next" ]] || [[ ${{ github.event.inputs.TAG }} =~ 3\.[0-9]+ ]]; then
-            version="${{ github.event.inputs.TAG }}"
+          if [[ ${{ env.TAG }} == "next" ]] || [[ ${{ env.TAG }} =~ 3\.[0-9]+ ]]; then
+            version="${{ env.TAG }}"
           elif [[ "$GITHUB_REF_NAME" == "devspaces-3-rhel-8" ]]; then
              version="next"
           else
@@ -84,8 +91,8 @@ jobs:
             rm -rf "$BUILD_DIR"/"$arch"/v3/resources
             cp -r "$BUILD_DIR"/"$arch" "$TARGET_DIR"
           done
-          # Check if the branch is latest.
-          if [[ "$GITHUB_REF_NAME" == "devspaces-3-rhel-8" ]] || [[ ${{ github.event.inputs.TAG }} == "next" ]] || [[ version=="next" ]]; then
+          # Check if the branch is devspaces-3-rhel-8 = next
+          if [[ "$GITHUB_REF_NAME" == "devspaces-3-rhel-8" ]] || [[ ${{ env.TAG }} == "next" ]]; then
             NEXT_VERSION_DIR="che-plugin-registry/next"
             [ -d "$NEXT_VERSION_DIR" ] && git rm -r "$NEXT_VERSION_DIR"
             mkdir -p "$NEXT_VERSION_DIR"
