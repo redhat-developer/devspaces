@@ -40,7 +40,19 @@ jobs:
         env:
           DEFAULT_TAG: 'next'
         run: |
+          if [[ "$GITHUB_REF_NAME" ]]; then
+            if [[ "$GITHUB_REF_NAME" =~ devspaces-([0-9]+\.[0-9]+)-rhel-8 ]]; then
+              # just use the 3.2 part of devspaces-3.2-rhel-8
+              echo "TAG=${BASH_REMATCH[1]}" >> $GITHUB_ENV
+            elif [[ "$GITHUB_REF_NAME" =~ devspaces-([0-9]+)-rhel-8 ]]; then
+              # for devspaces-3-rhel-8, use next
+              echo "TAG=next" >> $GITHUB_ENV
+            else
+              echo "TAG=$GITHUB_REF_NAME" >> $GITHUB_ENV
+            fi
+          else
             echo "TAG=${{ github.event.inputs.TAG || env.DEFAULT_TAG }}" >> $GITHUB_ENV
+          fi
       - name: Clone source code
         uses: actions/checkout@v2
         with:
@@ -50,9 +62,9 @@ jobs:
           export BUILD_DIR="$PWD/content"
           mkdir -p /tmp/devspaces-plugin-registry
           touch /tmp/devspaces-plugin-registry/architectures.json
-          if [[ ${{ env.TAG }} == "next" ]] || [[ ${{ env.TAG }} =~ 3\.[0-9]+ ]]; then
+          if [[ ${{ env.TAG }} =~ 3\.[0-9]+ ]]; then
             version="${{ env.TAG }}"
-          elif [[ "$GITHUB_REF_NAME" == "devspaces-3-rhel-8" ]]; then
+          elif [[ "$GITHUB_REF_NAME" == "devspaces-3-rhel-8" ]] || [[ ${{ env.TAG }} == "next" ]]; then
              version="next"
           else
              version=$(cat dependencies/VERSION)
@@ -92,7 +104,7 @@ jobs:
             cp -r "$BUILD_DIR"/"$arch" "$TARGET_DIR"
           done
           # Check if the branch is devspaces-3-rhel-8 = next
-          if [[ "$GITHUB_REF_NAME" == "devspaces-3-rhel-8" ]] || [[ ${{ env.TAG }} == "next" ]]; then
+          if [[ "$GITHUB_REF_NAME" == "devspaces-3-rhel-8" ]]; then
             NEXT_VERSION_DIR="che-plugin-registry/next"
             [ -d "$NEXT_VERSION_DIR" ] && git rm -q -r "$NEXT_VERSION_DIR"
             mkdir -p "$NEXT_VERSION_DIR"
