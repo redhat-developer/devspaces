@@ -41,7 +41,14 @@ jobs:
           DEFAULT_TAG: 'next'
         run: |
           if [[ "$GITHUB_REF_NAME" ]]; then
-            echo "TAG=$GITHUB_REF_NAME" >> $GITHUB_ENV
+            if [[ "$GITHUB_REF_NAME" =~ devspaces-([0-9]+\.[0-9]+)-rhel-8 ]]; then
+              # just use the 3.2 part of devspaces-3.2-rhel-8
+              echo "TAG=${BASH_REMATCH[1]}" >> $GITHUB_ENV
+            elif [[ "$GITHUB_REF_NAME" =~ devspaces-([0-9]+)-rhel-8 ]]; then
+              # for devspaces-3-rhel-8, use next
+              echo "TAG=next" >> $GITHUB_ENV
+            else
+              echo "TAG=$GITHUB_REF_NAME" >> $GITHUB_ENV
           else
             echo "TAG=${{ github.event.inputs.TAG || env.DEFAULT_TAG }}" >> $GITHUB_ENV
           fi
