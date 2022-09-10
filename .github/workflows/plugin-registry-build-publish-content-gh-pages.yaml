@@ -112,7 +112,7 @@ jobs:
           git config --global pull.rebase true
           git config --global hub.protocol https
           git remote set-url origin https://$GITHUB_TOKEN:x-oauth-basic@github.com/redhat-developer/devspaces.git
-          git diff-index --quiet HEAD || git commit -m "publish registry $VERSION - $(date)" -s
+          git diff-index --quiet HEAD || git commit -m "publish registry $VERSION - $(date)" -s || echo "Nothing to commit!"
           git push origin gh-pages || echo "No changes to push!" # https://redhat-developer.github.io/devspaces/
           for arch in $(cat /tmp/devspaces-plugin-registry/architectures.json); do
             echo "Plugin registry published to https://redhat-developer.github.io/$GITHUB_REPO_NAME/$VERSION_DIR/$arch/v3/plugins/"
