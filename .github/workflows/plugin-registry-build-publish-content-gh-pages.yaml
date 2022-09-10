@@ -49,6 +49,7 @@ jobs:
               echo "TAG=next" >> $GITHUB_ENV
             else
               echo "TAG=$GITHUB_REF_NAME" >> $GITHUB_ENV
+            fi
           else
             echo "TAG=${{ github.event.inputs.TAG || env.DEFAULT_TAG }}" >> $GITHUB_ENV
           fi
