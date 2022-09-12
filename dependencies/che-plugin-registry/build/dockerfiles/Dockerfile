@@ -126,9 +126,9 @@ COPY --from=openvsx-builder /tmp/openvsx-lib/ /openvsx-server
 # Copy OpenVSX configuration files
 COPY ./build/dockerfiles/application.yaml /openvsx-server/config/
 COPY ./build/dockerfiles/openvsx.conf /etc/httpd/conf.d/
-COPY ./build/dockerfiles/openvsx-sync.json /
-COPY ./build/dockerfiles/start-services.sh /
-COPY ./build/dockerfiles/import-vsix.sh /
+COPY ./build/dockerfiles/openvsx-sync.json /openvsx-server/
+COPY ./build/dockerfiles/start-services.sh /usr/local/bin/
+COPY ./build/dockerfiles/import-vsix.sh /usr/local/bin/
 
 WORKDIR /var/www/html
 
@@ -146,7 +146,7 @@ USER postgres
 
 RUN /usr/pgsql-14/bin/initdb && \
     # Add all vsix files to the database
-    /import-vsix.sh && \
+    /usr/local/bin/import-vsix.sh && \
     # add permissions for anyuserid
     chgrp -R 0 /var/lib/pgsql/14/data/database && \
     #cleanup postgresql pid

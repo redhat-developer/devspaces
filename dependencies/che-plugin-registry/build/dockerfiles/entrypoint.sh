@@ -87,7 +87,7 @@ function run_main() {
       rm -rf /var/lib/pgsql/14/data/old
 
       # start postgres and openvsx
-      /start-services.sh
+      ./start-services.sh
     fi
 
     # start httpd

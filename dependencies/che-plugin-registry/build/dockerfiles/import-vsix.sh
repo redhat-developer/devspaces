@@ -3,7 +3,7 @@
 set -e
 set -o pipefail
 
-/start-services.sh
+/usr/local/bin/start-services.sh
 
 # install temporary nodejs
 mkdir -p /tmp/opt/nodejs && curl -sL https://nodejs.org/download/release/v14.18.3/node-v14.18.3-linux-x64.tar.gz | tar xzf - -C /tmp/opt/nodejs --strip-components=1
@@ -29,7 +29,7 @@ containsElement () { for e in "${@:2}"; do [[ "$e" = "$1" ]] && return 0; done; 
 
 # pull vsix from OpenVSX
 mkdir -p /tmp/vsix
-openVsxSyncFileContent=$(cat "/openvsx-sync.json")
+openVsxSyncFileContent=$(cat "/openvsx-server/openvsx-sync.json")
 listOfVsixes=$(echo "${openVsxSyncFileContent}" | jq -r ".[]")
 listOfPublishers=()
 IFS=$'\n' 
