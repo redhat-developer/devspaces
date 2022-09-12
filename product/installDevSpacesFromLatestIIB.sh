@@ -237,8 +237,8 @@ while [[ "$#" -gt 0 ]]; do
           DSC=$(command -v dsc)
         fi
       fi; shift 1;;
-    '--iib-dwo') IIB_DWO="$2"; if [[ $IIB_DWO == "quay.io/devspaces/iib"* ]]; then CHANNEL_DWO="fast"; fi; shift 1;;
-    '--iib-ds')  IIB_DS="$2";  if [[ $IIB_DS == "quay.io/devspaces/iib"* ]];  then CHANNEL_DS="fast";  fi; shift 1;;
+    '--iib-dwo') IIB_DWO="$2"; if [[ $IIB_DWO == "quay.io/devspaces/iib"* ]]; then CHANNEL_DWO="fast"; ICSP_FLAG="--icsp quay.io"; fi; shift 1;;
+    '--iib-ds')  IIB_DS="$2";  if [[ $IIB_DS == "quay.io/devspaces/iib"* ]];  then CHANNEL_DS="fast";  ICSP_FLAG="--icsp quay.io"; fi; shift 1;;
     '--quay'|'--fast')   IIB_DS="quay.io/devspaces/iib"; CHANNEL_DS="fast"; CHANNEL_DWO="fast"; ICSP_FLAG="--icsp quay.io";;
     '--latest'|'--next') IIB_DS="quay.io/devspaces/iib"; CHANNEL_DS="fast"; CHANNEL_DWO="fast"; ICSP_FLAG="--icsp quay.io"; DS_VERSION="${1//--/}";;
     '--brew') ICSP_FLAG="--icsp brew.registry.redhat.io";;
