@@ -59,12 +59,11 @@ This script will
 4. Create 5 dummy OpenShift users from user1 to user5
 5. Create a CheCluster to install Dev Spaces
 
-Quick usage:
+Quick usage, to install Dev Spaces from quay.io/devspaces/iib, using fast channel:
 
-To install the latest Dev Spaces 3.3 CI build from fast channel to your connected OCP instance:
-
-$0 -t 3.3 --fast
-
+Install 3.2           : $0 -t 3.2 --quay
+Install 3.y (stable)  : $0 --latest
+Install 3.z (CI)      : $0 --next
 
 Full usage: $0 [OPTIONS]
 
@@ -94,12 +93,17 @@ Options:
                       : * brew.registry.redhat.io/rh-osbs/iib:987654 [RH public, auth required], or
                       : * quay.io/devspaces/iib:3.3-v4.11-987654-x86_64 [public], or 
                       : * quay.io/devspaces/iib:next-v4.10-ppc64le [public]
+
   --quay, --fast      : Install from quay.io/devspaces/iib:<DS_VERSION>-v4.yy-<OS_ARCH> (detected OCP version + arch) from fast channel
                       : Resolve images from quay.io using ImageContentSourcePolicy
-  --next, --latest    : Install from quay.io/devspaces/iib:next-v4.yy-<OS_ARCH> or quay.io/devspaces/iib:latest-v4.yy-<OS_ARCH>, from fast channel
+  --latest            : Install from quay.io/devspaces/iib:latest-v4.yy-<OS_ARCH>, from fast channel, built from stable devspaces-3.y-rhel-8 branch
                       : Resolve images from quay.io using ImageContentSourcePolicy
+  --next              : Install from quay.io/devspaces/iib:next-v4.yy-<OS_ARCH>, from fast channel, built from CI devspaces-3-rhel-8 branch
+                      : Resolve images from quay.io using ImageContentSourcePolicy
+
   --brew              : Resolve images from brew.registry.redhat.io using ImageContentSourcePolicy
   --icsp <REGISTRY>   : Resolve images from specified registry URL using ImageContentSourcePolicy
+
   --dsc               : Optional. To install with dsc, use '--dsc 3.1.0-CI' or '--dsc 3.0.0-GA'
                       : Use '--dsc local' to search PATH for installed dsc, or use '--dsc /path/to/dsc/bin/'
   --delete-before     : Before installing with dsc, delete using server:delete -y. Will not delete namespaces.
@@ -179,7 +183,7 @@ preflight() {
   fi
 
   if [ -z "$DS_VERSION" ]; then
-    errorf "Dev Spaces version is required (use '-t' parameter)"
+    errorf "Dev Spaces version is required (use '--next', '--latest', or '-t 3.y' parameter)"
     usage
     exit 1
   fi
@@ -236,7 +240,7 @@ while [[ "$#" -gt 0 ]]; do
     '--iib-dwo') IIB_DWO="$2"; shift 1;;
     '--iib-ds') IIB_DS="$2"; shift 1;;
     '--quay'|'--fast')   IIB_DS="quay.io/devspaces/iib"; CHANNEL_DS="fast"; CHANNEL_DWO="fast"; ICSP_FLAG="--icsp quay.io";;
-    '--latest'|'--next') IIB_DS="quay.io/devspaces/iib"; CHANNEL_DS="fast"; CHANNEL_DWO="fast"; ICSP_FLAG="--icsp quay.io"; DS_VERSION="$1";;
+    '--latest'|'--next') IIB_DS="quay.io/devspaces/iib"; CHANNEL_DS="fast"; CHANNEL_DWO="fast"; ICSP_FLAG="--icsp quay.io"; DS_VERSION="${1//--/}";;
     '--brew') ICSP_FLAG="--icsp brew.registry.redhat.io";;
     '--icsp') ICSP_FLAG="--icsp $2"; shift 1;;
     '--delete-before') DELETE_BEFORE="true";;
