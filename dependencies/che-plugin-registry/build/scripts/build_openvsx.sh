@@ -9,14 +9,14 @@ set -o pipefail
 
 cd /tmp
 # temporary location
-git clone https://github.com/benoitf/openvsx.git
-cd openvsx/server
+git clone https://github.com/che-incubator/che-openvsx.git
+cd che-openvsx/server
 git checkout OPENVSX-498
 
 ./gradlew --no-daemon assemble
 
 mkdir -p /tmp/openvsx-lib
-cp /tmp/openvsx/server/scripts/run-server.sh /tmp/openvsx-lib
-cp /tmp/openvsx/server/build/libs/openvsx-server.jar /tmp/openvsx-lib && rm -rf /tmp/openvsx
+cp /tmp/che-openvsx/server/scripts/run-server.sh /tmp/openvsx-lib
+cp /tmp/che-openvsx/server/build/libs/openvsx-server.jar /tmp/openvsx-lib && rm -rf /tmp/che-openvsx
 cd /tmp/openvsx-lib
 jar -xf openvsx-server.jar && rm openvsx-server.jar
