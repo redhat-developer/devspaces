@@ -13,6 +13,9 @@
 # 1. You are logged into an OpenShift cluster (with cluster-admin permissions)
 # 2. You an active kerberos token (kinit <username>@IPA.REDHAT.COM)
 # 3. You've set up a Brew registry token
+#
+# Requires: oc, jq, curl
+# Optional: podman (for brew.registry secret)
 
 set -e
 
@@ -93,6 +96,8 @@ Options:
                       : * quay.io/devspaces/iib:next-v4.10-ppc64le [public]
   --quay, --fast      : Install from quay.io/devspaces/iib:<DS_VERSION>-v4.yy-<OS_ARCH> (detected OCP version + arch) from fast channel
                       : Resolve images from quay.io using ImageContentSourcePolicy
+  --next, --latest    : Install from quay.io/devspaces/iib:next-v4.yy-<OS_ARCH> or quay.io/devspaces/iib:latest-v4.yy-<OS_ARCH>, from fast channel
+                      : Resolve images from quay.io using ImageContentSourcePolicy
   --brew              : Resolve images from brew.registry.redhat.io using ImageContentSourcePolicy
   --icsp <REGISTRY>   : Resolve images from specified registry URL using ImageContentSourcePolicy
   --dsc               : Optional. To install with dsc, use '--dsc 3.1.0-CI' or '--dsc 3.0.0-GA'
@@ -145,8 +150,31 @@ preflight() {
     DSC="$(command -v ${DSC_OPTION}/dsc)"
   fi
 
-  if [[ ! $(command -v htpasswd) ]] || [[ ! $(command -v bcrypt) ]]; then 
-    errorf "Please install htpasswd and bcrypt to create users on the cluster"
+  # minimum requirements
+  if [[ ! $(command -v oc) ]]; then 
+    errorf "Please install oc 4.10+ from an RPM or https://mirror.openshift.com/pub/openshift-v4/clients/ocp/"
+    exit 1
+  fi
+  if [[ ! $(command -v jq) ]]; then 
+    errorf "Please install jq 1.2 from an RPM or https://pypi.org/project/jq/"
+    exit 1
+  fi
+  if [[ ! $(command -v curl) ]]; then 
+    errorf "Please install curl"
+    exit 1
+  fi
+
+  # optional requirement - to create users
+  if [[ $CREATE_USERS == "true" ]]; then
+    if [[ ! $(command -v htpasswd) ]] || [[ ! $(command -v bcrypt) ]]; then 
+      errorf "Please install htpasswd and bcrypt to create users on the cluster"
+      exit 1
+    fi
+  fi
+  
+  # optional requirement (for brew.registry secret)
+  if [[ "${ICSP_FLAG}" == "--icsp brew.registry.redhat.io" ]] && [[ ! $(command -v podman) ]]; then 
+    errorf "Please install podman to use brew.registry.redhat.io, or use --quay flag to install from quay.io"
     exit 1
   fi
 
@@ -207,7 +235,8 @@ while [[ "$#" -gt 0 ]]; do
       fi; shift 1;;
     '--iib-dwo') IIB_DWO="$2"; shift 1;;
     '--iib-ds') IIB_DS="$2"; shift 1;;
-    '--quay'|'--fast') IIB_DS="quay.io/devspaces/iib"; CHANNEL_DS="fast"; CHANNEL_DWO="fast"; ICSP_FLAG="--icsp quay.io";;
+    '--quay'|'--fast')   IIB_DS="quay.io/devspaces/iib"; CHANNEL_DS="fast"; CHANNEL_DWO="fast"; ICSP_FLAG="--icsp quay.io";;
+    '--latest'|'--next') IIB_DS="quay.io/devspaces/iib"; CHANNEL_DS="fast"; CHANNEL_DWO="fast"; ICSP_FLAG="--icsp quay.io"; DS_VERSION="$1";;
     '--brew') ICSP_FLAG="--icsp brew.registry.redhat.io";;
     '--icsp') ICSP_FLAG="--icsp $2"; shift 1;;
     '--delete-before') DELETE_BEFORE="true";;
