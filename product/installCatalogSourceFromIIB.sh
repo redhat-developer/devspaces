@@ -10,6 +10,8 @@
 # Script to streamline installing an IIB image in an OpenShift cluster for testing
 # Supports optionally installing an operator from the newly-created catalog source.
 #
+# Requires: oc, jq, curl
+# Optional: podman (for brew.registry secret)
 
 set -e
 
@@ -77,6 +79,21 @@ while [[ "$#" -gt 0 ]]; do
   shift 1
 done
 
+# minimum requirements
+if [[ ! $(command -v oc) ]]; then 
+  errorf "Please install oc 4.10+ from an RPM or https://mirror.openshift.com/pub/openshift-v4/clients/ocp/"
+  exit 1
+fi
+if [[ ! $(command -v jq) ]]; then 
+  errorf "Please install jq 1.2+ from an RPM or https://pypi.org/project/jq/"
+  exit 1
+fi
+if [[ ! $(command -v curl) ]]; then 
+  errorf "Please install curl"
+  exit 1
+fi
+
+
 # Check that we have IIB image and use Brew mirror
 if [ -z "$UPSTREAM_IIB" ]; then
   errorf "IIB image is required (specify '--iib <image>')"
@@ -89,6 +106,12 @@ if [[ $UPSTREAM_IIB == "registry-proxy.engineering.redhat.com/rh-osbs/iib:"* ]];
 else
   echo "[INFO] Using iib $TO_INSTALL image $UPSTREAM_IIB"
   IIB_IMAGE="${UPSTREAM_IIB}"
+fi
+
+# optional requirements (for brew.registry secret)
+if [[ "${IIB_IMAGE}" == "brew.registry"* ]] && [[ ! $(command -v podman) ]]; then 
+  errorf "Please install podman to login to brew.registry.redhat.io, or use --iib to specify an IIB from a registry that doesn't require login"
+  exit 1
 fi
 
 # Check we're logged into a cluster
