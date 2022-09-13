@@ -15,7 +15,7 @@
   {
     "id": "che-incubator/che-code/insiders",
     "description": "Red Hat OpenShift Dev Spaces with Microsoft Visual Studio Code - Open Source IDE",
-    "displayName": "VS Code - Open Source",
+    "displayName": "vscode",
     "links": {
       "devfile": "/v3/plugins/che-incubator/che-code/insiders/devfile.yaml"
     },
@@ -27,7 +27,7 @@
   {
     "id": "che-incubator/che-idea/latest",
     "description": "Red Hat OpenShift Dev Spaces with JetBrains IntelliJ IDEA Community IDE",
-    "displayName": "IntelliJ IDEA Community",
+    "displayName": "idea",
     "links": {
       "devfile": "/v3/plugins/che-incubator/che-idea/latest/devfile.yaml"
     },
@@ -91,7 +91,7 @@
   {
     "id": "eclipse/che-theia/latest",
     "description": "Red Hat OpenShift Dev Spaces with Eclipse Theia IDE",
-    "displayName": "Eclipse Theia",
+    "displayName": "theia",
     "links": {
       "self": "/v3/plugins/eclipse/che-theia/latest",
       "devfile": "/v3/plugins/eclipse/che-theia/latest/devfile.yaml"
