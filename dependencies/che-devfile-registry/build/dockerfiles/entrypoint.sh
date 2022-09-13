@@ -238,7 +238,7 @@ function update_container_image_references() {
 
 function set_internal_url() {
   readarray -t metas < <(find "${DEVFILES_DIR}" -name 'meta.yaml')
-  readarray -t templates < <(find "${DEVFILES_DIR}" -name 'devworkspace-che-theia-latest.yaml')
+  readarray -t templates < <(find "${DEVFILES_DIR}" -name 'devworkspace-*.yaml')
   if [ -n "$INTERNAL_URL" ]; then
     INTERNAL_URL=${INTERNAL_URL%/}
     echo "Updating internal URL in files to ${INTERNAL_URL}"
