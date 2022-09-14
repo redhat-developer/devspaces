@@ -17,11 +17,42 @@ on:
     paths:
       - 'dependencies/che-plugin-registry/**'
 
+  # allow manual trigger of action in case things are stale
+  workflow_dispatch:
+    inputs:
+      TAG:
+        description: 'The tag to publish, eg., next or 3.y'
+        required: true
+        default: 'next'
+
+  # rebuild GH pages every night at 10pm
+  schedule:
+    - cron: "0 22 * * *"
+
 jobs:
   publish:
     name: publish
     runs-on: ubuntu-20.04
     steps:
+      - name: Set defaults (for use in crontab or workflow_dispatch)
+        id: SETUP_TAG
+        shell: bash
+        env:
+          DEFAULT_TAG: 'next'
+        run: |
+          if [[ "$GITHUB_REF_NAME" ]]; then
+            if [[ "$GITHUB_REF_NAME" =~ devspaces-([0-9]+\.[0-9]+)-rhel-8 ]]; then
+              # just use the 3.2 part of devspaces-3.2-rhel-8
+              echo "TAG=${BASH_REMATCH[1]}" >> $GITHUB_ENV
+            elif [[ "$GITHUB_REF_NAME" =~ devspaces-([0-9]+)-rhel-8 ]]; then
+              # for devspaces-3-rhel-8, use next
+              echo "TAG=next" >> $GITHUB_ENV
+            else
+              echo "TAG=$GITHUB_REF_NAME" >> $GITHUB_ENV
+            fi
+          else
+            echo "TAG=${{ github.event.inputs.TAG || env.DEFAULT_TAG }}" >> $GITHUB_ENV
+          fi
       - name: Clone source code
         uses: actions/checkout@v2
         with:
@@ -31,7 +62,9 @@ jobs:
           export BUILD_DIR="$PWD/content"
           mkdir -p /tmp/devspaces-plugin-registry
           touch /tmp/devspaces-plugin-registry/architectures.json
-          if [[ "$GITHUB_REF_NAME" == "devspaces-3-rhel-8" ]]; then
+          if [[ ${{ env.TAG }} =~ 3\.[0-9]+ ]]; then
+            version="${{ env.TAG }}"
+          elif [[ "$GITHUB_REF_NAME" == "devspaces-3-rhel-8" ]] || [[ ${{ env.TAG }} == "next" ]]; then
              version="next"
           else
              version=$(cat dependencies/VERSION)
@@ -56,7 +89,6 @@ jobs:
           export GITHUB_TOKEN=${{ secrets.CRW_BUILD_TOKEN }}
           GITHUB_REPO_NAME="devspaces"
           VERSION_DIR="che-plugin-registry"/"$(cat dependencies/VERSION)"
-
           rm "$GH_PAGES_DIR" -rf;
           mkdir "$GH_PAGES_DIR"
           cd "$GH_PAGES_DIR"
@@ -65,15 +97,17 @@ jobs:
           cd "$GITHUB_REPO_NAME"
           for arch in $(cat /tmp/devspaces-plugin-registry/architectures.json); do
             TARGET_DIR="$VERSION_DIR"/"$arch"
-            [ -d "$TARGET_DIR" ] && git rm -r "$TARGET_DIR"
+            echo "Delete and recreate $TARGET_DIR ..."
+            [ -d "$TARGET_DIR" ] && git rm -q -r "$TARGET_DIR"
             [ ! -d "$VERSION_DIR" ] && mkdir -p "$VERSION_DIR"
             rm -rf "$BUILD_DIR"/"$arch"/v3/resources
             cp -r "$BUILD_DIR"/"$arch" "$TARGET_DIR"
           done
-          # Check if the branch is latest.
+          # Check if the branch is devspaces-3-rhel-8 = next
           if [[ "$GITHUB_REF_NAME" == "devspaces-3-rhel-8" ]]; then
             NEXT_VERSION_DIR="che-plugin-registry/next"
-            [ -d "$NEXT_VERSION_DIR" ] && git rm -r "$NEXT_VERSION_DIR"
+            echo "Delete and recreate $NEXT_VERSION_DIR ..."
+            [ -d "$NEXT_VERSION_DIR" ] && git rm -q -r "$NEXT_VERSION_DIR"
             mkdir -p "$NEXT_VERSION_DIR"
             cp -r "$BUILD_DIR"/. "$NEXT_VERSION_DIR"
           fi
@@ -91,7 +125,7 @@ jobs:
           git config --global pull.rebase true
           git config --global hub.protocol https
           git remote set-url origin https://$GITHUB_TOKEN:x-oauth-basic@github.com/redhat-developer/devspaces.git
-          git diff-index --quiet HEAD || git commit -m "publish registry $VERSION - $(date)" -s
+          git diff-index --quiet HEAD || git commit -m "publish registry $VERSION - $(date)" -s || echo "Nothing to commit!"
           git push origin gh-pages || echo "No changes to push!" # https://redhat-developer.github.io/devspaces/
           for arch in $(cat /tmp/devspaces-plugin-registry/architectures.json); do
             echo "Plugin registry published to https://redhat-developer.github.io/$GITHUB_REPO_NAME/$VERSION_DIR/$arch/v3/plugins/"
