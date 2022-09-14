@@ -11,7 +11,7 @@ cd /tmp
 # temporary location
 git clone https://github.com/che-incubator/che-openvsx.git
 cd che-openvsx/server
-git checkout OPENVSX-498
+git checkout che-openvsx
 
 ./gradlew --no-daemon assemble
 

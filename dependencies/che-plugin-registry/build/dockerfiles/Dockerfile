@@ -105,7 +105,7 @@ RUN sed -i /etc/httpd/conf/httpd.conf \
     -e "s,logs/error_log,/dev/stderr," \
     -e "s,logs/access_log,/dev/stdout," \
     -e "s,AllowOverride None,AllowOverride All," && \
-    chmod a+rwX /etc/httpd/conf /run/httpd /etc/httpd/logs/
+    chmod a+rwX /etc/httpd/conf /etc/httpd/conf.d /run/httpd /var/log/httpd /etc/httpd/logs/
 STOPSIGNAL SIGWINCH
 
 ARG DS_BRANCH=devspaces-3-rhel-8
@@ -145,6 +145,8 @@ RUN chmod g+rwX /usr/local/bin/entrypoint.sh /usr/local/bin/rhel.entrypoint.sh &
 USER postgres
 
 RUN /usr/pgsql-14/bin/initdb && \
+    chmod -R g+rwX /var/run/postgresql && \
+    chgrp -R 0 /var/run/postgresql && \
     # Add all vsix files to the database
     /usr/local/bin/import-vsix.sh && \
     # add permissions for anyuserid
