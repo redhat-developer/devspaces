@@ -3,7 +3,7 @@
 set -e
 set -o pipefail
 
-/usr/local/bin/start-services.sh
+/usr/local/bin/start_services.sh
 
 # install temporary nodejs
 mkdir -p /tmp/opt/nodejs && curl -sL https://nodejs.org/download/release/v14.18.3/node-v14.18.3-linux-x64.tar.gz | tar xzf - -C /tmp/opt/nodejs --strip-components=1
@@ -34,35 +34,19 @@ listOfVsixes=$(echo "${openVsxSyncFileContent}" | jq -r ".[]")
 listOfPublishers=()
 IFS=$'\n' 
 
+/usr/local/bin/download_vsix.sh
+
 for vsixFullName in $listOfVsixes; do
     # extract from the vsix name the publisher name which is the first part of the vsix name before dot
     vsixPublisher=$(echo "${vsixFullName}" | cut -d '.' -f 1)
-
-    # replace the dot by / in the vsix name
     vsixName=$(echo "${vsixFullName}" | sed 's/\./\//g')
 
     # grab metadata for the vsix file
     vsixMetadata=$(curl -sL "https://open-vsx.org/api/${vsixName}/latest")
 
-    # check there is no error field in the metadata
-    if [[ $(echo "${vsixMetadata}" | jq -r ".error") != null ]]; then
-        echo "Error while getting metadata for ${vsixFullName}"
-        echo "${vsixMetadata}"
-        exit 1
-    fi
-
     # grab the version field from metadata
     vsixVersion=$(echo "${vsixMetadata}" | jq -r '.version')
-
-    # extract the download link from the json metadata
-    vsixDownloadLink=$(echo "${vsixMetadata}" | jq -r '.files.download')
-
-    echo "Downloading ${vsixDownloadLink} into ${vsixPublisher} folder..."
-
-    vsixFilename="/tmp/vsix/${vsixFullName}-${vsixVersion}.vsix"
-
-    # download the latest vsix file in the publisher directory
-    curl -sL "${vsixDownloadLink}" -o "${vsixFilename}"
+    vsixFilename="/openvsx-server/vsix/${vsixFullName}-${vsixVersion}.vsix"
 
     # check if publisher is in the list of publishers
     if ! containsElement "${vsixPublisher}" "${listOfPublishers[@]}"; then
@@ -73,12 +57,7 @@ for vsixFullName in $listOfVsixes; do
 
     # publish the file
     ovsx publish "${vsixFilename}"
-
-    # remove the downloaded file
-    rm "${vsixFilename}"
-
 done;
-
 
 # disable the personal access token
 psql -c "UPDATE personal_access_token SET active = false;"

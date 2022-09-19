@@ -19,6 +19,12 @@ DOCKERFILE="./build/dockerfiles/Dockerfile"
 SKIP_OCI_IMAGE="false"
 NODE_BUILD_OPTIONS="${NODE_BUILD_OPTIONS:-}"
 BUILD_FLAGS_ARRAY=()
+BUILD_COMMAND="build"
+
+OPENVSX_ASSET_SRC=asset-openvsx.tar.gz
+OPENVSX_ASSET_DEST="$base_dir"/build/dockerfiles/asset-openvsx.tar.gz
+OPENVSX_BUILDER_IMAGE=che-openvsx:latest
+
 
 USAGE="
 Usage: ./build.sh [OPTIONS]
@@ -75,40 +81,7 @@ function parse_arguments() {
 
 parse_arguments "$@"
 
-# load VERSION.json file from ./ or  ../, or fall back to the internet if no local copy
-if [[ -f "${base_dir}/job-config.json" ]]; then
-    versionjson="${base_dir}/job-config.json"
-    echo "Load ${versionjson} [1]"
-elif [[ -f "${base_dir%/*}/job-config.json" ]]; then
-    versionjson="${base_dir%/*}/job-config.json"
-    echo "Load ${versionjson} [2]"
-else
-    # echo "[WARN] Could not find VERSION.json in ${base_dir} or ${base_dir%/*}!"
-    # try to compute branches from currently checked out branch; else fall back to hard coded value
-    # where to find redhat-developer/devspaces/${SCRIPTS_BRANCH}/product/getLatestImageTags.sh
-    SCRIPTS_BRANCH="$(git rev-parse --abbrev-ref HEAD 2>/dev/null || true)"
-    if [[ $SCRIPTS_BRANCH != "devspaces-3."*"-rhel-8" ]]; then
-        SCRIPTS_BRANCH="devspaces-3-rhel-8"
-    fi
-    echo "Load https://raw.githubusercontent.com/redhat-developer/devspaces/${SCRIPTS_BRANCH}/dependencies/job-config.json [3]"
-    curl -sSLo /tmp/VERSION.json https://raw.githubusercontent.com/redhat-developer/devspaces/${SCRIPTS_BRANCH}/dependencies/job-config.json
-    versionjson=/tmp/VERSION.json
-fi
-REGISTRY_VERSION=$(jq -r '.Version' "${versionjson}");
-REGISTRY_GENERATOR_VERSION=$(jq -r --arg REGISTRY_VERSION "${REGISTRY_VERSION}" '.Other["@eclipse-che/plugin-registry-generator"][$REGISTRY_VERSION]' "${versionjson}");
-# echo "REGISTRY_VERSION=${REGISTRY_VERSION}; REGISTRY_GENERATOR_VERSION=${REGISTRY_GENERATOR_VERSION}"
-
-echo "Generate artifacts"
-# do not generate digests as they'll be added at runtime from the operator (see CRW-1157)
-npx @eclipse-che/plugin-registry-generator@"${REGISTRY_GENERATOR_VERSION}" --root-folder:"$(pwd)" --output-folder:"$(pwd)/output" "${BUILD_FLAGS_ARRAY[@]}" --skip-digest-generation:true
-
-echo -e "\nTest entrypoint.sh"
-EMOJI_HEADER="-" EMOJI_PASS="[PASS]" EMOJI_FAIL="[FAIL]" "${base_dir}"/build/dockerfiles/test_entrypoint.sh
-
-if [ "${SKIP_OCI_IMAGE}" != "true" ]; then
-    BUILD_COMMAND="build"
-    # Tar up the outputted files as the Dockerfile depends on them
-    tar -czvf resources.tgz ./output/v3/
+detectBuilder() {
     if [[ -z $BUILDER ]]; then
         echo "BUILDER not specified, trying with podman"
         BUILDER=$(command -v podman || true)
@@ -139,10 +112,97 @@ if [ "${SKIP_OCI_IMAGE}" != "true" ]; then
         fi
     fi
     echo "Build with $BUILDER $BUILD_COMMAND"
+}
+
+detectBuilder
+
+prepareOpenvsxPackagingAsset() {
+    cd "$base_dir" || exit 1
+    if [ -f "$OPENVSX_ASSET_DEST" ]; then
+        echo "Removing '$OPENVSX_ASSET_DEST'"
+        rm "$OPENVSX_ASSET_DEST"
+    fi
+
+    ${BUILDER} ${BUILD_COMMAND} --progress=plain -f build/dockerfiles/openvsx-builder.Dockerfile -t "$OPENVSX_BUILDER_IMAGE" .
+    # shellcheck disable=SC2181
+    if [[ $? -eq 0 ]]; then
+        echo "Container '$OPENVSX_BUILDER_IMAGE' successfully built"
+    else
+        echo "Container Openvsx build failed"
+        exit 1
+    fi
+
+    extractFromContainer "$OPENVSX_BUILDER_IMAGE" "$OPENVSX_ASSET_SRC" "$OPENVSX_ASSET_DEST"
+}
+
+# $1 is the container name
+# $2 is the path to extract from the container
+# $3 is the destination path to where located extracted path
+extractFromContainer() {
+    echo "Extract '$2' from '$1' container to '$3'"
+    tmpContainer="$(echo "$1" | tr "/:" "--")-$(date +%s)"
+
+    echo "Using temporary container '$tmpContainer'"
+    ${BUILDER} create --name="$tmpContainer" "$1" sh >/dev/null 2>&1
+    ${BUILDER} export "$tmpContainer" > "/tmp/$tmpContainer.tar"
+
+    tmpDir="/tmp/$tmpContainer"
+    echo "Created temporary directory '$tmpDir'"
+    rm -rf "$tmpDir" || true
+    mkdir -p "$tmpDir"
+
+    echo "Trying to unpack container '$tmpContainer'"
+    tar -xf "/tmp/$tmpContainer.tar" -C "$tmpDir" --no-same-owner "$2" || exit 1
+
+    echo "Moving '$tmpDir/$2' to '$3'"
+    mv "$tmpDir/$2" "$3"
+
+    echo "Clean up the temporary container and directory"
+    ${BUILDER} rm -f "$tmpContainer" >/dev/null 2>&1
+    rm -rf "/tmp/$tmpContainer.tar"
+    rm -rf "$tmpDir" || true
+}
+
+# load VERSION.json file from ./ or  ../, or fall back to the internet if no local copy
+if [[ -f "${base_dir}/job-config.json" ]]; then
+    versionjson="${base_dir}/job-config.json"
+    echo "Load ${versionjson} [1]"
+elif [[ -f "${base_dir%/*}/job-config.json" ]]; then
+    versionjson="${base_dir%/*}/job-config.json"
+    echo "Load ${versionjson} [2]"
+else
+    # echo "[WARN] Could not find VERSION.json in ${base_dir} or ${base_dir%/*}!"
+    # try to compute branches from currently checked out branch; else fall back to hard coded value
+    # where to find redhat-developer/devspaces/${SCRIPTS_BRANCH}/product/getLatestImageTags.sh
+    SCRIPTS_BRANCH="$(git rev-parse --abbrev-ref HEAD 2>/dev/null || true)"
+    if [[ $SCRIPTS_BRANCH != "devspaces-3."*"-rhel-8" ]]; then
+        SCRIPTS_BRANCH="devspaces-3-rhel-8"
+    fi
+    echo "Load https://raw.githubusercontent.com/redhat-developer/devspaces/${SCRIPTS_BRANCH}/dependencies/job-config.json [3]"
+    curl -sSLo /tmp/VERSION.json https://raw.githubusercontent.com/redhat-developer/devspaces/${SCRIPTS_BRANCH}/dependencies/job-config.json
+    versionjson=/tmp/VERSION.json
+fi
+REGISTRY_VERSION=$(jq -r '.Version' "${versionjson}");
+REGISTRY_GENERATOR_VERSION=$(jq -r --arg REGISTRY_VERSION "${REGISTRY_VERSION}" '.Other["@eclipse-che/plugin-registry-generator"][$REGISTRY_VERSION]' "${versionjson}");
+# echo "REGISTRY_VERSION=${REGISTRY_VERSION}; REGISTRY_GENERATOR_VERSION=${REGISTRY_GENERATOR_VERSION}"
+
+echo "Generate artifacts"
+# do not generate digests as they'll be added at runtime from the operator (see CRW-1157)
+npx @eclipse-che/plugin-registry-generator@"${REGISTRY_GENERATOR_VERSION}" --root-folder:"$(pwd)" --output-folder:"$(pwd)/output" "${BUILD_FLAGS_ARRAY[@]}" --skip-digest-generation:true
+
+prepareOpenvsxPackagingAsset
+
+echo -e "\nTest entrypoint.sh"
+EMOJI_HEADER="-" EMOJI_PASS="[PASS]" EMOJI_FAIL="[FAIL]" "${base_dir}"/build/dockerfiles/test_entrypoint.sh
+
+if [ "${SKIP_OCI_IMAGE}" != "true" ]; then
+    # Tar up the outputted files as the Dockerfile depends on them
+    tar -czvf resources.tgz ./output/v3/
+    echo "Build with $BUILDER $BUILD_COMMAND"
     IMAGE="${REGISTRY}/${ORGANIZATION}/pluginregistry-rhel8:${TAG}"
     # Copy to root directory to behave as if in Brew or devspaces-images
     cp "${DOCKERFILE}" ./builder.Dockerfile
-    ${BUILDER} ${BUILD_COMMAND} -t "${IMAGE}" -f ./builder.Dockerfile .
+    ${BUILDER} ${BUILD_COMMAND} --progress=plain -t "${IMAGE}" -f ./builder.Dockerfile .
     # Remove copied Dockerfile and tarred zip
-    rm ./builder.Dockerfile resources.tgz
+    rm ./builder.Dockerfile resources.tgz "${OPENVSX_ASSET_DEST}"
 fi

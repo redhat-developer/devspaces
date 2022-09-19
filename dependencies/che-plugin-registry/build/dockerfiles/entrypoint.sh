@@ -87,7 +87,7 @@ function run_main() {
       rm -rf /var/lib/pgsql/14/data/old
 
       # start postgres and openvsx
-      /usr/local/bin/start-services.sh
+      /usr/local/bin/start_services.sh
     fi
 
     # start httpd
@@ -180,6 +180,50 @@ function extract_and_use_related_images_env_variables_with_image_digest_info() {
                 fi
             done
         done
+    else
+        # Workaround in case if RELATED_IMAGES ENVs are not present in the container. 
+        # Try to read RELATED_IMAGES from devspaces.csv.yaml (this will not work in disconnected environment).
+        # DS_BRANCH env descries the branch where related csv.yaml is located; 
+        # default value is devspaces-3-rhel-8 but should be overwritten when built from a stable branch like devspaces-3.1-rhel-8
+        curl -o /tmp/csv.yaml https://raw.githubusercontent.com/redhat-developer/devspaces-images/"${DS_BRANCH}"/devspaces-operator-bundle-generated/manifests/devspaces.csv.yaml
+        readarray -t images < <(grep "image:" /tmp/csv.yaml | sed -r "s;.*image:[[:space:]]*'?\"?([._:a-zA-Z0-9-]*/?[._a-zA-Z0-9-]*/[._a-zA-Z0-9-]*(@sha256)?:?[._a-zA-Z0-9-]*)'?\"?[[:space:]]*;\1;")
+
+        if [[ -n "${#images[@]}" ]]; then
+            declare -A imageMap
+            for image in "${images[@]}"; do
+                digest=${image#*@}	
+                imageName=${image%@*}
+                imageMap["${imageName}"]="${digest}"
+            done	
+
+            echo "--------------------------Digest map--------------------------"
+            for KEY in "${!imageMap[@]}"; do
+                echo "Key: $KEY Value: ${imageMap[${KEY}]}"
+            done
+            echo "--------------------------------------------------------------"
+
+            readarray -t metas < <(find "${METAS_DIR}" -name 'meta.yaml' -o -name 'devfile.yaml')
+            for meta in "${metas[@]}"; do
+                readarray -t images < <(grep "image:" "${meta}" | sed -r "s;.*image:[[:space:]]*'?\"?([._:a-zA-Z0-9-]*/?[._a-zA-Z0-9-]*/[._a-zA-Z0-9-]*(@sha256)?:?[._a-zA-Z0-9-]*)'?\"?[[:space:]]*;\1;")
+                for image in "${images[@]}"; do
+                    separators="${image//[^\/]}"
+                    # Warning, keep in mind: image without registry name is it possible case. It's mean, that image comes from private registry, where is we have organization name, but no registry name...
+                    digest="${imageMap[${image%:*}]}"
+                    if [[ -n "${digest}" ]]; then
+                        if [[ ${image} == *":"* ]]; then
+                            imageWithoutTag="${image%:*}"
+                            tag="${image#*:}"
+                        else
+                            imageWithoutTag=${image}
+                            tag=""
+                        fi
+
+                        REGEX="([[:space:]]*\"?'?)(${imageWithoutTag}):?(${tag})(\"?'?)"
+                        sed -i -E "s|image:${REGEX}|image:\1\2@${digest}\4|" "$meta"
+                    fi
+                done
+            done
+        fi
     fi
 }
 
