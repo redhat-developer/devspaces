@@ -24,7 +24,7 @@ RUN /tmp/rhel.install.sh && rm -f /tmp/rhel.install.sh
 RUN mkdir -p /mnt/rootfs
 # Install httpd and postgresql
 RUN yum install -y https://download.postgresql.org/pub/repos/yum/reporpms/EL-8-x86_64/pgdg-redhat-repo-latest.noarch.rpm
-RUN yum install --installroot /mnt/rootfs postgresql14-libs postgresql14 postgresql14-server \
+RUN yum install --installroot /mnt/rootfs postgresql13-libs postgresql13 postgresql13-server \
     java-11-openjdk coreutils-single glibc-minimal-langpack glibc-langpack-en langpacks-en glibc-locale-source httpd nc \
     net-tools procps vi curl wget tar gzip jq\
     --releasever 8 --nodocs -y && \
@@ -48,7 +48,7 @@ RUN cat /mnt/rootfs/etc/passwd | sed s#root:x.*#root:x:\${USER_ID}:\${GROUP_ID}:
     && cat /mnt/rootfs/etc/group | sed s#root:x:0:#root:x:0:0,\${USER_ID}:#g > /mnt/rootfs/.group.template
 
 # Change permissions
-RUN for f in "/mnt/rootfs/etc/passwd" "/mnt/rootfs/etc/group" "/mnt/rootfs/var/lib/pgsql" "/mnt/rootfs/usr/pgsql-14" "/mnt/rootfs/var/run/postgresql"; do\
+RUN for f in "/mnt/rootfs/etc/passwd" "/mnt/rootfs/etc/group" "/mnt/rootfs/var/lib/pgsql" "/mnt/rootfs/usr/pgsql-13" "/mnt/rootfs/var/run/postgresql"; do\
            chgrp -R 0 ${f} && \
            chmod -R g+rwX ${f}; \
        done
@@ -100,19 +100,19 @@ USER postgres
 ENV LC_ALL=en_US.UTF-8 \
     LANG=en_US.UTF-8 \
     LANGUAGE=en_US.UTF-8 \
-    PGDATA=/var/lib/pgsql/14/data/database \
+    PGDATA=/var/lib/pgsql/13/data/database \
     JAVA_HOME=
 
-RUN /usr/pgsql-14/bin/initdb && \
+RUN /usr/pgsql-13/bin/initdb && \
     # Add all vsix files to the database
     /usr/local/bin/import_vsix.sh && \
     # add permissions for anyuserid
-    chgrp -R 0 /var/lib/pgsql/14/data/database && \
+    chgrp -R 0 /var/lib/pgsql/13/data/database && \
     #cleanup postgresql pid
-    rm /var/lib/pgsql/14/data/database/postmaster.pid && \
+    rm /var/lib/pgsql/13/data/database/postmaster.pid && \
     rm /var/run/postgresql/.s.PGSQL* && \
     rm /tmp/.s.PGSQL* && \
-    chmod -R g+rwX /var/lib/pgsql/14/data/database && mv /var/lib/pgsql/14/data/database /var/lib/pgsql/14/data/old
+    chmod -R g+rwX /var/lib/pgsql/13/data/database && mv /var/lib/pgsql/13/data/database /var/lib/pgsql/13/data/old
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 
 # append Brew metadata here
