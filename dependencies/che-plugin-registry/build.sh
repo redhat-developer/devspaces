@@ -204,5 +204,5 @@ if [ "${SKIP_OCI_IMAGE}" != "true" ]; then
     cp "${DOCKERFILE}" ./builder.Dockerfile
     ${BUILDER} ${BUILD_COMMAND} --progress=plain -t "${IMAGE}" -f ./builder.Dockerfile .
     # Remove copied Dockerfile and tarred zip
-    rm ./builder.Dockerfile resources.tgz "${OPENVSX_ASSET_DEST}"
+    rm ./builder.Dockerfile resources.tgz
 fi
