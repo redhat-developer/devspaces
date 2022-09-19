@@ -23,6 +23,12 @@ DISABLE_CATALOGSOURCES="false"
 INSTALL_PLAN_APPROVAL="Automatic"
 OLM_CHANNEL="fast"
 
+# default ICSP to use to resolve unreleased images
+# if using --fast or --quay flag, this will be changed to quay.io
+# if using --brew flag, this will be changed to brew.registry.redhat.io
+# if you want your own registry here, use --icsp flag to specify it
+ICSP_URL=""
+
 errorf() {
   echo -e "${RED}$1${NC}"
 }
@@ -51,7 +57,7 @@ Options:
   --manual-updates             : Use "manual" InstallPlanApproval for the CatalogSource instead of "automatic" if installing operator
   --disable-default-sources    : Disable default CatalogSources. Default: false 
   --quay                       : Resolve images from quay.io using ImageContentSourcePolicy
-  --brew                       : Resolve images from brew.registry.redhat.io using ImageContentSourcePolicy
+  --brew                       : Resolve images from brew.registry.redhat.io using ImageContentSourcePolicy (requires authentication)
   --icsp                       : Install using specified registry in ImageContentSourcePolicy
   -n, --namespace <NAMESPACE>  : Namespace to install CatalogSource into. Default: openshift-operators
 
