@@ -23,6 +23,12 @@ DISABLE_CATALOGSOURCES="false"
 INSTALL_PLAN_APPROVAL="Automatic"
 OLM_CHANNEL="fast"
 
+# default ICSP to use to resolve unreleased images
+# if using --fast or --quay flag, this will be changed to quay.io
+# if using --brew flag, this will be changed to brew.registry.redhat.io
+# if you want your own registry here, use --icsp flag to specify it
+ICSP_URL=""
+
 errorf() {
   echo -e "${RED}$1${NC}"
 }
@@ -50,7 +56,9 @@ Options:
   --channel <CHANNEL>          : Channel to use for operator subscription if installing operator. Default: "fast"
   --manual-updates             : Use "manual" InstallPlanApproval for the CatalogSource instead of "automatic" if installing operator
   --disable-default-sources    : Disable default CatalogSources. Default: false 
-  --icsp                       : Install using specified registry in ImageContentSourcePolicy, eg., quay.io, brew.registry.redhat.io, or custom
+  --quay                       : Resolve images from quay.io using ImageContentSourcePolicy
+  --brew                       : Resolve images from brew.registry.redhat.io using ImageContentSourcePolicy (requires authentication)
+  --icsp                       : Install using specified registry in ImageContentSourcePolicy
   -n, --namespace <NAMESPACE>  : Namespace to install CatalogSource into. Default: openshift-operators
 
 DevWorkspace Operator Example:
@@ -72,6 +80,8 @@ while [[ "$#" -gt 0 ]]; do
     '--manual-updates') INSTALL_PLAN_APPROVAL="Manual";;
     '--disable-default-sources') DISABLE_CATALOGSOURCES="true";;
     '--icsp') ICSP_URL="$2"; shift 1;;
+    '--quay') ICSP_URL="quay.io";;
+    '--brew') ICSP_URL="brew.registry.redhat.io";;
     '-n'|'--namespace') NAMESPACE="$2"; shift 1;;
     '-h'|'--help') usage; exit 0;;
     *) echo "[ERROR] Unknown parameter is used: $1."; usage; exit 1;;
