@@ -6,7 +6,7 @@
 # SPDX-License-Identifier: EPL-2.0
 #
 
-FROM registry.access.redhat.com/ubi8/ubi:8.6-943 as plugin-builder
+FROM registry.access.redhat.com/ubi8/ubi:8.6-943 as builder
 
 RUN yum install java-11-openjdk-devel git jq curl -y --nodocs
 
@@ -28,4 +28,4 @@ COPY /openvsx-sync.json /openvsx-server/
 COPY /build/scripts/download_vsix.sh /tmp
 RUN /tmp/download_vsix.sh && mv /tmp/vsix /openvsx-server
 
-RUN tar -czvf asset-openvsx.tar.gz openvsx-server \
+RUN tar -czvf openvsx-server.tar.gz openvsx-server \

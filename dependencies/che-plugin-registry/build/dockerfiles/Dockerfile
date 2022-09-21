@@ -35,8 +35,8 @@ RUN yum install --installroot /mnt/rootfs postgresql13-libs postgresql13 postgre
 WORKDIR /mnt/rootfs
 
 # Copy OpenVSX server files
-COPY --chown=0:0 /build/dockerfiles/asset-openvsx.tar.gz .
-RUN tar -xf asset-openvsx.tar.gz && rm asset-openvsx.tar.gz
+COPY --chown=0:0 /openvsx-server.tar.gz .
+RUN tar -xf openvsx-server.tar.gz && rm openvsx-server.tar.gz
 # Copy our configuration file for OpenVSX server
 COPY /build/dockerfiles/application.yaml /mnt/rootfs/openvsx-server/config/
 

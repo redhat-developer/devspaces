@@ -21,8 +21,8 @@ NODE_BUILD_OPTIONS="${NODE_BUILD_OPTIONS:-}"
 BUILD_FLAGS_ARRAY=()
 BUILD_COMMAND="build"
 
-OPENVSX_ASSET_SRC=asset-openvsx.tar.gz
-OPENVSX_ASSET_DEST="$base_dir"/build/dockerfiles/asset-openvsx.tar.gz
+OPENVSX_ASSET_SRC=openvsx-server.tar.gz
+OPENVSX_ASSET_DEST="$base_dir"/openvsx-server.tar.gz
 OPENVSX_BUILDER_IMAGE=che-openvsx:latest
 
 
@@ -114,8 +114,6 @@ detectBuilder() {
     echo "Build with $BUILDER $BUILD_COMMAND"
 }
 
-detectBuilder
-
 prepareOpenvsxPackagingAsset() {
     cd "$base_dir" || exit 1
     if [ -f "$OPENVSX_ASSET_DEST" ]; then
@@ -190,12 +188,12 @@ echo "Generate artifacts"
 # do not generate digests as they'll be added at runtime from the operator (see CRW-1157)
 npx @eclipse-che/plugin-registry-generator@"${REGISTRY_GENERATOR_VERSION}" --root-folder:"$(pwd)" --output-folder:"$(pwd)/output" "${BUILD_FLAGS_ARRAY[@]}" --skip-digest-generation:true
 
-prepareOpenvsxPackagingAsset
-
 echo -e "\nTest entrypoint.sh"
 EMOJI_HEADER="-" EMOJI_PASS="[PASS]" EMOJI_FAIL="[FAIL]" "${base_dir}"/build/dockerfiles/test_entrypoint.sh
 
 if [ "${SKIP_OCI_IMAGE}" != "true" ]; then
+    detectBuilder
+    prepareOpenvsxPackagingAsset
     # Tar up the outputted files as the Dockerfile depends on them
     tar -czvf resources.tgz ./output/v3/
     echo "Build with $BUILDER $BUILD_COMMAND"
@@ -204,5 +202,5 @@ if [ "${SKIP_OCI_IMAGE}" != "true" ]; then
     cp "${DOCKERFILE}" ./builder.Dockerfile
     ${BUILDER} ${BUILD_COMMAND} --progress=plain -t "${IMAGE}" -f ./builder.Dockerfile .
     # Remove copied Dockerfile and tarred zip
-    rm ./builder.Dockerfile resources.tgz
+    rm ./builder.Dockerfile resources.tgz openvsx-server.tar.gz
 fi
