@@ -197,11 +197,23 @@ plugins:
       volumeMounts:
         - name: kube
           path: /home/theia/.kube
-    extension: https://open-vsx.org/api/redhat/vscode-openshift-connector/0.6.0/file/redhat.vscode-openshift-connector-0.6.0.vsix
+    extension: https://github.com/redhat-developer/devspaces-vscode-extensions/releases/download/v4003a95/vscode-openshift-connector-v0.6.0.vsix
     metaYaml:
       extraDependencies:
         - ms-kubernetes-tools/vscode-kubernetes-tools
         - redhat/vscode-yaml
+        - redhat/vscode-redhat-account
+  - repository:
+      url: 'https://github.com/redhat-developer/vscode-redhat-account'
+      revision: 0.0.6
+    sidecar:
+      image: "quay.io/devspaces/udi-rhel8:3.3"
+      name: vscode-redhat-account
+      memoryLimit: 1500Mi
+      memoryRequest: 20Mi
+      cpuLimit: 800m
+      cpuRequest: 30m
+    extension: https://open-vsx.org/api/redhat/vscode-redhat-account/0.0.6/file/redhat.vscode-redhat-account-0.0.6.vsix
   - repository:
       url: 'https://github.com/redhat-developer/vscode-yaml'
       revision: 0.14.0
