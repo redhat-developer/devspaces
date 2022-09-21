@@ -106,6 +106,9 @@ ENV LC_ALL=en_US.UTF-8 \
     PGDATA=/var/lib/pgsql/13/data/database \
     JAVA_HOME=
 
+ARG DS_BRANCH=devspaces-3-rhel-8
+ENV DS_BRANCH=${DS_BRANCH}
+
 RUN /usr/pgsql-13/bin/initdb && \
     # Add all vsix files to the database
     /usr/local/bin/import_vsix.sh && \
