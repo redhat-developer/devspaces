@@ -25,6 +25,9 @@ OPENVSX_ASSET_SRC=openvsx-server.tar.gz
 OPENVSX_ASSET_DEST="$base_dir"/openvsx-server.tar.gz
 OPENVSX_BUILDER_IMAGE=che-openvsx:latest
 
+NODEJS_ASSET_SRC=ovsx/nodejs.tar.gz
+NODEJS_ASSET_DEST="$base_dir"/nodejs.tar.gz
+NODEJS_BUILDER_IMAGE=che-ovsx:latest
 
 USAGE="
 Usage: ./build.sh [OPTIONS]
@@ -114,6 +117,25 @@ detectBuilder() {
     echo "Build with $BUILDER $BUILD_COMMAND"
 }
 
+prepareOVSXPackagingAsset() {
+    cd "$base_dir" || exit 1
+    if [ -f "$NODEJS_ASSET_DEST" ]; then
+        echo "Removing '$NODEJS_ASSET_DEST'"
+        rm "$NODEJS_ASSET_DEST"
+    fi
+
+    ${BUILDER} ${BUILD_COMMAND} --progress=plain -f build/dockerfiles/ovsx-installer.Dockerfile -t "$NODEJS_BUILDER_IMAGE" .
+    # shellcheck disable=SC2181
+    if [[ $? -eq 0 ]]; then
+        echo "Container '$NODEJS_BUILDER_IMAGE' successfully built"
+    else
+        echo "Container OVSX build failed"
+        exit 1
+    fi
+
+    extractFromContainer "$NODEJS_BUILDER_IMAGE" "$NODEJS_ASSET_SRC" "$NODEJS_ASSET_DEST"
+}
+
 prepareOpenvsxPackagingAsset() {
     cd "$base_dir" || exit 1
     if [ -f "$OPENVSX_ASSET_DEST" ]; then
@@ -193,6 +215,7 @@ EMOJI_HEADER="-" EMOJI_PASS="[PASS]" EMOJI_FAIL="[FAIL]" "${base_dir}"/build/doc
 
 if [ "${SKIP_OCI_IMAGE}" != "true" ]; then
     detectBuilder
+    prepareOVSXPackagingAsset
     prepareOpenvsxPackagingAsset
     # Tar up the outputted files as the Dockerfile depends on them
     tar -czvf resources.tgz ./output/v3/
@@ -202,5 +225,5 @@ if [ "${SKIP_OCI_IMAGE}" != "true" ]; then
     cp "${DOCKERFILE}" ./builder.Dockerfile
     ${BUILDER} ${BUILD_COMMAND} --progress=plain -t "${IMAGE}" -f ./builder.Dockerfile .
     # Remove copied Dockerfile and tarred zip
-    rm ./builder.Dockerfile resources.tgz openvsx-server.tar.gz
+    rm ./builder.Dockerfile resources.tgz openvsx-server.tar.gz nodejs.tar.gz
 fi

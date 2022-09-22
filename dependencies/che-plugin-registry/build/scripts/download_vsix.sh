@@ -36,4 +36,6 @@ for vsixFullName in $listOfVsixes; do
     vsixFilename="/tmp/vsix/${vsixFullName}-${vsixVersion}.vsix"
     # download the latest vsix file in the publisher directory
     curl -sL "${vsixDownloadLink}" -o "${vsixFilename}"
+
+    sed -i "s/$vsixFullName/$vsixFullName:$vsixVersion/g" /openvsx-server/openvsx-sync.json
 done;

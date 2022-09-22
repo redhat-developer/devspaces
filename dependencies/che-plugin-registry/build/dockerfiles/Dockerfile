@@ -42,6 +42,12 @@ COPY --chown=0:0 /openvsx-server.tar.gz .
 RUN tar -xf openvsx-server.tar.gz && rm openvsx-server.tar.gz
 # Copy our configuration file for OpenVSX server
 COPY /build/dockerfiles/application.yaml /mnt/rootfs/openvsx-server/config/
+RUN chmod -R g+rwx /mnt/rootfs/openvsx-server
+
+# Copy NodeJS and OVSX files
+RUN mkdir -p /mnt/rootfs/tmp/opt
+COPY --chown=0:0 /nodejs.tar.gz .
+RUN tar -xf nodejs.tar.gz -C /mnt/rootfs && rm nodejs.tar.gz
 
 # Apply permissions to later change these files on httpd and postgres
 RUN chmod g+rwx /mnt/rootfs/var/log/httpd && chmod g+rw /mnt/rootfs/run/httpd && chmod g+rw /mnt/rootfs/var/lib/pgsql
@@ -68,7 +74,6 @@ STOPSIGNAL SIGWINCH
 
 RUN mkdir -m 777 /mnt/rootfs/var/www/html/v3
 COPY /build/scripts/import_vsix.sh /mnt/rootfs/usr/local/bin
-COPY /build/scripts/download_vsix.sh /mnt/rootfs/usr/local/bin
 COPY /build/scripts/start_services.sh /mnt/rootfs/usr/local/bin/
 RUN chmod 755 /mnt/rootfs/usr/local/bin/*.sh
 COPY /build/dockerfiles/openvsx.conf /mnt/rootfs/etc/httpd/conf.d/
@@ -104,7 +109,8 @@ ENV LC_ALL=en_US.UTF-8 \
     LANG=en_US.UTF-8 \
     LANGUAGE=en_US.UTF-8 \
     PGDATA=/var/lib/pgsql/13/data/database \
-    JAVA_HOME=
+    PATH="/tmp/opt/nodejs/bin:$PATH" \
+    npm_config_cache=/tmp/opt/cache
 
 ARG DS_BRANCH=devspaces-3-rhel-8
 ENV DS_BRANCH=${DS_BRANCH}
