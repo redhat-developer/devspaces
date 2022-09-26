@@ -17,7 +17,7 @@ RUN yum install curl -y --nodocs
 USER 1001
 
 RUN mkdir -p /tmp/opt/nodejs && mkdir -p /tmp/otp/cache &&\
-    curl -sL https://nodejs.org/download/release/v14.18.3/node-v14.18.3-linux-x64.tar.gz | tar xzf - -C /tmp/opt/nodejs --strip-components=1
+    curl -sL https://nodejs.org/download/release/v16.17.1/node-v16.17.1-linux-x64.tar.gz | tar xzf - -C /tmp/opt/nodejs --strip-components=1
 
 # install the ovsx cli
 RUN npm install -g ovsx@0.5.0 && chmod -R g+rwX /tmp/opt/nodejs

@@ -62,16 +62,6 @@ RUN for f in "/mnt/rootfs/etc/passwd" "/mnt/rootfs/etc/group" "/mnt/rootfs/var/l
            chmod -R g+rwX ${f}; \
        done
 
-# Apply httpd config file
-RUN sed -i /mnt/rootfs/etc/httpd/conf/httpd.conf \
-    -e "s,Listen 80,Listen 8080," \
-    -e "s,logs/error_log,/dev/stderr," \
-    -e "s,logs/access_log,/dev/stdout," \
-    -e "s,AllowOverride None,AllowOverride All," && \
-    chmod a+rwX /mnt/rootfs/etc/httpd/conf /mnt/rootfs/etc/httpd/conf.d /mnt/rootfs/run/httpd /mnt/rootfs/etc/httpd/logs/
-
-STOPSIGNAL SIGWINCH
-
 RUN mkdir -m 777 /mnt/rootfs/var/www/html/v3
 COPY /build/scripts/import_vsix.sh /mnt/rootfs/usr/local/bin
 COPY /build/scripts/start_services.sh /mnt/rootfs/usr/local/bin/
@@ -80,9 +70,7 @@ COPY /build/dockerfiles/openvsx.conf /mnt/rootfs/etc/httpd/conf.d/
 
 COPY README.md .htaccess /mnt/rootfs/var/www/html/
 
-COPY ./build/scripts/*.sh /build/
-COPY che-*.yaml /build/
-COPY resources.tgz /build/
+COPY ./build/scripts/*.sh che-*.yaml resources.tgz /build/
 
 RUN tar -xvf /build/resources.tgz -C /build/
 RUN rm -rf /build/output/v3/che-theia-plugins.yaml /build/output/v3/che-editors.yaml /build/output/v3/che-plugins.yaml
@@ -93,17 +81,46 @@ RUN chmod -R g+rwX /build
 RUN cp -r /build/output/v3 /mnt/rootfs/var/www/html/
 COPY v3/plugins/ /mnt/rootfs/var/www/html/v3/plugins/
 COPY v3/images/*.png /mnt/rootfs/var/www/html/v3/images/
-COPY ./build/dockerfiles/rhel.entrypoint.sh ./build/dockerfiles/entrypoint.sh /mnt/rootfs/usr/local/bin/
+COPY ./build/dockerfiles/entrypoint.sh /mnt/rootfs/usr/local/bin/
 
 # Apply permissions to later change these files (entrypoint update_extension_vsx_references)
 RUN chmod g+rwx -R /mnt/rootfs/var/www/html/v3
 
-# Use ubi8-minimal image and then copy ubi fs
-FROM registry.access.redhat.com/ubi8/ubi-minimal:8.6-941
+# Build registry, copy ubi fs from builder
+# https://registry.access.redhat.com/ubi8/httpd-24
+FROM registry.access.redhat.com/ubi8/httpd-24:1-199 AS registry
+USER 0
 COPY --from=ubi-builder /mnt/rootfs/ /
 # Add UTF-8 for the database
 RUN localedef -f UTF-8 -i en_US en_US.UTF-8 && \
     usermod -a -G apache,root,postgres postgres
+
+# latest httpd container doesn't include ssl cert, so generate one
+RUN chmod +x /usr/share/container-scripts/httpd/pre-init/40-ssl-certs.sh && \
+    /usr/share/container-scripts/httpd/pre-init/40-ssl-certs.sh
+RUN \
+    yum -y -q update && \
+    yum -y -q clean all && rm -rf /var/cache/yum && \
+    echo "Installed Packages" && rpm -qa | sort -V && echo "End Of Installed Packages"
+
+RUN echo "<FilesMatch "\""^\\.ht"\"">" >> /etc/httpd/conf/httpd.conf && \
+    echo "Require all denied" >> /etc/httpd/conf/httpd.conf && \
+    echo "</FilesMatch>" >> /etc/httpd/conf/httpd.conf
+
+RUN sed -i /etc/httpd/conf.d/ssl.conf \
+    -e "s,SSLProtocol all -SSLv2,SSLProtocol all -SSLv3," \
+    -e "s,SSLCipherSuite HIGH:MEDIUM:!aNULL:!MD5,SSLCipherSuite HIGH:!aNULL:!MD5,"
+
+# Apply httpd config file
+RUN sed -i /etc/httpd/conf/httpd.conf \
+    -e "s,Listen 80,Listen 8080," \
+    -e "s,logs/error_log,/dev/stderr," \
+    -e "s,logs/access_log,/dev/stdout," \
+    -e "s,AllowOverride None,AllowOverride All," && \
+    chmod a+rwX /etc/httpd/conf /etc/httpd/conf.d /run/httpd /etc/httpd/logs/
+
+STOPSIGNAL SIGWINCH
+
 USER postgres
 ENV LC_ALL=en_US.UTF-8 \
     LANG=en_US.UTF-8 \
