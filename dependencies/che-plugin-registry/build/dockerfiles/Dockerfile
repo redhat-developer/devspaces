@@ -26,7 +26,8 @@ RUN /tmp/rhel.install.sh && rm -f /tmp/rhel.install.sh
 
 RUN mkdir -p /mnt/rootfs
 # Install httpd and postgresql
-RUN yum install -y https://download.postgresql.org/pub/repos/yum/reporpms/EL-8-x86_64/pgdg-redhat-repo-latest.noarch.rpm
+COPY --chown=0:0 /pgdg-redhat-repo-latest.noarch.rpm /tmp
+RUN yum localinstall /tmp/pgdg-redhat-repo-latest.noarch.rpm -y && rm /tmp/pgdg-redhat-repo-latest.noarch.rpm
 RUN yum install --installroot /mnt/rootfs postgresql13-libs postgresql13 postgresql13-server \
     java-11-openjdk coreutils-single glibc-minimal-langpack glibc-langpack-en langpacks-en glibc-locale-source httpd nc \
     net-tools procps vi curl wget tar gzip jq\

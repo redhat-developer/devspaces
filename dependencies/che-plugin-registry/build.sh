@@ -29,6 +29,10 @@ NODEJS_ASSET_SRC=ovsx/nodejs.tar.gz
 NODEJS_ASSET_DEST="$base_dir"/nodejs.tar.gz
 NODEJS_BUILDER_IMAGE=che-ovsx:latest
 
+POSTGRESQL_ASSET_SRC=pgdg-redhat-repo-latest.noarch.rpm
+POSTGRESQL_ASSET_DEST="$base_dir"/pgdg-redhat-repo-latest.noarch.rpm
+POSTGRESQL_BUILDER_IMAGE=postgresql:latest
+
 USAGE="
 Usage: ./build.sh [OPTIONS]
 Options:
@@ -136,6 +140,25 @@ prepareOVSXPackagingAsset() {
     extractFromContainer "$NODEJS_BUILDER_IMAGE" "$NODEJS_ASSET_SRC" "$NODEJS_ASSET_DEST"
 }
 
+preparePostgresqlRPM() {
+    cd "$base_dir" || exit 1
+    if [ -f "$POSTGRESQL_ASSET_DEST" ]; then
+        echo "Removing '$POSTGRESQL_ASSET_DEST'"
+        rm "$POSTGRESQL_ASSET_DEST"
+    fi
+
+    ${BUILDER} ${BUILD_COMMAND} --progress=plain -f build/dockerfiles/postgresql.Dockerfile -t "$POSTGRESQL_BUILDER_IMAGE" .
+    # shellcheck disable=SC2181
+    if [[ $? -eq 0 ]]; then
+        echo "Container '$POSTGRESQL_BUILDER_IMAGE' successfully built"
+    else
+        echo "Container POSTGRESQL build failed"
+        exit 1
+    fi
+
+    extractFromContainer "$POSTGRESQL_BUILDER_IMAGE" "$POSTGRESQL_ASSET_SRC" "$POSTGRESQL_ASSET_DEST"
+}
+
 prepareOpenvsxPackagingAsset() {
     cd "$base_dir" || exit 1
     if [ -f "$OPENVSX_ASSET_DEST" ]; then
@@ -217,6 +240,7 @@ if [ "${SKIP_OCI_IMAGE}" != "true" ]; then
     detectBuilder
     prepareOVSXPackagingAsset
     prepareOpenvsxPackagingAsset
+    preparePostgresqlRPM
     # Tar up the outputted files as the Dockerfile depends on them
     tar -czvf resources.tgz ./output/v3/
     echo "Build with $BUILDER $BUILD_COMMAND"
@@ -225,5 +249,5 @@ if [ "${SKIP_OCI_IMAGE}" != "true" ]; then
     cp "${DOCKERFILE}" ./builder.Dockerfile
     ${BUILDER} ${BUILD_COMMAND} --progress=plain -t "${IMAGE}" -f ./builder.Dockerfile .
     # Remove copied Dockerfile and tarred zip
-    rm ./builder.Dockerfile resources.tgz openvsx-server.tar.gz nodejs.tar.gz
+    rm ./builder.Dockerfile resources.tgz openvsx-server.tar.gz nodejs.tar.gz pgdg-redhat-repo-latest.noarch.rpm
 fi
