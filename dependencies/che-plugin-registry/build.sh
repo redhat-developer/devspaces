@@ -25,9 +25,9 @@ OPENVSX_ASSET_SRC=openvsx-server.tar.gz
 OPENVSX_ASSET_DEST="$base_dir"/openvsx-server.tar.gz
 OPENVSX_BUILDER_IMAGE=che-openvsx:latest
 
-NODEJS_ASSET_SRC=opt/app-root/src/nodejs.tar.gz
-NODEJS_ASSET_DEST="$base_dir"/nodejs.tar.gz
-NODEJS_BUILDER_IMAGE=che-ovsx:latest
+OVSX_ASSET_SRC=opt/app-root/src/nodejs.tar.gz
+OVSX_ASSET_DEST="$base_dir"/nodejs.tar.gz
+OVSX_BUILDER_IMAGE=che-ovsx:latest
 
 POSTGRESQL_ASSET_SRC=postgresql13.tar.gz
 POSTGRESQL_ASSET_DEST="$base_dir"/postgresql13.tar.gz
@@ -123,21 +123,21 @@ detectBuilder() {
 
 prepareOVSXPackagingAsset() {
     cd "$base_dir" || exit 1
-    if [ -f "$NODEJS_ASSET_DEST" ]; then
-        echo "Removing '$NODEJS_ASSET_DEST'"
-        rm "$NODEJS_ASSET_DEST"
+    if [ -f "$OVSX_ASSET_DEST" ]; then
+        echo "Removing '$OVSX_ASSET_DEST'"
+        rm "$OVSX_ASSET_DEST"
     fi
 
-    ${BUILDER} ${BUILD_COMMAND} --progress=plain -f build/dockerfiles/ovsx-installer.Dockerfile -t "$NODEJS_BUILDER_IMAGE" .
+    ${BUILDER} ${BUILD_COMMAND} --progress=plain -f build/dockerfiles/ovsx-installer.Dockerfile -t "$OVSX_BUILDER_IMAGE" .
     # shellcheck disable=SC2181
     if [[ $? -eq 0 ]]; then
-        echo "Container '$NODEJS_BUILDER_IMAGE' successfully built"
+        echo "Container '$OVSX_BUILDER_IMAGE' successfully built"
     else
         echo "Container OVSX build failed"
         exit 1
     fi
 
-    extractFromContainer "$NODEJS_BUILDER_IMAGE" "$NODEJS_ASSET_SRC" "$NODEJS_ASSET_DEST"
+    extractFromContainer "$OVSX_BUILDER_IMAGE" "$OVSX_ASSET_SRC" "$OVSX_ASSET_DEST"
 }
 
 preparePostgresqlRPM() {
@@ -208,7 +208,7 @@ extractFromContainer() {
 
 # delete images from the local cache
 cleanupImages () {
-    ${BUILDER} rmi -f "${NODEJS_BUILDER_IMAGE}" "${OPENVSX_BUILDER_IMAGE}" "${POSTGRESQL_BUILDER_IMAGE}" || true
+    ${BUILDER} rmi -f "${OVSX_BUILDER_IMAGE}" "${OPENVSX_BUILDER_IMAGE}" "${POSTGRESQL_BUILDER_IMAGE}" || true
 }
 
 # load VERSION.json file from ./ or  ../, or fall back to the internet if no local copy
