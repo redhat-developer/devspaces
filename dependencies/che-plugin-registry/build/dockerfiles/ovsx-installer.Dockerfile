@@ -22,8 +22,4 @@ RUN mkdir -p /tmp/opt/nodejs && mkdir -p /tmp/otp/cache &&\
 # install the ovsx cli
 RUN npm install -g ovsx@0.5.0 && chmod -R g+rwX /tmp/opt/nodejs
 RUN tar -czvf nodejs.tar.gz /tmp/opt/nodejs
-
-FROM registry.access.redhat.com/ubi8/ubi-micro:8.5-744
-WORKDIR /ovsx
-COPY --from=builder /opt/app-root/src/nodejs.tar.gz nodejs.tar.gz
-RUN chmod g+rwX /ovsx/nodejs.tar.gz
+RUN chmod g+rwX /opt/app-root/src/nodejs.tar.gz

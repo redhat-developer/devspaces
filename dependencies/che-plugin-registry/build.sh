@@ -25,7 +25,7 @@ OPENVSX_ASSET_SRC=openvsx-server.tar.gz
 OPENVSX_ASSET_DEST="$base_dir"/openvsx-server.tar.gz
 OPENVSX_BUILDER_IMAGE=che-openvsx:latest
 
-NODEJS_ASSET_SRC=ovsx/nodejs.tar.gz
+NODEJS_ASSET_SRC=opt/app-root/src/nodejs.tar.gz
 NODEJS_ASSET_DEST="$base_dir"/nodejs.tar.gz
 NODEJS_BUILDER_IMAGE=che-ovsx:latest
 
