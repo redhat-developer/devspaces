@@ -11,95 +11,120 @@
 #   IBM Corporation - implementation
 #
 
-# Builder: check meta.yamls and create index.json
-# https://registry.access.redhat.com/ubi8/python-38
-FROM registry.access.redhat.com/ubi8/python-38:1-100 as builder
-USER 0
+# UBI Builder
+# https://registry.access.redhat.com/ubi8/ubi
+FROM registry.access.redhat.com/ubi8/ubi:8.6-903.1661794351 as ubi-builder
 
 ARG BOOTSTRAP=false
 ENV BOOTSTRAP=${BOOTSTRAP}
 
-# to get all the python deps pre-fetched so we can build in Brew:
-# 1. extract files in the container to your local filesystem
-#    find v3 -type f -exec dos2unix {} \;
-
-# NOTE: used to be in /root/.local but now can be found in /opt/app-root/src/.local
-# CONTAINERNAME=pluginregistryoffline && \
-# docker build -t ${CONTAINERNAME} . --no-cache  --target builder \
-#   --build-arg BOOTSTRAP=true -f build/dockerfiles/Dockerfile 
-# mkdir -p /tmp/root-local/ && docker run --rm -v \
-#   /tmp/root-local/:/tmp/root-local/ ${CONTAINERNAME} /bin/bash \
-#   -c 'cd /opt/app-root/src/.local/ && cp -r bin/ lib/ /tmp/root-local/'
-# pushd /tmp/root-local >/dev/null && sudo tar czf root-local.tgz lib/ bin/ && popd >/dev/null && mv -f /tmp/root-local/root-local.tgz . && sudo rm -fr /tmp/root-local/
-
-# 2. then add it to dist-git so it's part of this repo
-#    rhpkg new-sources root-local.tgz 
-
-# built in Brew, use tarball in lookaside cache; built locally, comment this out
-# COPY root-local.tgz /tmp/root-local.tgz
-
-# NOTE: uncomment for local build. Must also set full registry path in FROM to registry.redhat.io or registry.access.redhat.com
-# enable rhel 7 or 8 content sets (from Brew) to resolve jq as rpm
 COPY ./build/dockerfiles/content_set*.repo /etc/yum.repos.d/
 COPY ./build/dockerfiles/rhel.install.sh /tmp
 RUN /tmp/rhel.install.sh && rm -f /tmp/rhel.install.sh
 
-COPY ./build/scripts/*.sh /build/
-COPY che-*.yaml /build/
-COPY resources.tgz /build/
-COPY ./v3/plugins/ /build/v3/plugins/
-COPY ./v3/images/*.png /build/v3/images/
-WORKDIR /build/
+RUN mkdir -p /mnt/rootfs
 
-RUN tar -xvf resources.tgz -C ./
-RUN rm -rf ./output/v3/che-theia-plugins.yaml ./output/v3/che-editors.yaml ./output/v3/che-plugins.yaml
-RUN ./swap_plugins_memory.sh ./output/v3
-RUN ./list_referenced_images.sh ./output/v3 --use-generated-content > /build/output/v3/external_images.txt && cat /build/output/v3/external_images.txt
-RUN chmod -R g+rwX /build
+RUN yum install --installroot /mnt/rootfs \
+    java-11-openjdk coreutils-single glibc-minimal-langpack glibc-langpack-en langpacks-en glibc-locale-source httpd nc \
+    net-tools procps vi curl wget tar gzip jq \
+    --releasever 8 --nodocs -y && \
+    yum --installroot /mnt/rootfs clean all && \
+    rm -rf /mnt/rootfs/var/cache/* /mnt/rootfs/var/log/dnf* /mnt/rootfs/var/log/yum.*
 
-# Build registry, copying meta.yamls and index.json from builder
-# https://registry.access.redhat.com/ubi8/httpd-24
-FROM registry.access.redhat.com/ubi8/httpd-24:1-199 AS registry
-USER 0
+# Add postgresql
+COPY --chown=0:0 /postgresql13.tar.gz /
+RUN tar -xf postgresql13.tar.gz && rm /postgresql13.tar.gz
 
-# latest httpd container doesn't include ssl cert, so generate one
-RUN chmod +x /usr/share/container-scripts/httpd/pre-init/40-ssl-certs.sh && \
-    /usr/share/container-scripts/httpd/pre-init/40-ssl-certs.sh
-RUN \
-    yum -y -q update && \
-    yum -y -q clean all && rm -rf /var/cache/yum && \
-    echo "Installed Packages" && rpm -qa | sort -V && echo "End Of Installed Packages"
+# Use the final root filesystem as default directory
+WORKDIR /mnt/rootfs
 
-RUN echo "<FilesMatch "\""^\\.ht"\"">" >> /etc/httpd/conf/httpd.conf && \
-    echo "Require all denied" >> /etc/httpd/conf/httpd.conf && \
-    echo "</FilesMatch>" >> /etc/httpd/conf/httpd.conf
+# Copy OpenVSX server files
+COPY --chown=0:0 /openvsx-server.tar.gz .
+RUN tar -xf openvsx-server.tar.gz && rm openvsx-server.tar.gz
+# Copy our configuration file for OpenVSX server
+COPY /build/dockerfiles/application.yaml /mnt/rootfs/openvsx-server/config/
+RUN chmod -R g+rwx /mnt/rootfs/openvsx-server
 
-RUN sed -i /etc/httpd/conf.d/ssl.conf \
-    -e "s,SSLProtocol all -SSLv2,SSLProtocol all -SSLv3," \
-    -e "s,SSLCipherSuite HIGH:MEDIUM:!aNULL:!MD5,SSLCipherSuite HIGH:!aNULL:!MD5,"
+# Copy NodeJS and OVSX files
+RUN mkdir -p /mnt/rootfs/tmp/opt
+COPY --chown=0:0 /nodejs.tar.gz .
+RUN tar -xf nodejs.tar.gz -C /mnt/rootfs && rm nodejs.tar.gz
 
-RUN sed -i /etc/httpd/conf/httpd.conf \
+# Apply permissions to later change these files on httpd and postgres
+RUN chmod g+rwx /mnt/rootfs/var/log/httpd && chmod g+rw /mnt/rootfs/run/httpd && chmod g+rw /mnt/rootfs/var/lib/pgsql
+
+# Create user template
+RUN cat /mnt/rootfs/etc/passwd | sed s#root:x.*#root:x:\${USER_ID}:\${GROUP_ID}::\${HOME}:/bin/bash#g > /mnt/rootfs/.passwd.template \
+    && cat /mnt/rootfs/etc/group | sed s#root:x:0:#root:x:0:0,\${USER_ID}:#g > /mnt/rootfs/.group.template
+
+# Change permissions
+RUN for f in "/mnt/rootfs/etc/passwd" "/mnt/rootfs/etc/group" "/mnt/rootfs/var/lib/pgsql" "/mnt/rootfs/usr/pgsql-13" "/mnt/rootfs/var/run/postgresql"; do\
+           chgrp -R 0 ${f} && \
+           chmod -R g+rwX ${f}; \
+       done
+
+# Apply httpd config file
+RUN sed -i /mnt/rootfs/etc/httpd/conf/httpd.conf \
     -e "s,Listen 80,Listen 8080," \
     -e "s,logs/error_log,/dev/stderr," \
     -e "s,logs/access_log,/dev/stdout," \
     -e "s,AllowOverride None,AllowOverride All," && \
-    chmod a+rwX /etc/httpd/conf /run/httpd /etc/httpd/logs/
+    chmod a+rwX /mnt/rootfs/etc/httpd/conf /mnt/rootfs/etc/httpd/conf.d /mnt/rootfs/run/httpd /mnt/rootfs/etc/httpd/logs/
+
 STOPSIGNAL SIGWINCH
+
+RUN mkdir -m 777 /mnt/rootfs/var/www/html/v3
+COPY /build/scripts/import_vsix.sh /mnt/rootfs/usr/local/bin
+COPY /build/scripts/start_services.sh /mnt/rootfs/usr/local/bin/
+RUN chmod 755 /mnt/rootfs/usr/local/bin/*.sh
+COPY /build/dockerfiles/openvsx.conf /mnt/rootfs/etc/httpd/conf.d/
+
+COPY README.md .htaccess /mnt/rootfs/var/www/html/
+
+COPY /build/scripts/*.sh resources.tgz che-*.yaml /build/
+
+RUN tar -xvf /build/resources.tgz -C /build/
+RUN rm -rf /build/output/v3/che-theia-plugins.yaml /build/output/v3/che-editors.yaml /build/output/v3/che-plugins.yaml
+RUN /build/swap_plugins_memory.sh /build/output/v3
+RUN /build/list_referenced_images.sh /build/output/v3 --use-generated-content > /build/output/v3/external_images.txt && cat /build/output/v3/external_images.txt
+RUN chmod -R g+rwX /build
+
+RUN cp -r /build/output/v3 /mnt/rootfs/var/www/html/
+COPY v3/plugins/ /mnt/rootfs/var/www/html/v3/plugins/
+COPY v3/images/*.png /mnt/rootfs/var/www/html/v3/images/
+COPY /build/dockerfiles/entrypoint.sh /mnt/rootfs/usr/local/bin/
+
+# Apply permissions to later change these files (entrypoint update_extension_vsx_references)
+RUN chmod g+rwx -R /mnt/rootfs/var/www/html/v3
+
+# Use ubi8-minimal image and then copy ubi fs
+FROM registry.access.redhat.com/ubi8/ubi-minimal:8.6-941
+COPY --from=ubi-builder /mnt/rootfs/ /
+# Add UTF-8 for the database
+RUN localedef -f UTF-8 -i en_US en_US.UTF-8 && \
+    useradd apache && \
+    usermod -a -G apache,root,postgres postgres
+USER postgres
+ENV LC_ALL=en_US.UTF-8 \
+    LANG=en_US.UTF-8 \
+    LANGUAGE=en_US.UTF-8 \
+    PGDATA=/var/lib/pgsql/13/data/database \
+    PATH="/tmp/opt/nodejs/bin:$PATH" \
+    npm_config_cache=/tmp/opt/cache
 
 ARG DS_BRANCH=devspaces-3-rhel-8
 ENV DS_BRANCH=${DS_BRANCH}
 
-WORKDIR /var/www/html
-
-RUN mkdir -m 777 /var/www/html/v3
-COPY README.md .htaccess /var/www/html/
-COPY --from=builder /build/output/v3 /var/www/html/v3
-COPY --from=builder /build/v3/plugins/ /var/www/html/v3/plugins/
-COPY --from=builder /build/v3/images/ /var/www/html/v3/images/
-COPY ./build/dockerfiles/rhel.entrypoint.sh ./build/dockerfiles/entrypoint.sh /usr/local/bin/
-RUN chmod g+rwX /usr/local/bin/entrypoint.sh /usr/local/bin/rhel.entrypoint.sh && \
-    chgrp -R 0 /var/www/html && chmod -R g+rw /var/www/html
+RUN /usr/pgsql-13/bin/initdb && \
+    # Add all vsix files to the database
+    /usr/local/bin/import_vsix.sh && \
+    # add permissions for anyuserid
+    chgrp -R 0 /var/lib/pgsql/13/data/database && \
+    #cleanup postgresql pid
+    rm /var/lib/pgsql/13/data/database/postmaster.pid && \
+    rm /var/run/postgresql/.s.PGSQL* && \
+    rm /tmp/.s.PGSQL* && \
+    chmod -R g+rwX /var/lib/pgsql/13/data/database && mv /var/lib/pgsql/13/data/database /var/lib/pgsql/13/data/old
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
-CMD ["/usr/local/bin/rhel.entrypoint.sh"]
 
 # append Brew metadata here

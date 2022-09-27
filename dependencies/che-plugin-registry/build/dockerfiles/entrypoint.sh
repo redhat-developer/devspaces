@@ -69,7 +69,33 @@ function run_main() {
     sed -i -E "s|image:.*machineexec-rhel8.*|image: $CHE_PLUGIN_REGISTRY_MACHINE_EXEC_IMAGE|" "${metas[@]}"
     fi
 
-    exec "${@}"
+    # Add current (arbitrary) user to /etc/passwd and /etc/group
+    if ! whoami &> /dev/null; then
+        if [ -w /etc/passwd ]; then
+            echo "${USER_NAME:-postgres}:x:$(id -u):0:${USER_NAME:-postgres} user:${HOME}:/sbin/nologin" >> /etc/passwd
+        fi
+    fi
+
+    # Check if START_OPENVSX has been defined
+    # if not, default to false
+    START_OPENVSX=${START_OPENVSX:-false}
+    
+    # start only if wanted
+    if [ "${START_OPENVSX}" == "true" ]; then
+      # change permissions
+      cp -r /var/lib/pgsql/13/data/old /var/lib/pgsql/13/data/database
+      rm -rf /var/lib/pgsql/13/data/old
+
+      # start postgres and openvsx
+      /usr/local/bin/start_services.sh
+    fi
+
+    # start httpd
+    if [[ -x /usr/sbin/httpd ]]; then
+      /usr/sbin/httpd -D FOREGROUND
+    elif [[ -x /usr/bin/run-httpd ]]; then
+      /usr/bin/run-httpd
+    fi
 }
 
 function extract_and_use_related_images_env_variables_with_image_digest_info() {
@@ -159,8 +185,8 @@ function extract_and_use_related_images_env_variables_with_image_digest_info() {
         # Try to read RELATED_IMAGES from devspaces.csv.yaml (this will not work in disconnected environment).
         # DS_BRANCH env descries the branch where related csv.yaml is located; 
         # default value is devspaces-3-rhel-8 but should be overwritten when built from a stable branch like devspaces-3.1-rhel-8
-        curl -sSLo csv.yaml https://raw.githubusercontent.com/redhat-developer/devspaces-images/"${DS_BRANCH}"/devspaces-operator-bundle-generated/manifests/devspaces.csv.yaml
-        readarray -t images < <(grep "image:" csv.yaml | sed -r "s;.*image:[[:space:]]*'?\"?([._:a-zA-Z0-9-]*/?[._a-zA-Z0-9-]*/[._a-zA-Z0-9-]*(@sha256)?:?[._a-zA-Z0-9-]*)'?\"?[[:space:]]*;\1;")
+        curl -sSLo /tmp/csv.yaml https://raw.githubusercontent.com/redhat-developer/devspaces-images/"${DS_BRANCH}"/devspaces-operator-bundle-generated/manifests/devspaces.csv.yaml
+        readarray -t images < <(grep "image:" /tmp/csv.yaml | sed -r "s;.*image:[[:space:]]*'?\"?([._:a-zA-Z0-9-]*/?[._a-zA-Z0-9-]*/[._a-zA-Z0-9-]*(@sha256)?:?[._a-zA-Z0-9-]*)'?\"?[[:space:]]*;\1;")
 
         if [[ -n "${#images[@]}" ]]; then
             declare -A imageMap
