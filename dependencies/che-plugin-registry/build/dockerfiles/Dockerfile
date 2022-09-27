@@ -77,7 +77,7 @@ COPY /build/dockerfiles/openvsx.conf /mnt/rootfs/etc/httpd/conf.d/
 
 COPY README.md .htaccess /mnt/rootfs/var/www/html/
 
-COPY ./build/scripts/*.sh resources.tgz che-*.yaml /build/
+COPY /build/scripts/*.sh resources.tgz che-*.yaml /build/
 
 RUN tar -xvf /build/resources.tgz -C /build/
 RUN rm -rf /build/output/v3/che-theia-plugins.yaml /build/output/v3/che-editors.yaml /build/output/v3/che-plugins.yaml
@@ -88,7 +88,7 @@ RUN chmod -R g+rwX /build
 RUN cp -r /build/output/v3 /mnt/rootfs/var/www/html/
 COPY v3/plugins/ /mnt/rootfs/var/www/html/v3/plugins/
 COPY v3/images/*.png /mnt/rootfs/var/www/html/v3/images/
-COPY ./build/dockerfiles/entrypoint.sh /mnt/rootfs/usr/local/bin/
+COPY /build/dockerfiles/entrypoint.sh /mnt/rootfs/usr/local/bin/
 
 # Apply permissions to later change these files (entrypoint update_extension_vsx_references)
 RUN chmod g+rwx -R /mnt/rootfs/var/www/html/v3
