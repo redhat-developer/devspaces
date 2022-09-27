@@ -206,6 +206,11 @@ extractFromContainer() {
     rm -rf "$tmpDir" || true
 }
 
+# delete images from the local cache
+cleanupImages () {
+    ${BUILDER} rmi -f "${NODEJS_BUILDER_IMAGE}" "${OPENVSX_BUILDER_IMAGE}" "${POSTGRESQL_BUILDER_IMAGE}" || true
+}
+
 # load VERSION.json file from ./ or  ../, or fall back to the internet if no local copy
 if [[ -f "${base_dir}/job-config.json" ]]; then
     versionjson="${base_dir}/job-config.json"
@@ -238,6 +243,12 @@ EMOJI_HEADER="-" EMOJI_PASS="[PASS]" EMOJI_FAIL="[FAIL]" "${base_dir}"/build/doc
 
 if [ "${SKIP_OCI_IMAGE}" != "true" ]; then
     detectBuilder
+
+    # remove any leftovers from failed builds
+    cleanupImages
+
+    # create images and tarballs
+    # TODO migrate this to cachito - https://issues.redhat.com/browse/CRW-3336
     prepareOVSXPackagingAsset
     prepareOpenvsxPackagingAsset
     preparePostgresqlRPM
@@ -250,4 +261,7 @@ if [ "${SKIP_OCI_IMAGE}" != "true" ]; then
     ${BUILDER} ${BUILD_COMMAND} --progress=plain -t "${IMAGE}" -f ./builder.Dockerfile .
     # Remove copied Dockerfile and tarred zip
     rm ./builder.Dockerfile resources.tgz openvsx-server.tar.gz nodejs.tar.gz postgresql13.tar.gz
+
+    # remove unneeded images from container registry
+    cleanupImages
 fi
