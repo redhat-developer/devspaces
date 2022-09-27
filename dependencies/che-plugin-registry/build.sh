@@ -29,8 +29,8 @@ NODEJS_ASSET_SRC=ovsx/nodejs.tar.gz
 NODEJS_ASSET_DEST="$base_dir"/nodejs.tar.gz
 NODEJS_BUILDER_IMAGE=che-ovsx:latest
 
-POSTGRESQL_ASSET_SRC=pgdg-redhat-repo-latest.noarch.rpm
-POSTGRESQL_ASSET_DEST="$base_dir"/pgdg-redhat-repo-latest.noarch.rpm
+POSTGRESQL_ASSET_SRC=postgresql13.tar.gz
+POSTGRESQL_ASSET_DEST="$base_dir"/postgresql13.tar.gz
 POSTGRESQL_BUILDER_IMAGE=postgresql:latest
 
 USAGE="
@@ -249,5 +249,5 @@ if [ "${SKIP_OCI_IMAGE}" != "true" ]; then
     cp "${DOCKERFILE}" ./builder.Dockerfile
     ${BUILDER} ${BUILD_COMMAND} --progress=plain -t "${IMAGE}" -f ./builder.Dockerfile .
     # Remove copied Dockerfile and tarred zip
-    rm ./builder.Dockerfile resources.tgz openvsx-server.tar.gz nodejs.tar.gz pgdg-redhat-repo-latest.noarch.rpm
+    rm ./builder.Dockerfile resources.tgz openvsx-server.tar.gz nodejs.tar.gz postgresql13.tar.gz
 fi
