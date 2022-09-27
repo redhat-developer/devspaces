@@ -18,6 +18,9 @@ FROM registry.access.redhat.com/ubi8/ubi:8.6-903.1661794351 as ubi-builder
 ARG BOOTSTRAP=false
 ENV BOOTSTRAP=${BOOTSTRAP}
 
+# built in Brew, use tarball in lookaside cache; built locally with BOOTSTRAP = true, comment this out to create the tarball
+# COPY root-local.tgz /tmp/root-local.tgz
+
 COPY ./build/dockerfiles/content_set*.repo /etc/yum.repos.d/
 COPY ./build/dockerfiles/rhel.install.sh /tmp
 RUN /tmp/rhel.install.sh && rm -f /tmp/rhel.install.sh
@@ -103,7 +106,11 @@ COPY --from=ubi-builder /mnt/rootfs/ /
 # Add UTF-8 for the database
 RUN localedef -f UTF-8 -i en_US en_US.UTF-8 && \
     useradd apache && \
-    usermod -a -G apache,root,postgres postgres
+    usermod -a -G apache,root,postgres postgres && \
+    microdnf -y update && \
+    microdnf -y clean all && rm -rf /var/cache/yum && \
+    echo "Installed Packages" && rpm -qa | sort -V && echo "End Of Installed Packages"
+
 USER postgres
 ENV LC_ALL=en_US.UTF-8 \
     LANG=en_US.UTF-8 \
