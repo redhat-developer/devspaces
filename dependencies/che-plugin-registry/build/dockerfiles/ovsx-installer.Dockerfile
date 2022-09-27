@@ -12,14 +12,15 @@ USER 0
 ENV PATH="/tmp/opt/nodejs/bin:$PATH" \
     npm_config_cache=/tmp/opt/cache
 
-RUN yum install curl -y --nodocs
+RUN yum install curl -y -q --nodocs
 
 USER 1001
 
 RUN mkdir -p /tmp/opt/nodejs && mkdir -p /tmp/otp/cache &&\
-    curl -sL https://nodejs.org/download/release/v16.17.1/node-v16.17.1-linux-x64.tar.gz | tar xzf - -C /tmp/opt/nodejs --strip-components=1
+    UNAME=$(uname -m); if [[ $UNAME == "x86_64" ]]; then UNAME="x64"; fi && \
+    curl -sSL "https://nodejs.org/download/release/v16.17.1/node-v16.17.1-linux-${UNAME}.tar.gz" | tar xzf - -C /tmp/opt/nodejs --strip-components=1
 
 # install the ovsx cli
 RUN npm install -g ovsx@0.5.0 && chmod -R g+rwX /tmp/opt/nodejs
-RUN tar -czvf nodejs.tar.gz /tmp/opt/nodejs
+RUN tar -czf nodejs.tar.gz /tmp/opt/nodejs
 RUN chmod g+rwX /opt/app-root/src/nodejs.tar.gz
