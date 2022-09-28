@@ -13,10 +13,28 @@
 
 # UBI Builder
 # https://registry.access.redhat.com/ubi8/ubi
-FROM registry.access.redhat.com/ubi8/ubi:8.6-903.1661794351 as ubi-builder
+FROM registry.access.redhat.com/ubi8/python-38:1-107 as ubi-builder
+USER 0
+WORKDIR /
 
 ARG BOOTSTRAP=false
 ENV BOOTSTRAP=${BOOTSTRAP}
+
+# to get all the python deps pre-fetched so we can build in Brew:
+# 1. extract files in the container to your local filesystem
+#    find v3 -type f -exec dos2unix {} \;
+
+# NOTE: used to be in /root/.local but now can be found in /opt/app-root/src/.local
+# CONTAINERNAME=pluginregistryoffline && \
+# docker build -t ${CONTAINERNAME} . --no-cache  --target builder \
+#   --build-arg BOOTSTRAP=true -f build/dockerfiles/Dockerfile 
+# mkdir -p /tmp/root-local/ && docker run --rm -v \
+#   /tmp/root-local/:/tmp/root-local/ ${CONTAINERNAME} /bin/bash \
+#   -c 'cd /opt/app-root/src/.local/ && cp -r bin/ lib/ /tmp/root-local/'
+# pushd /tmp/root-local >/dev/null && sudo tar czf root-local.tgz lib/ bin/ && popd >/dev/null && mv -f /tmp/root-local/root-local.tgz . && sudo rm -fr /tmp/root-local/
+
+# 2. then add it to dist-git so it's part of this repo
+#    rhpkg new-sources root-local.tgz 
 
 # built in Brew, use tarball in lookaside cache; built locally with BOOTSTRAP = true, comment this out to create the tarball
 # COPY root-local.tgz /tmp/root-local.tgz

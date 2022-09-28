@@ -13,6 +13,7 @@ set -x
 PYTHON_VERSION="3.8"
 
 DNF="dnf -q"
+# shellcheck disable=SC2086
 if [[ ! -x $(command -v $DNF || true) ]]; then   DNF="yum -q"
   if [[ ! -x $(command -v $DNF || true) ]]; then DNF=microdnf; fi
 fi
