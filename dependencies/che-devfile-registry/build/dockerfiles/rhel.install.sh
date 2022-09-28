@@ -53,7 +53,7 @@ if [[ -f /tmp/root-local.tgz ]] || [[ ${BOOTSTRAP} == "true" ]]; then
         tar xf /tmp/root-local.tgz -C /opt/app-root/src/.local
         rm -fr /tmp/root-local.tgz
     fi
-    /usr/bin/python -m pip install --user yq
+    /usr/bin/python -m pip install --user yq argcomplete
     # NOTE: used to be in /root/.local but now can be found in /opt/app-root/src/.local
     # shellcheck disable=SC2043
     for d in /opt/app-root/src/.local; do
