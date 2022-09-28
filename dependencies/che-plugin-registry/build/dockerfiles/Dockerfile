@@ -13,7 +13,7 @@
 
 # UBI Builder
 # https://registry.access.redhat.com/ubi8/ubi
-FROM registry.access.redhat.com/ubi8/python-38:1-107 as ubi-builder
+FROM registry.access.redhat.com/ubi8/python-38:1-107 as builder
 USER 0
 WORKDIR /
 
@@ -118,10 +118,13 @@ COPY /build/dockerfiles/entrypoint.sh /mnt/rootfs/usr/local/bin/
 # Apply permissions to later change these files (entrypoint update_extension_vsx_references)
 RUN chmod g+rwx -R /mnt/rootfs/var/www/html/v3
 
+# Delete files that should not be copied into the final image
+RUN rm -rf /mnt/rootfs/etc/hosts
+
 # Use ubi8-minimal image and then copy ubi fs
 FROM registry.access.redhat.com/ubi8/ubi-minimal:8.6-941
 USER 0
-COPY --chown=0:0 --from=ubi-builder /mnt/rootfs/ /
+COPY --chown=0:0 --from=builder /mnt/rootfs/ /
 # Add UTF-8 for the database
 RUN localedef -f UTF-8 -i en_US en_US.UTF-8 && \
     useradd apache && \
