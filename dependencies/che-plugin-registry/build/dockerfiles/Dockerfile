@@ -120,7 +120,8 @@ RUN chmod g+rwx -R /mnt/rootfs/var/www/html/v3
 
 # Use ubi8-minimal image and then copy ubi fs
 FROM registry.access.redhat.com/ubi8/ubi-minimal:8.6-941
-COPY --from=ubi-builder /mnt/rootfs/ /
+USER 0
+COPY --chown=0:0 --from=ubi-builder /mnt/rootfs/ /
 # Add UTF-8 for the database
 RUN localedef -f UTF-8 -i en_US en_US.UTF-8 && \
     useradd apache && \
