@@ -9,7 +9,7 @@
 #
 set -x
 
-# must be the same version in 
+# set same version in Dockefiles, eg., base image ubi8/python-38
 PYTHON_VERSION="3.8"
 
 DNF="dnf -q"

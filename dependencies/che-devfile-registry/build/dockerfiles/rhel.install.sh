@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Copyright (c) 2018-2021 Red Hat, Inc.
+# Copyright (c) 2018-2022 Red Hat, Inc.
 # This program and the accompanying materials are made
 # available under the terms of the Eclipse Public License 2.0
 # which is available at https://www.eclipse.org/legal/epl-2.0/
@@ -9,8 +9,11 @@
 #
 set -x
 
-DNF=dnf
-if [[ ! -x $(command -v $DNF || true) ]]; then   DNF=yum
+# set same version in Dockefiles, eg., base image ubi8/python-38
+PYTHON_VERSION="3.8"
+
+DNF="dnf -q"
+if [[ ! -x $(command -v $DNF || true) ]]; then   DNF="yum -q"
   if [[ ! -x $(command -v $DNF || true) ]]; then DNF=microdnf; fi
 fi
 
@@ -26,8 +29,10 @@ max_parallel_downloads=10
 minrate=1
 retries=20
 timeout=60
-" > /etc/yum.conf 
-${DNF} install -y findutils bash wget yum git gzip tar jq python3-six python3-pip skopeo --exclude=unbound-libs || exit 1
+" > /etc/yum.conf
+if [[ $DNF != "microdnf" ]]; then $DNF -y module reset python${PYTHON_VERSION/./}; $DNF -y module enable python${PYTHON_VERSION/./}:${PYTHON_VERSION}; fi
+${DNF} -y install npm findutils bash wget yum git gzip tar jq skopeo \
+    python${PYTHON_VERSION/./} python${PYTHON_VERSION/./}-devel python${PYTHON_VERSION/./}-setuptools python${PYTHON_VERSION/./}-pip --exclude=unbound-libs || exit 1
 
 # shellcheck disable=SC2010
 PYTHON_BIN=$(ls -1 /usr/bin | grep -E "^python3.[0-9]$" | sort -V | tail -1 || true) # 3.6, 3.7, 3.8, etc.
@@ -64,7 +69,7 @@ if [[ -f /tmp/root-local.tgz ]] || [[ ${BOOTSTRAP} == "true" ]]; then
     done
     chmod -c +x /usr/local/bin/*
 else
-    /usr/bin/python -m pip install yq
+    /usr/bin/"${PYTHON_BIN}" -m pip install yq
 fi
 # test install worked
 for d in python yq jq; do echo -n "$d: "; $d --version; done

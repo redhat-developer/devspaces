@@ -6,7 +6,7 @@
 # SPDX-License-Identifier: EPL-2.0
 #
 
-FROM registry.access.redhat.com/ubi8/python-38:1-100 as builder
+FROM registry.access.redhat.com/ubi8/python-38:1-107 as builder
 USER 0
 
 ENV PATH="/tmp/opt/nodejs/bin:$PATH" \
