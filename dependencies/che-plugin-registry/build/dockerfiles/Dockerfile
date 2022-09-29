@@ -114,7 +114,6 @@ RUN \
     chmod g+rwx -R /var/www/html/v3 && \
     # Delete files that should not be copied into the final image
     rm -rf /build
-
 RUN \
     # Add UTF-8 for the database
     localedef -f UTF-8 -i en_US en_US.UTF-8 && \
