@@ -42,7 +42,7 @@ CHANNEL_DS="stable"
 # if using --fast or --quay flag, this will be changed to quay.io
 # if using --brew flag, this will be changed to brew.registry.redhat.io
 # if you want your own registry here, use --icsp flag to specify it
-ICSP_FLAG=""
+ICSP_FLAGs=""
 
 errorf() {
   echo -e "${RED}Error: $1${NC}"
@@ -175,7 +175,7 @@ preflight() {
   fi
   
   # optional requirement (for brew.registry secret)
-  if [[ "${ICSP_FLAG}" == "--icsp brew.registry.redhat.io" ]] && [[ ! $(command -v podman) ]]; then 
+  if [[ "${ICSP_FLAGs}" == *"--icsp brew.registry.redhat.io"* ]] && [[ ! $(command -v podman) ]]; then 
     errorf "Please install podman to use brew.registry.redhat.io, or use --quay flag to install from quay.io"
     exit 1
   fi
@@ -195,7 +195,7 @@ preflight() {
     errorf "Not logged into an OpenShift cluster"
     exit 1
   fi
-  if [[ "${ICSP_FLAG}" == "--icsp brew.registry.redhat.io" ]]; then 
+  if [[ "${ICSP_FLAGs}" == *"--icsp brew.registry.redhat.io"* ]]; then 
     TOKENS=$(curl --negotiate -u : https://employee-token-manager.registry.redhat.com/v1/tokens -s)
     if [[ $TOKENS == *"no authorization context provided"* ]]; then 
       errorf "No registry token configured -- make sure you've run kinit and have a token set up according to"
@@ -235,12 +235,12 @@ while [[ "$#" -gt 0 ]]; do
           DSC=$(command -v dsc)
         fi
       fi; shift 1;;
-    '--iib-dwo') IIB_DWO="$2"; if [[ $IIB_DWO == "quay.io/devspaces/iib"* ]]; then CHANNEL_DWO="fast"; ICSP_FLAG="--icsp quay.io"; fi; shift 1;;
-    '--iib-ds')  IIB_DS="$2";  if [[ $IIB_DS == "quay.io/devspaces/iib"* ]];  then CHANNEL_DS="fast";  ICSP_FLAG="--icsp quay.io"; fi; shift 1;;
-    '--quay'|'--fast')   IIB_DS="quay.io/devspaces/iib"; CHANNEL_DS="fast"; CHANNEL_DWO="fast"; ICSP_FLAG="--icsp quay.io";;
-    '--latest'|'--next') IIB_DS="quay.io/devspaces/iib"; CHANNEL_DS="fast"; CHANNEL_DWO="fast"; ICSP_FLAG="--icsp quay.io"; DS_VERSION="${1//--/}";;
-    '--brew') ICSP_FLAG="--icsp brew.registry.redhat.io";;
-    '--icsp') ICSP_FLAG="--icsp $2"; shift 1;;
+    '--iib-dwo') IIB_DWO="$2"; if [[ $IIB_DWO == "quay.io/devspaces/iib"* ]]; then CHANNEL_DWO="fast"; ICSP_FLAGs="${ICSP_FLAGs} --icsp quay.io"; fi; shift 1;;
+    '--iib-ds')  IIB_DS="$2";  if [[ $IIB_DS == "quay.io/devspaces/iib"* ]];  then CHANNEL_DS="fast";  ICSP_FLAGs="${ICSP_FLAGs} --icsp quay.io"; fi; shift 1;;
+    '--quay'|'--fast')   IIB_DS="quay.io/devspaces/iib"; CHANNEL_DS="fast"; CHANNEL_DWO="fast"; ICSP_FLAGs="${ICSP_FLAGs} --icsp quay.io";;
+    '--latest'|'--next') IIB_DS="quay.io/devspaces/iib"; CHANNEL_DS="fast"; CHANNEL_DWO="fast"; ICSP_FLAGs="${ICSP_FLAGs} --icsp quay.io"; DS_VERSION="${1//--/}";;
+    '--brew') ICSP_FLAGs="${ICSP_FLAGs} --icsp brew.registry.redhat.io";;
+    '--icsp') ICSP_FLAGs="${ICSP_FLAGs} --icsp $2"; shift 1;;
     '--delete-before') DELETE_BEFORE="true";;
     '--get-url') GET_URL="true";;
     '--no-get-url') GET_URL="false";;
@@ -259,7 +259,7 @@ echo "Detected OpenShift: v$OPENSHIFT_VER $OPENSHIFT_ARCH"
 if [[ $DWO_VERSION ]]; then
   if [[ ! $IIB_DWO ]] && [[ $DWO_VERSION ]]; then # compute the latest IIB for the DWO version passed in
     IIB_DWO=$("$SCRIPT_DIR"/getLatestIIBs.sh --dwo -t "$DWO_VERSION" -o "$OPENSHIFT_VER" -q)
-    if [[ ! $ICSP_FLAG ]]; then ICSP_FLAG="--icsp brew.registry.redhat.io"; fi
+    if [[ ! $ICSP_FLAGs ]]; then ICSP_FLAGs="${ICSP_FLAGs} --icsp brew.registry.redhat.io"; fi
     if [[ $IIB_DWO ]]; then
       echo "[INFO] Found latest Dev Workspace Operator IIB $IIB_DWO - installing from $CHANNEL_DWO channel..."
     else
@@ -276,12 +276,12 @@ if [[ $IIB_DWO ]]; then
     --iib "$IIB_DWO" \
     --install-operator "devworkspace-operator" \
     --channel "$CHANNEL_DWO" \
-    --namespace "$OLM_NAMESPACE" ${ICSP_FLAG}
+    --namespace "$OLM_NAMESPACE" ${ICSP_FLAGs}
 fi
 
 if [[ ! $IIB_DS ]]; then
   IIB_DS=$("$SCRIPT_DIR"/getLatestIIBs.sh --ds -t "$DS_VERSION"  -o "$OPENSHIFT_VER" -q)
-  if [[ ! $ICSP_FLAG ]]; then ICSP_FLAG="--icsp brew.registry.redhat.io"; fi
+  if [[ ! $ICSP_FLAGs ]]; then ICSP_FLAGs="${ICSP_FLAGs} --icsp brew.registry.redhat.io"; fi
   if [[ $IIB_DS ]]; then 
     echo "[INFO] Found latest Dev Spaces IIB $IIB_DS - installing from $CHANNEL_DS channel..."
   else
@@ -300,7 +300,7 @@ fi
   --iib "$IIB_DS" \
   --install-operator "devspaces" \
   --channel "$CHANNEL_DS" \
-  --namespace "$OLM_NAMESPACE" ${ICSP_FLAG}
+  --namespace "$OLM_NAMESPACE" ${ICSP_FLAGs}
 
 elapsed=0
 inc=3
@@ -493,4 +493,4 @@ Workspace base domain...... $(echo "$CHECLUSTER_JSON" | jq -r '.status.workspace
 "
 
 # cleanup temp yaml files
-rm -f $TMPDIR
+rm -fr $TMPDIR

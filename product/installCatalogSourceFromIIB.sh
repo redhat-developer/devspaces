@@ -27,14 +27,14 @@ OLM_CHANNEL="fast"
 # if using --fast or --quay flag, this will be changed to quay.io
 # if using --brew flag, this will be changed to brew.registry.redhat.io
 # if you want your own registry here, use --icsp flag to specify it
-ICSP_URL=""
+ICSP_URLs=""
 
 errorf() {
   echo -e "${RED}$1${NC}"
 }
 
 usage() {
-  cat <<EOF
+echo "
 This script streamlines testing IIB images by configuring an OpenShift cluster to enable it to use the specified IIB image 
 in a catalog. The CatalogSource is created in the openshift-operators namespaces unless '--namespace' is specified, and
 is named 'iib-testingoperatorName', eg., iib-testingdevspaces or iib-testingdevworkspace-operator
@@ -42,7 +42,7 @@ is named 'iib-testingoperatorName', eg., iib-testingdevspaces or iib-testingdevw
 Note: to compute the latest IIB image for a given operator, use ./getLatestIIBs.sh.
 
 If IIB installation fails, see https://docs.engineering.redhat.com/display/CFC/Test and
-follow steps in section "Adding Brew Pull Secret"
+follow steps in section 'Adding Brew Pull Secret'
 
 Usage: 
   $0 [OPTIONS]
@@ -68,8 +68,7 @@ DevWorkspace Operator Example:
 Dev Spaces Example:
   $0 \\
   --iib registry-proxy.engineering.redhat.com/rh-osbs/iib:987654 --install-operator devspaces --channel stable
-
-EOF
+"
 }
 
 while [[ "$#" -gt 0 ]]; do
@@ -79,9 +78,9 @@ while [[ "$#" -gt 0 ]]; do
     '--channel') OLM_CHANNEL="$2"; shift 1;;
     '--manual-updates') INSTALL_PLAN_APPROVAL="Manual";;
     '--disable-default-sources') DISABLE_CATALOGSOURCES="true";;
-    '--icsp') ICSP_URL="$2"; shift 1;;
-    '--quay') ICSP_URL="quay.io";;
-    '--brew') ICSP_URL="brew.registry.redhat.io";;
+    '--icsp') ICSP_URLs="${ICSP_URLs} $2"; shift 1;;
+    '--quay') ICSP_URLs="${ICSP_URLs} quay.io";;
+    '--brew') ICSP_URLs="${ICSP_URLs} brew.registry.redhat.io";;
     '-n'|'--namespace') NAMESPACE="$2"; shift 1;;
     '-h'|'--help') usage; exit 0;;
     *) echo "[ERROR] Unknown parameter is used: $1."; usage; exit 1;;
@@ -162,10 +161,12 @@ if ! oc get project "$NAMESPACE" > /dev/null 2>&1; then
   oc new-project "$NAMESPACE"
 fi
 
+TMPDIR=$(mktemp -d)
+
 # Add ImageContentSourcePolicy to let us pull the IIB
-if [[ $ICSP_URL ]]; then
-  cat <<EOF | oc apply -f -
-apiVersion: operator.openshift.io/v1alpha1
+if [[ $ICSP_URLs ]]; then
+  for ICSP_URL in $ICSP_URLs; do
+    echo "apiVersion: operator.openshift.io/v1alpha1
 kind: ImageContentSourcePolicy
 metadata:
   name: ${ICSP_URL//./-}
@@ -252,13 +253,13 @@ spec:
   - mirrors:
     - registry.redhat.io/devspaces/devspaces-operator-bundle
     source: registry-proxy.engineering.redhat.com/rh-osbs/devspaces-operator-bundle
-EOF
+" > $TMPDIR/ImageContentSourcePolicy_${ICSP_URL}.yml && oc apply -f $TMPDIR/ImageContentSourcePolicy_${ICSP_URL}.yml
+  done
 fi
 
 # Add CatalogSource for the IIB
 # Throw it in openshift-operators to make life a little easier for now
-cat <<EOF | oc apply -f - 
-apiVersion: operators.coreos.com/v1alpha1
+echo "apiVersion: operators.coreos.com/v1alpha1
 kind: CatalogSource
 metadata:
   name: iib-testing${TO_INSTALL}
@@ -268,7 +269,7 @@ spec:
   image: ${IIB_IMAGE}
   publisher: IIB testing ${TO_INSTALL}
   displayName: IIB testing catalog ${TO_INSTALL} 
-EOF
+" > $TMPDIR/CatalogSource.yml && oc apply -f $TMPDIR/CatalogSource.yml
 
 if [ -z "$TO_INSTALL" ]; then
   echo "Done"
@@ -278,18 +279,16 @@ fi
 # Create OperatorGroup to allow installing all-namespaces operators in $NAMESPACE
 if [[ "$NAMESPACE" != "openshift-operators" ]]; then
   echo "Using custom namespace for install; creating OperatorGroup to allow all-namespaces operators to be installed"
-cat <<EOF | oc apply -f -
-apiVersion: operators.coreos.com/v1
+echo "apiVersion: operators.coreos.com/v1
 kind: OperatorGroup
 metadata:
   name: $NAMESPACE-operators
   namespace: $NAMESPACE
-EOF
+" > $TMPDIR/OperatorGroup.yml && oc apply -f $TMPDIR/OperatorGroup.yml
 fi
 
 # Create subscription for operator
-cat <<EOF | oc apply -f -
-apiVersion: operators.coreos.com/v1alpha1
+echo "apiVersion: operators.coreos.com/v1alpha1
 kind: Subscription
 metadata:
   name: $TO_INSTALL
@@ -300,4 +299,7 @@ spec:
   name: $TO_INSTALL
   source: iib-testing${TO_INSTALL}
   sourceNamespace: $NAMESPACE
-EOF
+" > $TMPDIR/Subscription.yml && oc apply -f $TMPDIR/Subscription.yml
+
+# cleanup temp yaml files
+rm -fr $TMPDIR
