@@ -119,7 +119,7 @@ COPY /build/dockerfiles/entrypoint.sh /mnt/rootfs/usr/local/bin/
 RUN chmod g+rwx -R /mnt/rootfs/var/www/html/v3
 
 # Delete files that should not be copied into the final image
-RUN rm -rf /mnt/rootfs/etc/hosts
+RUN rm -rf /mnt/rootfs/etc/hosts /usr/share/i18n/ /usr/lib/locale
 
 # Use ubi8-minimal image and then copy ubi fs
 FROM registry.access.redhat.com/ubi8/ubi-minimal:8.6-941
@@ -144,16 +144,6 @@ ENV LC_ALL=en_US.UTF-8 \
 ARG DS_BRANCH=devspaces-3-rhel-8
 ENV DS_BRANCH=${DS_BRANCH}
 
-RUN /usr/pgsql-13/bin/initdb && \
-    # Add all vsix files to the database
-    /usr/local/bin/import_vsix.sh && \
-    # add permissions for anyuserid
-    chgrp -R 0 /var/lib/pgsql/13/data/database && \
-    #cleanup postgresql pid
-    rm /var/lib/pgsql/13/data/database/postmaster.pid && \
-    rm /var/run/postgresql/.s.PGSQL* && \
-    rm /tmp/.s.PGSQL* && \
-    chmod -R g+rwX /var/lib/pgsql/13/data/database && mv /var/lib/pgsql/13/data/database /var/lib/pgsql/13/data/old
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 
 # append Brew metadata here
