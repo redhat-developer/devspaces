@@ -43,95 +43,83 @@ COPY ./build/dockerfiles/content_set*.repo /etc/yum.repos.d/
 COPY ./build/dockerfiles/rhel.install.sh /tmp
 RUN /tmp/rhel.install.sh && rm -f /tmp/rhel.install.sh
 
-RUN mkdir -p /mnt/rootfs
-
-RUN yum install --installroot /mnt/rootfs \
+RUN yum -q -y install \
     java-11-openjdk coreutils-single glibc-minimal-langpack glibc-langpack-en langpacks-en glibc-locale-source httpd nc \
     net-tools procps vi curl wget tar gzip jq \
-    --releasever 8 --nodocs -y && \
-    yum --installroot /mnt/rootfs clean all && \
-    rm -rf /mnt/rootfs/var/cache/* /mnt/rootfs/var/log/dnf* /mnt/rootfs/var/log/yum.*
+    --releasever 8 --nodocs && \
+    yum -q -y update && yum -q -y clean all && rm -rf /var/cache/yum /var/log/dnf* /var/log/yum.* && \
+    echo "Installed Packages" && rpm -qa | sort -V && echo "End Of Installed Packages"
 
 # Add postgresql
 COPY --chown=0:0 /postgresql13.tar.gz /
 RUN tar -xf postgresql13.tar.gz && rm /postgresql13.tar.gz
 
 # Use the final root filesystem as default directory
-WORKDIR /mnt/rootfs
+WORKDIR /
 
 # Copy OpenVSX server files
 COPY --chown=0:0 /openvsx-server.tar.gz .
 RUN tar -xf openvsx-server.tar.gz && rm openvsx-server.tar.gz
 # Copy our configuration file for OpenVSX server
-COPY /build/dockerfiles/application.yaml /mnt/rootfs/openvsx-server/config/
-RUN chmod -R g+rwx /mnt/rootfs/openvsx-server
+COPY /build/dockerfiles/application.yaml /openvsx-server/config/
+RUN chmod -R g+rwx /openvsx-server
 
 # Copy NodeJS and OVSX files
-RUN mkdir -p /mnt/rootfs/tmp/opt
+RUN mkdir -p /tmp/opt
 COPY --chown=0:0 /nodejs.tar.gz .
-RUN tar -xf nodejs.tar.gz -C /mnt/rootfs && rm nodejs.tar.gz
+RUN tar -xf nodejs.tar.gz -C / && rm nodejs.tar.gz
 
-# Apply permissions to later change these files on httpd and postgres
-RUN chmod g+rwx /mnt/rootfs/var/log/httpd && chmod g+rw /mnt/rootfs/run/httpd && chmod g+rw /mnt/rootfs/var/lib/pgsql
-
-# Create user template
-RUN cat /mnt/rootfs/etc/passwd | sed s#root:x.*#root:x:\${USER_ID}:\${GROUP_ID}::\${HOME}:/bin/bash#g > /mnt/rootfs/.passwd.template \
-    && cat /mnt/rootfs/etc/group | sed s#root:x:0:#root:x:0:0,\${USER_ID}:#g > /mnt/rootfs/.group.template
-
-# Change permissions
-RUN for f in "/mnt/rootfs/etc/passwd" "/mnt/rootfs/etc/group" "/mnt/rootfs/var/lib/pgsql" "/mnt/rootfs/usr/pgsql-13" "/mnt/rootfs/var/run/postgresql"; do\
+RUN \
+    # Apply permissions to later change these files on httpd and postgres
+    chmod g+rwx /var/log/httpd && chmod g+rw /run/httpd && chmod g+rw /var/lib/pgsql && \
+    # Create user template
+    cat /etc/passwd | sed s#root:x.*#root:x:\${USER_ID}:\${GROUP_ID}::\${HOME}:/bin/bash#g > /.passwd.template \
+    && cat /etc/group | sed s#root:x:0:#root:x:0:0,\${USER_ID}:#g > /.group.template && \
+    # Change permissions
+    for f in "/etc/passwd" "/etc/group" "/var/lib/pgsql" "/usr/pgsql-13" "/var/run/postgresql"; do \
            chgrp -R 0 ${f} && \
            chmod -R g+rwX ${f}; \
-       done
-
-# Apply httpd config file
-RUN sed -i /mnt/rootfs/etc/httpd/conf/httpd.conf \
-    -e "s,Listen 80,Listen 8080," \
-    -e "s,logs/error_log,/dev/stderr," \
-    -e "s,logs/access_log,/dev/stdout," \
-    -e "s,AllowOverride None,AllowOverride All," && \
-    chmod a+rwX /mnt/rootfs/etc/httpd/conf /mnt/rootfs/etc/httpd/conf.d /mnt/rootfs/run/httpd /mnt/rootfs/etc/httpd/logs/
+    done && \
+    # Apply httpd config file
+    sed -i /etc/httpd/conf/httpd.conf \
+        -e "s,Listen 80,Listen 8080," \
+        -e "s,logs/error_log,/dev/stderr," \
+        -e "s,logs/access_log,/dev/stdout," \
+        -e "s,AllowOverride None,AllowOverride All," && \
+    chmod a+rwX /etc/httpd/conf /etc/httpd/conf.d /run/httpd /etc/httpd/logs/ && \
+    mkdir -m 777 /var/www/html/v3
 
 STOPSIGNAL SIGWINCH
 
-RUN mkdir -m 777 /mnt/rootfs/var/www/html/v3
-COPY /build/scripts/import_vsix.sh /mnt/rootfs/usr/local/bin
-COPY /build/scripts/start_services.sh /mnt/rootfs/usr/local/bin/
-RUN chmod 755 /mnt/rootfs/usr/local/bin/*.sh
-COPY /build/dockerfiles/openvsx.conf /mnt/rootfs/etc/httpd/conf.d/
-
-COPY README.md .htaccess /mnt/rootfs/var/www/html/
-
+COPY /build/scripts/import_vsix.sh /usr/local/bin
+COPY /build/scripts/start_services.sh /usr/local/bin/
+COPY /build/dockerfiles/openvsx.conf /etc/httpd/conf.d/
+COPY README.md .htaccess /var/www/html/
 COPY /build/scripts/*.sh resources.tgz che-*.yaml /build/
 
-RUN tar -xvf /build/resources.tgz -C /build/
-RUN rm -rf /build/output/v3/che-theia-plugins.yaml /build/output/v3/che-editors.yaml /build/output/v3/che-plugins.yaml
-RUN /build/swap_plugins_memory.sh /build/output/v3
-RUN /build/list_referenced_images.sh /build/output/v3 --use-generated-content > /build/output/v3/external_images.txt && cat /build/output/v3/external_images.txt
-RUN chmod -R g+rwX /build
+RUN chmod 755 /usr/local/bin/*.sh && \
+    tar -xvf /build/resources.tgz -C /build/ && \
+    rm -rf /build/output/v3/che-theia-plugins.yaml /build/output/v3/che-editors.yaml /build/output/v3/che-plugins.yaml && \
+    /build/swap_plugins_memory.sh /build/output/v3 && \
+    /build/list_referenced_images.sh /build/output/v3 --use-generated-content > /build/output/v3/external_images.txt && cat /build/output/v3/external_images.txt && \
+    chmod -R g+rwX /build && \
+    cp -r /build/output/v3 /var/www/html/
 
-RUN cp -r /build/output/v3 /mnt/rootfs/var/www/html/
-COPY v3/plugins/ /mnt/rootfs/var/www/html/v3/plugins/
-COPY v3/images/*.png /mnt/rootfs/var/www/html/v3/images/
-COPY /build/dockerfiles/entrypoint.sh /mnt/rootfs/usr/local/bin/
+COPY v3/plugins/ /var/www/html/v3/plugins/
+COPY v3/images/*.png /var/www/html/v3/images/
+COPY /build/dockerfiles/entrypoint.sh /usr/local/bin/
 
-# Apply permissions to later change these files (entrypoint update_extension_vsx_references)
-RUN chmod g+rwx -R /mnt/rootfs/var/www/html/v3
+RUN \
+    # Apply permissions to later change these files (entrypoint update_extension_vsx_references)
+    chmod g+rwx -R /var/www/html/v3 && \
+    # Delete files that should not be copied into the final image
+    rm -rf /build
 
-# Delete files that should not be copied into the final image
-RUN rm -rf /mnt/rootfs/etc/hosts /usr/share/i18n/ /usr/lib/locale
-
-# Use ubi8-minimal image and then copy ubi fs
-FROM registry.access.redhat.com/ubi8/ubi-minimal:8.6-941
-USER 0
-COPY --chown=0:0 --from=builder /mnt/rootfs/ /
-# Add UTF-8 for the database
-RUN localedef -f UTF-8 -i en_US en_US.UTF-8
-RUN useradd apache
-RUN usermod -a -G apache,root,postgres postgres
-RUN microdnf -y update && \
-    microdnf -y clean all && rm -rf /var/cache/yum && \
-    echo "Installed Packages" && rpm -qa | sort -V && echo "End Of Installed Packages"
+RUN \
+    # Add UTF-8 for the database
+    localedef -f UTF-8 -i en_US en_US.UTF-8 && \
+    # set up apache and postgres users
+    useradd apache && usermod -a -G apache,root,postgres postgres
 
 USER postgres
 ENV LC_ALL=en_US.UTF-8 \
