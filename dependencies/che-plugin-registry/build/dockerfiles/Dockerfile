@@ -70,7 +70,7 @@ COPY --chown=0:0 /nodejs.tar.gz .
 RUN tar -xf nodejs.tar.gz -C / && rm nodejs.tar.gz
 
 RUN \
-    # Apply permissions to later change these files on httpd and postgres
+    # Apply permissions to later change these files on httpd
     chmod g+rwx /var/log/httpd && chmod g+rw /run/httpd && \
     # Create user template
     cat /etc/passwd | sed s#root:x.*#root:x:\${USER_ID}:\${GROUP_ID}::\${HOME}:/bin/bash#g > /.passwd.template \
@@ -118,8 +118,8 @@ RUN \
 RUN \
     # Add UTF-8 for the database
     localedef -f UTF-8 -i en_US en_US.UTF-8 && \
-    # set up apache and postgres users
-    useradd apache && usermod -a -G apache,root,postgres postgres
+    # set up postgres user
+    usermod -a -G apache,root,postgres postgres
 
 USER postgres
 ENV LC_ALL=en_US.UTF-8 \
