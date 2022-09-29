@@ -126,10 +126,10 @@ FROM registry.access.redhat.com/ubi8/ubi-minimal:8.6-941
 USER 0
 COPY --chown=0:0 --from=builder /mnt/rootfs/ /
 # Add UTF-8 for the database
-RUN localedef -f UTF-8 -i en_US en_US.UTF-8 && \
-    useradd apache && \
-    usermod -a -G apache,root,postgres postgres && \
-    microdnf -y update && \
+RUN localedef -f UTF-8 -i en_US en_US.UTF-8
+RUN useradd apache
+RUN usermod -a -G apache,root,postgres postgres
+RUN microdnf -y update && \
     microdnf -y clean all && rm -rf /var/cache/yum && \
     echo "Installed Packages" && rpm -qa | sort -V && echo "End Of Installed Packages"
 
