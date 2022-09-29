@@ -49,8 +49,7 @@ errorf() {
 }
 
 usage() {
-  cat <<EOF
-
+  echo "
 This script will
 0. Log into the specified cluster using kubeadmin user & cluster API URL, if provided
 1. Get the latest IIB image for specified Dev Spaces version and detected OpenShift version
@@ -107,8 +106,7 @@ Options:
   --dsc               : Optional. To install with dsc, use '--dsc 3.1.0-CI' or '--dsc 3.0.0-GA'
                       : Use '--dsc local' to search PATH for installed dsc, or use '--dsc /path/to/dsc/bin/'
   --delete-before     : Before installing with dsc, delete using server:delete -y. Will not delete namespaces.
-
-EOF
+"
 }
 
 # Check we're logged into everything we need
@@ -325,6 +323,8 @@ if [[ "$CREATE_CHECLUSTER" == "false" ]]; then
   exit 0
 fi
 
+TMPDIR=$(mktemp -d)
+
 # add admin user + user{1..5} to cluster
 createUsers() {
   if [[ $CREATE_USERS == "true" ]]; then
@@ -341,8 +341,7 @@ createUsers() {
     htpwd_encoded="$(cat $HTPASSWD_FILE | base64 -w 0)"
     rm -f $HTPASSWD_FILE
 
-    cat <<EOF | oc apply -f -
-apiVersion: v1
+    echo "apiVersion: v1
 kind: Secret
 metadata:
   creationTimestamp: null
@@ -350,7 +349,7 @@ metadata:
   namespace: openshift-config
 data: 
   htpasswd: ${htpwd_encoded}
-EOF
+" > $TMPDIR/Secret.yml && oc apply -f $TMPDIR/Secret.yml
 
     oc patch oauths cluster --type merge -p '
 spec:
@@ -395,8 +394,7 @@ else
   # TODO: add support for custom patch YAML
   if [ -z "$CHECLUSTER_PATH" ]; then
     oc create namespace $NAMESPACE || true
-    cat <<EOF | oc apply -f -
-apiVersion: org.eclipse.che/v2
+    echo "apiVersion: org.eclipse.che/v2
 kind: CheCluster
 metadata:
   name: devspaces
@@ -425,18 +423,16 @@ spec:
     storage:
       pvcStrategy: common
   networking: {}
-EOF
+" > $TMPDIR/CheCluster.yml && oc apply -f $TMPDIR/CheCluster.yml
   else
     oc apply -f "$CHECLUSTER_PATH"
   fi
-
-cat <<EOF | oc apply -f - 
-apiVersion: operators.coreos.com/v1
+  echo "apiVersion: operators.coreos.com/v1
 kind: OperatorGroup
 metadata:
   name: devspaces-operator
   namespace: ${NAMESPACE}
-EOF
+" > $TMPDIR/OperatorGroup.yml && oc apply -f $TMPDIR/OperatorGroup.yml
 fi
 
 if [[ $GET_URL != "true" ]]; then
@@ -477,6 +473,7 @@ fi
 
 if [[ "$STATUS" != "Established" ]]; then
   errorf "Dev Spaces did not become available before timeout expired"
+  errorf "Temporary yml files are in $TMPDIR"
 else
   echo "Dev Spaces is installed \o/"
   echo
@@ -488,10 +485,12 @@ oc patch checluster/devspaces -n "${NAMESPACE}" --type='merge' -p '{"spec":{"com
 
 CHECLUSTER_JSON=$(oc get checlusters devspaces -n "$NAMESPACE" -o json)
 # note due to redirection bug https://github.com/eclipse/che/issues/21416 append trailing slashes just in case
-cat <<EOF
+echo "
 Dashboard URL.............. $(echo "$CHECLUSTER_JSON" | jq -r '.status.cheURL')/
 Devfile registry URL....... $(echo "$CHECLUSTER_JSON" | jq -r '.status.devfileRegistryURL')/
 Plugin registry URL........ $(echo "$CHECLUSTER_JSON" | jq -r '.status.pluginRegistryURL')/
 Workspace base domain...... $(echo "$CHECLUSTER_JSON" | jq -r '.status.workspaceBaseDomain')
-EOF
-echo
+"
+
+# cleanup temp yaml files
+rm -f $TMPDIR
