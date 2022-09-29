@@ -71,12 +71,12 @@ RUN tar -xf nodejs.tar.gz -C / && rm nodejs.tar.gz
 
 RUN \
     # Apply permissions to later change these files on httpd and postgres
-    chmod g+rwx /var/log/httpd && chmod g+rw /run/httpd && chmod g+rw /var/lib/pgsql && \
+    chmod g+rwx /var/log/httpd && chmod g+rw /run/httpd && \
     # Create user template
     cat /etc/passwd | sed s#root:x.*#root:x:\${USER_ID}:\${GROUP_ID}::\${HOME}:/bin/bash#g > /.passwd.template \
     && cat /etc/group | sed s#root:x:0:#root:x:0:0,\${USER_ID}:#g > /.group.template && \
     # Change permissions
-    for f in "/etc/passwd" "/etc/group" "/var/lib/pgsql" "/usr/pgsql-13" "/var/run/postgresql"; do \
+    for f in "/etc/passwd" "/etc/group"; do \
            chgrp -R 0 ${f} && \
            chmod -R g+rwX ${f}; \
     done && \
@@ -114,6 +114,7 @@ RUN \
     chmod g+rwx -R /var/www/html/v3 && \
     # Delete files that should not be copied into the final image
     rm -rf /build
+
 RUN \
     # Add UTF-8 for the database
     localedef -f UTF-8 -i en_US en_US.UTF-8 && \
