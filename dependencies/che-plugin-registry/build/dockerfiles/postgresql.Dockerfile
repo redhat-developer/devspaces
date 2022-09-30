@@ -7,18 +7,18 @@
 #
 
 FROM registry.access.redhat.com/ubi8/ubi:8.6-943 as builder
-
+USER 0
 RUN yum install -y -q curl && \
     cd /tmp; for arch in x86_64 ppc64le; do \
         for rpm in postgresql13 postgresql13-libs postgresql13-server; do \
             curl -SLO https://download.postgresql.org/pub/repos/yum/13/redhat/rhel-8-${arch}/${rpm}-13.8-1PGDG.rhel8.${arch}.rpm; \
         done && \
-        tar -czvf postgresql13-${arch}.tar.gz /tmp/*${arch}.rpm; \
+        tar -czvf /postgresql13-${arch}.tar.gz /tmp/*${arch}.rpm; \
     done && cd /tmp; for arch in s390x; do \
         # can't find postgresql13-libs so don't install it and see what happens!
         # https://rpmfind.net/linux/rpm2html/search.php?query=postgresql13-libs&submit=Search+...&system=&arch=s390x
         for rpm in postgresql13 postgresql13-server; do \
             curl -SLO https://rpmfind.net/linux/opensuse/ports/zsystems/tumbleweed/repo/oss/${arch}/${rpm}-13.8-1.1.${arch}.rpm; \
         done && \
-        tar -czvf postgresql13-${arch}.tar.gz /tmp/*${arch}.rpm; \
+        tar -czvf /postgresql13-${arch}.tar.gz /tmp/*${arch}.rpm; \
     done
