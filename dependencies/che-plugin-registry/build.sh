@@ -260,7 +260,7 @@ if [ "${SKIP_OCI_IMAGE}" != "true" ]; then
     cp "${DOCKERFILE}" ./builder.Dockerfile
     ${BUILDER} ${BUILD_COMMAND} --progress=plain -t "${IMAGE}" -f ./builder.Dockerfile .
     # Remove copied Dockerfile and tarred zip
-    rm ./builder.Dockerfile resources.tgz openvsx-server.tar.gz nodejs.tar.gz postgresql13.tar.gz
+    rm ./builder.Dockerfile resources.tgz openvsx-server.tar.gz nodejs.tar.gz postgresql13-$(uname -m).tar.gz
 
     # remove unneeded images from container registry
     cleanupImages
