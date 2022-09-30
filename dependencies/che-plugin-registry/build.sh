@@ -29,8 +29,8 @@ OVSX_ASSET_SRC=opt/app-root/src/nodejs.tar.gz
 OVSX_ASSET_DEST="$base_dir"/nodejs.tar.gz
 OVSX_BUILDER_IMAGE=che-ovsx:latest
 
-POSTGRESQL_ASSET_SRC=postgresql13.tar.gz
-POSTGRESQL_ASSET_DEST="$base_dir"/postgresql13.tar.gz
+POSTGRESQL_ASSET_SRC=postgresql13-$(uname -m).tar.gz
+POSTGRESQL_ASSET_DEST="$base_dir"/postgresql13-$(uname -m).tar.gz
 POSTGRESQL_BUILDER_IMAGE=postgresql:latest
 
 USAGE="
