@@ -49,12 +49,9 @@ RUN yum -q -y install \
     --releasever 8 --nodocs
 
 # Add postgresql
-COPY --chown=0:0 /postgresql13.tar.gz /
-RUN tar -xf postgresql13.tar.gz && rm /postgresql13.tar.gz
-RUN yum localinstall -y /tmp/postgresql13-13.8-1PGDG.rhel8.x86_64.rpm \
-    /tmp/postgresql13-libs-13.8-1PGDG.rhel8.x86_64.rpm \
-    /tmp/postgresql13-server-13.8-1PGDG.rhel8.x86_64.rpm && \
-    rm /tmp/*.rpm
+COPY --chown=0:0 /postgresql13-$(uname -m).tar.gz /
+RUN tar -xf postgresql13-$(uname -m).tar.gz && rm /postgresql13-$(uname -m).tar.gz && \
+    yum localinstall -y /tmp/postgresql13*.rpm && rm /tmp/*.rpm
 RUN for f in "/var/lib/pgsql" "/usr/pgsql-13"; do \
         chgrp -R 0 ${f} && \
         chmod -R g+rwX ${f}; \
