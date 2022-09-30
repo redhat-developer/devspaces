@@ -83,10 +83,6 @@ function run_main() {
     # start only if wanted
     if [ "${START_OPENVSX}" == "true" ]; then
       /usr/pgsql-13/bin/initdb
-      for f in "/var/lib/pgsql" "/usr/pgsql-13" "/var/run/postgresql"; do \
-        chgrp -R 0 ${f} && \
-        chmod -R g+rwX ${f}; \
-      done
       /usr/local/bin/import_vsix.sh
     fi
 

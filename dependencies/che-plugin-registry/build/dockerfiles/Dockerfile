@@ -13,7 +13,7 @@
 
 # UBI Builder
 # https://registry.access.redhat.com/ubi8/ubi
-FROM registry.access.redhat.com/ubi8/python-38:1-107 as builder
+FROM registry.access.redhat.com/ubi8/httpd-24:1-199
 USER 0
 WORKDIR /
 
@@ -44,15 +44,23 @@ COPY ./build/dockerfiles/rhel.install.sh /tmp
 RUN /tmp/rhel.install.sh && rm -f /tmp/rhel.install.sh
 
 RUN yum -q -y install \
-    java-11-openjdk coreutils-single glibc-minimal-langpack glibc-langpack-en langpacks-en glibc-locale-source httpd nc \
+    java-11-openjdk coreutils-single glibc-minimal-langpack glibc-langpack-en langpacks-en glibc-locale-source nc \
     net-tools procps vi curl wget tar gzip jq \
-    --releasever 8 --nodocs && \
-    yum -q -y update && yum -q -y clean all && rm -rf /var/cache/yum /var/log/dnf* /var/log/yum.* && \
-    echo "Installed Packages" && rpm -qa | sort -V && echo "End Of Installed Packages"
+    --releasever 8 --nodocs
 
 # Add postgresql
 COPY --chown=0:0 /postgresql13.tar.gz /
 RUN tar -xf postgresql13.tar.gz && rm /postgresql13.tar.gz
+RUN yum localinstall -y /tmp/postgresql13-13.8-1PGDG.rhel8.x86_64.rpm \
+    /tmp/postgresql13-libs-13.8-1PGDG.rhel8.x86_64.rpm \
+    /tmp/postgresql13-server-13.8-1PGDG.rhel8.x86_64.rpm && \
+    rm /tmp/*.rpm
+RUN for f in "/var/lib/pgsql" "/usr/pgsql-13"; do \
+        chgrp -R 0 ${f} && \
+        chmod -R g+rwX ${f}; \
+    done
+RUN yum -q -y update && yum -q -y clean all && rm -rf /var/cache/yum /var/log/dnf* /var/log/yum.* && \
+    echo "Installed Packages" && rpm -qa | sort -V && echo "End Of Installed Packages"
 
 # Use the final root filesystem as default directory
 WORKDIR /
@@ -79,17 +87,7 @@ RUN \
     for f in "/etc/passwd" "/etc/group"; do \
            chgrp -R 0 ${f} && \
            chmod -R g+rwX ${f}; \
-    done && \
-    # Apply httpd config file
-    sed -i /etc/httpd/conf/httpd.conf \
-        -e "s,Listen 80,Listen 8080," \
-        -e "s,logs/error_log,/dev/stderr," \
-        -e "s,logs/access_log,/dev/stdout," \
-        -e "s,AllowOverride None,AllowOverride All," && \
-    chmod a+rwX /etc/httpd/conf /etc/httpd/conf.d /run/httpd /etc/httpd/logs/ && \
-    mkdir -m 777 /var/www/html/v3
-
-STOPSIGNAL SIGWINCH
+    done
 
 COPY /build/scripts/import_vsix.sh /usr/local/bin
 COPY /build/scripts/start_services.sh /usr/local/bin/
@@ -121,6 +119,28 @@ RUN \
     # set up postgres user
     usermod -a -G apache,root,postgres postgres
 
+# latest httpd container doesn't include ssl cert, so generate one
+RUN chmod +x /usr/share/container-scripts/httpd/pre-init/40-ssl-certs.sh && \
+    /usr/share/container-scripts/httpd/pre-init/40-ssl-certs.sh
+
+RUN echo "<FilesMatch "\""^\\.ht"\"">" >> /etc/httpd/conf/httpd.conf && \
+    echo "Require all denied" >> /etc/httpd/conf/httpd.conf && \
+    echo "</FilesMatch>" >> /etc/httpd/conf/httpd.conf
+
+RUN sed -i /etc/httpd/conf.d/ssl.conf \
+    -e "s,SSLProtocol all -SSLv2,SSLProtocol all -SSLv3," \
+    -e "s,SSLCipherSuite HIGH:MEDIUM:!aNULL:!MD5,SSLCipherSuite HIGH:!aNULL:!MD5,"
+
+# Apply httpd config file
+RUN sed -i /etc/httpd/conf/httpd.conf \
+    -e "s,Listen 80,Listen 8080," \
+    -e "s,logs/error_log,/dev/stderr," \
+    -e "s,logs/access_log,/dev/stdout," \
+    -e "s,AllowOverride None,AllowOverride All," && \
+    chmod a+rwX /etc/httpd/conf /etc/httpd/conf.d /run/httpd /etc/httpd/logs/
+
+STOPSIGNAL SIGWINCH
+
 USER postgres
 ENV LC_ALL=en_US.UTF-8 \
     LANG=en_US.UTF-8 \
@@ -128,6 +148,8 @@ ENV LC_ALL=en_US.UTF-8 \
     PGDATA=/var/lib/pgsql/13/data/database \
     PATH="/tmp/opt/nodejs/bin:$PATH" \
     npm_config_cache=/tmp/opt/cache
+
+RUN chmod 777 /var/run/postgresql
 
 ARG DS_BRANCH=devspaces-3-rhel-8
 ENV DS_BRANCH=${DS_BRANCH}
