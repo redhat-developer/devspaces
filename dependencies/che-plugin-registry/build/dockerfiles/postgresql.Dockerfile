@@ -13,11 +13,11 @@ RUN yum install -y -q curl && \
         for rpm in postgresql13 postgresql13-libs postgresql13-server; do \
             curl -sSLO https://download.postgresql.org/pub/repos/yum/13/redhat/rhel-8-${arch}/${rpm}-13.8-1PGDG.rhel8.${arch}.rpm; \
         done && \
-        tar -czvf postgresql13-${arch}.tar.gz /tmp; \
+        tar -czvf postgresql13-${arch}.tar.gz /tmp/*${arch}.rpm; \
     done && \
     cd /tmp; for arch in s390x; do \
         for rpm in postgresql13 postgresql13-libs postgresql13-server; do \
             curl -sSLO https://rpmfind.net/linux/opensuse/ports/zsystems/tumbleweed/repo/oss/${arch}/${rpm}-13.8-1.1.${arch}.rpm; \
         done && \
-        tar -czvf postgresql13-${arch}.tar.gz /tmp; \
+        tar -czvf postgresql13-${arch}.tar.gz /tmp/*${arch}.rpm; \
     done
