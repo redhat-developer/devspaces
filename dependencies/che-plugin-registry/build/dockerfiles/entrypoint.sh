@@ -82,7 +82,7 @@ function run_main() {
     
     # start only if wanted
     if [ "${START_OPENVSX}" == "true" ]; then
-      /usr/pgsql-13/bin/initdb
+      initdb
       /usr/local/bin/import_vsix.sh
     fi
 
