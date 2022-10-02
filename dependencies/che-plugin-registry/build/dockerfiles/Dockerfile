@@ -11,9 +11,7 @@
 #   IBM Corporation - implementation
 #
 
-# UBI Builder
-# https://registry.access.redhat.com/ubi8/ubi
-FROM registry.access.redhat.com/ubi8/httpd-24:1-199
+FROM registry.redhat.io/rhel8/postgresql-13:1-78
 USER 0
 WORKDIR /
 
@@ -44,20 +42,9 @@ COPY ./build/dockerfiles/rhel.install.sh /tmp
 RUN /tmp/rhel.install.sh && rm -f /tmp/rhel.install.sh
 
 RUN yum -q -y install \
-    java-11-openjdk coreutils-single glibc-minimal-langpack glibc-langpack-en langpacks-en glibc-locale-source nc \
+    java-11-openjdk httpd coreutils-single glibc-minimal-langpack glibc-langpack-en langpacks-en glibc-locale-source nc \
     net-tools procps vi curl wget tar gzip jq \
     --releasever 8 --nodocs
-
-# Add postgresql
-COPY --chown=0:0 /postgresql13*.tar.gz /
-RUN tar -xf postgresql13-$(uname -m).tar.gz && rm /postgresql13-$(uname -m).tar.gz && \
-    yum localinstall -y /tmp/postgresql13*.rpm && rm /tmp/*.rpm
-RUN for f in "/var/lib/pgsql" "/usr/pgsql-13"; do \
-        chgrp -R 0 ${f} && \
-        chmod -R g+rwX ${f}; \
-    done
-RUN yum -q -y update && yum -q -y clean all && rm -rf /var/cache/yum /var/log/dnf* /var/log/yum.* && \
-    echo "Installed Packages" && rpm -qa | sort -V && echo "End Of Installed Packages"
 
 # Use the final root filesystem as default directory
 WORKDIR /
@@ -115,18 +102,6 @@ RUN \
     localedef -f UTF-8 -i en_US en_US.UTF-8 && \
     # set up postgres user
     usermod -a -G apache,root,postgres postgres
-
-# latest httpd container doesn't include ssl cert, so generate one
-RUN chmod +x /usr/share/container-scripts/httpd/pre-init/40-ssl-certs.sh && \
-    /usr/share/container-scripts/httpd/pre-init/40-ssl-certs.sh
-
-RUN echo "<FilesMatch "\""^\\.ht"\"">" >> /etc/httpd/conf/httpd.conf && \
-    echo "Require all denied" >> /etc/httpd/conf/httpd.conf && \
-    echo "</FilesMatch>" >> /etc/httpd/conf/httpd.conf
-
-RUN sed -i /etc/httpd/conf.d/ssl.conf \
-    -e "s,SSLProtocol all -SSLv2,SSLProtocol all -SSLv3," \
-    -e "s,SSLCipherSuite HIGH:MEDIUM:!aNULL:!MD5,SSLCipherSuite HIGH:!aNULL:!MD5,"
 
 # Apply httpd config file
 RUN sed -i /etc/httpd/conf/httpd.conf \
