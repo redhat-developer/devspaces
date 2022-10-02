@@ -49,15 +49,15 @@ fi
 
 # install yq (depends on jq and pyyaml - if jq and pyyaml not already installed, this will try to compile it)
 if [[ -f /tmp/root-local.tgz ]] || [[ ${BOOTSTRAP} == "true" ]]; then
-    mkdir -p /opt/app-root/src/.local
+    mkdir -p /var/lib/pgsql/.local
     if [[ -f /tmp/root-local.tgz ]]; then
-        tar xf /tmp/root-local.tgz -C /opt/app-root/src/.local
+        tar xf /tmp/root-local.tgz -C /var/lib/pgsql/.local
         rm -fr /tmp/root-local.tgz
     fi
     /usr/bin/python -m pip install --user yq argcomplete
-    # NOTE: used to be in /root/.local but now can be found in /opt/app-root/src/.local
+    # NOTE: used to be in /root/.local but now can be found in ~/.local
     # shellcheck disable=SC2043
-    for d in /opt/app-root/src/.local; do
+    for d in /var/lib/pgsql/.local; do
         if [[ -d ${d} ]]; then
             cp ${d}/bin/yq /usr/local/bin/
             mkdir -p ${d}/lib/"${PYTHON_BIN}"/site-packages/
