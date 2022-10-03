@@ -37,5 +37,6 @@ for vsixFullName in $listOfVsixes; do
     # download the latest vsix file in the publisher directory
     curl -sL "${vsixDownloadLink}" -o "${vsixFilename}"
 
-    sed -i "s/$vsixFullName/$vsixFullName:$vsixVersion/g" /openvsx-server/openvsx-sync.json
+    # shellcheck disable=SC2016
+    sed -i "s/\"$vsixFullName\"/\"$vsixFullName:$vsixVersion\"/g" /openvsx-server/openvsx-sync.json
 done;
