@@ -143,7 +143,7 @@ prepareOpenvsxPackagingAsset() {
         rm "$OPENVSX_ASSET_DEST"
     fi
 
-    ${BUILDER} ${BUILD_COMMAND} --progress=plain -f build/dockerfiles/openvsx-builder.Dockerfile -t "$OPENVSX_BUILDER_IMAGE" .
+    ${BUILDER} ${BUILD_COMMAND} --progress=plain --no-cache -f build/dockerfiles/openvsx-builder.Dockerfile -t "$OPENVSX_BUILDER_IMAGE" .
     # shellcheck disable=SC2181
     if [[ $? -eq 0 ]]; then
         echo "Container '$OPENVSX_BUILDER_IMAGE' successfully built"
