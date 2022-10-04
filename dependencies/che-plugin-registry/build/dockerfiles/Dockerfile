@@ -121,7 +121,17 @@ ENV LC_ALL=en_US.UTF-8 \
     PATH="/tmp/opt/nodejs/bin:$PATH" \
     npm_config_cache=/tmp/opt/cache
 
-RUN chmod 777 /var/run/postgresql
+RUN chmod 777 /var/run/postgresql && \
+    initdb && \
+    # Add all vsix files to the database
+    /usr/local/bin/import_vsix.sh && \
+    # add permissions for anyuserid
+    chgrp -R 0 /var/lib/pgsql/13/data/database && \
+    #cleanup postgresql pid
+    rm /var/lib/pgsql/13/data/database/postmaster.pid && \
+    rm /var/run/postgresql/.s.PGSQL* && \
+    rm /tmp/.s.PGSQL* && \
+    chmod -R g+rwX /var/lib/pgsql/13/data/database && mv /var/lib/pgsql/13/data/database /var/lib/pgsql/13/data/old
 
 ARG DS_BRANCH=devspaces-3-rhel-8
 ENV DS_BRANCH=${DS_BRANCH}

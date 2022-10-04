@@ -82,8 +82,12 @@ function run_main() {
     
     # start only if wanted
     if [ "${START_OPENVSX}" == "true" ]; then
-      initdb
-      /usr/local/bin/import_vsix.sh
+      # change permissions
+      cp -r /var/lib/pgsql/13/data/old /var/lib/pgsql/13/data/database
+      rm -rf /var/lib/pgsql/13/data/old
+
+      # start postgres and openvsx
+      /usr/local/bin/start_services.sh
     fi
 
     # start httpd

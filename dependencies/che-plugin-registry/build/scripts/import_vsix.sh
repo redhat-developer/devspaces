@@ -45,3 +45,6 @@ done;
 
 # disable the personal access token
 psql -c "UPDATE personal_access_token SET active = false;"
+
+# cleanup
+rm -rf /openvsx-server/vsix
