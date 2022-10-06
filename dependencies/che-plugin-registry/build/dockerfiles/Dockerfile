@@ -121,6 +121,10 @@ ENV LC_ALL=en_US.UTF-8 \
     PATH="/tmp/opt/nodejs/bin:$PATH" \
     npm_config_cache=/tmp/opt/cache
 
+RUN \
+    echo "=====Node version=====" && \
+    echo -n "node:  "; node --version && \
+    echo "======================"
 RUN chmod 777 /var/run/postgresql
 
 ARG DS_BRANCH=devspaces-3-rhel-8
