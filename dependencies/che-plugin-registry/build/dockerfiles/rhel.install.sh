@@ -11,6 +11,7 @@ set -x
 
 # set same version in Dockefiles, eg., base image ubi8/python-38
 PYTHON_VERSION="3.8"
+NODEJS_VERSION="16"
 
 DNF="dnf -q"
 # shellcheck disable=SC2086
@@ -32,7 +33,7 @@ retries=20
 timeout=60
 " > /etc/yum.conf
 if [[ $DNF != "microdnf" ]]; then $DNF -y module reset python${PYTHON_VERSION/./}; $DNF -y module enable python${PYTHON_VERSION/./}:${PYTHON_VERSION}; fi
-${DNF} -y install npm findutils bash wget yum git gzip tar jq skopeo \
+${DNF} -y install findutils bash wget yum git gzip tar jq skopeo \
     python${PYTHON_VERSION/./} python${PYTHON_VERSION/./}-devel python${PYTHON_VERSION/./}-setuptools python${PYTHON_VERSION/./}-pip --exclude=unbound-libs || exit 1
 
 # shellcheck disable=SC2010
@@ -46,6 +47,13 @@ fi
 if [[ ! -L /usr/bin/python ]]; then
     ln -s /usr/bin/"${PYTHON_BIN}" /usr/bin/python
 fi
+
+# install nodejs and npm
+if [[ $DNF != "microdnf" ]]; then $DNF -y module reset nodejs; $DNF -y module enable nodejs:${NODEJS_VERSION}; fi
+MODULE_DEPS="make gcc gcc-c++ libatomic_ops git openssl-devel" && \
+INSTALL_PKGS="$MODULE_DEPS nodejs npm nodejs-nodemon nss_wrapper" && \
+ln -s /usr/lib/node_modules/nodemon/bin/nodemon.js /usr/bin/nodemon && \
+$DNF install -y --setopt=tsflags=nodocs $INSTALL_PKGS && $DNF -y clean all
 
 # install yq (depends on jq and pyyaml - if jq and pyyaml not already installed, this will try to compile it)
 if [[ -f /tmp/root-local.tgz ]] || [[ ${BOOTSTRAP} == "true" ]]; then
