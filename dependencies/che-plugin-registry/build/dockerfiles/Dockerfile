@@ -43,15 +43,13 @@ RUN /tmp/rhel.install.sh && rm -f /tmp/rhel.install.sh
 
 RUN yum -q -y install \
     java-11-openjdk httpd coreutils-single glibc-minimal-langpack glibc-langpack-en langpacks-en glibc-locale-source nc \
-    net-tools procps vi curl wget tar gzip jq \
+    net-tools procps vi curl wget tar gzip jq findutils bash git skopeo \
     --releasever 8 --nodocs
 
 RUN yum -y module reset nodejs && \
     yum -y module enable nodejs:16 && \
-    INSTALL_PKGS="nodejs npm nodejs-nodemon nss_wrapper" && \
     ln -s /usr/lib/node_modules/nodemon/bin/nodemon.js /usr/bin/nodemon && \
-    yum install -y --setopt=tsflags=nodocs $INSTALL_PKGS && \
-    rpm -V $INSTALL_PKGS && \
+    yum install -y --setopt=tsflags=nodocs nodejs npm nodejs-nodemon nss_wrapper make gcc gcc-c++ libatomic_ops git openssl-devel && \
     yum -q -y update && yum -q -y clean all && rm -rf /var/cache/yum /var/log/dnf* /var/log/yum.* && \
     echo "Installed Packages" && rpm -qa | sort -V && echo "End Of Installed Packages"
 
