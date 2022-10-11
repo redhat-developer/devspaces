@@ -46,8 +46,9 @@ RUN yum -q -y install \
     net-tools procps vi curl wget tar gzip jq findutils bash git skopeo \
     --releasever 8 --nodocs
 
+ENV NODEJS_VERSION="16"
 RUN yum -y module reset nodejs && \
-    yum -y module enable nodejs:16 && \
+    yum -y module enable nodejs:${NODEJS_VERSION} && \
     ln -s /usr/lib/node_modules/nodemon/bin/nodemon.js /usr/bin/nodemon && \
     yum install -y --setopt=tsflags=nodocs nodejs npm nodejs-nodemon nss_wrapper make gcc gcc-c++ libatomic_ops git openssl-devel && \
     yum -q -y update && yum -q -y clean all && rm -rf /var/cache/yum /var/log/dnf* /var/log/yum.* && \

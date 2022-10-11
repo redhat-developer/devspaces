@@ -9,9 +9,8 @@
 #
 set -x
 
-# set same version in Dockefiles, eg., base image ubi8/python-38
+# set same version in Dockerfiles, eg., base image ubi8/python-38
 PYTHON_VERSION="3.8"
-NODEJS_VERSION="16"
 
 DNF="dnf -q"
 # shellcheck disable=SC2086
