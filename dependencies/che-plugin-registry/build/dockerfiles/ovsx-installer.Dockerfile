@@ -22,5 +22,6 @@ RUN mkdir -p /tmp/opt/nodejs && mkdir -p /tmp/otp/cache &&\
 
 # install the ovsx cli
 RUN npm install -g ovsx@0.5.0 && chmod -R g+rwX /tmp/opt/nodejs
-RUN tar -czf nodejs.tar.gz /tmp/opt/nodejs
-RUN chmod g+rwX /opt/app-root/src/nodejs.tar.gz
+RUN cp -r /tmp/opt/nodejs/lib/node_modules/ovsx/ /tmp/opt/
+RUN tar -czf ovsx.tar.gz /tmp/opt/ovsx
+RUN chmod g+rwX /opt/app-root/src/ovsx.tar.gz

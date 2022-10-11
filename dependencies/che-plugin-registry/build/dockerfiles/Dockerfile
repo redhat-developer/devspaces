@@ -46,6 +46,15 @@ RUN yum -q -y install \
     net-tools procps vi curl wget tar gzip jq \
     --releasever 8 --nodocs
 
+RUN yum -y module reset nodejs && \
+    yum -y module enable nodejs:16 && \
+    INSTALL_PKGS="nodejs npm nodejs-nodemon nss_wrapper" && \
+    ln -s /usr/lib/node_modules/nodemon/bin/nodemon.js /usr/bin/nodemon && \
+    yum install -y --setopt=tsflags=nodocs $INSTALL_PKGS && \
+    rpm -V $INSTALL_PKGS && \
+    yum -q -y update && yum -q -y clean all && rm -rf /var/cache/yum /var/log/dnf* /var/log/yum.* && \
+    echo "Installed Packages" && rpm -qa | sort -V && echo "End Of Installed Packages"
+
 # Use the final root filesystem as default directory
 WORKDIR /
 
@@ -56,10 +65,10 @@ RUN tar -xf openvsx-server.tar.gz && rm openvsx-server.tar.gz
 COPY /build/dockerfiles/application.yaml /openvsx-server/config/
 RUN chmod -R g+rwx /openvsx-server
 
-# Copy NodeJS and OVSX files
+# Copy OVSX npm package
 RUN mkdir -p /tmp/opt
-COPY --chown=0:0 /nodejs.tar.gz .
-RUN tar -xf nodejs.tar.gz -C / && rm nodejs.tar.gz
+COPY --chown=0:0 /ovsx.tar.gz .
+RUN tar -xf ovsx.tar.gz -C / && rm ovsx.tar.gz
 
 RUN \
     # Apply permissions to later change these files on httpd
@@ -118,12 +127,13 @@ ENV LC_ALL=en_US.UTF-8 \
     LANG=en_US.UTF-8 \
     LANGUAGE=en_US.UTF-8 \
     PGDATA=/var/lib/pgsql/13/data/database \
-    PATH="/tmp/opt/nodejs/bin:$PATH" \
-    npm_config_cache=/tmp/opt/cache
+    PATH="/tmp/opt/ovsx/lib:$PATH"
 
 RUN \
-    echo "=====Node version=====" && \
+    echo "======================" && \
     echo -n "node:  "; node --version && \
+    echo "======================" \
+    echo -n "ovsx:  "; ovsx --version && \
     echo "======================"
 RUN chmod 777 /var/run/postgresql
 
