@@ -11,6 +11,7 @@ set -x
 
 # set same version in Dockerfiles, eg., base image ubi8/python-38
 PYTHON_VERSION="3.8"
+NODEJS_VERSION="16"
 
 DNF="dnf -q"
 # shellcheck disable=SC2086
@@ -45,6 +46,18 @@ fi
 if [[ ! -L /usr/bin/python ]]; then
     ln -s /usr/bin/"${PYTHON_BIN}" /usr/bin/python
 fi
+
+${DNF} -y install \
+    java-11-openjdk httpd coreutils-single glibc-minimal-langpack glibc-langpack-en langpacks-en glibc-locale-source nc \
+    net-tools procps vi curl wget tar gzip jq findutils bash git skopeo \
+    --releasever 8 --nodocs
+
+${DNF} -y module reset nodejs && \
+    ${DNF} -y module enable nodejs:${NODEJS_VERSION} && \
+    ln -s /usr/lib/node_modules/nodemon/bin/nodemon.js /usr/bin/nodemon && \
+    ${DNF} install -y --setopt=tsflags=nodocs nodejs npm nodejs-nodemon nss_wrapper make gcc gcc-c++ libatomic_ops git openssl-devel && \
+    ${DNF} -y update && ${DNF} -y clean all && rm -rf /var/cache/yum /var/log/dnf* /var/log/yum.* && \
+    echo "Installed Packages" && rpm -qa | sort -V && echo "End Of Installed Packages"
 
 # install yq (depends on jq and pyyaml - if jq and pyyaml not already installed, this will try to compile it)
 if [[ -f /tmp/root-local.tgz ]] || [[ ${BOOTSTRAP} == "true" ]]; then
