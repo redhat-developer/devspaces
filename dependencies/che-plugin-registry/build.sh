@@ -25,8 +25,8 @@ OPENVSX_ASSET_SRC=openvsx-server.tar.gz
 OPENVSX_ASSET_DEST="$base_dir"/openvsx-server.tar.gz
 OPENVSX_BUILDER_IMAGE=che-openvsx:latest
 
-OVSX_ASSET_SRC=opt/app-root/src/nodejs.tar.gz
-OVSX_ASSET_DEST="$base_dir"/nodejs.tar.gz
+OVSX_ASSET_SRC=opt/app-root/src/ovsx.tar.gz
+OVSX_ASSET_DEST="$base_dir"/ovsx.tar.gz
 OVSX_BUILDER_IMAGE=che-ovsx:latest
 
 USAGE="
@@ -236,7 +236,7 @@ if [ "${SKIP_OCI_IMAGE}" != "true" ]; then
     cp "${DOCKERFILE}" ./builder.Dockerfile
     ${BUILDER} ${BUILD_COMMAND} --progress=plain -t "${IMAGE}" -f ./builder.Dockerfile .
     # Remove copied Dockerfile and tarred zip
-    rm ./builder.Dockerfile resources.tgz openvsx-server.tar.gz nodejs.tar.gz
+    rm ./builder.Dockerfile resources.tgz openvsx-server.tar.gz ovsx.tar.gz
 
     # remove unneeded images from container registry
     cleanupImages
