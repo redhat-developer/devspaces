@@ -61,15 +61,16 @@ ${DNF} -y module reset nodejs && \
 
 # install yq (depends on jq and pyyaml - if jq and pyyaml not already installed, this will try to compile it)
 if [[ -f /tmp/root-local.tgz ]] || [[ ${BOOTSTRAP} == "true" ]]; then
-    mkdir -p /var/lib/pgsql/.local
+    mkdir -p ${HOME}/.local
     if [[ -f /tmp/root-local.tgz ]]; then
-        tar xf /tmp/root-local.tgz -C /var/lib/pgsql/.local
+        tar xf /tmp/root-local.tgz -C ${HOME}/.local
         rm -fr /tmp/root-local.tgz
     fi
-    /usr/bin/python -m pip install --user yq argcomplete
-    # NOTE: used to be in /root/.local but now can be found in ~/.local
+    /usr/bin/"${PYTHON_BIN}" -m pip install --user yq argcomplete
+    # NOTE: using bootstrap.Dockerfile + ubi8/python-38      image, copy from /opt/app-root/src/.local == ~/.local
+    # NOTE: using           Dockerfile + rhel8/postgresql-13 image, copy from /var/lib/pgsql/.local == ~/.local
     # shellcheck disable=SC2043
-    for d in /var/lib/pgsql/.local; do
+    for d in ${HOME}/.local; do
         if [[ -d ${d} ]]; then
             cp ${d}/bin/yq /usr/local/bin/
             mkdir -p ${d}/lib/"${PYTHON_BIN}"/site-packages/
