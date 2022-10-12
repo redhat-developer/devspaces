@@ -113,7 +113,7 @@ ENV LC_ALL=en_US.UTF-8 \
     LANG=en_US.UTF-8 \
     LANGUAGE=en_US.UTF-8 \
     PGDATA=/var/lib/pgsql/13/data/database \
-    PATH="/tmp/opt/ovsx/lib:$PATH"
+    PATH="/tmp/opt/ovsx/bin:$PATH"
 
 RUN \
     echo "======================" && \
