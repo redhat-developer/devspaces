@@ -119,7 +119,7 @@ RUN \
     echo "======================" && \
     echo -n "node:  "; node --version && \
     echo "======================" \
-    echo -n "ovsx:  "; ovsx --version && \
+    echo -n "ovsx:  "; /tmp/opt/ovsx/bin/ovsx --version && \
     echo "======================"
 RUN chmod 777 /var/run/postgresql
 
