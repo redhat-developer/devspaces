@@ -37,7 +37,7 @@ usage() {
 echo "
 This script streamlines testing IIB images by configuring an OpenShift cluster to enable it to use the specified IIB image 
 in a catalog. The CatalogSource is created in the openshift-operators namespaces unless '--namespace' is specified, and
-is named 'iib-testingoperatorName', eg., iib-testingdevspaces or iib-testingdevworkspace-operator
+is named 'operatorName-channelName', eg., devspaces-stable or devworkspace-operator-fast
 
 Note: to compute the latest IIB image for a given operator, use ./getLatestIIBs.sh.
 
@@ -262,7 +262,7 @@ fi
 echo "apiVersion: operators.coreos.com/v1alpha1
 kind: CatalogSource
 metadata:
-  name: iib-testing${TO_INSTALL}
+  name: ${TO_INSTALL}-${OLM_CHANNEL}
   namespace: $NAMESPACE
 spec:
   sourceType: grpc
@@ -297,7 +297,7 @@ spec:
   channel: $OLM_CHANNEL
   installPlanApproval: $INSTALL_PLAN_APPROVAL
   name: $TO_INSTALL
-  source: iib-testing${TO_INSTALL}
+  source: ${TO_INSTALL}-${OLM_CHANNEL}
   sourceNamespace: $NAMESPACE
 " > $TMPDIR/Subscription.yml && oc apply -f $TMPDIR/Subscription.yml
 

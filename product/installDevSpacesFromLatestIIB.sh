@@ -271,7 +271,7 @@ if [[ $DWO_VERSION ]]; then
   fi
 fi
 if [[ $IIB_DWO ]]; then
-  # catalog is installed as "iib-testingdevworkspace-operator"
+  # catalog is installed as "devworkspace-operator-<CHANNEL_DWO>"
   "$SCRIPT_DIR"/installCatalogSourceFromIIB.sh \
     --iib "$IIB_DWO" \
     --install-operator "devworkspace-operator" \
@@ -295,7 +295,7 @@ else
   echo "[INFO] Requested Dev Spaces IIB $IIB_DS - installing from $CHANNEL_DS channel..."
 fi
 
-# catalog is installed as "iib-testingdevspaces"
+# catalog is installed as "devspaces-<CHANNEL_DS>"
 "$SCRIPT_DIR"/installCatalogSourceFromIIB.sh \
   --iib "$IIB_DS" \
   --install-operator "devspaces" \
@@ -383,7 +383,7 @@ if [[ $(command -v ${DSC}) ]]; then # use dsc
   echo "Using dsc from ${DSC}"
   ${DSC} server:deploy \
     --catalog-source-namespace=openshift-operators \
-    --catalog-source-name=iib-testingdevspaces --olm-channel=${CHANNEL_DS} \
+    --catalog-source-name=devspaces-${CHANNEL_DS} --olm-channel=${CHANNEL_DS} \
     --package-manifest-name="devspaces" -n "${NAMESPACE}" \
     --listr-renderer=verbose --telemetry=off
 
