@@ -11,7 +11,7 @@
 # script to skopeo copy some image to quay (preserving multiple arches)
 # will compute tag from sha if only a sha is provided.
 
-# must login to the source and target registries to read from and copy to
+# must be logged in to the source and target registries to read from and copy to
 
 # eg., registry.stage.redhat.io/devworkspace/devworkspace-operator-bundle@sha256:ffd00fff23ee87d09dea8cea5b1c649b62a85db30cca645ada2bf0a53c39e375
 # to   quay.io/devworkspace/devworkspace-operator-bundle:0.15-3.1661828401
