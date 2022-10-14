@@ -35,7 +35,8 @@ Options:
   -o <OCP version>     and check that bundle's CSV; BOTH these are required.
   --ds, --dwo, --wto   Define which product defaults to use; if not set, assume --ds.
 
-  -y, --quay           If image not resolved from RH Ecosystem Catalog, check equivalent image on Quay
+  -y, --quay           If image not resolved from RH Ecosystem Catalog, check equivalent image on quay.io
+  --brew               If image not resolved from RH Ecosystem Catalog, check equivalent image on brew.registry.redhat.io
   -i, --filter         Rather than return ALL images in the build, include a subset using grep -E
   -q                   Quieter output: show 'image:tag' instead of default 'tag :: image@sha'
   -qq                  Even quieter output: omit everything but related images
@@ -64,6 +65,7 @@ while [[ "$#" -gt 0 ]]; do
     '-t') PROD_VER="$2"; shift 1;;
     '-o') OCP_VER="$2"; shift 1;;
     '-y'|'--quay') QUAY=1; shift 0;;
+    '--brew') BREW=1; shift 0;;
     '-i'|'--filter') REGEX_FILTER="$2"; shift 1;;
     '-q') QUIET=1; shift 0;;
     '-qq') QUIET=2; shift 0;;
@@ -96,7 +98,7 @@ for imageAndTag in $IMAGES; do
     fi
     rm -fr /tmp/${SOURCE_CONTAINER//\//-}-${containerTag}-*/
     ${SCRIPTPATH}/containerExtract.sh ${SOURCE_CONTAINER}:${containerTag} --delete-before --delete-after 2>&1 >/dev/null || true
-    related_images=$(cat /tmp/${SOURCE_CONTAINER//\//-}-${containerTag}-*/manifests/*.csv.yaml | grep sha256: | sed -re "s@.+(value|mage): @@" | sort -uV)
+    related_images=$(cat /tmp/${SOURCE_CONTAINER//\//-}-${containerTag}-*/manifests/*.{csv,clusterserviceversion}.yaml 2>/dev/null | grep sha256: | sed -re "s@.+(value|mage): @@" | sort -uV)
     for related_image in $related_images; do 
         if [[ $REGEX_FILTER ]]; then related_image=$(echo "$related_image" | grep -E "$REGEX_FILTER"); fi
         if [[ "${related_image}" ]]; then
@@ -107,6 +109,17 @@ for imageAndTag in $IMAGES; do
           else
               if [[ $QUAY -eq 1 ]]; then # check quay
                 related_image=${related_image//registry.redhat.io/quay.io}
+                jqdump="$(skopeo inspect docker://${related_image} 2>&1)"
+                if [[ $jqdump == *"Labels"* ]]; then 
+                    tag=$(echo $jqdump | jq -r '.Labels.url' | sed -r -e "s#.+/images/##")
+                fi
+              # CRW-3330 support publishing DWO images from brew.reg or reg-proxy
+              elif [[ $BREW -eq 1 ]]; then # check brew registry
+                # NOTE: could use registry-proxy.engineering.redhat.com/rh-osbs/ instead but that's internal facing, 
+                # where brew.reg is auth'd and public
+                # convert registry.redhat.io/devworkspace/devworkspace-rhel8-operator
+                # to      brew.registry.redhat.io/rh-osbs/devworkspace-operator
+                related_image=$(echo $related_image | sed -r -e "s#registry.redhat.io/.+/#brew.registry.redhat.io/rh-osbs/#" -e "s#-rhel8##g")
                 jqdump="$(skopeo inspect docker://${related_image} 2>&1)"
                 if [[ $jqdump == *"Labels"* ]]; then 
                     tag=$(echo $jqdump | jq -r '.Labels.url' | sed -r -e "s#.+/images/##")

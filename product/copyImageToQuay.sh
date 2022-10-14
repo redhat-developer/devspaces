@@ -22,7 +22,7 @@ usage () {
 Example: $0 -v registry.stage.redhat.io/devworkspace/devworkspace-operator-bundle@sha256:ffd00fff23ee87d09dea8cea5b1c649b62a85db30cca645ada2bf0a53c39e375 ..."
 }
 
-# TODO: optionally set other tags if we pass in PUSHTOQUAYTAGS
+# TODO: optionally set other tags if we pass in PUSHTOQUAYTAGS, eg., "latest" or "next" 
 PUSHTOQUAYTAGS=""
 
 VERBOSE=0
@@ -32,12 +32,14 @@ while [[ "$#" -gt 0 ]]; do
   case $1 in
     '-v') VERBOSE=1;;
     '-h') usage; exit 1;;
+    --pushtoquay=*) PUSHTOQUAYTAGS="$(echo "${1#*=}")";;
     *) images="$images $1"
   esac
   shift 1
 done
 
 for image in $images; do
+    IMG=$image
     if [[ $image =~ (.+)@sha256:(.+) ]]; then 
         IMG=${BASH_REMATCH[1]}
         URL=$(skopeo inspect docker://${image} | jq -r '.Labels.url')
@@ -48,18 +50,23 @@ for image in $images; do
             SHA=${BASH_REMATCH[2]}
             echo "Got image $image from $IMG @ $SHA"
         fi
+    else
+        image=${IMG#*/}
     fi
+    TAG=${image##*:}
     REGISTRYPRE=${IMG%%/*}/
+    if [[ $IMG == *"rh-osbs/"* ]]; then REGISTRYPRE="${REGISTRYPRE}rh-osbs/"; fi
     URLfrag=${image#*/}
 
     QUAYDEST="${URLfrag}"; 
     # # special case for the operator and bundle images, which don't follow the same pattern in osbs as quay
     if [[ $URLfrag == *"devworkspace"* ]]; then
-        if [[ ${QUAYDEST} == *"/operator-bundle:"* ]]; then QUAYDEST="devworkspace/devworkspace-operator-bundle"; fi
-        if [[ ${QUAYDEST} == *"/operator:"* ]];        then QUAYDEST="devworkspace/devworkspace-rhel8-operator"; fi
+        if [[ ${QUAYDEST} == *"project-clone:"* ]]; then QUAYDEST="devworkspace/devworkspace-project-clone-rhel8:${TAG}"; fi
+        if [[ ${QUAYDEST} == *"operator-bundle:"* ]]; then QUAYDEST="devworkspace/devworkspace-operator-bundle:${TAG}"; fi
+        if [[ ${QUAYDEST} == *"operator:"* ]];        then QUAYDEST="devworkspace/devworkspace-rhel8-operator:${TAG}"; fi
     elif [[ $URLfrag == *"devspaces"* ]]; then
-        if [[ ${QUAYDEST} == *"/operator-bundle:"* ]]; then QUAYDEST="devspaces/devspaces-operator-bundle"; fi
-        if [[ ${QUAYDEST} == *"/operator:"* ]];        then QUAYDEST="devspaces/devspaces-rhel8-operator"; fi
+        if [[ ${QUAYDEST} == *"/operator-bundle:"* ]]; then QUAYDEST="devspaces/devspaces-operator-bundle:${TAG}"; fi
+        if [[ ${QUAYDEST} == *"/operator:"* ]];        then QUAYDEST="devspaces/devspaces-rhel8-operator:${TAG}"; fi
     else
         # replace /rh-osbs/foo-image with foo/image
         QUAYDEST=$(echo $QUAYDEST | sed -r -e "s#rh-osbs/([^-])-#\1/#g")
@@ -77,8 +84,8 @@ for image in $images; do
         CMD="skopeo --insecure-policy copy --all docker://${REGISTRYPRE}${URLfrag} docker://${QUAYDEST}"; echo $CMD; $CMD
         # and update additional PUSHTOQUAYTAGS tags 
         for qtag in ${PUSHTOQUAYTAGS}; do
-            if [[ $VERBOSE -eq 1 ]]; then echo "Copy ${REGISTRYPRE}${URLfrag} to ${QUAYDEST}:${qtag}"; fi
-            CMD="skopeo --insecure-policy copy --all docker://${REGISTRYPRE}${URLfrag} docker://${QUAYDEST}:${qtag}"; echo $CMD; $CMD
+            if [[ $VERBOSE -eq 1 ]]; then echo "Copy ${REGISTRYPRE}${URLfrag} to ${QUAYDEST%:*}:${qtag}"; fi
+            CMD="skopeo --insecure-policy copy --all docker://${REGISTRYPRE}${URLfrag} docker://${QUAYDEST%:*}:${qtag}"; echo $CMD; $CMD
         done
     else
         if [[ $VERBOSE -eq 1 ]]; then echo "Copy ${QUAYDEST} - already exists, nothing to do"; fi
