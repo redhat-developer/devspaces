@@ -91,4 +91,3 @@ if [[ $VERBOSE -eq 1 ]]; then
 else
     ${SCRIPT_DIR}/copyImageToQuay.sh --pushtoquay="${PROD_VER} ${latestNext}" ${bundle} ${operands}
 fi
-

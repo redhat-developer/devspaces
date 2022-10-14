@@ -95,6 +95,4 @@ for image in $images; do
             if [[ $VERBOSE -eq 1 ]]; then echo "Copy ${QUAYDEST%:*}:${qtag} - already exists, nothing to do"; fi
         fi
     done
-
 done
-
