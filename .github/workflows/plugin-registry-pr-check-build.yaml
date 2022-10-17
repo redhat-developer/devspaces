@@ -10,9 +10,6 @@
 name: Plugin Registry - PR check - Build
 
 on: 
-  push:
-    paths:
-    - 'dependencies/che-plugin-registry/**'
   pull_request:
     paths:
     - 'dependencies/che-plugin-registry/**'
@@ -30,7 +27,7 @@ jobs:
         fetch-depth: 0
     - uses: actions/setup-node@v1
       with:
-        node-version: '12'
+        node-version: '16'
     - name: Get yarn cache directory path
       id: yarn-cache-dir-path
       run: echo "::set-output name=dir::$(yarn cache dir)"

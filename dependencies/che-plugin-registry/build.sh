@@ -237,7 +237,6 @@ if [ "${SKIP_OCI_IMAGE}" != "true" ]; then
     ${BUILDER} ${BUILD_COMMAND} --progress=plain -t "${IMAGE}" -f ./builder.Dockerfile .
     # Remove copied Dockerfile and tarred zip
     rm ./builder.Dockerfile resources.tgz openvsx-server.tar.gz ovsx.tar.gz
-
     # remove unneeded images from container registry
     cleanupImages
 fi
