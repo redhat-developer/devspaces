@@ -169,12 +169,16 @@ for OCP_VER in ${OCP_VERSIONS}; do
     # registry-proxy.engineering.redhat.com/rh-osbs/iib:286641
     LATEST_IIB=$(${GLIB} --ds -t ${DS_VERSION} -o ${OCP_VER} -qi) # return quietly, just the index bundle
     LATEST_IIB_NUM=${LATEST_IIB##*:}
+    # Get DevWorkspace Operator IIB separately to enable DWO RC testing.
+    LATEST_DWO_IIB=$(${GLIB} --dwo -t "0" -c 'devworkspace-operator-bundle' -o ${OCP_VER} -qi) # return quietly, just the index bundle
+    LATEST_DWO_IIB_NUM=${LATEST_DWO_IIB##*:}
     # NOTE: this is NOT OCP server arch, but the arch of the local build machine!
     # must build on multiple arches to get per-arch IIBs
-    LATEST_IIB_QUAY="quay.io/devspaces/iib:${DS_VERSION}-${OCP_VER}-${LATEST_IIB_NUM}-$(uname -m)"
+    LATEST_IIB_QUAY="quay.io/devspaces/iib:${DS_VERSION}-${OCP_VER}-${LATEST_IIB_NUM}-${LATEST_DWO_IIB_NUM}-$(uname -m)"
     if [[ $VERBOSEFLAG == "-v" ]]; then 
         echo "[DEBUG] OPERATOR_BUNDLE=$(${GLIB} --ds -t ${DS_VERSION} -o ${OCP_VER} -qb)"
         echo "[DEBUG]  IIB FOR BUNDLE=${LATEST_IIB}"
+        echo "[DEBUG]     IIB FOR DWO=${LATEST_DWO_IIB}"
         echo "[DEBUG] QUAY IIB BUNDLE=${LATEST_IIB_QUAY}"
     fi
 
@@ -185,7 +189,8 @@ for OCP_VER in ${OCP_VERSIONS}; do
         # check if destination already exists in quay
         if [[ $(skopeo --insecure-policy inspect docker://${LATEST_IIB_QUAY} 2>&1) == *"Error"* ]] || [[ ${PUSHTOQUAYFORCE} -eq 1 ]]; then 
             # filter and publish to a new name, putting all operators in the fast channel
-            ${FIIB} -s ${LATEST_IIB} --channel-all fast ${VERBOSEFLAG} --dir $CATALOG_DIR
+            ${FIIB} -s ${LATEST_IIB} --channel-all fast ${VERBOSEFLAG} --dir $CATALOG_DIR --packages "devspaces web-terminal"
+            ${FIIB} -s ${LATEST_DWO_IIB} --channel-all fast ${VERBOSEFLAG} --dir $CATALOG_DIR --packages "devworkspace-operator"
             ${BCFF} -t ${LATEST_IIB_QUAY} --push ${VERBOSEFLAG} --dir $CATALOG_DIR --ocp-ver $OCP_VER
         else
             if [[ $VERBOSEFLAG == "-v" ]]; then echo "Copy ${LATEST_IIB_QUAY} - already exists, nothing to do"; fi
@@ -193,8 +198,13 @@ for OCP_VER in ${OCP_VERSIONS}; do
         fi
         PUSHTOQUAYFORCE_LOCAL=1
     else
-        ${FIIB} -s ${LATEST_IIB} ${VERBOSEFLAG} --dir $CATALOG_DIR
+        ${FIIB} -s ${LATEST_IIB} ${VERBOSEFLAG} --dir $CATALOG_DIR --packages "devspaces web-terminal"
+        ${FIIB} -s ${LATEST_DWO_IIB} ${VERBOSEFLAG} --dir $CATALOG_DIR --packages "devworkspace-operator"
         ${BCFF} -t ${LATEST_IIB_QUAY} ${VERBOSEFLAG} --dir $CATALOG_DIR --ocp-ver $OCP_VER
+    fi
+
+    if [[ "$PUSH" != "true" ]]; then
+        continue
     fi
 
     if [[ $(skopeo --insecure-policy inspect docker://${LATEST_IIB_QUAY} 2>&1) == *"Error"* ]]; then 
