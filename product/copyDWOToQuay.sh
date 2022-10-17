@@ -15,7 +15,7 @@
 
 # must be logged in to the source and target registries to read from and copy to
 
-VERBOSE==0
+VERBOSE=0
 RED='\033[0;31m'
 NC='\033[0m'
 
