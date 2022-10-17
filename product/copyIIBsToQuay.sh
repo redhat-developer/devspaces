@@ -8,7 +8,7 @@
 # SPDX-License-Identifier: EPL-2.0
 #
 # script to query latest IIBs for a given list of OCP versions, then copy those to Quay
-# OPM 4.11 is required to run filterIIBForDevSpaces.sh
+# OPM 4.11 is required to run buildCatalogFromFiles.sh
 # 
 
 SCRIPT_DIR=$(cd "$(dirname "$0")" || exit; pwd)
@@ -27,7 +27,7 @@ Options:
   -p, --push                 : Push IIB(s) to quay registry; default is to show commands but not copy anything
   --force                    : If target image exists, will re-filter and re-push it; otherwise skip to avoid updating image timestamps
   -t PROD_VER                : If x.y version/tag not set, will compute from dependencies/job-config.json file
-  -o 'OCP_VER1 OCP_VER2 ...' : Space-separated list of OCP version(s) to query and publish; defaults to job-config.json values
+  -o 'OCP_VER1 OCP_VER2 ...' : Space-separated list of OCP version(s) (e.g. 'v4.10 v4.11') to query and publish; defaults to job-config.json values
   -e, --extra-tags           : Extra tags to create, such as 3.2.0.RC-08-04
   -v                         : Verbose output: include additional information
   -h, --help                 : Show this help
@@ -130,19 +130,31 @@ checkVersion 1.1 "$(skopeo --version | sed -e "s/skopeo version //")" skopeo
 
 if [[ -x ${SCRIPT_DIR}/getLatestIIBs.sh ]]; then
     GLIB=${SCRIPT_DIR}/getLatestIIBs.sh
-else 
+else
+    if [[ $VERBOSEFLAG == "-v" ]]; then echo "Downloading getLatestIIBs.sh script from Github"; fi
     pushd /tmp >/dev/null 
     curl -sSLO https://raw.githubusercontent.com/redhat-developer/devspaces/${MIDSTM_BRANCH}/product/getLatestIIBs.sh && chmod +x getLatestIIBs.sh
     GLIB=/tmp/getLatestIIBs.sh
     popd >/dev/null
 fi
 
-if [[ -x ${SCRIPT_DIR}/filterIIBForDevSpaces.sh ]]; then
-    FIIB=${SCRIPT_DIR}/filterIIBForDevSpaces.sh
+if [[ -x ${SCRIPT_DIR}/filterIIBForPackage.sh ]]; then
+    FIIB=${SCRIPT_DIR}/filterIIBForPackage.sh
 else 
+    if [[ $VERBOSEFLAG == "-v" ]]; then echo "Downloading filterIIBForPackage.sh script from Github"; fi
     pushd /tmp >/dev/null 
-    curl -sSLO https://raw.githubusercontent.com/redhat-developer/devspaces/${MIDSTM_BRANCH}/product/filterIIBForDevSpaces.sh && chmod +x filterIIBForDevSpaces.sh
-    FIIB=/tmp/filterIIBForDevSpaces.sh
+    curl -sSLO https://raw.githubusercontent.com/redhat-developer/devspaces/${MIDSTM_BRANCH}/product/filterIIBForPackage.sh && chmod +x filterIIBForPackage.sh
+    FIIB=/tmp/filterIIBForPackage.sh
+    popd >/dev/null
+fi
+
+if [[ -x ${SCRIPT_DIR}/buildCatalogFromFiles.sh ]]; then
+    BCFF=${SCRIPT_DIR}/buildCatalogFromFiles.sh
+else
+    if [[ $VERBOSEFLAG == "-v" ]]; then echo "Downloading buildCatalogFromFiles.sh script from Github"; fi
+    pushd /tmp >/dev/null
+    curl -sSLO https://raw.githubusercontent.com/redhat-developer/devspaces/${MIDSTM_BRANCH}/product/buildCatalogFromFiles.sh && chmod +x buildCatalogFromFiles.sh
+    BCFF=/tmp/buildCatalogFromFiles.sh
     popd >/dev/null
 fi
 
@@ -166,24 +178,29 @@ for OCP_VER in ${OCP_VERSIONS}; do
         echo "[DEBUG] QUAY IIB BUNDLE=${LATEST_IIB_QUAY}"
     fi
 
+    CATALOG_DIR=$(mktemp -d --suffix "-${DS_VERSION}-${OCP_VER}-${LATEST_IIB_NUM}-$(uname -m)")
+    if [[ $VERBOSEFLAG == "-v" ]]; then echo "Rendering catalog to $CATALOG_DIR"; fi
+
     if [[ "$PUSH" == "true" ]]; then
         # check if destination already exists in quay
         if [[ $(skopeo --insecure-policy inspect docker://${LATEST_IIB_QUAY} 2>&1) == *"Error"* ]] || [[ ${PUSHTOQUAYFORCE} -eq 1 ]]; then 
             # filter and publish to a new name, putting all operators in the fast channel
-            ${FIIB} -s ${LATEST_IIB} -t ${LATEST_IIB_QUAY} --channel-all fast --push ${VERBOSEFLAG}
+            ${FIIB} -s ${LATEST_IIB} --channel-all fast ${VERBOSEFLAG} --dir $CATALOG_DIR
+            ${BCFF} -t ${LATEST_IIB_QUAY} --push ${VERBOSEFLAG} --dir $CATALOG_DIR --ocp-ver $OCP_VER
         else
             if [[ $VERBOSEFLAG == "-v" ]]; then echo "Copy ${LATEST_IIB_QUAY} - already exists, nothing to do"; fi
             echo "[IMG] ${LATEST_IIB_QUAY}"
         fi
         PUSHTOQUAYFORCE_LOCAL=1
     else
-        echo "${FIIB} -s ${LATEST_IIB} -t ${LATEST_IIB_QUAY} --push"
+        ${FIIB} -s ${LATEST_IIB} ${VERBOSEFLAG} --dir $CATALOG_DIR
+        ${BCFF} -t ${LATEST_IIB_QUAY} ${VERBOSEFLAG} --dir $CATALOG_DIR --ocp-ver $OCP_VER
     fi
 
     if [[ $(skopeo --insecure-policy inspect docker://${LATEST_IIB_QUAY} 2>&1) == *"Error"* ]]; then 
         echo "[ERROR] Cannot find image ${LATEST_IIB_QUAY} to copy!"
         echo "[ERROR] Check output of this command for an idea of what went wrong:"
-        echo "[ERROR] ${FIIB} -s ${LATEST_IIB} -t ${LATEST_IIB_QUAY} -v --push"
+        echo "[ERROR] ${BCFF} -s ${LATEST_IIB} -t ${LATEST_IIB_QUAY} -v --push"
         exit 1
     fi
 
