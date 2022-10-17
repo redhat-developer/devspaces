@@ -61,9 +61,9 @@ ${DNF} -y module reset nodejs && \
 
 # install yq (depends on jq and pyyaml - if jq and pyyaml not already installed, this will try to compile it)
 if [[ -f /tmp/root-local.tgz ]] || [[ ${BOOTSTRAP} == "true" ]]; then
-    mkdir -p ${HOME}/.local
+    mkdir -p "${HOME}"/.local
     if [[ -f /tmp/root-local.tgz ]]; then
-        tar xf /tmp/root-local.tgz -C ${HOME}/.local
+        tar xf /tmp/root-local.tgz -C "${HOME}"/.local
         rm -fr /tmp/root-local.tgz
     fi
     /usr/bin/"${PYTHON_BIN}" -m pip install --user yq argcomplete
@@ -72,10 +72,10 @@ if [[ -f /tmp/root-local.tgz ]] || [[ ${BOOTSTRAP} == "true" ]]; then
     # shellcheck disable=SC2043
     for d in ${HOME}/.local; do
         if [[ -d ${d} ]]; then
-            cp ${d}/bin/yq /usr/local/bin/
-            mkdir -p ${d}/lib/"${PYTHON_BIN}"/site-packages/
+            cp "${d}"/bin/yq /usr/local/bin/
+            mkdir -p "${d}"/lib/"${PYTHON_BIN}"/site-packages/
             # shellcheck disable=SC2164
-            pushd ${d}/lib/"${PYTHON_BIN}"/site-packages/ >/dev/null
+            pushd "${d}"/lib/"${PYTHON_BIN}"/site-packages/ >/dev/null
             cp -r PyYAML* xmltodict* yaml* yq* /usr/lib/"${PYTHON_BIN}"/site-packages/
             # shellcheck disable=SC2164
             popd >/dev/null
