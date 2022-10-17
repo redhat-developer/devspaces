@@ -39,6 +39,13 @@ jobs:
           username: ${{ secrets.DS_QUAY_USERNAME }}
           password: ${{ secrets.DS_QUAY_PASSWORD }}
 
+      - name: Login to the Red Hat Registry
+        uses: azure/docker-login@v1
+        with:
+          login-server: registry.redhat.io
+          username: ${{ secrets.REGISTRY_REDHAT_IO_USERNAME }}
+          password: ${{ secrets.REGISTRY_REDHAT_IO_PASSWORD }}
+
       - name: Get yarn cache directory path
         id: yarn-cache-dir-path
         run: echo "::set-output name=dir::$(yarn cache dir)"
