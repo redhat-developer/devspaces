@@ -30,14 +30,7 @@ jobs:
 
       - uses: actions/setup-node@v1
         with:
-          node-version: '12'
-
-      - name: Login to quay.io
-        uses: docker/login-action@v1
-        with:
-          registry: quay.io
-          username: ${{ secrets.DS_QUAY_USERNAME }}
-          password: ${{ secrets.DS_QUAY_PASSWORD }}
+          node-version: '16'
 
       - name: Login to the Red Hat Registry
         uses: azure/docker-login@v1
@@ -73,6 +66,13 @@ jobs:
       - name: image-build
         run: |
           BUILDER=docker SKIP_FORMAT=true SKIP_LINT=true SKIP_TEST=true ./build.sh --tag next-gh-action --offline
+
+      - name: Login to quay.io
+        uses: docker/login-action@v1
+        with:
+          registry: quay.io
+          username: ${{ secrets.DS_QUAY_USERNAME }}
+          password: ${{ secrets.DS_QUAY_PASSWORD }}
 
       - name: push plugin registry image
         run: |
