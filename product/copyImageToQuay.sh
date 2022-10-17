@@ -55,15 +55,15 @@ for image in $images; do
     fi
     TAG=${image##*:}
     REGISTRYPRE=${IMG%%/*}/
-    if [[ $IMG == *"rh-osbs/"* ]]; then REGISTRYPRE="${REGISTRYPRE}rh-osbs/"; fi
+    if [[ $IMG =~ .+(rh-osbs/|devworkspace/|devspaces/).+ ]]; then REGISTRYPRE="${REGISTRYPRE}${BASH_REMATCH[1]}"; fi
     URLfrag=${image#*/}
 
     QUAYDEST="${URLfrag}"; 
     # # special case for the operator and bundle images, which don't follow the same pattern in osbs as quay
     if [[ $URLfrag == *"devworkspace"* ]]; then
-        if [[ ${QUAYDEST} == *"project-clone:"* ]]; then QUAYDEST="devworkspace/devworkspace-project-clone-rhel8:${TAG}"; fi
-        if [[ ${QUAYDEST} == *"operator-bundle:"* ]]; then QUAYDEST="devworkspace/devworkspace-operator-bundle:${TAG}"; fi
-        if [[ ${QUAYDEST} == *"operator:"* ]];        then QUAYDEST="devworkspace/devworkspace-rhel8-operator:${TAG}"; fi
+        if [[ ${QUAYDEST} =~ .*(devworkspace-|)project-clone(-rhel8|):.+ ]];   then QUAYDEST="devworkspace/devworkspace-project-clone-rhel8:${TAG}"; fi
+        if [[ ${QUAYDEST} =~ .*(devworkspace-|)operator-bundle:.+ ]];          then QUAYDEST="devworkspace/devworkspace-operator-bundle:${TAG}"; fi
+        if [[ ${QUAYDEST} =~ .*(devworkspace-|)(rhel8-|)operator:.+ ]];        then QUAYDEST="devworkspace/devworkspace-rhel8-operator:${TAG}"; fi
     elif [[ $URLfrag == *"devspaces"* ]]; then
         if [[ ${QUAYDEST} == *"/operator-bundle:"* ]]; then QUAYDEST="devspaces/devspaces-operator-bundle:${TAG}"; fi
         if [[ ${QUAYDEST} == *"/operator:"* ]];        then QUAYDEST="devspaces/devspaces-rhel8-operator:${TAG}"; fi
