@@ -89,7 +89,7 @@ $PODMAN rmi --ignore --force $targetIndexImage >/dev/null 2>&1 || true
 # old way for olm 4.10
 # opm alpha generate dockerfile ./olm-catalog
 
-# new way for old 4.11 - see https://docs.openshift.com/container-platform/4.11/operators/admin/olm-managing-custom-catalogs.html#olm-creating-fb-catalog-image_olm-managing-custom-catalogs
+# new way for olm 4.11 - see https://docs.openshift.com/container-platform/4.11/operators/admin/olm-managing-custom-catalogs.html#olm-creating-fb-catalog-image_olm-managing-custom-catalogs
 cat <<EOF > olm-catalog.Dockerfile
 # The base image is expected to contain
 # /bin/opm (with a serve subcommand) and /bin/grpc_health_probe
