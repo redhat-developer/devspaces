@@ -8,7 +8,7 @@
 # SPDX-License-Identifier: EPL-2.0
 #
 # Utility script to filter the Dev Spaces, Web Terminal, DevWorkspace (and optionally CodeReady Workspaces) operators
-# from an IIB image.
+# from an IIB image. Creates a file tree of json files, one folder per filtered package. 
 #
 
 usage() {
