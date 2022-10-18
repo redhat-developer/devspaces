@@ -139,22 +139,22 @@ else
 fi
 
 if [[ -x ${SCRIPT_DIR}/filterIIB.sh ]]; then
-    FIIB=${SCRIPT_DIR}/filterIIB.sh
+    filterIIB=${SCRIPT_DIR}/filterIIB.sh
 else 
     if [[ $VERBOSEFLAG == "-v" ]]; then echo "Downloading filterIIB.sh script from Github"; fi
     pushd /tmp >/dev/null 
     curl -sSLO https://raw.githubusercontent.com/redhat-developer/devspaces/${MIDSTM_BRANCH}/product/filterIIB.sh && chmod +x filterIIB.sh
-    FIIB=/tmp/filterIIB.sh
+    filterIIB=/tmp/filterIIB.sh
     popd >/dev/null
 fi
 
 if [[ -x ${SCRIPT_DIR}/buildCatalog.sh ]]; then
-    BCFF=${SCRIPT_DIR}/buildCatalog.sh
+    buildCatalog=${SCRIPT_DIR}/buildCatalog.sh
 else
     if [[ $VERBOSEFLAG == "-v" ]]; then echo "Downloading buildCatalog.sh script from Github"; fi
     pushd /tmp >/dev/null
     curl -sSLO https://raw.githubusercontent.com/redhat-developer/devspaces/${MIDSTM_BRANCH}/product/buildCatalog.sh && chmod +x buildCatalog.sh
-    BCFF=/tmp/buildCatalog.sh
+    buildCatalog=/tmp/buildCatalog.sh
     popd >/dev/null
 fi
 
@@ -189,18 +189,18 @@ for OCP_VER in ${OCP_VERSIONS}; do
         # check if destination already exists in quay
         if [[ $(skopeo --insecure-policy inspect docker://${LATEST_IIB_QUAY} 2>&1) == *"Error"* ]] || [[ ${PUSHTOQUAYFORCE} -eq 1 ]]; then 
             # filter and publish to a new name, putting all operators in the fast channel
-            ${FIIB} -s ${LATEST_IIB} --channel-all fast ${VERBOSEFLAG} --dir $CATALOG_DIR --packages "devspaces web-terminal"
-            ${FIIB} -s ${LATEST_DWO_IIB} --channel-all fast ${VERBOSEFLAG} --dir $CATALOG_DIR --packages "devworkspace-operator"
-            ${BCFF} -t ${LATEST_IIB_QUAY} --push ${VERBOSEFLAG} --dir $CATALOG_DIR --ocp-ver $OCP_VER
+            ${filterIIB} -s ${LATEST_IIB} --channel-all fast ${VERBOSEFLAG} --dir $CATALOG_DIR --packages "devspaces web-terminal"
+            ${filterIIB} -s ${LATEST_DWO_IIB} --channel-all fast ${VERBOSEFLAG} --dir $CATALOG_DIR --packages "devworkspace-operator"
+            ${buildCatalog} -t ${LATEST_IIB_QUAY} --push ${VERBOSEFLAG} --dir $CATALOG_DIR --ocp-ver $OCP_VER
         else
             if [[ $VERBOSEFLAG == "-v" ]]; then echo "Copy ${LATEST_IIB_QUAY} - already exists, nothing to do"; fi
             echo "[IMG] ${LATEST_IIB_QUAY}"
         fi
         PUSHTOQUAYFORCE_LOCAL=1
     else
-        ${FIIB} -s ${LATEST_IIB} ${VERBOSEFLAG} --dir $CATALOG_DIR --packages "devspaces web-terminal"
-        ${FIIB} -s ${LATEST_DWO_IIB} ${VERBOSEFLAG} --dir $CATALOG_DIR --packages "devworkspace-operator"
-        ${BCFF} -t ${LATEST_IIB_QUAY} ${VERBOSEFLAG} --dir $CATALOG_DIR --ocp-ver $OCP_VER
+        ${filterIIB} -s ${LATEST_IIB} ${VERBOSEFLAG} --dir $CATALOG_DIR --packages "devspaces web-terminal"
+        ${filterIIB} -s ${LATEST_DWO_IIB} ${VERBOSEFLAG} --dir $CATALOG_DIR --packages "devworkspace-operator"
+        ${buildCatalog} -t ${LATEST_IIB_QUAY} ${VERBOSEFLAG} --dir $CATALOG_DIR --ocp-ver $OCP_VER
     fi
 
     if [[ "$PUSH" != "true" ]]; then
@@ -210,7 +210,7 @@ for OCP_VER in ${OCP_VERSIONS}; do
     if [[ $(skopeo --insecure-policy inspect docker://${LATEST_IIB_QUAY} 2>&1) == *"Error"* ]]; then 
         echo "[ERROR] Cannot find image ${LATEST_IIB_QUAY} to copy!"
         echo "[ERROR] Check output of this command for an idea of what went wrong:"
-        echo "[ERROR] ${BCFF} -s ${LATEST_IIB} -t ${LATEST_IIB_QUAY} -v --push"
+        echo "[ERROR] ${buildCatalog} -s ${LATEST_IIB} -t ${LATEST_IIB_QUAY} -v --push"
         exit 1
     fi
 
