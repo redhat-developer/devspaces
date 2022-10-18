@@ -1,0 +1,277 @@
+containers/devspaces-code-rhel8-container:3.2.0/ubi8:8.6-943 as ubi-builder
+containers/devspaces-code-rhel8-container:3.2.0/ubi8-minimal:8.6-941
+FROM ubi8:8.6-943 as ubi-builder
+RUN yum install --installroot /mnt/rootfs tar gzip brotli libstdc++ coreutils glibc-minimal-langpack --releasever 8 --setopt install_weak_deps=false --nodocs -y && yum --installroot /mnt/rootfs clean all
+RUN rm -rf /mnt/rootfs/var/cache/* /mnt/rootfs/var/log/dnf* /mnt/rootfs/var/log/yum.*
+COPY /build/scripts/entrypoint*.sh /mnt/rootfs/
+COPY asset-*.tar.gz /tmp/assets/
+FROM ubi8-minimal:8.6-941
+COPY --from=ubi-builder /mnt/rootfs/ /
+
+containers/devspaces-configbump-rhel8-container:3.2.0/ubi8-minimal:8.6-941
+FROM ubi8-minimal:8.6-941
+COPY $REMOTE_SOURCES $REMOTE_SOURCES_DIR
+RUN microdnf -y install shadow-utils golang && \
+    adduser appuser && \
+    CGO_ENABLED=0 GOOS=linux GOARCH=${ARCH} go build -a -ldflags '-w -s' -a -installsuffix cgo -o configbump cmd/configbump/main.go && \
+    microdnf -y clean all && rm -rf /var/cache/yum && \
+    echo "Installed Packages" && rpm -qa | sort -V && echo "End Of Installed Packages"
+
+containers/devspaces-dashboard-rhel8-container:3.2.0/ubi8/nodejs-16:1-58 as builder
+containers/devspaces-dashboard-rhel8-container:3.2.0/ubi8/nodejs-16:1-58
+FROM ubi8/nodejs-16:1-58 as builder
+COPY $REMOTE_SOURCES $REMOTE_SOURCES_DIR
+COPY .yarn/releases $REMOTE_SOURCES_DIR/devspaces-images-dashboard/app/devspaces-dashboard/.yarn/releases/
+RUN yarn config set nodedir /usr; yarn config set unsafe-perm true && yarn install
+FROM ubi8/nodejs-16:1-58
+    yum -y -q update && \
+    yum -y -q clean all && rm -rf /var/cache/yum && \
+    echo "Installed Packages" && rpm -qa | sort -V && echo "End Of Installed Packages"
+COPY --from=builder ${BACKEND_LIB} /backend
+COPY --from=builder ${FRONTEND_LIB} /public
+
+containers/devspaces-devfileregistry-rhel8-container:3.2.0/ubi8/python-38:1-107 as builder
+containers/devspaces-devfileregistry-rhel8-container:3.2.0/rhel8/httpd-24:1-215 AS registry
+FROM ubi8/python-38:1-107 as builder
+COPY root-local.tgz /tmp/root-local.tgz
+COPY ./build/dockerfiles/content_sets_rhel8.repo /etc/yum.repos.d/
+COPY ./build/dockerfiles/rhel.install.sh /tmp
+RUN /tmp/rhel.install.sh && rm -f /tmp/rhel.install.sh
+COPY ./build/scripts /build/
+COPY ./devfiles /build/devfiles
+COPY ./build/dockerfiles/rhel.cache_projects.sh resources.tgz /tmp/ 
+FROM rhel8/httpd-24:1-215 AS registry
+    yum -y -q update && \
+    yum -y -q clean all && rm -rf /var/cache/yum && \
+    echo "Installed Packages" && rpm -qa | sort -V && echo "End Of Installed Packages"
+COPY README.md .htaccess /var/www/html/
+COPY --from=builder /build/devfiles /var/www/html/devfiles
+COPY --from=builder /build/resources /var/www/html/resources
+COPY ./images /var/www/html/images
+
+containers/devspaces-idea-rhel8-container:3.2.0/ubi8:8.6-943 as ubi-builder
+containers/devspaces-idea-rhel8-container:3.2.0/ubi8-minimal:8.6-941
+FROM ubi8:8.6-943 as ubi-builder
+COPY --chown=0:0 asset-required-rpms.txt /tmp/asset-required-rpms.txt
+RUN yum install unzip -y --nodocs && \
+    yum install --installroot /mnt/rootfs \
+            --releasever 8 --setopt install_weak_deps=false --nodocs -y && \
+    yum --installroot /mnt/rootfs clean all
+RUN rm -rf /mnt/rootfs/var/cache/* /mnt/rootfs/var/log/dnf* /mnt/rootfs/var/log/yum.*
+COPY --chown=0:0 asset-ide-packaging.tar.gz .
+COPY --chown=0:0 asset-projector-server-assembly.zip .
+COPY --chown=0:0 asset-static-assembly.tar.gz .
+COPY --chown=0:0 asset-che-plugin-assembly.zip .
+COPY --chown=0:0 asset-machine-exec ide/bin/machine-exec
+FROM ubi8-minimal:8.6-941
+COPY --from=ubi-builder /mnt/rootfs/ /
+
+containers/devspaces-imagepuller-rhel8-container:3.2.0/rhel8/go-toolset:1.17.12-7 as builder
+containers/devspaces-imagepuller-rhel8-container:3.2.0/ubi8-minimal:8.6-941
+FROM rhel8/go-toolset:1.17.12-7 as builder
+COPY go.mod .
+COPY go.sum .
+COPY resources.tgz /tmp/resources.tgz
+COPY . .
+RUN adduser appuser && \
+FROM ubi8-minimal:8.6-941
+RUN microdnf -y update && microdnf clean all && rm -rf /var/cache/yum && echo "Installed Packages" && rpm -qa | sort -V && echo "End Of Installed Packages"
+COPY --from=builder /etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem /etc/pki/ca-trust/extracted/pem/
+COPY --from=builder /etc/pki/tls/certs/ca-bundle.crt                  /etc/pki/tls/certs/
+COPY --from=builder /etc/passwd /etc/passwd
+COPY --from=builder /kubernetes-image-puller/bin/kubernetes-image-puller /
+COPY --from=builder /kubernetes-image-puller/bin/sleep /bin/sleep
+
+containers/devspaces-machineexec-rhel8-container:3.2.0/rhel8/go-toolset:1.17.12-7 as builder
+containers/devspaces-machineexec-rhel8-container:3.2.0/scratch
+FROM rhel8/go-toolset:1.17.12-7 as builder
+COPY . .
+RUN adduser unprivilegeduser && \
+    CGO_ENABLED=0 GOOS=linux go build -mod=vendor -a -ldflags '-w -s' -a -installsuffix cgo -o che-machine-exec . && \
+FROM scratch
+COPY --from=builder /rootfs /
+
+containers/devspaces-operator-rhel8-container:3.2.0/rhel8/go-toolset:1.17.12-7 as builder
+containers/devspaces-operator-rhel8-container:3.2.0/ubi8-minimal:8.6-941
+FROM rhel8/go-toolset:1.17.12-7 as builder
+ARG DEV_WORKSPACE_CONTROLLER_VERSION="v0.13.0"
+COPY asset-* /tmp/
+COPY go.mod go.mod
+COPY go.sum go.sum
+COPY main.go main.go
+COPY vendor/ vendor/
+COPY mocks/ mocks/
+COPY api/ api/
+COPY config/ config/
+COPY controllers/ controllers/
+COPY pkg/ pkg/
+FROM ubi8-minimal:8.6-941
+COPY --from=builder /tmp/devworkspace-operator/templates /tmp/devworkspace-operator/templates
+COPY --from=builder /tmp/header-rewrite-traefik-plugin /tmp/header-rewrite-traefik-plugin
+COPY --from=builder /che-operator/che-operator /manager
+
+containers/devspaces-operator-bundle-rhel8-container:3.2.0/scratch
+FROM scratch
+COPY manifests /manifests/
+COPY metadata /metadata/
+
+containers/devspaces-pluginregistry-rhel8-container:3.2.0/ubi8/python-38:1-107 as builder
+containers/devspaces-pluginregistry-rhel8-container:3.2.0/rhel8/httpd-24:1-215 AS registry
+FROM ubi8/python-38:1-107 as builder
+COPY root-local.tgz /tmp/root-local.tgz
+COPY ./build/dockerfiles/content_sets_rhel8.repo /etc/yum.repos.d/
+COPY ./build/dockerfiles/rhel.install.sh /tmp
+RUN /tmp/rhel.install.sh && rm -f /tmp/rhel.install.sh
+COPY ./build/scripts/*.sh /build/
+COPY che-*.yaml /build/
+COPY resources.tgz /build/
+COPY ./v3/plugins/ /build/v3/plugins/
+COPY ./v3/images/*.png /build/v3/images/
+FROM rhel8/httpd-24:1-215 AS registry
+    yum -y -q update && \
+    yum -y -q clean all && rm -rf /var/cache/yum && \
+    echo "Installed Packages" && rpm -qa | sort -V && echo "End Of Installed Packages"
+COPY README.md .htaccess /var/www/html/
+COPY --from=builder /build/output/v3 /var/www/html/v3
+COPY --from=builder /build/v3/plugins/ /var/www/html/v3/plugins/
+COPY --from=builder /build/v3/images/ /var/www/html/v3/images/
+
+containers/devspaces-server-rhel8-container:3.2.0/ubi8-minimal:8.6-941
+FROM ubi8-minimal:8.6-941
+RUN microdnf install java-11-openjdk-headless tar gzip shadow-utils findutils && \
+    microdnf -y clean all && rm -rf /var/cache/yum && echo "Installed Packages" && rpm -qa | sort -V && echo "End Of Installed Packages" && \
+    adduser -G root user && mkdir -p /home/user/devspaces
+COPY asset-server.tgz /tmp/asset-server.tgz
+
+containers/devspaces-theia-dev-rhel8-container:3.2.0/ubi8/nodejs-14:1-83
+FROM ubi8/nodejs-14:1-83
+RUN yum -y -q update && \
+    yum -y -q clean all && rm -rf /var/cache/yum
+RUN yum install -y curl make cmake gcc gcc-c++ python2 git git-core-doc openssh less bash tar gzip rsync patch \
+    && yum -y clean all && rm -rf /var/cache/yum && \
+    echo "Installed Packages" && rpm -qa | sort -V && echo "End Of Installed Packages"
+COPY asset-yarn-*.tgz /tmp/
+COPY asset-eclipse-che-theia-generator.tgz ${HOME}/eclipse-che-theia-generator.tgz
+    yarn ${YARN_FLAGS} global add yo generator-code vsce@^1 @theia/generator-plugin@0.0.1-1622834185 file:${HOME}/eclipse-che-theia-generator && \
+RUN echo "Installed npm Packages" && npm ls -g | sort | uniq || true
+RUN echo "End Of Installed npm Packages"
+
+containers/devspaces-theia-endpoint-rhel8-container:3.2.0/registry-proxy.engineering.redhat.com/rh-osbs/devspaces-theia-rhel8:3.2 as builder
+containers/devspaces-theia-endpoint-rhel8-container:3.2.0/ubi8-minimal:8.6-902.1661794353 as runtime
+FROM registry-proxy.engineering.redhat.com/rh-osbs/devspaces-theia-rhel8:3.2 as builder
+COPY asset-theia-endpoint-runtime-pre-assembly-nexe-cache-*.tar.gz asset-theia-endpoint-runtime-binary-yarn-*.tar.gz asset-node-src.tar.gz /tmp/
+    export NODE_VERSION=$(node --version | sed -s 's/v//') && mkdir -p "/home/theia/.nexe/${NODE_VERSION}" && \
+    tar zxf /tmp/asset-node-src.tar.gz --strip-components=1 -C "/home/theia/.nexe/${NODE_VERSION}" && \
+RUN yum install -y git make cmake gcc gcc-c++ python2 automake autoconf which glibc-devel && \
+    yum -y clean all && rm -rf /var/cache/yum && ln -s /usr/bin/python2 /usr/bin/python
+COPY asset-theia-endpoint-runtime-pre-assembly-nexe-*.tar.gz /tmp/
+FROM ubi8-minimal:8.6-902.1661794353 as runtime
+RUN microdnf -y install yum python38 python38-pyyaml jq && python3 --version && \
+    yum -y -q update && \
+    yum -y -q clean all && rm -rf /var/cache/yum && \
+    echo "Installed Packages" && rpm -qa | sort -V && echo "End Of Installed Packages"
+COPY *.whl /tmp
+RUN pip3 --version && pip3 install /tmp/*.whl && yq --version && rm -fr /tmp/*.whl 
+COPY --from=builder /home/theia/plugin-remote-endpoint /plugin-remote-endpoint
+
+containers/devspaces-theia-rhel8-container:3.2.0/registry-proxy.engineering.redhat.com/rh-osbs/devspaces-theia-dev-rhel8:3.2 as builder
+containers/devspaces-theia-rhel8-container:3.2.0/ubi8/nodejs-14:1-83 as build-result
+containers/devspaces-theia-rhel8-container:3.2.0/ubi8/nodejs-14:1-83 as runtime
+FROM registry-proxy.engineering.redhat.com/rh-osbs/devspaces-theia-dev-rhel8:3.2 as builder
+ARG THEIA_VERSION=master
+COPY asset-theia-source-code.tar.gz /tmp/asset-theia-source-code.tar.gz
+COPY asset-branding.tar.gz /tmp/asset-branding.tar.gz
+ADD src/patches ${HOME}/patches
+RUN if [ -d "${HOME}/patches/${THEIA_VERSION}" ]; then \
+    echo "Applying patches for Theia version ${THEIA_VERSION}"; \
+    for file in $(find "${HOME}/patches/${THEIA_VERSION}" -name '*.patch'); do \
+COPY asset-che-theia.tar.gz /tmp/asset-che-theia.tar.gz
+    echo "" > ${HOME}/theia-source-code/dev-packages/electron/scripts/post-install.js && \
+RUN yum install -y libsecret libsecret-devel make cmake gcc gcc-c++
+COPY asset-yarn-*.tar.gz asset-post-download-dependencies-*.tar.gz /tmp/
+COPY asset-yarn-*.lock /tmp/
+COPY asset-node-headers.tar.gz ${HOME}/asset-node-headers.tar.gz
+COPY asset-untagged-theia_yeoman_plugin.theia /home/theia-dev/theia-source-code/production/plugins/theia_yeoman_plugin.theia
+FROM ubi8/nodejs-14:1-83 as build-result
+COPY --from=builder /home/theia-dev/theia-source-code/production /che-theia-build
+FROM ubi8/nodejs-14:1-83 as runtime
+RUN yum -y -q update && \
+    yum -y -q clean all && rm -rf /var/cache/yum && \
+    echo "Installed Packages" && rpm -qa | sort -V && echo "End Of Installed Packages"
+COPY --from=builder /tmp/branding ${HOME}/branding
+COPY --from=build-result /default-theia-plugins /default-theia-plugins
+COPY asset-sshpass-sources.tar.gz /tmp/
+    && yum install -y $LIBSECRET sudo git git-lfs bzip2 which bash curl openssh less \
+    cd /tmp/sshpass-*/ && ./configure && make install && cd .. && rm -rf *sshpass-* && \
+    echo "Installed Packages" && rpm -qa | sort -V && echo "End Of Installed Packages"
+COPY asset-yarn-runtime-image-*.tar.gz /tmp/
+    adduser -r -u 1002 -G root -d ${HOME} -m -s /bin/sh theia \
+    && yarn global add ${YARN_FLAGS} yo @theia/generator-plugin@0.0.1-1622834185 generator-code typescript@3.5.3 \
+COPY --chown=theia:root --from=build-result /che-theia-build /home/theia
+
+containers/devspaces-traefik-rhel8-container:3.2.0/ubi8-minimal:8.6-941 
+FROM ubi8-minimal:8.6-941 
+COPY asset-*.tar.gz /tmp/assets/ 
+COPY script/ca-certificates.crt /etc/ssl/certs/
+RUN microdnf -y install tar gzip && \ 
+    microdnf -y clean all && rm -rf /var/cache/yum && echo "Installed Packages" && rpm -qa | sort -V && echo "End Of Installed Packages" 
+    TRAEFIK_VERSION="v2.8.1" \
+    GOLANG_VERSION="1.16.2" \
+
+containers/devspaces-udi-rhel8-container:3.2.0/ubi8-minimal:8.6-941
+FROM ubi8-minimal:8.6-941
+COPY $REMOTE_SOURCES $REMOTE_SOURCES_DIR
+    KAMEL_VERSION="" \
+    NODEJS_VERSION="16" \
+    GRADLE_VERSION="6.1" \
+    MAVEN_VERSION="3.6.3" \
+    PYTHON_VERSION="3.9" \
+    PHP_VERSION="7.3" \
+    E2FSPROGS_VERSION="1.46.5" \
+ADD etc/storage.conf $HOME/.config/containers/storage.conf
+COPY . /tmp/assets/
+COPY etc/docker.sh /usr/local/bin/docker
+COPY artifacts/lombok.jar /lombok.jar
+COPY gradle-${GRADLE_VERSION}-bin.zip apache-maven-${MAVEN_VERSION}-bin.tar.gz e2fsprogs-${E2FSPROGS_VERSION}.tar.gz /tmp/
+    microdnf install -y dnf bash tar gzip unzip bzip2 which shadow-utils findutils wget curl sudo git procps-ng tree \
+    dnf -y reinstall shadow-utils && \
+    dnf -y install podman buildah skopeo fuse-overlayfs
+RUN sed -i -e 's|^#mount_program|mount_program|g' -e '/additionalimage.*/a "/var/lib/shared",' /etc/containers/storage.conf
+    dnf -y -q install java-1.8.0-openjdk java-1.8.0-openjdk-devel java-1.8.0-openjdk-headless \
+    dnf -y -q module enable nodejs:$NODEJS_VERSION && \
+    INSTALL_PKGS="$MODULE_DEPS nodejs npm nodejs-nodemon nss_wrapper" && \
+    dnf -y -q install --setopt=tsflags=nodocs $INSTALL_PKGS && \
+    rpm -V $INSTALL_PKGS && \
+    mkdir -p /opt; unzip -d /opt /tmp/gradle-${GRADLE_VERSION}-bin.zip && \
+    mv /opt/gradle-${GRADLE_VERSION} /opt/gradle && rm -f /tmp/gradle-${GRADLE_VERSION}-bin.zip && \
+    tar xzf /tmp/assets/apache-maven-${MAVEN_VERSION}-bin.tar.gz -C /opt && \
+    mv /opt/apache-maven-${MAVEN_VERSION} /opt/apache-maven && \
+    rm -f /tmp/assets/apache-maven-${MAVEN_VERSION}-bin.tar.gz && \
+    dnf -y -q module enable python39:${PYTHON_VERSION} && \
+    dnf -y -q install python39 python39-devel python39-setuptools python39-pip && \
+    python${PYTHON_VERSION} -m pip install --user --no-cache-dir --upgrade pip setuptools pytest && \
+    python${PYTHON_VERSION} -m pytest -V
+    echo -e "#/usr/bin/bash\n/usr/bin/python${PYTHON_VERSION} -m pylint \$*" | sed -r -e "s@#@#\!@" > /usr/bin/pylint && \
+    echo -e "#/usr/bin/bash\n/usr/bin/python${PYTHON_VERSION} -m pylint \$*" | sed -r -e "s@#@#\!@" > /usr/bin/pylint${PYTHON_VERSION} && \
+    echo -e "#/usr/bin/bash\n/usr/bin/python${PYTHON_VERSION} -m pip \$*" | sed -r -e "s@#@#\!@" > /usr/bin/pip && \
+    echo -e "#/usr/bin/bash\n/usr/bin/python${PYTHON_VERSION} -m pip \$*" | sed -r -e "s@#@#\!@" > /usr/bin/pip${PYTHON_VERSION} && \
+    SL=/usr/local/bin/python; if [[ ! -f ${SL} ]] && [[ ! -L ${SL} ]]; then ln -s /usr/bin/python${PYTHON_VERSION} ${SL}; else ls -la ${SL}; fi && \
+    SL=/usr/local/bin/pip; if [[ ! -f ${SL} ]] && [[ ! -L ${SL} ]]; then ln -s /usr/bin/pip${PYTHON_VERSION} ${SL}; else ls -la ${SL}; fi && \
+    SL=/usr/local/bin/pylint; if [[ ! -f ${SL} ]] && [[ ! -L ${SL} ]]; then ln -s /usr/bin/pylint${PYTHON_VERSION} ${SL}; else ls -la ${SL}; fi && \
+    dnf -y -q install llvm-toolset clang clang-libs clang-tools-extra git-clang-format gdb make cmake gcc gcc-c++ && \
+        dnf -y -q --setopt=tsflags=nodocs install dotnet dotnet-sdk-6.0 dotnet-sdk-3.1; \
+        dnf -y -q --setopt=tsflags=nodocs install dotnet dotnet-sdk-6.0; \
+    dnf -y -q install golang && \
+    dnf -y -q module enable php:$PHP_VERSION && \
+    dnf -y -q install php php-fpm php-opcache php-devel php-pear php-gd php-mysqli php-zlib php-curl ca-certificates && \
+        mv /tmp/e2fsprogs-${E2FSPROGS_VERSION}.tar.gz . && \
+        tar -zxvf e2fsprogs-${E2FSPROGS_VERSION}.tar.gz && \
+        cd "e2fsprogs-${E2FSPROGS_VERSION}" && \
+        make install && \
+        make install-libs && \
+        rm /tmp/e2fsprogs-${E2FSPROGS_VERSION}.tar.gz; \
+    dnf -y -q clean all && rm -rf /var/cache/yum && \
+    echo "Installed Packages" && rpm -qa | sort -V && echo "End Of Installed Packages" && \
+    echo "python basic install:"; python -V; \
+    echo "python venv install:"; source ~/.venv/bin/activate && python -V; \
+
