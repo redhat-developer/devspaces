@@ -8,7 +8,7 @@
 # SPDX-License-Identifier: EPL-2.0
 #
 # script to query latest IIBs for a given list of OCP versions, then copy those to Quay
-# OPM 4.11 is required to run buildCatalogFromFiles.sh
+# OPM 4.11 is required to run buildCatalog.sh
 # 
 
 SCRIPT_DIR=$(cd "$(dirname "$0")" || exit; pwd)
@@ -138,23 +138,23 @@ else
     popd >/dev/null
 fi
 
-if [[ -x ${SCRIPT_DIR}/filterIIBForPackage.sh ]]; then
-    FIIB=${SCRIPT_DIR}/filterIIBForPackage.sh
+if [[ -x ${SCRIPT_DIR}/filterIIB.sh ]]; then
+    FIIB=${SCRIPT_DIR}/filterIIB.sh
 else 
-    if [[ $VERBOSEFLAG == "-v" ]]; then echo "Downloading filterIIBForPackage.sh script from Github"; fi
+    if [[ $VERBOSEFLAG == "-v" ]]; then echo "Downloading filterIIB.sh script from Github"; fi
     pushd /tmp >/dev/null 
-    curl -sSLO https://raw.githubusercontent.com/redhat-developer/devspaces/${MIDSTM_BRANCH}/product/filterIIBForPackage.sh && chmod +x filterIIBForPackage.sh
-    FIIB=/tmp/filterIIBForPackage.sh
+    curl -sSLO https://raw.githubusercontent.com/redhat-developer/devspaces/${MIDSTM_BRANCH}/product/filterIIB.sh && chmod +x filterIIB.sh
+    FIIB=/tmp/filterIIB.sh
     popd >/dev/null
 fi
 
-if [[ -x ${SCRIPT_DIR}/buildCatalogFromFiles.sh ]]; then
-    BCFF=${SCRIPT_DIR}/buildCatalogFromFiles.sh
+if [[ -x ${SCRIPT_DIR}/buildCatalog.sh ]]; then
+    BCFF=${SCRIPT_DIR}/buildCatalog.sh
 else
-    if [[ $VERBOSEFLAG == "-v" ]]; then echo "Downloading buildCatalogFromFiles.sh script from Github"; fi
+    if [[ $VERBOSEFLAG == "-v" ]]; then echo "Downloading buildCatalog.sh script from Github"; fi
     pushd /tmp >/dev/null
-    curl -sSLO https://raw.githubusercontent.com/redhat-developer/devspaces/${MIDSTM_BRANCH}/product/buildCatalogFromFiles.sh && chmod +x buildCatalogFromFiles.sh
-    BCFF=/tmp/buildCatalogFromFiles.sh
+    curl -sSLO https://raw.githubusercontent.com/redhat-developer/devspaces/${MIDSTM_BRANCH}/product/buildCatalog.sh && chmod +x buildCatalog.sh
+    BCFF=/tmp/buildCatalog.sh
     popd >/dev/null
 fi
 

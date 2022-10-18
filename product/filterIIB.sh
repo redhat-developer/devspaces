@@ -8,7 +8,7 @@
 # SPDX-License-Identifier: EPL-2.0
 #
 # Utility script to filter the Dev Spaces, Web Terminal, DevWorkspace (and optionally CodeReady Workspaces) operators
-# from an IIB image. Creates a file tree of json files, one folder per filtered package. 
+# from an IIB image. Creates a file tree of json files, one folder per filtered package.
 #
 
 usage() {
@@ -25,11 +25,9 @@ Usage: $0 [OPTIONS]
 
 Options:
   -s, --iib <source_index>           : Source registry, org, index image and tag from which to pull operators. Required.
-  --channel-ds  <channel_name>       : Target channel to use when publishing Dev Spaces; if not set, use same channel in
-                                       source IIB image (eg., stable)
-  --channel-all <channel_name>       : Target channel to use when publishing all operators
+  --channel-all <channel_name>       : Target channel to use when publishing all operators. If unspecified, channels from IIB are used
   --packages '<package1> <package2>' : Space separated list of packages to filter and include in target image. If 
-                                       unspecified, default is 'devspaces devworkspace-operator web-terminal' 
+                                       unspecified, default is 'devworkspace-operator devspaces web-terminal'
   --include-crw                      : Include CodeReady Workspaces in new index. Useful for testing migration from 2.15 -> 3.x.
   --dir <directory>                  : Output files to <directory>/olm-catalog instead of ./olm-catalog
   -v, --verbose                      : Verbose output: include additional information
@@ -45,13 +43,12 @@ EOF
 }
 
 VERBOSE=0
-PACKAGES='devspaces devworkspace-operator web-terminal'
+PACKAGES='devworkspace-operator devspaces web-terminal'
 WORKING_DIR='./'
 
 while [[ "$#" -gt 0 ]]; do
   case $1 in
     '-s'|'--iib') sourceIndexImage="$2"; shift 1;;
-    '--channel-ds') targetChannelDS="$2"; shift 1;;
     '--channel-all') targetChannelAll="$2"; shift 1;;
     '--packages') PACKAGES="$2"; shift 1;;
     '--include-crw') INCLUDE_CRW="true";;
@@ -146,11 +143,8 @@ replaceChannelName()
 # olm-catalog/devspaces/channel.json # "name": "stable"
 # olm-catalog/devspaces/package.json # "defaultChannel": "stable"
 pushd olm-catalog/ >/dev/null
-if [[ ! -z $targetChannelDS ]]; then
-  replaceChannelName "devspaces" "$targetChannelDS"
-elif [[ ! -z $targetChannelAll ]]; then
-  if [[ "$INCLUDE_CRW" == "true" ]]; then replaceChannelName "codeready-workspaces" "$targetChannelAll"; fi
-  for d in devspaces web-terminal devworkspace-operator; do
+if [[ ! -z $targetChannelAll ]]; then
+  for d in devspaces web-terminal devworkspace-operator codeready-workspaces; do
       replaceChannelName "${d}" "$targetChannelAll"
   done
 fi

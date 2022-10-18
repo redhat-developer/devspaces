@@ -8,16 +8,16 @@
 # SPDX-License-Identifier: EPL-2.0
 #
 # Utility script build a catalog image from bundle, channel, and package files rendered
-# by filterIIBForPackage.sh. The built catalog contains only operators in files and is
+# by filterIIB.sh. The built catalog contains only operators in files and is
 # thus smaller in size.
-# OPM 4.11 is required to run buildCatalogFromFiles.sh
+# OPM 4.11 is required to run buildCatalog.sh
 #
 
 usage() {
   cat <<EOF
 Build an IIB OLM catalog from a set of files defining the operators (bundles, channels, packages) that
 should be included, resulting in a smaller OLM catalog that contains only those operators. This script
-is intended for use in conjunction with filterIIBForPackage.sh
+is intended for use in conjunction with filterIIB.sh
 
 Requires:
 * jq 1.6+, podman 2.0+, glibc 2.28+
@@ -82,6 +82,11 @@ fi
 
 pushd $WORKING_DIR > /dev/null
 trap 'popd > /dev/null' EXIT
+
+if [ ! -d ./olm-catalog ]; then
+  echo "Specified directory $(pwd) does not contain files for an OLM catalog. Aborting"
+  exit 1
+fi
 
 if [ -f ./olm-catalog.Dockerfile ]; then rm -f ./olm-catalog.Dockerfile; fi
 $PODMAN rmi --ignore --force $targetIndexImage >/dev/null 2>&1 || true
