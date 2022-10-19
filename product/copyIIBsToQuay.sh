@@ -190,9 +190,11 @@ for OCP_VER in ${OCP_VERSIONS}; do
     ${filterIIB} -s ${LATEST_DWO_IIB} --channel-all fast --dir $CATALOG_DIR --packages "devworkspace-operator" ${VERBOSEFLAG}
     if [[ "$PUSH" != "true" ]]; then
         ${buildCatalog} -t ${LATEST_IIB_QUAY} ${VERBOSEFLAG} --dir $CATALOG_DIR --ocp-ver $OCP_VER
+        # If we're not pushing, we're done processing the IIB for this OCP_VER -- skopeo inspect and copy fail if the image
+        # has not been pushed.
         continue
     fi
-
+    # $PUSH == true
     # check if destination already exists in quay
     if [[ $(skopeo --insecure-policy inspect docker://${LATEST_IIB_QUAY} 2>&1) == *"Error"* ]] || [[ ${PUSHTOQUAYFORCE} -eq 1 ]]; then
         ${buildCatalog} -t ${LATEST_IIB_QUAY} --push ${VERBOSEFLAG} --dir $CATALOG_DIR --ocp-ver $OCP_VER
@@ -205,7 +207,7 @@ for OCP_VER in ${OCP_VERSIONS}; do
     if [[ $(skopeo --insecure-policy inspect docker://${LATEST_IIB_QUAY} 2>&1) == *"Error"* ]]; then
         echo "[ERROR] Cannot find image ${LATEST_IIB_QUAY} to copy!"
         echo "[ERROR] Check output of this command for an idea of what went wrong:"
-        echo "[ERROR] ${buildCatalog} -s ${LATEST_IIB} -t ${LATEST_IIB_QUAY} -v --push"
+        echo "[ERROR] ${buildCatalog} -t ${LATEST_IIB_QUAY}  --dir $CATALOG_DIR --ocp-ver $OCP_VER --push -v"
         exit 1
     fi
 
