@@ -60,7 +60,7 @@ while [[ "$#" -gt 0 ]]; do
   shift 1
 done
 
-echo "Working in $WORKING_DIR"
+if [[ $VERBOSEFLAG == "-v" ]]; then echo "[DEBUG] Working in $WORKING_DIR"; fi
 pushd "$WORKING_DIR" > /dev/null
 trap 'popd >> /dev/null' EXIT
 
@@ -86,7 +86,7 @@ if [ -z $sourceIndexImage ]; then echo "IIB image required"; echo; usage; exit 1
 
 if [ -f ./render.json ]; then rm -f ./render.json; fi
 if [[ $VERBOSE -eq 1 ]]; then
-  echo "Rendering $sourceIndexImage. This will take several minutes."
+  echo "[DEBUG] Rendering $sourceIndexImage. This will take several minutes."
   time opm render "$sourceIndexImage" > render.json
 else
   opm render "$sourceIndexImage" > render.json

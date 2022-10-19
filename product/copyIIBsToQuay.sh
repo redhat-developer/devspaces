@@ -60,6 +60,8 @@ fi
 # collect defaults from dependencies/job-config.json file
 # product Version
 DS_VERSION=$(jq -r '.Version' ${jobconfigjson})
+DWO_VERSION=$(jq -r --arg VERSION "${DS_VERSION}" '.Other.DEV_WORKSPACE_OPERATOR_TAG[$VERSION]' ${jobconfigjson})
+if [[ $DWO_VERSION == "null" ]]; then DWO_VERSION="0."; fi
 
 setDefaults() {
     # list of OCP versions
@@ -97,8 +99,9 @@ fi
 
 if [[ $VERBOSEFLAG == "-v" ]]; then
 	echo "[DEBUG] DS_VERSION=${DS_VERSION}"
+	echo "[DEBUG] DWO_VERSION=${DWO_VERSION}"
 	echo "[DEBUG] MIDSTM_BRANCH = $MIDSTM_BRANCH"
-	echo "[DEBUG] OCP_VERSIONS = ${OCP_VERSIONS}"
+	echo "[DEBUG] OCP_VERSIONS  =${OCP_VERSIONS}"
 	echo "[DEBUG] FLOATING_QUAY_TAGS = $FLOATING_QUAY_TAGS"
     if [[ $EXTRA_TAGS ]]; then echo "[DEBUG] EXTRA_TAGS = $EXTRA_TAGS"; fi
 fi
@@ -170,20 +173,21 @@ for OCP_VER in ${OCP_VERSIONS}; do
     LATEST_IIB=$(${GLIB} --ds -t ${DS_VERSION} -o ${OCP_VER} -qi) # return quietly, just the index bundle
     LATEST_IIB_NUM=${LATEST_IIB##*:}
     # Get DevWorkspace Operator IIB separately to enable DWO RC testing.
-    LATEST_DWO_IIB=$(${GLIB} --dwo -t "0" -c 'devworkspace-operator-bundle' -o ${OCP_VER} -qi) # return quietly, just the index bundle
+    LATEST_DWO_IIB=$(${GLIB} --dwo -t ${DWO_VERSION} -c 'devworkspace-operator-bundle' -o ${OCP_VER} -qi) # return quietly, just the index bundle
     LATEST_DWO_IIB_NUM=${LATEST_DWO_IIB##*:}
     # NOTE: this is NOT OCP server arch, but the arch of the local build machine!
     # must build on multiple arches to get per-arch IIBs
     LATEST_IIB_QUAY="quay.io/devspaces/iib:${DS_VERSION}-${OCP_VER}-${LATEST_IIB_NUM}-${LATEST_DWO_IIB_NUM}-$(uname -m)"
     if [[ $VERBOSEFLAG == "-v" ]]; then
-        echo "[DEBUG] OPERATOR_BUNDLE=$(${GLIB} --ds -t ${DS_VERSION} -o ${OCP_VER} -qb)"
-        echo "[DEBUG]  IIB FOR BUNDLE=${LATEST_IIB}"
-        echo "[DEBUG]     IIB FOR DWO=${LATEST_DWO_IIB}"
-        echo "[DEBUG] QUAY IIB BUNDLE=${LATEST_IIB_QUAY}"
+        echo "[DEBUG] DS  OPERATOR BUNDLE=$(${GLIB} --ds -t ${DS_VERSION} -o ${OCP_VER} -qb)"
+        echo "[DEBUG] DS     INDEX BUNDLE=${LATEST_IIB}"
+        echo "[DEBUG] DWO OPERATOR BUNDLE=$(${GLIB} --dwo -t ${DWO_VERSION} -c 'devworkspace-operator-bundle' -o ${OCP_VER} -qb)"
+        echo "[DEBUG] DWO    INDEX BUNDLE=${LATEST_DWO_IIB}"
+        echo "[DEBUG] QUAY   INDEX BUNDLE=${LATEST_IIB_QUAY}"
     fi
 
-    CATALOG_DIR=$(mktemp -d --suffix "-${DS_VERSION}-${OCP_VER}-${LATEST_IIB_NUM}-$(uname -m)")
-    if [[ $VERBOSEFLAG == "-v" ]]; then echo "Rendering catalog to $CATALOG_DIR"; fi
+    CATALOG_DIR=$(mktemp -d --suffix "-${DS_VERSION}-${OCP_VER}-${LATEST_IIB_NUM}-${LATEST_DWO_IIB_NUM}-$(uname -m)")
+    if [[ $VERBOSEFLAG == "-v" ]]; then echo "[DEBUG] Rendering catalog to: $CATALOG_DIR"; fi
 
     # filter and publish to a new name, putting all operators in the fast channel
     ${filterIIB} -s ${LATEST_IIB} --channel-all fast --dir $CATALOG_DIR --packages "devspaces web-terminal" ${VERBOSEFLAG}
