@@ -225,67 +225,12 @@ if [[ ${phases} == *"2"* ]]; then
 	log ""
 	log " == golang =="
 	log ""
-	log "2a. Install golang go deps: go-language-server@${GOLANG_LS_VERSION}"
-	if [[ ! -x /usr/bin/go ]]; then sudo yum -y -q install golang || true; fi
-	if [[ ! -x /usr/bin/go ]]; then echo "Error: install golang to run this script: sudo yum -y install golang"; exit 1; fi
-	getBashVars devspaces-udi build_golang.sh
-	for d in \
-		"GOLANG_IMAGE" \
-		"GOLANG_LINT_VERSION" \
-		"GOLANG_LS_OLD_DEPS" \
-		"GOLANG_LS_VERSION" \
-		; do
-		log " * $d = ${!d}"
-	done
+	log "2. Install golang go + npm deps: migrated to cachito, nothing to include here"
 	log ""
-	cd /tmp
-	export GOPATH=/tmp/go-deps-tmp/
-	sudo rm -fr /tmp/go-deps-tmp
-	mkdir -p go-deps-tmp && cd go-deps-tmp
-
-	# run the same set of go get -v commands in the build_*.sh script:
-	grep -E "go get -v|go build -o" /tmp/devspaces-images/devspaces-udi/build/build_golang.sh > todos.txt
-	while read p; do
-		# if you want more detailed output and logging, comment the next 1 line and uncomment the following 4 lines
-		log "  ${p%%;*}"; ${p%%;*} || true
-		#log " == ${p%%;*} ==>"
-		#${p%%;*} 2>&1 | tee -a ${LOG_FILE}
-		#log "<== ${p%%;*} =="
-		#log ""
-	done <todos.txt
-	grep -E "GOLANG_LINT_VERSION" /tmp/devspaces-images/devspaces-udi/build/build_golang.sh > todos.txt
-	. todos.txt
-	rm -f todos.txt
-
-	# now get the SHAs used in each github repo cloned locally
-	mnf "devspaces-udi-container:${CSV_VERSION}/go-language-server:${GOLANG_LS_VERSION}"
-	for d in $(find . -name ".git" | sort); do
-		g=${d%%/.git}
-		pushd ${g} >/dev/null
-		mnf "  devspaces-udi-container:${CSV_VERSION}/${g##./src/}:$(git rev-parse HEAD)"
-		popd >/dev/null
-	done
-	mnf ""
-	sudo rm -fr /tmp/go-deps-tmp /tmp/go-build*
-
-	log ""
-	log "2b. Install golang npm deps: go-language-server@${GOLANG_LS_VERSION}"
-	if [[ ! $(which npm) ]]; then sudo yum -y -q install nodejs npm || true; fi
-	if [[ ! $(which npm) ]]; then echo "Error: install nodejs and npm to run this script: sudo yum -y install nodejs npm"; exit 1; fi
-	log ""
-	cd /tmp
-	rm -fr /tmp/npm-deps-tmp
-	mkdir -p npm-deps-tmp && cd npm-deps-tmp
-	{ npm install --prefix /tmp/npm-deps-tmp/ go-language-server@${GOLANG_LS_VERSION} | tee -a ${LOG_FILE}; } || true
-	log ""
-	{ npm list >> ${LOG_FILE}; } || true
-	mnf "devspaces-udi-container:${CSV_VERSION}/go-language-server:${GOLANG_LS_VERSION}"
-	npmList "  devspaces-udi-container:${CSV_VERSION}/"
-	mnf ""
-	rm -fr /tmp/npm-deps-tmp
 
 	cd /tmp
 	log ""
+	# TODO remove this for 3.3 as kamel is removed
 	log " == kamel =="
 	log ""
 	log "2c. kamel is built from go sources with no additional requirements"
