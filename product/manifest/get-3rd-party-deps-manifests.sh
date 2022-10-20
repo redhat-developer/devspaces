@@ -63,7 +63,8 @@ done
 cd /tmp || exit
 
 if [[ ! ${MIDSTM_BRANCH} ]]; then usage; fi
-if [[ ! ${phases} ]]; then phases=" 1 2 3 4 5 6 7 8 9 "; fi
+# phases 2 and 3 have been removed 
+if [[ ! ${phases} ]]; then phases=" 1 4 5 6 7 8 9 "; fi
 
 if [[ ! ${CSV_VERSION} ]]; then 
   CSV_VERSION=$(curl -sSLo - https://raw.githubusercontent.com/redhat-developer/devspaces-operator/${MIDSTM_BRANCH}/manifests/devspaces.csv.yaml | yq -r .spec.version)
@@ -156,7 +157,7 @@ function logDockerDetails ()
 
 rm -f ${LOG_FILE} ${MANIFEST_FILE}
 
-if [[ ${phases} == *"1"* ]] || [[ ${phases} == *"2"* ]] || [[ ${phases} == *"4"* ]] || [[ ${phases} == *"5"* ]] || [[ ${phases} == *"6"* ]]; then
+if [[ ${phases} == *"1"* ]] || [[ ${phases} == *"4"* ]] || [[ ${phases} == *"5"* ]] || [[ ${phases} == *"6"* ]]; then
 	log "1a. Check out 3rd party language server dependencies builder repo (will collect variables later)" 
 	cd /tmp
 	if [[ ! -d devspaces-images ]]; then
@@ -217,31 +218,6 @@ if [[ ${phases} == *"1"* ]]; then
 	log "See also latest build architecture diagram & development documentation:"
 	log "https://docs.google.com/presentation/d/1R9tr67pDMk3UVUbvN7vBJbJCYGlUsO2ZPcXbdaoOvTs/edit#slide=id.g4ac34a3cdd_0_0"
 	log "https://github.com/redhat-developer/devtools-productization/tree/main/codeready-workspaces"
-fi
-
-##################################
-
-if [[ ${phases} == *"2"* ]]; then
-	log ""
-	log " == golang =="
-	log ""
-	log "2. Install golang go + npm deps: migrated to cachito, nothing to include here"
-	log ""
-
-	cd /tmp
-	log ""
-	# TODO remove this for 3.3 as kamel is removed
-	log " == kamel =="
-	log ""
-	log "2c. kamel is built from go sources with no additional requirements"
-	getBashVars devspaces-udi build_kamel.sh
-	for d in \
-		"GOLANG_IMAGE" \
-		"KAMEL_VERSION" \
-		; do
-		log " * $d = ${!d}"
-	done
-	log ""
 fi
 
 ##################################
