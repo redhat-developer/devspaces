@@ -495,6 +495,15 @@ fi
 echo -n "Allow up to 30 concurrent workspace starts... " && \
 oc patch checluster/devspaces -n "${NAMESPACE}" --type='merge' -p '{"spec":{"components":{"devWorkspace":{"runningLimit":"30"}}}}'
 
+if [[ $DISABLE_CATALOGSOURCESFLAG != "" ]]; then
+  echo
+  echo "NOTE: Default catalog sources can be re-enabled with this command:";echo
+  cat <<EOF
+  oc patch OperatorHub cluster --type json -p '[{"op": "add", "path": "/spec/disableAllDefaultSources", "value": false}]'
+EOF
+  echo
+fi
+
 CHECLUSTER_JSON=$(oc get checlusters devspaces -n "$NAMESPACE" -o json)
 # note due to redirection bug https://github.com/eclipse/che/issues/21416 append trailing slashes just in case
 echo "
