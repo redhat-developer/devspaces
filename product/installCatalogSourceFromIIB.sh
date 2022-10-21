@@ -131,8 +131,8 @@ fi
 
 # Optionally disable all default CatalogSources, since we'll be installing from the IIB
 if [ "$DISABLE_CATALOGSOURCES" == "true" ]; then
-  oc patch OperatorHub cluster --type json -p '[{"op": "add", "path": "/spec/disableAllDefaultSources",
-"value": true}]'
+  echo "[INFO] Disable default catalog sources"
+  oc patch OperatorHub cluster --type json -p '[{"op": "add", "path": "/spec/disableAllDefaultSources", "value": true}]'
 fi
 
 if [[ "${IIB_IMAGE}" == "brew.registry"* ]]; then 

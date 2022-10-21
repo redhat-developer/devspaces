@@ -33,6 +33,7 @@ CREATE_CHECLUSTER="true"
 CREATE_USERS="false"
 GET_URL="true"
 DWO_VERSION="" # by default, install from latest release
+DISABLE_CATALOGSOURCESFLAG="" # by default, allow installation from default catalog sources; use --next or --disable-default-sources to disable
 
 # subscription channels
 CHANNEL_DWO="fast"
@@ -82,6 +83,9 @@ Options:
                       : For example, given https://console-openshift-console.apps.my-cluster-here.com instance,
                       : use 'my-cluster-here.com' (or longer format: 'api.my-cluster-here.com:6443')
 
+  --disable-default-sources
+                      : Disable default CatalogSources, like the RH Ecosystem Cataloge. Default: false
+
   --dwo <VERSION>     : Dev Workspace Operator version to test, e.g. '0.15'. Optional
   --dwo-chan <CHANNEL>: Dev Workspace Operator channel to install; default: $CHANNEL_DWO (if --quay flag used, default: fast)
   --iib-dwo <IIB_URL> : Dev Workspace Operator IIB from which to install; default: computed from DWO version
@@ -99,6 +103,7 @@ Options:
                       : Resolve images from quay.io using ImageContentSourcePolicy
   --next              : Install from quay.io/devspaces/iib:next-v4.yy-<OS_ARCH>, from fast channel, built from CI devspaces-3-rhel-8 branch
                       : Resolve images from quay.io using ImageContentSourcePolicy
+                      : If --next, --disable-default-sources is implied so that we ONLY install DWO from quay, not RH Ecosystem Catalog
 
   --brew              : Resolve images from brew.registry.redhat.io using ImageContentSourcePolicy
   --icsp <REGISTRY>   : Resolve images from specified registry URL using ImageContentSourcePolicy
@@ -239,6 +244,7 @@ while [[ "$#" -gt 0 ]]; do
     '--iib-ds')  IIB_DS="$2";  if [[ $IIB_DS == "quay.io/devspaces/iib"* ]];  then CHANNEL_DS="fast";  ICSP_FLAGs="${ICSP_FLAGs} --icsp quay.io"; fi; shift 1;;
     '--quay'|'--fast')   IIB_DS="quay.io/devspaces/iib"; CHANNEL_DS="fast"; CHANNEL_DWO="fast"; ICSP_FLAGs="${ICSP_FLAGs} --icsp quay.io";;
     '--latest'|'--next') IIB_DS="quay.io/devspaces/iib"; CHANNEL_DS="fast"; CHANNEL_DWO="fast"; ICSP_FLAGs="${ICSP_FLAGs} --icsp quay.io"; DS_VERSION="${1//--/}";;
+    '--disable-default-sources') DISABLE_CATALOGSOURCESFLAG="$1";;
     '--brew') ICSP_FLAGs="${ICSP_FLAGs} --icsp brew.registry.redhat.io";;
     '--icsp') ICSP_FLAGs="${ICSP_FLAGs} --icsp $2"; shift 1;;
     '--delete-before') DELETE_BEFORE="true";;
@@ -270,13 +276,19 @@ if [[ $DWO_VERSION ]]; then
     echo "[INFO] Requested Dev Workspace Operator IIB $IIB_DWO - installing from $CHANNEL_DWO channel..."
   fi
 fi
+
+# disable default catalog sources if installing DS next
+if [[ ${DS_VERSION} == "next" ]]; then
+  DISABLE_CATALOGSOURCESFLAG="--disable-default-sources"
+fi
+
 if [[ $IIB_DWO ]]; then
   # catalog is installed as "devworkspace-operator-<CHANNEL_DWO>"
   "$SCRIPT_DIR"/installCatalogSourceFromIIB.sh \
     --iib "$IIB_DWO" \
     --install-operator "devworkspace-operator" \
     --channel "$CHANNEL_DWO" \
-    --namespace "$OLM_NAMESPACE" ${ICSP_FLAGs}
+    --namespace "$OLM_NAMESPACE" ${ICSP_FLAGs} ${DISABLE_CATALOGSOURCESFLAG}
 fi
 
 if [[ ! $IIB_DS ]]; then
@@ -300,7 +312,7 @@ fi
   --iib "$IIB_DS" \
   --install-operator "devspaces" \
   --channel "$CHANNEL_DS" \
-  --namespace "$OLM_NAMESPACE" ${ICSP_FLAGs}
+  --namespace "$OLM_NAMESPACE" ${ICSP_FLAGs} ${DISABLE_CATALOGSOURCESFLAG}
 
 elapsed=0
 inc=3
@@ -482,6 +494,14 @@ fi
 # patch CheCluster so we can run up to 30 workspaces in parallel (instead of default 1)
 echo -n "Allow up to 30 concurrent workspace starts... " && \
 oc patch checluster/devspaces -n "${NAMESPACE}" --type='merge' -p '{"spec":{"components":{"devWorkspace":{"runningLimit":"30"}}}}'
+
+if [[ $DISABLE_CATALOGSOURCESFLAG != "" ]]; then
+  echo
+  echo "NOTE: Default catalog sources can be re-enabled with this command:";echo
+  cat <<EOF
+  oc patch OperatorHub cluster --type json -p '[{"op": "add", "path": "/spec/disableAllDefaultSources", "value": false}]'
+EOF
+fi
 
 CHECLUSTER_JSON=$(oc get checlusters devspaces -n "$NAMESPACE" -o json)
 # note due to redirection bug https://github.com/eclipse/che/issues/21416 append trailing slashes just in case
