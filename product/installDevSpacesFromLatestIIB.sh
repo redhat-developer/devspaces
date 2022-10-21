@@ -501,7 +501,6 @@ if [[ $DISABLE_CATALOGSOURCESFLAG != "" ]]; then
   cat <<EOF
   oc patch OperatorHub cluster --type json -p '[{"op": "add", "path": "/spec/disableAllDefaultSources", "value": false}]'
 EOF
-  echo
 fi
 
 CHECLUSTER_JSON=$(oc get checlusters devspaces -n "$NAMESPACE" -o json)
