@@ -33,6 +33,7 @@ CREATE_CHECLUSTER="true"
 CREATE_USERS="false"
 GET_URL="true"
 DWO_VERSION="" # by default, install from latest release
+DISABLE_CATALOGSOURCESFLAG="" # by default, allow installation from default catalog sources; use --next or --disable-default-sources to disable
 
 # subscription channels
 CHANNEL_DWO="fast"
@@ -277,7 +278,6 @@ if [[ $DWO_VERSION ]]; then
 fi
 
 # disable default catalog sources if installing DS next
-DISABLE_CATALOGSOURCESFLAG=""
 if [[ ${DS_VERSION} == "next" ]]; then
   DISABLE_CATALOGSOURCESFLAG="--disable-default-sources"
 fi
