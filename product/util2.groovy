@@ -313,13 +313,13 @@ def updateOCRpms(String rpmRepoVersion="4.11", String dir="${WORKSPACE}/sources"
   updatedVersion=updateRpms("openshift-clients-4", pulpRepoURL + "/content/dist/layered/rhel8/basearch/rhocp/" + rpmRepoVersion, dir, branch, ARCHES)
   commitChanges(dir, "[rpms] Update to " + updatedVersion, branch)
 }
-// ./getLatestRPM.sh -r "odo-2"             -u http://rhsm-pulp.corp.redhat.com/content/dist/layered/rhel8/basearch/ocp-tools/4.10 -s ...
-def updateOdoRpms(String rpmRepoVersion="4.10", String dir="${WORKSPACE}/sources", String branch=MIDSTM_BRANCH, String ARCHES="x86_64 s390x ppc64le") {
-  updatedVersion=updateRpms("odo-2", pulpRepoURL + "/content/dist/layered/rhel8/basearch/ocp-tools/" + rpmRepoVersion, dir, branch, ARCHES)
+// ./getLatestRPM.sh -r "odo-3"             -u http://rhsm-pulp.corp.redhat.com/content/dist/layered/rhel8/basearch/ocp-tools/4.11 -s ...
+def updateOdoRpms(String rpmRepoVersion="4.11", String dir="${WORKSPACE}/sources", String branch=MIDSTM_BRANCH, String ARCHES="x86_64 s390x ppc64le") {
+  updatedVersion=updateRpms("odo-3", pulpRepoURL + "/content/dist/layered/rhel8/basearch/ocp-tools/" + rpmRepoVersion, dir, branch, ARCHES)
   commitChanges(dir, "[rpms] Update to " + updatedVersion, branch)
 }
-// ./getLatestRPM.sh -r "helm-3"             -u http://rhsm-pulp.corp.redhat.com/content/dist/layered/rhel8/basearch/ocp-tools/4.10 -s ...
-def updateHelmRpms(String rpmRepoVersion="4.10", String dir="${WORKSPACE}/sources", String branch=MIDSTM_BRANCH, String ARCHES="x86_64 s390x ppc64le") {
+// ./getLatestRPM.sh -r "helm-3"             -u http://rhsm-pulp.corp.redhat.com/content/dist/layered/rhel8/basearch/ocp-tools/4.11 -s ...
+def updateHelmRpms(String rpmRepoVersion="4.11", String dir="${WORKSPACE}/sources", String branch=MIDSTM_BRANCH, String ARCHES="x86_64 s390x ppc64le") {
   updatedVersion=updateRpms("helm-3", pulpRepoURL + "/content/dist/layered/rhel8/basearch/ocp-tools/" + rpmRepoVersion, dir, branch, ARCHES)
   commitChanges(dir, "[rpms] Update to " + updatedVersion, branch)
 }
