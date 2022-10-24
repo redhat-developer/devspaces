@@ -29,6 +29,7 @@ Options:
   -v                  Verbose output: include additional information about what's happening
   -q, -qi             Quiet Index  output: instead of default tabbed table with operator bundle, IIB URL + OCP version; show IIB URL only
   -qb                 Quiet Bundle output: instead of default tabbed table with operator bundle, IIB URL + OCP version; show bundle only
+                      Note: you can achieve the same thing more reliably (though perhaps more slowly) by querying OSBS with getLatestImageTags.sh
 "
 }
 

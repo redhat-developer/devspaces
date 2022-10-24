@@ -84,7 +84,16 @@ if [[ $PROD_VER ]] && [[ $OCP_VER ]] && [[ ! $IMAGES ]]; then # compute latest I
   if [[ $QUIET -lt 2 ]]; then
     echo "----------"
   fi
-  IMAGES=$(${SCRIPTPATH}/getLatestIIBs.sh -t ${PROD_VER} -o ${OCP_VER} -qb)
+  # use getLatestImageTags.sh instead of getLatestIIBs.sh as it's more reliable when datagrepper content is unavailable/expired
+  GLIT=${SCRIPTPATH}/getLatestImageTags.sh
+  if [[ $GLI_FLAG == "--dwo" ]]; then
+    IMAGES=$(${GLIT} --osbs -c devworkspace-operator-bundle --tag "${PROD_VER}-")
+  elif [[ $GLI_FLAG == "--ds" ]]; then
+    IMAGES=$(${GLIT} --osbs -c devspaces-operator-bundle --tag "${PROD_VER}-")
+  else
+    echo "ERROR: only Dev Spaces and Dev Workspace operators are supported by this tool."
+    exit 2
+  fi
 fi
 
 for imageAndTag in $IMAGES; do 

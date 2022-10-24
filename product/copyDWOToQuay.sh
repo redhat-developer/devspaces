@@ -57,17 +57,11 @@ if [[ ! $PROD_VER ]]; then usage; exit 1; fi
 
 SCRIPT_DIR=$(cd "$(dirname "$0")" || exit; pwd)
 
-# 1. use getLatestIIBs.sh to get latest bundle in an IIB - return: operator-bundle:0.16-5 
-bundle=$(${SCRIPT_DIR}/getLatestIIBs.sh --dwo -t ${PROD_VER} -qb | sort -uV | tail -1) 
+# 1. use getLatestImageTags.sh to get latest bundle in an IIB - return: operator-bundle:0.16-5 
+bundle=$(${SCRIPT_DIR}/getLatestImageTags.sh --osbs -c devworkspace-operator-bundle --tag "${PROD_VER}-")
 if [[ ! $bundle ]]; then
-    echo "Could not compute latest IIB; searching for latest bundle instead..."
-    bundle=$(${SCRIPT_DIR}/getLatestImageTags.sh --osbs -c devworkspace-operator-bundle --tag "${PROD_VER}-")
-    if [[ ! $bundle ]]; then
-        errorf "Could not compute latest bundle! "
-        exit 2
-    fi
-else
-    bundle="registry-proxy.engineering.redhat.com/rh-osbs/devworkspace-${bundle}"
+    errorf "Could not compute latest bundle! "
+    exit 2
 fi
 if [[ $VERBOSE -eq 1 ]]; then echo "Got bundle: $bundle"; fi
 

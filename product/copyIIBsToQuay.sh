@@ -141,6 +141,16 @@ else
     popd >/dev/null
 fi
 
+if [[ -x ${SCRIPT_DIR}/getLatestImageTags.sh ]]; then
+    GLIT=${SCRIPT_DIR}/getLatestImageTags.sh
+else
+    if [[ $VERBOSEFLAG == "-v" ]]; then echo "Downloading getLatestImageTags.sh script from Github"; fi
+    pushd /tmp >/dev/null
+    curl -sSLO https://raw.githubusercontent.com/redhat-developer/devspaces/${MIDSTM_BRANCH}/product/getLatestImageTags.sh && chmod +x getLatestImageTags.sh
+    GLIT=/tmp/getLatestImageTags.sh
+    popd >/dev/null
+fi
+
 if [[ -x ${SCRIPT_DIR}/filterIIB.sh ]]; then
     filterIIB=${SCRIPT_DIR}/filterIIB.sh
 else
@@ -179,9 +189,9 @@ for OCP_VER in ${OCP_VERSIONS}; do
     # must build on multiple arches to get per-arch IIBs
     LATEST_IIB_QUAY="quay.io/devspaces/iib:${DS_VERSION}-${OCP_VER}-${LATEST_IIB_NUM}-${LATEST_DWO_IIB_NUM}-$(uname -m)"
     if [[ $VERBOSEFLAG == "-v" ]]; then
-        echo "[DEBUG] DS  OPERATOR BUNDLE=$(${GLIB} --ds -t ${DS_VERSION} -o ${OCP_VER} -qb)"
+        echo "[DEBUG] DS  OPERATOR BUNDLE=$(${GLIT} --osbs -c devspaces-operator-bundle --tag "${DS_VERSION}-")"
         echo "[DEBUG] DS     INDEX BUNDLE=${LATEST_IIB}"
-        echo "[DEBUG] DWO OPERATOR BUNDLE=$(${GLIB} --dwo -t ${DWO_VERSION} -c 'devworkspace-operator-bundle' -o ${OCP_VER} -qb)"
+        echo "[DEBUG] DWO OPERATOR BUNDLE=$(${GLIT} --osbs -c devworkspace-operator-bundle --tag "${DWO_VERSION}-")"
         echo "[DEBUG] DWO    INDEX BUNDLE=${LATEST_DWO_IIB}"
         echo "[DEBUG] QUAY   INDEX BUNDLE=${LATEST_IIB_QUAY}"
     fi
