@@ -182,30 +182,38 @@ for OCP_VER in ${OCP_VERSIONS}; do
     # registry-proxy.engineering.redhat.com/rh-osbs/iib:286641
     LATEST_IIB=$(${GLIB} --ds -t ${DS_VERSION} -o ${OCP_VER} -qi) # return quietly, just the index bundle
     LATEST_IIB_NUM=${LATEST_IIB##*:}
-    # Get DevWorkspace Operator IIB separately to enable DWO RC testing.
-    LATEST_DWO_IIB=$(${GLIB} --dwo -t ${DWO_VERSION} -c 'devworkspace-operator-bundle' -o ${OCP_VER} -qi) # return quietly, just the index bundle
+    # Get DevWorkspace Operator IIB separately to enable DWO RC testing
+    # don't wait the usual 30 mins to see if new DWO is published; instead just check once and give up if not found
+    LATEST_DWO_IIB=$(${GLIB} --dwo -t ${DWO_VERSION} -c 'devworkspace-operator-bundle' -o ${OCP_VER} -qi --timeout 2 --interval 1) # return quietly, just the index bundle
     LATEST_DWO_IIB_NUM=${LATEST_DWO_IIB##*:}
+
     # NOTE: this is NOT OCP server arch, but the arch of the local build machine!
     # must build on multiple arches to get per-arch IIBs
     if [[ $LATEST_DWO_IIB_NUM ]]; then
         LATEST_IIB_QUAY="quay.io/devspaces/iib:${DS_VERSION}-${OCP_VER}-${LATEST_IIB_NUM}-${LATEST_DWO_IIB_NUM}-$(uname -m)"
         CATALOG_DIR=$(mktemp -d --suffix "-${DS_VERSION}-${OCP_VER}-${LATEST_IIB_NUM}-${LATEST_DWO_IIB_NUM}-$(uname -m)")
     else
+         # use simpler tag when no DWO available
         LATEST_IIB_QUAY="quay.io/devspaces/iib:${DS_VERSION}-${OCP_VER}-${LATEST_IIB_NUM}-$(uname -m)"
         CATALOG_DIR=$(mktemp -d --suffix "-${DS_VERSION}-${OCP_VER}-${LATEST_IIB_NUM}-$(uname -m)")
-    fi
+    fi 
+
     if [[ $VERBOSEFLAG == "-v" ]]; then
-        echo "[DEBUG] DS  OPERATOR BUNDLE=$(${GLIT} --osbs -c devspaces-operator-bundle --tag "${DS_VERSION}-")"
-        echo "[DEBUG] DS     INDEX BUNDLE=${LATEST_IIB}"
-        echo "[DEBUG] DWO OPERATOR BUNDLE=$(${GLIT} --osbs -c devworkspace-operator-bundle --tag "${DWO_VERSION}-")"
-        echo "[DEBUG] DWO    INDEX BUNDLE=${LATEST_DWO_IIB}"
-        echo "[DEBUG] QUAY   INDEX BUNDLE=${LATEST_IIB_QUAY}"
+        echo "[DEBUG] DS  OPERATOR BUNDLE = $(${GLIT} --osbs -c devspaces-operator-bundle --tag "${DS_VERSION}-")"
+        echo "[DEBUG] DS     INDEX BUNDLE = ${LATEST_IIB}"
+        echo "[DEBUG] DWO OPERATOR BUNDLE = $(${GLIT} --osbs -c devworkspace-operator-bundle --tag "${DWO_VERSION}-")"
+        if [[ $LATEST_DWO_IIB ]] ;then
+            echo "[DEBUG] DWO    INDEX BUNDLE = ${LATEST_DWO_IIB}"
+        else
+            echo "[DEBUG] DWO    INDEX BUNDLE = n/a"
+        fi
+        echo "[DEBUG] QUAY   INDEX BUNDLE = ${LATEST_IIB_QUAY}"
     fi
 
     # filter and publish to a new name, putting all operators in the fast channel
     if [[ $VERBOSEFLAG == "-v" ]]; then echo "[DEBUG] Rendering catalog to: $CATALOG_DIR"; fi
     # if we have a latest DWO IIB, use that for DWO operator
-    if [[ $LATEST_DWO_IIB ]]; then
+    if [[ $LATEST_DWO_IIB_NUM ]]; then
         ${filterIIB} -s ${LATEST_IIB} --channel-all fast --dir $CATALOG_DIR --packages "devspaces web-terminal" ${VERBOSEFLAG}
         ${filterIIB} -s ${LATEST_DWO_IIB} --channel-all fast --dir $CATALOG_DIR --packages "devworkspace-operator" ${VERBOSEFLAG}
     # or, if no DWO IIB exists, fall back to latest DWO operator in the devspaces IIB
