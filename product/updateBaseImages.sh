@@ -227,16 +227,25 @@ for d in $(find "${WORKDIR}/" -maxdepth "${MAXDEPTH}" -name "${DOCKERFILE}" | so
 				# if [[ ${QUIET} -eq 0 ]]; then echo "# $QUERY| jq .RepoTags| grep -E -v \"\[|\]|latest|-source\"|sed -e 's#.*\"\(.\+\)\",*#- \1#'|sort -V|tail -5"; fi
 				# LATESTTAG=$(${QUERY} 2>/dev/null| jq .RepoTags|grep -E -v "\[|\]|latest|-source"|sed -e 's#.*\"\(.\+\)\",*#\1#'|sort -V|tail -1)
 				# shellcheck disable=SC2001
-				FROMPREFIX=$(echo "$URL" | sed -r -e "s#.+registry.access.redhat.com/##g" -e "s#.+(quay.io/.+)#\1#g")
+				FROMPREFIX=$(echo "$URL" | sed -r -e "s#.+((registry.access.redhat.com|quay.io)/.+)#\1#g")
 				GLIT_REPOFLAG=""
 				GLIT_TAG="${BASETAG}"
-				if [[ $FROMPREFIX == "quay.io/"* ]]; then
-					GLIT_REPOFLAG=" --quay"
-					FROMPREFIX="${FROMPREFIX#*quay.io/}" # trim off the quay.io/ prefix
+				if [[ $FROMPREFIX == *"#"* ]]; then
+					if [[ $FROMPREFIX == "quay.io/"* ]]; then
+						GLIT_REPOFLAG=" --quay"
+					fi
 					GLIT_TAG="${FROMPREFIX#*#}" # collect the special filter, if present, eg., ^7\. to get ONLY the released versions (not the sha-tagged nightlies)
-					FROMPREFIX="${FROMPREFIX%#*}"
-					# echo "GLIT_TAG=${GLIT_TAG}"
 				fi
+				# trim off the registry prefixes
+				FROMPREFIX="${FROMPREFIX#*quay.io/}" # note that we need to re-add this later
+				FROMPREFIX="${FROMPREFIX#registry.access.redhat.com/}" # note that we must NOT re-add this later
+				# trim off the special filter suffix
+				FROMPREFIX="${FROMPREFIX%#*}"
+				if [[ $VERBOSE -eq 1 ]]; then 
+					echo "[DEBUG] GLIT_TAG=${GLIT_TAG}"
+					echo "[DEBUG] FROMPREFIX=${FROMPREFIX}"
+				fi
+
 				# get getLatestImageTags script
 				# TODO CRW-1511 sometimes this returns a 404 instead of a valid script. Why?
 				if [[ ! -x /tmp/getLatestImageTags.sh ]]; then 
@@ -262,7 +271,7 @@ for d in $(find "${WORKDIR}/" -maxdepth "${MAXDEPTH}" -name "${DOCKERFILE}" | so
 				if [[ $VERBOSE -eq 1 ]]; then echo "[DEBUG] LATE_TAGver=$LATE_TAGver; LATE_TAGrev=$LATE_TAGrev; LATE_TAGrevbase=$LATE_TAGrevbase; LATE_TAGrevsuf=$LATE_TAGrevsuf"; fi
 				echo "+ ${FROMPREFIX}:${LATESTTAG}" # jboss-eap-7/eap72-openshift:1.0-15
 				# put the prefix back on to compare with the next line, if we removed it above for quay.io/ images
-				if [[ ${GLIT_REPOFLAG} == " --quay" ]]; then 
+				if [[ ${GLIT_REPOFLAG} == " --quay" ]]; then
 					FROMPREFIX="quay.io/${FROMPREFIX}"
 				fi
 			elif [[ $URL ]] && [[ $URL == "${FROMPREFIX}:"* ]]; then
