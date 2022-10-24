@@ -187,7 +187,13 @@ for OCP_VER in ${OCP_VERSIONS}; do
     LATEST_DWO_IIB_NUM=${LATEST_DWO_IIB##*:}
     # NOTE: this is NOT OCP server arch, but the arch of the local build machine!
     # must build on multiple arches to get per-arch IIBs
-    LATEST_IIB_QUAY="quay.io/devspaces/iib:${DS_VERSION}-${OCP_VER}-${LATEST_IIB_NUM}-${LATEST_DWO_IIB_NUM}-$(uname -m)"
+    if [[ $LATEST_DWO_IIB_NUM ]]; then
+        LATEST_IIB_QUAY="quay.io/devspaces/iib:${DS_VERSION}-${OCP_VER}-${LATEST_IIB_NUM}-${LATEST_DWO_IIB_NUM}-$(uname -m)"
+        CATALOG_DIR=$(mktemp -d --suffix "-${DS_VERSION}-${OCP_VER}-${LATEST_IIB_NUM}-${LATEST_DWO_IIB_NUM}-$(uname -m)")
+    else
+        LATEST_IIB_QUAY="quay.io/devspaces/iib:${DS_VERSION}-${OCP_VER}-${LATEST_IIB_NUM}-$(uname -m)"
+        CATALOG_DIR=$(mktemp -d --suffix "-${DS_VERSION}-${OCP_VER}-${LATEST_IIB_NUM}-$(uname -m)")
+    fi
     if [[ $VERBOSEFLAG == "-v" ]]; then
         echo "[DEBUG] DS  OPERATOR BUNDLE=$(${GLIT} --osbs -c devspaces-operator-bundle --tag "${DS_VERSION}-")"
         echo "[DEBUG] DS     INDEX BUNDLE=${LATEST_IIB}"
@@ -196,12 +202,10 @@ for OCP_VER in ${OCP_VERSIONS}; do
         echo "[DEBUG] QUAY   INDEX BUNDLE=${LATEST_IIB_QUAY}"
     fi
 
-    CATALOG_DIR=$(mktemp -d --suffix "-${DS_VERSION}-${OCP_VER}-${LATEST_IIB_NUM}-${LATEST_DWO_IIB_NUM}-$(uname -m)")
-    if [[ $VERBOSEFLAG == "-v" ]]; then echo "[DEBUG] Rendering catalog to: $CATALOG_DIR"; fi
-
     # filter and publish to a new name, putting all operators in the fast channel
+    if [[ $VERBOSEFLAG == "-v" ]]; then echo "[DEBUG] Rendering catalog to: $CATALOG_DIR"; fi
     # if we have a latest DWO IIB, use that for DWO operator
-    if [[ $LATEST_DWO_IIB ]]; then 
+    if [[ $LATEST_DWO_IIB ]]; then
         ${filterIIB} -s ${LATEST_IIB} --channel-all fast --dir $CATALOG_DIR --packages "devspaces web-terminal" ${VERBOSEFLAG}
         ${filterIIB} -s ${LATEST_DWO_IIB} --channel-all fast --dir $CATALOG_DIR --packages "devworkspace-operator" ${VERBOSEFLAG}
     # or, if no DWO IIB exists, fall back to latest DWO operator in the devspaces IIB
