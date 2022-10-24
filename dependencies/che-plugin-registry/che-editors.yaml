@@ -3,7 +3,7 @@ editors:
   - schemaVersion: 2.1.0
     metadata:
       name: eclipse/che-theia/latest
-      displayName: theia
+      displayName: Eclipse Theia
       description: Red Hat OpenShift Dev Spaces with Eclipse Theia IDE
       icon: https://raw.githubusercontent.com/theia-ide/theia/master/logo/theia-logo-no-text-black.svg?sanitize=true
       attributes:
@@ -162,7 +162,7 @@ editors:
   - schemaVersion: 2.1.0
     metadata:
       name: che-incubator/che-idea/latest
-      displayName: idea
+      displayName: IntelliJ IDEA Community
       description: Red Hat OpenShift Dev Spaces with JetBrains IntelliJ IDEA Community IDE
       icon: https://resources.jetbrains.com/storage/products/intellij-idea/img/meta/intellij-idea_logo_300x300.png
       attributes:
@@ -262,7 +262,7 @@ editors:
   - schemaVersion: 2.1.0
     metadata:
       name: che-incubator/che-code/insiders
-      displayName: vscode
+      displayName: VS Code - Open Source
       description: Red Hat OpenShift Dev Spaces with Microsoft Visual Studio Code - Open Source IDE
       icon: https://raw.githubusercontent.com/che-incubator/che-code/main/code/resources/server/code-512.png?sanitize=true
       attributes:
