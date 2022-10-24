@@ -30,17 +30,21 @@ Options:
   -q, -qi             Quiet Index  output: instead of default tabbed table with operator bundle, IIB URL + OCP version; show IIB URL only
   -qb                 Quiet Bundle output: instead of default tabbed table with operator bundle, IIB URL + OCP version; show bundle only
                       Note: you can achieve the same thing more reliably (though perhaps more slowly) by querying OSBS with getLatestImageTags.sh
+
+  --timeout           Check for a new IIB until N seconds have elapsed
+  --interval          Check for a new IIB every N seconds
 "
 }
 
-runCommandWithTimeout() {
-  this_timeout=$1
-  count=1
-  (( timeout_intervals=this_timeout/5 ))
-  while [[ $count -le $timeout_intervals ]]; do # echo $count
+runCommand() {
+  this_timeout=$1  # seconds
+  this_interval=$2 # seconds
+  count=0
+  while [[ $count -le $this_timeout ]]; do # echo $count
+    (( count=count+this_interval ))
     set +e
     if [[ $VERBOSE -eq 1 ]]; then
-      echo; echo "Checking for latest IIBs for $PROD_NAME (${IMAGE_PREFIX}) ${PROD_VER} ${csv}  ... [$count/$timeout_intervals]"; echo
+      echo -n "Check for latest IIBs for $PROD_NAME (${IMAGE_PREFIX}) ${PROD_VER} ${csv} ... "
     fi
     lastcsv=$(curl -sSLk "https://datagrepper.engineering.redhat.com/raw?topic=/topic/VirtualTopic.eng.ci.redhat-container-image.index.built&delta=1728000&rows_per_page=30&contains=${IMAGE_PREFIX}" | \
     jq ".raw_messages[].msg.index | .added_bundle_images[0]" -r | sort -uV | grep "${csv}:${PROD_VER}" | tail -1 | \
@@ -57,6 +61,7 @@ runCommandWithTimeout() {
           grep "${lastcsv}" | grep "${OCP_VER}")"
       fi
       if [[ $line ]]; then
+        echo
         if [[ $QUIET == "index" ]]; then # show only the index image
           echo "$line" | sed -r -e "s#registry-proxy.engineering.redhat.com/rh-osbs/${IMAGE_PREFIX}-##" -e "s#([^\t]+)\t([^\t]+)\tv.+#\2#"
         elif [[ $QUIET == "bundle" ]]; then # show only the bundle image
@@ -67,20 +72,27 @@ runCommandWithTimeout() {
         break;
       fi
     fi
-    (( count=count+1 ))
-    if [[ $VERBOSE -eq 1 ]]; then
-      echo "Sleeping for 5 mins..."
+    if [[ $count -lt $this_timeout ]]; then
+      if [[ $VERBOSE -eq 1 ]]; then
+        echo -n "Sleep for ${this_interval} seconds ... "
+      fi
+      sleep ${this_interval}s # sleep for N seconds
+      echo "[$count/${this_timeout}s]"
+    else
+      echo "Not found in $TIMEOUT seconds."
+      exit 1
     fi
-    sleep 300s # sleep for 5 min intervals
   done
-    # or report an error
-    if [[ !$? -eq 0 ]]; then
-        echo "[ERROR] Did not get IIBs after ${this_timeout} minutes - script must exit!"
-        exit 1;
-    fi
+  # or report an error
+  if [[ !$? -eq 0 ]]; then
+      echo "[ERROR] Did not get IIBs after ${this_timeout} seconds - script must exit!"
+      exit 1;
+  fi
 }
 
 VERBOSE=0
+TIMEOUT=1800 # keep trying to pull an IIB from datagrepper for up to this # of seconds
+INTERVAL=180 # keep trying to pull an IIB from datagrepper at intervals of this # of seconds
 QUIET="none"
 OCP_VER="" # if not set, check for all available versions, and return multiple results
 
@@ -125,6 +137,8 @@ while [[ "$#" -gt 0 ]]; do
     '--ds')   dsDefaults;;
     '--dwo') dwoDefaults;;
     '--wto') wtoDefaults;;
+    '--timeout') TIMEOUT="$2"; shift 1;;   # seconds
+    '--interval') INTERVAL="$2"; shift 1;; # seconds
   esac
   shift 1
 done
@@ -135,6 +149,5 @@ if [[ -z ${PROD_VER} ]]; then usage; exit 1; fi
 if [[ $PROD_VER == "2.15" ]]; then crwDefaults; fi
 
 for csv in $CSVs; do
-  runCommandWithTimeout 30
+  runCommand $TIMEOUT $INTERVAL
 done
-
