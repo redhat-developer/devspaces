@@ -200,8 +200,15 @@ for OCP_VER in ${OCP_VERSIONS}; do
     if [[ $VERBOSEFLAG == "-v" ]]; then echo "[DEBUG] Rendering catalog to: $CATALOG_DIR"; fi
 
     # filter and publish to a new name, putting all operators in the fast channel
-    ${filterIIB} -s ${LATEST_IIB} --channel-all fast --dir $CATALOG_DIR --packages "devspaces web-terminal" ${VERBOSEFLAG}
-    ${filterIIB} -s ${LATEST_DWO_IIB} --channel-all fast --dir $CATALOG_DIR --packages "devworkspace-operator" ${VERBOSEFLAG}
+    # if we have a latest DWO IIB, use that for DWO operator
+    if [[ $LATEST_DWO_IIB ]]; then 
+        ${filterIIB} -s ${LATEST_IIB} --channel-all fast --dir $CATALOG_DIR --packages "devspaces web-terminal" ${VERBOSEFLAG}
+        ${filterIIB} -s ${LATEST_DWO_IIB} --channel-all fast --dir $CATALOG_DIR --packages "devworkspace-operator" ${VERBOSEFLAG}
+    # or, if no DWO IIB exists, fall back to latest DWO operator in the devspaces IIB
+    else 
+        ${filterIIB} -s ${LATEST_IIB} --channel-all fast --dir $CATALOG_DIR --packages "devworkspace-operator devspaces web-terminal" ${VERBOSEFLAG}
+    fi
+
     if [[ "$PUSH" != "true" ]]; then
         ${buildCatalog} -t ${LATEST_IIB_QUAY} ${VERBOSEFLAG} --dir $CATALOG_DIR --ocp-ver $OCP_VER
         # If we're not pushing, we're done processing the IIB for this OCP_VER -- skopeo inspect and copy fail if the image
