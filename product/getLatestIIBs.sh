@@ -61,7 +61,7 @@ runCommand() {
           grep "${lastcsv}" | grep "${OCP_VER}")"
       fi
       if [[ $line ]]; then
-        echo
+        if [[ $VERBOSE -eq 1 ]]; then echo; fi
         if [[ $QUIET == "index" ]]; then # show only the index image
           echo "$line" | sed -r -e "s#registry-proxy.engineering.redhat.com/rh-osbs/${IMAGE_PREFIX}-##" -e "s#([^\t]+)\t([^\t]+)\tv.+#\2#"
         elif [[ $QUIET == "bundle" ]]; then # show only the bundle image
