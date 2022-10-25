@@ -169,7 +169,7 @@ echo "[DEBUG] ERRORS_FOUND=
 ${ERRORS_FOUND}
 --------------------"; fi
 
-TASK_URL="$(grep "Task info: https://brewweb.engineering.redhat.com/brew/taskinfo?taskID=" "${LOGFILE}" | grep -v grep | sed -e "s#Task info: ##" | head -1 || true)"
+TASK_URL="$(grep --text "Task info: https://brewweb.engineering.redhat.com/brew/taskinfo?taskID=" "${LOGFILE}" | grep -v grep | sed -e "s#Task info: ##" | head -1 || true)"
 TASK_ID="${TASK_URL##*=}"
 BUILD_DESC=$(echo $REPO_PATH | sed -r \
     -e 's#registry-proxy.engineering.redhat.com/rh-osbs/devspaces-#quay.io/devspaces/#g' \
