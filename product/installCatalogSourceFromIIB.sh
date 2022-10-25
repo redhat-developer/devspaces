@@ -150,6 +150,7 @@ if [[ "${IIB_IMAGE}" == "brew.registry"* ]]; then
   TOKEN_USERNAME=$(echo "$BREW_TOKENS" | jq -r '.[0].credentials.username')
   PASSWORD=$(echo "$BREW_TOKENS" | jq -r '.[0].credentials.password')
   oc get secret/pull-secret -n openshift-config -o json | jq -r '.data.".dockerconfigjson"' | base64 -d > authfile
+  # CRW-3463 can use podman login --tls-verify=false to work around 'certificate signed by unknown authority'
   echo "$PASSWORD" | podman login --authfile authfile --username "$TOKEN_USERNAME" --password-stdin brew.registry.redhat.io
   oc set data secret/pull-secret -n openshift-config --from-file=.dockerconfigjson=authfile
   rm authfile
