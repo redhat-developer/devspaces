@@ -165,13 +165,13 @@ def updateBaseImages(String REPO_PATH, String SOURCES_BRANCH, String FLAGS="", S
     sh('''#!/bin/bash -xe
 URL="https://raw.githubusercontent.com/redhat-developer/devspaces/''' + SCRIPTS_BRANCH + '''/product/updateBaseImages.sh"
 # check for 404 and fail if can't load the file
-header404="$(curl -sSLI $URL | grep -E -v "id: |^x-" | grep -v "content-length" | grep -E "404|Not Found" || true)"
+header404="$(curl -sSLI ${URL} | grep -E -v "id: |^x-" | grep -v "content-length" | grep -E "404|Not Found" || true)"
 if [[ $header404 ]]; then
   echo "[ERROR] Can not resolved $URL : $header404 "
   echo "[ERROR] Please check the value of SCRIPTS_BRANCH = ''' + SCRIPTS_BRANCH + ''' to confirm it's a valid branch."
   exit 1
 else
-  curl -sSL $URL -o ''' + updateBaseImages_bin + ''' && chmod +x ''' + updateBaseImages_bin + '''
+  curl -sSL ${URL} -o ''' + updateBaseImages_bin + ''' && chmod +x ''' + updateBaseImages_bin + '''
 fi
     ''')
   }
@@ -222,8 +222,8 @@ def installRedHatInternalCerts() {
     cd /tmp
     # 403 access on http://hdn.corp.redhat.com/rhel7-csb-stage/RPMS/noarch/redhat-internal-cert-install-0.1-24.el7.noarch.rpm
     # so use latest csb.noarch file instead 
-    rpm=$(curl -sSLo- "http://hdn.corp.redhat.com/rhel7-csb-stage/RPMS/noarch/?C=M;O=D" | grep cert-install | grep "csb.noarch" | head -1 | sed -r -e 's#.+>(redhat-internal-cert-install-.+[^<])</a.+#\\1#')
-    curl -sSLkO http://hdn.corp.redhat.com/rhel7-csb-stage/RPMS/noarch/${rpm}
+    rpm=$(curl --insecure -sSLo- "http://hdn.corp.redhat.com/rhel7-csb-stage/RPMS/noarch/?C=M;O=D" | grep cert-install | grep "csb.noarch" | head -1 | sed -r -e 's#.+>(redhat-internal-cert-install-.+[^<])</a.+#\\1#')
+    curl --insecure -sSLO http://hdn.corp.redhat.com/rhel7-csb-stage/RPMS/noarch/${rpm}
     sudo yum -y install ${rpm}
     rm -fr /tmp/${rpm}
   fi
@@ -380,11 +380,11 @@ def getBuildJSON(String url, String buildType, String field) {
   return sh(returnStdout: true, script: '''
 URL="''' + url + '''/''' + buildType + '''/api/json"
 # check for 404 and return 0 if can't load, or the actual value if loaded
-header404="$(curl -sSLI ${URL} | grep -E -v "id: |^x-" | grep -v "content-length" | grep -E "404|Not Found" || true)"
+header404="$(curl --insecure -sSLI ${URL} | grep -E -v "id: |^x-" | grep -v "content-length" | grep -E "404|Not Found" || true)"
 if [[ $header404 ]]; then # echo "[WARNING] Can not resolve ${URL} : $header404 "
   echo 0
 else
-  curl -sSLo- ${URL} | jq -r "''' + field + '''"
+  curl --insecure -sSLo- ${URL} | jq -r "''' + field + '''"
 fi
 ''').trim()
 }
@@ -531,7 +531,7 @@ def checkURL(String URL) {
   def statusCode = sh(script: '''#!/bin/bash -xe
 # check for 404 and fail if can't load the file
 URL="''' + URL + '''"
-header404="$(curl -sSLI "${URL}" | grep -E -v "id: |^x-" | grep -v "content-length" | grep -E "404|Not Found" || true)"
+header404="$(curl --insecure -sSLI "${URL}" | grep -E -v "id: |^x-" | grep -v "content-length" | grep -E "404|Not Found" || true)"
 if [[ $header404 ]]; then
   echo "[ERROR] Can not resolve $URL : $header404 "
   exit 1
