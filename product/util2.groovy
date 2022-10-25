@@ -545,7 +545,7 @@ boolean hasSuccessfullyBuiltAllArches(String containerYamlPath, String jobOutput
   int containerBuildCount = sh(script: '''#!/bin/bash -xe
     yq -r ".platforms.only | length" ''' + containerYamlPath, returnStdout: true).trim()
     echo "Expected number of container builds (arches in container.yaml): "+containerBuildCount
-  int containerSuccessCount = jobOutput.count("build has finished successfully \\\\o/")
+  int containerSuccessCount = jobOutput.count("Build finished successfully! Pushing image to ")
     echo "Successful builds detected: "+containerSuccessCount
   // should get 1 per arch + 1 overall success, which is 1 more than list in container.yaml
   if (containerSuccessCount > containerBuildCount) { 

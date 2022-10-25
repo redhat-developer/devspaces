@@ -86,7 +86,7 @@ if [ -z $sourceIndexImage ]; then echo "IIB image required"; echo; usage; exit 1
 
 if [ -f ./render.json ]; then rm -f ./render.json; fi
 if [[ $VERBOSE -eq 1 ]]; then
-  echo "[DEBUG] Rendering $sourceIndexImage. This will take several minutes."
+  echo "[DEBUG] Rendering $sourceIndexImage. This will take several minutes: 'opm render $sourceIndexImage > render.json'"
   time opm render "$sourceIndexImage" > render.json
 else
   opm render "$sourceIndexImage" > render.json
