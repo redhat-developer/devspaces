@@ -77,16 +77,18 @@ runCommand() {
         echo -n "Sleep for ${this_interval} seconds ... "
       fi
       sleep ${this_interval}s # sleep for N seconds
-      echo "[$count/${this_timeout}s]"
+      if [[ $VERBOSE -eq 1 ]]; then
+        echo "[$count/${this_timeout}s]"
+      fi
     else
-      echo "Not found in $TIMEOUT seconds."
+      if [[ $VERBOSE -eq 1 ]]; then echo "[ERROR] IIB not found in $this_timeout seconds."; fi
       exit 1
     fi
   done
   # or report an error
   if [[ !$? -eq 0 ]]; then
-      echo "[ERROR] Did not get IIBs after ${this_timeout} seconds - script must exit!"
-      exit 1;
+      echo "[ERROR] IIB not found in ${this_timeout} seconds - script must exit!"
+      exit 1
   fi
 }
 
