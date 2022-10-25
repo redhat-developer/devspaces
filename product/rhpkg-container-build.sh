@@ -87,36 +87,26 @@ fi
 touch "${LOGFILE}"
 
 # get list of reg-proxy repo:tag as '3.y-zz'
-TAGs=$(grep -E -A2 '"(tags|floating_tags)": \[' "${LOGFILE}" | grep -E -v "tags|\]|\[|--|latest" \
+# force processing of log to be text (not binary); remove [2022-10-24T21:20:51.640Z] timestamps
+# remove empty yaml and latest tags; find tags in x.y-zzz format
+# remove quotes; sort unique by version
+TAGs=$(grep --text -E -A2 '"(tags|floating_tags)": \[' "${LOGFILE}" | sed -r -e "s@\[[TZ0123456789.:-]+\]@@" | grep -E -v "tags|\]|\[|--|latest" \
 | grep -E "[0-9]+\.[0-9]+-[0-9]+" | tr -d ' "' | sort -urV || true)
 
 # OPTION 1/3: Successful non-scratch build - compute build desc from tag(s)
 echo "REPO_PATH=\"$(cat "${LOGFILE}" \
-    | grep -E -A2 '"(pull)": \[' | grep -E -v "candidate" | grep -E "registry-proxy.engineering.redhat.com/rh-osbs/devspaces-" \
+    | grep --text -E -A2 '"(pull)": \[' | sed -r -e "s@\[[TZ0123456789.:-]+\]@@" | grep -E -v "candidate" | grep -E "registry-proxy.engineering.redhat.com/rh-osbs/devspaces-" \
     | grep -E -v "@sha" | sed -r -e "s@.+\"(.+)\",*@\1@" | sort -u | tr -d "\n\r" )\"" \
     | tee "${WORKSPACE}"/build_desc.txt
 source "${WORKSPACE}"/build_desc.txt
 REPOS="${REPO_PATH}" # used for build description
 if [[ $REPOS ]] && [[ ${VERBOSE} -eq 1 ]]; then echo "[INFO] #2 Console parser successful!"; fi
 
-# # OPTION 1b/3: scratch build - Compute build desc with image created eg., "3.y-65 quay.io/devspaces/pluginregistry-rhel8:3.y-65"
-# if [[ ! ${REPOS} ]] || [[ ${REPOS} == " " ]]; then
-#   # for scratch builds look for this line:
-#   # platform:- - atomic_reactor.plugins.tag_from_config - DEBUG - Using additional unique tag 
-#   # rh-osbs/devspaces-server-rhel8:devspaces-3.0-rhel-8-containers-candidate-89319-20191122035915
-#   echo "REPO_PATH=\"$(grep -E "platform:- - atomic_reactor.plugins.tag_from_config - DEBUG - Using additional unique tag " "${LOGFILE}" \
-#     | grep -v grep | sed -r -e "s@.+Using additional primary tag (.+)@registry-proxy.engineering.redhat.com/\1@" | tr "\n\r" " " )\"" \
-#     | tee "${WORKSPACE}"/build_desc.txt
-#   source "${WORKSPACE}"/build_desc.txt
-#   REPOS="${REPO_PATH}" # used for build description
-#   if [[ $REPOS ]]; then echo "#2 Console parser successful!"; fi
-# fi
-
 # OPTION 2/3
 if [[ ! ${REPOS} ]] || [[ ${REPOS} == " " ]]; then
   # for scratch builds look for this line:
   # ^ADD Dockerfile-devspaces-server-rhel8-2.0-scratch-89319-20191122035915 /root/buildinfo/Dockerfile-devspaces-server-rhel8-2.0-scratch-89319-20191122035915
-  echo "REPO_PATH=\"$(grep -E "^ADD Dockerfile-devspaces-" "${LOGFILE}" \
+  echo "REPO_PATH=\"$(grep --text -E "^ADD Dockerfile-devspaces-" "${LOGFILE}" | sed -r -e "s@\[[TZ0123456789.:-]+\]@@" \
     | sed -r -e "s@^ADD Dockerfile-devspaces-(.+) /root/.+@\1@" | sort -u | tr "\n\r" " " )\"" \
     | tee "${WORKSPACE}"/build_desc.txt
   source "${WORKSPACE}"/build_desc.txt
