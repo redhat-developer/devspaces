@@ -69,7 +69,8 @@ if [[ ! $container_alt ]]; then
   # get remote image
   echo "[INFO] Pulling $container ..."
   # shellcheck disable=SC2086
-  ${PODMAN} pull ${ARCH_OVERRIDE} "$container" 2>&1
+  # CRW-3463 use --tls-verify=false to avoid "certificate signed by unknown authority"
+  ${PODMAN} pull --tls-verify=false ${ARCH_OVERRIDE} "$container" 2>&1
   # throw the same error code that a failed pull throws, in case we're running this in a nested bash shell
   ${PODMAN} image exists "$container" || exit 125
 fi
