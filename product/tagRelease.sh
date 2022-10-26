@@ -34,7 +34,7 @@ To create tags (and push updated CSV content into operator-bundle repo):
 Example: 
   $0 -v 3.y.0 -t 3.y -gh ${TARGET_BRANCH} -ghtoken \$GITHUB_TOKEN -pd ${pkgs_devel_branch} -pduser $pduser
 
-To create branches:
+To create or update existing branches:
   $0 -t DS_VERSION --branchfrom SOURCE_GH_BRANCH -gh TARGET_GH_BRANCH -ghtoken GITHUB_TOKEN
 Example: 
   $0 -t DS_VERSION --branchfrom devspaces-3-rhel-8 -gh ${TARGET_BRANCH} -ghtoken \$GITHUB_TOKEN
