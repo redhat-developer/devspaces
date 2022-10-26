@@ -12,7 +12,7 @@ metadata:
     - Linters
   icon: /images/redhat-vscode-apache-camel-icon.png
 sidecar:
-  image: quay.io/devspaces/udi-rhel8:3.3
+  image: registry.redhat.io/devspaces/udi-rhel8:3.3
   name: vscode-apache-camel
   memoryLimit: 768Mi
   memoryRequest: 20Mi

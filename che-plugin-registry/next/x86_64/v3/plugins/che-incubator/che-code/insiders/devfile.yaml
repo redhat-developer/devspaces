@@ -11,7 +11,7 @@ events:
 components:
   - name: che-code-runtime-description
     container:
-      image: quay.io/devspaces/udi-rhel8:3.3
+      image: registry.redhat.io/devspaces/udi-rhel8:3.3
       command:
         - /checode/entrypoint-volume.sh
       volumeMounts:
@@ -61,7 +61,7 @@ components:
     volume: {}
   - name: che-code-injector
     container:
-      image: quay.io/devspaces/code-rhel8:3.3
+      image: registry.redhat.io/devspaces/code-rhel8:3.3
       command:
         - /entrypoint-init-container.sh
       volumeMounts:

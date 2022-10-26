@@ -10,10 +10,10 @@ icon: /images/ms-vscode-js-debug-icon.png
 category: Debuggers
 repository: https://github.com/Microsoft/vscode-pwa.git
 firstPublicationDate: '2022-03-04'
-latestUpdateDate: '2022-10-25'
+latestUpdateDate: '2022-10-26'
 spec:
   containers:
-    - image: quay.io/devspaces/udi-rhel8:3.3
+    - image: registry.redhat.io/devspaces/udi-rhel8:3.3
       name: vscode-node-debug
       memoryLimit: 512Mi
       memoryRequest: 20Mi
