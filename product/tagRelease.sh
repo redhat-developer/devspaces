@@ -97,17 +97,9 @@ toggleQuayRHECReferences() {
 	YAML_ROOT="dependencies/"
 	# replace DS meta.yaml files with links to current version of devfile v2
 	for yaml in $(find ${YAML_ROOT} -name "*.yaml"); do
-		if [[ $TARGET_BRANCH == "devspaces-3-rhel-8" ]]; then
-			sed -r -i $yaml -e "s#registry.redhat.io/devspaces/#quay.io/devspaces/#g"
-		else
-			sed -r -i $yaml -e "s#quay.io/devspaces/#registry.redhat.io/devspaces/#g"
-		fi
+		sed -r -i $yaml -e "s#quay.io/devspaces/#registry.redhat.io/devspaces/#g"
 	done
-	if [[ $TARGET_BRANCH == "devspaces-3-rhel-8" ]]; then
-		git commit -s -m "chore(yaml) set image refs to quay.io/devspaces/" $YAML_ROOT || echo ""
-	else
-		git commit -s -m "chore(yaml) set image refs to registry.redhat.io/devspaces/" $YAML_ROOT || echo ""
-	fi
+	git commit -s -m "chore(yaml) set image refs to registry.redhat.io/devspaces/" $YAML_ROOT || echo ""
 }
 
 # for the devspaces main repo, update meta.yaml files to point to the correct branch of $samplesRepo
@@ -145,14 +137,8 @@ updateSampleDevfileReferences () {
 	sed -r -i $devfile \
 		-e "s#devspaces/udi-[a-z0-9:@.-]+#devspaces/udi-rhel8:${DS_TAG}#g"
 
-	# for 3.x builds, point image refs at quay instead of RHEC
-	if [[ $TARGET_BRANCH == "devspaces-3-rhel-8" ]]; then
-		sed -r -i $devfile -e "s#registry.redhat.io/devspaces/#quay.io/devspaces/#g"
-		git commit -s -m "chore(devfile) link v2 devfile to :${DS_TAG}; set image refs to quay.io/devspaces/" "$devfile" || echo ""
-	else
-		sed -r -i $devfile -e "s#quay.io/devspaces/#registry.redhat.io/devspaces/#g"
-		git commit -s -m "chore(devfile) link v2 devfile to :${DS_TAG}; set image refs to registry.redhat.io/devspaces/" "$devfile" || echo ""
-	fi
+	sed -r -i $devfile -e "s#quay.io/devspaces/#registry.redhat.io/devspaces/#g"
+	git commit -s -m "chore(devfile) link v2 devfile to :${DS_TAG}; set image refs to registry.redhat.io/devspaces/" "$devfile" || echo ""
 }
 
 # create branch or tag
