@@ -136,7 +136,7 @@ if [[ $OUTPUT_YML ]]; then
         echo "$yaml" > $OUTPUT_YML
     fi
     if [[ $OUTPUT_CSV ]]; then 
-        cat $OUTPUT_YML | yq -r '.[]|(keys)|@csv' | uniq > $OUTPUT_CSV
+        cat $OUTPUT_YML | yq -r '.[]|(keys_unsorted)|@csv' | uniq > $OUTPUT_CSV
         yq -r '.[]|flatten|@csv' $OUTPUT_YML >> $OUTPUT_CSV
     fi
 fi
