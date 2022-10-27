@@ -212,6 +212,11 @@ for OCP_VER in ${OCP_VERSIONS}; do
         echo "[DEBUG] QUAY   INDEX BUNDLE = ${LATEST_IIB_QUAY}"
     fi
 
+    if [[ ! ${LATEST_IIB} ]]; then
+        echo "[ERROR] Could not compute index bundle for DS ${DS_VERSION} and OCP ${OCP_VER} !"
+        exit 2
+    fi
+
     # filter and publish to a new name, putting all operators in the fast channel
     if [[ $VERBOSEFLAG == "-v" ]]; then echo "[DEBUG] Rendering catalog to: $CATALOG_DIR"; fi
     # if we have a latest DWO IIB, use that for DWO operator
