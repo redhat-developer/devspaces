@@ -27,7 +27,7 @@ Options:
   -p, --push                 : Push IIB(s) to quay registry; default is to show commands but not copy anything
   --force                    : If target image exists, will re-filter and re-push it; otherwise skip to avoid updating image timestamps
   -t PROD_VER                : If x.y version/tag not set, will compute from dependencies/job-config.json file
-  -o 'OCP_VER1 OCP_VER2 ...' : Space-separated list of OCP version(s) (e.g. 'v4.10 v4.11') to query and publish; defaults to job-config.json values
+  -o 'OCP_VER1 OCP_VER2 ...' : Space-separated list of OCP version(s) (e.g. 'v4.12 v4.11 v4.10') to query and publish; defaults to job-config.json values
   -e, --extra-tags           : Extra tags to create, such as 3.2.0.RC-08-04
   -v                         : Verbose output: include additional information
   -h, --help                 : Show this help
@@ -199,9 +199,11 @@ for OCP_VER in ${OCP_VERSIONS}; do
     fi 
 
     if [[ $VERBOSEFLAG == "-v" ]]; then
-        echo "[DEBUG] DS  OPERATOR BUNDLE = $(${GLIT} --osbs -c devspaces-operator-bundle --tag "${DS_VERSION}-")"
+        echo "[DEBUG] LATEST DS  OPERATOR BUNDLE = $(${GLIT} --osbs -c devspaces-operator-bundle --tag "${DS_VERSION}-")"
+        echo "[DEBUG] LATEST DWO OPERATOR BUNDLE = $(${GLIT} --osbs -c devworkspace-operator-bundle --tag "${DWO_VERSION}-")"
+        echo "[DEBUG] Note that the above bundles might not yet exist for the latest IIB, if still being published."
+        echo ""
         echo "[DEBUG] DS     INDEX BUNDLE = ${LATEST_IIB}"
-        echo "[DEBUG] DWO OPERATOR BUNDLE = $(${GLIT} --osbs -c devworkspace-operator-bundle --tag "${DWO_VERSION}-")"
         if [[ $LATEST_DWO_IIB ]] ;then
             echo "[DEBUG] DWO    INDEX BUNDLE = ${LATEST_DWO_IIB}"
         else
