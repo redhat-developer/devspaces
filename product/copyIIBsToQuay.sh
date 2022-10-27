@@ -180,11 +180,11 @@ fi
 for OCP_VER in ${OCP_VERSIONS}; do
     PUSHTOQUAYFORCE_LOCAL=${PUSHTOQUAYFORCE}
     # registry-proxy.engineering.redhat.com/rh-osbs/iib:286641
-    LATEST_IIB=$(${GLIB} --ds -t ${DS_VERSION} -o ${OCP_VER} -qi) # return quietly, just the index bundle
+    LATEST_IIB=$(${GLIB} --ds -t ${DS_VERSION} -o ${OCP_VER} -qi | sort -uV | tail -1) # return quietly, just the index bundle
     LATEST_IIB_NUM=${LATEST_IIB##*:}
     # Get DevWorkspace Operator IIB separately to enable DWO RC testing
     # don't wait the usual 30 mins to see if new DWO is published; instead just check once and give up if not found
-    LATEST_DWO_IIB=$(${GLIB} --dwo -t ${DWO_VERSION} -c 'devworkspace-operator-bundle' -o ${OCP_VER} -qi --timeout 2 --interval 1) # return quietly, just the index bundle
+    LATEST_DWO_IIB=$(${GLIB} --dwo -t ${DWO_VERSION} -c 'devworkspace-operator-bundle' -o ${OCP_VER} -qi --timeout 2 --interval 1 | sort -uV | tail -1) # return quietly, just the index bundle
     LATEST_DWO_IIB_NUM=${LATEST_DWO_IIB##*:}
 
     # NOTE: this is NOT OCP server arch, but the arch of the local build machine!
