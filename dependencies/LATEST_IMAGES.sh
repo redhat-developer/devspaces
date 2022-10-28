@@ -142,6 +142,11 @@ for d in $(cat dependencies/LATEST_IMAGES); do
   cat dependencies/LATEST_IMAGES_COMMITS | grep NVR | sed -r -e "s#.+NVR: ##" > dependencies/LATEST_IMAGES_NVRS
 done
 
+# STEP 5 :: update OSBS performance data 
+for d in $(cat dependencies/LATEST_IMAGES_COMMITS | grep Build | sed -r -e s@.+buildID=@@); do
+  ./product/collectBuildInfo.sh -b $d --append -f dependencies/LATEST_BUILD_TIMES.yml --csv dependencies/LATEST_BUILD_TIMES.csv
+done
+
 if [[ ${COMMIT_CHANGES} -eq 1 ]]; then
   # CRW-1621 if any gz resources are larger than 10485760b, must use MaxFileSize to force dist-git to shut up and take my sources!
   if [[ $(git commit -s -m "chore: Update dependencies/LATEST_IMAGES, COMMITS, DIGESTS, INDEXES" dependencies/LATEST_IMAGES* || true) == *"nothing to commit, working tree clean"* ]]; then
