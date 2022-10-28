@@ -142,7 +142,8 @@ for d in $(cat dependencies/LATEST_IMAGES); do
   cat dependencies/LATEST_IMAGES_COMMITS | grep NVR | sed -r -e "s#.+NVR: ##" > dependencies/LATEST_IMAGES_NVRS
 done
 
-# STEP 5 :: update OSBS performance data 
+# STEP 5 :: update OSBS performance data
+echo 
 for d in $(cat dependencies/LATEST_IMAGES_COMMITS | grep Build | sed -r -e s@.+buildID=@@); do
   ./product/collectBuildInfo.sh -b $d --append -f dependencies/LATEST_BUILD_TIMES.yml --csv dependencies/LATEST_BUILD_TIMES.csv
 done
