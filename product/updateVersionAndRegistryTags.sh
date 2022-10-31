@@ -171,9 +171,15 @@ updateVersion() {
     replaceField "${WORKDIR}/dependencies/job-config.json" '.Copyright' "[\"${COPYRIGHT}\"]"
 
     DEVSPACES_Y_VALUE="${DEVSPACES_VERSION#*.}"
-    UPPER_CHE_Y=$(( (${DEVSPACES_Y_VALUE} + 24) * 2 ))
-    LOWER_CHE_Y=$(( ((${DEVSPACES_Y_VALUE} + 24) * 2) - 1 ))
-    
+
+    # TODO: every time we slip a release to be aligned to a later Che release, this math needs to be updated
+    if [[ $DEVSPACES_VERSION == "3.2" ]]; then
+      UPPER_CHE_Y=$(( (${DEVSPACES_Y_VALUE} + 24) * 2 )) # 7.52
+      LOWER_CHE_Y=$(( ((${DEVSPACES_Y_VALUE} + 24) * 2) - 1 ))
+    else
+      UPPER_CHE_Y=$(( (${DEVSPACES_Y_VALUE} + 25) * 2 )) # 7.56
+      LOWER_CHE_Y=$(( ((${DEVSPACES_Y_VALUE} + 25) * 2) - 1 ))
+    fi
     # CRW-2155, if version is in the json update it for che and devspaces branches
     # otherwise inject new version.
     check=$(cat ${WORKDIR}/dependencies/job-config.json | jq '.Jobs[] | keys' | grep "\"${DEVSPACES_VERSION}\"")
@@ -181,8 +187,12 @@ updateVersion() {
       COMMIT_MSG="ci: update ${DEVSPACES_VERSION}"
       replaceField "${WORKDIR}/dependencies/job-config.json" "(.Jobs[][\"${DEVSPACES_VERSION}\"][\"upstream_branch\"]|select(.[]?==\"main\"))" "[\"7.${UPPER_CHE_Y}.x\",\"7.${LOWER_CHE_Y}.x\"]"
       replaceField "${WORKDIR}/dependencies/job-config.json" "(.Jobs[][\"${DEVSPACES_VERSION}\"][\"upstream_branch\"]|select(.[]?==\"devspaces-3-rhel-8\"))" "[\"devspaces-${DEVSPACES_VERSION}-rhel-8\",\"devspaces-${DEVSPACES_VERSION}-rhel-8\"]"
-      # special case for code builds which have a main branch upstream and don't use che 7.yy.x convention
-      replaceField "${WORKDIR}/dependencies/job-config.json" "(.Jobs[\"code\"][\"${DEVSPACES_VERSION}\"][\"upstream_branch\"]|select(.[]|contains(\"7.\")))" "[\"devspaces-${DEVSPACES_VERSION}-rhel-8\",\"devspaces-${DEVSPACES_VERSION}-rhel-8\"]"
+      # if code <= 3.2 use devspaces-3.2-rhel-8 branch; as of 3.3 use 7.yy.x convention
+      if [[ $DEVSPACES_VERSION == "3.2" ]]; then
+        replaceField "${WORKDIR}/dependencies/job-config.json" "(.Jobs[\"code\"][\"${DEVSPACES_VERSION}\"][\"upstream_branch\"]|select(.[]))" "[\"devspaces-${DEVSPACES_VERSION}-rhel-8\",\"devspaces-${DEVSPACES_VERSION}-rhel-8\"]"
+      else
+        replaceField "${WORKDIR}/dependencies/job-config.json" "(.Jobs[\"code\"][\"${DEVSPACES_VERSION}\"][\"upstream_branch\"]|select(.[]))" "[\"7.${UPPER_CHE_Y}.x\",\"7.${LOWER_CHE_Y}.x\"]"
+      fi
 
       replaceField "${WORKDIR}/dependencies/job-config.json" "(.\"Management-Jobs\"[][\"${DEVSPACES_VERSION}\"][\"upstream_branch\"]|select(.[]?==\"main\"))" "[\"7.${UPPER_CHE_Y}.x\",\"7.${LOWER_CHE_Y}.x\"]"
       replaceField "${WORKDIR}/dependencies/job-config.json" "(.\"Management-Jobs\"[][\"${DEVSPACES_VERSION}\"][\"upstream_branch\"]|select(.[]?==\"devspaces-3-rhel-8\"))" "[\"devspaces-${DEVSPACES_VERSION}-rhel-8\",\"devspaces-${DEVSPACES_VERSION}-rhel-8\"]"
@@ -225,9 +235,12 @@ updateVersion() {
       done
       replaceField "${WORKDIR}/dependencies/job-config.json" "(.Jobs[][\"${DEVSPACES_VERSION}\"][\"upstream_branch\"]|select(.[]?==\"main\"))" "[\"7.${UPPER_CHE_Y}.x\",\"7.${LOWER_CHE_Y}.x\"]"
       replaceField "${WORKDIR}/dependencies/job-config.json" "(.Jobs[][\"${DEVSPACES_VERSION}\"][\"upstream_branch\"]|select(.[]?==\"devspaces-3-rhel-8\"))" "[\"devspaces-${DEVSPACES_VERSION}-rhel-8\",\"devspaces-${DEVSPACES_VERSION}-rhel-8\"]"
-
-      # special case for code builds which have a main branch upstream and don't use che 7.yy.x convention
-      replaceField "${WORKDIR}/dependencies/job-config.json" "(.Jobs[\"code\"][\"${DEVSPACES_VERSION}\"][\"upstream_branch\"]|select(.[]|contains(\"7.\")))" "[\"devspaces-${DEVSPACES_VERSION}-rhel-8\",\"devspaces-${DEVSPACES_VERSION}-rhel-8\"]"
+      # if code <= 3.2 use devspaces-3.2-rhel-8 branch; as of 3.3 use 7.yy.x convention
+      if [[ $DEVSPACES_VERSION == "3.2" ]]; then
+        replaceField "${WORKDIR}/dependencies/job-config.json" "(.Jobs[\"code\"][\"${DEVSPACES_VERSION}\"][\"upstream_branch\"]|select(.[]))" "[\"devspaces-${DEVSPACES_VERSION}-rhel-8\",\"devspaces-${DEVSPACES_VERSION}-rhel-8\"]"
+      else
+        replaceField "${WORKDIR}/dependencies/job-config.json" "(.Jobs[\"code\"][\"${DEVSPACES_VERSION}\"][\"upstream_branch\"]|select(.[]))" "[\"7.${UPPER_CHE_Y}.x\",\"7.${LOWER_CHE_Y}.x\"]"
+      fi
 
       replaceField "${WORKDIR}/dependencies/job-config.json" "(.\"Management-Jobs\"[][\"${DEVSPACES_VERSION}\"][\"upstream_branch\"]|select(.[]?==\"main\"))" "[\"7.${UPPER_CHE_Y}.x\",\"7.${LOWER_CHE_Y}.x\"]"
       replaceField "${WORKDIR}/dependencies/job-config.json" "(.\"Management-Jobs\"[][\"${DEVSPACES_VERSION}\"][\"upstream_branch\"]|select(.[]?==\"devspaces-3-rhel-8\"))" "[\"devspaces-${DEVSPACES_VERSION}-rhel-8\",\"devspaces-${DEVSPACES_VERSION}-rhel-8\"]"
