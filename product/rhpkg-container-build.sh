@@ -122,7 +122,7 @@ if [[ ! ${REPOS} ]] || [[ ${REPOS} == " " ]]; then
 fi
 
 # scrub dupe lines out of error log
-ERRORS_FOUND=$(grep -E --text -B2 "Max retries exceeded with url: /brewhub|Failed to establish a new connection|Brew build has failed|failed with exit code|Problem loading ID|Finished: FAILURE" "${LOGFILE}" | \
+ERRORS_FOUND=$(grep -E --text -B2 "Max retries exceeded with url: /brewhub|Failed to establish a new connection|Build failed \(rc=|Brew build has failed|failed with exit code|Problem loading ID|Finished: FAILURE|Error: error creating build container: committing the finished image" "${LOGFILE}" | \
   grep -v "grep" | \
   sed -r -e "s#[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2},[0-9]{3} -*##g" \
     -e "s# \(rc=1\)##g" \
@@ -150,6 +150,8 @@ ERRORS_FOUND=$(grep -E --text -B2 "Max retries exceeded with url: /brewhub|Faile
     -e 's#.+(atomic_reactor|raise PluginFailedException).+##g' \
     -e 's#.*(Dockerfile used for build:|End of Pipeline|Brew build has failed:|rm -f /tmp/tmp).*##g' \
     -e 's#ERROR - running##g' \
+    -e 's#.+Build failed \(rc=\{rc\}.+##g' \
+    -e 's# +for line in output_lines:.*##g' \
     `# remove short lines` \
     -e '/^.{,9}$/d' \
     | sort -u || true)
