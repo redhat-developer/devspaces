@@ -133,3 +133,21 @@ jobs:
               echo "Plugin registry published to https://redhat-developer.github.io/$GITHUB_REPO_NAME/$NEXT_VERSION_DIR/$arch/v3/plugins/"
             fi
           done
+
+      - name: Trigger rebuild of devfile registry
+        env:
+          GITHUB_TOKEN: ${{ secrets.CRW_BUILD_TOKEN }}
+        run: |
+          export GITHUB_TOKEN=${{ secrets.CRW_BUILD_TOKEN }}
+          # TODO do we need a branch here? 
+          git clone -b "$GITHUB_REF_NAME" "https://github.com/$GITHUB_REPOSITORY.git" ds
+          cd ds
+          git config user.email "nickboldt+devstudio-release@gmail.com"
+          git config user.name "devstudio-release"
+          git config --global push.default matching
+          git config --global pull.rebase true
+          git config --global hub.protocol https
+          git remote set-url origin https://$GITHUB_TOKEN:x-oauth-basic@github.com/redhat-developer/devspaces.git
+          sed -i -r -e "s@^Webhook triggered on: .+@Webhook triggered on: $(date)@" dependencies/che-devfile-registry/webhook_trigger.txt
+          git commit -m "chore: update webhook_trigger.txt timestamp" dependencies/che-devfile-registry/webhook_trigger.txt
+          git push origin "$GITHUB_REF_NAME" 
