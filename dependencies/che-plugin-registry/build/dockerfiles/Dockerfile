@@ -78,7 +78,9 @@ RUN chmod 755 /usr/local/bin/*.sh && \
     tar -xvf /build/resources.tgz -C /build/ && \
     rm -rf /build/output/v3/che-theia-plugins.yaml /build/output/v3/che-editors.yaml /build/output/v3/che-plugins.yaml && \
     /build/swap_plugins_memory.sh /build/output/v3 && \
-    /build/list_referenced_images.sh /build/output/v3 --use-generated-content > /build/output/v3/external_images.txt && cat /build/output/v3/external_images.txt && \
+    /build/list_referenced_images.sh /build/output/v3 --use-generated-content > /build/output/v3/external_images.txt && \
+    /build/add_extra_images.sh >> /build/output/v3/external_images.txt && \
+    cat /build/output/v3/external_images.txt && \
     chmod -R g+rwX /build && \
     cp -r /build/output/v3 /var/www/html/
 
