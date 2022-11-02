@@ -1,3 +1,13 @@
+# What is this?
+
+This is a tool for building a ubi8-minimal image with dnf, so you can more 
+easily check content sets for available RHEL8 rpms.
+
+## Usage
+
+Note that the ubi8 image contains fewer content sets than the ubi8-brew image, 
+which can also be queried for rhocp and ocp-tools RPMs.
+
 . build an image
 +
 ```

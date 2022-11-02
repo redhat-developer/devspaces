@@ -16,14 +16,14 @@ baseurl=http://rhsm-pulp.corp.redhat.com/content/dist/rhel8/8/$basearch/coderead
 enabled=1
 gpgcheck=0
 
-[rhocp-4.9-for-rhel-8-rpms]
-name=rhocp-4.9-for-rhel-8-rpms
-baseurl=http://rhsm-pulp.corp.redhat.com/content/dist/layered/rhel8/$basearch/rhocp/4.9/os/
+[rhocp-4.11-for-rhel-8-rpms]
+name=rhocp-4.11-for-rhel-8-rpms
+baseurl=http://rhsm-pulp.corp.redhat.com/content/dist/layered/rhel8/$basearch/rhocp/4.11/os/
 enabled=1
 gpgcheck=0
 
-[ocp-tools-4.9-for-rhel-8-rpms]
-name=ocp-tools-4.9-for-rhel-8-rpms
-baseurl=http://rhsm-pulp.corp.redhat.com/content/dist/layered/rhel8/$basearch/ocp-tools/4.9/os/
+[ocp-tools-4.11-for-rhel-8-rpms]
+name=ocp-tools-4.11-for-rhel-8-rpms
+baseurl=http://rhsm-pulp.corp.redhat.com/content/dist/layered/rhel8/$basearch/ocp-tools/4.11/os/
 enabled=1
 gpgcheck=0

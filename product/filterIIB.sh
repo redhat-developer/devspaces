@@ -87,7 +87,8 @@ if [ -z $sourceIndexImage ]; then echo "IIB image required"; echo; usage; exit 1
 if [ -f ./render.json ]; then rm -f ./render.json; fi
 # CRW-3463 use --skip-tls-verify as workaround for "certificate signed by unknown authority"
 if [[ $VERBOSE -eq 1 ]]; then
-  echo "[DEBUG] Rendering $sourceIndexImage. This will take several minutes: 'opm --skip-tls-verify render $sourceIndexImage > render.json'"
+  echo "[DEBUG] Rendering 'opm --skip-tls-verify render $sourceIndexImage > render.json'"
+  echo "[DEBUG] This may take several minutes."
   time opm --skip-tls-verify render "$sourceIndexImage" > render.json
 else
   opm --skip-tls-verify render "$sourceIndexImage" > render.json

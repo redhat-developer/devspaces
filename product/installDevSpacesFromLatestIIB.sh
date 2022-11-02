@@ -383,8 +383,8 @@ fi
 if [[ $(command -v ${DSC}) ]]; then # use dsc
   if [[ $DELETE_BEFORE == "true" ]]; then 
     echo
-    echo "Using dsc from ${DSC}"
-    ${DSC} server:delete -y -n "${NAMESPACE}" --listr-renderer=verbose --telemetry=off
+    echo "Using dsc from ${DSC} (including namespace and DWO resources)"
+    ${DSC} server:delete -y -n "${NAMESPACE}" --listr-renderer=verbose --telemetry=off --delete-all --delete-namespace
     echo -n "Sleeping for 30s "
     for _ in {1..6}; do
       echo -n '.'

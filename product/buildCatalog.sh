@@ -95,10 +95,14 @@ $PODMAN rmi --ignore --force $targetIndexImage >/dev/null 2>&1 || true
 # opm alpha generate dockerfile ./olm-catalog
 
 # new way for olm 4.11 - see https://docs.openshift.com/container-platform/4.11/operators/admin/olm-managing-custom-catalogs.html#olm-creating-fb-catalog-image_olm-managing-custom-catalogs
+OSE_VER="${OCP_VER}"
+if [[ $(skopeo inspect docker://registry.redhat.io/openshift4/ose-operator-registry:${OCP_VER} --raw 2>&1 | grep "Not found") != "" ]]; then 
+  OSE_VER="latest"
+fi
 cat <<EOF > olm-catalog.Dockerfile
 # The base image is expected to contain
 # /bin/opm (with a serve subcommand) and /bin/grpc_health_probe
-FROM registry.redhat.io/openshift4/ose-operator-registry:${OCP_VER}
+FROM registry.redhat.io/openshift4/ose-operator-registry:${OSE_VER}
 
 # Configure the entrypoint and command
 ENTRYPOINT ["/bin/opm"]
@@ -112,7 +116,7 @@ ADD olm-catalog /configs
 LABEL operators.operatorframework.io.index.configs.v1=/configs
 EOF
 if [[ $VERBOSE -eq 1 ]]; then
-  echo "Generated dockerfile for OCP $OCP_VER: "
+  echo "Generated dockerfile from ose-operator-registry:${OSE_VER} for OCP $OCP_VER:"
   cat olm-catalog.Dockerfile
 fi
 

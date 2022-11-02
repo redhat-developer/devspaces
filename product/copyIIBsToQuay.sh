@@ -27,7 +27,7 @@ Options:
   -p, --push                 : Push IIB(s) to quay registry; default is to show commands but not copy anything
   --force                    : If target image exists, will re-filter and re-push it; otherwise skip to avoid updating image timestamps
   -t PROD_VER                : If x.y version/tag not set, will compute from dependencies/job-config.json file
-  -o 'OCP_VER1 OCP_VER2 ...' : Space-separated list of OCP version(s) (e.g. 'v4.10 v4.11') to query and publish; defaults to job-config.json values
+  -o 'OCP_VER1 OCP_VER2 ...' : Space-separated list of OCP version(s) (e.g. 'v4.12 v4.11 v4.10') to query and publish; defaults to job-config.json values
   -e, --extra-tags           : Extra tags to create, such as 3.2.0.RC-08-04
   -v                         : Verbose output: include additional information
   -h, --help                 : Show this help
@@ -180,11 +180,11 @@ fi
 for OCP_VER in ${OCP_VERSIONS}; do
     PUSHTOQUAYFORCE_LOCAL=${PUSHTOQUAYFORCE}
     # registry-proxy.engineering.redhat.com/rh-osbs/iib:286641
-    LATEST_IIB=$(${GLIB} --ds -t ${DS_VERSION} -o ${OCP_VER} -qi) # return quietly, just the index bundle
+    LATEST_IIB=$(${GLIB} --ds -t ${DS_VERSION} -o ${OCP_VER} -qi | sort -uV | tail -1) # return quietly, just the index bundle
     LATEST_IIB_NUM=${LATEST_IIB##*:}
     # Get DevWorkspace Operator IIB separately to enable DWO RC testing
     # don't wait the usual 30 mins to see if new DWO is published; instead just check once and give up if not found
-    LATEST_DWO_IIB=$(${GLIB} --dwo -t ${DWO_VERSION} -c 'devworkspace-operator-bundle' -o ${OCP_VER} -qi --timeout 2 --interval 1) # return quietly, just the index bundle
+    LATEST_DWO_IIB=$(${GLIB} --dwo -t ${DWO_VERSION} -c 'devworkspace-operator-bundle' -o ${OCP_VER} -qi --timeout 2 --interval 1 | sort -uV | tail -1) # return quietly, just the index bundle
     LATEST_DWO_IIB_NUM=${LATEST_DWO_IIB##*:}
 
     # NOTE: this is NOT OCP server arch, but the arch of the local build machine!
@@ -199,15 +199,22 @@ for OCP_VER in ${OCP_VERSIONS}; do
     fi 
 
     if [[ $VERBOSEFLAG == "-v" ]]; then
-        echo "[DEBUG] DS  OPERATOR BUNDLE = $(${GLIT} --osbs -c devspaces-operator-bundle --tag "${DS_VERSION}-")"
+        echo "[DEBUG] LATEST DS  OPERATOR BUNDLE = $(${GLIT} --osbs -c devspaces-operator-bundle --tag "${DS_VERSION}-")"
+        echo "[DEBUG] LATEST DWO OPERATOR BUNDLE = $(${GLIT} --osbs -c devworkspace-operator-bundle --tag "${DWO_VERSION}-")"
+        echo "[DEBUG] Note that the above bundles might not yet exist for the latest IIB, if still being published."
+        echo ""
         echo "[DEBUG] DS     INDEX BUNDLE = ${LATEST_IIB}"
-        echo "[DEBUG] DWO OPERATOR BUNDLE = $(${GLIT} --osbs -c devworkspace-operator-bundle --tag "${DWO_VERSION}-")"
         if [[ $LATEST_DWO_IIB ]] ;then
             echo "[DEBUG] DWO    INDEX BUNDLE = ${LATEST_DWO_IIB}"
         else
             echo "[DEBUG] DWO    INDEX BUNDLE = n/a"
         fi
         echo "[DEBUG] QUAY   INDEX BUNDLE = ${LATEST_IIB_QUAY}"
+    fi
+
+    if [[ ! ${LATEST_IIB} ]]; then
+        echo "[ERROR] Could not compute index bundle for DS ${DS_VERSION} and OCP ${OCP_VER} !"
+        exit 2
     fi
 
     # filter and publish to a new name, putting all operators in the fast channel
@@ -231,12 +238,11 @@ for OCP_VER in ${OCP_VERSIONS}; do
     # check if destination already exists in quay
     if [[ $(skopeo --insecure-policy inspect docker://${LATEST_IIB_QUAY} 2>&1) == *"Error"* ]] || [[ ${PUSHTOQUAYFORCE} -eq 1 ]]; then
         ${buildCatalog} -t ${LATEST_IIB_QUAY} --push ${VERBOSEFLAG} --dir $CATALOG_DIR --ocp-ver $OCP_VER
+        PUSHTOQUAYFORCE_LOCAL=1
     else
         if [[ $VERBOSEFLAG == "-v" ]]; then echo "Copy ${LATEST_IIB_QUAY} - already exists, nothing to do"; fi
         echo "[IMG] ${LATEST_IIB_QUAY}"
     fi
-    PUSHTOQUAYFORCE_LOCAL=1
-
     if [[ $(skopeo --insecure-policy inspect docker://${LATEST_IIB_QUAY} 2>&1) == *"Error"* ]]; then
         echo "[ERROR] Cannot find image ${LATEST_IIB_QUAY} to copy!"
         echo "[ERROR] Check output of this command for an idea of what went wrong:"
