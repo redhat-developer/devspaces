@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Copyright (c) 2018-2022 Red Hat, Inc.
+# Copyright (c) 2022 Red Hat, Inc.
 # This program and the accompanying materials are made
 # available under the terms of the Eclipse Public License 2.0
 # which is available at https://www.eclipse.org/legal/epl-2.0/
@@ -12,6 +12,8 @@
 VERBOSE=0
 QUIET="none"
 OCP_VER="v" # by default return all OCP versions
+
+SCRIPT_DIR=$(cd "$(dirname "$0")" || exit; pwd)
 
 while [[ "$#" -gt 0 ]]; do
   case $1 in
@@ -45,15 +47,25 @@ Options:
 if [[ -z ${PROD_VER} ]]; then usage; exit 1; fi
 if [[ -z ${IMAGE} ]]; then usage; exit 1; fi
 
+if [[ -x ${SCRIPT_DIR}/getLatestImageTags.sh ]]; then
+    GLIT=${SCRIPT_DIR}/getLatestImageTags.sh
+else
+    if [[ $VERBOSEFLAG == "-v" ]]; then echo "Downloading getLatestImageTags.sh script from Github"; fi
+    pushd /tmp >/dev/null
+    curl -sSLO https://raw.githubusercontent.com/redhat-developer/devspaces/${MIDSTM_BRANCH}/product/getLatestImageTags.sh && chmod +x getLatestImageTags.sh
+    GLIT=/tmp/getLatestImageTags.sh
+    popd >/dev/null
+fi
+
 # registry-proxy.engineering.redhat.com/rh-osbs/devworkspace-operator-bundle:0.17-1
-VER=$(./getLatestImageTags.sh --osbs -c ${IMAGE} --tag ${PROD_VER})
+VER=$(${GLIT} --osbs -c ${IMAGE} --tag ${PROD_VER})
 if [[ $VERBOSE -eq 1 ]]; then echo "[DEBUG] $VER"; fi
 VER=${VER##*:} # 0.17-1
 resultsdbURL="https://resultsdb-api.engineering.redhat.com/api/v2.0/results/latest?testcases=cvp.redhat.detailed.operator-catalog-initialization-bundle-image&item=$IMAGE-container-$VER"
-URL=$(curl -sSL "$resultsdbURL" | jq -r '.[][].ref_url')
+URL=$(curl -sSLk "$resultsdbURL" | jq -r '.[][].ref_url')
 if [[ $VERBOSE -eq 1 ]]; then echo "[DEBUG] $URL"; fi
 if [[ ! $URL ]]; then echo "Could not fetch ref_url from $resultsdbURL"; exit 1; fi
-results="$(curl -sSL "${URL}index_images.yml" | tr -d "[]'\n " | tr "," "\n" | sed -r -e "s@(v[0-9.]+):(.+)@$IMAGE:$VER\t\2\t\1@" | grep $OCP_VER)"
+results="$(curl -sSLk "${URL}index_images.yml" | tr -d "[]'\n " | tr "," "\n" | sed -r -e "s@(v[0-9.]+):(.+)@$IMAGE:$VER\t\2\t\1@" | grep $OCP_VER)"
 
 for line in "$results"; do
     if [[ $QUIET == "index" ]]; then # show only the index image
