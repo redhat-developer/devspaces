@@ -9,6 +9,14 @@
 #
 # script to query latest IIBs (one per OCP version) for a given version of DS, Dev Spaces, DevWorkspace, or Web Terminal operators
 
+# defaults
+VERBOSE=0
+NUM_RESULTS=1 # only show one result if more are found (latest IIB tag value)
+TIMEOUT=1800 # keep trying to pull an IIB from datagrepper for up to this # of seconds
+INTERVAL=180 # keep trying to pull an IIB from datagrepper at intervals of this # of seconds
+QUIET="none"
+OCP_VER="" # if not set, check for all available versions, and return multiple results
+
 usage () {
 	echo "
 Usage: 
@@ -46,19 +54,20 @@ runCommand() {
     if [[ $VERBOSE -eq 1 ]]; then
       echo -n "Check for latest IIBs for $PROD_NAME (${IMAGE_PREFIX}) ${PROD_VER} ${csv} ... "
     fi
-    lastcsv=$(curl -sSLk "https://datagrepper.engineering.redhat.com/raw?topic=/topic/VirtualTopic.eng.ci.redhat-container-image.index.built&delta=1728000&rows_per_page=30&contains=${IMAGE_PREFIX}" | \
+    lastcsv=$(curl -sSLk "https://datagrepper.engineering.redhat.com/raw?topic=/topic/VirtualTopic.eng.ci.redhat-container-image.index.built&delta=1728000&rows_per_page=99&contains=${IMAGE_PREFIX}" | \
     jq ".raw_messages[].msg.index | .added_bundle_images[0]" -r | sort -uV | grep "${csv}:${PROD_VER}" | tail -1 | \
     sed -r -e "s#registry-proxy.engineering.redhat.com/rh-osbs/${IMAGE_PREFIX}-##");
 
     if [[ "${lastcsv}" ]]; then
       if [[ $OCP_VER == "" ]]; then
-        line="$(curl -sSLk "https://datagrepper.engineering.redhat.com/raw?topic=/topic/VirtualTopic.eng.ci.redhat-container-image.index.built&delta=1728000&rows_per_page=30&contains=${IMAGE_PREFIX}" | \
+        # TODO return only ONE result per OCP version, not multiple
+        line="$(curl -sSLk "https://datagrepper.engineering.redhat.com/raw?topic=/topic/VirtualTopic.eng.ci.redhat-container-image.index.built&delta=1728000&rows_per_page=99&contains=${IMAGE_PREFIX}" | \
             jq ".raw_messages[].msg.index | [.added_bundle_images[0], .index_image, .ocp_version] | @tsv" -r | sort -uV | \
             grep "${lastcsv}" | sed -r -e "s#registry-proxy.engineering.redhat.com/rh-osbs/${IMAGE_PREFIX}-#  #")"
       else
-        line="$(curl -sSLk "https://datagrepper.engineering.redhat.com/raw?topic=/topic/VirtualTopic.eng.ci.redhat-container-image.index.built&delta=1728000&rows_per_page=30&contains=${IMAGE_PREFIX}" | \
+        line="$(curl -sSLk "https://datagrepper.engineering.redhat.com/raw?topic=/topic/VirtualTopic.eng.ci.redhat-container-image.index.built&delta=1728000&rows_per_page=99&contains=${IMAGE_PREFIX}" | \
           jq ".raw_messages[].msg.index | [.added_bundle_images[0], .index_image, .ocp_version] | @tsv" -r | sort -uV | \
-          grep "${lastcsv}" | grep "${OCP_VER}")"
+          grep "${lastcsv}" | grep "${OCP_VER}" | tail -${NUM_RESULTS})"
       fi
       if [[ $line ]]; then
         if [[ $VERBOSE -eq 1 ]]; then echo; fi
@@ -91,12 +100,6 @@ runCommand() {
       exit 1
   fi
 }
-
-VERBOSE=0
-TIMEOUT=1800 # keep trying to pull an IIB from datagrepper for up to this # of seconds
-INTERVAL=180 # keep trying to pull an IIB from datagrepper at intervals of this # of seconds
-QUIET="none"
-OCP_VER="" # if not set, check for all available versions, and return multiple results
 
 crwDefaults () {
   PROD_VER="2.15"
