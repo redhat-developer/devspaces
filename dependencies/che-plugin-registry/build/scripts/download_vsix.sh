@@ -31,6 +31,11 @@ for vsixFullName in $listOfVsixes; do
 
     # extract the download link from the json metadata
     vsixDownloadLink=$(echo "${vsixMetadata}" | jq -r '.files.download')
+    # get linux-x64 download link
+    vsixLinux64DownloadLink=$(echo "${vsixMetadata}" | jq -r '.downloads."linux-x64"')
+    if [[ $vsixLinux64DownloadLink != null ]]; then
+        vsixDownloadLink=$vsixLinux64DownloadLink
+    fi
 
     echo "Downloading ${vsixDownloadLink} into ${vsixPublisher} folder..."
     vsixFilename="/tmp/vsix/${vsixFullName}-${vsixVersion}.vsix"
