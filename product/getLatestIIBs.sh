@@ -8,6 +8,10 @@
 # SPDX-License-Identifier: EPL-2.0
 #
 # script to query latest IIBs (one per OCP version) for a given version of DS, Dev Spaces, DevWorkspace, or Web Terminal operators
+#
+# this script uses datagrepper to compute IIB URLs
+#
+# see also getIIBsForBundle.sh, which uses the resultsdb service instead (and may have more historical data available)
 
 # defaults
 VERBOSE=0

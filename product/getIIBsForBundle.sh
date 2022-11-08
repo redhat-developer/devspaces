@@ -8,6 +8,9 @@
 # SPDX-License-Identifier: EPL-2.0
 #
 # for a given operator-bundle & tag, compute the associated IIBs for all OCP versions
+# this script uses resultsdb (CVP data) to compute IIB URLs
+#
+# see also getLatestIIBs.sh, which uses the datagrepper service instead
 
 VERBOSE=0
 QUIET="none"

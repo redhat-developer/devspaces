@@ -8,11 +8,15 @@
 # SPDX-License-Identifier: EPL-2.0
 #
 # script to automatically install Dev Spaces from the latest IIB image
-# Basically a wrapper on getLatestIIBs.sh and installCatalogSourceFromIIB.sh
+# Basically a wrapper for getIIBsForBundle.sh (or getLatestIIBs.sh) and installCatalogSourceFromIIB.sh
+#
 # Note: this script requires
 # 1. You are logged into an OpenShift cluster (with cluster-admin permissions)
-# 2. You an active kerberos token (kinit <username>@IPA.REDHAT.COM)
-# 3. You've set up a Brew registry token
+# 2. You an active kerberos token (kinit <username>@IPA.REDHAT.COM) [if fetching latest IIB from RH's datagrepper or resultsdb services]
+# 3. You've set up a Brew registry token [if pulling images from brew.registry.redhat]
+# 
+# However, if you're installing the latest images from quay.io/devspaces, you don't need the above RH internal requirements.
+# You do need to be logged into an OpenShift cluster, but you can optionally pass your cluster and kubeadmin password via commandline.
 #
 # Requires: oc, jq, curl
 # Optional: podman (for brew.registry secret)
@@ -264,7 +268,11 @@ echo "Detected OpenShift: v$OPENSHIFT_VER $OPENSHIFT_ARCH"
 
 if [[ $DWO_VERSION ]]; then
   if [[ ! $IIB_DWO ]] && [[ $DWO_VERSION ]]; then # compute the latest IIB for the DWO version passed in
-    IIB_DWO=$("$SCRIPT_DIR"/getLatestIIBs.sh --dwo -t "$DWO_VERSION" -o "$OPENSHIFT_VER" -q)
+    # try the new way using resultsdb [requires VPN access]
+    IIB_DWO=$("$SCRIPT_DIR"/getIIBsForBundle.sh --dwo -t "$DWO_VERSION" -o "$OPENSHIFT_VER" -q)
+    if [[ ! $IIB_DWO ]]; then # try the old way with datagrepper [requires VPN access]
+      IIB_DWO=$("$SCRIPT_DIR"/getLatestIIBs.sh --dwo -t "$DWO_VERSION" -o "$OPENSHIFT_VER" -q)
+    fi
     if [[ ! $ICSP_FLAGs ]]; then ICSP_FLAGs="${ICSP_FLAGs} --icsp brew.registry.redhat.io"; fi
     if [[ $IIB_DWO ]]; then
       echo "[INFO] Found latest Dev Workspace Operator IIB $IIB_DWO - installing from $CHANNEL_DWO channel..."
@@ -292,7 +300,11 @@ if [[ $IIB_DWO ]]; then
 fi
 
 if [[ ! $IIB_DS ]]; then
-  IIB_DS=$("$SCRIPT_DIR"/getLatestIIBs.sh --ds -t "$DS_VERSION"  -o "$OPENSHIFT_VER" -q)
+  # try the new way using resultsdb [requires VPN access]
+  IIB_DS=$("$SCRIPT_DIR"/getIIBsForBundle.sh --dwo -t "$DS_VERSION" -o "$OPENSHIFT_VER" -q)
+  if [[ ! $IIB_DS ]]; then # try the old way with datagrepper [requires VPN access]
+    IIB_DS=$("$SCRIPT_DIR"/getLatestIIBs.sh --ds -t "$DS_VERSION"  -o "$OPENSHIFT_VER" -q)
+  fi
   if [[ ! $ICSP_FLAGs ]]; then ICSP_FLAGs="${ICSP_FLAGs} --icsp brew.registry.redhat.io"; fi
   if [[ $IIB_DS ]]; then 
     echo "[INFO] Found latest Dev Spaces IIB $IIB_DS - installing from $CHANNEL_DS channel..."
