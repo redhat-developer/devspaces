@@ -41,6 +41,7 @@ while [[ "$#" -gt 0 ]]; do
 done
 
 for image in $images; do
+    PUSHTOQUAYFORCE_LOCAL=${PUSHTOQUAYFORCE}
     IMG=$image
     if [[ $image =~ (.+)@sha256:(.+) ]]; then 
         IMG=${BASH_REMATCH[1]}
