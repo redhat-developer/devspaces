@@ -42,11 +42,13 @@ Options:
 }
 
 latestNext=""
+PUSHTOQUAYFORCEFLAG=""
 while [[ "$#" -gt 0 ]]; do
   case $1 in
     '-t') PROD_VER="$2"; shift 1;;
     '--latest') latestNext="latest";;
     '--next') latestNext="next";;
+    '--force') PUSHTOQUAYFORCEFLAG="--force";;
     '-v') VERBOSE=1;;
     '-h') usage;;
   esac
@@ -83,7 +85,7 @@ if [[ $VERBOSE -eq 1 ]]; then
     else
         echo "Pushing to quay (including tag: ${PROD_VER})..."
     fi
-    ${SCRIPT_DIR}/copyImageToQuay.sh --pushtoquay="${PROD_VER} ${latestNext}" ${bundle} ${operands} -v
+    ${SCRIPT_DIR}/copyImageToQuay.sh --pushtoquay="${PROD_VER} ${latestNext} ${PUSHTOQUAYFORCEFLAG}" ${bundle} ${operands} -v
 else
-    ${SCRIPT_DIR}/copyImageToQuay.sh --pushtoquay="${PROD_VER} ${latestNext}" ${bundle} ${operands}
+    ${SCRIPT_DIR}/copyImageToQuay.sh --pushtoquay="${PROD_VER} ${latestNext} ${PUSHTOQUAYFORCEFLAG}" ${bundle} ${operands}
 fi

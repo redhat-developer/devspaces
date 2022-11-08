@@ -24,6 +24,7 @@ Example: $0 -v registry.stage.redhat.io/devworkspace/devworkspace-operator-bundl
 
 # TODO: optionally set other tags if we pass in PUSHTOQUAYTAGS, eg., "latest" or "next" 
 PUSHTOQUAYTAGS=""
+PUSHTOQUAYFORCE=0
 
 VERBOSE=0
 if [[ "$#" -eq 0 ]]; then usage; exit 1; fi
@@ -32,6 +33,7 @@ while [[ "$#" -gt 0 ]]; do
   case $1 in
     '-v') VERBOSE=1;;
     '-h') usage; exit 1;;
+    '--force') PUSHTOQUAYFORCE=1;;
     --pushtoquay=*) PUSHTOQUAYTAGS="$(echo "${1#*=}")";;
     *) images="$images $1"
   esac
@@ -78,17 +80,18 @@ for image in $images; do
         echo "Target: $QUAYDEST"
     fi
 
-    if [[ $(skopeo --insecure-policy inspect docker://${QUAYDEST} 2>&1) == *"Error"* ]]; then 
+    if [[ $(skopeo --insecure-policy inspect docker://${QUAYDEST} 2>&1) == *"Error"* ]] || [[ ${PUSHTOQUAYFORCE} -eq 1 ]]; then
         # CRW-1914 copy tag ONLY if it doesn't already exist on the registry, to prevent re-timestamping it and making it look new
         if [[ $VERBOSE -eq 1 ]]; then echo "Copy ${REGISTRYPRE}${URLfrag} to ${QUAYDEST}"; fi
         CMD="skopeo --insecure-policy copy --all docker://${REGISTRYPRE}${URLfrag} docker://${QUAYDEST}"; echo $CMD; $CMD
+        PUSHTOQUAYFORCE_LOCAL=1
     else
         if [[ $VERBOSE -eq 1 ]]; then echo "Copy ${QUAYDEST} - already exists, nothing to do"; fi
     fi
 
     # and update additional PUSHTOQUAYTAGS tags 
     for qtag in ${PUSHTOQUAYTAGS}; do
-        if [[ $(skopeo --insecure-policy inspect docker://${QUAYDEST%:*}:${qtag} 2>&1) == *"Error"* ]]; then 
+        if [[ $(skopeo --insecure-policy inspect docker://${QUAYDEST%:*}:${qtag} 2>&1) == *"Error"* ]] || [[ ${PUSHTOQUAYFORCE_LOCAL} -eq 1 ]]; then
             if [[ $VERBOSE -eq 1 ]]; then echo "Copy ${REGISTRYPRE}${URLfrag} to ${QUAYDEST%:*}:${qtag}"; fi
             CMD="skopeo --insecure-policy copy --all docker://${REGISTRYPRE}${URLfrag} docker://${QUAYDEST%:*}:${qtag}"; echo $CMD; $CMD
         else
