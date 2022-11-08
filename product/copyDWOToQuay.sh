@@ -85,7 +85,7 @@ if [[ $VERBOSE -eq 1 ]]; then
     else
         echo "Pushing to quay (including tag: ${PROD_VER})..."
     fi
-    ${SCRIPT_DIR}/copyImageToQuay.sh --pushtoquay="${PROD_VER} ${latestNext} ${PUSHTOQUAYFORCEFLAG}" ${bundle} ${operands} -v
+    ${SCRIPT_DIR}/copyImageToQuay.sh --pushtoquay="${PROD_VER} ${latestNext}" ${bundle} ${operands} -v ${PUSHTOQUAYFORCEFLAG}
 else
-    ${SCRIPT_DIR}/copyImageToQuay.sh --pushtoquay="${PROD_VER} ${latestNext} ${PUSHTOQUAYFORCEFLAG}" ${bundle} ${operands}
+    ${SCRIPT_DIR}/copyImageToQuay.sh --pushtoquay="${PROD_VER} ${latestNext}" ${bundle} ${operands} ${PUSHTOQUAYFORCEFLAG}
 fi
