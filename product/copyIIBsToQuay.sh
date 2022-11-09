@@ -131,45 +131,27 @@ checkVersion() {
 }
 checkVersion 1.1 "$(skopeo --version | sed -e "s/skopeo version //")" skopeo
 
-if [[ -x ${SCRIPT_DIR}/getLatestIIBs.sh ]]; then
-    GLIB=${SCRIPT_DIR}/getLatestIIBs.sh
-else
-    if [[ $VERBOSEFLAG == "-v" ]]; then echo "Downloading getLatestIIBs.sh script from Github"; fi
-    pushd /tmp >/dev/null
-    curl -sSLO https://raw.githubusercontent.com/redhat-developer/devspaces/${MIDSTM_BRANCH}/product/getLatestIIBs.sh && chmod +x getLatestIIBs.sh
-    GLIB=/tmp/getLatestIIBs.sh
-    popd >/dev/null
-fi
+getScript () {
+    scriptFile=$1
+    if [[ -x ${SCRIPT_DIR}/${scriptFile} ]]; then
+        getScript_return=${SCRIPT_DIR}/${scriptFile}
+    else
+        if [[ $VERBOSEFLAG == "-v" ]]; then echo "Downloading ${scriptFile} script from Github"; fi
+        pushd /tmp >/dev/null
+        curl -sSLO https://raw.githubusercontent.com/redhat-developer/devspaces/${MIDSTM_BRANCH}/product/${scriptFile} && \
+        chmod +x ${scriptFile}
+        getScript_return=/tmp/${scriptFile}
+        popd >/dev/null
+    fi
+}
 
-if [[ -x ${SCRIPT_DIR}/getLatestImageTags.sh ]]; then
-    GLIT=${SCRIPT_DIR}/getLatestImageTags.sh
-else
-    if [[ $VERBOSEFLAG == "-v" ]]; then echo "Downloading getLatestImageTags.sh script from Github"; fi
-    pushd /tmp >/dev/null
-    curl -sSLO https://raw.githubusercontent.com/redhat-developer/devspaces/${MIDSTM_BRANCH}/product/getLatestImageTags.sh && chmod +x getLatestImageTags.sh
-    GLIT=/tmp/getLatestImageTags.sh
-    popd >/dev/null
-fi
+# TODO remove this script if we no longer need it because getIIBsForBundle works better / faster
+getScript getLatestIIBs.sh;      getLatestIIBs=${getScript_return}
 
-if [[ -x ${SCRIPT_DIR}/filterIIB.sh ]]; then
-    filterIIB=${SCRIPT_DIR}/filterIIB.sh
-else
-    if [[ $VERBOSEFLAG == "-v" ]]; then echo "Downloading filterIIB.sh script from Github"; fi
-    pushd /tmp >/dev/null
-    curl -sSLO https://raw.githubusercontent.com/redhat-developer/devspaces/${MIDSTM_BRANCH}/product/filterIIB.sh && chmod +x filterIIB.sh
-    filterIIB=/tmp/filterIIB.sh
-    popd >/dev/null
-fi
-
-if [[ -x ${SCRIPT_DIR}/buildCatalog.sh ]]; then
-    buildCatalog=${SCRIPT_DIR}/buildCatalog.sh
-else
-    if [[ $VERBOSEFLAG == "-v" ]]; then echo "Downloading buildCatalog.sh script from Github"; fi
-    pushd /tmp >/dev/null
-    curl -sSLO https://raw.githubusercontent.com/redhat-developer/devspaces/${MIDSTM_BRANCH}/product/buildCatalog.sh && chmod +x buildCatalog.sh
-    buildCatalog=/tmp/buildCatalog.sh
-    popd >/dev/null
-fi
+getScript getIIBsForBundle.sh;   getIIBsForBundle=${getScript_return}
+getScript getLatestImageTags.sh; getLatestImageTags=${getScript_return}
+getScript filterIIB.sh;          filterIIB=${getScript_return}
+getScript buildCatalog.sh;       buildCatalog=${getScript_return}
 
 if [[ "$PUSH" != "true" ]]; then
     echo "To filter and publish IIBs, copy the commands below, or re-run using --push flag."
@@ -180,11 +162,17 @@ fi
 for OCP_VER in ${OCP_VERSIONS}; do
     PUSHTOQUAYFORCE_LOCAL=${PUSHTOQUAYFORCE}
     # registry-proxy.engineering.redhat.com/rh-osbs/iib:286641
-    LATEST_IIB=$(${GLIB} --ds -t ${DS_VERSION} -o ${OCP_VER} -qi | sort -uV | tail -1) # return quietly, just the index bundle
+    LATEST_IIB=$(${getIIBsForBundle}  --ds -t ${DS_VERSION} -o ${OCP_VER} -qi | sort -uV | tail -1) # return quietly, just the index bundle
+    if [[ ! $LATEST_IIB ]]; then # fall back to getLatestIIBs.sh
+        LATEST_IIB=$(${getLatestIIBs} --ds -t ${DS_VERSION} -o ${OCP_VER} -qi | sort -uV | tail -1) # return quietly, just the index bundle
+    fi
     LATEST_IIB_NUM=${LATEST_IIB##*:}
     # Get DevWorkspace Operator IIB separately to enable DWO RC testing
     # don't wait the usual 30 mins to see if new DWO is published; instead just check once and give up if not found
-    LATEST_DWO_IIB=$(${GLIB} --dwo -t ${DWO_VERSION} -c 'devworkspace-operator-bundle' -o ${OCP_VER} -qi --timeout 2 --interval 1 | sort -uV | tail -1) # return quietly, just the index bundle
+    LATEST_DWO_IIB=$(${getIIBsForBundle}  --dwo -t ${DWO_VERSION} -c 'devworkspace-operator-bundle' -o ${OCP_VER} -qi | sort -uV | tail -1) # return quietly, just the index bundle
+    if [[ ! $LATEST_DWO_IIB ]]; then # fall back to getLatestIIBs.sh
+        LATEST_DWO_IIB=$(${getLatestIIBs} --dwo -t ${DWO_VERSION} -c 'devworkspace-operator-bundle' -o ${OCP_VER} -qi --timeout 2 --interval 1 | sort -uV | tail -1) # return quietly, just the index bundle
+    fi
     LATEST_DWO_IIB_NUM=${LATEST_DWO_IIB##*:}
 
     # NOTE: this is NOT OCP server arch, but the arch of the local build machine!
@@ -199,8 +187,8 @@ for OCP_VER in ${OCP_VERSIONS}; do
     fi 
 
     if [[ $VERBOSEFLAG == "-v" ]]; then
-        echo "[DEBUG] LATEST DS  OPERATOR BUNDLE = $(${GLIT} --osbs -c devspaces-operator-bundle --tag "${DS_VERSION}-")"
-        echo "[DEBUG] LATEST DWO OPERATOR BUNDLE = $(${GLIT} --osbs -c devworkspace-operator-bundle --tag "${DWO_VERSION}-")"
+        echo "[DEBUG] LATEST DS  OPERATOR BUNDLE = $(${getLatestImageTags} --osbs -c devspaces-operator-bundle --tag "${DS_VERSION}-")"
+        echo "[DEBUG] LATEST DWO OPERATOR BUNDLE = $(${getLatestImageTags} --osbs -c devworkspace-operator-bundle --tag "${DWO_VERSION}-")"
         echo "[DEBUG] Note that the above bundles might not yet exist for the latest IIB, if still being published."
         echo ""
         echo "[DEBUG] DS     INDEX BUNDLE = ${LATEST_IIB}"
