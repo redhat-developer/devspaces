@@ -20,19 +20,19 @@ for i in $(seq 0 "$((numberOfExtensions - 1))"); do
     # replace the dot by / in the vsix name
     vsixName=$(echo "${vsixFullName}" | sed 's/\./\//g')
 
-    # if download wasn't set, try to fetch from opnevsx.org
+    # if download wasn't set, try to fetch from openvsx.org
     if [[ $vsixDownloadLink == null ]]; then
         # grab metadata for the vsix file
         # if version wasn't set, use latest
         if [[ $vsixVersion == null ]]; then
-            vsixMetadata=$(curl -sL "https://open-vsx.org/api/${vsixName}/latest")
+            vsixMetadata=$(curl -sLS "https://open-vsx.org/api/${vsixName}/latest")
             
             # if version wasn't set in json, grab it from metadata and add it into the file
             vsixVersion=$(echo "${vsixMetadata}" | jq -r '.version')
             jq --argjson i "$i" --arg version "$vsixVersion" '.[$i] += { "version": $version }' /openvsx-server/openvsx-sync.json > tmp.json
             mv tmp.json /openvsx-server/openvsx-sync.json
         else
-            vsixMetadata=$(curl -sL "https://open-vsx.org/api/${vsixName}/${vsixVersion}")
+            vsixMetadata=$(curl -sLS "https://open-vsx.org/api/${vsixName}/${vsixVersion}")
         fi 
         # check there is no error field in the metadata
         if [[ $(echo "${vsixMetadata}" | jq -r ".error") != null ]]; then
@@ -53,5 +53,5 @@ for i in $(seq 0 "$((numberOfExtensions - 1))"); do
     echo "Downloading ${vsixDownloadLink} into ${vsixPublisher} folder..."
     vsixFilename="/tmp/vsix/${vsixFullName}-${vsixVersion}.vsix"
     # download the latest vsix file in the publisher directory
-    curl -sL "${vsixDownloadLink}" -o "${vsixFilename}"
+    curl -sLS "${vsixDownloadLink}" -o "${vsixFilename}"
 done;
