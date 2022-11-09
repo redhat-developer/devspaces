@@ -10,10 +10,10 @@ icon: /images/redhat-vscode-yaml-icon.png
 category: Programming Languages
 repository: https://github.com/redhat-developer/vscode-yaml
 firstPublicationDate: '2021-04-26'
-latestUpdateDate: '2022-11-07'
+latestUpdateDate: '2022-11-09'
 spec:
   containers:
-    - image: registry.redhat.io/devspaces/udi-rhel8:3.3
+    - image: registry.redhat.io/devspaces/udi-rhel8:3.4
       name: vscode-yaml
       memoryLimit: 256Mi
       memoryRequest: 20Mi

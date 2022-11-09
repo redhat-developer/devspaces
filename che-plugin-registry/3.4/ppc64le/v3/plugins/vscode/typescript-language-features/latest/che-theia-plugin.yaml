@@ -11,7 +11,7 @@ metadata:
     - Programming Languages
   icon: /images/vscode-typescript-language-features-icon.png
 sidecar:
-  image: registry.redhat.io/devspaces/udi-rhel8:3.3
+  image: registry.redhat.io/devspaces/udi-rhel8:3.4
   memoryLimit: 512Mi
   name: vscode-node
   memoryRequest: 20Mi
