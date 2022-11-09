@@ -1645,3 +1645,21 @@
   timeWait: 9 mins
   timeBuild: 4 mins
   timeTotal: 14 mins
+- name: devspaces-operator
+  tag: 3.3-60
+  taskId: 48875994
+  timeCreate: Tue Nov 8 18:25:47 2022
+  timeStart: Tue Nov 8 18:26:28 2022
+  timeFinish: Tue Nov 8 18:40:29 2022
+  timeWait: 0 mins
+  timeBuild: 14 mins
+  timeTotal: 14 mins
+- name: devspaces-operator-bundle
+  tag: 3.3-202
+  taskId: 48876200
+  timeCreate: Tue Nov 8 18:48:01 2022
+  timeStart: Tue Nov 8 18:48:34 2022
+  timeFinish: Tue Nov 8 18:52:22 2022
+  timeWait: 0 mins
+  timeBuild: 3 mins
+  timeTotal: 4 mins
