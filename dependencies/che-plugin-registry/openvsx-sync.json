@@ -1,44 +1,131 @@
 [
-    "donjayamanne.githistory",
-    "vscode.github-authentication",
-    "github.vscode-pull-request-github",
-    "ms-vscode.js-debug",
-    "vscode.typescript-language-features",
-    "llvm-vs-code-extensions.vscode-clangd",
-    "eclipse-cdt.cdt-gdb-vscode",
-    "bmewburn.vscode-intelephense-client",
-    "ms-python.python",
-    "golang.go",
-    "redhat.vscode-yaml",
-    "ms-kubernetes-tools.vscode-kubernetes-tools",
-    "redhat.java",
-    "vscjava.vscode-java-debug",
-    "vscjava.vscode-java-test",
-    "redhat.vscode-microprofile",
-    "redhat.vscode-quarkus",
-    "redhat.fabric8-analytics",
-    "redhat.project-initializer",
-    "redhat.vscode-redhat-account",
-    "redhat.vscode-openshift-connector",
-    "felixfbecker.php-debug",
-    "redhat.vscode-xml",
-    "muhammad-sammy.csharp",
-    "sonarsource.sonarlint-vscode",
-    "vscode.git-base",
-    "vscode.git",
-    "dbaeumer.vscode-eslint",
-    "redhat.vscode-commons",
-    "redhat.vscode-tekton-pipelines",
-    "atlassian.atlascode",
-    "JFrog.jfrog-vscode-extension",
-    "SonatypeCommunity.vscode-iq-plugin",
-    "GitLab.gitlab-workflow",
-    "timonwong.shellcheck",
-    "redhat.ansible",
-    "vscode.npm",
-    "esbenp.prettier-vscode",
-    "ms-toolsai.jupyter",
-    "ms-toolsai.jupyter-renderers",
-    "ms-toolsai.jupyter-keymap",
-    "eamodio.gitlens"
+    {
+        "id": "donjayamanne.githistory"
+    },
+    {
+        "id": "vscode.github-authentication"
+    },
+    {
+        "id": "github.vscode-pull-request-github"
+    },
+    {
+        "id": "ms-vscode.js-debug"
+    },
+    {
+        "id": "vscode.typescript-language-features"
+    },
+    {
+        "id": "llvm-vs-code-extensions.vscode-clangd"
+    },
+    {
+        "id": "eclipse-cdt.cdt-gdb-vscode"
+    },
+    {
+        "id": "bmewburn.vscode-intelephense-client"
+    },
+    {
+        "id": "ms-python.python"
+    },
+    {
+        "id": "golang.go"
+    },
+    {
+        "id": "redhat.vscode-yaml",
+        "version": "1.10.1",
+        "download": "https://github.com/redhat-developer/vscode-yaml/releases/download/1.10.1/yaml-1.10.1-19523.vsix"
+    },
+    {
+        "id": "ms-kubernetes-tools.vscode-kubernetes-tools"
+    },
+    {
+        "id": "redhat.java",
+        "version": "1.12.0"
+    },
+    {
+        "id": "vscjava.vscode-java-debug"
+    },
+    {
+        "id": "vscjava.vscode-java-test"
+    },
+    {
+        "id": "redhat.vscode-microprofile"
+    },
+    {
+        "id": "redhat.vscode-quarkus"
+    },
+    {    
+        "id": "redhat.fabric8-analytics"
+    },
+    {
+        "id": "redhat.project-initializer"
+    },
+    {
+        "id": "redhat.vscode-redhat-account"
+    },
+    {
+        "id": "redhat.vscode-openshift-connector"
+    },
+    {
+        "id": "felixfbecker.php-debug"
+    },
+    {
+        "id": "redhat.vscode-xml"
+    },
+    {
+        "id": "muhammad-sammy.csharp"
+    },
+    {
+        "id": "sonarsource.sonarlint-vscode"
+    },
+    {
+        "id": "vscode.git-base"
+    },
+    {
+        "id": "vscode.git"
+    },
+    {
+        "id": "dbaeumer.vscode-eslint"
+    },
+    {
+        "id": "redhat.vscode-commons"
+    },
+    {
+        "id": "redhat.vscode-tekton-pipelines"
+    },
+    {
+        "id": "atlassian.atlascode"
+    },
+    {
+        "id": "JFrog.jfrog-vscode-extension"
+    },
+    {
+        "id": "SonatypeCommunity.vscode-iq-plugin"
+    },
+    {
+        "id": "GitLab.gitlab-workflow"
+    },
+    {
+        "id": "timonwong.shellcheck"
+    },
+    {
+        "id": "redhat.ansible"
+    },
+    {
+        "id": "vscode.npm"
+    },
+    {
+        "id": "esbenp.prettier-vscode"
+    },
+    {
+        "id": "ms-toolsai.jupyter"
+    },
+    {
+        "id": "ms-toolsai.jupyter-renderers"
+    },
+    {
+        "id": "ms-toolsai.jupyter-keymap"
+    },
+    {
+        "id": "eamodio.gitlens"
+    }
 ]
