@@ -20,13 +20,13 @@ containsElement () { for e in "${@:2}"; do [[ "$e" = "$1" ]] && return 0; done; 
 # pull vsix from OpenVSX
 mkdir -p /tmp/vsix
 openVsxSyncFileContent=$(cat "/openvsx-server/openvsx-sync.json")
-listOfVsixes=$(echo "${openVsxSyncFileContent}" | jq -r ".[]")
+numberOfExtensions=$(echo "${openVsxSyncFileContent}" | jq ". | length")
 listOfPublishers=()
 IFS=$'\n' 
 
-for extension in $listOfVsixes; do
-    vsixFullName=${extension%:*}
-    vsixVersion=${extension##*:}
+for i in $(seq 0 "$((numberOfExtensions - 1))"); do
+    vsixFullName=$(echo "${openVsxSyncFileContent}" | jq -r ".[$i].id")
+    vsixVersion=$(echo "${openVsxSyncFileContent}" | jq -r ".[$i].version")
     # extract from the vsix name the publisher name which is the first part of the vsix name before dot
     vsixPublisher=$(echo "${vsixFullName}" | cut -d '.' -f 1)
 
