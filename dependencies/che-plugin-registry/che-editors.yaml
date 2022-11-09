@@ -22,7 +22,7 @@ editors:
     components:
       - name: theia-ide
         container:
-          image: 'registry.redhat.io/devspaces/theia-rhel8:3.3'
+          image: 'registry.redhat.io/devspaces/theia-rhel8:3.4'
           env:
             - name: THEIA_PLUGINS
               value: 'local-dir:///plugins'
@@ -116,7 +116,7 @@ editors:
         volume: {}
       - name: che-machine-exec
         container:
-          image: 'registry.redhat.io/devspaces/machineexec-rhel8:3.3'
+          image: 'registry.redhat.io/devspaces/machineexec-rhel8:3.4'
           memoryLimit: 128Mi
           memoryRequest: 32Mi
           cpuLimit: 500m
@@ -141,7 +141,7 @@ editors:
             - exposedPort: 3333
       - name: remote-runtime-injector
         container:
-          image: 'registry.redhat.io/devspaces/theia-endpoint-rhel8:3.3'
+          image: 'registry.redhat.io/devspaces/theia-endpoint-rhel8:3.4'
           memoryLimit: 128Mi
           memoryRequest: 32Mi
           cpuLimit: 500m
@@ -182,7 +182,7 @@ editors:
     components:
       - name: idea-rhel8
         container:
-          image: 'registry.redhat.io/devspaces/udi-rhel8:3.3'
+          image: 'registry.redhat.io/devspaces/udi-rhel8:3.4'
           command:
             - /projector/entrypoint-volume.sh
           env:
@@ -245,7 +245,7 @@ editors:
         volume: { }
       - name: idea-rhel8-injector
         container:
-          image: 'registry.redhat.io/devspaces/idea-rhel8:3.3'
+          image: 'registry.redhat.io/devspaces/idea-rhel8:3.4'
           command: ["/projector/entrypoint-init-container.sh"]
           env:
             - name: PROJECTOR_VOLUME_MOUNT
@@ -282,7 +282,7 @@ editors:
     components:
       - name: che-code-injector
         container:
-          image: 'registry.redhat.io/devspaces/code-rhel8:3.3'
+          image: 'registry.redhat.io/devspaces/code-rhel8:3.4'
           command: ["/entrypoint-init-container.sh"]
           volumeMounts:
             - name: checode
@@ -293,7 +293,7 @@ editors:
           cpuRequest: 30m
       - name: che-code-runtime-description
         container:
-          image: 'registry.redhat.io/devspaces/udi-rhel8:3.3'
+          image: 'registry.redhat.io/devspaces/udi-rhel8:3.4'
           memoryLimit: 1024Mi
           memoryRequest: 256Mi
           cpuLimit: 500m
