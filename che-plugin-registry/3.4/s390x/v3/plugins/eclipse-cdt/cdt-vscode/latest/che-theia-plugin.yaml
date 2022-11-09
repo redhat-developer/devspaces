@@ -1,0 +1,24 @@
+schemaVersion: 1.0.0
+metadata:
+  id: eclipse-cdt/cdt-vscode
+  publisher: eclipse-cdt
+  name: cdt-vscode
+  version: latest
+  displayName: ''
+  description: CDT VS Code Extension for C/C++ Developers
+  repository: https://github.com/eclipse-cdt/cdt-vscode.git
+  categories:
+    - Other
+  icon: /images/eclipse-cdt-cdt-vscode-icon.png
+sidecar:
+  image: registry.redhat.io/devspaces/udi-rhel8:3.3
+  name: cpp-plugins
+  memoryLimit: 512Mi
+  memoryRequest: 20Mi
+  cpuLimit: 500m
+  cpuRequest: 30m
+dependencies:
+  - eclipse-cdt/cdt-gdb-vscode
+  - llvm-vs-code-extensions/vscode-clangd
+extensions:
+  - relative:extension/resources/github_com/redhat-developer/devspaces-vscode-extensions/releases/download/7_44-che-assets/cdt-vscode-0.0.7-75cf95.vsix

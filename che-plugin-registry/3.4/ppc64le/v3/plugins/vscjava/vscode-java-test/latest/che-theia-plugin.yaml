@@ -1,0 +1,24 @@
+schemaVersion: 1.0.0
+metadata:
+  id: vscjava/vscode-java-test
+  publisher: vscjava
+  name: vscode-java-test
+  version: latest
+  displayName: Java Test Runner
+  description: Run and debug JUnit or TestNG test cases
+  repository: https://github.com/Microsoft/vscode-java-test
+  categories:
+    - Other
+  icon: /images/vscjava-vscode-java-test-icon.png
+sidecar:
+  image: registry.redhat.io/devspaces/udi-rhel8:3.3
+  name: vscode-java
+  memoryLimit: 1500Mi
+  memoryRequest: 20Mi
+  cpuLimit: 800m
+  cpuRequest: 30m
+dependencies:
+  - redhat/java
+  - vscjava/vscode-java-debug
+extensions:
+  - relative:extension/resources/open-vsx_org/api/vscjava/vscode-java-test/0_28_1/file/vscjava.vscode-java-test-0.28.1.vsix
