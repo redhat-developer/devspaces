@@ -1780,3 +1780,48 @@
   timeWait: 0 mins
   timeBuild: 3 mins
   timeTotal: 3 mins
+- name: devspaces-machineexec-rhel8
+  tag: 3.3-22
+  taskId: 48919912
+  timeCreate: Thu Nov 10 09:32:28 2022
+  timeStart: Thu Nov 10 09:32:35 2022
+  timeFinish: Thu Nov 10 09:37:34 2022
+  timeWait: 0 mins
+  timeBuild: 4 mins
+  timeTotal: 5 mins
+- name: devspaces-devfileregistry-rhel8
+  tag: 3.3-47
+  taskId: 48919936
+  timeCreate: Thu Nov 10 09:33:41 2022
+  timeStart: Thu Nov 10 09:34:12 2022
+  timeFinish: Thu Nov 10 09:44:53 2022
+  timeWait: 0 mins
+  timeBuild: 10 mins
+  timeTotal: 11 mins
+- name: devspaces-imagepuller-rhel8
+  tag: 3.3-17
+  taskId: 48919938
+  timeCreate: Thu Nov 10 09:33:46 2022
+  timeStart: Thu Nov 10 09:34:13 2022
+  timeFinish: Thu Nov 10 09:51:57 2022
+  timeWait: 0 mins
+  timeBuild: 17 mins
+  timeTotal: 18 mins
+- name: devspaces-operator
+  tag: 3.3-61
+  taskId: 48919953
+  timeCreate: Thu Nov 10 09:34:43 2022
+  timeStart: Thu Nov 10 09:34:59 2022
+  timeFinish: Thu Nov 10 09:52:03 2022
+  timeWait: 0 mins
+  timeBuild: 17 mins
+  timeTotal: 17 mins
+- name: devspaces-operator-bundle
+  tag: 3.3-210
+  taskId: 48919968
+  timeCreate: Thu Nov 10 09:36:31 2022
+  timeStart: Thu Nov 10 09:36:32 2022
+  timeFinish: Thu Nov 10 09:39:50 2022
+  timeWait: 0 mins
+  timeBuild: 3 mins
+  timeTotal: 3 mins
