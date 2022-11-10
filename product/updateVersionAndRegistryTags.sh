@@ -24,6 +24,10 @@ DISABLE_DEVSPACES_JOBS_VERSION=""
 DISABLE_DEVSPACES_MGMTJOBS_VERSION=""
 BRANCH="devspaces-3-rhel-8"
 
+# for DS 3.y, take y value, add CHE_OFFSET, and double it to get Che version
+# 3.3 => (3 + 25) * 2 = 56 ==> 7.56
+CHE_OFFSET=25
+
 usage () {
   echo "
 Usage:   $0 -v [DEVSPACES CSV_VERSION] [-t DEVSPACES_VERSION]
@@ -138,9 +142,7 @@ computeLatestPackageVersion() {
       # old mapping for CRW 2.15 = Che 7.42
       THIS_Y_VALUE="${BASE_VERSION#*.}"; THIS_CHE_Y=$(( (${THIS_Y_VALUE} + 6) * 2 )); THIS_CHE_Y_LOWER=$(( ((${THIS_Y_VALUE} + 6) * 2) - 1 ))
     else
-      # new mapping for DS 3.0 = Che 7.46
-      # new mapping for DS 3.1 = Che 7.50, DS 3.2 = 7.52...
-      THIS_Y_VALUE="${BASE_VERSION#*.}"; THIS_CHE_Y=$(( (${THIS_Y_VALUE} + 24) * 2 )); THIS_CHE_Y_LOWER=$(( ((${THIS_Y_VALUE} + 24) * 2) - 1 ))
+      THIS_Y_VALUE="${BASE_VERSION#*.}"; THIS_CHE_Y=$(( (${THIS_Y_VALUE} + ${CHE_OFFSET}) * 2 )); THIS_CHE_Y_LOWER=$(( ((${THIS_Y_VALUE} + ${CHE_OFFSET}) * 2) - 1 ))
     fi
     # check if .2, .1, .0 version exists in npmjs.com
     for y in $THIS_CHE_Y $THIS_CHE_Y_LOWER; do 
@@ -172,13 +174,12 @@ updateVersion() {
 
     DEVSPACES_Y_VALUE="${DEVSPACES_VERSION#*.}"
 
-    # TODO: every time we slip a release to be aligned to a later Che release, this math needs to be updated
-    if [[ $DEVSPACES_VERSION == "3.2" ]]; then
-      UPPER_CHE_Y=$(( (${DEVSPACES_Y_VALUE} + 24) * 2 )) # 7.52
+    if [[ $DEVSPACES_VERSION == "3.2" ]]; then # 7.52
+      UPPER_CHE_Y=$(( (${DEVSPACES_Y_VALUE} + 24) * 2 )) 
       LOWER_CHE_Y=$(( ((${DEVSPACES_Y_VALUE} + 24) * 2) - 1 ))
     else
-      UPPER_CHE_Y=$(( (${DEVSPACES_Y_VALUE} + 25) * 2 )) # 7.56
-      LOWER_CHE_Y=$(( ((${DEVSPACES_Y_VALUE} + 25) * 2) - 1 ))
+      UPPER_CHE_Y=$(( (${DEVSPACES_Y_VALUE} + ${CHE_OFFSET}) * 2 ))
+      LOWER_CHE_Y=$(( ((${DEVSPACES_Y_VALUE} + ${CHE_OFFSET}) * 2) - 1 ))
     fi
     # CRW-2155, if version is in the json update it for che and devspaces branches
     # otherwise inject new version.
