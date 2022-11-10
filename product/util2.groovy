@@ -355,7 +355,7 @@ def runJob(String jobPath, boolean doWait=false, boolean doPropagateStatus=true,
   )
   // wait until #5 -> #6
   jobLink=jobPath + "/" +  (prevSuccessBuildId + 1).toString()
-  triggerDesc="<br/>=?> Job <a href=${JENKINS_URL}${jobLink}/>${jobPath} #" + (prevSuccessBuildId + 1).toString() + " triggered"
+  triggerDesc="<br/>=?> Job <a href=${JENKINS_URL}${jobLink}/>${jobPath} #" + (prevSuccessBuildId + 1).toString() + " triggered</a>"
   if (doWait) { 
     println("waiting for runJob(" + jobPath + ") :: prevSuccessBuildId = " + prevSuccessBuildId)
     currentBuild.description+=triggerDesc + " [waiting]"
