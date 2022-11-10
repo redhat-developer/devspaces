@@ -354,10 +354,13 @@ def runJob(String jobPath, boolean doWait=false, boolean doPropagateStatus=true,
     ]
   )
   // wait until #5 -> #6
+  jobLink=jobPath + "/" +  (prevSuccessBuildId + 1).toString()
+  triggerDesc="<br/>=?> Job <a href=${JENKINS_URL}${jobLink}/>${jobPath} #" + (prevSuccessBuildId + 1).toString() + " triggered"
   if (doWait) { 
-    jobLink=jobPath + "/" +  jobResult?.number?.toString()
     println("waiting for runJob(" + jobPath + ") :: prevSuccessBuildId = " + prevSuccessBuildId)
+    currentBuild.description+=triggerDesc + " [waiting]"
     if (!waitForNewBuild(jenkinsURL + jobPath, prevSuccessBuildId)) { 
+      jobLink=jobPath + "/" +  jobResult?.number?.toString()
       println("--x Job ${JENKINS_URL}${jobLink}/console failed!")
       currentBuild.description+="<br/>* <b style='color:red'>FAILED: <a href=${jobLink}/console>" + (jobLink.replaceAll("/job/","/")) + "</a></b>"
       currentBuild.result = 'FAILED'
@@ -365,8 +368,8 @@ def runJob(String jobPath, boolean doWait=false, boolean doPropagateStatus=true,
     }
     println("++> Job ${JENKINS_URL}${jobLink}/console completed.")
   } else {
-    jobLink=jobPath + "/" +  (prevSuccessBuildId + 1).toString() + "/"
-    println("=?> Job ${JENKINS_URL}${jobLink} launched.")
+    println("=?> Job ${JENKINS_URL}${jobLink} triggered.")
+    currentBuild.description+=triggerDesc + " [no wait]"
   }
   return getLastSuccessfulBuildId(jenkinsURL + jobPath)
 }
