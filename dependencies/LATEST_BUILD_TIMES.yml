@@ -1780,6 +1780,15 @@
   timeWait: 0 mins
   timeBuild: 3 mins
   timeTotal: 3 mins
+- name: devspaces-configbump-rhel8
+  tag: 3.3-17
+  taskId: 48919910
+  timeCreate: Thu Nov 10 09:32:17 2022
+  timeStart: Thu Nov 10 09:32:34 2022
+  timeFinish: Thu Nov 10 09:53:39 2022
+  timeWait: 0 mins
+  timeBuild: 21 mins
+  timeTotal: 21 mins
 - name: devspaces-machineexec-rhel8
   tag: 3.3-22
   taskId: 48919912
@@ -1789,6 +1798,15 @@
   timeWait: 0 mins
   timeBuild: 4 mins
   timeTotal: 5 mins
+- name: devspaces-dashboard-rhel8
+  tag: 3.3-58
+  taskId: 48919919
+  timeCreate: Thu Nov 10 09:32:43 2022
+  timeStart: Thu Nov 10 09:33:24 2022
+  timeFinish: Thu Nov 10 10:03:57 2022
+  timeWait: 0 mins
+  timeBuild: 30 mins
+  timeTotal: 31 mins
 - name: devspaces-devfileregistry-rhel8
   tag: 3.3-47
   taskId: 48919936
@@ -1825,3 +1843,48 @@
   timeWait: 0 mins
   timeBuild: 3 mins
   timeTotal: 3 mins
+- name: devspaces-server-rhel8
+  tag: 3.3-42
+  taskId: 48920041
+  timeCreate: Thu Nov 10 09:44:23 2022
+  timeStart: Thu Nov 10 09:44:59 2022
+  timeFinish: Thu Nov 10 09:53:34 2022
+  timeWait: 0 mins
+  timeBuild: 8 mins
+  timeTotal: 9 mins
+- name: devspaces-pluginregistry-rhel8
+  tag: 3.3-44
+  taskId: 48920061
+  timeCreate: Thu Nov 10 09:47:38 2022
+  timeStart: Thu Nov 10 09:48:02 2022
+  timeFinish: Thu Nov 10 10:11:24 2022
+  timeWait: 0 mins
+  timeBuild: 23 mins
+  timeTotal: 23 mins
+- name: devspaces-traefik-rhel8
+  tag: 3.3-17
+  taskId: 48920590
+  timeCreate: Thu Nov 10 09:57:32 2022
+  timeStart: Thu Nov 10 09:57:57 2022
+  timeFinish: Thu Nov 10 10:27:36 2022
+  timeWait: 0 mins
+  timeBuild: 29 mins
+  timeTotal: 30 mins
+- name: devspaces-theia-dev-rhel8
+  tag: 3.3-13
+  taskId: 48920603
+  timeCreate: Thu Nov 10 10:00:17 2022
+  timeStart: Thu Nov 10 10:01:03 2022
+  timeFinish: Thu Nov 10 10:14:41 2022
+  timeWait: 0 mins
+  timeBuild: 13 mins
+  timeTotal: 14 mins
+- name: devspaces-operator-bundle
+  tag: 3.3-211
+  taskId: 48920708
+  timeCreate: Thu Nov 10 10:08:29 2022
+  timeStart: Thu Nov 10 10:09:02 2022
+  timeFinish: Thu Nov 10 10:13:52 2022
+  timeWait: 0 mins
+  timeBuild: 4 mins
+  timeTotal: 5 mins
