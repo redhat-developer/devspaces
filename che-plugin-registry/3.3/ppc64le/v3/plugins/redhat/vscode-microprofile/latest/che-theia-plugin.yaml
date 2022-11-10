@@ -13,7 +13,7 @@ metadata:
     - Other
   icon: /images/redhat-vscode-microprofile-icon.png
 sidecar:
-  image: registry.redhat.io/devspaces/udi-rhel8:3.3
+  image: 'registry.redhat.io/devspaces/udi-rhel8:'
   name: vscode-microp
   memoryLimit: 3500Mi
   memoryRequest: 20Mi

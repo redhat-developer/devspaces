@@ -1,10 +1,10 @@
 schemaVersion: 2.1.0
 metadata:
-  name: che-machine-exec-plugin
+  name: Che machine-exec Service
 components:
   - name: che-machine-exec
     container:
-      image: registry.redhat.io/devspaces/machineexec-rhel8:3.3
+      image: 'registry.redhat.io/devspaces/machineexec-rhel8:'
       command:
         - /go/bin/che-machine-exec
         - '--url'

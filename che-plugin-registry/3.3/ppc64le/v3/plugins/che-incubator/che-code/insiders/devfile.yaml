@@ -1,6 +1,6 @@
 schemaVersion: 2.1.0
 metadata:
-  name: che-code
+  name: VS Code - Open Source
 commands:
   - id: init-container-command
     apply:
@@ -11,7 +11,7 @@ events:
 components:
   - name: che-code-runtime-description
     container:
-      image: registry.redhat.io/devspaces/udi-rhel8:3.3
+      image: 'registry.redhat.io/devspaces/udi-rhel8:'
       command:
         - /checode/entrypoint-volume.sh
       volumeMounts:
@@ -61,7 +61,7 @@ components:
     volume: {}
   - name: che-code-injector
     container:
-      image: registry.redhat.io/devspaces/code-rhel8:3.3
+      image: 'registry.redhat.io/devspaces/code-rhel8:'
       command:
         - /entrypoint-init-container.sh
       volumeMounts:
