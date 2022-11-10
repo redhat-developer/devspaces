@@ -1888,6 +1888,15 @@
   timeWait: 0 mins
   timeBuild: 4 mins
   timeTotal: 5 mins
+- name: devspaces-theia-rhel8
+  tag: 3.3-11
+  taskId: 48921963
+  timeCreate: Thu Nov 10 10:50:09 2022
+  timeStart: Thu Nov 10 10:58:43 2022
+  timeFinish: Thu Nov 10 12:02:17 2022
+  timeWait: 8 mins
+  timeBuild: 63 mins
+  timeTotal: 72 mins
 - name: devspaces-udi-rhel8
   tag: 3.3-27
   taskId: 48921978
@@ -1915,3 +1924,12 @@
   timeWait: 1 mins
   timeBuild: 6 mins
   timeTotal: 7 mins
+- name: devspaces-operator-bundle
+  tag: 3.3-213
+  taskId: 48924718
+  timeCreate: Thu Nov 10 12:24:06 2022
+  timeStart: Thu Nov 10 12:24:18 2022
+  timeFinish: Thu Nov 10 12:29:31 2022
+  timeWait: 0 mins
+  timeBuild: 5 mins
+  timeTotal: 5 mins
