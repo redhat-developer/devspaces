@@ -13,7 +13,7 @@ metadata:
     - Formatters
   icon: /images/llvm-vs-code-extensions-vscode-clangd-icon.png
 sidecar:
-  image: registry.redhat.io/devspaces/udi-rhel8:3.4
+  image: registry.redhat.io/devspaces/udi-rhel8:3.3
   name: cpp-plugins
   memoryLimit: 512Mi
   memoryRequest: 20Mi
