@@ -11,7 +11,7 @@ metadata:
     - Other
   icon: /images/redhat-vscode-camelk-icon.png
 sidecar:
-  image: registry.redhat.io/devspaces/udi-rhel8:3.4
+  image: 'registry.redhat.io/devspaces/udi-rhel8:'
   name: vscode-camelk
   memoryLimit: 1Gi
   memoryRequest: 20Mi

@@ -4,7 +4,7 @@ metadata:
 components:
   - name: che-machine-exec
     container:
-      image: registry.redhat.io/devspaces/machineexec-rhel8:3.4
+      image: 'registry.redhat.io/devspaces/machineexec-rhel8:'
       command:
         - /go/bin/che-machine-exec
         - '--url'

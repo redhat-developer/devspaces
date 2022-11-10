@@ -13,7 +13,7 @@ firstPublicationDate: '2021-03-03'
 latestUpdateDate: '2022-11-10'
 spec:
   containers:
-    - image: registry.redhat.io/devspaces/udi-rhel8:3.4
+    - image: 'registry.redhat.io/devspaces/udi-rhel8:'
       name: vscode-java
       memoryLimit: 1500Mi
       memoryRequest: 20Mi

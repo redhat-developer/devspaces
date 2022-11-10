@@ -16,7 +16,7 @@ deprecate:
   migrateTo: redhat/java/latest
 spec:
   containers:
-    - image: registry.redhat.io/devspaces/udi-rhel8:3.4
+    - image: 'registry.redhat.io/devspaces/udi-rhel8:'
       name: vscode-java
       volumes:
         - name: m2

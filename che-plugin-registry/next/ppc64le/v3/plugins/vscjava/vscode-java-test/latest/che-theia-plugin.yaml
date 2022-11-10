@@ -11,7 +11,7 @@ metadata:
     - Other
   icon: /images/vscjava-vscode-java-test-icon.png
 sidecar:
-  image: registry.redhat.io/devspaces/udi-rhel8:3.4
+  image: 'registry.redhat.io/devspaces/udi-rhel8:'
   name: vscode-java
   memoryLimit: 1500Mi
   memoryRequest: 20Mi
