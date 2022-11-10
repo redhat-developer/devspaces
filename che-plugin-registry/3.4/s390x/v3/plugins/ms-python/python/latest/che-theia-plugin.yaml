@@ -20,7 +20,7 @@ metadata:
     - Notebooks
   icon: /images/ms-python-python-icon.png
 sidecar:
-  image: registry.redhat.io/devspaces/udi-rhel8:3.3
+  image: registry.redhat.io/devspaces/udi-rhel8:3.4
   name: vscode-python
   memoryLimit: 1Gi
   memoryRequest: 20Mi

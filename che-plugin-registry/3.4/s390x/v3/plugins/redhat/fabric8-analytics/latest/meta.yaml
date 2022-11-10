@@ -10,10 +10,10 @@ icon: /images/redhat-fabric8-analytics-icon.png
 category: Other
 repository: https://github.com/fabric8-analytics/fabric8-analytics-vscode-extension
 firstPublicationDate: '2022-06-28'
-latestUpdateDate: '2022-11-07'
+latestUpdateDate: '2022-11-10'
 spec:
   containers:
-    - image: registry.redhat.io/devspaces/udi-rhel8:3.3
+    - image: registry.redhat.io/devspaces/udi-rhel8:3.4
       name: dependency-analytics
       memoryLimit: 1Gi
       memoryRequest: 20Mi
