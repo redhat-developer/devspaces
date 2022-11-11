@@ -10,13 +10,13 @@ icon: /images/redhat-java-icon.png
 category: Programming Languages
 repository: https://github.com/redhat-developer/vscode-java
 firstPublicationDate: '2021-09-16'
-latestUpdateDate: '2022-11-10'
+latestUpdateDate: '2022-11-11'
 deprecate:
   automigrate: true
   migrateTo: redhat/java/latest
 spec:
   containers:
-    - image: 'registry.redhat.io/devspaces/udi-rhel8:'
+    - image: registry.redhat.io/devspaces/udi-rhel8:3.4
       name: vscode-java
       volumes:
         - name: m2
