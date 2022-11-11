@@ -2041,3 +2041,30 @@
   timeWait: 0 mins
   timeBuild: 3 mins
   timeTotal: 4 mins
+- name: devspaces-pluginregistry-rhel8
+  tag: 3.3-45
+  taskId: 48941714
+  timeCreate: Fri Nov 11 11:56:21 2022
+  timeStart: Fri Nov 11 11:57:02 2022
+  timeFinish: Fri Nov 11 12:18:49 2022
+  timeWait: 0 mins
+  timeBuild: 21 mins
+  timeTotal: 22 mins
+- name: devspaces-operator-bundle
+  tag: 3.3-219
+  taskId: 48942646
+  timeCreate: Fri Nov 11 12:43:25 2022
+  timeStart: Fri Nov 11 12:44:09 2022
+  timeFinish: Fri Nov 11 12:47:48 2022
+  timeWait: 0 mins
+  timeBuild: 3 mins
+  timeTotal: 4 mins
+- name: devspaces-devfileregistry-rhel8
+  tag: 3.3-48
+  taskId: 48943161
+  timeCreate: Fri Nov 11 13:02:03 2022
+  timeStart: Fri Nov 11 13:02:05 2022
+  timeFinish: Fri Nov 11 13:09:55 2022
+  timeWait: 0 mins
+  timeBuild: 7 mins
+  timeTotal: 7 mins
