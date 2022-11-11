@@ -10,7 +10,7 @@ plugins:
       url: 'https://github.com/Microsoft/vscode-js-debug'
       revision: v1.66.0
     sidecar:
-      image: "registry.redhat.io/devspaces/udi-rhel8:"
+      image: "registry.redhat.io/devspaces/udi-rhel8:3.4"
       name: vscode-node-debug
       memoryLimit: 512Mi
       memoryRequest: 20Mi
@@ -23,7 +23,7 @@ plugins:
       directory: extensions/typescript-language-features
     featured: true
     sidecar:
-      image: "registry.redhat.io/devspaces/udi-rhel8:"
+      image: "registry.redhat.io/devspaces/udi-rhel8:3.4"
       memoryLimit: 512Mi
       name: vscode-node
       memoryRequest: 20Mi
@@ -36,7 +36,7 @@ plugins:
     metaYaml:
      skipIndex: true
     sidecar:
-      image: "registry.redhat.io/devspaces/udi-rhel8:"
+      image: "registry.redhat.io/devspaces/udi-rhel8:3.4"
       name: cpp-plugins
       memoryLimit: 512Mi
       memoryRequest: 20Mi
@@ -49,7 +49,7 @@ plugins:
     metaYaml:
      skipIndex: true
     sidecar:
-      image: "registry.redhat.io/devspaces/udi-rhel8:"
+      image: "registry.redhat.io/devspaces/udi-rhel8:3.4"
       name: cpp-plugins
       memoryLimit: 512Mi
       memoryRequest: 20Mi
@@ -67,7 +67,7 @@ plugins:
         - llvm-vs-code-extensions/vscode-clangd
     featured: true
     sidecar:
-      image: "registry.redhat.io/devspaces/udi-rhel8:"
+      image: "registry.redhat.io/devspaces/udi-rhel8:3.4"
       name: cpp-plugins
       memoryLimit: 512Mi
       memoryRequest: 20Mi
@@ -81,7 +81,7 @@ plugins:
     aliases:
       - redhat/php
     sidecar:
-      image: "registry.redhat.io/devspaces/udi-rhel8:"
+      image: "registry.redhat.io/devspaces/udi-rhel8:3.4"
       name: php-intelephense
       memoryLimit: 1Gi
       memoryRequest: 20Mi
@@ -93,7 +93,7 @@ plugins:
       revision: 2020.7.94776
     featured: true
     sidecar:
-      image: "registry.redhat.io/devspaces/udi-rhel8:"
+      image: "registry.redhat.io/devspaces/udi-rhel8:3.4"
       name: vscode-python
       memoryLimit: 1Gi
       memoryRequest: 20Mi
@@ -108,7 +108,7 @@ plugins:
       revision: v0.23.0
     featured: true
     sidecar:
-      image: "registry.redhat.io/devspaces/udi-rhel8:"
+      image: "registry.redhat.io/devspaces/udi-rhel8:3.4"
       name: vscode-go
       memoryLimit: 512Mi
       memoryRequest: 20Mi
@@ -119,7 +119,7 @@ plugins:
       url: 'https://github.com/camel-tooling/vscode-camelk'
       revision: 0.0.26
     sidecar:
-      image: "registry.redhat.io/devspaces/udi-rhel8:"
+      image: "registry.redhat.io/devspaces/udi-rhel8:3.4"
       name: vscode-camelk
       memoryLimit: 1Gi
       memoryRequest: 20Mi
@@ -130,7 +130,7 @@ plugins:
       url: 'https://github.com/redhat-developer/vscode-microprofile'
       revision: 174c77f51a57bf1cfadba8f78ad7072ce63baa1d
     sidecar:
-      image: "registry.redhat.io/devspaces/udi-rhel8:"
+      image: "registry.redhat.io/devspaces/udi-rhel8:3.4"
       name: vscode-microp
       memoryLimit: 3500Mi
       memoryRequest: 20Mi
@@ -149,7 +149,7 @@ plugins:
     preferences:
       java.server.launchMode: Standard
     sidecar:
-      image: "registry.redhat.io/devspaces/udi-rhel8:"
+      image: "registry.redhat.io/devspaces/udi-rhel8:3.4"
       name: vscode-quarkus
       memoryLimit: 3500Mi
       memoryRequest: 20Mi
@@ -171,7 +171,7 @@ plugins:
     aliases:
       - redhat/dependency-analytics
     sidecar:
-      image: "registry.redhat.io/devspaces/udi-rhel8:"
+      image: "registry.redhat.io/devspaces/udi-rhel8:3.4"
       name: dependency-analytics
       memoryLimit: 1Gi
       memoryRequest: 20Mi
@@ -188,7 +188,7 @@ plugins:
       url: 'https://github.com/redhat-developer/vscode-openshift-tools'
       revision: v0.2.11
     sidecar:
-      image: "registry.redhat.io/devspaces/udi-rhel8:"
+      image: "registry.redhat.io/devspaces/udi-rhel8:3.4"
       name: vscode-openshift-connector
       memoryLimit: 1500Mi
       memoryRequest: 20Mi
@@ -207,7 +207,7 @@ plugins:
       revision: 0.14.0
     featured: true
     sidecar:
-      image: "registry.redhat.io/devspaces/udi-rhel8:"
+      image: "registry.redhat.io/devspaces/udi-rhel8:3.4"
       name: vscode-yaml
       memoryLimit: 256Mi
       memoryRequest: 20Mi
@@ -220,7 +220,7 @@ plugins:
     metaYaml:
       skipIndex: true
     sidecar:
-      image: "registry.redhat.io/devspaces/udi-rhel8:"
+      image: "registry.redhat.io/devspaces/udi-rhel8:3.4"
       name: vscode-java
       memoryLimit: 1500Mi
       memoryRequest: 20Mi
@@ -233,7 +233,7 @@ plugins:
     metaYaml:
       skipIndex: true
     sidecar:
-      image: "registry.redhat.io/devspaces/udi-rhel8:"
+      image: "registry.redhat.io/devspaces/udi-rhel8:3.4"
       name: vscode-java
       memoryLimit: 1500Mi
       memoryRequest: 20Mi
@@ -250,7 +250,7 @@ plugins:
     preferences:
       java.server.launchMode: Standard
     sidecar:
-      image: "registry.redhat.io/devspaces/udi-rhel8:"
+      image: "registry.redhat.io/devspaces/udi-rhel8:3.4"
       name: vscode-java
       memoryLimit: 1500Mi
       memoryRequest: 20Mi
@@ -271,7 +271,7 @@ plugins:
     preferences:
       java.server.launchMode: Standard
     sidecar:
-      image: "registry.redhat.io/devspaces/udi-rhel8:"
+      image: "registry.redhat.io/devspaces/udi-rhel8:3.4"
       name: vscode-java
       memoryLimit: 1500Mi
       memoryRequest: 20Mi
@@ -292,7 +292,7 @@ plugins:
       - felixfbecker/vscode-php-debug
       - redhat/php-debugger
     sidecar:
-      image: "registry.redhat.io/devspaces/udi-rhel8:"
+      image: "registry.redhat.io/devspaces/udi-rhel8:3.4"
       name: php-debugger
       memoryLimit: 512Mi
       memoryRequest: 20Mi
@@ -303,7 +303,7 @@ plugins:
       url: 'https://github.com/camel-tooling/camel-lsp-client-vscode'
       revision: 0.1.5
     sidecar:
-      image: "registry.redhat.io/devspaces/udi-rhel8:"
+      image: "registry.redhat.io/devspaces/udi-rhel8:3.4"
       name: vscode-apache-camel
       memoryLimit: 768Mi
       memoryRequest: 20Mi
@@ -318,7 +318,7 @@ plugins:
       revision: 0.17.0
     featured: true
     sidecar:
-      image: "registry.redhat.io/devspaces/udi-rhel8:"
+      image: "registry.redhat.io/devspaces/udi-rhel8:3.4"
       name: vscode-xml
       memoryLimit: 768Mi
       memoryRequest: 20Mi
@@ -329,7 +329,7 @@ plugins:
       url: 'https://github.com/Azure/vscode-kubernetes-tools'
       revision: 1.2.1
     sidecar:
-      image: "registry.redhat.io/devspaces/udi-rhel8:"
+      image: "registry.redhat.io/devspaces/udi-rhel8:3.4"
       name: vscode-kubernetes-tools
       memoryLimit: 1Gi
       memoryRequest: 20Mi
@@ -340,7 +340,7 @@ plugins:
       url: 'https://github.com/SonarSource/sonarlint-vscode'
       revision: 1.20.1
     sidecar:
-      image: "registry.redhat.io/devspaces/udi-rhel8:"
+      image: "registry.redhat.io/devspaces/udi-rhel8:3.4"
       name: vscode-sonarlint
       memoryLimit: 512Mi
       memoryRequest: 20Mi
