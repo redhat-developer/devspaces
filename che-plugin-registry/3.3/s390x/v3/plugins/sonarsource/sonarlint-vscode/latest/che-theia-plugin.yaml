@@ -11,7 +11,7 @@ metadata:
     - Linters
   icon: /images/sonarsource-sonarlint-vscode-icon.png
 sidecar:
-  image: 'registry.redhat.io/devspaces/udi-rhel8:'
+  image: registry.redhat.io/devspaces/udi-rhel8:3.3
   name: vscode-sonarlint
   memoryLimit: 512Mi
   memoryRequest: 20Mi
