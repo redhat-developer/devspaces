@@ -1987,3 +1987,21 @@
   timeWait: 0 mins
   timeBuild: 3 mins
   timeTotal: 4 mins
+- name: devspaces-code-rhel8
+  tag: 3.4-3
+  taskId: 48933640
+  timeCreate: Fri Nov 11 06:05:36 2022
+  timeStart: Fri Nov 11 06:05:36 2022
+  timeFinish: Fri Nov 11 06:14:14 2022
+  timeWait: 0 mins
+  timeBuild: 8 mins
+  timeTotal: 8 mins
+- name: devspaces-operator-bundle
+  tag: 3.4-11
+  taskId: 48933724
+  timeCreate: Fri Nov 11 06:21:07 2022
+  timeStart: Fri Nov 11 06:21:50 2022
+  timeFinish: Fri Nov 11 06:25:16 2022
+  timeWait: 0 mins
+  timeBuild: 3 mins
+  timeTotal: 4 mins
