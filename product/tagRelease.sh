@@ -135,7 +135,7 @@ updateSampleDevfileReferences () {
 	fi
 	# echo "[DEBUG] update $devfile with DS_TAG = $DS_TAG"
 	sed -r -i $devfile \
-		-e "s#devspaces/udi-[a-z0-9:@.-]+#devspaces/udi-rhel8:${DS_TAG}#g"
+		-e "s#devspaces/(.+)[:@][0-9:@.-]+#devspaces/\1:${DS_TAG}#g"
 
 	sed -r -i $devfile -e "s#quay.io/devspaces/#registry.redhat.io/devspaces/#g"
 	git commit -s -m "chore(devfile) link v2 devfile to :${DS_TAG}; set image refs to registry.redhat.io/devspaces/" "$devfile" || echo ""
