@@ -17,6 +17,7 @@ QUIET="none"
 OCP_VER="v" # by default return all OCP versions
 
 SCRIPT_DIR=$(cd "$(dirname "$0")" || exit; pwd)
+IMAGE="devspaces-operator-bundle"
 
 while [[ "$#" -gt 0 ]]; do
   case $1 in
