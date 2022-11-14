@@ -1,12 +1,11 @@
 #!/bin/bash
-#
-# Copyright (c) 2018-2022 Red Hat, Inc.
-# This program and the accompanying materials are made
 # available under the terms of the Eclipse Public License 2.0
 # which is available at https://www.eclipse.org/legal/epl-2.0/
 #
 # SPDX-License-Identifier: EPL-2.0
-#
+# 
+# The script is used by GitHub PR check action "VSIX Definition PR Check", 
+# it validates the IDs of VS Code extensions from openvsx-sync.json file 
 
 trap EXIT
 
@@ -62,7 +61,11 @@ for i in $(seq 0 "$((numberOfExtensions - 1))"); do
     fi
     
     # Publisher and name should be divided by . in extension's id
-    if [[ $vsixFullName != *.* ]]; then
+    # extract from the vsix name the publisher name which is the first part of the vsix name before dot
+    vsixPublisher=${vsixFullName%.*}
+    # extract from the vsix name the extension name which is the second part of the vsix name after dot
+    vsixName=${vsixFullName##*.}
+    if [[ $vsixFullName != *.* ]] || [[ -z "$vsixPublisher" ]] || [[ -z "$vsixName" ]]; then
       echo -e "Publisher and name should be divided by . for $vsixFullName"
       echo -e "${RED}${EMOJI_FAIL}${RESETSTYLE} Test failed!"
       exit 1
