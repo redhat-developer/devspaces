@@ -11,7 +11,7 @@
 # so you can browse its contents. Also works with scratch images
 
 DELETE_LOCAL_IMAGE=""
-QUIET=0
+QUIET=""
 TMPDIR="/tmp"
 
 usage ()
@@ -29,7 +29,7 @@ Options:
   --override-arch    set a different arch than the current one, eg., s390x or ppc64le
   --tar-flags        pass flags to the tar extraction process
   --tmpdir           use a different folder for extraction than /tmp/
-  -q                 quieter output
+  -q, --quiet        quieter output
   "
   exit
 }
@@ -42,9 +42,9 @@ while [[ "$#" -gt 0 ]]; do
     '--delete-after') DELETE_LOCAL_IMAGE="${DELETE_LOCAL_IMAGE} after";;
     '--override-arch') ARCH_OVERRIDE="--override-arch $2"; shift 1;;
     '--tar-flags'   ) TAR_FLAGS="$2"; shift 1;;
-    '--tmpdir') TMPDIR="$2"; shift 1;;
+    '--tmpdir') TMPDIR="$2"; mkdir -p $TMPDIR; shift 1;;
     '-h') usage;;
-    '-q') QUIET=1;;
+    '-q'|'--quiet') QUIET="--quiet";;
     *) container="$1";;
   esac
   shift 1
@@ -55,7 +55,7 @@ done
 
 PODMAN=$(command -v podman)
 if [[ ! -x $PODMAN ]]; then
-  if [[ $QUIET -eq 0 ]]; then echo "[WARNING] podman is not installed."; fi
+  if [[ $QUIET == "" ]]; then echo "[WARNING] podman is not installed."; fi
  PODMAN=$(command -v docker)
   if [[ ! -x $PODMAN ]]; then
     echo "[ERROR] docker is not installed. Aborting."; exit 1
@@ -81,16 +81,21 @@ for container_ref in "$container" "localhost/$container:latest" "localhost/$cont
   container_check="$(${PODMAN} images "$container_ref" -q)"
   if [[ $container_check ]]; then
     container_alt="$container_check"
-    if [[ $QUIET -eq 0 ]]; then echo "[INFO] Using local $container_ref ($container_alt)..."; fi
+    if [[ $QUIET == "" ]]; then echo "[INFO] Using local $container_ref ($container_alt)..."; fi
     break
   fi
 done
+
+# get remote image
 if [[ ! $container_alt ]]; then
-  # get remote image
-  if [[ $QUIET -eq 0 ]]; then echo "[INFO] Pulling $container ..."; fi
   # shellcheck disable=SC2086
   # CRW-3463 use --tls-verify=false to avoid "certificate signed by unknown authority"
-  ${PODMAN} pull --tls-verify=false ${ARCH_OVERRIDE} "$container" 2>&1
+  if [[ $QUIET == "" ]]; then 
+    echo "[INFO] Pulling $container ..."
+    ${PODMAN} pull ${QUIET} --tls-verify=false ${ARCH_OVERRIDE} "$container" 2>&1
+  else
+    ${PODMAN} pull ${QUIET} --tls-verify=false ${ARCH_OVERRIDE} "$container" 2>/dev/null 1>/dev/null
+  fi
   # throw the same error code that a failed pull throws, in case we're running this in a nested bash shell
   ${PODMAN} image exists "$container" || exit 125
 fi
@@ -110,7 +115,7 @@ rm -fr "$unpackdir" || true
 mkdir -p "$unpackdir"
 # shellcheck disable=SC2086 disable=SC2116
 TAR_FLAGS="$(echo $TAR_FLAGS)" # squash duplicate spaces
-if [[ $QUIET -eq 0 ]]; then echo "[INFO] Extract from container (${TAR_FLAGS}) ..."; fi
+if [[ $QUIET == "" ]]; then echo "[INFO] Extract from container (${TAR_FLAGS}) ..."; fi
 # shellcheck disable=SC2086
 tar xf "$TMPDIR/${tmpcontainer}.tar" --wildcards -C "$unpackdir" ${TAR_FLAGS} || exit 1 # fail if we can't unpack the tar
 
@@ -118,7 +123,7 @@ tar xf "$TMPDIR/${tmpcontainer}.tar" --wildcards -C "$unpackdir" ${TAR_FLAGS} ||
 ${PODMAN} rm -f "${tmpcontainer}" >/dev/null 2>&1 || true
 rm -fr "$TMPDIR/${tmpcontainer}.tar" || true
 
-if [[ $QUIET -eq 0 ]]; then 
+if [[ $QUIET == "" ]]; then 
   if [[ $container_alt ]]; then 
     echo "[INFO] Container $container ($container_alt) unpacked to $unpackdir"
   else
@@ -128,8 +133,8 @@ fi
 
 if [[ $DELETE_LOCAL_IMAGE == *"after"* ]]; then
   if [[ $container_alt ]]; then 
-    ${PODMAN} rmi $container_alt || true
+    ${PODMAN} rmi $container_alt 2>/dev/null >/dev/null || true
   else
-    ${PODMAN} rmi $container || true
+    ${PODMAN} rmi $container 2>/dev/null >/dev/null || true
   fi
 fi
