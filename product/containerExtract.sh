@@ -1,18 +1,36 @@
 #!/bin/bash -e
+#
+# Copyright (c) 2021-2022 Red Hat, Inc.
+# This program and the accompanying materials are made
+# available under the terms of the Eclipse Public License 2.0
+# which is available at https://www.eclipse.org/legal/epl-2.0/
+#
+# SPDX-License-Identifier: EPL-2.0
+#
+# this script will extract the filesystem of a container to a folder 
+# so you can browse its contents. Also works with scratch images
 
 DELETE_LOCAL_IMAGE=""
+QUIET=0
+TMPDIR="/tmp"
 
 usage ()
 {
-  echo "Usage: $0 CONTAINER [--override-arch s390x] [--tar-flags tar-extraction-flags] [--delete-before] [--delete-after]"
-  echo "Usage: $0 quay.io/devspaces/operator-bundle:latest"
-  echo "Usage: $0 quay.io/devspaces/udi-rhel8:2.4"
-  echo "Usage: $0 quay.io/devspaces/pluginregistry-rhel8:latest --tar-flags var/www/html/*/external_images.txt"
-  echo "Usage: $0 quay.io/devspaces/devfileregistry-rhel8:latest --tar-flags var/www/html/*/external_images.txt --override-arch ppc64le"
-  echo "
+  echo "Usage: $0 CONTAINER  
+
+Examples:
+  $0 quay.io/devspaces/devspaces-operator-bundle:latest
+  $0 quay.io/devworkspace/devworkspace-operator-bundle:next
+  $0 quay.io/devspaces/devfileregistry-rhel8:latest --tar-flags var/www/html/*/external_images.txt --override-arch ppc64le
+
 Options:
   --delete-before    remove any local images before attempting to pull and extract a new copy
-  --delete-after     remove any local images after attempting to pull and extract the container"
+  --delete-after     remove any local images after attempting to pull and extract the container
+  --override-arch    set a different arch than the current one, eg., s390x or ppc64le
+  --tar-flags        pass flags to the tar extraction process
+  --tmpdir           use a different folder for extraction than /tmp/
+  -q                 quieter output
+  "
   exit
 }
 
@@ -20,11 +38,13 @@ if [[ $# -lt 1 ]]; then usage; fi
 
 while [[ "$#" -gt 0 ]]; do
   case $1 in
-    '--override-arch') ARCH_OVERRIDE="--override-arch $2"; shift 1;;
-    '--delete-after') DELETE_LOCAL_IMAGE="${DELETE_LOCAL_IMAGE} after";;
     '--delete-before') DELETE_LOCAL_IMAGE="${DELETE_LOCAL_IMAGE} before";;
+    '--delete-after') DELETE_LOCAL_IMAGE="${DELETE_LOCAL_IMAGE} after";;
+    '--override-arch') ARCH_OVERRIDE="--override-arch $2"; shift 1;;
     '--tar-flags'   ) TAR_FLAGS="$2"; shift 1;;
+    '--tmpdir') TMPDIR="$2"; shift 1;;
     '-h') usage;;
+    '-q') QUIET=1;;
     *) container="$1";;
   esac
   shift 1
@@ -35,7 +55,7 @@ done
 
 PODMAN=$(command -v podman)
 if [[ ! -x $PODMAN ]]; then
-  echo "[WARNING] podman is not installed."
+  if [[ $QUIET -eq 0 ]]; then echo "[WARNING] podman is not installed."; fi
  PODMAN=$(command -v docker)
   if [[ ! -x $PODMAN ]]; then
     echo "[ERROR] docker is not installed. Aborting."; exit 1
@@ -51,7 +71,7 @@ if [[ $container == *"@"* ]]; then
 else 
   tmpcontainer="$(echo "$container" | tr "/:" "--")-$(date +%s)"
 fi
-unpackdir="/tmp/${tmpcontainer}"
+unpackdir="$TMPDIR/${tmpcontainer}"
 
 container_alt=""
 for container_ref in "$container" "localhost/$container:latest" "localhost/$container"; do 
@@ -61,13 +81,13 @@ for container_ref in "$container" "localhost/$container:latest" "localhost/$cont
   container_check="$(${PODMAN} images "$container_ref" -q)"
   if [[ $container_check ]]; then
     container_alt="$container_check"
-    echo "[INFO] Using local $container_ref ($container_alt)..."
+    if [[ $QUIET -eq 0 ]]; then echo "[INFO] Using local $container_ref ($container_alt)..."; fi
     break
   fi
 done
 if [[ ! $container_alt ]]; then
   # get remote image
-  echo "[INFO] Pulling $container ..."
+  if [[ $QUIET -eq 0 ]]; then echo "[INFO] Pulling $container ..."; fi
   # shellcheck disable=SC2086
   # CRW-3463 use --tls-verify=false to avoid "certificate signed by unknown authority"
   ${PODMAN} pull --tls-verify=false ${ARCH_OVERRIDE} "$container" 2>&1
@@ -85,23 +105,25 @@ else
 fi
 
 # export and unpack
-${PODMAN} export "${tmpcontainer}" > "/tmp/${tmpcontainer}.tar"
+${PODMAN} export "${tmpcontainer}" > "$TMPDIR/${tmpcontainer}.tar"
 rm -fr "$unpackdir" || true
 mkdir -p "$unpackdir"
 # shellcheck disable=SC2086 disable=SC2116
 TAR_FLAGS="$(echo $TAR_FLAGS)" # squash duplicate spaces
-echo "[INFO] Extract from container (${TAR_FLAGS}) ..."
+if [[ $QUIET -eq 0 ]]; then echo "[INFO] Extract from container (${TAR_FLAGS}) ..."; fi
 # shellcheck disable=SC2086
-tar xf "/tmp/${tmpcontainer}.tar" --wildcards -C "$unpackdir" ${TAR_FLAGS} || exit 1 # fail if we can't unpack the tar
+tar xf "$TMPDIR/${tmpcontainer}.tar" --wildcards -C "$unpackdir" ${TAR_FLAGS} || exit 1 # fail if we can't unpack the tar
 
 # cleanup
 ${PODMAN} rm -f "${tmpcontainer}" >/dev/null 2>&1 || true
-rm -fr "/tmp/${tmpcontainer}.tar" || true
+rm -fr "$TMPDIR/${tmpcontainer}.tar" || true
 
-if [[ $container_alt ]]; then 
-  echo "[INFO] Container $container ($container_alt) unpacked to $unpackdir"
-else
-  echo "[INFO] Container $container unpacked to $unpackdir"
+if [[ $QUIET -eq 0 ]]; then 
+  if [[ $container_alt ]]; then 
+    echo "[INFO] Container $container ($container_alt) unpacked to $unpackdir"
+  else
+    echo "[INFO] Container $container unpacked to $unpackdir"
+  fi
 fi
 
 if [[ $DELETE_LOCAL_IMAGE == *"after"* ]]; then
