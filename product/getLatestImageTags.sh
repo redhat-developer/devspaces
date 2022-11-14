@@ -20,52 +20,41 @@
 
 # try to compute branches from currently checked out branch; else fall back to hard coded value
 DWNSTM_BRANCH="$(git rev-parse --abbrev-ref HEAD 2>/dev/null || true)"
-VERSION=""
-if [[ -f dependencies/job-config.json ]]; then
-	jcjson=dependencies/job-config.json
-else
-	jcjson=/tmp/job-config.json
-	curl -sSLo $jcjson https://raw.githubusercontent.com/redhat-developer/devspaces/devspaces-3-rhel-8/dependencies/job-config.json
-fi
-VERSION=$(jq -r '.Version' $jcjson)
 
-if [[ $DWNSTM_BRANCH != "devspaces-3."*"-rhel-8" ]] && [[ $DWNSTM_BRANCH != "devspaces-3-rhel-8" ]]; then
-	if [[ ${VERSION} != "" ]]; then
-		DWNSTM_BRANCH="devspaces-${VERSION}-rhel-8"
-	else 
-		DWNSTM_BRANCH="devspaces-3-rhel-8"
-		VERSION="3.x"
+getVersion() {
+	VERSION=""
+	if [[ -f dependencies/job-config.json ]]; then
+		jcjson=dependencies/job-config.json
+	else
+		jcjson=/tmp/job-config.json
+		curl -sSLo $jcjson https://raw.githubusercontent.com/redhat-developer/devspaces/devspaces-3-rhel-8/dependencies/job-config.json
 	fi
-else
-	DS_VERSION=${DWNSTM_BRANCH/devspaces-/}; DS_VERSION=${DS_VERSION/-rhel-8/}
-	if [[ $DS_VERSION == 2 ]] || [[ $DS_VERSION == 3 ]]; then # invalid version
-		if [[ ${VERSION} ]]; then # use version from VERSION file
-			DS_VERSION=${VERSION}
-		else # set placeholder version 3.y
-			DS_VERSION="3.y"
-		fi
-	fi
-fi
+	VERSION=$(jq -r '.Version' $jcjson)
+}
+getVersion
 # echo "VERSION=$VERSION"
 
-# compute default errata num for use with --errata flag
-DEFAULT_ERRATA_NUM=$(jq -r --arg VERSION "${VERSION}" '.Other.Errata[$VERSION]' $jcjson)
-if [[ $DEFAULT_ERRATA_NUM == "" ]] || [[ $DEFAULT_ERRATA_NUM == "null" ]] || [[ $DEFAULT_ERRATA_NUM == "n/a" ]]; then 
-	if [[ $VERSION =~ ^([0-9]+)\.([0-9]+) ]]; then # reduce the z digit, remove the snapshot suffix
-		XX=${BASH_REMATCH[1]}
-		YY=${BASH_REMATCH[2]}
-		let YY=YY-1 || YY=0; if [[ $YY -lt 0 ]]; then YY=0; fi # if result of a let == 0, bash returns 1
-		VERSION_PREV="${XX}.${YY}"
-		# echo "VERSION_PREV=$VERSION_PREV"
+getDsVersion ()
+{
+	if [[ $DWNSTM_BRANCH != "devspaces-3."*"-rhel-8" ]] && [[ $DWNSTM_BRANCH != "devspaces-3-rhel-8" ]]; then
+		if [[ ${VERSION} != "" ]]; then
+			DWNSTM_BRANCH="devspaces-${VERSION}-rhel-8"
+		else 
+			DWNSTM_BRANCH="devspaces-3-rhel-8"
+			VERSION="3.x"
+		fi
+	else
+		DS_VERSION=${DWNSTM_BRANCH/devspaces-/}; DS_VERSION=${DS_VERSION/-rhel-8/}
+		if [[ $DS_VERSION == 2 ]] || [[ $DS_VERSION == 3 ]]; then # invalid version
+			if [[ ${VERSION} ]]; then # use version from VERSION file
+				DS_VERSION=${VERSION}
+			else # set placeholder version 3.y
+				DS_VERSION="3.y"
+			fi
+		fi
 	fi
-	DEFAULT_ERRATA_NUM=$(jq -r --arg VERSION_PREV "${VERSION_PREV}" '.Other.Errata[$VERSION_PREV]' $jcjson)
-fi
-if [[ $DEFAULT_ERRATA_NUM == "" ]] || [[ $DEFAULT_ERRATA_NUM == "null" ]] || [[ $DEFAULT_ERRATA_NUM == "n/a" ]]; then 
-	DEFAULT_ERRATA_NUM="99999"
-fi
-
-# cleanup /tmp files
-rm -fr /tmp/job-config.json || true
+}
+getDsVersion
 
 command -v skopeo >/dev/null 2>&1 || which skopeo >/dev/null 2>&1 || { echo "skopeo is not installed. Aborting."; exit 1; }
 command -v jq >/dev/null 2>&1     || which jq >/dev/null 2>&1     || { echo "jq is not installed. Aborting."; exit 1; }
@@ -121,21 +110,44 @@ PUSHTOQUAYTAGS="" # utility method to pull then push to quay (extra tags to push
 PUSHTOQUAYFORCE=0 # normally, don't repush a tag if it's already in the registry (to avoid re-timestamping it and updating tag history)
 SORTED=0 # if 0, use the order of containers in the DS*_CONTAINERS_* strings above; if 1, sort alphabetically
 latestNext="latest"; if [[ $DS_VERSION == "3.y" ]] || [[ $DWNSTM_BRANCH == "devspaces-3-rhel-8" ]]; then latestNext="next  "; fi
+
+# cleanup /tmp files
+cleanup_temp () {
+	rm -fr /tmp/job-config.json || true
+}
+
 usage () {
+	getVersion
+	getDsVersion
+
+	# compute default errata num for use with --errata flag
+	DEFAULT_ERRATA_NUM=$(jq -r --arg VERSION "${VERSION}" '.Other.Errata[$VERSION]' $jcjson)
+	if [[ $DEFAULT_ERRATA_NUM == "" ]] || [[ $DEFAULT_ERRATA_NUM == "null" ]] || [[ $DEFAULT_ERRATA_NUM == "n/a" ]]; then 
+		if [[ $VERSION =~ ^([0-9]+)\.([0-9]+) ]]; then # reduce the z digit, remove the snapshot suffix
+			XX=${BASH_REMATCH[1]}
+			YY=${BASH_REMATCH[2]}
+			let YY=YY-1 || YY=0; if [[ $YY -lt 0 ]]; then YY=0; fi # if result of a let == 0, bash returns 1
+			VERSION_PREV="${XX}.${YY}"
+			# echo "VERSION_PREV=$VERSION_PREV"
+		fi
+		DEFAULT_ERRATA_NUM=$(jq -r --arg VERSION_PREV "${VERSION_PREV}" '.Other.Errata[$VERSION_PREV]' $jcjson)
+	fi
+	if [[ $DEFAULT_ERRATA_NUM == "" ]] || [[ $DEFAULT_ERRATA_NUM == "null" ]] || [[ $DEFAULT_ERRATA_NUM == "n/a" ]]; then 
+		DEFAULT_ERRATA_NUM="99999"
+	fi
+
 	echo "
 Usage: 
-  $0 -b ${DWNSTM_BRANCH} --nvr --log                      | check images in brew; output NVRs can be copied to Errata; show Brew builds/logs
-  $0 -b ${DWNSTM_BRANCH} --errata $DEFAULT_ERRATA_NUM                  | check images in brew; output NVRs + update builds in specified Errata (implies --nvr --hide)
+  $0 -b ${DWNSTM_BRANCH} --nvr --log                       | check images in brew; output NVRs can be copied to Errata; show Brew builds/logs
+  $0 -b ${DWNSTM_BRANCH} --errata $DEFAULT_ERRATA_NUM                   | check images in brew; output NVRs; push builds to Errata (implies --nvr --hide)
 
-  $0 -b ${DWNSTM_BRANCH} --quay --tag \"${DS_VERSION}-\" --hide       | use default list of DS images in quay.io/devspaces, for tag 3.y-; show nothing if tag umatched
-  $0 -b ${DWNSTM_BRANCH} --osbs                           | check images in OSBS ( registry-proxy.engineering.redhat.com/rh-osbs )
-  $0 -b ${DWNSTM_BRANCH} --osbs --pushtoquay='${DS_VERSION} ${latestNext}' | pull images from OSBS, push ${DS_VERSION}-z tag + 2 extras to quay
-  $0 -b ${DWNSTM_BRANCH} --stage --sort                   | use default list of DS images in RHEC Stage, sorted alphabetically
-  $0 -b ${DWNSTM_BRANCH} --arches                         | use default list of DS images in RHEC Prod; show arches
+  $0 -b ${DWNSTM_BRANCH} --quay --tag \"${DS_VERSION}-\" --hide        | use default quay.io/devspaces images, for tag ${DS_VERSION}-; show nothing if unmatched tag
+  $0 -b ${DWNSTM_BRANCH} --osbs                            | check images in OSBS ( registry-proxy.engineering.redhat.com/rh-osbs )
+  $0 -b ${DWNSTM_BRANCH} --osbs --pushtoquay='${DS_VERSION} ${latestNext}'  | pull images from OSBS, push ${DS_VERSION}-z tag + 2 extras to quay
+  $0 -b ${DWNSTM_BRANCH} --stage --sort                    | use default list of DS images in RHEC Stage, sorted alphabetically
+  $0 -b ${DWNSTM_BRANCH} --arches                          | use default list of DS images in RHEC Prod; show arches
 
-  $0 -b ${DWNSTM_BRANCH} --quay -c devspaces/iib -o v4.11 --tag ${DS_VERSION}-v4.11
-                                                                                 | search for latest Dev Spaces IIBs in quay for a given OCP version
-
+  $0 -c devspaces/iib --quay -o v4.11 --tag ${DS_VERSION}-v4.11          | search for latest Dev Spaces IIBs in quay for a given OCP version
   $0 -c devspaces/code-rhel8 --quay                            | check latest tag for specific Quay image(s), with branch = ${DWNSTM_BRANCH}
   $0 -c devspaces-operator --osbs                              | check an image from OSBS
   $0 -c devspaces-devspaces-rhel8-operator --nvr               | check an NVR from OSBS
@@ -144,7 +156,7 @@ Usage:
   $0 -c pivotaldata/centos --docker --dockerfile               | check docker registry; show Dockerfile contents (requires dfimage)
 "
 }
-if [[ $# -lt 1 ]]; then usage; exit 1; fi
+if [[ $# -lt 1 ]]; then usage; cleanup_temp; exit 1; fi
 
 REGISTRY="https://registry.redhat.io" # or http://brew-pulp-docker01.web.prod.ext.phx2.redhat.com:8888 or https://registry-1.docker.io or https://registry.access.redhat.com
 CONTAINERS=""
@@ -187,14 +199,14 @@ while [[ "$#" -gt 0 ]]; do
     '--tagonly') TAGONLY=1;;
     '--log') SHOWLOG=1;;
     '--sort') SORTED=1;;
-    '-h') usage; exit 1;;
+    '-h'|'--help') usage; cleanup_temp; exit 1;;
   esac
   shift 1
 done
 
 if [[ $CONTAINERS == *"devspaces/iib"* ]]; then
 	if [[ $latestNext == "latest" ]] || [[ $latestNext == "next  " ]]; then
-		echo "[ERROR] For Quay IIB searches, must specify OCP version. For example: '-o v4.11'"; usage; exit 1
+		echo "[ERROR] For Quay IIB searches, must specify OCP version. For example: '-o v4.11'"; usage; cleanup_temp; exit 2
 	fi
 fi
 
@@ -211,12 +223,12 @@ if [[ -z ${BASETAG} ]] && [[ ${DWNSTM_BRANCH} ]]; then
 elif [[ "${BASETAG}" ]]; then # if --tag flag used, don't use derived value or fail
 	true
 else
-	usage; exit 1
+	usage; cleanup_temp; exit 3
 fi
 if [[ -z ${candidateTag} ]] && [[ ${DWNSTM_BRANCH} ]]; then
 	candidateTag="${DWNSTM_BRANCH}-container-candidate"
 else
-	usage; exit 1
+	usage; cleanup_temp; exit 4
 fi
 
 if [[ $VERBOSE -eq 1 ]]; then 
@@ -262,7 +274,7 @@ if [[ $SHOWHISTORY -eq 1 ]]; then
 	fi
 fi
 
-if [[ ${CONTAINERS} == "" ]]; then usage; fi
+if [[ ${CONTAINERS} == "" ]]; then usage; cleanup_temp; exit 5; fi
 
 # sort the container list
 if [[ $SORTED -eq 1 ]]; then CONTAINERS=$(tr ' ' '\n' <<< "${CONTAINERS}" | sort | uniq); fi
