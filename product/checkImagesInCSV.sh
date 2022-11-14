@@ -20,15 +20,26 @@ QUIET=0
 REGEX_FILTER=""
 
 # defaults to pass to getLatestIIBs.sh
-PROD_VER=""
 OCP_VER=""
 GLI_FLAG=""
+
+# compute a default value for PROD_VER to use in usage()
+PROD_VER="3.yy"
+if [[ -f dependencies/job-config.json ]]; then
+	jcjson=dependencies/job-config.json
+else
+	jcjson=/tmp/job-config.json
+	curl -sSLo $jcjson https://raw.githubusercontent.com/redhat-developer/devspaces/devspaces-3-rhel-8/dependencies/job-config.json
+fi
+PROD_VER=$(jq -r '.Version' $jcjson)
+# cleanup /tmp files
+rm -fr /tmp/job-config.json || true
 
 usage () {
   echo "
 Usage:
   Using a specific bundle: $0 bundle-image1 [bundle-image2...] [OPTIONS]
-  Using the latest bundle: $0 -t 3.1 -o 4.10 [OPTIONS]
+  Using the latest bundle: $0 -t $PROD_VER -o 4.11 [OPTIONS]
 
 Options:
   -t <product tag>     Use getLatestIIBs.sh to fetch latest IIB's contained bundle image, 
@@ -42,11 +53,10 @@ Options:
   -qq                  Even quieter output: omit everything but related images
 
 Examples:
-  $0 quay.io/crw/crw-2-rhel8-operator-bundle:2.15-276.1647377069
-  $0 quay.io/devspaces/devspaces-operator-bundle:3.1 -y -i 'devfile|plugin|udi'
+  $0 quay.io/devspaces/devspaces-operator-bundle:$PROD_VER -y -i 'devfile|plugin|udi'
 
 To compare latest image in Quay to latest CSV in bundle in latest IIB:
-  TAG=3.1; \\
+  TAG=$PROD_VER; \\
   IMG=devspaces/dashboard-rhel8; \\
   IMG=devspaces/devfileregistry-rhel8; \\
   img_quay=\$(${SCRIPTPATH}/getLatestImageTags.sh -b devspaces-\${TAG}-rhel-8 --quay --tag \"\${TAG}-\" -c \${IMG}); echo \$img_quay; \\
@@ -74,7 +84,7 @@ while [[ "$#" -gt 0 ]]; do
   shift 1
 done
 
-if [[ $PROD_VER ]] && [[ $OCP_VER ]] && [[ ! $IMAGES ]]; then # compute latest IIB -> bundle
+if [[ $PROD_VER ]] && [[ $PROD_VER != "3.yy" ]] && [[ $OCP_VER ]] && [[ ! $IMAGES ]]; then # compute latest IIB -> bundle
   if [[ $QUIET -lt 2 ]]; then
     echo "Checking for latest OCP v${OCP_VER} IIB for ${GLI_FLAG//--} ${PROD_VER}"
   fi
