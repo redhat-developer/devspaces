@@ -21,9 +21,14 @@
 # try to compute branches from currently checked out branch; else fall back to hard coded value
 DWNSTM_BRANCH="$(git rev-parse --abbrev-ref HEAD 2>/dev/null || true)"
 VERSION=""
-if [[ -f dependencies/VERSION ]]; then
-	VERSION=$(cat dependencies/VERSION)
+if [[ -f dependencies/job-config.json ]]; then
+	jcjson=dependencies/job-config.json
+else
+	jcjson=/tmp/job-config.json
+	curl -sSLo $jcjson https://raw.githubusercontent.com/redhat-developer/devspaces/devspaces-3-rhel-8/dependencies/job-config.json
 fi
+VERSION=$(jq -r '.Version' $jcjson)
+
 if [[ $DWNSTM_BRANCH != "devspaces-3."*"-rhel-8" ]] && [[ $DWNSTM_BRANCH != "devspaces-3-rhel-8" ]]; then
 	if [[ ${VERSION} != "" ]]; then
 		DWNSTM_BRANCH="devspaces-${VERSION}-rhel-8"
@@ -41,16 +46,26 @@ else
 		fi
 	fi
 fi
+# echo "VERSION=$VERSION"
 
 # compute default errata num for use with --errata flag
-DEFAULT_ERRATA_NUM=""
-if [[ -f dependencies/job-config.json ]]; then
-	DEFAULT_ERRATA_NUM=$(jq -r --arg VERSION "${VERSION}" '.Other.Errata[$VERSION]' dependencies/job-config.json)
+DEFAULT_ERRATA_NUM=$(jq -r --arg VERSION "${VERSION}" '.Other.Errata[$VERSION]' $jcjson)
+if [[ $DEFAULT_ERRATA_NUM == "" ]] || [[ $DEFAULT_ERRATA_NUM == "null" ]] || [[ $DEFAULT_ERRATA_NUM == "n/a" ]]; then 
+	if [[ $VERSION =~ ^([0-9]+)\.([0-9]+) ]]; then # reduce the z digit, remove the snapshot suffix
+		XX=${BASH_REMATCH[1]}
+		YY=${BASH_REMATCH[2]}
+		let YY=YY-1 || YY=0; if [[ $YY -lt 0 ]]; then YY=0; fi # if result of a let == 0, bash returns 1
+		VERSION_PREV="${XX}.${YY}"
+		# echo "VERSION_PREV=$VERSION_PREV"
+	fi
+	DEFAULT_ERRATA_NUM=$(jq -r --arg VERSION_PREV "${VERSION_PREV}" '.Other.Errata[$VERSION_PREV]' $jcjson)
 fi
-if [[ $DEFAULT_ERRATA_NUM == "" ]] || [[ $DEFAULT_ERRATA_NUM == "null" ]]; then 
-	DEFAULT_ERRATA_NUM=$(curl -sSLo- https://raw.githubusercontent.com/redhat-developer/devspaces/devspaces-3-rhel-8/dependencies/job-config.json | jq -r --arg VERSION "${VERSION}" '.Other.Errata[$VERSION]')
+if [[ $DEFAULT_ERRATA_NUM == "" ]] || [[ $DEFAULT_ERRATA_NUM == "null" ]] || [[ $DEFAULT_ERRATA_NUM == "n/a" ]]; then 
+	DEFAULT_ERRATA_NUM="99999"
 fi
-if [[ $DEFAULT_ERRATA_NUM == "" ]] || [[ $DEFAULT_ERRATA_NUM == "null" ]]; then DEFAULT_ERRATA_NUM="99999"; fi
+
+# cleanup /tmp files
+rm -fr /tmp/job-config.json || true
 
 command -v skopeo >/dev/null 2>&1 || which skopeo >/dev/null 2>&1 || { echo "skopeo is not installed. Aborting."; exit 1; }
 command -v jq >/dev/null 2>&1     || which jq >/dev/null 2>&1     || { echo "jq is not installed. Aborting."; exit 1; }
@@ -110,7 +125,7 @@ usage () {
 	echo "
 Usage: 
   $0 -b ${DWNSTM_BRANCH} --nvr --log                      | check images in brew; output NVRs can be copied to Errata; show Brew builds/logs
-  $0 -b ${DWNSTM_BRANCH} --errata $DEFAULT_ERRATA_NUM                   | check images in brew; output NVRs + update builds in specified Errata (implies --nvr --hide)
+  $0 -b ${DWNSTM_BRANCH} --errata $DEFAULT_ERRATA_NUM                  | check images in brew; output NVRs + update builds in specified Errata (implies --nvr --hide)
 
   $0 -b ${DWNSTM_BRANCH} --quay --tag \"${DS_VERSION}-\" --hide       | use default list of DS images in quay.io/devspaces, for tag 3.y-; show nothing if tag umatched
   $0 -b ${DWNSTM_BRANCH} --osbs                           | check images in OSBS ( registry-proxy.engineering.redhat.com/rh-osbs )
@@ -118,7 +133,7 @@ Usage:
   $0 -b ${DWNSTM_BRANCH} --stage --sort                   | use default list of DS images in RHEC Stage, sorted alphabetically
   $0 -b ${DWNSTM_BRANCH} --arches                         | use default list of DS images in RHEC Prod; show arches
 
-  $0 -b ${DWNSTM_BRANCH} --quay -c devspaces/iib -o v4.11 --tag 3.2-v4.11
+  $0 -b ${DWNSTM_BRANCH} --quay -c devspaces/iib -o v4.11 --tag ${DS_VERSION}-v4.11
                                                                                  | search for latest Dev Spaces IIBs in quay for a given OCP version
 
   $0 -c devspaces/code-rhel8 --quay                            | check latest tag for specific Quay image(s), with branch = ${DWNSTM_BRANCH}
