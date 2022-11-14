@@ -21,7 +21,7 @@ For Dev Workspace Operator: https://quay.io/repository/devworkspace/devworkspace
 For Dev Spaces Operator: https://quay.io/repository/devspaces/devspaces-operator-bundle?tab=tags
 
 Usage: 
-  $0 -t VERSION -d DWO_VERSION [-q]
+  $0 -t VERSION -d DWO_VERSION [--quiet]
 
 Example:
     $0 -t 3.3 -d 0.17 -q      # devspaces, quiet output
@@ -33,7 +33,7 @@ while [[ "$#" -gt 0 ]]; do
   case $1 in
     '-t') VERSION="$2"; shift 1;;
     '-d') DWO_VERSION="$2"; shift 1;;
-    '-q') QUIET="--quiet";;
+    '-q'|'--quiet') QUIET="--quiet";;
     '-h') usage;;
   esac
   shift 1
