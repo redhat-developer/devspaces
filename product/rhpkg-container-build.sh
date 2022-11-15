@@ -122,7 +122,7 @@ if [[ ! ${REPOS} ]] || [[ ${REPOS} == " " ]]; then
 fi
 
 # scrub dupe lines out of error log
-ERRORS_FOUND=$(grep -E --text -B2 "Max retries exceeded with url: /brewhub|Failed to establish a new connection|Build failed \(rc=|Brew build has failed|failed with exit code|Problem loading ID|Finished: FAILURE|Error: error creating build container: committing the finished image" "${LOGFILE}" | \
+ERRORS_FOUND=$(grep -E --text -B2 "Max retries exceeded with url: /brewhub|Failed to establish a new connection|Build failed \(rc=|Brew build has failed|failed with exit code|Problem loading ID|Finished: FAILURE|Error: error creating build container: committing the finished image|binary_container_postbuild failed" "${LOGFILE}" | \
   grep -v "grep" | \
   sed -r -e "s#[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2},[0-9]{3} -*##g" \
     -e "s# \(rc=1\)##g" \
@@ -136,6 +136,7 @@ ERRORS_FOUND=$(grep -E --text -B2 "Max retries exceeded with url: /brewhub|Faile
     -e 's#PluginFailedException: ##g' \
     \
     -e 's#Build step plugin imagebuilder failed: ##g' \
+    -e 's#binary_container_postbuild failed: ##g' \
     -e 's#buildstep plugin failed: ##g' \
     -e 's#image build failed: ##g' \
     -e 's#build failed: ##g' \
