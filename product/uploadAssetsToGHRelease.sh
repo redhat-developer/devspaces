@@ -145,7 +145,7 @@ if [[ $PUBLISH_ASSETS -eq 1 ]]; then
       hub release create -t "${MIDSTM_BRANCH}" \
         -m "Assets for the ${CSV_VERSION} ${ASSET_NAME} release" -m "${ASSET_TYPE} for ${CSV_VERSION}" \
         ${PRE_RELEASE} "${CSV_VERSION}-${ASSET_NAME}-assets" || true
-      sleep 10s
+      sleep 15s
       echo "[INFO] Upload new asset $fileToPush (2/3)"
       tryAgain=$(hub release edit -a ${fileToPush} "${CSV_VERSION}-${ASSET_NAME}-assets" \
       -m "Assets for the ${CSV_VERSION} ${ASSET_NAME} release" -m "${ASSET_TYPE} for ${CSV_VERSION}"  2>&1 || true)
@@ -157,7 +157,7 @@ if [[ $PUBLISH_ASSETS -eq 1 ]]; then
       hub release create -t "${MIDSTM_BRANCH}" \
         -m "Assets for the ${CSV_VERSION} ${ASSET_NAME} release" -m "${ASSET_TYPE} for ${CSV_VERSION}" \
         ${PRE_RELEASE} "${CSV_VERSION}-${ASSET_NAME}-assets" || true
-      sleep 10s
+      sleep 15s
       echo "[INFO] Upload new asset $fileToPush (3/3)"
       hub release edit -a ${fileToPush} "${CSV_VERSION}-${ASSET_NAME}-assets" \
       -m "Assets for the ${CSV_VERSION} ${ASSET_NAME} release" -m "${ASSET_TYPE} for ${CSV_VERSION}" || \
