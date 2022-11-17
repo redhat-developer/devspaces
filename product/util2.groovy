@@ -558,5 +558,73 @@ boolean hasSuccessfullyBuiltAllArches(String containerYamlPath, String jobOutput
   }
 }
 
+String prepareHTMLStringForJSON(String input) {
+  return input.replaceAll("<([a-z]+)/>","<\$1 />").replaceAll("\n","").replaceAll("/>","\\/>")
+}
+
+// formatted for submission via JSON
+String defaultPullRequestComment (String MIDSTM_BRANCH) {
+  def comment = \
+  '''Build:   ''' + currentBuild.absoluteUrl + '''console<br \\/>''' + \
+  '''Changes:  ''' + currentBuild.absoluteUrl + '''changes<br \\/>''' + \
+  '''Git Data: ''' + currentBuild.absoluteUrl + '''git'''
+  // for 3.x builds, identify the version of DS being built
+  if (currentBuild.absoluteUrl.contains("_3.x")) {
+    def DS_VERSION = getDsVersion(MIDSTM_BRANCH)
+    return '''Version: ''' + DS_VERSION + '''<br \\/>''' + comment
+  }
+  return comment
+}
+
+// convenience methods to comment with build URL or description
+String commentOnPullRequestBuildLinks(String ownerRepo, String SHA) {
+  return commentOnPullRequest(ownerRepo, SHA, defaultPullRequestComment(MIDSTM_BRANCH))
+}
+String commentOnPullRequestBuildLinks(String comments_url) {
+  return commentOnPullRequest(comments_url, defaultPullRequestComment(MIDSTM_BRANCH))
+}
+String commentOnPullRequestBuildDescription(String ownerRepo, String SHA) {
+  return commentOnPullRequest(ownerRepo, SHA, prepareHTMLStringForJSON(currentBuild.description))
+}
+String commentOnPullRequestBuildDescription(String comments_url) {
+  return commentOnPullRequest(comments_url, prepareHTMLStringForJSON(currentBuild.description))
+}
+
+// given a repo and commit SHA, compute PR comments_url like https://api.github.com/repos/redhat-developer/devspaces/issues/848/comments
+// then publish a message to that URL 
+// return comments_url (with comment hash) so we can pass that to downstream jobs
+String commentOnPullRequest(String ownerRepo, String SHA, String message) {
+  def comments_url = sh(script: '''#!/bin/bash -xe
+export GITHUB_TOKEN=''' + GITHUB_TOKEN + ''' # echo "''' + GITHUB_TOKEN + '''"
+ownerRepo="''' + ownerRepo + '''"
+SHA="''' + SHA + '''"
+# use gh to query a given repo for closed pulls for a given commitSHA; return the PR URL
+curl -sSL -H "Authorization: token ${GITHUB_TOKEN}" -H "Accept: application/vnd.github.v3+json" \\
+  "https://api.github.com/repos/${ownerRepo}/pulls?state=closed" | yq -r --arg SHA "$SHA" '.[]|select(.head.sha == $SHA)|.comments_url'
+''', returnStdout: true).trim()
+  return commentOnPullRequest(comments_url, message)
+}
+
+// given a PR comments_url like https://api.github.com/repos/redhat-developer/devspaces/issues/848/comments
+// publish a message containing links to build console/changes, or the currentBuild.description
+// return comments_url (with comment hash) so we can pass that to downstream jobs
+String commentOnPullRequest(String comments_url, String message) {
+  def comments_url_hashed = ""
+  if (message?.trim()) {
+    comments_url_hashed = sh(script: '''#!/bin/bash -xe
+export GITHUB_TOKEN=''' + GITHUB_TOKEN + ''' # echo "''' + GITHUB_TOKEN + '''"
+message="''' + message + '''"
+comments_url="''' + comments_url + '''"
+
+# comment on the PR by URL: https://api.github.com/repos/redhat-developer/devspaces/issues/848/comments
+if [[ $comments_url ]]; then
+  curl -sSL -H "Authorization: token ${GITHUB_TOKEN}" -H "Accept: application/vnd.github.v3+json" -X POST \\
+  -d '{"body": "'"${message}"'"}' "${comments_url}" | yq -r '.html_url'
+fi
+''', returnStdout: true).trim()
+  }
+  return comments_url_hashed
+}
+
 // return this file's contents when loaded
 return this
