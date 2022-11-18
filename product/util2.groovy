@@ -611,6 +611,9 @@ curl -sSL -H "Authorization: token ${GITHUB_TOKEN}" -H "Accept: application/vnd.
 String commentOnPullRequest(String comments_url, String message) {
   // if url and message are set; otherwise return nullstring
   if (comments_url?.trim() && message?.trim()) {
+    // convert html PR URL to API comment URL
+    comments_url = comments_url.replaceAll("https://github.com/","https://api.github.com/repos/")
+    comments_url = comments_url.replaceAll("/pull/([0-9]+)","/issues/\$1/comments")
     return sh(script: '''#!/bin/bash -xe
 export GITHUB_TOKEN=''' + GITHUB_TOKEN + ''' # echo "''' + GITHUB_TOKEN + '''"
 message="''' + message + '''"
