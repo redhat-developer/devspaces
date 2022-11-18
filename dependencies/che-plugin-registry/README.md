@@ -28,7 +28,7 @@ https://github.com/redhat-developer/devspaces-images
 
 Sidecar image sources are then synced from the [devspaces-images](https://github.com/redhat-developer/devspaces-images) repo to a dist-git repo at Red Hat, and from built in Brew. 
 
-For example, the udi sidecar:
+For example, the udi sidecar: 
 
 * [devspaces-images/devspaces-udi](https://github.com/redhat-developer/devspaces-images/tree/devspaces-3-rhel-8/devspacesudi)
 * [containers/devspaces-udi](http://pkgs.devel.redhat.com/cgit/containers/devspaces-udi/tree/sources?h=devspaces-3-rhel-8)
