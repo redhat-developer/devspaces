@@ -609,21 +609,19 @@ curl -sSL -H "Authorization: token ${GITHUB_TOKEN}" -H "Accept: application/vnd.
 // publish a message containing links to build console/changes, or the currentBuild.description
 // return comments_url (with comment hash) so we can pass that to downstream jobs
 String commentOnPullRequest(String comments_url, String message) {
-  def comments_url_hashed = ""
-  if (message?.trim()) {
-    comments_url_hashed = sh(script: '''#!/bin/bash -xe
+  // if url and message are set; otherwise return nullstring
+  if (comments_url?.trim() && message?.trim()) {
+    return sh(script: '''#!/bin/bash -xe
 export GITHUB_TOKEN=''' + GITHUB_TOKEN + ''' # echo "''' + GITHUB_TOKEN + '''"
 message="''' + message + '''"
 comments_url="''' + comments_url + '''"
 
 # comment on the PR by URL: https://api.github.com/repos/redhat-developer/devspaces/issues/848/comments
-if [[ $comments_url ]]; then
-  curl -sSL -H "Authorization: token ${GITHUB_TOKEN}" -H "Accept: application/vnd.github.v3+json" -X POST \\
+curl -sSL -H "Authorization: token ${GITHUB_TOKEN}" -H "Accept: application/vnd.github.v3+json" -X POST \\
   -d '{"body": "'"${message}"'"}' "${comments_url}" | yq -r '.html_url'
-fi
 ''', returnStdout: true).trim()
   }
-  return comments_url_hashed
+  return ""
 }
 
 // return this file's contents when loaded
