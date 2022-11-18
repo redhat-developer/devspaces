@@ -600,7 +600,7 @@ ownerRepo="''' + ownerRepo + '''"
 SHA="''' + SHA + '''"
 # use gh to query a given repo for closed pulls for a given commitSHA; return the PR URL
 curl -sSL -H "Authorization: token ${GITHUB_TOKEN}" -H "Accept: application/vnd.github.v3+json" \\
-  "https://api.github.com/repos/${ownerRepo}/pulls?state=closed" | yq -r --arg SHA "$SHA" '.[]|select(.head.sha == $SHA)|.comments_url'
+  "https://api.github.com/repos/${ownerRepo}/pulls?state=closed" | yq -r --arg SHA "$SHA" '.[]|select(.merge_commit_sha == $SHA or .head.sha == $SHA)|.comments_url'
 ''', returnStdout: true).trim()
   return commentOnPullRequest(comments_url, message)
 }
