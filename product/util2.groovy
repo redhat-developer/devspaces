@@ -585,10 +585,10 @@ String commentOnPullRequestBuildLinks(String comments_url) {
   return commentOnPullRequest(comments_url, defaultPullRequestComment(MIDSTM_BRANCH))
 }
 String commentOnPullRequestBuildDescription(String ownerRepo, String SHA) {
-  return commentOnPullRequest(ownerRepo, SHA, prepareHTMLStringForJSON(currentBuild.description))
+  return commentOnPullRequest(ownerRepo, SHA, prepareHTMLStringForJSON("[Build "+currentBuild.absoluteUrl.replaceAll(".+/([^/]+/[0-9]+)/","\$1") + "](" + currentBuild.absoluteUrl+"):<br />" + currentBuild.description))
 }
 String commentOnPullRequestBuildDescription(String comments_url) {
-  return commentOnPullRequest(comments_url, prepareHTMLStringForJSON(currentBuild.description))
+  return commentOnPullRequest(comments_url, prepareHTMLStringForJSON("[Build "+currentBuild.absoluteUrl.replaceAll(".+/([^/]+/[0-9]+)/","\$1") + "](" + currentBuild.absoluteUrl+"):<br />" + currentBuild.description))
 }
 
 // given a repo and commit SHA, compute PR comments_url like https://api.github.com/repos/redhat-developer/devspaces/issues/848/comments
