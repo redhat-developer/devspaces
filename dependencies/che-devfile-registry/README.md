@@ -51,7 +51,7 @@ When deploying this offline registry, it is necessary to set the environment var
 
 ## Deploy the registry to OpenShift
 
-You can deploy the registry to Openshift as follows:
+You can deploy the registry to Openshift as follows: 
 
 ```bash
   oc new-app -f deploy/openshift/che-devfile-registry.yaml \
