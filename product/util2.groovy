@@ -565,9 +565,10 @@ String prepareHTMLStringForJSON(String input) {
 // formatted for submission via JSON
 String defaultPullRequestComment (String MIDSTM_BRANCH) {
   def comment = \
-  '''Build:   ''' + currentBuild.absoluteUrl + '''console<br \\/>''' + \
-  '''Changes:  ''' + currentBuild.absoluteUrl + '''changes<br \\/>''' + \
-  '''Git Data: ''' + currentBuild.absoluteUrl + '''git'''
+  "[Build "+currentBuild.absoluteUrl.replaceAll(".+/([^/]+/[0-9]+)/","\$1") + "](" + currentBuild.absoluteUrl+"): " + \
+  "[Console](" + currentBuild.absoluteUrl + "console), " + \
+  "[Changes](" + currentBuild.absoluteUrl + "changes), " + \
+  "[Git Data](" + currentBuild.absoluteUrl + "git)"
   // for 3.x builds, identify the version of DS being built
   if (currentBuild.absoluteUrl.contains("_3.x")) {
     def DS_VERSION = getDsVersion(MIDSTM_BRANCH)
