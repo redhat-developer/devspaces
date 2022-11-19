@@ -4,55 +4,55 @@ quay.io/devspaces/code-rhel8:3.3-30
    Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=2264598
   Source: https://pkgs.devel.redhat.com/cgit/containers/devspaces-code/commit?id=9eae0aa91c17f531c667ff4736799080e71479bf
 
-quay.io/devspaces/configbump-rhel8:3.3-19
-     NVR: devspaces-configbump-rhel8-container-3.3-19
-   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=2264442
-  Source: https://pkgs.devel.redhat.com/cgit/containers/devspaces-configbump/commit?id=8f9de792db5b0f99683a04c5ee4ef1391f4100a9
+quay.io/devspaces/configbump-rhel8:3.3-20
+     NVR: devspaces-configbump-rhel8-container-3.3-20
+   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=2268964
+  Source: https://pkgs.devel.redhat.com/cgit/containers/devspaces-configbump/commit?id=cd03c2f39b1854112ed6fc26f8062e5738acd8cc
 
-quay.io/devspaces/devspaces-rhel8-operator:3.3-62
-     NVR: devspaces-rhel8-operator-container-3.3-62
-   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=2259487
-  Source: https://pkgs.devel.redhat.com/cgit/containers/devspaces-operator/commit?id=4afd3b31de7f0d35c09dc6e33b131b3073e53976
+quay.io/devspaces/devspaces-rhel8-operator:3.3-63
+     NVR: devspaces-rhel8-operator-container-3.3-63
+   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=2268967
+  Source: https://pkgs.devel.redhat.com/cgit/containers/devspaces-operator/commit?id=3a932f9adf73ff3fa3da3af55f09a05df1815f3c
 
-quay.io/devspaces/devspaces-operator-bundle:3.3-232
-     NVR: devspaces-operator-bundle-container-3.3-232
-   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=2264689
+quay.io/devspaces/devspaces-operator-bundle:3.3-233
+     NVR: devspaces-operator-bundle-container-3.3-233
+   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=2268987
   Source: https://pkgs.devel.redhat.com/cgit/containers/devspaces-operator-bundle/commit?id=1bddf0dfd2a31325266a29813190b0849e477f39
 
-quay.io/devspaces/dashboard-rhel8:3.3-61
-     NVR: devspaces-dashboard-rhel8-container-3.3-61
-   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=2264455
-  Source: https://pkgs.devel.redhat.com/cgit/containers/devspaces-dashboard/commit?id=573cd1574442eb5e70943a4f04133a06793bd9a6
+quay.io/devspaces/dashboard-rhel8:3.3-62
+     NVR: devspaces-dashboard-rhel8-container-3.3-62
+   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=2268966
+  Source: https://pkgs.devel.redhat.com/cgit/containers/devspaces-dashboard/commit?id=aab98439ac83156ecca9421a423c24ef952a5845
 
-quay.io/devspaces/devfileregistry-rhel8:3.3-53
-     NVR: devspaces-devfileregistry-rhel8-container-3.3-53
-   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=2262397
-  Source: https://pkgs.devel.redhat.com/cgit/containers/devspaces-devfileregistry/commit?id=9aa238a77b7a0dc794c44c3f58616ee707481027
+quay.io/devspaces/devfileregistry-rhel8:3.3-54
+     NVR: devspaces-devfileregistry-rhel8-container-3.3-54
+   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=2268970
+  Source: https://pkgs.devel.redhat.com/cgit/containers/devspaces-devfileregistry/commit?id=292b44783f0ab7b115348db3313d35ca9f7788cf
 
 quay.io/devspaces/idea-rhel8:3.3-11
      NVR: devspaces-idea-rhel8-container-3.3-11
    Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=2264477
   Source: https://pkgs.devel.redhat.com/cgit/containers/devspaces-idea/commit?id=f81eef8f4abf4f5c181b63ba4aeba81884b106fe
 
-quay.io/devspaces/imagepuller-rhel8:3.3-19
-     NVR: devspaces-imagepuller-rhel8-container-3.3-19
-   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=2264454
-  Source: https://pkgs.devel.redhat.com/cgit/containers/devspaces-imagepuller/commit?id=5dac5480105f41b1c1ef3658bf699992b67af3c9
+quay.io/devspaces/imagepuller-rhel8:3.3-20
+     NVR: devspaces-imagepuller-rhel8-container-3.3-20
+   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=2268963
+  Source: https://pkgs.devel.redhat.com/cgit/containers/devspaces-imagepuller/commit?id=db1f049588e86dd0a0688278e5737fd5fc4f282f
 
-quay.io/devspaces/machineexec-rhel8:3.3-24
-     NVR: devspaces-machineexec-rhel8-container-3.3-24
-   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=2264453
-  Source: https://pkgs.devel.redhat.com/cgit/containers/devspaces-machineexec/commit?id=403b73c1272046e5494f371ad92083716877fd82
+quay.io/devspaces/machineexec-rhel8:3.3-25
+     NVR: devspaces-machineexec-rhel8-container-3.3-25
+   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=2268965
+  Source: https://pkgs.devel.redhat.com/cgit/containers/devspaces-machineexec/commit?id=3d8ac5139d916b624df2ac855ce3bb71d4325e16
 
-quay.io/devspaces/pluginregistry-rhel8:3.3-48
-     NVR: devspaces-pluginregistry-rhel8-container-3.3-48
-   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=2262326
-  Source: https://pkgs.devel.redhat.com/cgit/containers/devspaces-pluginregistry/commit?id=eac5ad867a0232eead5d1519f6517256bc156b3c
+quay.io/devspaces/pluginregistry-rhel8:3.3-49
+     NVR: devspaces-pluginregistry-rhel8-container-3.3-49
+   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=2268975
+  Source: https://pkgs.devel.redhat.com/cgit/containers/devspaces-pluginregistry/commit?id=12987ff67eb50185c4beabeb1b503f940e1449b2
 
-quay.io/devspaces/server-rhel8:3.3-45
-     NVR: devspaces-server-rhel8-container-3.3-45
-   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=2264464
-  Source: https://pkgs.devel.redhat.com/cgit/containers/devspaces-server/commit?id=63bd1686ac10265b0ab41e2e720525d19387d06f
+quay.io/devspaces/server-rhel8:3.3-46
+     NVR: devspaces-server-rhel8-container-3.3-46
+   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=2268974
+  Source: https://pkgs.devel.redhat.com/cgit/containers/devspaces-server/commit?id=7d1fa4c7f2edfccf06d90732cac4927dc6e0459d
 
 quay.io/devspaces/theia-dev-rhel8:3.3-15
      NVR: devspaces-theia-dev-rhel8-container-3.3-15
