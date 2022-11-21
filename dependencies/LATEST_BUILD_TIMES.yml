@@ -2851,3 +2851,129 @@
   timeWait: 0 mins
   timeBuild: 5 mins
   timeTotal: 5 mins
+- name: devspaces-operator
+  tag: 3.4-8
+  taskId: 49114520
+  timeCreate: Sun Nov 20 03:59:52 2022
+  timeStart: Sun Nov 20 04:00:02 2022
+  timeFinish: Sun Nov 20 04:14:50 2022
+  timeWait: 0 mins
+  timeBuild: 14 mins
+  timeTotal: 14 mins
+- name: devspaces-configbump-rhel8
+  tag: 3.4-6
+  taskId: 49114524
+  timeCreate: Sun Nov 20 04:00:19 2022
+  timeStart: Sun Nov 20 04:00:55 2022
+  timeFinish: Sun Nov 20 04:15:30 2022
+  timeWait: 0 mins
+  timeBuild: 14 mins
+  timeTotal: 15 mins
+- name: devspaces-imagepuller-rhel8
+  tag: 3.4-6
+  taskId: 49114525
+  timeCreate: Sun Nov 20 04:00:26 2022
+  timeStart: Sun Nov 20 04:00:59 2022
+  timeFinish: Sun Nov 20 04:12:05 2022
+  timeWait: 0 mins
+  timeBuild: 11 mins
+  timeTotal: 11 mins
+- name: devspaces-dashboard-rhel8
+  tag: 3.4-9
+  taskId: 49114526
+  timeCreate: Sun Nov 20 04:00:37 2022
+  timeStart: Sun Nov 20 04:01:03 2022
+  timeFinish: Sun Nov 20 04:28:05 2022
+  timeWait: 0 mins
+  timeBuild: 27 mins
+  timeTotal: 27 mins
+- name: devspaces-traefik-rhel8
+  tag: 3.4-4
+  taskId: 49114527
+  timeCreate: Sun Nov 20 04:00:40 2022
+  timeStart: Sun Nov 20 04:01:07 2022
+  timeFinish: Sun Nov 20 04:28:09 2022
+  timeWait: 0 mins
+  timeBuild: 27 mins
+  timeTotal: 27 mins
+- name: devspaces-server-rhel8
+  tag: 3.4-8
+  taskId: 49114535
+  timeCreate: Sun Nov 20 04:04:10 2022
+  timeStart: Sun Nov 20 04:04:12 2022
+  timeFinish: Sun Nov 20 04:10:58 2022
+  timeWait: 0 mins
+  timeBuild: 6 mins
+  timeTotal: 6 mins
+- name: devspaces-pluginregistry-rhel8
+  tag: 3.4-14
+  taskId: 49114539
+  timeCreate: Sun Nov 20 04:08:50 2022
+  timeStart: Sun Nov 20 04:08:53 2022
+  timeFinish: Sun Nov 20 04:31:06 2022
+  timeWait: 0 mins
+  timeBuild: 22 mins
+  timeTotal: 22 mins
+- name: devspaces-theia-dev-rhel8
+  tag: 3.4-3
+  taskId: 49114636
+  timeCreate: Sun Nov 20 04:39:36 2022
+  timeStart: Sun Nov 20 04:40:04 2022
+  timeFinish: Sun Nov 20 04:51:07 2022
+  timeWait: 0 mins
+  timeBuild: 11 mins
+  timeTotal: 11 mins
+- name: devspaces-theia-rhel8
+  tag: 3.4-2
+  taskId: 49114888
+  timeCreate: Sun Nov 20 05:22:30 2022
+  timeStart: Sun Nov 20 05:22:54 2022
+  timeFinish: Sun Nov 20 05:58:53 2022
+  timeWait: 0 mins
+  timeBuild: 35 mins
+  timeTotal: 36 mins
+- name: devspaces-theia-endpoint-rhel8
+  tag: 3.4-2
+  taskId: 49115083
+  timeCreate: Sun Nov 20 06:06:36 2022
+  timeStart: Sun Nov 20 06:07:10 2022
+  timeFinish: Sun Nov 20 06:16:36 2022
+  timeWait: 0 mins
+  timeBuild: 9 mins
+  timeTotal: 10 mins
+- name: devspaces-devfileregistry-rhel8
+  tag: 3.4-34
+  taskId: 49118339
+  timeCreate: Sun Nov 20 17:25:30 2022
+  timeStart: Sun Nov 20 17:25:50 2022
+  timeFinish: Sun Nov 20 17:33:47 2022
+  timeWait: 0 mins
+  timeBuild: 7 mins
+  timeTotal: 8 mins
+- name: devspaces-machineexec-rhel8
+  tag: 3.4-12
+  taskId: 49125059
+  timeCreate: Mon Nov 21 07:38:22 2022
+  timeStart: Mon Nov 21 07:38:44 2022
+  timeFinish: Mon Nov 21 07:42:55 2022
+  timeWait: 0 mins
+  timeBuild: 4 mins
+  timeTotal: 4 mins
+- name: devspaces-code-rhel8
+  tag: 3.4-17
+  taskId: 49125066
+  timeCreate: Mon Nov 21 07:39:01 2022
+  timeStart: Mon Nov 21 07:39:34 2022
+  timeFinish: Mon Nov 21 07:47:51 2022
+  timeWait: 0 mins
+  timeBuild: 8 mins
+  timeTotal: 8 mins
+- name: devspaces-operator-bundle
+  tag: 3.4-44
+  taskId: 49125713
+  timeCreate: Mon Nov 21 07:54:52 2022
+  timeStart: Mon Nov 21 07:55:16 2022
+  timeFinish: Mon Nov 21 07:58:47 2022
+  timeWait: 0 mins
+  timeBuild: 3 mins
+  timeTotal: 3 mins
