@@ -586,7 +586,7 @@ String defaultPullRequestCommentBuildDescription(String MIDSTM_BRANCH) {
 }
 
 String defaultPullRequestCommentHeader(String MIDSTM_BRANCH) {
-  return "Build " + getDsVersion(MIDSTM_BRANCH) + " :: [" + \
+  return "Build [" + getDsVersion(MIDSTM_BRANCH) + "](https://github.com/redhat-developer/devspaces-images/tree/" + MIDSTM_BRANCH + "/) :: [" + \
     currentBuild.absoluteUrl.replaceAll(".+/([^/]+/[0-9]+)/","\$1") + "](" + currentBuild.absoluteUrl+"): "
 }
 // formatted for submission via JSON
