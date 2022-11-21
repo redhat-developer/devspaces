@@ -163,14 +163,14 @@ for OCP_VER in ${OCP_VERSIONS}; do
     PUSHTOQUAYFORCE_LOCAL=${PUSHTOQUAYFORCE}
     # registry-proxy.engineering.redhat.com/rh-osbs/iib:286641
     LATEST_IIB=$(${getIIBsForBundle}  --ds -t ${DS_VERSION} -o ${OCP_VER} -qi | sort -uV | tail -1) # return quietly, just the index bundle
-    if [[ ! $LATEST_IIB ]]; then # fall back to getLatestIIBs.sh
+    if [[ ! $LATEST_IIB ]] || [[ $LATEST_IIB == *"Could not fetch ref_url"* ]]; then # fall back to getLatestIIBs.sh
         LATEST_IIB=$(${getLatestIIBs} --ds -t ${DS_VERSION} -o ${OCP_VER} -qi | sort -uV | tail -1) # return quietly, just the index bundle
     fi
     LATEST_IIB_NUM=${LATEST_IIB##*:}
     # Get DevWorkspace Operator IIB separately to enable DWO RC testing
     # don't wait the usual 30 mins to see if new DWO is published; instead just check once and give up if not found
     LATEST_DWO_IIB=$(${getIIBsForBundle}  --dwo -t ${DWO_VERSION} -c 'devworkspace-operator-bundle' -o ${OCP_VER} -qi | sort -uV | tail -1) # return quietly, just the index bundle
-    if [[ ! $LATEST_DWO_IIB ]]; then # fall back to getLatestIIBs.sh
+    if [[ ! $LATEST_DWO_IIB ]] || [[ $LATEST_DWO_IIB == *"Could not fetch ref_url"* ]]; then # fall back to getLatestIIBs.sh
         LATEST_DWO_IIB=$(${getLatestIIBs} --dwo -t ${DWO_VERSION} -c 'devworkspace-operator-bundle' -o ${OCP_VER} -qi --timeout 2 --interval 1 | sort -uV | tail -1) # return quietly, just the index bundle
     fi
     LATEST_DWO_IIB_NUM=${LATEST_DWO_IIB##*:}
