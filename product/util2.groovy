@@ -564,9 +564,10 @@ String prepareHTMLStringForJSON(String input) {
 
 String buildResultBadge() {
   def currentBuildResult = currentBuild.result?.trim().toString()
-  def badge = "![UNKNOWN](https://img.shields.io/badge/Build-UNKNOWN-blue?style=plastic&logo=redhat)"
+  println("currentBuildResult = " + currentBuildResult)
+  def badge = currentBuildResult
   switch(currentBuildResult) {
-    case "SUCCESS":
+    case ["SUCCESS", "", "null", null]:
       badge = "![SUCCESS](https://img.shields.io/badge/Build-SUCCESS-brightgreen?style=plastic&logo=redhat)"
       break
     case "UNSTABLE":
@@ -577,6 +578,9 @@ String buildResultBadge() {
       break
     case "FAILURE":
       badge = "![FAILURE](https://img.shields.io/badge/Build-FAILURE-red?style=plastic&logo=redhat)"
+      break
+    default:
+      badge = "![UNKNOWN](https://img.shields.io/badge/Build-UNKNOWN-blue?style=plastic&logo=redhat)"
       break
   }
   return "[" + badge + "](" + currentBuild.absoluteUrl+")"
