@@ -562,18 +562,21 @@ String prepareHTMLStringForJSON(String input) {
   return input.replaceAll("<([a-z]+)/>","<\$1 />").replaceAll("\n","").replaceAll("/>","\\/>")
 }
 
+String defaultPullRequestCommentBuildDescription(String MIDSTM_BRANCH) {
+  return prepareHTMLStringForJSON(defaultPullRequestCommentHeader(MIDSTM_BRANCH) + "<br /><blockquote>" + currentBuild.description + "</blockquote>")
+}
+
+String defaultPullRequestCommentHeader(String MIDSTM_BRANCH) {
+  return "Build " + getDsVersion(MIDSTM_BRANCH) + " :: [" + \
+    currentBuild.absoluteUrl.replaceAll(".+/([^/]+/[0-9]+)/","\$1") + "](" + currentBuild.absoluteUrl+"): "
+}
 // formatted for submission via JSON
 String defaultPullRequestComment (String MIDSTM_BRANCH) {
   def comment = \
-  "[Build "+currentBuild.absoluteUrl.replaceAll(".+/([^/]+/[0-9]+)/","\$1") + "](" + currentBuild.absoluteUrl+"): " + \
+  defaultPullRequestCommentHeader(MIDSTM_BRANCH) + \
   "[Console](" + currentBuild.absoluteUrl + "console), " + \
   "[Changes](" + currentBuild.absoluteUrl + "changes), " + \
   "[Git Data](" + currentBuild.absoluteUrl + "git)"
-  // for 3.x builds, identify the version of DS being built
-  if (currentBuild.absoluteUrl.contains("_3.x")) {
-    def DS_VERSION = getDsVersion(MIDSTM_BRANCH)
-    return '''Version: ''' + DS_VERSION + '''<br \\/>''' + comment
-  }
   return comment
 }
 
@@ -585,10 +588,10 @@ String commentOnPullRequestBuildLinks(String comments_url) {
   return commentOnPullRequest(comments_url, defaultPullRequestComment(MIDSTM_BRANCH))
 }
 String commentOnPullRequestBuildDescription(String ownerRepo, String SHA) {
-  return commentOnPullRequest(ownerRepo, SHA, prepareHTMLStringForJSON("[Build "+currentBuild.absoluteUrl.replaceAll(".+/([^/]+/[0-9]+)/","\$1") + "](" + currentBuild.absoluteUrl+"):<br />" + currentBuild.description))
+  return commentOnPullRequest(ownerRepo, SHA, defaultPullRequestCommentBuildDescription(MIDSTM_BRANCH))
 }
 String commentOnPullRequestBuildDescription(String comments_url) {
-  return commentOnPullRequest(comments_url, prepareHTMLStringForJSON("[Build "+currentBuild.absoluteUrl.replaceAll(".+/([^/]+/[0-9]+)/","\$1") + "](" + currentBuild.absoluteUrl+"):<br />" + currentBuild.description))
+  return commentOnPullRequest(comments_url, defaultPullRequestCommentBuildDescription(MIDSTM_BRANCH))
 }
 
 // given a repo and commit SHA, compute PR comments_url like https://api.github.com/repos/redhat-developer/devspaces/issues/848/comments
@@ -617,7 +620,7 @@ String commentOnPullRequest(String comments_url, String message) {
     comments_url = comments_url.replaceAll("/pull/([0-9]+)","/issues/\$1/comments")
     // fix relative job/build URLs to be absolute
     // TODO do we have to add suport for href="" and href='' ?
-    message=message.replaceAll("<a href=/","<a href=${JENKINS_URL}/")
+    message=message.replaceAll("<a href=/","<a href=${JENKINS_URL}")
     message=message.replaceAll("<a href=../","<a href="+currentBuild.absoluteUrl.replaceAll(".+/([^/]+/[0-9]+/*)",""))
     return sh(script: '''#!/bin/bash -xe
 export GITHUB_TOKEN=''' + GITHUB_TOKEN + ''' # echo "''' + GITHUB_TOKEN + '''"
