@@ -615,6 +615,10 @@ String commentOnPullRequest(String comments_url, String message) {
     // convert html PR URL to API comment URL
     comments_url = comments_url.replaceAll("https://github.com/","https://api.github.com/repos/")
     comments_url = comments_url.replaceAll("/pull/([0-9]+)","/issues/\$1/comments")
+    // fix relative job/build URLs to be absolute
+    // TODO do we have to add suport for href="" and href='' ?
+    message=message.replaceAll("<a href=/","<a href=${JENKINS_URL}/")
+    message=message.replaceAll("<a href=../","<a href="+currentBuild.absoluteUrl.replaceAll(".+/([^/]+/[0-9]+/*)",""))
     return sh(script: '''#!/bin/bash -xe
 export GITHUB_TOKEN=''' + GITHUB_TOKEN + ''' # echo "''' + GITHUB_TOKEN + '''"
 message="''' + message + '''"
