@@ -563,7 +563,7 @@ String prepareHTMLStringForJSON(String input) {
 }
 
 String buildResultHTML() {
-  switch(currentBuild.result) {
+  switch(currentBuild.result?.trim().toString()) {
     case "SUCCESS":
       return "![SUCCESS](https://img.shields.io/badge/Build-SUCCESS-brightgreen?style=plastic&logo=redhat)"
       break
@@ -577,7 +577,7 @@ String buildResultHTML() {
       return "![FAILURE](https://img.shields.io/badge/Build-FAILURE-red?style=plastic&logo=redhat)"
       break
   }
-  return ""
+  return "![UNKNOWN](https://img.shields.io/badge/Build-UNKNOWN-blue?style=plastic&logo=redhat)"
 }
 
 String defaultPullRequestCommentBuildDescription(String MIDSTM_BRANCH) {
