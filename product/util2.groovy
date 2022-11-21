@@ -562,8 +562,23 @@ String prepareHTMLStringForJSON(String input) {
   return input.replaceAll("<([a-z]+)/>","<\$1 />").replaceAll("\n","").replaceAll("/>","\\/>")
 }
 
+String buildResultHTML() {
+  switch(currentBuild.result) {
+    case "SUCCESS":
+      return ![SUCCESS](https://img.shields.io/badge/Build-SUCCESS-brightgreen?style=plastic&logo=redhat)
+    case "UNSTABLE":
+      return ![UNSTABLE](https://img.shields.io/badge/Build-UNSTABLE-yellow?style=plastic&logo=redhat)
+    case "ABORTED":
+      return ![ABORTED](https://img.shields.io/badge/Build-ABORTED-lightgrey?style=plastic&logo=redhat)
+    case "FAILURE":
+      return ![FAILURE](https://img.shields.io/badge/Build-FAILURE-red?style=plastic&logo=redhat)
+  }
+  return ""
+}
+
 String defaultPullRequestCommentBuildDescription(String MIDSTM_BRANCH) {
-  return prepareHTMLStringForJSON(defaultPullRequestCommentHeader(MIDSTM_BRANCH) + "<br /><blockquote>" + currentBuild.description + "</blockquote>")
+  return prepareHTMLStringForJSON(defaultPullRequestCommentHeader(MIDSTM_BRANCH) + \
+    buildResultHTML() + "<br /><blockquote>" + currentBuild.description + "</blockquote>")
 }
 
 String defaultPullRequestCommentHeader(String MIDSTM_BRANCH) {
