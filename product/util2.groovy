@@ -565,13 +565,17 @@ String prepareHTMLStringForJSON(String input) {
 String buildResultHTML() {
   switch(currentBuild.result) {
     case "SUCCESS":
-      return ![SUCCESS](https://img.shields.io/badge/Build-SUCCESS-brightgreen?style=plastic&logo=redhat)
+      return "![SUCCESS](https://img.shields.io/badge/Build-SUCCESS-brightgreen?style=plastic&logo=redhat)"
+      break
     case "UNSTABLE":
-      return ![UNSTABLE](https://img.shields.io/badge/Build-UNSTABLE-yellow?style=plastic&logo=redhat)
+      return "![UNSTABLE](https://img.shields.io/badge/Build-UNSTABLE-yellow?style=plastic&logo=redhat)"
+      break
     case "ABORTED":
-      return ![ABORTED](https://img.shields.io/badge/Build-ABORTED-lightgrey?style=plastic&logo=redhat)
+      return "![ABORTED](https://img.shields.io/badge/Build-ABORTED-lightgrey?style=plastic&logo=redhat)"
+      break
     case "FAILURE":
-      return ![FAILURE](https://img.shields.io/badge/Build-FAILURE-red?style=plastic&logo=redhat)
+      return "![FAILURE](https://img.shields.io/badge/Build-FAILURE-red?style=plastic&logo=redhat)"
+      break
   }
   return ""
 }
