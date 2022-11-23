@@ -558,5 +558,107 @@ boolean hasSuccessfullyBuiltAllArches(String containerYamlPath, String jobOutput
   }
 }
 
+String prepareHTMLStringForJSON(String input) {
+  return input.replaceAll("<([a-z]+)/>","<\$1 />").replaceAll("\n","").replaceAll("/>","\\/>")
+}
+
+String buildResultBadge() {
+  def currentBuildResult = currentBuild.result?.trim().toString()
+  println("currentBuildResult = " + currentBuildResult)
+  def badge = currentBuildResult
+  switch(currentBuildResult) {
+    case ["SUCCESS", "", "null", null]:
+      badge = "![SUCCESS](https://img.shields.io/badge/Build-SUCCESS-brightgreen?style=plastic&logo=redhat)"
+      break
+    case "UNSTABLE":
+      badge = "![UNSTABLE](https://img.shields.io/badge/Build-UNSTABLE-yellow?style=plastic&logo=redhat)"
+      break
+    case "ABORTED":
+      badge = "![ABORTED](https://img.shields.io/badge/Build-ABORTED-lightgrey?style=plastic&logo=redhat)"
+      break
+    case "FAILURE":
+      badge = "![FAILURE](https://img.shields.io/badge/Build-FAILURE-red?style=plastic&logo=redhat)"
+      break
+    default:
+      badge = "![UNKNOWN](https://img.shields.io/badge/Build-UNKNOWN-blue?style=plastic&logo=redhat)"
+      break
+  }
+  return "[" + badge + "](" + currentBuild.absoluteUrl+")"
+}
+
+String defaultPullRequestCommentBuildDescription(String MIDSTM_BRANCH) {
+  return prepareHTMLStringForJSON(defaultPullRequestCommentHeader(MIDSTM_BRANCH) + \
+    buildResultBadge() + "<br /><blockquote>" + currentBuild.description + "</blockquote>")
+}
+
+String defaultPullRequestCommentHeader(String MIDSTM_BRANCH) {
+  return "Build [" + getDsVersion(MIDSTM_BRANCH) + "](https://github.com/redhat-developer/devspaces-images/tree/" + MIDSTM_BRANCH + "/) :: [" + \
+    currentBuild.absoluteUrl.replaceAll(".+/([^/]+/[0-9]+)/","\$1") + "](" + currentBuild.absoluteUrl+"): "
+}
+// formatted for submission via JSON
+String defaultPullRequestComment (String MIDSTM_BRANCH) {
+  def comment = \
+  defaultPullRequestCommentHeader(MIDSTM_BRANCH) + \
+  "[Console](" + currentBuild.absoluteUrl + "console), " + \
+  "[Changes](" + currentBuild.absoluteUrl + "changes), " + \
+  "[Git Data](" + currentBuild.absoluteUrl + "git)"
+  return comment
+}
+
+// convenience methods to comment with build URL or description
+String commentOnPullRequestBuildLinks(String ownerRepo, String SHA) {
+  return commentOnPullRequest(ownerRepo, SHA, defaultPullRequestComment(MIDSTM_BRANCH))
+}
+String commentOnPullRequestBuildLinks(String comments_url) {
+  return commentOnPullRequest(comments_url, defaultPullRequestComment(MIDSTM_BRANCH))
+}
+String commentOnPullRequestBuildDescription(String ownerRepo, String SHA) {
+  return commentOnPullRequest(ownerRepo, SHA, defaultPullRequestCommentBuildDescription(MIDSTM_BRANCH))
+}
+String commentOnPullRequestBuildDescription(String comments_url) {
+  return commentOnPullRequest(comments_url, defaultPullRequestCommentBuildDescription(MIDSTM_BRANCH))
+}
+
+// given a repo and commit SHA, compute PR comments_url like https://api.github.com/repos/redhat-developer/devspaces/issues/848/comments
+// then publish a message to that URL 
+// return comments_url (with comment hash) so we can pass that to downstream jobs
+String commentOnPullRequest(String ownerRepo, String SHA, String message) {
+  def comments_url = sh(script: '''#!/bin/bash -xe
+export GITHUB_TOKEN=''' + GITHUB_TOKEN + ''' # echo "''' + GITHUB_TOKEN + '''"
+ownerRepo="''' + ownerRepo + '''"
+SHA="''' + SHA + '''"
+# use gh to query a given repo for closed pulls for a given commitSHA; return the PR URL
+curl -sSL -H "Authorization: token ${GITHUB_TOKEN}" -H "Accept: application/vnd.github.v3+json" \\
+  "https://api.github.com/repos/${ownerRepo}/pulls?state=closed" | yq -r --arg SHA "$SHA" '.[]|select(.merge_commit_sha == $SHA or .head.sha == $SHA)|.comments_url'
+''', returnStdout: true).trim()
+  return commentOnPullRequest(comments_url, message)
+}
+
+// given a PR comments_url like https://api.github.com/repos/redhat-developer/devspaces/issues/848/comments
+// publish a message containing links to build console/changes, or the currentBuild.description
+// return comments_url (with comment hash) so we can pass that to downstream jobs
+String commentOnPullRequest(String comments_url, String message) {
+  // if url and message are set; otherwise return nullstring
+  if (comments_url?.trim() && message?.trim()) {
+    // convert html PR URL to API comment URL
+    comments_url = comments_url.replaceAll("https://github.com/","https://api.github.com/repos/")
+    comments_url = comments_url.replaceAll("/pull/([0-9]+)","/issues/\$1/comments")
+    // fix relative job/build URLs to be absolute
+    // TODO do we have to add suport for href="" and href='' ?
+    message=message.replaceAll("<a href=/","<a href=${JENKINS_URL}")
+    message=message.replaceAll("<a href=../","<a href="+currentBuild.absoluteUrl.replaceAll(".+/([^/]+/[0-9]+/*)",""))
+    return sh(script: '''#!/bin/bash -xe
+export GITHUB_TOKEN=''' + GITHUB_TOKEN + ''' # echo "''' + GITHUB_TOKEN + '''"
+message="''' + message + '''"
+comments_url="''' + comments_url + '''"
+
+# comment on the PR by URL: https://api.github.com/repos/redhat-developer/devspaces/issues/848/comments
+curl -sSL -H "Authorization: token ${GITHUB_TOKEN}" -H "Accept: application/vnd.github.v3+json" -X POST \\
+  -d '{"body": "'"${message}"'"}' "${comments_url}" | yq -r '.html_url'
+''', returnStdout: true).trim()
+  }
+  return ""
+}
+
 // return this file's contents when loaded
 return this
