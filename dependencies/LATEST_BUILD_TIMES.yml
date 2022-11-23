@@ -3121,3 +3121,21 @@
   timeWait: 0 mins
   timeBuild: 6 mins
   timeTotal: 7 mins
+- name: devspaces-machineexec-rhel8
+  tag: 3.4-15
+  taskId: 49161875
+  timeCreate: Tue Nov 22 21:19:55 2022
+  timeStart: Tue Nov 22 21:20:16 2022
+  timeFinish: Tue Nov 22 21:25:01 2022
+  timeWait: 0 mins
+  timeBuild: 4 mins
+  timeTotal: 5 mins
+- name: devspaces-operator-bundle
+  tag: 3.4-56
+  taskId: 49162123
+  timeCreate: Tue Nov 22 21:30:49 2022
+  timeStart: Tue Nov 22 21:31:06 2022
+  timeFinish: Tue Nov 22 21:35:00 2022
+  timeWait: 0 mins
+  timeBuild: 3 mins
+  timeTotal: 4 mins
