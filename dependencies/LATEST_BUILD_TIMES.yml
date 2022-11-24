@@ -3211,3 +3211,30 @@
   timeWait: 0 mins
   timeBuild: 4 mins
   timeTotal: 4 mins
+- name: devspaces-server-rhel8
+  tag: 3.4-10
+  taskId: 49200543
+  timeCreate: Thu Nov 24 09:40:07 2022
+  timeStart: Thu Nov 24 09:40:50 2022
+  timeFinish: Thu Nov 24 09:48:05 2022
+  timeWait: 0 mins
+  timeBuild: 7 mins
+  timeTotal: 7 mins
+- name: devspaces-dashboard-rhel8
+  tag: 3.4-12
+  taskId: 49201813
+  timeCreate: Thu Nov 24 10:58:39 2022
+  timeStart: Thu Nov 24 10:59:19 2022
+  timeFinish: Thu Nov 24 11:34:24 2022
+  timeWait: 0 mins
+  timeBuild: 35 mins
+  timeTotal: 35 mins
+- name: devspaces-operator-bundle
+  tag: 3.4-61
+  taskId: 49202932
+  timeCreate: Thu Nov 24 12:04:00 2022
+  timeStart: Thu Nov 24 12:04:29 2022
+  timeFinish: Thu Nov 24 12:08:26 2022
+  timeWait: 0 mins
+  timeBuild: 3 mins
+  timeTotal: 4 mins
