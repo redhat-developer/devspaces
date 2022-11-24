@@ -49,6 +49,14 @@ CHANNEL_DS="stable"
 # if you want your own registry here, use --icsp flag to specify it
 ICSP_FLAGs=""
 
+# Additional registries that needs to be added to the OpenShift configuration
+# in the event that the OpenShift cluster is restricted to not allow these registries
+ADDITIONAL_REGISTRIES=(
+  "registry-proxy.engineering.redhat.com"
+  "registry.stage.redhat.io"
+  "quay.io"
+)
+
 errorf() {
   echo -e "${RED}Error: $1${NC}"
 }
@@ -256,6 +264,8 @@ done
 
 preflight
 
+TMPDIR=$(mktemp -d)
+
 # detect openshift server version and arch; for amd, use x86_64; for others, trim linux/ prefix
 OPENSHIFT_VER=$(oc version -o json | jq -r '.openshiftVersion | scan("^[0-9].[0-9]+")')
 OPENSHIFT_ARCH=$(oc version -o json | jq -r '.serverVersion.platform' | sed -r -e "s#linux/amd64#x86_64#" -e "s#linux/##")
@@ -289,6 +299,40 @@ fi
 if [[ ${ENABLE_CATALOGSOURCES} == "true" ]]; then
     oc patch OperatorHub cluster --type json -p '[{"op": "add", "path": "/spec/disableAllDefaultSources", "value": false}]'
 fi
+
+# Function used to check to see if additional registries are needed
+# in the allowedRegistries / allowedRegistriesForImport cluster configuration 
+# - required registries will be added if missing
+# - registry list will be updated *only* if Cluster Configuration is set to a restricted list
+addRequiredRegistries() {
+  imageRegistries=$(oc get image.config.openshift.io/cluster -o json)
+
+  # Check to see if the Cluster Configuration is restricted to a specific list of registries
+  if [[ $(echo -n ${imageRegistries} | jq '.spec.registrySources.allowedRegistries | length') -eq 0 ]]; then
+    echo "[INFO] OpenShift environment does not have restricted registries - continuing..."
+    return 0
+  fi
+
+  # Add require registries to both "allowedRegistries" and "allowedRegistriesForImport"
+  for r in ${ADDITIONAL_REGISTRIES[@]}; do
+    if [[ $(echo -n ${imageRegistries} | jq '.spec.registrySources.allowedRegistries' | grep -c "${r}") -eq 0 ]]; then
+      imageRegistries=$(echo -n ${imageRegistries} | jq ".spec.registrySources.allowedRegistries += [\"${r}\"]")
+    fi
+
+    if [[ $(echo -n ${imageRegistries} | jq '.spec.allowedRegistriesForImport' | grep -c "${r}") -eq 0 ]]; then
+      imageRegistries=$(echo -n ${imageRegistries} | jq ".spec.allowedRegistriesForImport += [{\"domainName\": \"${r}\",\"insecure\":false}]")
+    fi
+  done
+
+  # Remove a few entries in the JSON object to allow for oc apply below
+  ImagesJson=$(echo -n ${imageRegistries} | jq 'del(.metadata.creationTimestamp, .metadata.generation, .metadata.ownerReferences, .metadata.resourceVersion, .metadata.uid)')
+
+  echo -n "${imageRegistries}" | oc apply -f -
+
+  echo "[INFO] OpenShift Cluster image registries updated."
+}
+
+addRequiredRegistries
 
 if [[ $IIB_DWO ]]; then
   # catalog is installed as "devworkspace-operator-<CHANNEL_DWO>"
@@ -347,7 +391,6 @@ if [[ "$CREATE_CHECLUSTER" == "false" ]]; then
   exit 0
 fi
 
-TMPDIR=$(mktemp -d)
 
 # add admin user + user{1..5} to cluster
 createUsers() {
