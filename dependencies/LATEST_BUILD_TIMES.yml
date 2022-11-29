@@ -3490,6 +3490,15 @@
   timeWait: 0 mins
   timeBuild: 7 mins
   timeTotal: 7 mins
+- name: devspaces-udi-rhel8
+  tag: 3.4-22
+  taskId: 49280543
+  timeCreate: Tue Nov 29 11:33:21 2022
+  timeStart: Tue Nov 29 11:33:54 2022
+  timeFinish: Tue Nov 29 12:15:44 2022
+  timeWait: 0 mins
+  timeBuild: 41 mins
+  timeTotal: 42 mins
 - name: devspaces-operator-bundle
   tag: 3.4-72
   taskId: 49280869
@@ -3499,3 +3508,30 @@
   timeWait: 0 mins
   timeBuild: 3 mins
   timeTotal: 3 mins
+- name: devspaces-devfileregistry-rhel8
+  tag: 3.4-47
+  taskId: 49282077
+  timeCreate: Tue Nov 29 12:29:49 2022
+  timeStart: Tue Nov 29 12:30:23 2022
+  timeFinish: Tue Nov 29 12:39:42 2022
+  timeWait: 0 mins
+  timeBuild: 9 mins
+  timeTotal: 9 mins
+- name: devspaces-server-rhel8
+  tag: 3.4-15
+  taskId: 49282182
+  timeCreate: Tue Nov 29 12:30:49 2022
+  timeStart: Tue Nov 29 12:31:09 2022
+  timeFinish: Tue Nov 29 12:37:54 2022
+  timeWait: 0 mins
+  timeBuild: 6 mins
+  timeTotal: 7 mins
+- name: devspaces-operator-bundle
+  tag: 3.4-73
+  taskId: 49282591
+  timeCreate: Tue Nov 29 12:47:34 2022
+  timeStart: Tue Nov 29 12:47:57 2022
+  timeFinish: Tue Nov 29 12:52:28 2022
+  timeWait: 0 mins
+  timeBuild: 4 mins
+  timeTotal: 4 mins
