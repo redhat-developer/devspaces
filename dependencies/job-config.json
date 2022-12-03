@@ -644,7 +644,7 @@
           "7.55.x"
         ],
         "node_version": "16.13.2",
-        "disabled": false
+        "disabled": true
       },
       "3.4": {
         "upstream_branch": [
@@ -683,7 +683,7 @@
           "7.56.x",
           "7.55.x"
         ],
-        "disabled": false
+        "disabled": true
       },
       "3.4": {
         "upstream_branch": [
@@ -717,7 +717,7 @@
         "disabled": true
       },
       "3.3": {
-        "disabled": false
+        "disabled": true
       },
       "3.4": {
         "disabled": false
@@ -734,7 +734,7 @@
         "disabled": true
       },
       "3.3": {
-        "disabled": false
+        "disabled": true
       },
       "3.4": {
         "disabled": false
@@ -751,7 +751,7 @@
         "disabled": true
       },
       "3.3": {
-        "disabled": false
+        "disabled": true
       },
       "3.4": {
         "disabled": false
@@ -770,7 +770,7 @@
         "disabled": true
       },
       "3.3": {
-        "disabled": false
+        "disabled": true
       },
       "3.4": {
         "disabled": false
@@ -787,7 +787,7 @@
         "disabled": true
       },
       "3.3": {
-        "disabled": false
+        "disabled": true
       },
       "3.4": {
         "disabled": false
@@ -813,11 +813,11 @@
       },
       "3.4": {
         "CSV_VERSION": "3.4.0",
-        "CSV_VERSION_PREV": "3.2.0"
+        "CSV_VERSION_PREV": "3.2.0-0.1667820512.p"
       },
       "3.x": {
         "CSV_VERSION": "3.4.0",
-        "CSV_VERSION_PREV": "3.2.0"
+        "CSV_VERSION_PREV": "3.2.0-0.1667820512.p"
       }
     },
     "operator-metadata": {
