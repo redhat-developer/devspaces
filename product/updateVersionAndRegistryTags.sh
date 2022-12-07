@@ -36,7 +36,7 @@ Example: $0 -t 3.yy   # use tag version
 
 Options:
   --help, -h              help
-  -w WORKDIR              work in a differnt dir than $(pwd)
+  -w WORKDIR              work in a different dir than $(pwd)
   -b BRANCH               commit to a different branch than $BRANCH
   -t DEVSPACES_VERSION          use a specific tag; by default, compute from CSV_VERSION
   --no-commit, -n         do not commit to BRANCH
@@ -126,6 +126,8 @@ computeLatestCSV() {
     CSV_VERSION_PREV=$(yq -r '.spec.version' /tmp/${SOURCE_CONTAINER//\//-}-${containerTag}-*/manifests/devspaces.csv.yaml 2>/dev/null | tr "+" "-")
     rm -fr /tmp/${SOURCE_CONTAINER//\//-}-${containerTag}-*/
   fi
+  # remove freshmaker suffix (can break CVP tests if image doesn't exist for all OCP versions or hasn't been released yet to RHEC)
+  CSV_VERSION_PREV=${CSV_VERSION_PREV%-*.p}
   echo "Found CSV_VERSION_PREV = ${CSV_VERSION_PREV}"
 
   # update CSVs["${image}"].$version.CSV_VERSION_PREV
