@@ -4174,3 +4174,21 @@
   timeWait: 0 mins
   timeBuild: 3 mins
   timeTotal: 3 mins
+- name: devspaces-udi-rhel8
+  tag: 3.4-29
+  taskId: 49460834
+  timeCreate: Wed Dec 7 02:24:03 2022
+  timeStart: Wed Dec 7 02:24:14 2022
+  timeFinish: Wed Dec 7 03:05:17 2022
+  timeWait: 0 mins
+  timeBuild: 41 mins
+  timeTotal: 41 mins
+- name: devspaces-operator-bundle
+  tag: 3.4-106
+  taskId: 49462353
+  timeCreate: Wed Dec 7 03:17:10 2022
+  timeStart: Wed Dec 7 04:12:31 2022
+  timeFinish: Wed Dec 7 04:16:54 2022
+  timeWait: 55 mins
+  timeBuild: 4 mins
+  timeTotal: 59 mins
