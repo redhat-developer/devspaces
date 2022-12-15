@@ -126,16 +126,16 @@ git remote set-url origin ''' + AUTH_URL_SHELL + '''
   } else {
     if (!fileExists(REPO_PATH)) {
       sh('''#!/bin/bash -xe
-export KRB5CCNAME=/var/tmp/crw-build_ccache
+export KRB5CCNAME=/var/tmp/devspaces-build_ccache
 git clone ''' + URL + ''' ''' + REPO_PATH
       )
     }
     sh('''#!/bin/bash -xe
-export KRB5CCNAME=/var/tmp/crw-build_ccache
+export KRB5CCNAME=/var/tmp/devspaces-build_ccache
 cd ''' + REPO_PATH + '''
 git checkout --track origin/''' + BRANCH + ''' || true
-git config user.email crw-build@REDHAT.COM
-git config user.name "CRW Build"
+git config user.email che-prod+devspaces-build@redhat.com
+git config user.name "Dev Spaces Build"
 git config --global push.default matching
 # fix for warning: Pulling without specifying how to reconcile divergent branches is discouraged
 git config --global pull.rebase true
@@ -187,7 +187,7 @@ cd ''' + REPO_PATH + '''
 cd ''' + REPO_PATH + '''; git remote -v | grep pkgs.devel.redhat.com || true''', returnStdout: true).trim()
   if (is_pkgsdevel?.trim()) {
     sh('''#!/bin/bash -xe
-export KRB5CCNAME=/var/tmp/crw-build_ccache
+export KRB5CCNAME=/var/tmp/devspaces-build_ccache
 ''' + updateBaseImages_cmd
     )
   } else {
@@ -232,9 +232,9 @@ def installRedHatInternalCerts() {
 
 def sshMountRcmGuest(String path="devspaces") {
   DESTHOST="rcm-guest.hosts.prod.psi.bos.redhat.com"
-  DESTHOSTMOUNT="crw-build/codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com@" + DESTHOST
+  DESTHOSTMOUNT="devspaces-build@" + DESTHOST
   sh('''#!/bin/bash -xe
-export KRB5CCNAME=/var/tmp/crw-build_ccache
+export KRB5CCNAME=/var/tmp/devspaces-build_ccache
 
 # set up sshfs mount
 RCMG="''' + DESTHOSTMOUNT + ''':/mnt/rcm-guest/staging/''' + path + '''"
@@ -246,7 +246,7 @@ for mnt in RCMG; do
 done
 
 # CRW-2869 copy keytab from home dir to remote
-rsync -q ~/crw_crw-build-keytab rcm-guest.hosts.prod.psi.bos.redhat.com:~/
+rsync -q ~/devspaces-build-keytab rcm-guest.hosts.prod.psi.bos.redhat.com:~/
 ''')
   // don't include the user, since that's set in ~/.ssh/config file now
   return DESTHOST
