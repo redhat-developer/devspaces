@@ -10,7 +10,7 @@ icon: /images/default.png
 category: Editor
 repository: https://github.com/eclipse-che/che-theia
 firstPublicationDate: '2019-03-07'
-latestUpdateDate: '2022-12-11'
+latestUpdateDate: '2022-12-17'
 spec:
   endpoints:
     - name: theia
@@ -85,7 +85,7 @@ spec:
         secure: true
       public: true
   containers:
-    - image: registry.redhat.io/devspaces/theia-rhel8:3.4
+    - image: registry.redhat.io/devspaces/theia-rhel8:3.5
       env:
         - name: THEIA_PLUGINS
           value: local-dir:///plugins
@@ -111,7 +111,7 @@ spec:
         - exposedPort: 13131
         - exposedPort: 13132
         - exposedPort: 13133
-    - image: registry.redhat.io/devspaces/machineexec-rhel8:3.4
+    - image: registry.redhat.io/devspaces/machineexec-rhel8:3.5
       memoryLimit: 2Gi
       memoryRequest: 32Mi
       cpuLimit: 500m
@@ -124,7 +124,7 @@ spec:
       ports:
         - exposedPort: 3333
   initContainers:
-    - image: registry.redhat.io/devspaces/theia-endpoint-rhel8:3.4
+    - image: registry.redhat.io/devspaces/theia-endpoint-rhel8:3.5
       memoryLimit: 128Mi
       memoryRequest: 32Mi
       cpuLimit: 500m

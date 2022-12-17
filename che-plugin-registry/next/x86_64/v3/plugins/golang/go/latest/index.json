@@ -10,10 +10,10 @@ icon: /images/golang-go-icon.png
 category: Programming Languages
 repository: https://github.com/golang/vscode-go
 firstPublicationDate: '2021-03-05'
-latestUpdateDate: '2022-12-11'
+latestUpdateDate: '2022-12-17'
 spec:
   containers:
-    - image: registry.redhat.io/devspaces/udi-rhel8:3.4
+    - image: registry.redhat.io/devspaces/udi-rhel8:3.5
       name: vscode-go
       memoryLimit: 512Mi
       memoryRequest: 20Mi
