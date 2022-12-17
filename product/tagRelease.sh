@@ -235,27 +235,16 @@ done
 rm -fr /tmp/tmp-checkouts/*
 
 ####### sample projects: branching and tagging
+# cat devspaces-devfileregistry/devfiles/*/meta.* | grep v2 | sort
 sampleprojects="\
-c-plus-plus \
 cakephp-ex \
-camel-k \
-demo \
+c-plus-plus \
 dotnet-web-simple \
-fuse-rest-http-booster \
 golang-health-check \
-gradle-demo-project \
-gs-validating-form-input \
-jboss-eap-quickstarts \
 lombok-project-sample \
-microprofile-quickstart \
-microprofile-quickstart-bootable \
-nodejs-configmap \
 nodejs-mongodb-sample \
 python-hello-world \
 quarkus-quickstarts \
-rest-http-example \
-vertx-health-checks-example-redhat \
-vertx-http-example \
 web-nodejs-sample \
 "
 
