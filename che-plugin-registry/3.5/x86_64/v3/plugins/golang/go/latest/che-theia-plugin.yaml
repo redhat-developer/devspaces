@@ -1,0 +1,26 @@
+schemaVersion: 1.0.0
+metadata:
+  id: golang/go
+  publisher: golang
+  name: go
+  version: latest
+  displayName: Go
+  description: Rich Go language support for Visual Studio Code
+  repository: https://github.com/golang/vscode-go
+  categories:
+    - Programming Languages
+    - Snippets
+    - Linters
+    - Debuggers
+    - Formatters
+  icon: /images/golang-go-icon.png
+sidecar:
+  image: registry.redhat.io/devspaces/udi-rhel8:3.4
+  name: vscode-go
+  memoryLimit: 512Mi
+  memoryRequest: 20Mi
+  cpuLimit: 500m
+  cpuRequest: 30m
+dependencies: []
+extensions:
+  - relative:extension/resources/github_com/golang/vscode-go/releases/download/v0_23_0/go-0.23.0.vsix

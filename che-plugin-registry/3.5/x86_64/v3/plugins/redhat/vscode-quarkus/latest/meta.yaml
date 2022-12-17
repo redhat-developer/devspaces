@@ -1,0 +1,33 @@
+apiVersion: v2
+publisher: redhat
+name: vscode-quarkus
+version: latest
+type: VS Code extension
+displayName: Quarkus
+title: Quarkus
+description: Quarkus Tools for Visual Studio Code
+icon: /images/redhat-vscode-quarkus-icon.png
+category: Programming Languages
+repository: https://github.com/redhat-developer/vscode-quarkus
+firstPublicationDate: '2020-09-21'
+latestUpdateDate: '2022-12-11'
+spec:
+  containers:
+    - image: registry.redhat.io/devspaces/udi-rhel8:3.4
+      name: vscode-quarkus
+      volumes:
+        - name: m2
+          mountPath: /home/user/.m2
+      memoryLimit: 3500Mi
+      memoryRequest: 20Mi
+      cpuRequest: 30m
+      cpuLimit: 800m
+      env:
+        - name: CHE_THEIA_SIDECAR_PREFERENCES
+          value: '{"java.server.launchMode":"Standard"}'
+  extensions:
+    - relative:extension/resources/github_com/redhat-developer/devspaces-vscode-extensions/releases/download/7_44-che-assets/vscode-quarkus-1.7.0-437.vsix
+    - relative:extension/resources/github_com/redhat-developer/devspaces-vscode-extensions/releases/download/7_44-che-assets/vscode-microprofile-0.1.1-48.vsix
+    - relative:extension/resources/github_com/redhat-developer/devspaces-vscode-extensions/releases/download/7_44-che-assets/java-0.82.0-369.vsix
+    - relative:extension/resources/github_com/redhat-developer/devspaces-vscode-extensions/releases/download/7_44-che-assets/vscode-java-debug-0.26.0.vsix
+    - relative:extension/resources/open-vsx_org/api/vscjava/vscode-java-test/0_28_1/file/vscjava.vscode-java-test-0.28.1.vsix

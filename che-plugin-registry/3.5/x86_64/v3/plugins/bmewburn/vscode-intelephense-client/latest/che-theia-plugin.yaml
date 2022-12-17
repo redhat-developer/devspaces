@@ -1,0 +1,24 @@
+schemaVersion: 1.0.0
+metadata:
+  id: bmewburn/vscode-intelephense-client
+  publisher: bmewburn
+  name: vscode-intelephense-client
+  version: latest
+  displayName: PHP Intelephense
+  description: PHP code intelligence for Visual Studio Code
+  repository: https://github.com/bmewburn/vscode-intelephense.git
+  categories:
+    - Programming Languages
+    - Linters
+    - Formatters
+  icon: /images/bmewburn-vscode-intelephense-client-icon.png
+sidecar:
+  image: registry.redhat.io/devspaces/udi-rhel8:3.4
+  name: php-intelephense
+  memoryLimit: 1Gi
+  memoryRequest: 20Mi
+  cpuLimit: 500m
+  cpuRequest: 30m
+dependencies: []
+extensions:
+  - relative:extension/resources/github_com/redhat-developer/devspaces-vscode-extensions/releases/download/7_44-che-assets/vscode-intelephense-client-1.5.4.vsix

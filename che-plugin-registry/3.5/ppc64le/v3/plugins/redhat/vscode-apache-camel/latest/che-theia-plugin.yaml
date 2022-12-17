@@ -1,0 +1,23 @@
+schemaVersion: 1.0.0
+metadata:
+  id: redhat/vscode-apache-camel
+  publisher: redhat
+  name: vscode-apache-camel
+  version: latest
+  displayName: Language Support for Apache Camel by Red Hat
+  description: Provides completion and documentation features for Apache Camel URI elements in XML DSL.
+  repository: https://github.com/camel-tooling/camel-lsp-client-vscode.git
+  categories:
+    - Programming Languages
+    - Linters
+  icon: /images/redhat-vscode-apache-camel-icon.png
+sidecar:
+  image: registry.redhat.io/devspaces/udi-rhel8:3.4
+  name: vscode-apache-camel
+  memoryLimit: 768Mi
+  memoryRequest: 20Mi
+  cpuLimit: 500m
+  cpuRequest: 30m
+dependencies: []
+extensions:
+  - relative:extension/resources/github_com/redhat-developer/devspaces-vscode-extensions/releases/download/7_44-che-assets/vscode-apache-camel-0.1.5-1377.vsix
