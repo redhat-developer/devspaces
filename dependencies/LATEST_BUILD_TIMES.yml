@@ -4939,3 +4939,48 @@
   timeWait: 0 mins
   timeBuild: 3 mins
   timeTotal: 3 mins
+- name: devspaces-udi-rhel8
+  tag: 3.4-44
+  taskId: 49716145
+  timeCreate: Mon Dec 19 12:11:39 2022
+  timeStart: Mon Dec 19 12:12:10 2022
+  timeFinish: Mon Dec 19 12:54:40 2022
+  timeWait: 0 mins
+  timeBuild: 42 mins
+  timeTotal: 43 mins
+- name: devspaces-configbump-rhel8
+  tag: 3.4-10
+  taskId: 49716147
+  timeCreate: Mon Dec 19 12:12:20 2022
+  timeStart: Mon Dec 19 12:12:56 2022
+  timeFinish: Mon Dec 19 12:28:09 2022
+  timeWait: 0 mins
+  timeBuild: 15 mins
+  timeTotal: 15 mins
+- name: devspaces-dashboard-rhel8
+  tag: 3.4-21
+  taskId: 49716224
+  timeCreate: Mon Dec 19 12:16:31 2022
+  timeStart: Mon Dec 19 12:16:47 2022
+  timeFinish: Mon Dec 19 12:38:11 2022
+  timeWait: 0 mins
+  timeBuild: 21 mins
+  timeTotal: 21 mins
+- name: devspaces-machineexec-rhel8
+  tag: 3.4-20
+  taskId: 49716231
+  timeCreate: Mon Dec 19 12:16:58 2022
+  timeStart: Mon Dec 19 12:17:33 2022
+  timeFinish: Mon Dec 19 12:21:43 2022
+  timeWait: 0 mins
+  timeBuild: 4 mins
+  timeTotal: 4 mins
+- name: devspaces-imagepuller-rhel8
+  tag: 3.4-10
+  taskId: 49716694
+  timeCreate: Mon Dec 19 12:48:09 2022
+  timeStart: Mon Dec 19 12:48:43 2022
+  timeFinish: Mon Dec 19 12:59:40 2022
+  timeWait: 0 mins
+  timeBuild: 10 mins
+  timeTotal: 11 mins
