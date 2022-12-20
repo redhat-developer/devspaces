@@ -5101,3 +5101,30 @@
   timeWait: 12 mins
   timeBuild: 4 mins
   timeTotal: 17 mins
+- name: devspaces-theia-rhel8
+  tag: 3.4-5
+  taskId: 49735317
+  timeCreate: Tue Dec 20 13:34:49 2022
+  timeStart: Tue Dec 20 13:41:01 2022
+  timeFinish: Tue Dec 20 14:38:27 2022
+  timeWait: 6 mins
+  timeBuild: 57 mins
+  timeTotal: 63 mins
+- name: devspaces-theia-endpoint-rhel8
+  tag: 3.4-4
+  taskId: 49735956
+  timeCreate: Tue Dec 20 14:22:25 2022
+  timeStart: Tue Dec 20 14:22:36 2022
+  timeFinish: Tue Dec 20 14:34:13 2022
+  timeWait: 0 mins
+  timeBuild: 11 mins
+  timeTotal: 11 mins
+- name: devspaces-operator-bundle
+  tag: 3.4-152
+  taskId: 49735989
+  timeCreate: Tue Dec 20 14:24:07 2022
+  timeStart: Tue Dec 20 14:24:17 2022
+  timeFinish: Tue Dec 20 14:29:54 2022
+  timeWait: 0 mins
+  timeBuild: 5 mins
+  timeTotal: 5 mins

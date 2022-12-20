@@ -14,10 +14,10 @@ quay.io/devspaces/devspaces-rhel8-operator:3.4-19
    Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=2309446
   Source: https://pkgs.devel.redhat.com/cgit/containers/devspaces-operator/commit?id=be034eb646deaac387beedf5e4fae895d5291a6c
 
-quay.io/devspaces/devspaces-operator-bundle:3.4-150
-     NVR: devspaces-operator-bundle-container-3.4-150
-   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=2310518
-  Source: https://pkgs.devel.redhat.com/cgit/containers/devspaces-operator-bundle/commit?id=eb5fbecc8427f57d9acea88b5065341496bfd04d
+quay.io/devspaces/devspaces-operator-bundle:3.4-152
+     NVR: devspaces-operator-bundle-container-3.4-152
+   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=2310906
+  Source: https://pkgs.devel.redhat.com/cgit/containers/devspaces-operator-bundle/commit?id=1434100f97a04030d25aa6121dffda1c250784df
 
 quay.io/devspaces/dashboard-rhel8:3.4-21
      NVR: devspaces-dashboard-rhel8-container-3.4-21
@@ -59,9 +59,15 @@ quay.io/devspaces/theia-dev-rhel8:3.4-5
    Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=2309510
   Source: https://pkgs.devel.redhat.com/cgit/containers/devspaces-theia-dev/commit?id=fe0d7cadf77c4f7ded91afd441ea1ed31acd24cd
 
-quay.io/devspaces/theia-endpoint-rhel8:3.4-3
+quay.io/devspaces/theia-endpoint-rhel8:3.4-4
+     NVR: devspaces-theia-endpoint-rhel8-container-3.4-4
+   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=2310904
+  Source: https://pkgs.devel.redhat.com/cgit/containers/devspaces-theia-endpoint/commit?id=8bf3937e8d7593c21db74b2d81ae5e417a191a16
 
-quay.io/devspaces/theia-rhel8:3.4-3
+quay.io/devspaces/theia-rhel8:3.4-5
+     NVR: devspaces-theia-rhel8-container-3.4-5
+   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=2310830
+  Source: https://pkgs.devel.redhat.com/cgit/containers/devspaces-theia/commit?id=8d62d072ddedd9280b204934f76a94c7fdbfa95f
 
 quay.io/devspaces/traefik-rhel8:3.4-8
      NVR: devspaces-traefik-rhel8-container-3.4-8
