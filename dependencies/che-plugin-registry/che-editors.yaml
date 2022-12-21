@@ -88,21 +88,21 @@ editors:
               protocol: http
               attributes:
                 discoverable: false
-                urlRewriteSupported: true
+                urlRewriteSupported: false
             - name: theia-redirect-2
               targetPort: 13132
               exposure: public
               protocol: http
               attributes:
                 discoverable: false
-                urlRewriteSupported: true
+                urlRewriteSupported: false
             - name: theia-redirect-3
               targetPort: 13133
               exposure: public
               protocol: http
               attributes:
                 discoverable: false
-                urlRewriteSupported: true
+                urlRewriteSupported: false
         attributes:
           ports:
             - exposedPort: 3100
@@ -219,21 +219,21 @@ editors:
               protocol: http
               attributes:
                 discoverable: false
-                urlRewriteSupported: true
+                urlRewriteSupported: false
             - name: intellij-redirect-2
               targetPort: 13132
               exposure: public
               protocol: http
               attributes:
                 discoverable: false
-                urlRewriteSupported: true
+                urlRewriteSupported: false
             - name: intellij-redirect-3
               targetPort: 13133
               exposure: public
               protocol: http
               attributes:
                 discoverable: false
-                urlRewriteSupported: true
+                urlRewriteSupported: false
         attributes:
           app.kubernetes.io/component: idea-rhel8-injector
           app.kubernetes.io/part-of: idea-rhel8.eclipse.org
@@ -321,21 +321,21 @@ editors:
               protocol: http
               attributes:
                 discoverable: false
-                urlRewriteSupported: true
+                urlRewriteSupported: false
             - name: code-redirect-2
               targetPort: 13132
               exposure: public
               protocol: http
               attributes:
                 discoverable: false
-                urlRewriteSupported: true
+                urlRewriteSupported: false
             - name: code-redirect-3
               targetPort: 13133
               exposure: public
               protocol: http
               attributes:
                 discoverable: false
-                urlRewriteSupported: true
+                urlRewriteSupported: false
         attributes:
           app.kubernetes.io/component: che-code-runtime
           app.kubernetes.io/part-of: che-code.eclipse.org
