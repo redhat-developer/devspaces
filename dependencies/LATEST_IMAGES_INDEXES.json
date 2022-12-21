@@ -2,13 +2,9 @@
     "Indexes": {
         "operator-bundle": {
             "3.4": {
-                "v4.10": {
-                    "iibURL": "registry-proxy.engineering.redhat.com/rh-osbs/iib:401422",
-                    "iibTag": "401422"
-                },
-                "OSBSImage": "registry-proxy.engineering.redhat.com/rh-osbs/devspaces-devspaces-operator-bundle:3.4-152",
-                "quayImage": "quay.io/devspaces/devspaces-operator-bundle:3.4-152",
-                "tag": "3.4-152"
+                "OSBSImage": "registry-proxy.engineering.redhat.com/rh-osbs/devspaces-devspaces-operator-bundle:3.4-153",
+                "quayImage": "quay.io/devspaces/devspaces-operator-bundle:3.4-153",
+                "tag": "3.4-153"
             }
         }
     }
