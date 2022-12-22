@@ -5227,6 +5227,15 @@
   timeWait: 0 mins
   timeBuild: 14 mins
   timeTotal: 15 mins
+- name: devspaces-pluginregistry-rhel8
+  tag: 3.5-4
+  taskId: 49764949
+  timeCreate: Thu Dec 22 13:46:02 2022
+  timeStart: Thu Dec 22 13:46:42 2022
+  timeFinish: Thu Dec 22 14:08:01 2022
+  timeWait: 0 mins
+  timeBuild: 21 mins
+  timeTotal: 21 mins
 - name: devspaces-operator-bundle
   tag: 3.5-10
   taskId: 49764954
@@ -5236,3 +5245,12 @@
   timeWait: 0 mins
   timeBuild: 3 mins
   timeTotal: 3 mins
+- name: devspaces-operator-bundle
+  tag: 3.5-11
+  taskId: 49765458
+  timeCreate: Thu Dec 22 14:36:52 2022
+  timeStart: Thu Dec 22 14:37:26 2022
+  timeFinish: Thu Dec 22 14:41:20 2022
+  timeWait: 0 mins
+  timeBuild: 3 mins
+  timeTotal: 4 mins
