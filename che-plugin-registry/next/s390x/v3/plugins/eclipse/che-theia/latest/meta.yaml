@@ -10,7 +10,7 @@ icon: /images/default.png
 category: Editor
 repository: https://github.com/eclipse-che/che-theia
 firstPublicationDate: '2019-03-07'
-latestUpdateDate: '2022-12-18'
+latestUpdateDate: '2022-12-22'
 spec:
   endpoints:
     - name: theia
@@ -57,21 +57,21 @@ spec:
       targetPort: 13131
       attributes:
         discoverable: false
-        urlRewriteSupported: true
+        urlRewriteSupported: false
         protocol: http
       public: true
     - name: theia-redirect-2
       targetPort: 13132
       attributes:
         discoverable: false
-        urlRewriteSupported: true
+        urlRewriteSupported: false
         protocol: http
       public: true
     - name: theia-redirect-3
       targetPort: 13133
       attributes:
         discoverable: false
-        urlRewriteSupported: true
+        urlRewriteSupported: false
         protocol: http
       public: true
     - name: terminal
