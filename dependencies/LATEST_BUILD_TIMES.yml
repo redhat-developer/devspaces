@@ -5218,3 +5218,21 @@
   timeWait: 0 mins
   timeBuild: 3 mins
   timeTotal: 4 mins
+- name: devspaces-operator
+  tag: 3.5-4
+  taskId: 49764204
+  timeCreate: Thu Dec 22 13:06:05 2022
+  timeStart: Thu Dec 22 13:06:41 2022
+  timeFinish: Thu Dec 22 13:21:11 2022
+  timeWait: 0 mins
+  timeBuild: 14 mins
+  timeTotal: 15 mins
+- name: devspaces-operator-bundle
+  tag: 3.5-10
+  taskId: 49764954
+  timeCreate: Thu Dec 22 13:47:28 2022
+  timeStart: Thu Dec 22 13:47:29 2022
+  timeFinish: Thu Dec 22 13:51:21 2022
+  timeWait: 0 mins
+  timeBuild: 3 mins
+  timeTotal: 3 mins
