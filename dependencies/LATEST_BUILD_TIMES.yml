@@ -5299,3 +5299,21 @@
   timeWait: 0 mins
   timeBuild: 2 mins
   timeTotal: 3 mins
+- name: devspaces-operator
+  tag: 3.5-5
+  taskId: 49779785
+  timeCreate: Fri Dec 23 08:13:40 2022
+  timeStart: Fri Dec 23 08:14:25 2022
+  timeFinish: Fri Dec 23 08:28:21 2022
+  timeWait: 0 mins
+  timeBuild: 13 mins
+  timeTotal: 14 mins
+- name: devspaces-operator-bundle
+  tag: 3.5-14
+  taskId: 49780056
+  timeCreate: Fri Dec 23 08:44:42 2022
+  timeStart: Fri Dec 23 08:44:55 2022
+  timeFinish: Fri Dec 23 08:48:09 2022
+  timeWait: 0 mins
+  timeBuild: 3 mins
+  timeTotal: 3 mins
