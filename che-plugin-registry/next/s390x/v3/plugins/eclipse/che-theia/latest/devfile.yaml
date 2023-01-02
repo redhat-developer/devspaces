@@ -107,6 +107,29 @@ components:
     volume: {}
   - name: theia-local
     volume: {}
+  - name: theia-ide-contributions
+    container:
+      image: registry.redhat.io/devspaces/udi-rhel8:3.5
+      args:
+        - sh
+        - '-c'
+        - ${PLUGIN_REMOTE_ENDPOINT_EXECUTABLE}
+      env:
+        - name: PLUGIN_REMOTE_ENDPOINT_EXECUTABLE
+          value: /remote-endpoint/plugin-remote-endpoint
+        - name: THEIA_PLUGINS
+          value: local-dir:///plugins/sidecars/tools
+      volumeMounts:
+        - name: plugins
+          path: /plugins
+        - name: remote-endpoint
+          path: /remote-endpoint
+      memoryLimit: 512Mi
+    attributes:
+      controller.devfile.io/container-contribution: true
+  - name: remote-endpoint
+    volume:
+      ephemeral: true
   - name: che-machine-exec
     container:
       image: registry.redhat.io/devspaces/machineexec-rhel8:3.5
@@ -136,6 +159,3 @@ components:
       memoryRequest: 32Mi
       cpuLimit: 500m
       cpuRequest: 30m
-  - name: remote-endpoint
-    volume:
-      ephemeral: true

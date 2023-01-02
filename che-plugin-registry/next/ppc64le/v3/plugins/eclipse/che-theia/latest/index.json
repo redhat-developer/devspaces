@@ -10,7 +10,7 @@ icon: /images/default.png
 category: Editor
 repository: https://github.com/eclipse-che/che-theia
 firstPublicationDate: '2019-03-07'
-latestUpdateDate: '2023-01-01'
+latestUpdateDate: '2023-01-02'
 spec:
   endpoints:
     - name: theia
@@ -111,6 +111,24 @@ spec:
         - exposedPort: 13131
         - exposedPort: 13132
         - exposedPort: 13133
+    - args:
+        - sh
+        - '-c'
+        - ${PLUGIN_REMOTE_ENDPOINT_EXECUTABLE}
+      env:
+        - name: PLUGIN_REMOTE_ENDPOINT_EXECUTABLE
+          value: /remote-endpoint/plugin-remote-endpoint
+        - name: THEIA_PLUGINS
+          value: local-dir:///plugins/sidecars/tools
+      memoryLimit: 2Gi
+      image: registry.redhat.io/devspaces/udi-rhel8:3.5
+      volumes:
+        - name: plugins
+          mountPath: /plugins
+        - name: remote-endpoint
+          mountPath: /remote-endpoint
+          ephemeral: true
+      name: theia-ide-contributions
     - image: registry.redhat.io/devspaces/machineexec-rhel8:3.5
       memoryLimit: 2Gi
       memoryRequest: 32Mi

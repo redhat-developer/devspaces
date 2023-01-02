@@ -57,6 +57,7 @@ components:
     attributes:
       app.kubernetes.io/component: che-code-runtime
       app.kubernetes.io/part-of: che-code.eclipse.org
+      controller.devfile.io/container-contribution: true
   - name: checode
     volume: {}
   - name: che-code-injector
