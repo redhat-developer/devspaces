@@ -5902,3 +5902,30 @@
   timeWait: 0 mins
   timeBuild: 3 mins
   timeTotal: 4 mins
+- name: devspaces-dashboard-rhel8
+  tag: 3.5-6
+  taskId: 49873312
+  timeCreate: Wed Jan 4 09:13:11 2023
+  timeStart: Wed Jan 4 09:13:38 2023
+  timeFinish: Wed Jan 4 09:38:07 2023
+  timeWait: 0 mins
+  timeBuild: 24 mins
+  timeTotal: 24 mins
+- name: devspaces-server-rhel8
+  tag: 3.5-9
+  taskId: 49873989
+  timeCreate: Wed Jan 4 09:47:37 2023
+  timeStart: Wed Jan 4 09:47:52 2023
+  timeFinish: Wed Jan 4 09:55:40 2023
+  timeWait: 0 mins
+  timeBuild: 7 mins
+  timeTotal: 8 mins
+- name: devspaces-operator-bundle
+  tag: 3.5-38
+  taskId: 49874061
+  timeCreate: Wed Jan 4 09:51:19 2023
+  timeStart: Wed Jan 4 09:51:52 2023
+  timeFinish: Wed Jan 4 09:55:58 2023
+  timeWait: 0 mins
+  timeBuild: 4 mins
+  timeTotal: 4 mins
