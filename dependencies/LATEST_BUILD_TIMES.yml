@@ -5434,3 +5434,21 @@
   timeWait: 0 mins
   timeBuild: 3 mins
   timeTotal: 3 mins
+- name: devspaces-dashboard-rhel8
+  tag: 3.4-24
+  taskId: 49894519
+  timeCreate: Thu Jan 5 09:09:51 2023
+  timeStart: Thu Jan 5 09:10:10 2023
+  timeFinish: Thu Jan 5 09:33:33 2023
+  timeWait: 0 mins
+  timeBuild: 23 mins
+  timeTotal: 23 mins
+- name: devspaces-operator-bundle
+  tag: 3.4-161
+  taskId: 49895379
+  timeCreate: Thu Jan 5 09:46:22 2023
+  timeStart: Thu Jan 5 09:46:27 2023
+  timeFinish: Thu Jan 5 09:51:39 2023
+  timeWait: 0 mins
+  timeBuild: 5 mins
+  timeTotal: 5 mins
