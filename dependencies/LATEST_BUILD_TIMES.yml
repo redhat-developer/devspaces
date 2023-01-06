@@ -6001,3 +6001,30 @@
   timeWait: 0 mins
   timeBuild: 5 mins
   timeTotal: 5 mins
+- name: devspaces-pluginregistry-rhel8
+  tag: 3.5-8
+  taskId: 49906129
+  timeCreate: Thu Jan 5 22:25:43 2023
+  timeStart: Thu Jan 5 22:25:49 2023
+  timeFinish: Thu Jan 5 22:47:49 2023
+  timeWait: 0 mins
+  timeBuild: 22 mins
+  timeTotal: 22 mins
+- name: devspaces-devfileregistry-rhel8
+  tag: 3.5-25
+  taskId: 49906151
+  timeCreate: Thu Jan 5 22:27:58 2023
+  timeStart: Thu Jan 5 22:28:12 2023
+  timeFinish: Thu Jan 5 22:35:55 2023
+  timeWait: 0 mins
+  timeBuild: 7 mins
+  timeTotal: 7 mins
+- name: devspaces-operator-bundle
+  tag: 3.5-43
+  taskId: 49906498
+  timeCreate: Thu Jan 5 23:02:28 2023
+  timeStart: Thu Jan 5 23:03:10 2023
+  timeFinish: Thu Jan 5 23:07:08 2023
+  timeWait: 0 mins
+  timeBuild: 3 mins
+  timeTotal: 4 mins
