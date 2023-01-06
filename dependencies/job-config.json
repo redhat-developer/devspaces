@@ -24,7 +24,7 @@
           "7.58.x",
           "7.57.x"
         ],
-        "disabled": false
+        "disabled": true
       },
       "3.5": {
         "upstream_branch": [
@@ -61,7 +61,7 @@
           "7.58.x",
           "7.57.x"
         ],
-        "disabled": false
+        "disabled": true
       },
       "3.5": {
         "upstream_branch": [
@@ -98,7 +98,7 @@
           "7.58.x",
           "7.57.x"
         ],
-        "disabled": false
+        "disabled": true
       },
       "3.5": {
         "upstream_branch": [
@@ -135,7 +135,7 @@
           "7.58.x",
           "7.57.x"
         ],
-        "disabled": false
+        "disabled": true
       },
       "3.5": {
         "upstream_branch": [
@@ -181,7 +181,7 @@
           "7.58.x",
           "7.57.x"
         ],
-        "disabled": false
+        "disabled": true
       },
       "3.5": {
         "upstream_branch": [
@@ -218,7 +218,7 @@
           "7.58.x",
           "7.57.x"
         ],
-        "disabled": false
+        "disabled": true
       },
       "3.5": {
         "upstream_branch": [
@@ -255,7 +255,7 @@
           "7.58.x",
           "7.57.x"
         ],
-        "disabled": false
+        "disabled": true
       },
       "3.5": {
         "upstream_branch": [
@@ -301,7 +301,7 @@
           "7.58.x",
           "7.57.x"
         ],
-        "disabled": false
+        "disabled": true
       },
       "3.5": {
         "upstream_branch": [
@@ -347,7 +347,7 @@
           "devspaces-3.4-rhel-8",
           "devspaces-3.4-rhel-8"
         ],
-        "disabled": false
+        "disabled": true
       },
       "3.5": {
         "upstream_branch": [
@@ -384,7 +384,7 @@
           "devspaces-3.4-rhel-8",
           "devspaces-3.4-rhel-8"
         ],
-        "disabled": false
+        "disabled": true
       },
       "3.5": {
         "upstream_branch": [
@@ -511,7 +511,7 @@
           "20221111",
           "20221111"
         ],
-        "disabled": false
+        "disabled": true
       },
       "3.5": {
         "upstream_branch": [
@@ -548,7 +548,7 @@
           "v2.8.1",
           "v2.8.1"
         ],
-        "disabled": false
+        "disabled": true
       },
       "3.5": {
         "upstream_branch": [
@@ -578,7 +578,7 @@
         "disabled": true
       },
       "3.4": {
-        "disabled": false
+        "disabled": true
       },
       "3.5": {
         "disabled": false
@@ -600,7 +600,7 @@
           "devspaces-3.4-rhel-8",
           "devspaces-3.4-rhel-8"
         ],
-        "disabled": false
+        "disabled": true
       },
       "3.5": {
         "upstream_branch": [
@@ -644,7 +644,7 @@
           "7.57.x"
         ],
         "node_version": "16.13.2",
-        "disabled": false
+        "disabled": true
       },
       "3.5": {
         "upstream_branch": [
@@ -683,7 +683,7 @@
           "7.58.x",
           "7.57.x"
         ],
-        "disabled": false
+        "disabled": true
       },
       "3.5": {
         "upstream_branch": [
@@ -717,7 +717,7 @@
         "disabled": true
       },
       "3.4": {
-        "disabled": false
+        "disabled": true
       },
       "3.5": {
         "disabled": false
@@ -734,7 +734,7 @@
         "disabled": true
       },
       "3.4": {
-        "disabled": false
+        "disabled": true
       },
       "3.5": {
         "disabled": false
@@ -751,7 +751,7 @@
         "disabled": true
       },
       "3.4": {
-        "disabled": false
+        "disabled": true
       },
       "3.5": {
         "disabled": false
@@ -770,7 +770,7 @@
         "disabled": true
       },
       "3.4": {
-        "disabled": false
+        "disabled": true
       },
       "3.5": {
         "disabled": false
@@ -787,7 +787,7 @@
         "disabled": true
       },
       "3.4": {
-        "disabled": false
+        "disabled": true
       },
       "3.5": {
         "disabled": false
@@ -970,6 +970,6 @@
     }
   },
   "Copyright": [
-    "#\n# Copyright (c) 2018-2022 Red Hat, Inc.\n#    This program and the accompanying materials are made\n#    available under the terms of the Eclipse Public License 2.0\n#    which is available at https://www.eclipse.org/legal/epl-2.0/\n#\n#  SPDX-License-Identifier: EPL-2.0\n#\n#  Contributors:\n#    Red Hat, Inc. - initial API and implementation\n"
+    "#\n# Copyright (c) 2018-2023 Red Hat, Inc.\n#    This program and the accompanying materials are made\n#    available under the terms of the Eclipse Public License 2.0\n#    which is available at https://www.eclipse.org/legal/epl-2.0/\n#\n#  SPDX-License-Identifier: EPL-2.0\n#\n#  Contributors:\n#    Red Hat, Inc. - initial API and implementation\n"
   ]
 }
