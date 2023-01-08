@@ -6136,3 +6136,84 @@
   timeWait: 0 mins
   timeBuild: 5 mins
   timeTotal: 6 mins
+- name: devspaces-machineexec-rhel8
+  tag: 3.5-6
+  taskId: 49930941
+  timeCreate: Sun Jan 8 03:53:45 2023
+  timeStart: Sun Jan 8 03:54:06 2023
+  timeFinish: Sun Jan 8 03:58:20 2023
+  timeWait: 0 mins
+  timeBuild: 4 mins
+  timeTotal: 4 mins
+- name: devspaces-operator
+  tag: 3.5-13
+  taskId: 49930943
+  timeCreate: Sun Jan 8 03:54:57 2023
+  timeStart: Sun Jan 8 03:55:39 2023
+  timeFinish: Sun Jan 8 04:12:21 2023
+  timeWait: 0 mins
+  timeBuild: 16 mins
+  timeTotal: 17 mins
+- name: devspaces-configbump-rhel8
+  tag: 3.5-5
+  taskId: 49930944
+  timeCreate: Sun Jan 8 03:55:19 2023
+  timeStart: Sun Jan 8 03:55:40 2023
+  timeFinish: Sun Jan 8 04:12:02 2023
+  timeWait: 0 mins
+  timeBuild: 16 mins
+  timeTotal: 16 mins
+- name: devspaces-imagepuller-rhel8
+  tag: 3.5-5
+  taskId: 49930945
+  timeCreate: Sun Jan 8 03:55:20 2023
+  timeStart: Sun Jan 8 03:55:40 2023
+  timeFinish: Sun Jan 8 04:09:04 2023
+  timeWait: 0 mins
+  timeBuild: 13 mins
+  timeTotal: 13 mins
+- name: devspaces-traefik-rhel8
+  tag: 3.5-5
+  taskId: 49930946
+  timeCreate: Sun Jan 8 03:55:24 2023
+  timeStart: Sun Jan 8 03:55:41 2023
+  timeFinish: Sun Jan 8 04:22:16 2023
+  timeWait: 0 mins
+  timeBuild: 26 mins
+  timeTotal: 26 mins
+- name: devspaces-server-rhel8
+  tag: 3.5-11
+  taskId: 49930947
+  timeCreate: Sun Jan 8 03:55:44 2023
+  timeStart: Sun Jan 8 03:56:27 2023
+  timeFinish: Sun Jan 8 04:03:49 2023
+  timeWait: 0 mins
+  timeBuild: 7 mins
+  timeTotal: 8 mins
+- name: devspaces-devfileregistry-rhel8
+  tag: 3.5-28
+  taskId: 49930948
+  timeCreate: Sun Jan 8 03:55:52 2023
+  timeStart: Sun Jan 8 03:56:28 2023
+  timeFinish: Sun Jan 8 04:03:47 2023
+  timeWait: 0 mins
+  timeBuild: 7 mins
+  timeTotal: 7 mins
+- name: devspaces-pluginregistry-rhel8
+  tag: 3.5-9
+  taskId: 49930961
+  timeCreate: Sun Jan 8 04:09:49 2023
+  timeStart: Sun Jan 8 04:10:10 2023
+  timeFinish: Sun Jan 8 04:31:17 2023
+  timeWait: 0 mins
+  timeBuild: 21 mins
+  timeTotal: 21 mins
+- name: devspaces-operator-bundle
+  tag: 3.5-50
+  taskId: 49931051
+  timeCreate: Sun Jan 8 04:47:49 2023
+  timeStart: Sun Jan 8 04:48:26 2023
+  timeFinish: Sun Jan 8 04:52:26 2023
+  timeWait: 0 mins
+  timeBuild: 4 mins
+  timeTotal: 4 mins
