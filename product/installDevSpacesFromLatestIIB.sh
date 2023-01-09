@@ -419,6 +419,9 @@ else
   if [ -z "$CHECLUSTER_PATH" ]; then
     oc create namespace $NAMESPACE || true
 
+    # note trailing space on the notice text
+    techPreviewNotice="Installations of Dev Spaces from quay.io are available only as a Technology Preview. Full support is only available from <a href=https://catalog.redhat.com/software/containers/search?q=devspaces>registry.redhat.io</a>. "
+
     # don't set a dashboard header message by default
     dashboardHeaderMessage=""
 
@@ -435,13 +438,10 @@ else
         dashboardHeaderMessage="    dashboard:
       headerMessage:
         show: true
-        text: >-
-          Installations of Dev Spaces from quay.io are available only as a
-          Technology Preview. Full support is only available from
-          <a href=https://catalog.redhat.com/software/containers/search?q=devspaces>registry.redhat.io</a>.  
+        text: ${techPreviewNotice}
 "
       else
-        dashboardHeaderMessage=$(echo "$dashboardHeaderMessage" | sed -r -e "s@text: @text: Installations of Dev Spaces from quay.io are available only as a Technology Preview. Full support is only available from registry.redhat.io.@")
+        dashboardHeaderMessage=$(echo "$dashboardHeaderMessage" | sed -r -e "s@text: @text: ${techPreviewNotice}@")
       fi
     fi
 
