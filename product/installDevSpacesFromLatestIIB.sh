@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Copyright (c) 2022 Red Hat, Inc.
+# Copyright (c) 2022-2023 Red Hat, Inc.
 # This program and the accompanying materials are made
 # available under the terms of the Eclipse Public License 2.0
 # which is available at https://www.eclipse.org/legal/epl-2.0/
@@ -419,22 +419,30 @@ else
   if [ -z "$CHECLUSTER_PATH" ]; then
     oc create namespace $NAMESPACE || true
 
-    # TODO could we read the header from the latest CSV associated with this IIB?
-    # or from https://github.com/redhat-developer/devspaces-images/blob/devspaces-3-rhel-8/devspaces-operator-bundle-generated/manifests/devspaces.csv.yaml#L59-L67 ?
-
     # don't set a dashboard header message by default
     dashboardHeaderMessage=""
 
+    # compute header from the latest CSV associated with this IIB (also in https://github.com/redhat-developer/devspaces-images/blob/devspaces-3-rhel-8/devspaces-operator-bundle-generated/manifests/devspaces.csv.yaml#L59-L67)
+    ${SCRIPT_DIR}/containerExtract.sh --delete-before --delete-after ${IIB_DS} --tar-flags configs/devspaces/*bundle.json || true
+    bundleImage=$(cat $(ls /tmp/quay.io-devspaces-iib-*/configs/devspaces/*bundle.json | sort -V | tail -1 || true) | jq -r '.image' | sed -r -e "s@registry-proxy.engineering.redhat.com/rh-osbs@quay.io/devspaces@g" || true)
+    ${SCRIPT_DIR}/containerExtract.sh --delete-before --delete-after $(${SCRIPT_DIR}/getTagForSHA.sh ${bundleImage} --quiet) --tar-flags manifests/*csv* || true
+    dashboardHeaderMessage="$(cat /tmp/quay.io-devspaces-devspaces-operator-bundle-*/manifests/devspaces.csv.yaml | yq -r '.metadata.annotations."alm-examples"' | jq -r '[.[1].spec.components]' | yq -y '.[]' | sed -r -e "s/^/    /g" || true)"
+    sudo rm -fr /tmp/quay.io-devspaces-iib-* /tmp/quay.io-devspaces-devspaces-operator-bundle-* || true
+
     # add dashboard note about quay.io fast channel == Tech Preview support
     if [[ $CHANNEL_DS == "fast" ]]; then
-      dashboardHeaderMessage="    dashboard:
-          headerMessage:
-            show: true
-            text: >-
-              Installations of Dev Spaces from quay.io are available only as a
-              Technology Preview. Full support is only available from
-              registry.redhat.io.
+      if [[ $dashboardHeaderMessage == "" ]]; then
+        dashboardHeaderMessage="    dashboard:
+      headerMessage:
+        show: true
+        text: >-
+          Installations of Dev Spaces from quay.io are available only as a
+          Technology Preview. Full support is only available from
+          registry.redhat.io.
 "
+      else
+        dashboardHeaderMessage=$(echo "$dashboardHeaderMessage" | sed -r -e "s@text: @text: Installations of Dev Spaces from quay.io are available only as a Technology Preview. Full support is only available from registry.redhat.io.@")
+      fi
     fi
 
     echo "apiVersion: org.eclipse.che/v2
