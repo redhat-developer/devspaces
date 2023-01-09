@@ -88,6 +88,10 @@ function clear_generated_data() {
       if [[ -f "$CHE_CODE_DW" ]]; then
         rm "${CHE_CODE_DW}"
       fi
+      CHE_IDEA_DW="${dir}/devworkspace-che-idea-latest.yaml"
+      if [[ -f "$CHE_IDEA_DW" ]]; then
+        rm "${CHE_IDEA_DW}"
+      fi
     done
 }
 
