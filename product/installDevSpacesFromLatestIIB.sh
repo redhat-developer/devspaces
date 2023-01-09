@@ -38,7 +38,7 @@ CREATE_USERS="false"
 GET_URL="true"
 DWO_VERSION="" # by default, install from latest release
 DISABLE_CATALOGSOURCESFLAG="" # by default, allow installation from default catalog sources; use --next or --disable-default-sources to disable
-
+ENABLE_CATALOGSOURCES=""  # use this flag to force default catalog sources to remain enabled even when installing from --next
 # subscription channels
 CHANNEL_DWO="fast"
 CHANNEL_DS="stable"
@@ -89,6 +89,8 @@ Options:
 
   --disable-default-sources
                       : Disable default CatalogSources, like the RH Ecosystem Cataloge. Default: false
+  -cs, --enable-default-sources
+                      : Keep default CatalogSources enabled, like the RH Ecosystem Cataloge. Optional.
 
   --dwo <VERSION>     : Dev Workspace Operator version to test, e.g. '0.15'. Optional
   --dwo-chan <CHANNEL>: Dev Workspace Operator channel to install; default: $CHANNEL_DWO (if --quay flag used, default: fast)
@@ -249,6 +251,7 @@ while [[ "$#" -gt 0 ]]; do
     '--quay'|'--fast')   IIB_DS="quay.io/devspaces/iib"; CHANNEL_DS="fast"; CHANNEL_DWO="fast"; ICSP_FLAGs="${ICSP_FLAGs} --icsp quay.io";;
     '--latest'|'--next') IIB_DS="quay.io/devspaces/iib"; CHANNEL_DS="fast"; CHANNEL_DWO="fast"; ICSP_FLAGs="${ICSP_FLAGs} --icsp quay.io"; DS_VERSION="${1//--/}";;
     '--disable-default-sources') DISABLE_CATALOGSOURCESFLAG="$1";;
+    '-cs'|'--enable-default-sources') ENABLE_CATALOGSOURCES="true";;
     '--brew') ICSP_FLAGs="${ICSP_FLAGs} --icsp brew.registry.redhat.io";;
     '--icsp') ICSP_FLAGs="${ICSP_FLAGs} --icsp $2"; shift 1;;
     '--delete-before') DELETE_BEFORE="true";;
@@ -285,9 +288,14 @@ if [[ $DWO_VERSION ]]; then
   fi
 fi
 
-# disable default catalog sources if installing DS next
-if [[ ${DS_VERSION} == "next" ]]; then
+# disable default catalog sources if installing DS next unless using --enable--default-sources flag
+if [[ ${DS_VERSION} == "next" ]] && [[ ${ENABLE_CATALOGSOURCES} == "" ]]; then
   DISABLE_CATALOGSOURCESFLAG="--disable-default-sources"
+fi
+
+# ensure default sources are enabled
+if [[ ${ENABLE_CATALOGSOURCES} == "true" ]]; then
+    oc patch OperatorHub cluster --type json -p '[{"op": "add", "path": "/spec/disableAllDefaultSources", "value": false}]'
 fi
 
 if [[ $IIB_DWO ]]; then
@@ -402,6 +410,11 @@ if [[ $(command -v ${DSC}) ]]; then # use dsc
       echo -n '.'
       sleep 5s
     done
+
+    # ensure default sources are enabled
+    if [[ ${ENABLE_CATALOGSOURCES} == "true" ]]; then
+        oc patch OperatorHub cluster --type json -p '[{"op": "add", "path": "/spec/disableAllDefaultSources", "value": false}]'
+    fi
   fi
   echo
   echo "Using dsc from ${DSC}"
@@ -426,9 +439,12 @@ else
     dashboardHeaderMessage=""
 
     # compute header from the latest CSV associated with this IIB (also in https://github.com/redhat-developer/devspaces-images/blob/devspaces-3-rhel-8/devspaces-operator-bundle-generated/manifests/devspaces.csv.yaml#L59-L67)
-    ${SCRIPT_DIR}/containerExtract.sh --delete-before --delete-after ${IIB_DS} --tar-flags configs/devspaces/*bundle.json || true
+    ${SCRIPT_DIR}/containerExtract.sh --quiet --delete-before --delete-after ${IIB_DS} --tar-flags configs/devspaces/*bundle.json || true
     bundleImage=$(cat $(ls /tmp/quay.io-devspaces-iib-*/configs/devspaces/*bundle.json | sort -V | tail -1 || true) | jq -r '.image' | sed -r -e "s@registry-proxy.engineering.redhat.com/rh-osbs@quay.io/devspaces@g" || true)
-    ${SCRIPT_DIR}/containerExtract.sh --delete-before --delete-after $(${SCRIPT_DIR}/getTagForSHA.sh ${bundleImage} --quiet) --tar-flags manifests/*csv* || true
+    echo "[INFO] Bundle image SHA: ${bundleImage}"
+    bundleImage="$(${SCRIPT_DIR}/getTagForSHA.sh ${bundleImage} --quiet)"
+    echo "[INFO] Bundle image TAG: ${bundleImage}"
+    ${SCRIPT_DIR}/containerExtract.sh --quiet --delete-before --delete-after ${bundleImage} --tar-flags manifests/*csv* || true
     dashboardHeaderMessage="$(cat /tmp/quay.io-devspaces-devspaces-operator-bundle-*/manifests/devspaces.csv.yaml | yq -r '.metadata.annotations."alm-examples"' | jq -r '[.[1].spec.components]' | yq -y '.[]' | sed -r -e "s/^/    /g" || true)"
     sudo rm -fr /tmp/quay.io-devspaces-iib-* /tmp/quay.io-devspaces-devspaces-operator-bundle-* || true
 
@@ -443,6 +459,10 @@ else
       else
         dashboardHeaderMessage=$(echo "$dashboardHeaderMessage" | sed -r -e "s@text: @text: ${techPreviewNotice}@")
       fi
+    fi
+
+    if [[ ${dashboardHeaderMessage} ]]; then
+      echo "[INFO] Dashboard Header Message: $(echo "${dashboardHeaderMessage}" | yq -r '.dashboard.headerMessage.text')"
     fi
 
     echo "apiVersion: org.eclipse.che/v2
