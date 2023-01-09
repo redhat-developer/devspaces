@@ -63,7 +63,7 @@ This script will
 4. Create 5 dummy OpenShift users from user1 to user5
 5. Create a CheCluster to install Dev Spaces
 
-Quick usage, to install Dev Spaces from quay.io/devspaces/iib, using fast channel:
+Quick usage, to install Dev Spaces from quay.io/devspaces/iib as a Technology Preview from fast channel:
 
 Install 3.2           : $0 -t 3.2 --quay
 Install 3.y (stable)  : $0 --latest
@@ -418,6 +418,25 @@ else
   # TODO: add support for custom patch YAML
   if [ -z "$CHECLUSTER_PATH" ]; then
     oc create namespace $NAMESPACE || true
+
+# TODO could we read the header from the latest CSV associated with this IIB?
+# or from https://github.com/redhat-developer/devspaces-images/blob/devspaces-3-rhel-8/devspaces-operator-bundle-generated/manifests/devspaces.csv.yaml#L59-L67 ?
+
+# don't set a dashboard header message by default
+dashboardHeaderMessage=""
+
+# add dashboard note about quay.io fast channel == Tech Preview support
+if [[ $CHANNEL_DS == "fast" ]]; 
+  dashboardHeaderMessage="    dashboard:
+      headerMessage:
+        show: true
+        text: >-
+          Installations of Dev Spaces from quay.io are available only as a
+          Technology Preview. Full support is only available from
+          registry.redhat.io.
+"
+fi
+
     echo "apiVersion: org.eclipse.che/v2
 kind: CheCluster
 metadata:
@@ -436,6 +455,7 @@ spec:
       postgresPort: '5432'
       pvc:
         claimSize: 1Gi
+${dashboardHeaderMessage}
     metrics:
       enable: true
   containerRegistry: {}
