@@ -419,23 +419,23 @@ else
   if [ -z "$CHECLUSTER_PATH" ]; then
     oc create namespace $NAMESPACE || true
 
-# TODO could we read the header from the latest CSV associated with this IIB?
-# or from https://github.com/redhat-developer/devspaces-images/blob/devspaces-3-rhel-8/devspaces-operator-bundle-generated/manifests/devspaces.csv.yaml#L59-L67 ?
+    # TODO could we read the header from the latest CSV associated with this IIB?
+    # or from https://github.com/redhat-developer/devspaces-images/blob/devspaces-3-rhel-8/devspaces-operator-bundle-generated/manifests/devspaces.csv.yaml#L59-L67 ?
 
-# don't set a dashboard header message by default
-dashboardHeaderMessage=""
+    # don't set a dashboard header message by default
+    dashboardHeaderMessage=""
 
-# add dashboard note about quay.io fast channel == Tech Preview support
-if [[ $CHANNEL_DS == "fast" ]]; 
-  dashboardHeaderMessage="    dashboard:
-      headerMessage:
-        show: true
-        text: >-
-          Installations of Dev Spaces from quay.io are available only as a
-          Technology Preview. Full support is only available from
-          registry.redhat.io.
+    # add dashboard note about quay.io fast channel == Tech Preview support
+    if [[ $CHANNEL_DS == "fast" ]]; then
+      dashboardHeaderMessage="    dashboard:
+          headerMessage:
+            show: true
+            text: >-
+              Installations of Dev Spaces from quay.io are available only as a
+              Technology Preview. Full support is only available from
+              registry.redhat.io.
 "
-fi
+    fi
 
     echo "apiVersion: org.eclipse.che/v2
 kind: CheCluster
