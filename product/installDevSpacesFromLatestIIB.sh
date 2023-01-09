@@ -438,7 +438,7 @@ else
         text: >-
           Installations of Dev Spaces from quay.io are available only as a
           Technology Preview. Full support is only available from
-          registry.redhat.io.
+          <a href=https://catalog.redhat.com/software/containers/search?q=devspaces>registry.redhat.io</a>.  
 "
       else
         dashboardHeaderMessage=$(echo "$dashboardHeaderMessage" | sed -r -e "s@text: @text: Installations of Dev Spaces from quay.io are available only as a Technology Preview. Full support is only available from registry.redhat.io.@")
