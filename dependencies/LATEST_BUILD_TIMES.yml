@@ -6361,3 +6361,30 @@
   timeWait: 0 mins
   timeBuild: 4 mins
   timeTotal: 4 mins
+- name: devspaces-dashboard-rhel8
+  tag: 3.5-9
+  taskId: 49995862
+  timeCreate: Wed Jan 11 09:13:05 2023
+  timeStart: Wed Jan 11 09:23:43 2023
+  timeFinish: Wed Jan 11 09:46:47 2023
+  timeWait: 10 mins
+  timeBuild: 23 mins
+  timeTotal: 33 mins
+- name: devspaces-operator
+  tag: 3.5-17
+  taskId: 49999325
+  timeCreate: Wed Jan 11 10:42:25 2023
+  timeStart: Wed Jan 11 10:42:59 2023
+  timeFinish: Wed Jan 11 10:58:22 2023
+  timeWait: 0 mins
+  timeBuild: 15 mins
+  timeTotal: 15 mins
+- name: devspaces-operator-bundle
+  tag: 3.5-58
+  taskId: 49999948
+  timeCreate: Wed Jan 11 11:05:19 2023
+  timeStart: Wed Jan 11 11:05:48 2023
+  timeFinish: Wed Jan 11 11:10:29 2023
+  timeWait: 0 mins
+  timeBuild: 4 mins
+  timeTotal: 5 mins
