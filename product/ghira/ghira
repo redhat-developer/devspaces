@@ -175,6 +175,7 @@ class IssueToJIRA:
         logging.error("expecting github key %s to exist in github issue data" % gh_k)
     return jira_data
 
+# TODO filter out and items with `new&noteworthy/che-only` label
 # Retrieve Issues from github
 #   search term definitions: https://pygithub.readthedocs.io/en/latest/github_objects/Issue.html
 issue_search = {
@@ -195,6 +196,8 @@ for i in all_issues:
   if datetime.datetime.strptime(i.raw_data['closed_at'], '%Y-%m-%dT%H:%M:%SZ') < datetime.datetime.now() - datetime.timedelta(weeks=NUM_WEEKS):
     continue
 
+  # TODO update the JIRA if GH issue changed
+    # check for "Release Notes Text" in initial comment / issue description
   # search through comments for sync text of already sync'd issues
   found = False
   for c in i.get_comments():
@@ -258,7 +261,7 @@ for i in pending_issues:
     # update github issue with comment
     i.create_comment(ISSUE_SYNC_COMMENT + new_jira_issue.key)
 
-logging.info("%s JIRAs created." % len(pending_issues))
+logging.info("%s JIRAs processed." % len(pending_issues))
 
 # for debugging, dump json for a complete issue to figure out field names
 # i=j.issue("CRW-1684")
