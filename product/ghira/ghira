@@ -87,7 +87,7 @@ def get_area_lead_email(area):
     components = json.load(open('components.json', 'r'))
     for k,v in components["Components"].items():
       if area in v["Labels"]:
-        return v["Lead"] + "@redhat.com"
+        return v["Email"]
   except:
     logging.error("get_area_lead_email: Exception while processing components.json")
   return ""
