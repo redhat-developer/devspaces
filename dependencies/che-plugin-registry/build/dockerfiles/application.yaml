@@ -4,6 +4,12 @@ server:
 spring:
   profiles:
     include: ovsx
+  autoconfigure:
+    exclude: 
+      - org.jobrunr.spring.autoconfigure.storage.JobRunrElasticSearchStorageAutoConfiguration
+  cache:
+    jcache:
+      config: classpath:ehcache.xml
   datasource:
     url: jdbc:postgresql://localhost:5432/postgres
     username: postgres
