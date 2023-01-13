@@ -39,21 +39,26 @@ EMAIL_TO_DEFAULT = "nboldt@redhat.com"
 
 # defaults
 LOG_LEVEL = logging.INFO
-NUM_WEEKS = 2
+NUM_DAYS = 14
+LIMIT = 0
 DRY_RUN=False
 
 # parse option flags
 options, remainder = getopt.gnu_getopt(
-  sys.argv[1:], 'o:v', ['weeks=', 'debug', 'dryrun', 'dry-run',])
+  sys.argv[1:], 'o:v', ['limit=', 'days=', 'weeks=', 'debug', 'dryrun', 'dry-run',])
 for opt, arg in options:
   if opt in ('--dryrun', '--dry-run'):
     DRY_RUN=True
   elif opt in ('--debug'):
     LOG_LEVEL = logging.DEBUG
-  elif opt == '--weeks':
-    NUM_WEEKS = int(arg)
+  elif opt in ('--weeks'):
+    NUM_DAYS = int(arg) * 7
+  elif opt in ('--days'):
+    NUM_DAYS = int(arg)
+  elif opt in ('--limit'):
+    LIMIT = int(arg)
   
-print("Check for new&noteworthy issues closed in the last " + str(NUM_WEEKS) + " weeks")
+print("Check for new&noteworthy issues closed in the last " + str(NUM_DAYS) + " days")
 if DRY_RUN:
   print("Dry run. Nothing will be created.")
 
@@ -66,10 +71,14 @@ logging.basicConfig(handlers=[ExitOnErrorHandler()], format='%(levelname)s: %(me
 
 j = jira.JIRA(server=JIRA_URL, token_auth=JIRA_TOKEN)
 
+# to verify login token works:
+# issue = j.issue('CRW-3818')
+# print(issue.fields.summary)
+
 # g = Github(GITHUB_TOKEN)
 # r = g.get_repo(GITHUB_REPO)
 api = GhApi(owner=GITHUB_ORG, repo=GITHUB_REPO, token=GITHUB_TOKEN)
-# logging.debug("Got user: " + str(api.users.get_authenticated()))
+# logging.debug("Got GH user: " + str(api.users.get_authenticated()))
 
 def send_email(msg_from, msg_to, subject, body):
   if not msg_to:
@@ -144,6 +153,11 @@ class IssueToJIRA:
         return [version_map[data['title'] + '.x']]
     return []
 
+  # for debugging, dump json for a complete issue to help figure out field names
+  # can also use JQL to see mapping of field name to field ID
+  # i=j.issue("CRW-3643")
+  # print(json.dumps(i.raw,indent=2))
+
   # map github issue to jira issue
   data_map = {
     'body': 'description',
@@ -156,15 +170,20 @@ class IssueToJIRA:
     'project': 'CRW',
     'issuetype': {'name': 'Task'},
     'components': [{"name": "docs"}],
+    # "Release Note Text" (will set this to a better value later)
     'customfield_12310211': 'To be written by team lead or assignee',
-    'customfield_12310213': {'value': 'Not Yet Documented'}
+    # "Release Note Status"
+    'customfield_12310213': {'value': 'Proposed'}
+    # TODO can we guess this from the upstream issue labels / body / comments?
+    # "Release Note Type" 
+    # 'customfield_12320850': ...
   }
 
   # convert github issue to jira issue
   #  - use raw data from both apis. map keys using data_map.
   #  - non-trivial data_map can use (name, function) tuple instead of name
   def convert(issue):
-    gh_data = issue.raw_data
+    gh_data = issue
     # logging.debug(json.dumps(gh_data, indent=2))
     jira_data = copy.deepcopy(IssueToJIRA.default_jira_data)
 
@@ -181,8 +200,7 @@ class IssueToJIRA:
     return jira_data
 
 # Retrieve Issues from github
-#   search term definitions: https://pygithub.readthedocs.io/en/latest/github_objects/Issue.html
-since_date = (datetime.datetime.now() - datetime.timedelta(weeks=NUM_WEEKS)).strftime('%Y-%m-%dT%H:%M:%SZ')
+since_date = (datetime.datetime.now() - datetime.timedelta(days=NUM_DAYS)).strftime('%Y-%m-%dT%H:%M:%SZ')
 logging.info("Searching for issues with https://api.github.com/repos/" + GITHUB_ORG + "/" + GITHUB_REPO + "/issues?filter=all&state=closed&labels=new%26noteworthy&sort=updated&since=" + since_date)
 issue_search = {
   "owner": GITHUB_ORG,
@@ -195,7 +213,7 @@ issue_search = {
   # use since=2023-01-11T00:00:00Z to reduce payload
   "since": since_date,
   # TODO: remove this limit when we;re done debugging
-  "per_page": "2" 
+  "per_page": str(LIMIT) 
 }
 
 all_issues = []
@@ -216,26 +234,25 @@ for i in all_issues:
   issue_num = i["number"]
   logging.debug("Checking issue #" + str(issue_num))
 
-  # for debugging, dump json for a complete issue to figure out field names
-  # i=j.issue("CRW-1684")
-  # print(json.dumps(i.raw,indent=2))
+  # for debugging, dump list of api.issues methods
+  # logging.debug(api.issues)
 
-  # only look at issues closed in last NUM_WEEKS weeks
-  # if datetime.datetime.strptime(i.raw_data['closed_at'], '%Y-%m-%dT%H:%M:%SZ') < datetime.datetime.now() - datetime.timedelta(weeks=NUM_WEEKS):
-    # continue
-
-  # TODO filter out and items with `new&noteworthy/che-only` label
-  # if ...
-    # continue
+  # filter out and items with `new&noteworthy/che-only` label
+  for l in api.issues.list_labels_on_issue(issue_num):
+    # logging.debug("Checking issue #" + str(issue_num) + " :: label: " + l["name"])
+    if "new&noteworthy/che-only" in l["name"]:
+      logging.info("Skip https://github.com/" + GITHUB_ORG + "/" + GITHUB_REPO + "/issues/%s -- Upstream issue" % i["number"])
+      continue
 
   # TODO update the JIRA if GH issue changed
     # check for "Release Notes Text" in initial comment / issue description
   # search through comments for sync text of already sync'd issues
   found = False
-  for c in i.get_comments():
-    if c.body.find(ISSUE_SYNC_COMMENT) != -1:    # and c.user.login == GITHUB_USER
+  for c in api.issues.list_comments(issue_num):
+    # logging.debug(str(c["body"]))
+    if ISSUE_SYNC_COMMENT in c["body"]:
       found = True
-      logging.info("Skip https://github.com/" + GITHUB_ORG + "/" + GITHUB_REPO + "/issues/%s -- Already sync'd" % i.number)
+      logging.info("Skip https://github.com/" + GITHUB_ORG + "/" + GITHUB_REPO + "/issues/%s -- Already sync'd" % i["number"])
       break
   if not found:
     pending_issues.append(i)
@@ -243,55 +260,83 @@ for i in all_issues:
 # convert issue to jira
 for i in pending_issues:
   new_jira = IssueToJIRA.convert(i)
+  logging.debug(new_jira)
 
-  if not new_jira['fixVersions']:
-    d = i.raw_data
-    milestone = d['milestone']['title'] if d['milestone'] and 'title' in d['milestone'] else ""
-    logging.warning("Skip https://github.com/" + GITHUB_ORG + "/" + GITHUB_REPO + "/issues/%s -- Invalid/Empty milestone (%s)" % (i.number, milestone))
-    for l in d["labels"]:
-      msg_to = get_area_lead_email(l["name"])
-      if msg_to:
-        break
-    subject = "repo " + GITHUB_ORG + "/" + GITHUB_REPO + " issue# " + str(i.number) + " has invalid milestone"
-    body = f"Issue URL: { d['html_url'] }\nTitle: { d['title'] }\nUpdated: { d['updated_at'] }\n\n" + \
-      f"Issue not synced to JIRA because milestone field is invalid ({ milestone })"
-    send_email(EMAIL_FROM, msg_to, subject, body)
-    continue
+  milestone = i['milestone']['title'] if i['milestone'] and 'title' in i['milestone'] else ""
+  logging.debug("Converting issue #" + str(issue_num) + " [" + milestone + "]")
+
+  if len(new_jira['fixVersions']) == 0:
+    if milestone == "":
+      # no milestone, send email
+      logging.warning("Skip https://github.com/" + GITHUB_ORG + "/" + GITHUB_REPO + "/issues/%s -- Milestone (%s) is invalid or empty" % (i["number"], milestone))
+      for l in i["labels"]:
+        msg_to = get_area_lead_email(l["name"])
+        if msg_to:
+          break
+      subject = "repo " + GITHUB_ORG + "/" + GITHUB_REPO + " issue# " + str(i["number"]) + " has invalid or missing milestone"
+      body = f"Issue URL: { i['html_url'] }\nTitle: { i['title'] }\nUpdated: { i['updated_at'] }\n\n" + \
+        f"Issue not synced to JIRA because milestone field is invalid or missing ({ milestone })"
+      send_email(EMAIL_FROM, msg_to, subject, body)
+      continue
+    # if we want to send emails for N&N issues that cannot be synced because they're too old - not found in job-config.json mapping - enable this block
+    # else:
+    #   # if can't resolve old milestone in https://github.com/redhat-developer/devspaces/blob/devspaces-3-rhel-8/dependencies/job-config.json, it's too old to process as N&N 
+    #   logging.warning("Skip https://github.com/" + GITHUB_ORG + "/" + GITHUB_REPO + "/issues/%s -- Milestone (%s) is not found in job-config.json (too old?)" % (i["number"], milestone))
+    #   for l in i["labels"]:
+    #     msg_to = get_area_lead_email(l["name"])
+    #     if msg_to:
+    #       break
+    #   subject = "repo " + GITHUB_ORG + "/" + GITHUB_REPO + " issue# " + str(i["number"]) + " has invalid or old milestone"
+    #   body = f"Issue URL: { i['html_url'] }\nTitle: { i['title'] }\nUpdated: { i['updated_at'] }\n\n" + \
+    #     f"Issue not synced to JIRA because milestone field is invalid or too old ({ milestone })"
+    #   send_email(EMAIL_FROM, msg_to, subject, body)
+    #   continue
   elif '3.x' in new_jira['fixVersions']:
-    logging.info("Skip https://github.com/" + GITHUB_ORG + "/" + GITHUB_REPO + "/issues/%s -- for future release" % i.number)
+    logging.info("Skip https://github.com/" + GITHUB_ORG + "/" + GITHUB_REPO + "/issues/%s -- for future release" % i["number"])
     continue
 
-  logging.info("Sync https://github.com/" + GITHUB_ORG + "/" + GITHUB_REPO + "/issues/%s to JIRA" % i.number)
-  logging.debug("  - JIRA with raw data:\n" + json.dumps(new_jira, indent=2) + '\n')
-  if not DRY_RUN:
-    # massage new_jira to be jira API friendly
-    fvs = []   # format fixVersions
-    for v in new_jira['fixVersions']:
-      fvs.append({'name': v})
-    new_jira['fixVersions'] = fvs
-    # affects version set to same default value as fixversion
-    new_jira['versions'] = fvs 
+  logging.info("Sync https://github.com/" + GITHUB_ORG + "/" + GITHUB_REPO + "/issues/%s to JIRA" % i["number"])
+  # massage new_jira to be jira API friendly
+  fvs = []   # format fixVersions
+  for v in new_jira['fixVersions']:
+    fvs.append({'name': v})
+  new_jira['fixVersions'] = fvs
+  # affects version set to same default value as fixversion
+  new_jira['versions'] = fvs 
 
-    customfields = {}   # custom fields only allowed to be updated and not set on create?
-    for k, v in new_jira.items():
-      if k.startswith('customfield_'):
-        customfields[k] = v
-    for k in customfields.keys():
-      del new_jira[k]
-    new_jira['description'] = '*Synced from ' + GITHUB_ORG + '/' + GITHUB_REPO + ' issue*\n\nhttps://github.com/' + GITHUB_ORG + '/' + GITHUB_REPO + '/issues/' + str(i.number) + '\n\n' + mistletoe.markdown(new_jira['description'], JIRARenderer)
+  # some fields cannot be set on creation, only on update
+  customfields = {}   
+  customfields["description"] = '*Synced from ' + GITHUB_ORG + '/' + GITHUB_REPO + ' issue*\n\nhttps://github.com/' + GITHUB_ORG + '/' + GITHUB_REPO + '/issues/' + str(i["number"]) + '\n\n' + mistletoe.markdown(new_jira['description'], JIRARenderer)
+  for k, v in new_jira.items():
+    # logging.debug(k + " = " + str(v))
+    if k.startswith('customfield_'):
+      customfields[k] = v
+  # set the release notes text field to the value of the upstream issue + release notes text content in the uptream issue description, if available
+  # scrape out just the content after RELEASE NOTES TEXT line
+  customfields["customfield_12310211"] = "= " + new_jira["summary"] + new_jira["description"].partition("Release Notes Text")[2]
+  for k in customfields.keys():
+    del new_jira[k]
 
-    new_jira_issue = j.create_issue(fields=new_jira)
-    logging.info("JIRA https://issues.redhat.com/browse/%s created" % new_jira_issue.key)
-    new_jira_issue.update(fields=customfields)
+  logging.debug("  - JIRA json - new_jira:\n" + json.dumps(new_jira, indent=2) + '\n')
+  logging.debug("  - JIRA json - customfields:\n" + json.dumps(customfields, indent=2) + '\n')
 
-    with warnings.catch_warnings():
-      warnings.simplefilter("ignore")
-      j.add_remote_link(new_jira_issue, {'url': "https://github.com/" + GITHUB_ORG + "/" + GITHUB_REPO + "/issues/" + str(i.number), \
-        'title': new_jira['summary'] + " #" + str(i.number), \
-        "icon": {"url16x16": "https://github.com/favicon.ico"}})
+if not DRY_RUN:
+  new_jira_issue = j.create_issue(fields=new_jira)
+  logging.info("JIRA https://issues.redhat.com/browse/%s created" % new_jira_issue.key)
+  new_jira_issue.update(fields=customfields)
 
-    # update github issue with comment
-    i.create_comment(ISSUE_SYNC_COMMENT + new_jira_issue.key)
+  with warnings.catch_warnings():
+    warnings.simplefilter("ignore")
+    j.add_remote_link(new_jira_issue, {'url': "https://github.com/" + GITHUB_ORG + "/" + GITHUB_REPO + "/issues/" + str(i["number"]), \
+      'title': new_jira['summary'] + " #" + str(i["number"]), \
+      "icon": {"url16x16": "https://github.com/favicon.ico"}})
+
+  # update github issue with comment
+  # TODO migrate this to new API
+  i.create_comment(ISSUE_SYNC_COMMENT + new_jira_issue.key)
+
+else:
+  logging.info(new_jira)
 
 logging.info("%s JIRAs processed." % len(pending_issues))
 
