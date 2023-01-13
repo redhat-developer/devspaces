@@ -7,11 +7,14 @@ import re
 import json
 import logging
 import smtplib
+import ast
 import datetime
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
-from github import Github
+# from github import Github
+from ghapi.all import GhApi
+
 import jira
 import requests
 import mistletoe
@@ -24,7 +27,8 @@ JIRA_EMAIL = os.environ["JIRA_EMAIL"]
 JIRA_TOKEN = os.environ["JIRA_TOKEN"]
 
 GITHUB_TOKEN = os.environ["GITHUB_TOKEN"]
-GITHUB_REPO = "eclipse/che"
+GITHUB_ORG='eclipse'
+GITHUB_REPO = 'che'
 
 ISSUE_SYNC_COMMENT = "sync'd to Red Hat JIRA https://issues.redhat.com/browse/"
 
@@ -62,9 +66,10 @@ logging.basicConfig(handlers=[ExitOnErrorHandler()], format='%(levelname)s: %(me
 
 j = jira.JIRA(server=JIRA_URL, token_auth=JIRA_TOKEN)
 
-g = Github(GITHUB_TOKEN)
-r = g.get_repo(GITHUB_REPO)
-GITHUB_USER = g.get_user().login
+# g = Github(GITHUB_TOKEN)
+# r = g.get_repo(GITHUB_REPO)
+api = GhApi(owner=GITHUB_ORG, repo=GITHUB_REPO, token=GITHUB_TOKEN)
+# logging.debug("Got user: " + str(api.users.get_authenticated()))
 
 def send_email(msg_from, msg_to, subject, body):
   if not msg_to:
@@ -175,26 +180,53 @@ class IssueToJIRA:
         logging.error("expecting github key %s to exist in github issue data" % gh_k)
     return jira_data
 
-# TODO filter out and items with `new&noteworthy/che-only` label
 # Retrieve Issues from github
 #   search term definitions: https://pygithub.readthedocs.io/en/latest/github_objects/Issue.html
+since_date = (datetime.datetime.now() - datetime.timedelta(weeks=NUM_WEEKS)).strftime('%Y-%m-%dT%H:%M:%SZ')
+logging.info("Searching for issues with https://api.github.com/repos/" + GITHUB_ORG + "/" + GITHUB_REPO + "/issues?filter=all&state=closed&labels=new%26noteworthy&sort=updated&since=" + since_date)
 issue_search = {
-  'state': 'closed',
-  'labels': ['new&noteworthy']
+  "owner": GITHUB_ORG,
+  "repo": GITHUB_REPO,
+  "filter": "all",
+  "state": "closed",
+  "labels": "new&noteworthy",
+  "sort": "updated",
+  "direction": "desc",
+  # use since=2023-01-11T00:00:00Z to reduce payload
+  "since": since_date,
+  # TODO: remove this limit when we;re done debugging
+  "per_page": "2" 
 }
+
 all_issues = []
 try:
-  all_issues = r.get_issues(**issue_search)
+  raw_issues = str(api.issues.list_for_repo(**issue_search))
+  all_issues = ast.literal_eval(json.loads(json.dumps(raw_issues)))
+  # logging.debug("Issues json: " + raw_issues_string)
+  # with open("/tmp/ghira.issues.json", "w") as outfile:
+  #   outfile.write(json.dump(all_issues_string))
+
 except BaseException as err:
-  logging.error("No closed new&noteworthy issues found: https://github.com/eclipse/che/issues?q=is%3Aissue+is%3Aclosed+label%3Anew%26noteworthy")
+  logging.error("No closed new&noteworthy issues found: https://github.com/" + GITHUB_ORG + "/" + GITHUB_REPO + "/issues?q=is%3Aissue+is%3Aclosed+label%3Anew%26noteworthy")
   logging.error(f"Unexpected {err}, {type(err)}")
 
 # filter out items
 pending_issues = []
 for i in all_issues:
+  issue_num = i["number"]
+  logging.debug("Checking issue #" + str(issue_num))
+
+  # for debugging, dump json for a complete issue to figure out field names
+  # i=j.issue("CRW-1684")
+  # print(json.dumps(i.raw,indent=2))
+
   # only look at issues closed in last NUM_WEEKS weeks
-  if datetime.datetime.strptime(i.raw_data['closed_at'], '%Y-%m-%dT%H:%M:%SZ') < datetime.datetime.now() - datetime.timedelta(weeks=NUM_WEEKS):
-    continue
+  # if datetime.datetime.strptime(i.raw_data['closed_at'], '%Y-%m-%dT%H:%M:%SZ') < datetime.datetime.now() - datetime.timedelta(weeks=NUM_WEEKS):
+    # continue
+
+  # TODO filter out and items with `new&noteworthy/che-only` label
+  # if ...
+    # continue
 
   # TODO update the JIRA if GH issue changed
     # check for "Release Notes Text" in initial comment / issue description
@@ -203,7 +235,7 @@ for i in all_issues:
   for c in i.get_comments():
     if c.body.find(ISSUE_SYNC_COMMENT) != -1:    # and c.user.login == GITHUB_USER
       found = True
-      logging.info("Skip https://github.com/eclipse/che/issues/%s -- Already sync'd" % i.number)
+      logging.info("Skip https://github.com/" + GITHUB_ORG + "/" + GITHUB_REPO + "/issues/%s -- Already sync'd" % i.number)
       break
   if not found:
     pending_issues.append(i)
@@ -215,21 +247,21 @@ for i in pending_issues:
   if not new_jira['fixVersions']:
     d = i.raw_data
     milestone = d['milestone']['title'] if d['milestone'] and 'title' in d['milestone'] else ""
-    logging.warning("Skip https://github.com/eclipse/che/issues/%s -- Invalid/Empty milestone (%s)" % (i.number, milestone))
+    logging.warning("Skip https://github.com/" + GITHUB_ORG + "/" + GITHUB_REPO + "/issues/%s -- Invalid/Empty milestone (%s)" % (i.number, milestone))
     for l in d["labels"]:
       msg_to = get_area_lead_email(l["name"])
       if msg_to:
         break
-    subject = "repo " + GITHUB_REPO + " issue# " + str(i.number) + " has invalid milestone"
+    subject = "repo " + GITHUB_ORG + "/" + GITHUB_REPO + " issue# " + str(i.number) + " has invalid milestone"
     body = f"Issue URL: { d['html_url'] }\nTitle: { d['title'] }\nUpdated: { d['updated_at'] }\n\n" + \
       f"Issue not synced to JIRA because milestone field is invalid ({ milestone })"
     send_email(EMAIL_FROM, msg_to, subject, body)
     continue
   elif '3.x' in new_jira['fixVersions']:
-    logging.info("Skip https://github.com/eclipse/che/issues/%s -- for future release" % i.number)
+    logging.info("Skip https://github.com/" + GITHUB_ORG + "/" + GITHUB_REPO + "/issues/%s -- for future release" % i.number)
     continue
 
-  logging.info("Sync https://github.com/eclipse/che/issues/%s to JIRA" % i.number)
+  logging.info("Sync https://github.com/" + GITHUB_ORG + "/" + GITHUB_REPO + "/issues/%s to JIRA" % i.number)
   logging.debug("  - JIRA with raw data:\n" + json.dumps(new_jira, indent=2) + '\n')
   if not DRY_RUN:
     # massage new_jira to be jira API friendly
@@ -246,7 +278,7 @@ for i in pending_issues:
         customfields[k] = v
     for k in customfields.keys():
       del new_jira[k]
-    new_jira['description'] = '*Synced from Eclipse Che issue*\n\nhttps://github.com/eclipse/che/issues/' + str(i.number) + '\n\n' + mistletoe.markdown(new_jira['description'], JIRARenderer)
+    new_jira['description'] = '*Synced from ' + GITHUB_ORG + '/' + GITHUB_REPO + ' issue*\n\nhttps://github.com/' + GITHUB_ORG + '/' + GITHUB_REPO + '/issues/' + str(i.number) + '\n\n' + mistletoe.markdown(new_jira['description'], JIRARenderer)
 
     new_jira_issue = j.create_issue(fields=new_jira)
     logging.info("JIRA https://issues.redhat.com/browse/%s created" % new_jira_issue.key)
@@ -254,7 +286,7 @@ for i in pending_issues:
 
     with warnings.catch_warnings():
       warnings.simplefilter("ignore")
-      j.add_remote_link(new_jira_issue, {'url': "https://github.com/eclipse/che/issues/" + str(i.number), \
+      j.add_remote_link(new_jira_issue, {'url': "https://github.com/" + GITHUB_ORG + "/" + GITHUB_REPO + "/issues/" + str(i.number), \
         'title': new_jira['summary'] + " #" + str(i.number), \
         "icon": {"url16x16": "https://github.com/favicon.ico"}})
 
@@ -263,6 +295,3 @@ for i in pending_issues:
 
 logging.info("%s JIRAs processed." % len(pending_issues))
 
-# for debugging, dump json for a complete issue to figure out field names
-# i=j.issue("CRW-1684")
-# print(json.dumps(i.raw,indent=2))
