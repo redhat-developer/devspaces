@@ -4,6 +4,7 @@ server:
 spring:
   profiles:
     include: ovsx
+  # Disable embedded elasticsearch 
   autoconfigure:
     exclude: 
       - org.jobrunr.spring.autoconfigure.storage.JobRunrElasticSearchStorageAutoConfiguration
