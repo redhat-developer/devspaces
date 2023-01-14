@@ -12,7 +12,6 @@ import datetime
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
-# from github import Github
 from ghapi.all import GhApi
 
 import jira
