@@ -6487,3 +6487,21 @@
   timeWait: 0 mins
   timeBuild: 3 mins
   timeTotal: 4 mins
+- name: devspaces-machineexec-rhel8
+  tag: 3.5-7
+  taskId: 50072227
+  timeCreate: Sun Jan 15 03:55:15 2023
+  timeStart: Sun Jan 15 03:55:36 2023
+  timeFinish: Sun Jan 15 03:59:40 2023
+  timeWait: 0 mins
+  timeBuild: 4 mins
+  timeTotal: 4 mins
+- name: devspaces-operator-bundle
+  tag: 3.5-64
+  taskId: 50072253
+  timeCreate: Sun Jan 15 04:15:10 2023
+  timeStart: Sun Jan 15 04:15:41 2023
+  timeFinish: Sun Jan 15 04:19:03 2023
+  timeWait: 0 mins
+  timeBuild: 3 mins
+  timeTotal: 3 mins
