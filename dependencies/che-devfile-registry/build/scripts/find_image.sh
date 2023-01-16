@@ -19,7 +19,7 @@ fi
 
 for url in "${image_urls[@]}" ; do
   echo "Registry ${url}:" >> "$LOG_FILE"
-  manifest="$(skopeo --override-arch $ARCH inspect --tls-verify=false "docker://${url}" 2>> "$LOG_FILE")"
+  manifest="$(skopeo --override-arch "$ARCH" inspect --tls-verify=false "docker://${url}" 2>> "$LOG_FILE")"
   if [[ -n "$manifest" ]] ; then
     echo "$manifest"
     cat "$LOG_FILE" >&2

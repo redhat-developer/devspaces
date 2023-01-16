@@ -77,12 +77,14 @@ sed -i \
     -e "s|CHE_|DS_|g" \
     -e "s|che|devspaces|g" \
     -e "s|Che|Dev Spaces|g" \
-    ${SOURCE_TEMPLATE}
+    "${SOURCE_TEMPLATE}"
 
-yq -ryiY "(.parameters[] | select(.name == \"IMAGE\") | .value ) = \"${DOCKER_IMAGE}\"" ${SOURCE_TEMPLATE}
-yq -ryiY "(.parameters[] | select(.name == \"IMAGE\") | .description ) = \"Red Hat OpenShift Dev Spaces ${REG_NAME} registry container image. Defaults to ${DOCKER_IMAGE}\"" ${SOURCE_TEMPLATE}
-yq -ryiY "(.parameters[] | select(.name == \"IMAGE_TAG\") | .value ) = \"${DEFAULT_TAG}\"" ${SOURCE_TEMPLATE}
+yq -ryiY "(.parameters[] | select(.name == \"IMAGE\") | .value ) = \"${DOCKER_IMAGE}\"" "${SOURCE_TEMPLATE}"
+yq -ryiY "(.parameters[] | select(.name == \"IMAGE\") | .description ) = \"Red Hat OpenShift Dev Spaces ${REG_NAME} registry container image. Defaults to ${DOCKER_IMAGE}\"" "${SOURCE_TEMPLATE}"
+yq -ryiY "(.parameters[] | select(.name == \"IMAGE_TAG\") | .value ) = \"${DEFAULT_TAG}\"" "${SOURCE_TEMPLATE}"
 
+# shellcheck disable=SC2005 disable=SC2046
+# why this extra echo?
 echo "$(echo '#
 # Copyright (c) 2018-'$(date +%Y)' Red Hat, Inc.
 # This program and the accompanying materials are made
@@ -91,4 +93,4 @@ echo "$(echo '#
 #
 # SPDX-License-Identifier: EPL-2.0
 #
----' | cat - ${SOURCE_TEMPLATE})" > ${SOURCE_TEMPLATE}
+---' | cat - "${SOURCE_TEMPLATE}")" > "${SOURCE_TEMPLATE}"

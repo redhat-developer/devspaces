@@ -27,8 +27,8 @@ done
 if [[ $ALLOWED_REGISTRIES ]] || [[ $ALLOWED_TAGS ]]; then 
     had_failure=0
     script_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-    containers=$(${script_dir}/list_referenced_images.sh $target_dir)
-    containers_all=$(${script_dir}/list_referenced_images_by_file.sh $target_dir)
+    containers=$("${script_dir}/list_referenced_images.sh" "$target_dir")
+    containers_all=$("${script_dir}/list_referenced_images_by_file.sh" "$target_dir")
 fi
 
 # if no registries set, then all registries are allowed
@@ -47,6 +47,7 @@ if [[ $ALLOWED_REGISTRIES ]] && [[ $ALLOWED_REGISTRIES != " " ]]; then
             echo -n " - "
             echo "$containers_all" | grep -E "$container" | sed -r -e "s#\t# :: #g" \
                 -e "s#(http.+github.com/)(.+)(/devfile.yaml)#<a href=\1\2\3>\2</a>#" | sort -uV || true
+                # shellcheck disable=SC2219
             let had_failure=had_failure+1
         fi
     done
@@ -72,9 +73,11 @@ if [[ $ALLOWED_TAGS ]] && [[ $ALLOWED_TAGS != " " ]]; then
             echo -n " - "
             echo "$containers_all" | grep -E "$container" | sed -r -e "s#\t# :: #g" \
                 -e "s#(http.+github.com/)(.+)(/devfile.yaml)#<a href=\1\2\3>\2</a>#" | sort -uV || true
+            # shellcheck disable=SC2219
             let had_failure=had_failure+1
         fi
     done
 fi
 
+# shellcheck disable=SC2086
 if [[ $had_failure -gt 0 ]]; then exit $had_failure; fi

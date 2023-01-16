@@ -15,6 +15,7 @@ set -e
 CONTAINERS=""
 
 while IFS= read -r -d '' file; do
+  # shellcheck disable=SC2086 disable=SC2002
   URL=$(cat ${file/\/devworkspace*.yaml/\/meta.yaml} | yq -r '.links.v2')
   CONTAINERS="${CONTAINERS} $(yq -r '..|.image?' "${file}" | grep -v "null" | sort -u | sed -r -e "s#\$#!${URL}/devfile.yaml!${file##*/}#g")"
 done < <(find "$1" \( -name 'devworkspace-*.yaml' \) -print0)
