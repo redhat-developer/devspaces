@@ -30,6 +30,8 @@ GITHUB_ORG='eclipse'
 GITHUB_REPO = 'che'
 
 ISSUE_SYNC_COMMENT = "sync'd to Red Hat JIRA https://issues.redhat.com/browse/"
+# alternative comment that some devs/doc writers have manually set - if found, don't generate a new comment
+ISSUE_SYNC_COMMENT2 = "Sync'd with Red Hat JIRA https://issues.redhat.com/browse/"
 
 SMTP_HOST = "smtp.corp.redhat.com"
 SMTP_PORT = 25
@@ -243,7 +245,7 @@ def updateJiraAndGHComments(jira_id, gh_issue_id, gh_comment_id):
           # check for existing comment; don't duplicate
           found_gh_comment = False
           for gh_comment in api.issues.list_comments(gh_issue_id):
-            if gh_comment.body == ISSUE_SYNC_COMMENT + jira_id:
+            if gh_comment.body == ISSUE_SYNC_COMMENT + jira_id or gh_comment.body == ISSUE_SYNC_COMMENT2 + jira_id:
               found_gh_comment = True
               logging.info("    GH comment: https://github.com/eclipse/che/issues/" + str(gh_issue_id) + "#issuecomment-" + str(gh_comment.id))
               break
@@ -299,23 +301,25 @@ for i in all_issues:
       found = True
       break
 
-  if found == False:
+  if not found:
     # check for "Release Notes Text" in initial comment / issue description
     # search through comments for sync text of already sync'd issues
     # if found, update comments but don't create new issues
     for c in api.issues.list_comments(gh_issue_id):
-      if ISSUE_SYNC_COMMENT in c["body"]:
-        found = True
-        jira_id=c["body"].partition(ISSUE_SYNC_COMMENT)[2]
-        comment_update_date = c["updated_at"]
-        issue_update_date = api.issues.get(gh_issue_id)["updated_at"]
-        # logging.debug("issue   updated: " + issue_update_date)
-        # logging.debug("comment updated: " + comment_update_date)
-        # if the GH issue has been updated since the ISSUE_SYNC_COMMENT was added, then update the JIRA with a fresh comment
-        if datetime.datetime.strptime(issue_update_date, '%Y-%m-%dT%H:%M:%SZ') > datetime.datetime.strptime(comment_update_date, '%Y-%m-%dT%H:%M:%SZ'):
-          logging.info("  Update https://github.com/" + GITHUB_ORG + "/" + GITHUB_REPO + "/issues/%s = https://issues.redhat.com/browse/%s" % (gh_issue_id, jira_id))
-          updateJiraAndGHComments(jira_id, gh_issue_id, c["id"])
-        break
+      if not found:
+        for issue_sync_com in [ISSUE_SYNC_COMMENT, ISSUE_SYNC_COMMENT2]:
+          if not found and issue_sync_com in c["body"]:
+            found = True
+            jira_id=c["body"].partition(issue_sync_com)[2]
+            comment_update_date = c["updated_at"]
+            issue_update_date = api.issues.get(gh_issue_id)["updated_at"]
+            # logging.debug("issue   updated: " + issue_update_date)
+            # logging.debug("comment updated: " + comment_update_date)
+            # if the GH issue has been updated since the ISSUE_SYNC_COMMENT was added, then update the JIRA with a fresh comment
+            if datetime.datetime.strptime(issue_update_date, '%Y-%m-%dT%H:%M:%SZ') > datetime.datetime.strptime(comment_update_date, '%Y-%m-%dT%H:%M:%SZ'):
+              logging.info("  Update https://github.com/" + GITHUB_ORG + "/" + GITHUB_REPO + "/issues/%s = https://issues.redhat.com/browse/%s" % (gh_issue_id, jira_id))
+              updateJiraAndGHComments(jira_id, gh_issue_id, c["id"])
+            break
 
   if not found:
     pending_issues.append(i)
