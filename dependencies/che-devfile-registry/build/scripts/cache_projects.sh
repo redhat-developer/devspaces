@@ -22,6 +22,9 @@ DEVFILES_DIR="${1%/}"
 RESOURCES_DIR="${2%/}"
 TEMP_DIR="${RESOURCES_DIR}/devfiles_temp"
 TEMP_FILE="${TEMP_DIR}/temp.yaml"
+
+# used by clone_and_zip() from clone_and_zip.sh
+# shellcheck disable=SC2034
 TEMP_REPO="${TEMP_DIR}/cloned"
 
 # Update devfile to refer to a locally stored zip instead of a public git repo

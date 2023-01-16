@@ -13,7 +13,7 @@ set -e
 script_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 # shellcheck disable=SC1091
-source ${script_dir}/clone_and_zip.sh
+source "${script_dir}/clone_and_zip.sh"
 if [[ -f VERSION ]]; then 
   VERSION=$(cat VERSION)
 elif [[ -f ../VERSION ]]; then 
