@@ -43,10 +43,12 @@ Use these flags to control output:
 ```
 --debug     Enable verbose mode 
 --dryrun    Query for issues to create, but do not create JIRAs or update GH issues
---weeks n   Limit query to the last n weeks (default: 2)
+--days n    Limit query to the last n days (default: 14)
+--weeks n   Limit query to the last n weeks
+--limit x   Limit query within the date range to no more than x results
 ```
 
 Run as follows:
 ```
-python3 ghira --dryrun
+python3 ghira --days 5 --limit 3 --dryrun --debug 
 ```
