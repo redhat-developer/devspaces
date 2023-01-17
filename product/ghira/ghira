@@ -200,6 +200,16 @@ class IssueToJIRA:
         logging.error("expecting github key %s to exist in github issue data" % gh_k)
     return jira_data
 
+def getCrossReferences(gh_issue_id):
+  crossrefs=""
+  for e in api.issues.list_events_for_timeline(gh_issue_id):
+    # want 'event': 'cross-referenced' items with an 'html_url' that looks like a pull request 'https://github.com/eclipse-che/che-operator/pull/1395'
+    if e["event"] == "cross-referenced":
+      if e["source"]["type"] == "issue" and e["source"]["issue"]["html_url"] and "/pull/" in e["source"]["issue"]["html_url"] :
+        # logging.debug(gh_issue_id + " " + e["event"] + " " +  e["source"]["issue"]["html_url"])
+        crossrefs += " " + e["source"]["issue"]["html_url"]
+  return crossrefs
+
 # update an existing JIRA with new release notes content (issue title and RN text in the description), scraped from GH issue
 # then replace the old "synch'd to Red HAt JIRA" comment with a fresh one to avoid duplicate comments/updates in JIRA
 def updateJiraAndGHComments(jira_id, gh_issue_id, gh_comment_id, crossrefs):
@@ -243,18 +253,18 @@ def updateJiraAndGHComments(jira_id, gh_issue_id, gh_comment_id, crossrefs):
             api.issues.delete_comment(gh_comment_id)
           except:
             logging.info("    Could not delete comment https://github.com/eclipse/che/issues/" + str(gh_issue_id) + "#issuecomment-" + str(gh_comment_id) +"; new comment appended.")
-          else:
-            # if deleted or couldn't delete, check for existing comment; don't duplicate
-            for gh_comment in api.issues.list_comments(gh_issue_id):
-              # update comment if it contains the ISSUE_SYNC_COMMENT, so we can add PR links
-              if ISSUE_SYNC_COMMENT + jira_id in gh_comment.body or ISSUE_SYNC_COMMENT2 + jira+id in gh_comment.body:
-                found_gh_comment = True
-                logging.info("    GH comment: https://github.com/eclipse/che/issues/" + str(gh_issue_id) + "#issuecomment-" + str(gh_comment.id))
-                try:
-                  api.issues.update_comment(gh_issue_id, ISSUE_SYNC_COMMENT + jira_id  + "\n" + crossrefs.replace(" ","\n * "))
-                except:
-                  logging.info("    Could not update comment https://github.com/eclipse/che/issues/" + str(gh_issue_id) + "#issuecomment-" + str(gh_comment_id) +"!")
-                break
+        else:
+          # if deleted or couldn't delete, check for existing comment; don't duplicate
+          for gh_comment in api.issues.list_comments(gh_issue_id):
+            # update comment if it contains the ISSUE_SYNC_COMMENT, so we can add PR links
+            if ISSUE_SYNC_COMMENT + jira_id in gh_comment.body or ISSUE_SYNC_COMMENT2 + jira+id in gh_comment.body:
+              found_gh_comment = True
+              logging.info("    GH comment: https://github.com/eclipse/che/issues/" + str(gh_issue_id) + "#issuecomment-" + str(gh_comment.id))
+              try:
+                api.issues.update_comment(gh_issue_id, ISSUE_SYNC_COMMENT + jira_id  + "\n" + crossrefs.replace(" ","\n * "))
+              except:
+                logging.info("    Could not update comment https://github.com/eclipse/che/issues/" + str(gh_issue_id) + "#issuecomment-" + str(gh_comment_id) +"!")
+              break
         if not found_gh_comment:
           api.issues.create_comment(gh_issue_id, ISSUE_SYNC_COMMENT + jira_id + "\n" + crossrefs.replace(" ","\n * "))
 
@@ -311,7 +321,6 @@ for i in all_issues:
     # search through comments for sync text of already sync'd issues
     # if found, update comments but don't create new issues
     for c in api.issues.list_comments(gh_issue_id):
-      crossrefs=""
       if not found:
         for issue_sync_com in [ISSUE_SYNC_COMMENT, ISSUE_SYNC_COMMENT2]:
           if not found and issue_sync_com in c["body"]:
@@ -322,12 +331,7 @@ for i in all_issues:
             # logging.debug("issue   updated: " + issue_update_date)
             # logging.debug("comment updated: " + comment_update_date)
             # Find "cross-referenced" events - https://docs.github.com/en/developers/webhooks-and-events/events/issue-event-types#cross-referenced to get pull requests for this issue
-            for e in api.issues.list_events_for_timeline(gh_issue_id):
-              # want 'event': 'cross-referenced' items with an 'html_url' that looks like a pull request 'https://github.com/eclipse-che/che-operator/pull/1395'
-              if e["event"] == "cross-referenced":
-                if e["source"]["type"] == "issue" and e["source"]["issue"]["html_url"] and "/pull/" in e["source"]["issue"]["html_url"] :
-                  # logging.debug(gh_issue_id + " " + e["event"] + " " +  e["source"]["issue"]["html_url"])
-                  crossrefs += " " + e["source"]["issue"]["html_url"]
+            crossrefs=getCrossReferences(gh_issue_id)
 
             # if the GH issue has been updated since the ISSUE_SYNC_COMMENT was added, then update the JIRA with a fresh comment
             if datetime.datetime.strptime(issue_update_date, '%Y-%m-%dT%H:%M:%SZ') > datetime.datetime.strptime(comment_update_date, '%Y-%m-%dT%H:%M:%SZ'):
@@ -421,13 +425,7 @@ for i in pending_issues:
         "icon": {"url16x16": "https://github.com/favicon.ico"}})
 
     # Find "cross-referenced" events - https://docs.github.com/en/developers/webhooks-and-events/events/issue-event-types#cross-referenced to get pull requests for this issue
-    crossrefs=""
-    for e in api.issues.list_events_for_timeline(gh_issue_id):
-      # want 'event': 'cross-referenced' items with an 'html_url' that looks like a pull request 'https://github.com/eclipse-che/che-operator/pull/1395'
-      if e["event"] == "cross-referenced":
-        if e["source"]["type"] == "issue" and e["source"]["issue"]["html_url"] and "/pull/" in e["source"]["issue"]["html_url"] :
-          # logging.debug(gh_issue_id + " " + e["event"] + " " +  e["source"]["issue"]["html_url"])
-          crossrefs += " " + e["source"]["issue"]["html_url"]
+    crossrefs=getCrossReferences(gh_issue_id)
 
     # update github issue with comment
     gh_comment_id = api.issues.create_comment(gh_issue_id, ISSUE_SYNC_COMMENT + new_jira_issue.key + "\n" + crossrefs.replace(" ","\n * "))
