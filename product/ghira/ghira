@@ -223,7 +223,7 @@ def updateJiraAndGHComments(jira_id, gh_issue_id, gh_comment_id, crossrefs):
   else:
     found = False
     JIRA_MSG="*GH issue https://github.com/" + GITHUB_ORG + "/" + GITHUB_REPO + "/issues/" + gh_issue_id + " updated:*\n\n= " + gh_issue["title"] + gh_issue["body"].partition("Release Notes Text")[2] + "\n" + crossrefs.replace(" ","\n * ")
-
+    GH_MSG=str(ISSUE_SYNC_COMMENT + jira_id + "\n" + crossrefs.replace(" ","\n * "))
     # check existing comments in JIRA
     for jira_comment in j.issue(jira_id).fields.comment.comments:
       if jira_comment.body == JIRA_MSG:
@@ -245,7 +245,7 @@ def updateJiraAndGHComments(jira_id, gh_issue_id, gh_comment_id, crossrefs):
       # update the GH comment so we don't keep putting fresh comments on JIRA
       if DRY_RUN:
         logging.debug("    Comment on " + str(gh_comment_id) + ":")
-        logging.debug("    " + str(ISSUE_SYNC_COMMENT + jira_id + "\n" + crossrefs.replace(" ","\n * ")))
+        logging.debug("    " + GH_MSG)
       else:
         if gh_comment_id:
           logging.debug("    Delete and recreate GH comment (" + str(gh_comment_id) + ")")
@@ -261,12 +261,12 @@ def updateJiraAndGHComments(jira_id, gh_issue_id, gh_comment_id, crossrefs):
               found_gh_comment = True
               logging.info("    GH comment: https://github.com/eclipse/che/issues/" + str(gh_issue_id) + "#issuecomment-" + str(gh_comment.id))
               try:
-                api.issues.update_comment(gh_issue_id, ISSUE_SYNC_COMMENT + jira_id  + "\n" + crossrefs.replace(" ","\n * "))
+                api.issues.update_comment(gh_issue_id, GH_MSG)
               except:
                 logging.info("    Could not update comment https://github.com/eclipse/che/issues/" + str(gh_issue_id) + "#issuecomment-" + str(gh_comment_id) +"!")
               break
         if not found_gh_comment:
-          api.issues.create_comment(gh_issue_id, ISSUE_SYNC_COMMENT + jira_id + "\n" + crossrefs.replace(" ","\n * "))
+          api.issues.create_comment(gh_issue_id, GH_MSG)
 
 # Retrieve Issues from github
 since_date = (datetime.datetime.now() - datetime.timedelta(days=NUM_DAYS)).strftime('%Y-%m-%dT%H:%M:%SZ')
