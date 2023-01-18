@@ -328,7 +328,8 @@ for i in all_issues:
         for issue_sync_com in [ISSUE_SYNC_COMMENT, ISSUE_SYNC_COMMENT2]:
           if not found and issue_sync_com in c["body"]:
             found = True
-            jira_id=c["body"].partition(issue_sync_com)[2].strip()
+            jira_id=c["body"].partition(issue_sync_com)[2].splitlines()[0].strip()
+            # logging.debug("Got jiraid = " + jira_id)
             comment_update_date = c["updated_at"]
             issue_update_date = api.issues.get(gh_issue_id)["updated_at"]
             # logging.debug("issue   updated: " + issue_update_date)
