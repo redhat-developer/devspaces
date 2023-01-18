@@ -222,7 +222,7 @@ def updateJiraAndGHComments(jira_id, gh_issue_id, gh_comment_id, crossrefs):
   # only add a new comment if it's not already present, and if the issue.fields.status is not Closed
   if str(j.issue(jira_id).fields.status) == "Closed":
     logging.info("    Skip https://issues.redhat.com/browse/" + str(jira_id) + " -- JIRA is closed")
-    print("")
+    logging.info("")
   else:
     found = False
     JIRA_MSG="*GH issue https://github.com/" + GITHUB_ORG + "/" + GITHUB_REPO + "/issues/" + gh_issue_id + " updated:*\n\n= " + gh_issue["title"] + gh_issue["body"].partition("Release Notes Text")[2] + "\n" + crossrefs.replace(" ","\n * ")
@@ -231,7 +231,7 @@ def updateJiraAndGHComments(jira_id, gh_issue_id, gh_comment_id, crossrefs):
     for jira_comment in j.issue(jira_id).fields.comment.comments:
       if jira_comment.body == JIRA_MSG:
         logging.info("    Skip - JIRA comment already exists: https://issues.redhat.com/browse/" + str(jira_id))
-        print("")
+        logging.info("")
         found = True
         break
 
@@ -292,7 +292,7 @@ try:
   raw_issues = str(api.issues.list_for_repo(**issue_search))
   all_issues = ast.literal_eval(json.loads(json.dumps(raw_issues)))
   logging.info("  " + str(len(all_issues)) + " issues found")
-  print("")
+  logging.info("")
   # logging.debug("Issues json: " + raw_issues_string)
   # with open("/tmp/ghira.issues.json", "w") as outfile:
   #   outfile.write(json.dump(all_issues_string))
@@ -315,7 +315,7 @@ for i in all_issues:
   for l in api.issues.list_labels_on_issue(gh_issue_id):
     if "new&noteworthy/che-only" in l["name"]:
       logging.info("  Skip https://github.com/" + GITHUB_ORG + "/" + GITHUB_REPO + "/issues/%s -- Upstream-only issue" % gh_issue_id)
-      print("")
+      logging.info("")
       found = True
       break
 
@@ -437,7 +437,7 @@ for i in pending_issues:
     # update JIRA with comment (don't also update GH since we just created the comment one line above)
     updateJiraAndGHComments(new_jira_issue.key, gh_issue_id, None, crossrefs)
 
-  logging.info("")
+    logging.info("")
 
 if not DRY_RUN:
   logging.info("%s JIRAs processed." % len(pending_issues))
