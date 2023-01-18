@@ -221,7 +221,7 @@ def updateJiraAndGHComments(jira_id, gh_issue_id, gh_comment_id, crossrefs):
 
   # only add a new comment if it's not already present, and if the issue.fields.status is not Closed
   if str(j.issue(jira_id).fields.status) == "Closed":
-    logging.info("    Skip https://issues.redhat.com/browse/" + str(jira_id) + " -- JIRA is closed")
+    logging.info("    Skip https://github.com/" + GITHUB_ORG + "/" + GITHUB_REPO + "/issues/" + gh_issue_id + " = https://issues.redhat.com/browse/" + str(jira_id) + " -- JIRA is closed")
     logging.info("")
   else:
     found = False
@@ -230,7 +230,7 @@ def updateJiraAndGHComments(jira_id, gh_issue_id, gh_comment_id, crossrefs):
     # check existing comments in JIRA
     for jira_comment in j.issue(jira_id).fields.comment.comments:
       if jira_comment.body == JIRA_MSG:
-        logging.info("    Skip - JIRA comment already exists: https://issues.redhat.com/browse/" + str(jira_id))
+        logging.info("    Skip https://github.com/" + GITHUB_ORG + "/" + GITHUB_REPO + "/issues/" + gh_issue_id + " = https://issues.redhat.com/browse/" + str(jira_id) + " -- JIRA comment already exists")
         logging.info("")
         found = True
         break
@@ -340,7 +340,7 @@ for i in all_issues:
 
             # if the GH issue has been updated since the ISSUE_SYNC_COMMENT was added, then update the JIRA with a fresh comment
             if datetime.datetime.strptime(issue_update_date, '%Y-%m-%dT%H:%M:%SZ') > datetime.datetime.strptime(comment_update_date, '%Y-%m-%dT%H:%M:%SZ'):
-              logging.info("  Update https://github.com/" + GITHUB_ORG + "/" + GITHUB_REPO + "/issues/%s = https://issues.redhat.com/browse/%s ..." % (gh_issue_id, jira_id))
+              # logging.info("  Update https://github.com/" + GITHUB_ORG + "/" + GITHUB_REPO + "/issues/%s = https://issues.redhat.com/browse/%s ..." % (gh_issue_id, jira_id))
               updateJiraAndGHComments(jira_id, gh_issue_id, c["id"], crossrefs)
             else:
               logging.info("    Skip https://github.com/" + GITHUB_ORG + "/" + GITHUB_REPO + "/issues/%s = https://issues.redhat.com/browse/%s -- no change\n" % (gh_issue_id, jira_id))
@@ -361,7 +361,7 @@ for i in pending_issues:
   if len(new_jira['fixVersions']) == 0:
     if milestone == "":
       # no milestone, send email
-      logging.warning("Skip https://github.com/" + GITHUB_ORG + "/" + GITHUB_REPO + "/issues/%s -- Milestone (%s) is invalid or empty" % (gh_issue_id, milestone))
+      logging.warning("    Skip https://github.com/" + GITHUB_ORG + "/" + GITHUB_REPO + "/issues/%s -- milestone (%s) is invalid or empty" % (gh_issue_id, milestone))
       for l in i["labels"]:
         msg_to = get_area_lead_email(l["name"])
         if msg_to:
@@ -385,7 +385,7 @@ for i in pending_issues:
     #   send_email(EMAIL_FROM, msg_to, subject, body)
     #   continue
   elif '3.x' in new_jira['fixVersions']:
-    logging.info("Skip https://github.com/" + GITHUB_ORG + "/" + GITHUB_REPO + "/issues/%s -- for future release" % gh_issue_id)
+    logging.info("    Skip https://github.com/" + GITHUB_ORG + "/" + GITHUB_REPO + "/issues/%s -- for future release" % gh_issue_id)
     continue
 
   # TODO should we skip OLD issues for which there's no fixversion (because no mapping found in job-config.json?)
