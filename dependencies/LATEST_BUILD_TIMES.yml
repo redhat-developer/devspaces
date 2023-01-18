@@ -6559,3 +6559,21 @@
   timeWait: 0 mins
   timeBuild: 3 mins
   timeTotal: 4 mins
+- name: devspaces-operator
+  tag: 3.5-20
+  taskId: 50130956
+  timeCreate: Wed Jan 18 02:08:56 2023
+  timeStart: Wed Jan 18 02:09:42 2023
+  timeFinish: Wed Jan 18 02:23:24 2023
+  timeWait: 0 mins
+  timeBuild: 13 mins
+  timeTotal: 14 mins
+- name: devspaces-operator-bundle
+  tag: 3.5-68
+  taskId: 50131347
+  timeCreate: Wed Jan 18 02:29:18 2023
+  timeStart: Wed Jan 18 02:29:43 2023
+  timeFinish: Wed Jan 18 02:33:52 2023
+  timeWait: 0 mins
+  timeBuild: 4 mins
+  timeTotal: 4 mins
