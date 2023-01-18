@@ -290,8 +290,7 @@ all_issues = []
 try:
   raw_issues = str(api.issues.list_for_repo(**issue_search))
   all_issues = ast.literal_eval(json.loads(json.dumps(raw_issues)))
-  logging.info("  " + str(len(all_issues)) + " issues found")
-  logging.info("")
+  logging.info("  " + str(len(all_issues)) + " issues found\n")
   # logging.debug("Issues json: " + raw_issues_string)
   # with open("/tmp/ghira.issues.json", "w") as outfile:
   #   outfile.write(json.dump(all_issues_string))
