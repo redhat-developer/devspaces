@@ -310,12 +310,12 @@ pending_issues = []
 for i in all_issues:
   found = False
   gh_issue_id = str(i["number"])
-  logging.debug("Check: https://github.com/" + GITHUB_ORG + "/" + GITHUB_REPO + "/issues/" + gh_issue_id)
+  logging.debug("Check   https://github.com/" + GITHUB_ORG + "/" + GITHUB_REPO + "/issues/" + gh_issue_id)
  
   # filter out and items with `new&noteworthy/che-only` label
   for l in api.issues.list_labels_on_issue(gh_issue_id):
     if "new&noteworthy/che-only" in l["name"]:
-      logging.info("  Skip https://github.com/" + GITHUB_ORG + "/" + GITHUB_REPO + "/issues/%s -- Upstream-only issue" % gh_issue_id)
+      logging.info("    Skip https://github.com/" + GITHUB_ORG + "/" + GITHUB_REPO + "/issues/%s -- upstream-only" % gh_issue_id)
       logging.info("")
       found = True
       break
@@ -343,7 +343,7 @@ for i in all_issues:
               logging.info("  Update https://github.com/" + GITHUB_ORG + "/" + GITHUB_REPO + "/issues/%s = https://issues.redhat.com/browse/%s ..." % (gh_issue_id, jira_id))
               updateJiraAndGHComments(jira_id, gh_issue_id, c["id"], crossrefs)
             else:
-              logging.info("  Skip https://github.com/" + GITHUB_ORG + "/" + GITHUB_REPO + "/issues/%s = https://issues.redhat.com/browse/%s - no change\n" % (gh_issue_id, jira_id))
+              logging.info("    Skip https://github.com/" + GITHUB_ORG + "/" + GITHUB_REPO + "/issues/%s = https://issues.redhat.com/browse/%s -- no change\n" % (gh_issue_id, jira_id))
             break
 
   if not found:
