@@ -240,14 +240,14 @@ def updateJiraAndGHComments(jira_id, gh_issue_id, gh_comment_id, crossrefs):
     if not found:
       # updated GH data, including new_jira["description"] (release notes text) and new_jira["summary"] (issue title)
       if DRY_RUN:
-        logging.debug("    Comment on " + str(jira_id) + ":")
+        logging.debug("    Comment on https://issues.redhat.com/browse/" + str(jira_id) + " :")
         logging.debug("    " + str(JIRA_MSG))
       else:
         j.add_comment(jira_id, JIRA_MSG)
 
       # update the GH comment so we don't keep putting fresh comments on JIRA
       if DRY_RUN:
-        logging.debug("    Comment on " + str(gh_comment_id) + ":")
+        logging.debug("    Comment on https://github.com/eclipse/che/issues/" + str(gh_issue_id) + "#issuecomment-" + str(gh_comment_id) + " :")
         logging.debug("    " + GH_MSG)
       else:
         if gh_comment_id:
