@@ -7,11 +7,13 @@ import re
 import json
 import logging
 import smtplib
+import ast
 import datetime
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
-from github import Github
+from ghapi.all import GhApi
+
 import jira
 import requests
 import mistletoe
@@ -24,9 +26,12 @@ JIRA_EMAIL = os.environ["JIRA_EMAIL"]
 JIRA_TOKEN = os.environ["JIRA_TOKEN"]
 
 GITHUB_TOKEN = os.environ["GITHUB_TOKEN"]
-GITHUB_REPO = "eclipse/che"
+GITHUB_ORG='eclipse'
+GITHUB_REPO = 'che'
 
 ISSUE_SYNC_COMMENT = "sync'd to Red Hat JIRA https://issues.redhat.com/browse/"
+# alternative comment that some devs/doc writers have manually set - if found, don't generate a new comment
+ISSUE_SYNC_COMMENT2 = "Sync'd with Red Hat JIRA https://issues.redhat.com/browse/"
 
 SMTP_HOST = "smtp.corp.redhat.com"
 SMTP_PORT = 25
@@ -35,21 +40,26 @@ EMAIL_TO_DEFAULT = "nboldt@redhat.com"
 
 # defaults
 LOG_LEVEL = logging.INFO
-NUM_WEEKS = 2
+NUM_DAYS = 14
+LIMIT = 0
 DRY_RUN=False
 
 # parse option flags
 options, remainder = getopt.gnu_getopt(
-  sys.argv[1:], 'o:v', ['weeks=', 'debug', 'dryrun', 'dry-run',])
+  sys.argv[1:], 'o:v', ['limit=', 'days=', 'weeks=', 'debug', 'dryrun', 'dry-run',])
 for opt, arg in options:
   if opt in ('--dryrun', '--dry-run'):
     DRY_RUN=True
   elif opt in ('--debug'):
     LOG_LEVEL = logging.DEBUG
-  elif opt == '--weeks':
-    NUM_WEEKS = int(arg)
+  elif opt in ('--weeks'):
+    NUM_DAYS = int(arg) * 7
+  elif opt in ('--days'):
+    NUM_DAYS = int(arg)
+  elif opt in ('--limit'):
+    LIMIT = int(arg)
   
-print("Check for new&noteworthy issues closed in the last " + str(NUM_WEEKS) + " weeks")
+print("Check for new&noteworthy issues closed in the last " + str(NUM_DAYS) + " days")
 if DRY_RUN:
   print("Dry run. Nothing will be created.")
 
@@ -62,9 +72,14 @@ logging.basicConfig(handlers=[ExitOnErrorHandler()], format='%(levelname)s: %(me
 
 j = jira.JIRA(server=JIRA_URL, token_auth=JIRA_TOKEN)
 
-g = Github(GITHUB_TOKEN)
-r = g.get_repo(GITHUB_REPO)
-GITHUB_USER = g.get_user().login
+# to verify login token works:
+# issue = j.issue('CRW-3818')
+# print(issue.fields.summary)
+
+# g = Github(GITHUB_TOKEN)
+# r = g.get_repo(GITHUB_REPO)
+api = GhApi(owner=GITHUB_ORG, repo=GITHUB_REPO, token=GITHUB_TOKEN)
+# logging.debug("Got GH user: " + str(api.users.get_authenticated()))
 
 def send_email(msg_from, msg_to, subject, body):
   if not msg_to:
@@ -104,13 +119,16 @@ class IssueToJIRA:
     url = 'https://raw.githubusercontent.com/redhat-developer/devspaces/devspaces-3-rhel-8/dependencies/job-config.json'
     resp = requests.get(url)
     if resp.status_code != 200:
-      logging.error("Unable to fetch fix version mapping from theia-sources.groovy in github")
+      logging.error("Unable to fetch fix version mapping from " + str(url))
+    else:
+      logging.debug("Loaded " + str(url))
     txt = resp.text
 
     version_map = json.loads(txt)
     try:
       n = {}
-      version_map = version_map["Jobs"]["theia"]
+      # pull mapping from a container image we know will always be part of the deployment
+      version_map = version_map["Jobs"]["operator"]
       for k, vs in version_map.items():
         for v in vs['upstream_branch']:
           n[v] = k
@@ -139,6 +157,11 @@ class IssueToJIRA:
         return [version_map[data['title'] + '.x']]
     return []
 
+  # for debugging, dump json for a complete issue to help figure out field names
+  # can also use JQL to see mapping of field name to field ID
+  # i=j.issue("CRW-3643")
+  # print(json.dumps(i.raw,indent=2))
+
   # map github issue to jira issue
   data_map = {
     'body': 'description',
@@ -151,15 +174,20 @@ class IssueToJIRA:
     'project': 'CRW',
     'issuetype': {'name': 'Task'},
     'components': [{"name": "docs"}],
+    # "Release Note Text" (will set this to a better value later)
     'customfield_12310211': 'To be written by team lead or assignee',
-    'customfield_12310213': {'value': 'Not Yet Documented'}
+    # "Release Note Status"
+    'customfield_12310213': {'value': 'Proposed'}
+    # TODO can we guess this from the upstream issue labels / body / comments?
+    # "Release Note Type" 
+    # 'customfield_12320850': ...
   }
 
   # convert github issue to jira issue
   #  - use raw data from both apis. map keys using data_map.
   #  - non-trivial data_map can use (name, function) tuple instead of name
   def convert(issue):
-    gh_data = issue.raw_data
+    gh_data = issue
     # logging.debug(json.dumps(gh_data, indent=2))
     jira_data = copy.deepcopy(IssueToJIRA.default_jira_data)
 
@@ -175,94 +203,243 @@ class IssueToJIRA:
         logging.error("expecting github key %s to exist in github issue data" % gh_k)
     return jira_data
 
-# TODO filter out and items with `new&noteworthy/che-only` label
+def getCrossReferences(gh_issue_id):
+  crossrefs=""
+  for e in api.issues.list_events_for_timeline(gh_issue_id):
+    # want 'event': 'cross-referenced' items with an 'html_url' that looks like a pull request 'https://github.com/eclipse-che/che-operator/pull/1395'
+    if e["event"] == "cross-referenced":
+      if e["source"]["type"] == "issue" and e["source"]["issue"]["html_url"] and "/pull/" in e["source"]["issue"]["html_url"] :
+        # logging.debug(gh_issue_id + " " + e["event"] + " " +  e["source"]["issue"]["html_url"])
+        crossrefs += " " + e["source"]["issue"]["html_url"]
+  return crossrefs
+
+# update an existing JIRA with new release notes content (issue title and RN text in the description), scraped from GH issue
+# then replace the old "synch'd to Red HAt JIRA" comment with a fresh one to avoid duplicate comments/updates in JIRA
+def updateJiraAndGHComments(jira_id, gh_issue_id, gh_comment_id, crossrefs):
+  gh_issue = api.issues.get(gh_issue_id)
+  # logging.debug(gh_issue) # check for update date
+
+  # only add a new comment if it's not already present, and if the issue.fields.status is not Closed
+  if str(j.issue(jira_id).fields.status) == "Closed":
+    logging.info("    Skip https://issues.redhat.com/browse/" + str(jira_id) + " -- JIRA is closed")
+    print("")
+  else:
+    found = False
+    JIRA_MSG="*GH issue https://github.com/" + GITHUB_ORG + "/" + GITHUB_REPO + "/issues/" + gh_issue_id + " updated:*\n\n= " + gh_issue["title"] + gh_issue["body"].partition("Release Notes Text")[2] + "\n" + crossrefs.replace(" ","\n * ")
+    GH_MSG=str(ISSUE_SYNC_COMMENT + jira_id + "\n" + crossrefs.replace(" ","\n * "))
+    # check existing comments in JIRA
+    for jira_comment in j.issue(jira_id).fields.comment.comments:
+      if jira_comment.body == JIRA_MSG:
+        logging.info("    Skip - JIRA comment already exists: https://issues.redhat.com/browse/" + str(jira_id))
+        print("")
+        found = True
+        break
+
+    found_gh_comment = False
+
+    if not found:
+      # updated GH data, including new_jira["description"] (release notes text) and new_jira["summary"] (issue title)
+      if DRY_RUN:
+        logging.debug("    Comment on " + str(jira_id) + ":")
+        logging.debug("    " + str(JIRA_MSG))
+      else:
+        j.add_comment(jira_id, JIRA_MSG)
+
+      # update the GH comment so we don't keep putting fresh comments on JIRA
+      if DRY_RUN:
+        logging.debug("    Comment on " + str(gh_comment_id) + ":")
+        logging.debug("    " + GH_MSG)
+      else:
+        if gh_comment_id:
+          logging.debug("    Delete and recreate GH comment (" + str(gh_comment_id) + ")")
+          try:
+            api.issues.delete_comment(gh_comment_id)
+          except:
+            logging.info("    Could not delete comment https://github.com/eclipse/che/issues/" + str(gh_issue_id) + "#issuecomment-" + str(gh_comment_id) +"; new comment appended.")
+        else:
+          # if deleted or couldn't delete, check for existing comment; don't duplicate
+          for gh_comment in api.issues.list_comments(gh_issue_id):
+            # update comment if it contains the ISSUE_SYNC_COMMENT, so we can add PR links
+            if ISSUE_SYNC_COMMENT + jira_id in gh_comment.body or ISSUE_SYNC_COMMENT2 + jira+id in gh_comment.body:
+              found_gh_comment = True
+              logging.info("    GH comment: https://github.com/eclipse/che/issues/" + str(gh_issue_id) + "#issuecomment-" + str(gh_comment.id))
+              try:
+                api.issues.update_comment(gh_issue_id, GH_MSG)
+              except:
+                logging.info("    Could not update comment https://github.com/eclipse/che/issues/" + str(gh_issue_id) + "#issuecomment-" + str(gh_comment_id) +"!")
+              break
+        if not found_gh_comment:
+          api.issues.create_comment(gh_issue_id, GH_MSG)
+
 # Retrieve Issues from github
-#   search term definitions: https://pygithub.readthedocs.io/en/latest/github_objects/Issue.html
+since_date = (datetime.datetime.now() - datetime.timedelta(days=NUM_DAYS)).strftime('%Y-%m-%dT%H:%M:%SZ')
+logging.info("Searching for issues with https://api.github.com/repos/" + GITHUB_ORG + "/" + GITHUB_REPO + "/issues?filter=all&state=closed&labels=new%26noteworthy&sort=updated&since=" + since_date)
 issue_search = {
-  'state': 'closed',
-  'labels': ['new&noteworthy']
+  "owner": GITHUB_ORG,
+  "repo": GITHUB_REPO,
+  "filter": "all",
+  "state": "closed",
+  "labels": "new&noteworthy",
+  "sort": "updated",
+  "direction": "desc",
+  # use since=2023-01-11T00:00:00Z to reduce payload
+  "since": since_date,
+  "per_page": str(LIMIT) 
 }
+
 all_issues = []
 try:
-  all_issues = r.get_issues(**issue_search)
+  raw_issues = str(api.issues.list_for_repo(**issue_search))
+  all_issues = ast.literal_eval(json.loads(json.dumps(raw_issues)))
+  logging.info("  " + str(len(all_issues)) + " issues found")
+  print("")
+  # logging.debug("Issues json: " + raw_issues_string)
+  # with open("/tmp/ghira.issues.json", "w") as outfile:
+  #   outfile.write(json.dump(all_issues_string))
+
 except BaseException as err:
-  logging.error("No closed new&noteworthy issues found: https://github.com/eclipse/che/issues?q=is%3Aissue+is%3Aclosed+label%3Anew%26noteworthy")
+  logging.error("No closed new&noteworthy issues found: https://github.com/" + GITHUB_ORG + "/" + GITHUB_REPO + "/issues?q=is%3Aissue+is%3Aclosed+label%3Anew%26noteworthy")
   logging.error(f"Unexpected {err}, {type(err)}")
+
+# for debugging, dump list of api.issues methods
+# logging.debug(api.issues)
 
 # filter out items
 pending_issues = []
 for i in all_issues:
-  # only look at issues closed in last NUM_WEEKS weeks
-  if datetime.datetime.strptime(i.raw_data['closed_at'], '%Y-%m-%dT%H:%M:%SZ') < datetime.datetime.now() - datetime.timedelta(weeks=NUM_WEEKS):
-    continue
-
-  # TODO update the JIRA if GH issue changed
-    # check for "Release Notes Text" in initial comment / issue description
-  # search through comments for sync text of already sync'd issues
   found = False
-  for c in i.get_comments():
-    if c.body.find(ISSUE_SYNC_COMMENT) != -1:    # and c.user.login == GITHUB_USER
+  gh_issue_id = str(i["number"])
+  logging.debug("Check: https://github.com/" + GITHUB_ORG + "/" + GITHUB_REPO + "/issues/" + gh_issue_id)
+ 
+  # filter out and items with `new&noteworthy/che-only` label
+  for l in api.issues.list_labels_on_issue(gh_issue_id):
+    if "new&noteworthy/che-only" in l["name"]:
+      logging.info("  Skip https://github.com/" + GITHUB_ORG + "/" + GITHUB_REPO + "/issues/%s -- Upstream-only issue" % gh_issue_id)
+      print("")
       found = True
-      logging.info("Skip https://github.com/eclipse/che/issues/%s -- Already sync'd" % i.number)
       break
+
+  if not found:
+    # check for "Release Notes Text" in initial comment / issue description
+    # search through comments for sync text of already sync'd issues
+    # if found, update comments but don't create new issues
+    for c in api.issues.list_comments(gh_issue_id):
+      if not found:
+        for issue_sync_com in [ISSUE_SYNC_COMMENT, ISSUE_SYNC_COMMENT2]:
+          if not found and issue_sync_com in c["body"]:
+            found = True
+            jira_id=c["body"].partition(issue_sync_com)[2].strip()
+            comment_update_date = c["updated_at"]
+            issue_update_date = api.issues.get(gh_issue_id)["updated_at"]
+            # logging.debug("issue   updated: " + issue_update_date)
+            # logging.debug("comment updated: " + comment_update_date)
+            # Find "cross-referenced" events - https://docs.github.com/en/developers/webhooks-and-events/events/issue-event-types#cross-referenced to get pull requests for this issue
+            crossrefs=getCrossReferences(gh_issue_id)
+
+            # if the GH issue has been updated since the ISSUE_SYNC_COMMENT was added, then update the JIRA with a fresh comment
+            if datetime.datetime.strptime(issue_update_date, '%Y-%m-%dT%H:%M:%SZ') > datetime.datetime.strptime(comment_update_date, '%Y-%m-%dT%H:%M:%SZ'):
+              logging.info("  Update https://github.com/" + GITHUB_ORG + "/" + GITHUB_REPO + "/issues/%s = https://issues.redhat.com/browse/%s ..." % (gh_issue_id, jira_id))
+              updateJiraAndGHComments(jira_id, gh_issue_id, c["id"], crossrefs)
+            else:
+              logging.info("  Skip https://github.com/" + GITHUB_ORG + "/" + GITHUB_REPO + "/issues/%s = https://issues.redhat.com/browse/%s - no change\n" % (gh_issue_id, jira_id))
+            break
+
   if not found:
     pending_issues.append(i)
 
 # convert issue to jira
 for i in pending_issues:
   new_jira = IssueToJIRA.convert(i)
+  # logging.debug(new_jira)
+  gh_issue_id = str(i["number"])
 
-  if not new_jira['fixVersions']:
-    d = i.raw_data
-    milestone = d['milestone']['title'] if d['milestone'] and 'title' in d['milestone'] else ""
-    logging.warning("Skip https://github.com/eclipse/che/issues/%s -- Invalid/Empty milestone (%s)" % (i.number, milestone))
-    for l in d["labels"]:
-      msg_to = get_area_lead_email(l["name"])
-      if msg_to:
-        break
-    subject = "repo " + GITHUB_REPO + " issue# " + str(i.number) + " has invalid milestone"
-    body = f"Issue URL: { d['html_url'] }\nTitle: { d['title'] }\nUpdated: { d['updated_at'] }\n\n" + \
-      f"Issue not synced to JIRA because milestone field is invalid ({ milestone })"
-    send_email(EMAIL_FROM, msg_to, subject, body)
-    continue
+  milestone = i['milestone']['title'] if i['milestone'] and 'title' in i['milestone'] else ""
+  logging.debug("Converting issue #" + gh_issue_id + " [" + milestone + "]")
+
+  if len(new_jira['fixVersions']) == 0:
+    if milestone == "":
+      # no milestone, send email
+      logging.warning("Skip https://github.com/" + GITHUB_ORG + "/" + GITHUB_REPO + "/issues/%s -- Milestone (%s) is invalid or empty" % (gh_issue_id, milestone))
+      for l in i["labels"]:
+        msg_to = get_area_lead_email(l["name"])
+        if msg_to:
+          break
+      subject = "repo " + GITHUB_ORG + "/" + GITHUB_REPO + " issue# " + gh_issue_id + " has invalid or missing milestone"
+      body = f"Issue URL: { i['html_url'] }\nTitle: { i['title'] }\nUpdated: { i['updated_at'] }\n\n" + \
+        f"Issue not synced to JIRA because milestone field is invalid or missing ({ milestone })"
+      send_email(EMAIL_FROM, msg_to, subject, body)
+      continue
+    # if we want to send emails for N&N issues that cannot be synced because they're too old - not found in job-config.json mapping - enable this block
+    # else:
+    #   # if can't resolve old milestone in https://github.com/redhat-developer/devspaces/blob/devspaces-3-rhel-8/dependencies/job-config.json, it's too old to process as N&N 
+    #   logging.warning("Skip https://github.com/" + GITHUB_ORG + "/" + GITHUB_REPO + "/issues/%s -- Milestone (%s) is not found in job-config.json (too old?)" % (gh_issue_id, milestone))
+    #   for l in i["labels"]:
+    #     msg_to = get_area_lead_email(l["name"])
+    #     if msg_to:
+    #       break
+    #   subject = "repo " + GITHUB_ORG + "/" + GITHUB_REPO + " issue# " + gh_issue_id + " has invalid or old milestone"
+    #   body = f"Issue URL: { i['html_url'] }\nTitle: { i['title'] }\nUpdated: { i['updated_at'] }\n\n" + \
+    #     f"Issue not synced to JIRA because milestone field is invalid or too old ({ milestone })"
+    #   send_email(EMAIL_FROM, msg_to, subject, body)
+    #   continue
   elif '3.x' in new_jira['fixVersions']:
-    logging.info("Skip https://github.com/eclipse/che/issues/%s -- for future release" % i.number)
+    logging.info("Skip https://github.com/" + GITHUB_ORG + "/" + GITHUB_REPO + "/issues/%s -- for future release" % gh_issue_id)
     continue
 
-  logging.info("Sync https://github.com/eclipse/che/issues/%s to JIRA" % i.number)
-  logging.debug("  - JIRA with raw data:\n" + json.dumps(new_jira, indent=2) + '\n')
+  # TODO should we skip OLD issues for which there's no fixversion (because no mapping found in job-config.json?)
+
+  logging.info("Sync https://github.com/" + GITHUB_ORG + "/" + GITHUB_REPO + "/issues/%s to JIRA" % gh_issue_id)
+  # massage new_jira to be jira API friendly
+  fvs = []   # format fixVersions
+  for v in new_jira['fixVersions']:
+    fvs.append({'name': v})
+  new_jira['fixVersions'] = fvs
+  # affects version set to same default value as fixversion
+  new_jira['versions'] = fvs 
+
+  # some fields cannot be set on creation, only on update
+  customfields = {}   
+  customfields["description"] = '*Synced from ' + GITHUB_ORG + '/' + GITHUB_REPO + ' issue*\n\nhttps://github.com/' + GITHUB_ORG + '/' + GITHUB_REPO + '/issues/' + gh_issue_id + '\n\n' + mistletoe.markdown(new_jira['description'], JIRARenderer)
+  for k, v in new_jira.items():
+    # logging.debug(k + " = " + str(v))
+    if k.startswith('customfield_'):
+      customfields[k] = v
+  # set the release notes text field to the value of the upstream issue + release notes text content in the uptream issue description, if available
+  # scrape out just the content after RELEASE NOTES TEXT line
+  customfields["customfield_12310211"] = "= " + new_jira["summary"] + new_jira["description"].partition("Release Notes Text")[2]
+  for k in customfields.keys():
+    del new_jira[k]
+
+  # prepend "[RN] " on summary field
+  new_jira["summary"] = "[RN] " + new_jira["summary"]
+
+  logging.debug("JIRA json: new_jira:\n" + json.dumps(new_jira, indent=2) + '\n')
+  logging.debug("JIRA json: customfields:\n" + json.dumps(customfields, indent=2) + '\n')
+
   if not DRY_RUN:
-    # massage new_jira to be jira API friendly
-    fvs = []   # format fixVersions
-    for v in new_jira['fixVersions']:
-      fvs.append({'name': v})
-    new_jira['fixVersions'] = fvs
-    # affects version set to same default value as fixversion
-    new_jira['versions'] = fvs 
-
-    customfields = {}   # custom fields only allowed to be updated and not set on create?
-    for k, v in new_jira.items():
-      if k.startswith('customfield_'):
-        customfields[k] = v
-    for k in customfields.keys():
-      del new_jira[k]
-    new_jira['description'] = '*Synced from Eclipse Che issue*\n\nhttps://github.com/eclipse/che/issues/' + str(i.number) + '\n\n' + mistletoe.markdown(new_jira['description'], JIRARenderer)
-
     new_jira_issue = j.create_issue(fields=new_jira)
     logging.info("JIRA https://issues.redhat.com/browse/%s created" % new_jira_issue.key)
     new_jira_issue.update(fields=customfields)
 
     with warnings.catch_warnings():
       warnings.simplefilter("ignore")
-      j.add_remote_link(new_jira_issue, {'url': "https://github.com/eclipse/che/issues/" + str(i.number), \
-        'title': new_jira['summary'] + " #" + str(i.number), \
+      j.add_remote_link(new_jira_issue, {'url': "https://github.com/" + GITHUB_ORG + "/" + GITHUB_REPO + "/issues/" + gh_issue_id, \
+        'title': new_jira['summary'] + " #" + gh_issue_id, \
         "icon": {"url16x16": "https://github.com/favicon.ico"}})
 
+    # Find "cross-referenced" events - https://docs.github.com/en/developers/webhooks-and-events/events/issue-event-types#cross-referenced to get pull requests for this issue
+    crossrefs=getCrossReferences(gh_issue_id)
+
     # update github issue with comment
-    i.create_comment(ISSUE_SYNC_COMMENT + new_jira_issue.key)
+    gh_comment_id = api.issues.create_comment(gh_issue_id, ISSUE_SYNC_COMMENT + new_jira_issue.key + "\n" + crossrefs.replace(" ","\n * "))
 
-logging.info("%s JIRAs processed." % len(pending_issues))
+    # update JIRA with comment (don't also update GH since we just created the comment one line above)
+    updateJiraAndGHComments(new_jira_issue.key, gh_issue_id, None, crossrefs)
 
-# for debugging, dump json for a complete issue to figure out field names
-# i=j.issue("CRW-1684")
-# print(json.dumps(i.raw,indent=2))
+  logging.info("")
+
+if not DRY_RUN:
+  logging.info("%s JIRAs processed." % len(pending_issues))
+else:
+  logging.info("%s JIRAs processed (no changes applied)." % len(pending_issues))
+
