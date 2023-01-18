@@ -240,22 +240,22 @@ def updateJiraAndGHComments(jira_id, gh_issue_id, gh_comment_id, crossrefs):
     if not found:
       # updated GH data, including new_jira["description"] (release notes text) and new_jira["summary"] (issue title)
       if DRY_RUN:
-        logging.debug("    Comment on https://issues.redhat.com/browse/" + str(jira_id) + " :")
+        logging.debug("    JIRA comment on https://issues.redhat.com/browse/" + str(jira_id) + " :")
         logging.debug("    " + str(JIRA_MSG))
       else:
         j.add_comment(jira_id, JIRA_MSG)
 
       # update the GH comment so we don't keep putting fresh comments on JIRA
       if DRY_RUN:
-        logging.debug("    Comment on https://github.com/eclipse/che/issues/" + str(gh_issue_id) + "#issuecomment-" + str(gh_comment_id) + " :")
+        logging.debug("    GH comment on https://github.com/eclipse/che/issues/" + str(gh_issue_id) + "#issuecomment-" + str(gh_comment_id) + " :")
         logging.debug("    " + GH_MSG)
       else:
         if gh_comment_id:
-          logging.debug("    Delete and recreate GH comment (" + str(gh_comment_id) + ")")
+          logging.debug("    Delete and recreate GH comment: https://github.com/eclipse/che/issues/" + str(gh_issue_id) + "#issuecomment-" + str(gh_comment_id) + "")
           try:
             api.issues.delete_comment(gh_comment_id)
           except:
-            logging.info("    Could not delete comment https://github.com/eclipse/che/issues/" + str(gh_issue_id) + "#issuecomment-" + str(gh_comment_id) +"; new comment appended.")
+            logging.info("    Could not delete GH comment https://github.com/eclipse/che/issues/" + str(gh_issue_id) + "#issuecomment-" + str(gh_comment_id) +"; new comment appended.")
         else:
           # if deleted or couldn't delete, check for existing comment; don't duplicate
           for gh_comment in api.issues.list_comments(gh_issue_id):
@@ -266,10 +266,11 @@ def updateJiraAndGHComments(jira_id, gh_issue_id, gh_comment_id, crossrefs):
               try:
                 api.issues.update_comment(gh_issue_id, GH_MSG)
               except:
-                logging.info("    Could not update comment https://github.com/eclipse/che/issues/" + str(gh_issue_id) + "#issuecomment-" + str(gh_comment_id) +"!")
+                logging.info("    Could not update GH comment https://github.com/eclipse/che/issues/" + str(gh_issue_id) + "#issuecomment-" + str(gh_comment_id) +"!")
               break
         if not found_gh_comment:
-          api.issues.create_comment(gh_issue_id, GH_MSG)
+          gh_comment_id = api.issues.create_comment(gh_issue_id, GH_MSG)
+          logging.info("    GH comment: https://github.com/eclipse/che/issues/" + str(gh_issue_id) + "#issuecomment-" + str(gh_comment_id))
 
 # Retrieve Issues from github
 since_date = (datetime.datetime.now() - datetime.timedelta(days=NUM_DAYS)).strftime('%Y-%m-%dT%H:%M:%SZ')
