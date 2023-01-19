@@ -11,8 +11,6 @@ name: Plugin Registry - PR check - Publish Registry Content
 
 on:
   pull_request:
-    paths:
-      - '.github/**'
     branches: 
       - '**'
 # on:
