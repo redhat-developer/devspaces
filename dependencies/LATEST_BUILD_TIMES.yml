@@ -6631,3 +6631,21 @@
   timeWait: 0 mins
   timeBuild: 4 mins
   timeTotal: 4 mins
+- name: devspaces-server-rhel8
+  tag: 3.5-13
+  taskId: 50156922
+  timeCreate: Thu Jan 19 07:15:49 2023
+  timeStart: Thu Jan 19 07:16:04 2023
+  timeFinish: Thu Jan 19 07:26:01 2023
+  timeWait: 0 mins
+  timeBuild: 9 mins
+  timeTotal: 10 mins
+- name: devspaces-operator-bundle
+  tag: 3.5-72
+  taskId: 50157518
+  timeCreate: Thu Jan 19 07:32:33 2023
+  timeStart: Thu Jan 19 07:33:32 2023
+  timeFinish: Thu Jan 19 07:38:09 2023
+  timeWait: 0 mins
+  timeBuild: 4 mins
+  timeTotal: 5 mins
