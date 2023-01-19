@@ -61,7 +61,6 @@ jobs:
         run: |
           pwd
           ls -la
-          cd dependencies/che-plugin-registry
           sudo apt-get install tree
           npm install -g surge
           mkdir unpacked
