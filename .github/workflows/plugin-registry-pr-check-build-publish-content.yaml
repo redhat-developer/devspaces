@@ -54,11 +54,13 @@ jobs:
           echo "PR_SHA=$pr_sha" >> $GITHUB_ENV
       - uses: actions/setup-node@v2-beta
         with:
-          node-version: '12'
+          node-version: '16'
       - name: publish
         env:
           SURGE_TOKEN: ${{ secrets.SURGE_TOKEN }}
         run: |
+          pwd
+          ls -la
           cd dependencies/che-plugin-registry
           sudo apt-get install tree
           npm install -g surge
