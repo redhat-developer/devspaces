@@ -59,12 +59,11 @@ jobs:
         env:
           SURGE_TOKEN: ${{ secrets.SURGE_TOKEN }}
         run: |
-          pwd
-          ls -la
           sudo apt-get install tree
           npm install -g surge
           mkdir unpacked
           tar zxvf content/*.tgz -C unpacked/
+          rm -rf ./unpacked/v3/resources/
           # generate tree index on all directories
           for directory in `find unpacked/ -type d`; do
               (cd $directory && tree -H '.' -L 1 --noreport --charset utf-8 | sed '/<p class="VERSION">/,/<\/p>/d' > index.html)
