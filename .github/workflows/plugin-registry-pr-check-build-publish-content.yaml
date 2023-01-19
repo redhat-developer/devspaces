@@ -60,6 +60,7 @@ jobs:
           SURGE_TOKEN: ${{ secrets.SURGE_TOKEN }}
         run: |
           pwd
+          ls -la
           cd dependencies/che-plugin-registry
           sudo apt-get install tree
           npm install -g surge
