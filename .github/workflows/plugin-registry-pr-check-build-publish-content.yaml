@@ -10,10 +10,16 @@
 name: Plugin Registry - PR check - Publish Registry Content
 
 on:
-  workflow_run:
-    workflows: ["Plugin Registry - PR check - Build"]
-    types:
-      - completed
+  pull_request:
+    paths:
+      - '.github/**'
+    branches: 
+      - '**'
+# on:
+#   workflow_run:
+#     workflows: ["Plugin Registry - PR check - Build"]
+#     types:
+#       - completed
 
 jobs:
   publish:
