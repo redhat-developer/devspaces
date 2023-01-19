@@ -9,10 +9,10 @@
 
 name: Plugin Registry - PR check - Publish Registry Content
 
-on:
+on: 
   pull_request:
-    branches: 
-      - '**'
+    paths:
+    - 'dependencies/che-plugin-registry/**'
 # on:
 #   workflow_run:
 #     workflows: ["Plugin Registry - PR check - Build"]
