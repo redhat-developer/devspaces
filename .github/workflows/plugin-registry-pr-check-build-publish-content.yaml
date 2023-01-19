@@ -81,4 +81,4 @@ jobs:
         with:
          script: |
            const { repo: { owner, repo } } = context;
-           await github.repos.createCommitStatus({ owner, repo, sha: process.env.PR_SHA, state: "success", target_url: process.env.DEPLOY_DOMAIN, description: "Browse registry content live" })
+           await github.rest.repos.createCommitStatus({ owner, repo, sha: process.env.PR_SHA, state: "success", target_url: process.env.DEPLOY_DOMAIN, description: "Browse registry content live", context: "Surge" })
