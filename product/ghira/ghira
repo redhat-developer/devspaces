@@ -215,7 +215,7 @@ def getCrossReferences(gh_issue_id):
 
 # update an existing JIRA with new release notes content (issue title and RN text in the description), scraped from GH issue
 # then replace the old "synch'd to Red HAt JIRA" comment with a fresh one to avoid duplicate comments/updates in JIRA
-def updateJiraAndGHComments(jira_id, gh_issue_id, gh_comment_id, crossrefs):
+def updateJiraAndGHComments(jira_id, gh_issue_id, gh_comment_id_existing, crossrefs):
   gh_issue = api.issues.get(gh_issue_id)
   # logging.debug(gh_issue) # check for update date
 
@@ -245,15 +245,18 @@ def updateJiraAndGHComments(jira_id, gh_issue_id, gh_comment_id, crossrefs):
 
       # update the GH comment so we don't keep putting fresh comments on JIRA
       if DRY_RUN:
-        logging.debug("    GH comment on https://github.com/eclipse/che/issues/" + str(gh_issue_id) + "#issuecomment-" + str(gh_comment_id) + " :")
+        if gh_comment_id_existing:
+          logging.debug("    GH comment on https://github.com/eclipse/che/issues/" + str(gh_issue_id) + "#issuecomment-" + str(gh_comment_id_existing) + " :")
+        else:
+          logging.debug("    GH comment on https://github.com/eclipse/che/issues/" + str(gh_issue_id) + " :")
         logging.debug("    " + GH_MSG)
       else:
-        if gh_comment_id:
-          logging.debug("    Delete and recreate GH comment: https://github.com/eclipse/che/issues/" + str(gh_issue_id) + "#issuecomment-" + str(gh_comment_id) + "")
+        if gh_comment_id_existing:
+          logging.debug("    Delete and recreate GH comment: https://github.com/eclipse/che/issues/" + str(gh_issue_id) + "#issuecomment-" + str(gh_comment_id_existing) + "")
           try:
-            api.issues.delete_comment(gh_comment_id)
+            api.issues.delete_comment(gh_comment_id_existing)
           except:
-            logging.info("    Could not delete GH comment https://github.com/eclipse/che/issues/" + str(gh_issue_id) + "#issuecomment-" + str(gh_comment_id) +"; new comment appended.")
+            logging.info("    Could not delete GH comment https://github.com/eclipse/che/issues/" + str(gh_issue_id) + "#issuecomment-" + str(gh_comment_id_existing) +"; new comment appended.")
         else:
           # if deleted or couldn't delete, check for existing comment; don't duplicate
           for gh_comment in api.issues.list_comments(gh_issue_id):
@@ -264,11 +267,11 @@ def updateJiraAndGHComments(jira_id, gh_issue_id, gh_comment_id, crossrefs):
               try:
                 api.issues.update_comment(str(gh_comment.id), GH_MSG)
               except:
-                logging.info("    Could not update GH comment https://github.com/eclipse/che/issues/" + str(gh_issue_id) + "#issuecomment-" + str(gh_comment_id) +"!")
+                logging.info("    Could not update GH comment https://github.com/eclipse/che/issues/" + str(gh_issue_id) + "#issuecomment-" + str(gh_comment.id) +"!")
               break
         if not found_gh_comment:
-          gh_comment_id = api.issues.create_comment(gh_issue_id, GH_MSG)
-          logging.info("    GH comment: https://github.com/eclipse/che/issues/" + str(gh_issue_id) + "#issuecomment-" + str(gh_comment_id))
+          gh_comment = api.issues.create_comment(gh_issue_id, GH_MSG)
+          logging.info("    GH comment: https://github.com/eclipse/che/issues/" + str(gh_issue_id) + "#issuecomment-" + str(gh_comment.id))
 
 # Retrieve Issues from github
 since_date = (datetime.datetime.now() - datetime.timedelta(days=NUM_DAYS)).strftime('%Y-%m-%dT%H:%M:%SZ')
@@ -429,7 +432,7 @@ for i in pending_issues:
         "icon": {"url16x16": "https://github.com/favicon.ico"}})
 
     # update github issue with comment
-    gh_comment_id = api.issues.create_comment(gh_issue_id, ISSUE_SYNC_COMMENT + new_jira_issue.key + "\n" + crossrefs.replace(" ","\n * "))
+    gh_comment = api.issues.create_comment(gh_issue_id, ISSUE_SYNC_COMMENT + new_jira_issue.key + "\n" + crossrefs.replace(" ","\n * "))
 
     # update JIRA with comment (don't also update GH since we just created the comment one line above)
     updateJiraAndGHComments(new_jira_issue.key, gh_issue_id, None, crossrefs)
