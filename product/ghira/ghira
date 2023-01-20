@@ -58,17 +58,30 @@ for opt, arg in options:
     NUM_DAYS = int(arg)
   elif opt in ('--limit'):
     LIMIT = int(arg)
-  
-print("Check for new&noteworthy issues closed in the last " + str(NUM_DAYS) + " days")
-if DRY_RUN:
-  print("Dry run. Nothing will be created.")
+
+NOW_DATETIME=datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+FORMAT='%(asctime)s %(levelname)s: %(message)s'
+LOGFILE='ghira.log.txt'
+if os.path.exists(LOGFILE):
+  os.remove(LOGFILE)
 
 class ExitOnErrorHandler(logging.StreamHandler):
     def emit(self, record):
         super().emit(record)
+        f = open(LOGFILE, "a")
+        f.write(logging.Formatter(fmt=FORMAT).format(record)+"\n")
+        f.close()
         if record.levelno in (logging.ERROR, logging.CRITICAL):
+            error_email_body="An error occurred at " + NOW_DATETIME + "!\n\n"
+            with open(LOGFILE, 'r') as file:
+              error_email_body += file.read()
+            send_email(EMAIL_FROM, EMAIL_TO_DEFAULT, "ghira error at " + NOW_DATETIME, error_email_body)
             raise SystemExit(-1)
-logging.basicConfig(handlers=[ExitOnErrorHandler()], format='%(levelname)s: %(message)s', level=LOG_LEVEL)
+logging.basicConfig(handlers=[ExitOnErrorHandler()], format=FORMAT, level=LOG_LEVEL)
+
+logging.info("Check for closed new&noteworthy issues updated in the last " + str(NUM_DAYS) + " days, limited to " + str(LIMIT) + " issues to process")
+if DRY_RUN:
+  logging.info("Dry run. Nothing will be created or updated.")
 
 j = jira.JIRA(server=JIRA_URL, token_auth=JIRA_TOKEN)
 
@@ -447,3 +460,7 @@ if not DRY_RUN:
 else:
   logging.info("%s JIRAs processed (no changes applied)." % len(pending_issues))
 
+log_email_body="ghira log " + NOW_DATETIME + " :\n\n"
+with open(LOGFILE, 'r') as file:
+  log_email_body += file.read()
+send_email(EMAIL_FROM, EMAIL_TO_DEFAULT, "ghira error at " + NOW_DATETIME, log_email_body)
