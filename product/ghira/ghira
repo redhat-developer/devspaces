@@ -262,7 +262,7 @@ def updateJiraAndGHComments(jira_id, gh_issue_id, gh_comment_id, crossrefs):
               found_gh_comment = True
               logging.info("    GH comment: https://github.com/eclipse/che/issues/" + str(gh_issue_id) + "#issuecomment-" + str(gh_comment.id))
               try:
-                api.issues.update_comment(gh_issue_id, GH_MSG)
+                api.issues.update_comment(str(gh_comment.id), GH_MSG)
               except:
                 logging.info("    Could not update GH comment https://github.com/eclipse/che/issues/" + str(gh_issue_id) + "#issuecomment-" + str(gh_comment_id) +"!")
               break
