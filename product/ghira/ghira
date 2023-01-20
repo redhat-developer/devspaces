@@ -252,9 +252,9 @@ def updateJiraAndGHComments(jira_id, gh_issue_id, gh_comment_id_existing, crossr
         logging.debug("    " + GH_MSG)
       else:
         if gh_comment_id_existing:
-          logging.debug("    Delete and recreate GH comment: https://github.com/eclipse/che/issues/" + str(gh_issue_id) + "#issuecomment-" + str(gh_comment_id_existing) + "")
           try:
             api.issues.delete_comment(gh_comment_id_existing)
+            logging.info("    Deleted GH comment: https://github.com/eclipse/che/issues/" + str(gh_issue_id) + "#issuecomment-" + str(gh_comment_id_existing) + "")
           except:
             logging.info("    Could not delete GH comment https://github.com/eclipse/che/issues/" + str(gh_issue_id) + "#issuecomment-" + str(gh_comment_id_existing) +"; new comment appended.")
         else:
@@ -263,15 +263,15 @@ def updateJiraAndGHComments(jira_id, gh_issue_id, gh_comment_id_existing, crossr
             # update comment if it contains the ISSUE_SYNC_COMMENT, so we can add PR links
             if ISSUE_SYNC_COMMENT + jira_id in gh_comment.body or ISSUE_SYNC_COMMENT2 + jira_id in gh_comment.body:
               found_gh_comment = True
-              logging.info("    GH comment: https://github.com/eclipse/che/issues/" + str(gh_issue_id) + "#issuecomment-" + str(gh_comment.id))
               try:
                 api.issues.update_comment(str(gh_comment.id), GH_MSG)
+                logging.info("    Updated GH comment: https://github.com/eclipse/che/issues/" + str(gh_issue_id) + "#issuecomment-" + str(gh_comment.id))
               except:
                 logging.info("    Could not update GH comment https://github.com/eclipse/che/issues/" + str(gh_issue_id) + "#issuecomment-" + str(gh_comment.id) +"!")
               break
         if not found_gh_comment:
           gh_comment = api.issues.create_comment(gh_issue_id, GH_MSG)
-          logging.info("    GH comment: https://github.com/eclipse/che/issues/" + str(gh_issue_id) + "#issuecomment-" + str(gh_comment.id))
+          logging.info("    Created GH comment: https://github.com/eclipse/che/issues/" + str(gh_issue_id) + "#issuecomment-" + str(gh_comment.id))
 
 # Retrieve Issues from github
 since_date = (datetime.datetime.now() - datetime.timedelta(days=NUM_DAYS)).strftime('%Y-%m-%dT%H:%M:%SZ')
