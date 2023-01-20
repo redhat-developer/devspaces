@@ -1,0 +1,77 @@
+{
+    "Components" : 
+    {
+        "controller" : {
+            "Description" : "controller: dashboard, factory/dashboard, plugin broker, ts-workspace-client",
+            "Labels" : [ "area/dashboard", "area/factory/dashboard", "area/ts-workspace-client", "area/devfile-converter" ],
+            "Email" : "ibuziuk@redhat.com",
+            "GH_User":"ibuziuk"
+        },
+        "deploy" : {
+            "Description": "deploy: cli, install, machine-exec, operator",
+            "Labels": [ "area/chectl", "area/install", "area/operator", "area/machine-exec" ],
+            "Email" : "abazko@redhat.com",
+            "GH_User" : "tolusha"
+        },
+        "devex" : {
+            "Description": "devex: workshops, RHPDS",
+            "Labels": [ "area/ux", "area/dev-experience" ],
+            "Email" : "mloriedo@redhat.com",
+            "GH_User" : "l0rd"
+        },
+        "docs" : {
+            "Description": "docs",
+            "Labels": [ "team/doc", "status/release-notes-review-needed", "status/release-notes-review-done" ],
+            "Email" : "jvrbkova@redhat.com",
+            "GH_User":"deerskindoll"
+        },
+        "dwo" : {
+            "Description": "dwo",
+            "Labels": [ "engine/devworkspace", "area/devworkspace-client", "area/devworkspace-operator", "area/devworkspace-che-operator" ],
+            "Email" : "ibuziuk@redhat.com",
+            "GH_User":"ibuziuk"
+        },
+        "editors" : {
+            "Description": "editors: vscode, idea, theia",
+            "Labels": [ "area/editor/che-code", "area/editor/intellij-platform", "area/editor/che-theia" ],
+            "Email" : "azatsary@redhat.com",
+            "GH_User": "azatsarynnyy"
+        },
+        "hosted che" : {
+            "Description": "hosted che: telemetry, kubernetes-image-puller, devsandbox",
+            "Labels": [ "area/hosted-che", "area/image-puller" ],
+            "Email" : "ibuziuk@redhat.com",
+            "GH_User": "ibuziuk"
+        },
+        "languages" : {
+            "Description": "languages: debugger, devfiles, lsp, samples, stacks",
+            "Labels": [ "area/languages", "area/devfile/v2", "area/devfile/v1", "area/samples", "area/getting-started" ],
+            "Email" : "vsvydenk@redhat.com",
+            "GH_User": "svor"
+        },
+        "platform" : {
+            "Description": "platform: jwtproxy, wsmaster, devfile spec, teams, security, sharing, factory api, monitoring",
+            "Labels": [ "area/factory/server", "area/che-server" ],
+            "Email" : "ivinokur@redhat.com",
+            "GH_User": "vinokurig"
+        },
+        "plugins" : {
+            "Description": "plugins: registries, factories, git",
+            "Labels": [ "area/plugins", "area/git", "area/devfile-registry", "area/plugin-registry" ],
+            "Email" : "vsvydenk@redhat.com",
+            "GH_User": "svor"
+        },
+        "productization" : {
+            "Description": "productization: build & internals",
+            "Labels": [ "area/ci-prod" ],
+            "Email" : "nboldt@redhat.com",
+            "GH_User":"nickboldt"
+        },
+        "testing" : {
+            "Description": "testing",
+            "Labels": [ "area/qe", "e2e-test/failure" ],
+            "Email" : "dnochnevn@redhat.com",
+            "GH_User": "dmytro-ndp"
+        }
+    }
+}
