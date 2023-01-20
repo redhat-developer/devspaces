@@ -258,7 +258,7 @@ def updateJiraAndGHComments(jira_id, gh_issue_id, gh_comment_id, crossrefs):
           # if deleted or couldn't delete, check for existing comment; don't duplicate
           for gh_comment in api.issues.list_comments(gh_issue_id):
             # update comment if it contains the ISSUE_SYNC_COMMENT, so we can add PR links
-            if ISSUE_SYNC_COMMENT + jira_id in gh_comment.body or ISSUE_SYNC_COMMENT2 + jira+id in gh_comment.body:
+            if ISSUE_SYNC_COMMENT + jira_id in gh_comment.body or ISSUE_SYNC_COMMENT2 + jira_id in gh_comment.body:
               found_gh_comment = True
               logging.info("    GH comment: https://github.com/eclipse/che/issues/" + str(gh_issue_id) + "#issuecomment-" + str(gh_comment.id))
               try:
