@@ -414,6 +414,9 @@ for i in pending_issues:
   logging.debug("JIRA json: new_jira:\n" + json.dumps(new_jira, indent=2) + '\n')
   logging.debug("JIRA json: customfields:\n" + json.dumps(customfields, indent=2) + '\n')
 
+  # Find "cross-referenced" events - https://docs.github.com/en/developers/webhooks-and-events/events/issue-event-types#cross-referenced to get pull requests for this issue
+  crossrefs=getCrossReferences(gh_issue_id)
+
   if not DRY_RUN:
     new_jira_issue = j.create_issue(fields=new_jira)
     logging.info("JIRA https://issues.redhat.com/browse/%s created" % new_jira_issue.key)
@@ -425,9 +428,6 @@ for i in pending_issues:
         'title': new_jira['summary'] + " #" + gh_issue_id, \
         "icon": {"url16x16": "https://github.com/favicon.ico"}})
 
-    # Find "cross-referenced" events - https://docs.github.com/en/developers/webhooks-and-events/events/issue-event-types#cross-referenced to get pull requests for this issue
-    crossrefs=getCrossReferences(gh_issue_id)
-
     # update github issue with comment
     gh_comment_id = api.issues.create_comment(gh_issue_id, ISSUE_SYNC_COMMENT + new_jira_issue.key + "\n" + crossrefs.replace(" ","\n * "))
 
@@ -435,6 +435,9 @@ for i in pending_issues:
     updateJiraAndGHComments(new_jira_issue.key, gh_issue_id, None, crossrefs)
 
     logging.info("")
+  else:
+    logging.debug("GH comment:\n\n" + ISSUE_SYNC_COMMENT + "CRW-####\n" + crossrefs.replace(" ","\n * ") + "\n")
+    logging.debug("JIRA comment:\n\n" + "https://github.com/" + GITHUB_ORG + "/" + GITHUB_REPO + "/issues/" + gh_issue_id + "\n" + crossrefs.replace(" ","\n * ") + "\n")
 
 if not DRY_RUN:
   logging.info("%s JIRAs processed." % len(pending_issues))
