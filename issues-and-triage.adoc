@@ -1,0 +1,130 @@
+This page describes how we track issues in JIRA for Red Hat OpenShift Dev Spaces.
+
+## Issue Triage
+
+New issues are automatically assigned to a component owner when one is set **_at the time the issue is created_**.
+
+Issues created **_without a component or assignee_** need to be reviewed by a project committer (triage curator) who will set:
+
+* component(s), 
+* label(s), 
+* affects version(s), 
+* release note related fields/flags, incuding writer if known, 
+* priority/severity.
+
+If known at the time of triage, curator can also set:
+
+* fix version and
+* assignee. 
+
+
+### Triage process
+
+All issues in the following JIRA filters should be reviewed daily by a curator so that the queries return no results.
+
+* link:https://issues.redhat.com/issues/?filter=12405235[Issues with customer, cee, or need-triage labels]
+* link:https://issues.redhat.com/issues/?filter=12405236[Issues with no component]
+
+Additionally, these queries should be chedked regularly to ensure the number of issues is decreasing over time.
+
+* link:https://issues.redhat.com/issues/?filter=12405237[Issues with no assignee]
+* link:https://issues.redhat.com/issues/?filter=12405233[Issues with no fix version]
+* link:https://issues.redhat.com/issues/?filter=12405238[Security issues with no fix version]
+
+Steps to triage an issue:
+
+. Verify:
+    - The issue is not a **duplicate**
+    - The issue has **all the needed information**
+    - If the issue is a bug, it must include:
+        * **steps to reproduce it**
+        * **product and platform versions & workspace details** (OCP, Dev Spaces, devfile/project/sample used)
+    - If the issue is not a bug:
+        * the issue type must be set correctly (Task, QE Task, Enhancement, Epic, etc.)
+. Set a **component** so the issue will be seen by the relevant people
+. Set any relevant **labels** to assist sprint planning, prioritization, and review by Docs, PM, CEE, and other stakeholders
+. Set **Affects Version** if not set but the issue description implies it
+
+For some issues, you may be able to add even more information:
+
+. Set **Assignee** if not set and work will begin immediately; remove assignee if work is not scheduled
+. Set **Fix Version** if known/obvious; empty and "3.x" versions can be set to a more concrete value during sprint planning
+. Set **Priority** if default “major” is not correct
+. Set **release note fields** if relevant:
+    - Affects: Release Notes
+    - Release Note Text
+    - Release Note Type
+    - Release Note Status = Proposed, Rejected, None
+    - Writer (if known)
+
+
+[NOTE]
+====
+If not sure what to set:
+
+* Ask in Slack @ link:https://app.slack.com/client/T027F3GAJ/C011LSD1R4M[#forum-devspaces] or link:https://app.slack.com/client/T027F3GAJ/C04L0QR0P09[@team-devspaces], or, 
+
+* Set the `needs-triage` label so the next triager can review
+* Ask for more info from the reporter and @mention them
+* If reporter is authorised, assign issue to the reporter
+
+====
+
+### Notification of triage results
+
+At the end of their working day the curator reports the triage summary in Slack @ link:https://app.slack.com/client/T027F3GAJ/C011LSD1R4M[#forum-devspaces]
+
+The same person should do link:https://github.com/eclipse/che/wiki/Issue-Tracking#triage-process[upstream] and downstream triage that day. 
+
+### Issue Labels
+Dev Spaces uses the following labels, but you are welcome to add more or use others.
+
+#### Docs, Support, Security & Planning:
+
+* noteworthy
+* CVE-yyyy-number, Security, SecurityTracking, pssc, pssc-ess, prodsec, legal
+* user-experience, cee, cee_low, cee_medium, cee_high, cee.neXT
+* current-sprint, next-sprint, sprint/next, sprint/current
+* Customer1, Customer2, Customer3, Customer4
+* tech-debt, tech_debt, technical-debt, tech-preview
+
+#### Architecture, Testing & Environments:
+
+* x86_64, IBM_Z, s390x, IBM_Power, ppc64le, Z/P
+* rhel9
+* airgap
+* e2e-failure
+* testing, qe-ci, releasework
+* workflow, error_handling, error_message, automation-gap
+
+#### Features:
+
+* channel, operator
+* vscode-as-default, vscode-extension
+* git, oauth
+* regression
+* udi, python, java
+
+#### Other labels
+
+Eclipse Che uses these labels:
+
+* https://github.com/eclipse/che/labels
+* https://github.com/eclipse/che/wiki/Labels
+
+### Triage curators
+
+
+See link:https://github.com/eclipse/che/wiki/Issue-Tracking#triage-curators[Triage curators] for the latest rota.
+
+### Triage FAQ
+
+**Should the curator try to reproduce all the issues?**
+
+The curator doesn’t have the time to reproduce every issue. If reproducing an issue takes more than 15 min they should delegate it to a team. This is done through proper issue labeling, setting a component, and setting an assignee to review the issue. 
+
+**Should the curator set the issue milestone?**
+
+The curator should not set the fixversion but, if the issue is a blocker, it *must* be part of the current release. If not a blocker, fix version will depend on the team's bandwidth and on the risk of regression. If the curator is not able to determine if an issue is a blocker, they should ask questions on slack.
+
+See also link:https://github.com/eclipse/che/wiki/Issue-Tracking#triage-faq[Eclipse Che Issue Triage FAQ].
