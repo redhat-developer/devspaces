@@ -32,7 +32,7 @@ Additionally, these queries should be checked regularly to ensure the number of 
 * link:https://issues.redhat.com/issues/?filter=12405233[Issues with no fix version]
 * link:https://issues.redhat.com/issues/?filter=12405238[Security issues with no fix version]
 
-You can add issue counts per query here: 
+You can add issue counts per query here:
 
 * link:https://docs.google.com/spreadsheets/d/1q5AV0BU8RZqAwJ2GaEX0k5iZBRK2FJTXzz-2-vfBVTs/edit?usp=sharing[Issue triage stats]
 
@@ -80,6 +80,10 @@ If not sure what to set:
 At the end of their working day the curator reports the triage summary in Slack @ link:https://app.slack.com/client/T027F3GAJ/C011LSD1R4M[#forum-devspaces]
 
 The same person should do link:https://github.com/eclipse/che/wiki/Issue-Tracking#triage-process[upstream] and downstream triage that day. 
+
+Please also add a row of data to this table:
+
+* link:https://docs.google.com/spreadsheets/d/1q5AV0BU8RZqAwJ2GaEX0k5iZBRK2FJTXzz-2-vfBVTs/edit?usp=sharing[Issue triage stats]
 
 ### Issue Labels
 Dev Spaces uses the following labels, but you are welcome to add more or use others.
