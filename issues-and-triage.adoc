@@ -22,14 +22,19 @@ If known at the time of triage, curator can also set:
 
 All issues in the following JIRA filters should be reviewed daily by a curator so that the queries return no results.
 
-* link:https://issues.redhat.com/issues/?filter=12405235[Issues with customer, cee, or need-triage labels]
+* link:https://issues.redhat.com/issues/?filter=12405933[Issues with need-triage labels]
 * link:https://issues.redhat.com/issues/?filter=12405236[Issues with no component]
 
-Additionally, these queries should be chedked regularly to ensure the number of issues is decreasing over time.
+Additionally, these queries should be checked regularly to ensure the number of issues is decreasing over time.
 
+* link:https://issues.redhat.com/issues/?filter=12405235[Issues with customer or cee labels]
 * link:https://issues.redhat.com/issues/?filter=12405237[Issues with no assignee]
 * link:https://issues.redhat.com/issues/?filter=12405233[Issues with no fix version]
 * link:https://issues.redhat.com/issues/?filter=12405238[Security issues with no fix version]
+
+You can add issue counts per query here: 
+
+* linkhttps://docs.google.com/spreadsheets/d/1q5AV0BU8RZqAwJ2GaEX0k5iZBRK2FJTXzz-2-vfBVTs/edit?usp=sharing[Issue triage stats]
 
 Steps to triage an issue:
 
