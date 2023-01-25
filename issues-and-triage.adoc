@@ -50,7 +50,7 @@ For some issues, you may be able to add even more information:
 . Set **Assignee** if not set and work will begin immediately; remove assignee if work is not scheduled
 . Set **Fix Version** if known/obvious; empty and "3.x" versions can be set to a more concrete value during sprint planning
 . Set **Priority** if default “major” is not correct. 
-Don't change priority if the issue has a label `need triage by PM/Support`, but you are not Dev Spaces / DWO / WTO Product Manager or CEE.
+Don't change priority if the issue has a label `need-PM/Support-triage`, but you are not Dev Spaces / DWO / WTO Product Manager or CEE.
 
 . Set **release note fields** if relevant:
     - Affects: Release Notes
