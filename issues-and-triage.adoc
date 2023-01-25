@@ -25,7 +25,7 @@ All issues in the following JIRA filters should be reviewed daily by a curator s
 * link:https://issues.redhat.com/issues/?filter=12405235[Issues with customer, cee, or need-triage labels]
 * link:https://issues.redhat.com/issues/?filter=12405236[Issues with no component]
 
-Additionally, these queries should be chedked regularly to ensure the number of issues is decreasing over time.
+Additionally, these queries should be checked regularly to ensure the number of issues is decreasing over time.
 
 * link:https://issues.redhat.com/issues/?filter=12405237[Issues with no assignee]
 * link:https://issues.redhat.com/issues/?filter=12405233[Issues with no fix version]
@@ -49,7 +49,9 @@ For some issues, you may be able to add even more information:
 
 . Set **Assignee** if not set and work will begin immediately; remove assignee if work is not scheduled
 . Set **Fix Version** if known/obvious; empty and "3.x" versions can be set to a more concrete value during sprint planning
-. Set **Priority** if default “major” is not correct
+. Set **Priority** if default “major” is not correct. 
+Don't change priority if the issue has a label `need triage by PM, CEE`, but you are not Dev Spaces / DWO / WTO Product Manager or CEE.
+
 . Set **release note fields** if relevant:
     - Affects: Release Notes
     - Release Note Text
