@@ -462,5 +462,5 @@ else:
 
 log_email_body="ghira log " + NOW_DATETIME + " :\n\n"
 with open(LOGFILE, 'r') as file:
-  log_email_body += file.read()
-send_email(EMAIL_FROM, EMAIL_TO_DEFAULT, "ghira error at " + NOW_DATETIME, log_email_body)
+  log_email_body += str(file.read())
+send_email(EMAIL_FROM, EMAIL_TO_DEFAULT, "ghira logged at " + NOW_DATETIME, log_email_body)
