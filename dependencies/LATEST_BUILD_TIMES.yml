@@ -5506,3 +5506,21 @@
   timeWait: 0 mins
   timeBuild: 3 mins
   timeTotal: 3 mins
+- name: devspaces-operator-bundle
+  tag: 3.4-168
+  taskId: 50309821
+  timeCreate: Thu Jan 26 13:38:33 2023
+  timeStart: Thu Jan 26 15:06:28 2023
+  timeFinish: Thu Jan 26 15:12:48 2023
+  timeWait: 87 mins
+  timeBuild: 6 mins
+  timeTotal: 94 mins
+- name: devspaces-theia-dev-rhel8
+  tag: 3.4-7
+  taskId: 50310731
+  timeCreate: Thu Jan 26 14:14:21 2023
+  timeStart: Thu Jan 26 15:27:14 2023
+  timeFinish: Thu Jan 26 15:48:26 2023
+  timeWait: 72 mins
+  timeBuild: 21 mins
+  timeTotal: 94 mins
