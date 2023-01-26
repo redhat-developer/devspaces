@@ -22,11 +22,12 @@ If known at the time of triage, curator can also set:
 
 All issues in the following JIRA filters should be reviewed daily by a curator so that the queries return no results.
 
-* link:https://issues.redhat.com/issues/?filter=12405933[Issues with need-triage labels]
 * link:https://issues.redhat.com/issues/?filter=12405236[Issues with no component]
+* link:https://issues.redhat.com/issues/?filter=12405933[Issues with need-triage labels]
 
 Additionally, these queries should be checked regularly to ensure the number of issues is decreasing over time.
 
+* link:https://issues.redhat.com/issues/?filter=12405937[Issues with need-PM/Support-triage label]
 * link:https://issues.redhat.com/issues/?filter=12405235[Issues with customer or cee labels]
 * link:https://issues.redhat.com/issues/?filter=12405237[Issues with no assignee]
 * link:https://issues.redhat.com/issues/?filter=12405233[Issues with no fix version]
@@ -55,8 +56,12 @@ For some issues, you may be able to add even more information:
 . Set **Assignee** if not set and work will begin immediately; remove assignee if work is not scheduled
 . Set **Fix Version** if known/obvious; empty and "3.x" versions can be set to a more concrete value during sprint planning
 . Set **Priority** if default “major” is not correct. 
-Don't change priority if the issue has a label `need-PM/Support-triage`, but you are not Dev Spaces / DWO / WTO Product Manager or CEE.
-
++
+[NOTE]
+====
+Don't change priority if the issue has a label `need-PM/Support-triage`. Instead, talk to the Product Manager or Support person for the related product (Dev Spaces, DWO, or WTO). You can message on Slack if they're online, or leave a comment on the JIRA for them if they're not.
+====
++
 . Set **release note fields** if relevant:
     - Affects: Release Notes
     - Release Note Text
@@ -64,16 +69,14 @@ Don't change priority if the issue has a label `need-PM/Support-triage`, but you
     - Release Note Status = Proposed, Rejected, None
     - Writer (if known)
 
-
-[NOTE]
+. In general, if you're not sure what to do:
 ====
-If not sure what to set:
+* Ask in Slack @ link:https://app.slack.com/client/T027F3GAJ/C011LSD1R4M[#forum-devspaces] or link:https://app.slack.com/client/T027F3GAJ/C04L0QR0P09[@team-devspaces], or, try one of these approaches:
 
-* Ask in Slack @ link:https://app.slack.com/client/T027F3GAJ/C011LSD1R4M[#forum-devspaces] or link:https://app.slack.com/client/T027F3GAJ/C04L0QR0P09[@team-devspaces], or, 
-
-* Set the `needs-triage` label so the next triager can review
-* Ask for more info from the reporter and @mention them
-* If reporter is authorised, assign issue to the reporter
+    - Set the `need-triage` label so the next triager can review
+    - Set the `need-PM/Support-triage` label if PM or Support should review
+    - Ask for more info from the reporter and @mention them
+    - If reporter is an authorised member of the CRW JIRA, assign issue to the reporter
 
 ====
 
@@ -93,11 +96,12 @@ Dev Spaces uses the following labels, but you are welcome to add more or use oth
 #### Docs, Support, Security & Planning:
 
 * noteworthy
-* CVE-yyyy-number, Security, SecurityTracking, pssc, pssc-ess, prodsec, legal
 * user-experience, cee, cee_low, cee_medium, cee_high, cee.neXT
 * current-sprint, next-sprint, sprint/next, sprint/current
 * Customer1, Customer2, Customer3, Customer4
 * tech-debt, tech_debt, technical-debt, tech-preview
+* CVE-yyyy-number, Security, SecurityTracking, pssc, pssc-ess, prodsec, legal
+* need-PM/Support-triage, need-triage
 
 #### Architecture, Testing & Environments:
 
