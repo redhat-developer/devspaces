@@ -69,16 +69,14 @@ Don't change priority if the issue has a label `need-PM/Support-triage`. Instead
     - Release Note Status = Proposed, Rejected, None
     - Writer (if known)
 
-. In general, if you're not sure what to do:
-====
-* Ask in Slack @ link:https://app.slack.com/client/T027F3GAJ/C011LSD1R4M[#forum-devspaces] or link:https://app.slack.com/client/T027F3GAJ/C04L0QR0P09[@team-devspaces], or, try one of these approaches:
+. In general, if you're not sure what to do, ask in Slack @ link:https://app.slack.com/client/T027F3GAJ/C011LSD1R4M[#forum-devspaces] or link:https://app.slack.com/client/T027F3GAJ/C04L0QR0P09[@team-devspaces]. 
++
+Or, try one of these approaches:
 
     - Set the `need-triage` label so the next triager can review
     - Set the `need-PM/Support-triage` label if PM or Support should review
     - Ask for more info from the reporter and @mention them
     - If reporter is an authorised member of the CRW JIRA, assign issue to the reporter
-
-====
 
 ### Notification of triage results
 
