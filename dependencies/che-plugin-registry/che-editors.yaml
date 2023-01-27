@@ -307,7 +307,7 @@ editors:
           volumeMounts:
             - name: checode
               path: /checode
-          memoryLimit: 128Mi
+          memoryLimit: 256Mi
           memoryRequest: 32Mi
           cpuLimit: 500m
           cpuRequest: 30m
