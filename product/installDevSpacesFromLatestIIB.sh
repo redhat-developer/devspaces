@@ -251,8 +251,8 @@ while [[ "$#" -gt 0 ]]; do
     '--iib-ds')  IIB_DS="$2";  if [[ $IIB_DS == "quay.io/devspaces/iib"* ]];  then CHANNEL_DS="fast";  ICSP_FLAGs="${ICSP_FLAGs} --icsp quay.io"; fi; shift 1;;
     '--quay'|'--fast')   IIB_DS="quay.io/devspaces/iib"; CHANNEL_DS="fast"; CHANNEL_DWO="fast"; ICSP_FLAGs="${ICSP_FLAGs} --icsp quay.io";;
     '--latest'|'--next') IIB_DS="quay.io/devspaces/iib"; CHANNEL_DS="fast"; CHANNEL_DWO="fast"; ICSP_FLAGs="${ICSP_FLAGs} --icsp quay.io"; DS_VERSION="${1//--/}";;
-    '--ds-startingCSV') DS_STARTING_CSV="--startingCSV $2";;
-    '--dwo-startingCSV') DWO_STARTING_CSV="--startingCSV $2";;
+    '--ds-startingCSV') DS_STARTING_CSV="--startingCSV $2"; shift 1;;
+    '--dwo-startingCSV') DWO_STARTING_CSV="--startingCSV $2"; shift 1;;
     '--disable-default-sources') DISABLE_CATALOGSOURCESFLAG="$1";;
     '--brew') ICSP_FLAGs="${ICSP_FLAGs} --icsp brew.registry.redhat.io";;
     '--icsp') ICSP_FLAGs="${ICSP_FLAGs} --icsp $2"; shift 1;;
@@ -301,7 +301,7 @@ if [[ $IIB_DWO ]]; then
     --iib "$IIB_DWO" \
     --install-operator "devworkspace-operator" \
     --channel "$CHANNEL_DWO" \
-    --namespace "$OLM_NAMESPACE" "${ICSP_FLAGs} ${DISABLE_CATALOGSOURCESFLAG} ${DWO_STARTING_CSV}"
+    --namespace "$OLM_NAMESPACE" ${ICSP_FLAGs} ${DISABLE_CATALOGSOURCESFLAG} ${DWO_STARTING_CSV}
 fi
 
 if [[ ! $IIB_DS ]]; then
@@ -329,7 +329,7 @@ fi
   --iib "$IIB_DS" \
   --install-operator "devspaces" \
   --channel "$CHANNEL_DS" \
-  --namespace "$OLM_NAMESPACE" "${ICSP_FLAGs} ${DISABLE_CATALOGSOURCESFLAG} ${DS_STARTING_CSV}"
+  --namespace "$OLM_NAMESPACE" ${ICSP_FLAGs} ${DISABLE_CATALOGSOURCESFLAG} ${DS_STARTING_CSV}
 
 elapsed=0
 inc=3

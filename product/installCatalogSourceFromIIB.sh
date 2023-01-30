@@ -79,7 +79,7 @@ while [[ "$#" -gt 0 ]]; do
     '--install-operator') TO_INSTALL="$2"; shift 1;;
     '--channel') OLM_CHANNEL="$2"; shift 1;;
     '--manual-updates') INSTALL_PLAN_APPROVAL="Manual";;
-    '--startingCSV') STARTING_CSV="  startingCSV: $2";;
+    '--startingCSV') STARTING_CSV="  startingCSV: $2"; shift 1;;
     '--disable-default-sources') DISABLE_CATALOGSOURCES="true";;
     '--icsp') ICSP_URLs="${ICSP_URLs} $2"; shift 1;;
     '--quay') ICSP_URLs="${ICSP_URLs} quay.io";;
