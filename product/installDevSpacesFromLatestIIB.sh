@@ -38,6 +38,8 @@ CREATE_USERS="false"
 GET_URL="true"
 DWO_VERSION="" # by default, install from latest release
 DISABLE_CATALOGSOURCESFLAG="" # by default, allow installation from default catalog sources; use --next or --disable-default-sources to disable
+DS_STARTING_CSV="" # by default, install the latest version from the catalog source; can use this to install something older
+DWO_STARTING_CSV="" # by default, install the latest version from the catalog source; can use this to install something older
 
 # subscription channels
 CHANNEL_DWO="fast"
@@ -87,8 +89,9 @@ Options:
                       : For example, given https://console-openshift-console.apps.my-cluster-here.com instance,
                       : use 'my-cluster-here.com' (or longer format: 'api.my-cluster-here.com:6443')
 
-  --disable-default-sources
-                      : Disable default CatalogSources, like the RH Ecosystem Cataloge. Default: false
+  --ds-startingCSV <x.y.z>   : Set the version of DS operator to install via the subscription. If unset, install the latest available
+  --dwo-startingCSV <x.y.z>  : Set the version of DWO operator to install via the subscription. If unset, install the latest available
+  --disable-default-sources  : Disable default CatalogSources, like the RH Ecosystem Cataloge. Default: false
 
   --dwo <VERSION>     : Dev Workspace Operator version to test, e.g. '0.15'. Optional
   --dwo-chan <CHANNEL>: Dev Workspace Operator channel to install; default: $CHANNEL_DWO (if --quay flag used, default: fast)
@@ -123,8 +126,8 @@ preflight() {
   # Download specified dsc version to /tmp and use that
   if [[ "$DSC_OPTION" =~ ^3\..*-(GA|CI)$ ]]; then 
     DSC_VER="${DSC_OPTION}"
-    rm -fr /tmp/dsc-${DSC_VER}/; mkdir -p /tmp/dsc-${DSC_VER}/
-    pushd /tmp/dsc-${DSC_VER}/ >/dev/null
+    rm -fr "/tmp/dsc-${DSC_VER}/"; mkdir -p "/tmp/dsc-${DSC_VER}/"
+    pushd "/tmp/dsc-${DSC_VER}/" >/dev/null
       asset_dir="${DSC_VER}-dsc-assets"
       # old folder format
       # echo "curl https://github.com/redhat-developer/devspaces-chectl/releases/download/${asset_dir}/devspaces-${DSC_VER/-CI/}-quay-dsc-linux-x64.tar.gz ... "
@@ -248,6 +251,8 @@ while [[ "$#" -gt 0 ]]; do
     '--iib-ds')  IIB_DS="$2";  if [[ $IIB_DS == "quay.io/devspaces/iib"* ]];  then CHANNEL_DS="fast";  ICSP_FLAGs="${ICSP_FLAGs} --icsp quay.io"; fi; shift 1;;
     '--quay'|'--fast')   IIB_DS="quay.io/devspaces/iib"; CHANNEL_DS="fast"; CHANNEL_DWO="fast"; ICSP_FLAGs="${ICSP_FLAGs} --icsp quay.io";;
     '--latest'|'--next') IIB_DS="quay.io/devspaces/iib"; CHANNEL_DS="fast"; CHANNEL_DWO="fast"; ICSP_FLAGs="${ICSP_FLAGs} --icsp quay.io"; DS_VERSION="${1//--/}";;
+    '--ds-startingCSV') DS_STARTING_CSV="--startingCSV $2"; shift 1;;
+    '--dwo-startingCSV') DWO_STARTING_CSV="--startingCSV $2"; shift 1;;
     '--disable-default-sources') DISABLE_CATALOGSOURCESFLAG="$1";;
     '--brew') ICSP_FLAGs="${ICSP_FLAGs} --icsp brew.registry.redhat.io";;
     '--icsp') ICSP_FLAGs="${ICSP_FLAGs} --icsp $2"; shift 1;;
@@ -296,7 +301,7 @@ if [[ $IIB_DWO ]]; then
     --iib "$IIB_DWO" \
     --install-operator "devworkspace-operator" \
     --channel "$CHANNEL_DWO" \
-    --namespace "$OLM_NAMESPACE" ${ICSP_FLAGs} ${DISABLE_CATALOGSOURCESFLAG}
+    --namespace "$OLM_NAMESPACE" ${ICSP_FLAGs} ${DISABLE_CATALOGSOURCESFLAG} ${DWO_STARTING_CSV}
 fi
 
 if [[ ! $IIB_DS ]]; then
@@ -324,7 +329,7 @@ fi
   --iib "$IIB_DS" \
   --install-operator "devspaces" \
   --channel "$CHANNEL_DS" \
-  --namespace "$OLM_NAMESPACE" ${ICSP_FLAGs} ${DISABLE_CATALOGSOURCESFLAG}
+  --namespace "$OLM_NAMESPACE" ${ICSP_FLAGs} ${DISABLE_CATALOGSOURCESFLAG} ${DS_STARTING_CSV}
 
 elapsed=0
 inc=3
@@ -407,7 +412,7 @@ if [[ $(command -v ${DSC}) ]]; then # use dsc
   echo "Using dsc from ${DSC}"
   ${DSC} server:deploy \
     --catalog-source-namespace=openshift-operators \
-    --catalog-source-name=devspaces-${CHANNEL_DS} --olm-channel=${CHANNEL_DS} \
+    --catalog-source-name=devspaces-"${CHANNEL_DS}" --olm-channel="${CHANNEL_DS}" \
     --package-manifest-name="devspaces" -n "${NAMESPACE}" \
     --listr-renderer=verbose --telemetry=off
 
@@ -417,7 +422,7 @@ if [[ $(command -v ${DSC}) ]]; then # use dsc
 else
   # TODO: add support for custom patch YAML
   if [ -z "$CHECLUSTER_PATH" ]; then
-    oc create namespace $NAMESPACE || true
+    oc create namespace "$NAMESPACE" || true
     echo "apiVersion: org.eclipse.che/v2
 kind: CheCluster
 metadata:
@@ -447,7 +452,7 @@ spec:
     storage:
       pvcStrategy: common
   networking: {}
-" > $TMPDIR/CheCluster.yml && oc apply -f $TMPDIR/CheCluster.yml
+" > "$TMPDIR/CheCluster.yml" && oc apply -f "$TMPDIR/CheCluster.yml"
   else
     oc apply -f "$CHECLUSTER_PATH"
   fi
@@ -456,7 +461,7 @@ kind: OperatorGroup
 metadata:
   name: devspaces-operator
   namespace: ${NAMESPACE}
-" > $TMPDIR/OperatorGroup.yml && oc apply -f $TMPDIR/OperatorGroup.yml
+" > "$TMPDIR/OperatorGroup.yml" && oc apply -f "$TMPDIR/OperatorGroup.yml"
 fi
 
 if [[ $GET_URL != "true" ]]; then

@@ -22,6 +22,7 @@ NAMESPACE="openshift-operators"
 DISABLE_CATALOGSOURCES="false"
 INSTALL_PLAN_APPROVAL="Automatic"
 OLM_CHANNEL="fast"
+STARTING_CSV=""
 
 # default ICSP to use to resolve unreleased images
 # if using --fast or --quay flag, this will be changed to quay.io
@@ -53,8 +54,9 @@ Options:
                                : * brew.registry.redhat.io/rh-osbs/iib:987654 [RH public, auth required], or
                                : * quay.io/devspaces/iib:3.2-v4.11-987654 or quay.io/devspaces/iib:next-v4.10 [public]
   --install-operator <NAME>    : Install operator named $NAME after creating CatalogSource
-  --channel <CHANNEL>          : Channel to use for operator subscription if installing operator. Default: "fast"
-  --manual-updates             : Use "manual" InstallPlanApproval for the CatalogSource instead of "automatic" if installing operator
+  --channel <CHANNEL>          : Channel to use for operator subscription if installing operator. Default: 'fast'
+  --manual-updates             : Use 'manual' InstallPlanApproval for the CatalogSource instead of 'automatic' if installing operator
+  --startingCSV <x.y.z>        : Set the version of operator to install via the subscription. If unset, install the latest available
   --disable-default-sources    : Disable default CatalogSources. Default: false 
   --quay                       : Resolve images from quay.io using ImageContentSourcePolicy
   --brew                       : Resolve images from brew.registry.redhat.io using ImageContentSourcePolicy (requires authentication)
@@ -77,6 +79,7 @@ while [[ "$#" -gt 0 ]]; do
     '--install-operator') TO_INSTALL="$2"; shift 1;;
     '--channel') OLM_CHANNEL="$2"; shift 1;;
     '--manual-updates') INSTALL_PLAN_APPROVAL="Manual";;
+    '--startingCSV') STARTING_CSV="  startingCSV: $2"; shift 1;;
     '--disable-default-sources') DISABLE_CATALOGSOURCES="true";;
     '--icsp') ICSP_URLs="${ICSP_URLs} $2"; shift 1;;
     '--quay') ICSP_URLs="${ICSP_URLs} quay.io";;
@@ -254,7 +257,7 @@ spec:
   - mirrors:
     - registry.redhat.io/devspaces/devspaces-operator-bundle
     source: registry-proxy.engineering.redhat.com/rh-osbs/devspaces-operator-bundle
-" > $TMPDIR/ImageContentSourcePolicy_${ICSP_URL}.yml && oc apply -f $TMPDIR/ImageContentSourcePolicy_${ICSP_URL}.yml
+" > "${TMPDIR}/ImageContentSourcePolicy_${ICSP_URL}.yml" && oc apply -f "${TMPDIR}/ImageContentSourcePolicy_${ICSP_URL}.yml"
   done
 fi
 
@@ -270,7 +273,7 @@ spec:
   image: ${IIB_IMAGE}
   publisher: IIB testing ${TO_INSTALL}
   displayName: IIB testing catalog ${TO_INSTALL} 
-" > $TMPDIR/CatalogSource.yml && oc apply -f $TMPDIR/CatalogSource.yml
+" > "${TMPDIR}"/CatalogSource.yml && oc apply -f "${TMPDIR}"/CatalogSource.yml
 
 if [ -z "$TO_INSTALL" ]; then
   echo "Done"
@@ -285,7 +288,7 @@ kind: OperatorGroup
 metadata:
   name: $NAMESPACE-operators
   namespace: $NAMESPACE
-" > $TMPDIR/OperatorGroup.yml && oc apply -f $TMPDIR/OperatorGroup.yml
+" > "${TMPDIR}"/OperatorGroup.yml && oc apply -f "${TMPDIR}"/OperatorGroup.yml
 fi
 
 # Create subscription for operator
@@ -300,7 +303,8 @@ spec:
   name: $TO_INSTALL
   source: ${TO_INSTALL}-${OLM_CHANNEL}
   sourceNamespace: $NAMESPACE
-" > $TMPDIR/Subscription.yml && oc apply -f $TMPDIR/Subscription.yml
+${STARTING_CSV}
+" > "${TMPDIR}"/Subscription.yml && oc apply -f "${TMPDIR}"/Subscription.yml
 
 # cleanup temp yaml files
-rm -fr $TMPDIR
+rm -fr "${TMPDIR}"
