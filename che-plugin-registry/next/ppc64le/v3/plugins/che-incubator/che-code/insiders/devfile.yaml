@@ -30,7 +30,6 @@ components:
             urlRewriteSupported: true
           targetPort: 3100
           exposure: public
-          path: '?tkn=eclipse-che'
           secure: false
           protocol: https
         - name: code-redirect-1
