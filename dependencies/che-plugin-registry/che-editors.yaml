@@ -255,8 +255,9 @@ editors:
                 discoverable: false
                 urlRewriteSupported: false
         attributes:
-          app.kubernetes.io/component: idea-rhel8-injector
+          app.kubernetes.io/component: idea-rhel8-runtime
           app.kubernetes.io/part-of: idea-rhel8.eclipse.org
+          controller.devfile.io/container-contribution: true
       - name: projector-volume
         volume: { }
       - name: projector-configuration
