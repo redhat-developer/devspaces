@@ -1,0 +1,27 @@
+schemaVersion: 1.0.0
+metadata:
+  id: ms-kubernetes-tools/vscode-kubernetes-tools
+  publisher: ms-kubernetes-tools
+  name: vscode-kubernetes-tools
+  version: latest
+  displayName: Kubernetes
+  description: Develop, deploy and debug Kubernetes applications
+  repository: https://github.com/Azure/vscode-kubernetes-tools
+  categories:
+    - Snippets
+    - Linters
+    - Debuggers
+    - Azure
+    - Other
+  icon: /images/ms-kubernetes-tools-vscode-kubernetes-tools-icon.png
+sidecar:
+  image: registry.redhat.io/devspaces/udi-rhel8:3.5
+  name: vscode-kubernetes-tools
+  memoryLimit: 1Gi
+  memoryRequest: 20Mi
+  cpuLimit: 500m
+  cpuRequest: 30m
+dependencies:
+  - redhat/vscode-yaml
+extensions:
+  - relative:extension/resources/github_com/redhat-developer/devspaces-vscode-extensions/releases/download/7_44-che-assets/vscode-kubernetes-tools-1.2.1.vsix

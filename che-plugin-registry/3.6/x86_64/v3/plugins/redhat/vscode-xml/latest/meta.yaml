@@ -1,0 +1,23 @@
+apiVersion: v2
+publisher: redhat
+name: vscode-xml
+version: latest
+type: VS Code extension
+displayName: XML
+title: XML
+description: XML Language Support by Red Hat
+icon: /images/redhat-vscode-xml-icon.png
+category: Programming Languages
+repository: https://github.com/redhat-developer/vscode-xml
+firstPublicationDate: '2021-11-05'
+latestUpdateDate: '2023-01-31'
+spec:
+  containers:
+    - image: registry.redhat.io/devspaces/udi-rhel8:3.5
+      name: vscode-xml
+      memoryLimit: 768Mi
+      memoryRequest: 20Mi
+      cpuRequest: 30m
+      cpuLimit: 500m
+  extensions:
+    - relative:extension/resources/github_com/redhat-developer/devspaces-vscode-extensions/releases/download/v069c634/vscode-xml-0.17.0.vsix
