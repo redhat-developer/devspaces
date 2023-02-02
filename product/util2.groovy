@@ -134,7 +134,7 @@ git clone ''' + URL + ''' ''' + REPO_PATH
 export KRB5CCNAME=/var/tmp/devspaces-build_ccache
 cd ''' + REPO_PATH + '''
 git checkout --track origin/''' + BRANCH + ''' || true
-git config user.email che-prod+devspaces-build@redhat.com
+git config user.email devspaces-build@redhat.com
 git config user.name "Dev Spaces Build"
 git config --global push.default matching
 # fix for warning: Pulling without specifying how to reconcile divergent branches is discouraged
