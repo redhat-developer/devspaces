@@ -35,7 +35,7 @@ errorf() {
 
 usage() {
 echo "
-This script streamlines testing IIB images by configuring an OpenShift cluster to enable it to use the specified IIB image 
+This script streamlines testing IIB images by configuring an OpenShift cluster to enable it to use the specified IIB image
 in a catalog. The CatalogSource is created in the openshift-operators namespaces unless '--namespace' is specified, and
 is named 'operatorName-channelName', eg., devspaces-stable or devworkspace-operator-fast
 
@@ -44,7 +44,7 @@ Note: to compute the latest IIB image for a given operator, use ./getLatestIIBs.
 If IIB installation fails, see https://docs.engineering.redhat.com/display/CFC/Test and
 follow steps in section 'Adding Brew Pull Secret'
 
-Usage: 
+Usage:
   $0 [OPTIONS]
 
 Options:
@@ -55,7 +55,7 @@ Options:
   --install-operator <NAME>    : Install operator named $NAME after creating CatalogSource
   --channel <CHANNEL>          : Channel to use for operator subscription if installing operator. Default: "fast"
   --manual-updates             : Use "manual" InstallPlanApproval for the CatalogSource instead of "automatic" if installing operator
-  --disable-default-sources    : Disable default CatalogSources. Default: false 
+  --disable-default-sources    : Disable default CatalogSources. Default: false
   --quay                       : Resolve images from quay.io using ImageContentSourcePolicy
   --brew                       : Resolve images from brew.registry.redhat.io using ImageContentSourcePolicy (requires authentication)
   --icsp                       : Install using specified registry in ImageContentSourcePolicy
@@ -89,15 +89,15 @@ while [[ "$#" -gt 0 ]]; do
 done
 
 # minimum requirements
-if [[ ! $(command -v oc) ]]; then 
+if [[ ! $(command -v oc) ]]; then
   errorf "Please install oc 4.10+ from an RPM or https://mirror.openshift.com/pub/openshift-v4/clients/ocp/"
   exit 1
 fi
-if [[ ! $(command -v jq) ]]; then 
+if [[ ! $(command -v jq) ]]; then
   errorf "Please install jq 1.2+ from an RPM or https://pypi.org/project/jq/"
   exit 1
 fi
-if [[ ! $(command -v curl) ]]; then 
+if [[ ! $(command -v curl) ]]; then
   errorf "Please install curl"
   exit 1
 fi
@@ -109,7 +109,7 @@ if [ -z "$UPSTREAM_IIB" ]; then
   usage
   exit 1
 fi
-if [[ $UPSTREAM_IIB == "registry-proxy.engineering.redhat.com/rh-osbs/iib:"* ]]; then 
+if [[ $UPSTREAM_IIB == "registry-proxy.engineering.redhat.com/rh-osbs/iib:"* ]]; then
   IIB_IMAGE="brew.registry.redhat.io/rh-osbs/iib:${UPSTREAM_IIB##*:}"
   echo "[INFO] Using iib $TO_INSTALL image $IIB_IMAGE mirrored from $UPSTREAM_IIB"
 else
@@ -118,7 +118,7 @@ else
 fi
 
 # optional requirements (for brew.registry secret)
-if [[ "${IIB_IMAGE}" == "brew.registry"* ]] && [[ ! $(command -v podman) ]]; then 
+if [[ "${IIB_IMAGE}" == "brew.registry"* ]] && [[ ! $(command -v podman) ]]; then
   errorf "Please install podman to login to brew.registry.redhat.io, or use --iib to specify an IIB from a registry that doesn't require login"
   exit 1
 fi
@@ -135,7 +135,7 @@ if [ "$DISABLE_CATALOGSOURCES" == "true" ]; then
   oc patch OperatorHub cluster --type json -p '[{"op": "add", "path": "/spec/disableAllDefaultSources", "value": true}]'
 fi
 
-if [[ "${IIB_IMAGE}" == "brew.registry"* ]]; then 
+if [[ "${IIB_IMAGE}" == "brew.registry"* ]]; then
   # Grab Brew registry token and verify we can use it
   BREW_TOKENS="$(curl --negotiate -u : https://employee-token-manager.registry.redhat.com/v1/tokens -s)"
   if [[ $(echo "$BREW_TOKENS" | jq -r 'length') == "0" ]]; then
@@ -260,16 +260,21 @@ fi
 
 # Add CatalogSource for the IIB
 # Throw it in openshift-operators to make life a little easier for now
+if [ -z "$TO_INSTALL" ]; then
+  CATALOGSOURCE_NAME="iib-${UPSTREAM_IIB##*:}-${OLM_CHANNEL}"
+else
+  CATALOGSOURCE_NAME="${TO_INSTALL}-${OLM_CHANNEL}"
+fi
 echo "apiVersion: operators.coreos.com/v1alpha1
 kind: CatalogSource
 metadata:
-  name: ${TO_INSTALL}-${OLM_CHANNEL}
+  name: ${CATALOGSOURCE_NAME}
   namespace: $NAMESPACE
 spec:
   sourceType: grpc
   image: ${IIB_IMAGE}
   publisher: IIB testing ${TO_INSTALL}
-  displayName: IIB testing catalog ${TO_INSTALL} 
+  displayName: IIB testing catalog ${TO_INSTALL}
 " > $TMPDIR/CatalogSource.yml && oc apply -f $TMPDIR/CatalogSource.yml
 
 if [ -z "$TO_INSTALL" ]; then

@@ -33,8 +33,9 @@ usage () {
 Usage: 
   $0 -s SOURCE_DIR -r RPM_PATTERN  -u BASE_URL -a 'ARCH1 ... ARCHN' 
 Example: 
-  $0 -s /path/to/dockerfiles/ -r openshift-clients-4 -u http://rhsm-pulp.corp.redhat.com/content/dist/layered/rhel8/basearch/rhocp/4.8
-  $0 -s /path/to/dockerfiles/ -r helm-3              -u http://rhsm-pulp.corp.redhat.com/content/dist/layered/rhel8/basearch/ocp-tools/4.8
+  $0 -s /path/to/dockerfiles/ -r openshift-clients-4 -u http://rhsm-pulp.corp.redhat.com/content/dist/layered/rhel8/basearch/rhocp/4.12
+  $0 -s /path/to/dockerfiles/ -r odo-3               -u http://rhsm-pulp.corp.redhat.com/content/dist/layered/rhel8/basearch/ocp-tools/4.12
+  $0 -s /path/to/dockerfiles/ -r helm-3              -u http://rhsm-pulp.corp.redhat.com/content/dist/layered/rhel8/basearch/ocp-tools/4.12
 Options:
   -q quieter output; only reports changed rpm version or 0 if failure
 "
