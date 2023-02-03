@@ -11,14 +11,16 @@
 # optionally, use --quay flag to also check quay.io registry
 
 QUIET=0
-
+USE_QUAY="false" # check for image at quay.io, if not found
+USE_QUAY_TOO="false" # always check for image at quay.io
 usage () {
 	echo "Usage:   ${0##*/} $0 registry/org/image@sha256:digest [OPTIONS]
 
 Options:
-  -y, --quay    search for image on quay.io registry if not found on provided one (eg., for an unreleased registry.redhat.io image)
-  -q, --quiet   quieter output
-  -h, --help    this help
+  -y, --quay       search for image on quay.io registry if not found on provided one (eg., for an unreleased registry.redhat.io image)
+  -yy, --quay-too  search for image on quay.io registry AS WELL AS on provided one (eg., to compare RHEC Freshmaker releases w/ Quay.io ones)
+  -q, --quiet      quieter output - only container name found
+  -h, --help       this help
 "
 }
 
@@ -26,29 +28,49 @@ if [[ $# -lt 1 ]]; then usage; fi
 
 while [[ "$#" -gt 0 ]]; do
   case $1 in
-    '-y'|'--quay')  imageAndSHAs="${imageAndSHAs} quay.io/${imageAndSHAs#*/}";;
-    '-q'|'--quiet') QUIET=1;;
-    '-h'|'--help')  usage; exit 0;;
-    *)              imageAndSHAs="${imageAndSHAs} $1";;
+    '-y'|'--quay')       USE_QUAY=true;;
+    '-yy'|'--quay-too')  USE_QUAY="true"; USE_QUAY_TOO=true;;
+    '-q'|'--quiet')      QUIET=1;;
+    '-h'|'--help')       usage; exit 0;;
+    *)                   imageAndSHAs="${imageAndSHAs} $1";;
   esac
   shift 1
 done
 
-for imageAndSHA in $imageAndSHAs; do
+checkImage_result="false"
+checkImage () {
+    local imageAndSHA="$1"
     if [[ $QUIET -eq 0 ]]; then echo "For $imageAndSHA"; fi
     image=${imageAndSHA%%@*}
-    URL=$(skopeo inspect docker://${imageAndSHA} | jq -r '.Labels.url')
+    if [[ $QUIET -eq 1 ]]; then 
+        URL=$(skopeo inspect docker://${imageAndSHA} 2>/dev/null | jq -r '.Labels.url')
+    else
+        URL=$(skopeo inspect docker://${imageAndSHA} | jq -r '.Labels.url')
+    fi
     # echo "Got $URL"
     if [[ $URL ]]; then
         container=${URL}
         container=${image}:${container##*/images/}
+        # replace quay.io/devspaces/devspaces-rhel8-operator:3.4:3.4-22 with quay.io/devspaces/devspaces-rhel8-operator:3.4-22
+        container=$(echo "$container" | sed -r -e "s@:[0-9.]+:@:@")
         if [[ $QUIET -eq 0 ]]; then echo "Got $container"; else echo $container; fi
+        checkImage_result="true"
     else
-        if [[ $2 == "--quay" ]]; then 
-            echo "Not found"; echo
-        else 
-            echo; echo "Not found; try --quay flag to check same image on quay.io registry"
+        if [[ ${imageAndSHA} == "quay.io/"* ]];then 
+            echo "Not found"
+        elif [[ $USE_QUAY != "true" ]]; then 
+            echo "Not found; try --quay or -y flag to check same image on quay.io registry"
         fi
+        checkImage_result="false"
     fi
     # skopeo inspect docker://${container} | jq -r .Digest # note, this might be different from the input SHA, but still equivalent 
+}
+
+for imageAndSHA in $imageAndSHAs; do
+    checkImage "${imageAndSHA}"
+    if [[ "$checkImage_result" != "true" ]] || [[ "$USE_QUAY_TOO" == "true" ]]; then
+        if [[ "${imageAndSHA}" != "quay.io/"* ]]; then # don't check quay again if we already did!
+            checkImage "quay.io/${imageAndSHA#*/}"
+        fi
+    fi
 done
