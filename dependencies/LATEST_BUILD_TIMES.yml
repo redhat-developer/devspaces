@@ -7495,6 +7495,15 @@
   timeWait: 19 mins
   timeBuild: 14 mins
   timeTotal: 33 mins
+- name: devspaces-operator
+  tag: 3.5-25
+  taskId: 50479940
+  timeCreate: Fri Feb 3 05:13:39 2023
+  timeStart: Fri Feb 3 05:14:17 2023
+  timeFinish: Fri Feb 3 05:29:53 2023
+  timeWait: 0 mins
+  timeBuild: 15 mins
+  timeTotal: 16 mins
 - name: devspaces-operator-bundle
   tag: 3.5-103
   taskId: 50479943
@@ -7504,3 +7513,12 @@
   timeWait: 0 mins
   timeBuild: 5 mins
   timeTotal: 5 mins
+- name: devspaces-operator-bundle
+  tag: 3.5-104
+  taskId: 50480554
+  timeCreate: Fri Feb 3 05:51:30 2023
+  timeStart: Fri Feb 3 05:51:39 2023
+  timeFinish: Fri Feb 3 05:54:45 2023
+  timeWait: 0 mins
+  timeBuild: 3 mins
+  timeTotal: 3 mins
