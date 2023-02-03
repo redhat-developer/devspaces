@@ -7486,3 +7486,21 @@
   timeWait: 0 mins
   timeBuild: 3 mins
   timeTotal: 3 mins
+- name: devspaces-operator
+  tag: 3.5-24
+  taskId: 50478853
+  timeCreate: Fri Feb 3 04:25:13 2023
+  timeStart: Fri Feb 3 04:44:51 2023
+  timeFinish: Fri Feb 3 04:58:51 2023
+  timeWait: 19 mins
+  timeBuild: 14 mins
+  timeTotal: 33 mins
+- name: devspaces-operator-bundle
+  tag: 3.5-103
+  taskId: 50479943
+  timeCreate: Fri Feb 3 05:14:01 2023
+  timeStart: Fri Feb 3 05:14:18 2023
+  timeFinish: Fri Feb 3 05:19:18 2023
+  timeWait: 0 mins
+  timeBuild: 5 mins
+  timeTotal: 5 mins
