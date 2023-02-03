@@ -10,10 +10,10 @@ icon: /images/ms-kubernetes-tools-vscode-kubernetes-tools-icon.png
 category: Snippets
 repository: https://github.com/Azure/vscode-kubernetes-tools
 firstPublicationDate: '2020-08-10'
-latestUpdateDate: '2023-01-31'
+latestUpdateDate: '2023-02-03'
 spec:
   containers:
-    - image: registry.redhat.io/devspaces/udi-rhel8:3.5
+    - image: registry.redhat.io/devspaces/udi-rhel8:3.6
       name: vscode-kubernetes-tools
       memoryLimit: 1Gi
       memoryRequest: 20Mi

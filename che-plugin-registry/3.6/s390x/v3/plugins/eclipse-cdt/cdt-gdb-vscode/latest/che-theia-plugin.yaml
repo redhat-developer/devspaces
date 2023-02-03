@@ -11,7 +11,7 @@ metadata:
     - Other
   icon: /images/eclipse-cdt-cdt-gdb-vscode-icon.png
 sidecar:
-  image: registry.redhat.io/devspaces/udi-rhel8:3.5
+  image: registry.redhat.io/devspaces/udi-rhel8:3.6
   name: cpp-plugins
   memoryLimit: 512Mi
   memoryRequest: 20Mi

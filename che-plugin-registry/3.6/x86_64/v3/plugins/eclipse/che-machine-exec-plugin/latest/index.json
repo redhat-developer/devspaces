@@ -10,7 +10,7 @@ icon: /images/default.png
 category: Other
 repository: https://github.com/eclipse/che-machine-exec/
 firstPublicationDate: '2021-02-18'
-latestUpdateDate: '2023-01-31'
+latestUpdateDate: '2023-02-03'
 spec:
   endpoints:
     - name: che-machine-exec
@@ -24,7 +24,7 @@ spec:
         cookiesAuthEnabled: true
   containers:
     - name: che-machine-exec
-      image: registry.redhat.io/devspaces/machineexec-rhel8:3.5
+      image: registry.redhat.io/devspaces/machineexec-rhel8:3.6
       memoryLimit: 128Mi
       memoryRequest: 32Mi
       cpuLimit: 500m

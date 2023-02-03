@@ -15,7 +15,7 @@ metadata:
     - Other
   icon: /images/ms-kubernetes-tools-vscode-kubernetes-tools-icon.png
 sidecar:
-  image: registry.redhat.io/devspaces/udi-rhel8:3.5
+  image: registry.redhat.io/devspaces/udi-rhel8:3.6
   name: vscode-kubernetes-tools
   memoryLimit: 1Gi
   memoryRequest: 20Mi

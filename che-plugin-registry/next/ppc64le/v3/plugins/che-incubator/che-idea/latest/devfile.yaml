@@ -11,7 +11,7 @@ events:
 components:
   - name: idea-rhel8
     container:
-      image: registry.redhat.io/devspaces/udi-rhel8:3.5
+      image: registry.redhat.io/devspaces/udi-rhel8:3.6
       command:
         - /projector/entrypoint-volume.sh
       env:
@@ -64,8 +64,9 @@ components:
           exposure: public
           protocol: http
     attributes:
-      app.kubernetes.io/component: idea-rhel8-injector
+      app.kubernetes.io/component: idea-rhel8-runtime
       app.kubernetes.io/part-of: idea-rhel8.eclipse.org
+      controller.devfile.io/container-contribution: true
   - name: projector-volume
     volume: {}
   - name: projector-configuration
@@ -74,7 +75,7 @@ components:
     volume: {}
   - name: idea-rhel8-injector
     container:
-      image: registry.redhat.io/devspaces/idea-rhel8:3.5
+      image: registry.redhat.io/devspaces/idea-rhel8:3.6
       command:
         - /projector/entrypoint-init-container.sh
       env:
