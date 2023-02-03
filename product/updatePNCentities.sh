@@ -31,7 +31,7 @@ DS_VERSION=
 # commandline args
 while [[ "$#" -gt 0 ]]; do
   case $1 in
-	'-v') DS_VERSION="$2"; shift 1;; # set major version
+	'-v') DS_VERSION="$2"; shift 1;; # set major.minor version (3.yy)
 	'--latest') STABLE_UPDATE="true"; shift 0;; # if set true, perform workflow for latest branch
           '--next') NEXT_UPDATE="true"; shift 0;; # if set true, perform workflow for next branch
   esac
