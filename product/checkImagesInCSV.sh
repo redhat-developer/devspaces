@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Copyright (c) 2022 Red Hat, Inc.
+# Copyright (c) 2022-2023 Red Hat, Inc.
 # This program and the accompanying materials are made
 # available under the terms of the Eclipse Public License 2.0
 # which is available at https://www.eclipse.org/legal/epl-2.0/
@@ -14,6 +14,8 @@ SCRIPT=$(readlink -f "$0"); SCRIPTPATH=$(dirname "$SCRIPT")
 
 # by default resolve image tags / digests from RHEC or as stated in the CSV; with this override, check Quay if can't find in RHEC
 QUAY=0
+# by default resolve image tags / digests from RHEC or as stated in the CSV; with this override, check Brew if can't find in RHEC
+BREW=0
 # by default, show the tag :: image@sha; optionally just show image:tag
 QUIET=0
 # by default show all images; optionally filter for one or more, eg 'devfile|plugin|udi'
@@ -49,11 +51,11 @@ Options:
   -y, --quay           If image not resolved from RH Ecosystem Catalog, check equivalent image on quay.io
   --brew               If image not resolved from RH Ecosystem Catalog, check equivalent image on brew.registry.redhat.io
   -i, --filter         Rather than return ALL images in the build, include a subset using grep -E
-  -q                   Quieter output: show 'image:tag' instead of default 'tag :: image@sha'
-  -qq                  Even quieter output: omit everything but related images
+  -q, --quiet          Quiet output: show 'image:tag' instead of default 'tag :: image@sha'
+  -qq, --quieter       Quieter output: omit everything but related images
 
 Examples:
-  $0 quay.io/devspaces/devspaces-operator-bundle:$PROD_VER -y -i 'devfile|plugin|udi'
+  $0 quay.io/devspaces/devspaces-operator-bundle:$PROD_VER -y -i 'dashboard|operator|registry-rhel|udi'
 
 To compare latest image in Quay to latest CSV in bundle in latest IIB:
   TAG=$PROD_VER; \\
@@ -77,8 +79,8 @@ while [[ "$#" -gt 0 ]]; do
     '-y'|'--quay') QUAY=1; shift 0;;
     '--brew') BREW=1; shift 0;;
     '-i'|'--filter') REGEX_FILTER="$2"; shift 1;;
-    '-q') QUIET=1; shift 0;;
-    '-qq') QUIET=2; shift 0;;
+    '-q'|'--quiet') QUIET=1; shift 0;;
+    '-qq'|'--quieter') QUIET=2; shift 0;;
     *) IMAGES="${IMAGES} $1"; shift 0;;
   esac
   shift 1
@@ -89,7 +91,7 @@ if [[ $PROD_VER ]] && [[ $PROD_VER != "3.yy" ]] && [[ $OCP_VER ]] && [[ ! $IMAGE
     echo "Checking for latest OCP v${OCP_VER} IIB for ${GLI_FLAG//--} ${PROD_VER}"
   fi
   if [[ $QUIET -lt 2 ]]; then
-    ${SCRIPTPATH}/getLatestIIBs.sh -t ${PROD_VER} -o ${OCP_VER} ${GLI_FLAG}
+    "${SCRIPTPATH}"/getLatestIIBs.sh -t "${PROD_VER}" -o "${OCP_VER}" "${GLI_FLAG}"
   fi
   if [[ $QUIET -lt 2 ]]; then
     echo "----------"
@@ -106,6 +108,9 @@ if [[ $PROD_VER ]] && [[ $PROD_VER != "3.yy" ]] && [[ $OCP_VER ]] && [[ ! $IMAGE
   fi
 fi
 
+# echo "REGEX_FILTER = $REGEX_FILTER"
+
+# shellcheck disable=SC2086
 for imageAndTag in $IMAGES; do 
     SOURCE_CONTAINER=${imageAndTag%%:*}
     containerTag=$(skopeo inspect docker://${imageAndTag} | jq -r '.Labels.url' | sed -r -e "s#.+/images/##")
@@ -116,7 +121,7 @@ for imageAndTag in $IMAGES; do
         chmod +x containerExtract.sh
     fi
     rm -fr /tmp/${SOURCE_CONTAINER//\//-}-${containerTag}-*/
-    ${SCRIPTPATH}/containerExtract.sh ${SOURCE_CONTAINER}:${containerTag} --delete-before --delete-after 2>&1 >/dev/null || true
+    "${SCRIPTPATH}"/containerExtract.sh ${SOURCE_CONTAINER}:${containerTag} --delete-before --delete-after >/dev/null 2>&1 || true
     related_images=$(cat /tmp/${SOURCE_CONTAINER//\//-}-${containerTag}-*/manifests/*.{csv,clusterserviceversion}.yaml 2>/dev/null | grep sha256: | sed -re "s@.+(value|mage): @@" | sort -uV)
     for related_image in $related_images; do 
         if [[ $REGEX_FILTER ]]; then related_image=$(echo "$related_image" | grep -E "$REGEX_FILTER"); fi
