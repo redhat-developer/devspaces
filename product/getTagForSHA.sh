@@ -43,6 +43,7 @@ checkImage () {
     local imageAndSHA="$1"
     if [[ $QUIET -eq 0 ]]; then echo "For $imageAndSHA"; fi
     image=${imageAndSHA%%@*}
+    # shellcheck disable=SC2086
     if [[ $QUIET -eq 1 ]]; then 
         URL=$(skopeo inspect docker://${imageAndSHA} 2>/dev/null | jq -r '.Labels.url')
     else

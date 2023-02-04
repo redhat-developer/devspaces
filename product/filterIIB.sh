@@ -61,27 +61,29 @@ while [[ "$#" -gt 0 ]]; do
 done
 
 if [[ $VERBOSEFLAG == "-v" ]]; then echo "[DEBUG] Working in $WORKING_DIR"; fi
-pushd "$WORKING_DIR" > /dev/null
+pushd "$WORKING_DIR" > /dev/null || exit
 trap 'popd >> /dev/null' EXIT
 
 # install opm if not installed from https://mirror.openshift.com/pub/openshift-v4/$(uname -m)/clients/ocp/latest-4.11/opm-linux.tar.gz
 if [[ ! -x /usr/local/bin/opm ]] && [[ ! -x ${HOME}/.local/bin/opm ]]; then 
-    pushd /tmp >/dev/null
+    pushd /tmp >/dev/null || exit
     echo "[INFO] Installing latest opm from https://mirror.openshift.com/pub/openshift-v4/$(uname -m)/clients/ocp/latest-4.11/opm-linux.tar.gz ..."
+    # shellcheck disable=SC2046
     curl -sSLo- https://mirror.openshift.com/pub/openshift-v4/$(uname -m)/clients/ocp/latest-4.11/opm-linux.tar.gz | tar xz; chmod 755 opm
-    sudo cp opm /usr/local/bin/ || cp opm ${HOME}/.local/bin/
-    sudo chmod 755 /usr/local/bin/opm || chmod 755 ${HOME}/.local/bin/opm
+    sudo cp opm /usr/local/bin/ || cp opm "${HOME}"/.local/bin/
+    sudo chmod 755 /usr/local/bin/opm || chmod 755 "${HOME}"/.local/bin/opm
     if [[ ! -x /usr/local/bin/opm ]] && [[ ! -x ${HOME}/.local/bin/opm ]]; then 
         echo "[ERROR] Could not install opm v1.19.5 or higher (see https://docs.openshift.com/container-platform/4.11/cli_reference/opm/cli-opm-install.html#cli-opm-install )";
         exit 1
     fi
-    popd >/dev/null
+    popd >/dev/null || exit
 fi
 
 PODMAN=$(command -v podman)
 if [[ ! -x $PODMAN ]]; then echo "[ERROR] podman is not installed. Aborting."; echo; usage; exit 1; fi
 command -v jq >/dev/null 2>&1     || which jq >/dev/null 2>&1     || { echo "jq is not installed. Aborting."; exit 1; }
 
+# shellcheck disable=SC2086
 if [ -z $sourceIndexImage ]; then echo "IIB image required"; echo; usage; exit 1; fi
 
 if [ -f ./render.json ]; then rm -f ./render.json; fi
@@ -103,12 +105,13 @@ for PACKAGE in ${PACKAGES}; do
   jq --arg PACKAGE "$PACKAGE" 'select(.schema == "olm.package") | select(.name == $PACKAGE)' render.json > "./olm-catalog/$PACKAGE/package.json"
   if [ ! -s "./olm-catalog/$PACKAGE/package.json" ]; then 
     echo "Could not find package $PACKAGE in IIB; aborting"
-    rm -rf ./olm-catalog/$PACKAGE/
+    rm -rf "./olm-catalog/$PACKAGE/"
     exit 1
   fi
   jq --arg PACKAGE "$PACKAGE" 'select(.schema == "olm.channel") | select(.package == $PACKAGE)' render.json > "./olm-catalog/$PACKAGE/channel.json"
   for BUNDLE in $(jq -r --arg PACKAGE "$PACKAGE" 'select(.package == $PACKAGE) | select(.schema == "olm.bundle") | .name' render.json); do
     echo "extracting bundle $BUNDLE"
+    # shellcheck disable=SC2086
     jq --arg BUNDLE $BUNDLE 'select(.name == $BUNDLE) | select(.schema == "olm.bundle")' render.json > "./olm-catalog/$PACKAGE/$BUNDLE.bundle.json"
   done
 done
@@ -119,6 +122,7 @@ if [[ "$INCLUDE_CRW" == "true" ]]; then
   jq 'select(.schema == "olm.package") | select(.name == "codeready-workspaces")' render.json > olm-catalog/codeready-workspaces/package.json
   jq 'select(.package == "codeready-workspaces") | select(.schema == "olm.channel")' render.json > olm-catalog/codeready-workspaces/channel.json
   for bundle in $(jq -r 'select(.package == "codeready-workspaces") | select(.schema == "olm.bundle") | .name' render.json); do
+    # shellcheck disable=SC2086
     jq --arg bundle $bundle 'select(.name == $bundle) | select(.schema == "olm.bundle")' render.json > "olm-catalog/codeready-workspaces/$bundle.bundle.json"
   done
 fi
@@ -131,7 +135,7 @@ replaceField()
   # echo "    ${0##*/} rF :: * ${updateName}: ${updateVal}"
   # shellcheck disable=SC2016 disable=SC2002 disable=SC2086
   changed=$(jq --arg updateName "${updateName}" --arg updateVal "${updateVal}" ${updateName}' = $updateVal' "${theFile}")
-  echo "${header}${changed}" > "${theFile}"
+  echo "${changed}" > "${theFile}"
 }
 
 replaceChannelName()
@@ -144,10 +148,10 @@ replaceChannelName()
 # optionally, override the channels from the IIBs with a targetChannel (for all operators or for the devspaces operator only)
 # olm-catalog/devspaces/channel.json # "name": "stable"
 # olm-catalog/devspaces/package.json # "defaultChannel": "stable"
-pushd olm-catalog/ >/dev/null
-if [[ ! -z $targetChannelAll ]]; then
+pushd olm-catalog/ >/dev/null || exit
+if [[ -n $targetChannelAll ]]; then
   for d in devspaces web-terminal devworkspace-operator codeready-workspaces; do
       replaceChannelName "${d}" "$targetChannelAll"
   done
 fi
-popd >/dev/null
+popd >/dev/null || exit

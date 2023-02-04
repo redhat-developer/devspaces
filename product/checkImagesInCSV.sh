@@ -55,7 +55,7 @@ Options:
   -qq, --quieter       Quieter output: omit everything but related images
 
 Examples:
-  $0 quay.io/devspaces/devspaces-operator-bundle:$PROD_VER -y -i 'devfile|plugin|udi'
+  $0 quay.io/devspaces/devspaces-operator-bundle:$PROD_VER -y -i 'dashboard|operator|registry-rhel|udi'
 
 To compare latest image in Quay to latest CSV in bundle in latest IIB:
   TAG=$PROD_VER; \\
@@ -91,7 +91,7 @@ if [[ $PROD_VER ]] && [[ $PROD_VER != "3.yy" ]] && [[ $OCP_VER ]] && [[ ! $IMAGE
     echo "Checking for latest OCP v${OCP_VER} IIB for ${GLI_FLAG//--} ${PROD_VER}"
   fi
   if [[ $QUIET -lt 2 ]]; then
-    ${SCRIPTPATH}/getLatestIIBs.sh -t ${PROD_VER} -o ${OCP_VER} ${GLI_FLAG}
+    "${SCRIPTPATH}"/getLatestIIBs.sh -t "${PROD_VER}" -o "${OCP_VER}" "${GLI_FLAG}"
   fi
   if [[ $QUIET -lt 2 ]]; then
     echo "----------"
@@ -108,6 +108,9 @@ if [[ $PROD_VER ]] && [[ $PROD_VER != "3.yy" ]] && [[ $OCP_VER ]] && [[ ! $IMAGE
   fi
 fi
 
+# echo "REGEX_FILTER = $REGEX_FILTER"
+
+# shellcheck disable=SC2086
 for imageAndTag in $IMAGES; do 
     SOURCE_CONTAINER=${imageAndTag%%:*}
     containerTag=$(skopeo inspect docker://${imageAndTag} | jq -r '.Labels.url' | sed -r -e "s#.+/images/##")
@@ -118,7 +121,7 @@ for imageAndTag in $IMAGES; do
         chmod +x containerExtract.sh
     fi
     rm -fr /tmp/${SOURCE_CONTAINER//\//-}-${containerTag}-*/
-    ${SCRIPTPATH}/containerExtract.sh ${SOURCE_CONTAINER}:${containerTag} --delete-before --delete-after 2>&1 >/dev/null || true
+    "${SCRIPTPATH}"/containerExtract.sh ${SOURCE_CONTAINER}:${containerTag} --delete-before --delete-after >/dev/null 2>&1 || true
     related_images=$(cat /tmp/${SOURCE_CONTAINER//\//-}-${containerTag}-*/manifests/*.{csv,clusterserviceversion}.yaml 2>/dev/null | grep sha256: | sed -re "s@.+(value|mage): @@" | sort -uV)
     for related_image in $related_images; do 
         if [[ $REGEX_FILTER ]]; then related_image=$(echo "$related_image" | grep -E "$REGEX_FILTER"); fi

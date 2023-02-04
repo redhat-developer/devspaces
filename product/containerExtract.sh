@@ -42,7 +42,7 @@ while [[ "$#" -gt 0 ]]; do
     '--delete-after') DELETE_LOCAL_IMAGE="${DELETE_LOCAL_IMAGE} after";;
     '--override-arch') ARCH_OVERRIDE="--override-arch $2"; shift 1;;
     '--tar-flags'   ) TAR_FLAGS="$2"; shift 1;;
-    '--tmpdir') TMPDIR="$2"; mkdir -p $TMPDIR; shift 1;;
+    '--tmpdir') TMPDIR="$2"; mkdir -p "$TMPDIR"; shift 1;;
     '-h') usage;;
     '-q'|'--quiet') QUIET="--quiet";;
     *) container="$1";;
@@ -76,6 +76,7 @@ unpackdir="$TMPDIR/${tmpcontainer}"
 container_alt=""
 for container_ref in "$container" "localhost/$container:latest" "localhost/$container"; do 
   if [[ $DELETE_LOCAL_IMAGE == *"before"* ]]; then
+    # shellcheck disable=SC2086
     ${PODMAN} rmi $container_ref 2>/dev/null >/dev/null || true
   fi
   container_check="$(${PODMAN} images "$container_ref" -q)"
@@ -132,6 +133,7 @@ if [[ $QUIET == "" ]]; then
 fi
 
 if [[ $DELETE_LOCAL_IMAGE == *"after"* ]]; then
+  # shellcheck disable=SC2086
   if [[ $container_alt ]]; then 
     ${PODMAN} rmi $container_alt 2>/dev/null >/dev/null || true
   else
