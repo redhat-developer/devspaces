@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Copyright (c) 2022 Red Hat, Inc.
+# Copyright (c) 2022-2023 Red Hat, Inc.
 # This program and the accompanying materials are made
 # available under the terms of the Eclipse Public License 2.0
 # which is available at https://www.eclipse.org/legal/epl-2.0/
@@ -14,6 +14,8 @@ SCRIPT=$(readlink -f "$0"); SCRIPTPATH=$(dirname "$SCRIPT")
 
 # by default resolve image tags / digests from RHEC or as stated in the CSV; with this override, check Quay if can't find in RHEC
 QUAY=0
+# by default resolve image tags / digests from RHEC or as stated in the CSV; with this override, check Brew if can't find in RHEC
+BREW=0
 # by default, show the tag :: image@sha; optionally just show image:tag
 QUIET=0
 # by default show all images; optionally filter for one or more, eg 'devfile|plugin|udi'
@@ -49,8 +51,8 @@ Options:
   -y, --quay           If image not resolved from RH Ecosystem Catalog, check equivalent image on quay.io
   --brew               If image not resolved from RH Ecosystem Catalog, check equivalent image on brew.registry.redhat.io
   -i, --filter         Rather than return ALL images in the build, include a subset using grep -E
-  -q                   Quieter output: show 'image:tag' instead of default 'tag :: image@sha'
-  -qq                  Even quieter output: omit everything but related images
+  -q, --quiet          Quiet output: show 'image:tag' instead of default 'tag :: image@sha'
+  -qq, --quieter       Quieter output: omit everything but related images
 
 Examples:
   $0 quay.io/devspaces/devspaces-operator-bundle:$PROD_VER -y -i 'devfile|plugin|udi'
@@ -77,8 +79,8 @@ while [[ "$#" -gt 0 ]]; do
     '-y'|'--quay') QUAY=1; shift 0;;
     '--brew') BREW=1; shift 0;;
     '-i'|'--filter') REGEX_FILTER="$2"; shift 1;;
-    '-q') QUIET=1; shift 0;;
-    '-qq') QUIET=2; shift 0;;
+    '-q'|'--quiet') QUIET=1; shift 0;;
+    '-qq'|'--quieter') QUIET=2; shift 0;;
     *) IMAGES="${IMAGES} $1"; shift 0;;
   esac
   shift 1
