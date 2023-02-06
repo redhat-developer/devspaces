@@ -54,12 +54,12 @@ do
     --output-file:"${dir}"devworkspace-che-theia-latest.yaml \
     --project."${project}"
 
-    # Generate devworkspace-che-code-insiders.yaml
+    # Generate devworkspace-che-code-latest.yaml
     npm_config_yes=true npx @eclipse-che/${che_devworkspace_generator} \
     --devfile-url:"${devfile_url}" \
-    --editor-entry:che-incubator/che-code/insiders \
+    --editor-entry:che-incubator/che-code/latest \
     --plugin-registry-url:https://redhat-developer.github.io/devspaces/che-plugin-registry/"${VERSION}"/"${arch}"/v3 \
-    --output-file:"${dir}"devworkspace-che-code-insiders.yaml \
+    --output-file:"${dir}"devworkspace-che-code-latest.yaml \
     --project."${project}"
 
     # Generate devworkspace-che-idea-latest.yaml
