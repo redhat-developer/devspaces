@@ -24,7 +24,6 @@ samplesRepo=devspaces-samples
 
 SOURCE_BRANCH="" # normally, use this script to create tags, not branches
 
-SCRIPT=$(readlink -f "$0"); SCRIPTPATH=$(dirname "$SCRIPT")
 CLEAN="false" #  if set true, delete existing folders and do fresh checkouts
 
 if [[ $# -lt 4 ]]; then
@@ -74,30 +73,31 @@ pushTagPD ()
 {
 	d="$1"
 	echo; echo "== $d =="
-	if [[ ! -d /tmp/tmp-checkouts/containers_${d} ]]; then
-		git clone -b ${pkgs_devel_branch} ssh://${pduser}@pkgs.devel.redhat.com/containers/${d} containers_${d}
-		pushd /tmp/tmp-checkouts/containers_${d} >/dev/null || exit 1
+	if [[ ! -d "/tmp/tmp-checkouts/containers_${d}" ]]; then
+		git clone -b "${pkgs_devel_branch}" "ssh://${pduser}@pkgs.devel.redhat.com/containers/${d}" "containers_${d}"
+		pushd "/tmp/tmp-checkouts/containers_${d}" >/dev/null || exit 1
 			export KRB5CCNAME=/var/tmp/${pduser}_ccache
-			git config user.email ${pduser}@REDHAT.COM
+			git config user.email "${pduser}@REDHAT.COM"
 			git config user.name "Dev Spaces Build"
 			git config --global push.default matching
 
-			git checkout --track origin/${pkgs_devel_branch} -q || true
+			git checkout --track origin/"${pkgs_devel_branch}" -q || true
 			git pull -q
 		popd >/dev/null || exit 1
 	fi
-	pushd /tmp/tmp-checkouts/containers_${d} >/dev/null || exit 1
+	pushd "/tmp/tmp-checkouts/containers_${d}" >/dev/null || exit 1
 		# push new tag (no op if already exists)
-		git tag -a ${CSV_VERSION} -m "${CSV_VERSION}" || true
-		git push origin ${CSV_VERSION} || true
+		git tag -a "${CSV_VERSION}" -m "${CSV_VERSION}" || true
+		git push origin "${CSV_VERSION}" || true
 	popd >/dev/null || exit 1
 }
 
 toggleQuayRHECReferences() {
 	YAML_ROOT="dependencies/"
 	# replace DS meta.yaml files with links to current version of devfile v2
+	# shellcheck disable=SC2044
 	for yaml in $(find ${YAML_ROOT} -name "*.yaml"); do
-		sed -r -i $yaml -e "s#quay.io/devspaces/#registry.redhat.io/devspaces/#g"
+		sed -r -i "$yaml" -e "s#quay.io/devspaces/#registry.redhat.io/devspaces/#g"
 	done
 	git commit -s -m "chore(yaml) set image refs to registry.redhat.io/devspaces/" $YAML_ROOT || echo ""
 }
@@ -105,6 +105,7 @@ toggleQuayRHECReferences() {
 # for the devspaces main repo, update meta.yaml files to point to the correct branch of $samplesRepo
 updateImageTags() {
 	YAML_ROOT="dependencies/che-plugin-registry/"
+	# shellcheck disable=SC2044
 	for cheyaml in $(find ${YAML_ROOT} -name "che-*.yaml"); do
 	   sed -r -i "${cheyaml}" \
 		   -e "s|(image: .+/devspaces/.+):[0-9.]+|\1:${DS_VERSION}|g"
@@ -117,6 +118,7 @@ updateLinksToDevfiles() {
 	YAML_ROOT="dependencies/che-devfile-registry/devfiles"
 
 	# replace DS meta.yaml files with links to current version of devfile v2
+	# shellcheck disable=SC2044
 	for meta in $(find ${YAML_ROOT} -name "meta.yaml"); do
 	   sed -r -i "${meta}" \
 		   -e "s|/tree/devfilev2|/tree/${TARGET_BRANCH}|g" \
@@ -147,31 +149,31 @@ pushBranchAndOrTagGH () {
 	org="$2"
 	echo; echo "== $d =="
 	# if source_branch defined and target branch doesn't exist yet, check out the source branch
-	if [[ ${SOURCE_BRANCH} ]] && [[ $(git ls-remote --heads https://github.com/${org}/${d} ${TARGET_BRANCH}) == "" ]]; then
+	if [[ ${SOURCE_BRANCH} ]] && [[ $(git ls-remote --heads "https://github.com/${org}/${d}" "${TARGET_BRANCH}") == "" ]]; then
 		clone_branch=${SOURCE_BRANCH}
 	else # if source branch not set (tagging operation) or target branch already exists
 		clone_branch=${TARGET_BRANCH}
 	fi
-	if [[ ! -d /tmp/tmp-checkouts/projects_${d} ]]; then
-		git clone -q --depth 1 -b ${clone_branch} https://github.com/${org}/${d} projects_${d}
-		pushd /tmp/tmp-checkouts/projects_${d} >/dev/null || exit 1
+	if [[ ! -d "/tmp/tmp-checkouts/projects_${d}" ]]; then
+		git clone -q --depth 1 -b "${clone_branch}" "https://github.com/${org}/${d}" "projects_${d}"
+		pushd "/tmp/tmp-checkouts/projects_${d}" >/dev/null || exit 1
 			export GITHUB_TOKEN="${GITHUB_TOKEN}"
 			git config user.email "nickboldt+devstudio-release@gmail.com"
 			git config user.name "Red Hat Devstudio Release Bot"
 			git config --global push.default matching
 			git config --global hub.protocol https
-			git remote set-url origin https://${GITHUB_TOKEN}:x-oauth-basic@github.com/${org}/${d}
+			git remote set-url origin "https://${GITHUB_TOKEN}:x-oauth-basic@github.com/${org}/${d}"
 
-			git checkout --track origin/${clone_branch} -q || true
+			git checkout --track "origin/${clone_branch}" -q || true
 			git pull -q
 		popd >/dev/null || exit 1
 	fi
-	pushd /tmp/tmp-checkouts/projects_${d} >/dev/null || exit 1
+	pushd "/tmp/tmp-checkouts/projects_${d}" >/dev/null || exit 1
 	if [[ ${SOURCE_BRANCH} ]]; then 
 		# create a branch or use existing
-		git branch ${TARGET_BRANCH} || true
-		git checkout ${TARGET_BRANCH} || true
-		git pull origin ${TARGET_BRANCH} || true
+		git branch "${TARGET_BRANCH}" || true
+		git checkout "${TARGET_BRANCH}" || true
+		git pull origin "${TARGET_BRANCH}" || true
 
 		# for the devspaces main repo, update devfiles to point to the correct tag/branch
 		if [[ $d == "devspaces" ]]; then
@@ -185,18 +187,18 @@ pushBranchAndOrTagGH () {
 			updateSampleDevfileReferences
 		fi
 
-		git pull origin ${TARGET_BRANCH} || true
-		git push origin ${TARGET_BRANCH} || true
+		git pull origin "${TARGET_BRANCH}" || true
+		git push origin "${TARGET_BRANCH}" || true
 	fi
 	if [[ $CSV_VERSION ]]; then # push a new tag (or no-op if exists)
-		git tag ${CSV_VERSION} || true
-		git push origin ${CSV_VERSION} || true
+		git tag "${CSV_VERSION}" || true
+		git push origin "${CSV_VERSION}" || true
 	fi
 	popd >/dev/null || exit 1
 }
 
 # tag pkgs.devel repos only (branches are created by SPMM ticket, eg., https://projects.engineering.redhat.com/browse/SPMM-2517)
-if [[ ${pkgs_devel_branch} ]] && [[ ${CSV_VERSION} ]]; then
+if [[ "${pkgs_devel_branch}" ]] && [[ "${CSV_VERSION}" ]]; then
 	for repo in \
 	devspaces-code \
 	devspaces-configbump \
@@ -250,7 +252,7 @@ web-nodejs-sample \
 
 # create branches for devspaces samples, located under https://github.com/${samplesRepo}/
 for s in $sampleprojects; do
-	pushBranchAndOrTagGH $s ${samplesRepo}
+	pushBranchAndOrTagGH "$s" ${samplesRepo}
 done
 
 # cleanup
