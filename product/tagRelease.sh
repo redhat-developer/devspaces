@@ -18,7 +18,7 @@ if [[ $TARGET_BRANCH != "devspaces-3."*"-rhel-8" ]]; then
 fi
 pkgs_devel_branch=${TARGET_BRANCH}
 
-pduser=crw-build
+pduser=devspaces-build
 
 samplesRepo=devspaces-samples
 
