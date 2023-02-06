@@ -8,7 +8,7 @@ set -e
 
 MIDSTM_BRANCH=""
 SCRIPT_DIR=$(dirname $(readlink -f "${BASH_SOURCE[0]}"))
-PKGS_DEVEL_USER="crw-build"
+PKGS_DEVEL_USER="devspaces-build"
 DEBUG=0
 CLEAN=1 # by default delete intermediate assets to save disk space
 phases=" 1 2 3 "
