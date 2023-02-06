@@ -27,7 +27,7 @@ cleanup () {
 # commandline args
 while [[ "$#" -gt 0 ]]; do
   case $1 in
-	'-pduser') pduser="$2"; shift 1;;
+    '-pduser') pduser="$2"; shift 1;;
     '-b') MIDSTM_BRANCH="$2"; shift 1;;
     '--keep-temp') CLEAN=0;;
     '--clean') cleanup;;
