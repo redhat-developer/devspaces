@@ -36,7 +36,6 @@ done
 initVariables() {
   # init variables used by both flows
   product_version=$DS_VERSION
-  # devspaces server have the same project and product name
   product_name="RHOSDS"
   project_name="devspaces-server"
 }
@@ -76,7 +75,6 @@ configureLatestBuildConfig() {
 
 configureNextBuildConfig() {
   build_config_name="devspaces-server-build-main"
-
   build_config_id=$(pnc build-config list --query "project.name==$project_name;name==$build_config_name" | yq -r '.[].id')
   if [[ $build_config_id ]]; then 
     echo "[INFO] detected existing PNC build-config for $product_version, id - $build_config_id"
