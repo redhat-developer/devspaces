@@ -101,6 +101,7 @@ cleanup() {
 
 if [[ -z ${DS_VERSION} ]] || [[ -z ${NEXT_UPDATE} && -z ${LATEST_UPDATE} ]]; then
   usage
+  exit 1
 fi
 
 initVariables
