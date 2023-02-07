@@ -237,12 +237,12 @@ rm -fr /tmp/tmp-checkouts/*
 ####### sample projects: branching and tagging
 # cat devspaces-devfileregistry/devfiles/*/meta.* | grep v2 | sort
 sampleprojects="\
-cakephp-ex \
 c-plus-plus \
 dotnet-web-simple \
 golang-health-check \
 lombok-project-sample \
 nodejs-mongodb-sample \
+php-hello-world \
 python-hello-world \
 quarkus-quickstarts \
 web-nodejs-sample \
