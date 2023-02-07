@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Copyright (c) 2021 Red Hat, Inc.
+# Copyright (c) 2021-2023 Red Hat, Inc.
 # This program and the accompanying materials are made
 # available under the terms of the Eclipse Public License 2.0
 # which is available at https://www.eclipse.org/legal/epl-2.0/
@@ -40,31 +40,38 @@ if [[ ! ${MIDSTM_BRANCH} ]]; then usage; fi
 if [[ ! ${SOURCE_DIR} ]]; then usage; fi
 
 if [[ ! -x ${SCRIPTPATH}/containerExtract.sh ]]; then
-    curl -sSLO https://raw.githubusercontent.com/redhat-developer/devspaces/${MIDSTM_BRANCH}/product/containerExtract.sh
+    curl -sSLO https://raw.githubusercontent.com/redhat-developer/devspaces/"${MIDSTM_BRANCH}"/product/containerExtract.sh
     chmod +x containerExtract.sh
 fi
 
-${SCRIPTPATH}/containerExtract.sh ${SOURCE_CONTAINER}:${DS_VERSION} --delete-before --delete-after || true
-rm -fr ${SOURCE_DIR}/${DEST_DIR}
+"${SCRIPTPATH}"/containerExtract.sh "${SOURCE_CONTAINER}:${DS_VERSION}" --delete-before --delete-after || true
+rm -fr "${SOURCE_DIR:?}/${DEST_DIR}"
+# shellcheck disable=SC2086
 rsync -zrlt /tmp/${SOURCE_CONTAINER//\//-}-${DS_VERSION}-*/* \
-    ${SOURCE_DIR}/${DEST_DIR}/
+    "${SOURCE_DIR}/${DEST_DIR}/"
 
 # CRW-2077 generate a json file with the latest DS version and CSV versions too
-CSV_VERSION_BUNDLE="$(yq -r '.spec.version' ${SOURCE_DIR}/devspaces-operator-bundle-generated/manifests/devspaces.csv.yaml)"
-echo '{' > ${SOURCE_DIR}/VERSION.json
-echo '    "DS_VERSION": "'${DS_VERSION}'",'                   >> ${SOURCE_DIR}/VERSION.json
-echo '    "CSV_VERSION_BUNDLE": "'${CSV_VERSION_BUNDLE}'"' >> ${SOURCE_DIR}/VERSION.json
-echo '}' >> ${SOURCE_DIR}/VERSION.json
+CSV_VERSION_BUNDLE="$(yq -r '.spec.version' "${SOURCE_DIR}"/devspaces-operator-bundle-generated/manifests/devspaces.csv.yaml)"
+echo '{' > "${SOURCE_DIR}"/VERSION.json
+# shellcheck disable=SC2129
+echo '    "NOTE": "This file is deprecated; see https://github.com/redhat-developer/devspaces/blob/'"${MIDSTM_BRANCH}"'/dependencies/job-config.json",' >> "${SOURCE_DIR}"/VERSION.json
+# shellcheck disable=SC2086
+echo '    "DS_VERSION": "'${DS_VERSION}'",'                   >> "${SOURCE_DIR}"/VERSION.json
+# shellcheck disable=SC2086
+echo '    "CSV_VERSION_BUNDLE": "'${CSV_VERSION_BUNDLE}'"'    >> "${SOURCE_DIR}"/VERSION.json
+echo '}' >> "${SOURCE_DIR}"/VERSION.json
 
 # get container suffix number
+# shellcheck disable=SC2086
 DS_VERSION_SUFFIX=$(find /tmp/${SOURCE_CONTAINER//\//-}-${DS_VERSION}-*/root/buildinfo/ -name "Dockerfile*" | sed -r -e "s#.+-##g")
 
-pushd ${SOURCE_DIR}/ >/dev/null || exit 1
-    git add ${DEST_DIR} VERSION.json || true
-    git commit -m "[brew] Publish CSV with generated digests from ${SOURCE_CONTAINER}:${DS_VERSION_SUFFIX}" ${DEST_DIR} VERSION.json || true
+pushd "${SOURCE_DIR}"/ >/dev/null || exit 1
+    git add "${DEST_DIR}" VERSION.json || true
+    git commit -m "[brew] Publish CSV with generated digests from ${SOURCE_CONTAINER}:${DS_VERSION_SUFFIX}" "${DEST_DIR}" VERSION.json || true
     git pull origin "${MIDSTM_BRANCH}" || true
     git push origin "${MIDSTM_BRANCH}"
 popd >/dev/null || true
 
 # cleanup
+# shellcheck disable=SC2086
 rm -fr /tmp/${SOURCE_CONTAINER//\//-}-${DS_VERSION}-*
