@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Copyright (c) 2018-2022 Red Hat, Inc.
+# Copyright (c) 2018-2023 Red Hat, Inc.
 # This program and the accompanying materials are made
 # available under the terms of the Eclipse Public License 2.0
 # which is available at https://www.eclipse.org/legal/epl-2.0/
@@ -188,15 +188,15 @@ cleanupImages () {
     ${BUILDER} rmi -f "${OVSX_BUILDER_IMAGE}" "${OPENVSX_BUILDER_IMAGE}" || true
 }
 
-# load VERSION.json file from ./ or  ../, or fall back to the internet if no local copy
+# load job-config.json file from ./ or  ../, or fall back to the internet if no local copy
 if [[ -f "${base_dir}/job-config.json" ]]; then
-    versionjson="${base_dir}/job-config.json"
-    echo "Load ${versionjson} [1]"
+    jobconfigjson="${base_dir}/job-config.json"
+    echo "Load ${jobconfigjson} [1]"
 elif [[ -f "${base_dir%/*}/job-config.json" ]]; then
-    versionjson="${base_dir%/*}/job-config.json"
-    echo "Load ${versionjson} [2]"
+    jobconfigjson="${base_dir%/*}/job-config.json"
+    echo "Load ${jobconfigjson} [2]"
 else
-    # echo "[WARN] Could not find VERSION.json in ${base_dir} or ${base_dir%/*}!"
+    # echo "[WARN] Could not find job-config.json in ${base_dir} or ${base_dir%/*}!"
     # try to compute branches from currently checked out branch; else fall back to hard coded value
     # where to find redhat-developer/devspaces/${SCRIPTS_BRANCH}/product/getLatestImageTags.sh
     SCRIPTS_BRANCH="$(git rev-parse --abbrev-ref HEAD 2>/dev/null || true)"
@@ -204,11 +204,11 @@ else
         SCRIPTS_BRANCH="devspaces-3-rhel-8"
     fi
     echo "Load https://raw.githubusercontent.com/redhat-developer/devspaces/${SCRIPTS_BRANCH}/dependencies/job-config.json [3]"
-    curl -sSLo /tmp/VERSION.json https://raw.githubusercontent.com/redhat-developer/devspaces/${SCRIPTS_BRANCH}/dependencies/job-config.json
-    versionjson=/tmp/VERSION.json
+    curl -sSLo /tmp/job-config.json https://raw.githubusercontent.com/redhat-developer/devspaces/${SCRIPTS_BRANCH}/dependencies/job-config.json
+    jobconfigjson=/tmp/job-config.json
 fi
-REGISTRY_VERSION=$(jq -r '.Version' "${versionjson}");
-REGISTRY_GENERATOR_VERSION=$(jq -r --arg REGISTRY_VERSION "${REGISTRY_VERSION}" '.Other["@eclipse-che/plugin-registry-generator"][$REGISTRY_VERSION]' "${versionjson}");
+REGISTRY_VERSION=$(jq -r '.Version' "${jobconfigjson}");
+REGISTRY_GENERATOR_VERSION=$(jq -r --arg REGISTRY_VERSION "${REGISTRY_VERSION}" '.Other["@eclipse-che/plugin-registry-generator"][$REGISTRY_VERSION]' "${jobconfigjson}");
 # echo "REGISTRY_VERSION=${REGISTRY_VERSION}; REGISTRY_GENERATOR_VERSION=${REGISTRY_GENERATOR_VERSION}"
 
 echo "Generate artifacts"
