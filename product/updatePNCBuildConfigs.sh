@@ -14,15 +14,10 @@ usage() {
   echo "
   Provide a version and type of workflow (next or latest):
   Example: 
-            $0 -v 3.6 --latest
-            $0 -v 3.7 --next
+    $0 -v 3.6 --latest
+    $0 -v 3.7 --next
   "
 }
-
-if [[ $# -lt 3 ]]; then
-	usage
-	exit 1
-fi
 
 LATEST_UPDATE=
 NEXT_UPDATE=
@@ -31,9 +26,9 @@ DS_VERSION=
 # commandline args
 while [[ "$#" -gt 0 ]]; do
   case $1 in
-	'-v') DS_VERSION="$2"; shift 1;; # set major.minor version (3.yy)
-	'--latest') LATEST_UPDATE="true"; shift 0;; # if set true, perform workflow for latest branch
-  '--next') NEXT_UPDATE="true"; shift 0;; # if set true, perform workflow for next branch
+    '-v') DS_VERSION="$2"; shift 1;; # set major.minor version (3.yy)
+    '--latest') LATEST_UPDATE="true"; shift 0;; # if set true, perform workflow for latest branch
+    '--next') NEXT_UPDATE="true"; shift 0;; # if set true, perform workflow for next branch
   esac
   shift 1
 done
@@ -72,10 +67,7 @@ configureLatestBuildConfig() {
     curl -sSLo /tmp/job-config.json https://raw.githubusercontent.com/redhat-developer/devspaces/devspaces-3-rhel-8/dependencies/job-config.json 
     new_build_config_scmRevision=$(jq -r '.Jobs.server."'"$product_version"'".upstream_branch[0]' /tmp/job-config.json)
     new_build_config_name="devspaces-server-build-$new_build_config_scmRevision"
-    build_config_id=$(pnc build-config clone \
-                                        --buildConfigName="$new_build_config_name" \
-                                        --scmRevision="$new_build_config_scmRevision" \
-                                        "$old_build_config_id" | yq -r '.id')
+    build_config_id=$(pnc build-config clone --buildConfigName="$new_build_config_name" --scmRevision="$new_build_config_scmRevision" "$old_build_config_id" | yq -r '.id')
     # update config to point to new product version
     pnc build-config update --product-version-id="$product_id_version" "$build_config_id"
     echo "[INFO] created PNC build config for $product_version, id - $build_config_id"
