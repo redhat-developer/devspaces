@@ -67,7 +67,7 @@ configureLatestBuildConfig() {
     # get previous build config for latest build to base the clone from
     [[ ${DS_VERSION} =~ ^([0-9]+)\.([0-9]+)$ ]] && BASE=${BASH_REMATCH[1]}; NEXT=${BASH_REMATCH[2]}; (( NEXT=NEXT-1 )) 
     old_product_version=${BASE}.${NEXT}
-    old_build_config_id=$(pnc build-config list --query "project.name==$project_name;productVersion.version==$old_product_version")
+    old_build_config_id=$(pnc build-config list --query "project.name==$project_name;productVersion.version==$old_product_version" | yq -r '.[].id')
     # fetch job-config.json, where new upstream version is listed
     curl -sSLo /tmp/job-config.json https://raw.githubusercontent.com/redhat-developer/devspaces/devspaces-3-rhel-8/dependencies/job-config.json 
     new_build_config_scmRevision=$(jq -r '.Jobs.server."'"$product_version"'".upstream_branch[0]' /tmp/job-config.json)
@@ -75,7 +75,7 @@ configureLatestBuildConfig() {
     build_config_id=$(pnc build-config clone \
                                         --buildConfigName="$new_build_config_name" \
                                         --scmRevision="$new_build_config_scmRevision" \
-                                        "$old_build_config_id")	
+                                        "$old_build_config_id" | yq -r '.id')
     # update config to point to new product version
     pnc build-config update --product-version-id="$product_id_version" "$build_config_id"
     echo "[INFO] created PNC build config for $product_version, id - $build_config_id"
