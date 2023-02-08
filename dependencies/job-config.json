@@ -690,14 +690,14 @@
           "7.62.x",
           "7.61.x"
         ],
-        "disabled": false
+        "disabled": true
       },
       "3.x": {
         "upstream_branch": [
           "main",
           "main"
         ],
-        "disabled": false
+        "disabled": true
       }
     },
     "operator-metadata": {
