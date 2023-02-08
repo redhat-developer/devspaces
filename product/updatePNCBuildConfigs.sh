@@ -102,3 +102,4 @@ elif [[ $NEXT_UPDATE ]]; then
   configureNextBuildConfig
 fi
 cleanup
+
