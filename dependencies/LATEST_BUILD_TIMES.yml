@@ -7810,3 +7810,147 @@
   timeWait: 63 mins
   timeBuild: 4 mins
   timeTotal: 67 mins
+- name: devspaces-theia-rhel8
+  tag: 3.5-7.1675825587
+  taskId: 50598473
+  timeCreate: Wed Feb 8 03:06:27 2023
+  timeStart: Wed Feb 8 03:43:39 2023
+  timeFinish: Wed Feb 8 04:25:28 2023
+  timeWait: 37 mins
+  timeBuild: 41 mins
+  timeTotal: 79 mins
+- name: devspaces-udi-rhel8
+  tag: 3.5-13.1675830400
+  taskId: 50600696
+  timeCreate: Wed Feb 8 04:26:40 2023
+  timeStart: Wed Feb 8 04:29:46 2023
+  timeFinish: Wed Feb 8 05:12:22 2023
+  timeWait: 3 mins
+  timeBuild: 42 mins
+  timeTotal: 45 mins
+- name: devspaces-traefik-rhel8
+  tag: 3.5-8.1675830401
+  taskId: 50600699
+  timeCreate: Wed Feb 8 04:26:41 2023
+  timeStart: Wed Feb 8 04:29:48 2023
+  timeFinish: Wed Feb 8 04:53:53 2023
+  timeWait: 3 mins
+  timeBuild: 24 mins
+  timeTotal: 27 mins
+- name: devspaces-theia-endpoint-rhel8
+  tag: 3.5-7.1675830403
+  taskId: 50600704
+  timeCreate: Wed Feb 8 04:26:43 2023
+  timeStart: Wed Feb 8 04:30:35 2023
+  timeFinish: Wed Feb 8 04:41:39 2023
+  timeWait: 3 mins
+  timeBuild: 11 mins
+  timeTotal: 14 mins
+- name: devspaces-idea-rhel8
+  tag: 3.5-5.1675830410
+  taskId: 50600715
+  timeCreate: Wed Feb 8 04:26:51 2023
+  timeStart: Wed Feb 8 04:32:14 2023
+  timeFinish: Wed Feb 8 04:48:32 2023
+  timeWait: 5 mins
+  timeBuild: 16 mins
+  timeTotal: 21 mins
+- name: devspaces-configbump-rhel8
+  tag: 3.5-9.1675830412
+  taskId: 50600716
+  timeCreate: Wed Feb 8 04:26:52 2023
+  timeStart: Wed Feb 8 04:32:16 2023
+  timeFinish: Wed Feb 8 04:46:56 2023
+  timeWait: 5 mins
+  timeBuild: 14 mins
+  timeTotal: 20 mins
+- name: devspaces-dashboard-rhel8
+  tag: 3.5-19.1675831818
+  taskId: 50601407
+  timeCreate: Wed Feb 8 04:50:18 2023
+  timeStart: Wed Feb 8 04:50:57 2023
+  timeFinish: Wed Feb 8 05:28:27 2023
+  timeWait: 0 mins
+  timeBuild: 37 mins
+  timeTotal: 38 mins
+- name: devspaces-theia-rhel8
+  tag: 3.5-7.1675833566
+  taskId: 50602021
+  timeCreate: Wed Feb 8 05:19:27 2023
+  timeStart: Wed Feb 8 05:19:45 2023
+  timeFinish: Wed Feb 8 06:07:35 2023
+  timeWait: 0 mins
+  timeBuild: 47 mins
+  timeTotal: 48 mins
+- name: devspaces-traefik-rhel8
+  tag: 3.5-8.1675837487
+  taskId: 50604280
+  timeCreate: Wed Feb 8 06:24:47 2023
+  timeStart: Wed Feb 8 06:25:00 2023
+  timeFinish: Wed Feb 8 06:49:53 2023
+  timeWait: 0 mins
+  timeBuild: 24 mins
+  timeTotal: 25 mins
+- name: devspaces-theia-endpoint-rhel8
+  tag: 3.5-7.1675837488
+  taskId: 50604282
+  timeCreate: Wed Feb 8 06:24:48 2023
+  timeStart: Wed Feb 8 06:25:02 2023
+  timeFinish: Wed Feb 8 06:35:35 2023
+  timeWait: 0 mins
+  timeBuild: 10 mins
+  timeTotal: 10 mins
+- name: devspaces-server-rhel8
+  tag: 3.5-17.1675837490
+  taskId: 50604283
+  timeCreate: Wed Feb 8 06:24:50 2023
+  timeStart: Wed Feb 8 06:25:04 2023
+  timeFinish: Wed Feb 8 06:33:16 2023
+  timeWait: 0 mins
+  timeBuild: 8 mins
+  timeTotal: 8 mins
+- name: devspaces-operator
+  tag: 3.5-26.1675837491
+  taskId: 50604284
+  timeCreate: Wed Feb 8 06:24:51 2023
+  timeStart: Wed Feb 8 06:25:06 2023
+  timeFinish: Wed Feb 8 06:38:40 2023
+  timeWait: 0 mins
+  timeBuild: 13 mins
+  timeTotal: 13 mins
+- name: devspaces-imagepuller-rhel8
+  tag: 3.5-10.1675837493
+  taskId: 50604285
+  timeCreate: Wed Feb 8 06:24:53 2023
+  timeStart: Wed Feb 8 06:25:08 2023
+  timeFinish: Wed Feb 8 06:35:49 2023
+  timeWait: 0 mins
+  timeBuild: 10 mins
+  timeTotal: 10 mins
+- name: devspaces-configbump-rhel8
+  tag: 3.5-9.1675837495
+  taskId: 50604286
+  timeCreate: Wed Feb 8 06:24:55 2023
+  timeStart: Wed Feb 8 06:25:10 2023
+  timeFinish: Wed Feb 8 06:39:35 2023
+  timeWait: 0 mins
+  timeBuild: 14 mins
+  timeTotal: 14 mins
+- name: devspaces-code-rhel8
+  tag: 3.5-5
+  taskId: 50634537
+  timeCreate: Wed Feb 8 22:52:18 2023
+  timeStart: Wed Feb 8 23:36:57 2023
+  timeFinish: Wed Feb 8 23:44:42 2023
+  timeWait: 44 mins
+  timeBuild: 7 mins
+  timeTotal: 52 mins
+- name: devspaces-operator-bundle
+  tag: 3.5-118
+  taskId: 50637215
+  timeCreate: Thu Feb 9 00:11:58 2023
+  timeStart: Thu Feb 9 01:14:19 2023
+  timeFinish: Thu Feb 9 01:19:13 2023
+  timeWait: 62 mins
+  timeBuild: 4 mins
+  timeTotal: 67 mins
