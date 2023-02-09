@@ -41,9 +41,9 @@ initVariables() {
 }
 
 configureProductVersion() {
-  product_id=$(pnc product list  --query "abbreviation==$product_name" | yq -r '.[].id')
+  product_id=$(pnc product list --query "abbreviation==$product_name" | yq -r '.[].id')
   product_id_version=$(pnc product list-versions "$product_id" | yq -r '.[] | select(.version == "'"$DS_VERSION"'") | .id')
-  if [[ $product_id_version ]]; then 
+  if [[ $product_id_version ]]; then
     echo "[INFO] detected existing PNC version for $DS_VERSION, id - $product_id_version"
   else
     echo "[INFO] creating PNC version for $DS_VERSION"
@@ -54,7 +54,7 @@ configureProductVersion() {
 
 configureLatestBuildConfig() {
   build_config_id=$(pnc build-config list --query "project.name==$project_name;productVersion.version==$product_version" | yq -r '.[].id')
-  if [[ $build_config_id ]]; then 
+  if [[ $build_config_id ]]; then
     echo "[INFO] detected existing PNC build-config for $product_version, id - $build_config_id"
   else
     echo "[INFO] cloning PNC build config for $product_version"
@@ -63,7 +63,7 @@ configureLatestBuildConfig() {
     old_product_version=${BASE}.${NEXT}
     old_build_config_id=$(pnc build-config list --query "project.name==$project_name;productVersion.version==$old_product_version" | yq -r '.[].id')
     # fetch job-config.json, where new upstream version is listed
-    curl -sSLo /tmp/job-config.json https://raw.githubusercontent.com/redhat-developer/devspaces/devspaces-3-rhel-8/dependencies/job-config.json 
+    curl -sSLo /tmp/job-config.json https://raw.githubusercontent.com/redhat-developer/devspaces/devspaces-3-rhel-8/dependencies/job-config.json
     new_build_config_scmRevision=$(jq -r '.Jobs.server."'"$product_version"'".upstream_branch[0]' /tmp/job-config.json)
     new_build_config_name="devspaces-server-build-$new_build_config_scmRevision"
     build_config_id=$(pnc build-config clone --buildConfigName="$new_build_config_name" --scmRevision="$new_build_config_scmRevision" "$old_build_config_id" | yq -r '.id')
@@ -76,7 +76,7 @@ configureLatestBuildConfig() {
 configureNextBuildConfig() {
   build_config_name="devspaces-server-build-main"
   build_config_id=$(pnc build-config list --query "project.name==$project_name;name==$build_config_name" | yq -r '.[].id')
-  if [[ $build_config_id ]]; then 
+  if [[ $build_config_id ]]; then
     echo "[INFO] detected existing PNC build-config for $product_version, id - $build_config_id"
     echo "[INFO] updating PNC build config for $product_version"
     # update config to point to new product version

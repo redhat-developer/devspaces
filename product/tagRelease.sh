@@ -10,6 +10,7 @@
 
 # script to tag the Che/devspaces repos for a given release
 
+SCRIPT=$(readlink -f "$0"); SCRIPTPATH=$(dirname "$SCRIPT")
 # defaults
 # try to compute branches from currently checked out branch; else fall back to hard coded value
 TARGET_BRANCH="$(git rev-parse --abbrev-ref HEAD 2>/dev/null || true)"
@@ -197,6 +198,22 @@ pushBranchAndOrTagGH () {
 	popd >/dev/null || exit 1
 }
 
+updatePNCBuildConfigs() {
+  if [[ ! -x ${SCRIPTPATH}/updatePNCBuildConfigs.sh ]]; then
+    curl -sSLO https://raw.githubusercontent.com/redhat-developer/devspaces/${MIDSTM_BRANCH}/product/updatePNCBuildConfigs.sh --output-dir /tmp
+    chmod +x /tmp/updatePNCBuildConfigs.sh
+    PNC_SCRIPT_LOCATION="/tmp/updatePNCBuildConfigs.sh"
+  else
+    PNC_SCRIPT_LOCATION="${SCRIPTPATH}/updatePNCBuildConfigs.sh"
+  fi
+  # same source and target branch indicates the usecase for next workflow
+  if [ "${TARGET_BRANCH}" == "${SOURCE_BRANCH}" ];then
+    ${PNC_SCRIPT_LOCATION} ${DS_VERSION} --next
+  else
+    ${PNC_SCRIPT_LOCATION} ${DS_VERSION} --latest
+  fi
+}
+
 # tag pkgs.devel repos only (branches are created by SPMM ticket, eg., https://projects.engineering.redhat.com/browse/SPMM-2517)
 if [[ "${pkgs_devel_branch}" ]] && [[ "${CSV_VERSION}" ]]; then
 	for repo in \
@@ -255,5 +272,10 @@ for s in $sampleprojects; do
 	pushBranchAndOrTagGH "$s" ${samplesRepo}
 done
 
+# update PNC configs, only if performing branching operation
+if [[ ${SOURCE_BRANCH} ]]; then
+  updatePNCBuildConfigs
+fi
+
 # cleanup
-rm -fr /tmp/tmp-checkouts
+rm -fr /tmp/tmp-checkouts /tmp/updatePNCBuildConfigs.sh
