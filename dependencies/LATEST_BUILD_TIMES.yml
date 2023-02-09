@@ -7954,3 +7954,21 @@
   timeWait: 62 mins
   timeBuild: 4 mins
   timeTotal: 67 mins
+- name: devspaces-pluginregistry-rhel8
+  tag: 3.5-19
+  taskId: 50658071
+  timeCreate: Thu Feb 9 08:42:52 2023
+  timeStart: Thu Feb 9 09:47:38 2023
+  timeFinish: Thu Feb 9 10:14:48 2023
+  timeWait: 64 mins
+  timeBuild: 27 mins
+  timeTotal: 91 mins
+- name: devspaces-devfileregistry-rhel8
+  tag: 3.5-66
+  taskId: 50658170
+  timeCreate: Thu Feb 9 08:46:34 2023
+  timeStart: Thu Feb 9 09:48:25 2023
+  timeFinish: Thu Feb 9 09:59:43 2023
+  timeWait: 61 mins
+  timeBuild: 11 mins
+  timeTotal: 73 mins
