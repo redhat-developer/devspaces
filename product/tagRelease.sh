@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Copyright (c) 2018-2022 Red Hat, Inc.
+# Copyright (c) 2018-2023 Red Hat, Inc.
 # This program and the accompanying materials are made
 # available under the terms of the Eclipse Public License 2.0
 # which is available at https://www.eclipse.org/legal/epl-2.0/
@@ -9,6 +9,7 @@
 #
 
 # script to tag the Che/devspaces repos for a given release
+# as well as create/update branches and related PNC build-configs
 
 SCRIPT=$(readlink -f "$0"); SCRIPTPATH=$(dirname "$SCRIPT")
 # defaults
@@ -34,7 +35,7 @@ To create tags (and push updated CSV content into operator-bundle repo):
 Example: 
   $0 -v 3.y.0 -t 3.y -gh ${TARGET_BRANCH} -ghtoken \$GITHUB_TOKEN -pd ${pkgs_devel_branch} -pduser $pduser
 
-To create or update existing branches:
+To create or update existing branches and update related PNC build-configs:
   $0 -t DS_VERSION --branchfrom SOURCE_GH_BRANCH -gh TARGET_GH_BRANCH -ghtoken GITHUB_TOKEN
 Example: 
   $0 -t DS_VERSION --branchfrom devspaces-3-rhel-8 -gh ${TARGET_BRANCH} -ghtoken \$GITHUB_TOKEN
