@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Copyright (c) 2018-2022 Red Hat, Inc.
+# Copyright (c) 2018-2023 Red Hat, Inc.
 # This program and the accompanying materials are made
 # available under the terms of the Eclipse Public License 2.0
 # which is available at https://www.eclipse.org/legal/epl-2.0/
@@ -9,7 +9,9 @@
 #
 
 # script to tag the Che/devspaces repos for a given release
+# as well as create/update branches and related PNC build-configs
 
+SCRIPT=$(readlink -f "$0"); SCRIPTPATH=$(dirname "$SCRIPT")
 # defaults
 # try to compute branches from currently checked out branch; else fall back to hard coded value
 TARGET_BRANCH="$(git rev-parse --abbrev-ref HEAD 2>/dev/null || true)"
@@ -33,7 +35,7 @@ To create tags (and push updated CSV content into operator-bundle repo):
 Example: 
   $0 -v 3.y.0 -t 3.y -gh ${TARGET_BRANCH} -ghtoken \$GITHUB_TOKEN -pd ${pkgs_devel_branch} -pduser $pduser
 
-To create or update existing branches:
+To create or update existing branches and update related PNC build-configs:
   $0 -t DS_VERSION --branchfrom SOURCE_GH_BRANCH -gh TARGET_GH_BRANCH -ghtoken GITHUB_TOKEN
 Example: 
   $0 -t DS_VERSION --branchfrom devspaces-3-rhel-8 -gh ${TARGET_BRANCH} -ghtoken \$GITHUB_TOKEN
@@ -197,6 +199,22 @@ pushBranchAndOrTagGH () {
 	popd >/dev/null || exit 1
 }
 
+updatePNCBuildConfigs() {
+  if [[ ! -x ${SCRIPTPATH}/updatePNCBuildConfigs.sh ]]; then
+    curl -sSLO https://raw.githubusercontent.com/redhat-developer/devspaces/${MIDSTM_BRANCH}/product/updatePNCBuildConfigs.sh --output-dir /tmp
+    chmod +x /tmp/updatePNCBuildConfigs.sh
+    PNC_SCRIPT_LOCATION="/tmp/updatePNCBuildConfigs.sh"
+  else
+    PNC_SCRIPT_LOCATION="${SCRIPTPATH}/updatePNCBuildConfigs.sh"
+  fi
+  # if source and target branch are the same, we're updating the 3.x / next branch; else we're updating the 3.yy / latest branch
+  if [ "${TARGET_BRANCH}" == "${SOURCE_BRANCH}" ];then
+    ${PNC_SCRIPT_LOCATION} -v ${DS_VERSION} --next
+  else
+    ${PNC_SCRIPT_LOCATION} -v ${DS_VERSION} --latest
+  fi
+}
+
 # tag pkgs.devel repos only (branches are created by SPMM ticket, eg., https://projects.engineering.redhat.com/browse/SPMM-2517)
 if [[ "${pkgs_devel_branch}" ]] && [[ "${CSV_VERSION}" ]]; then
 	for repo in \
@@ -255,5 +273,10 @@ for s in $sampleprojects; do
 	pushBranchAndOrTagGH "$s" ${samplesRepo}
 done
 
+# update PNC build-configs, only if performing branching operation (not when tagging)
+if [[ ${SOURCE_BRANCH} ]]; then
+  updatePNCBuildConfigs
+fi
+
 # cleanup
-rm -fr /tmp/tmp-checkouts
+rm -fr /tmp/tmp-checkouts /tmp/updatePNCBuildConfigs.sh
