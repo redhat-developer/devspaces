@@ -7603,3 +7603,75 @@
   timeWait: 61 mins
   timeBuild: 11 mins
   timeTotal: 73 mins
+- name: devspaces-devfileregistry-rhel8
+  tag: 3.6-18
+  taskId: 50662785
+  timeCreate: Thu Feb 9 10:03:02 2023
+  timeStart: Thu Feb 9 10:51:00 2023
+  timeFinish: Thu Feb 9 11:01:19 2023
+  timeWait: 47 mins
+  timeBuild: 10 mins
+  timeTotal: 58 mins
+- name: devspaces-configbump-rhel8
+  tag: 3.6-2
+  taskId: 50667594
+  timeCreate: Thu Feb 9 12:48:53 2023
+  timeStart: Thu Feb 9 13:24:32 2023
+  timeFinish: Thu Feb 9 13:42:01 2023
+  timeWait: 35 mins
+  timeBuild: 17 mins
+  timeTotal: 53 mins
+- name: devspaces-machineexec-rhel8
+  tag: 3.6-3
+  taskId: 50667839
+  timeCreate: Thu Feb 9 12:58:58 2023
+  timeStart: Thu Feb 9 13:28:18 2023
+  timeFinish: Thu Feb 9 13:33:40 2023
+  timeWait: 29 mins
+  timeBuild: 5 mins
+  timeTotal: 34 mins
+- name: devspaces-imagepuller-rhel8
+  tag: 3.6-2
+  taskId: 50667843
+  timeCreate: Thu Feb 9 12:59:02 2023
+  timeStart: Thu Feb 9 13:29:06 2023
+  timeFinish: Thu Feb 9 13:40:26 2023
+  timeWait: 30 mins
+  timeBuild: 11 mins
+  timeTotal: 41 mins
+- name: devspaces-operator
+  tag: 3.6-5
+  taskId: 50668047
+  timeCreate: Thu Feb 9 13:03:49 2023
+  timeStart: Thu Feb 9 13:30:55 2023
+  timeFinish: Thu Feb 9 13:45:23 2023
+  timeWait: 27 mins
+  timeBuild: 14 mins
+  timeTotal: 41 mins
+- name: devspaces-dashboard-rhel8
+  tag: 3.6-6
+  taskId: 50668182
+  timeCreate: Thu Feb 9 13:10:07 2023
+  timeStart: Thu Feb 9 13:36:36 2023
+  timeFinish: Thu Feb 9 14:01:35 2023
+  timeWait: 26 mins
+  timeBuild: 24 mins
+  timeTotal: 51 mins
+- name: devspaces-server-rhel8
+  tag: 3.6-7
+  taskId: 50668184
+  timeCreate: Thu Feb 9 13:10:26 2023
+  timeStart: Thu Feb 9 13:37:24 2023
+  timeFinish: Thu Feb 9 13:46:19 2023
+  timeWait: 26 mins
+  timeBuild: 8 mins
+  timeTotal: 35 mins
+- name: devspaces-operator-bundle
+  tag: 3.6-4
+  taskId: 50669194
+  timeCreate: Thu Feb 9 13:54:42 2023
+  timeStart: Thu Feb 9 14:11:58 2023
+  timeFinish: Thu Feb 9 14:16:29 2023
+  timeWait: 17 mins
+  timeBuild: 4 mins
+  timeTotal: 21 mins
