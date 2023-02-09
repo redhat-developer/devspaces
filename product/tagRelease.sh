@@ -208,9 +208,9 @@ updatePNCBuildConfigs() {
   fi
   # if source and target branch are the same, we're updating the 3.x / next branch; else we're updating the 3.yy / latest branch
   if [ "${TARGET_BRANCH}" == "${SOURCE_BRANCH}" ];then
-    ${PNC_SCRIPT_LOCATION} ${DS_VERSION} --next
+    ${PNC_SCRIPT_LOCATION} -v ${DS_VERSION} --next
   else
-    ${PNC_SCRIPT_LOCATION} ${DS_VERSION} --latest
+    ${PNC_SCRIPT_LOCATION} -v ${DS_VERSION} --latest
   fi
 }
 
