@@ -18,7 +18,7 @@ spec:
       volumes:
         - name: kube
           mountPath: /home/theia/.kube
-      memoryLimit: 2.5Gi
+      memoryLimit: 1500Mi
       memoryRequest: 20Mi
       cpuRequest: 30m
       cpuLimit: 800m

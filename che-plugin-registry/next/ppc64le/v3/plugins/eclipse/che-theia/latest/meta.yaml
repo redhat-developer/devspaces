@@ -96,7 +96,7 @@ spec:
         - name: THEIA_HOST
           value: 127.0.0.1
       mountSources: true
-      memoryLimit: 2Gi
+      memoryLimit: 512M
       cpuLimit: 1500m
       cpuRequest: 100m
       volumes:
@@ -120,7 +120,7 @@ spec:
           value: /remote-endpoint/plugin-remote-endpoint
         - name: THEIA_PLUGINS
           value: local-dir:///plugins/sidecars/tools
-      memoryLimit: 2Gi
+      memoryLimit: 512Mi
       image: registry.redhat.io/devspaces/udi-rhel8:3.6
       volumes:
         - name: plugins
@@ -130,7 +130,7 @@ spec:
           ephemeral: true
       name: theia-ide-contributions
     - image: registry.redhat.io/devspaces/machineexec-rhel8:3.6
-      memoryLimit: 2Gi
+      memoryLimit: 128Mi
       memoryRequest: 32Mi
       cpuLimit: 500m
       cpuRequest: 30m
