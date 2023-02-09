@@ -8044,6 +8044,15 @@
   timeWait: 11 mins
   timeBuild: 13 mins
   timeTotal: 25 mins
+- name: devspaces-theia-rhel8
+  tag: 3.5-8
+  taskId: 50671170
+  timeCreate: Thu Feb 9 15:02:17 2023
+  timeStart: Thu Feb 9 15:02:20 2023
+  timeFinish: Thu Feb 9 15:41:18 2023
+  timeWait: 0 mins
+  timeBuild: 38 mins
+  timeTotal: 39 mins
 - name: devspaces-operator-bundle
   tag: 3.5-121
   taskId: 50671180
@@ -8053,3 +8062,21 @@
   timeWait: 0 mins
   timeBuild: 4 mins
   timeTotal: 4 mins
+- name: devspaces-theia-endpoint-rhel8
+  tag: 3.5-8
+  taskId: 50672641
+  timeCreate: Thu Feb 9 15:49:17 2023
+  timeStart: Thu Feb 9 15:55:47 2023
+  timeFinish: Thu Feb 9 16:08:03 2023
+  timeWait: 6 mins
+  timeBuild: 12 mins
+  timeTotal: 18 mins
+- name: devspaces-operator-bundle
+  tag: 3.5-122
+  taskId: 50672958
+  timeCreate: Thu Feb 9 15:57:11 2023
+  timeStart: Thu Feb 9 16:06:20 2023
+  timeFinish: Thu Feb 9 16:11:34 2023
+  timeWait: 9 mins
+  timeBuild: 5 mins
+  timeTotal: 14 mins
