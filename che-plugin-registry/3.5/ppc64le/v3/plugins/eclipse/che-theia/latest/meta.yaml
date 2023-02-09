@@ -10,7 +10,7 @@ icon: /images/default.png
 category: Editor
 repository: https://github.com/eclipse-che/che-theia
 firstPublicationDate: '2019-03-07'
-latestUpdateDate: '2023-02-07'
+latestUpdateDate: '2023-02-09'
 spec:
   endpoints:
     - name: theia
@@ -96,7 +96,7 @@ spec:
         - name: THEIA_HOST
           value: 127.0.0.1
       mountSources: true
-      memoryLimit: 2Gi
+      memoryLimit: 512M
       cpuLimit: 1500m
       cpuRequest: 100m
       volumes:
@@ -120,7 +120,7 @@ spec:
           value: /remote-endpoint/plugin-remote-endpoint
         - name: THEIA_PLUGINS
           value: local-dir:///plugins/sidecars/tools
-      memoryLimit: 2Gi
+      memoryLimit: 512Mi
       image: registry.redhat.io/devspaces/udi-rhel8:3.5
       volumes:
         - name: plugins
@@ -130,7 +130,7 @@ spec:
           ephemeral: true
       name: theia-ide-contributions
     - image: registry.redhat.io/devspaces/machineexec-rhel8:3.5
-      memoryLimit: 2Gi
+      memoryLimit: 128Mi
       memoryRequest: 32Mi
       cpuLimit: 500m
       cpuRequest: 30m
