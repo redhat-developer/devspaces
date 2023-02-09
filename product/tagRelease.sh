@@ -272,7 +272,7 @@ for s in $sampleprojects; do
 	pushBranchAndOrTagGH "$s" ${samplesRepo}
 done
 
-# update PNC configs, only if performing branching operation
+# update PNC build-configs, only if performing branching operation (not when tagging)
 if [[ ${SOURCE_BRANCH} ]]; then
   updatePNCBuildConfigs
 fi
