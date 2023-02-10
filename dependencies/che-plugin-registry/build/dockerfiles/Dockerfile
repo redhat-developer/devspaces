@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2018-2022 Red Hat, Inc.
+# Copyright (c) 2018-2023 Red Hat, Inc.
 # This program and the accompanying materials are made
 # available under the terms of the Eclipse Public License 2.0
 # which is available at https://www.eclipse.org/legal/epl-2.0/
@@ -11,7 +11,8 @@
 #   IBM Corporation - implementation
 #
 
-FROM registry.redhat.io/rhel8/postgresql-13:1-78
+# https://registry.access.redhat.com/rhel8/postgresql-13
+FROM registry.redhat.io/rhel8/postgresql-13:1-101.1675799511
 USER 0
 WORKDIR /
 
