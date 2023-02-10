@@ -195,6 +195,10 @@ pushBranchAndOrTagGH () {
 	if [[ $CSV_VERSION ]]; then # push a new tag (or no-op if exists)
 		git tag "${CSV_VERSION}" || true
 		git push origin "${CSV_VERSION}" || true
+    # for sample projects, update (force push) the update
+    if [[ $org == "${samplesRepo}" ]]; then
+      git push origin "${CSV_VERSION}:latest" -f || true
+    fi
 	fi
 	popd >/dev/null || exit 1
 }
