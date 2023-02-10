@@ -201,9 +201,9 @@ pushBranchAndOrTagGH () {
 			# then latest floating tag should not be updated
 			LATEST_TAG=$(git tag -l -n 3.*.* --sort -version:refname | head -n 1 | grep "3.*.*")
 			if { echo "${CSV_VERSION}"; echo "${LATEST_TAG}"; } | sort --version-sort --check;then
-				echo "[DEBUG] Sample version  is less than latest version";
+				echo "[DEBUG] Sample version ${d} is less than latest version";
 			else
-				echo "[DEBUG] Updating latest tag of sample $d with ${CSV_VERSION}"
+				echo "[DEBUG] Updating latest tag of sample ${d} with ${CSV_VERSION}"
 				git tag -D "latest"
 				git tag "latest"
 				git push origin "latest" -f || true
