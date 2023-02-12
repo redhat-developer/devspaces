@@ -14,9 +14,9 @@ quay.io/devspaces/devspaces-rhel8-operator:3.6-6
    Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=2372954
   Source: https://pkgs.devel.redhat.com/cgit/containers/devspaces-operator/commit?id=ece60c04296c3a52c4e7641cc5d9caf067118a40
 
-quay.io/devspaces/devspaces-operator-bundle:3.6-11
-     NVR: devspaces-operator-bundle-container-3.6-11
-   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=2372986
+quay.io/devspaces/devspaces-operator-bundle:3.6-12
+     NVR: devspaces-operator-bundle-container-3.6-12
+   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=2373000
   Source: https://pkgs.devel.redhat.com/cgit/containers/devspaces-operator-bundle/commit?id=8f6ccdf3d4394f718bfe2f95383575370d406c4f
 
 quay.io/devspaces/dashboard-rhel8:3.6-7
@@ -29,10 +29,10 @@ quay.io/devspaces/devfileregistry-rhel8:3.6-24
    Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=2372978
   Source: https://pkgs.devel.redhat.com/cgit/containers/devspaces-devfileregistry/commit?id=97af902bd785204a76e04bd07bad14d5b1b8b57c
 
-quay.io/devspaces/idea-rhel8:3.6-2
-     NVR: devspaces-idea-rhel8-container-3.6-2
-   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=2363557
-  Source: https://pkgs.devel.redhat.com/cgit/containers/devspaces-idea/commit?id=2c7ccf93aa4dd93b4abf315fc86a1f06ae6081e2
+quay.io/devspaces/idea-rhel8:3.6-3
+     NVR: devspaces-idea-rhel8-container-3.6-3
+   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=2372988
+  Source: https://pkgs.devel.redhat.com/cgit/containers/devspaces-idea/commit?id=5a005c6dcb26daab071981b2f255bebc2bf71031
 
 quay.io/devspaces/imagepuller-rhel8:3.6-3
      NVR: devspaces-imagepuller-rhel8-container-3.6-3
@@ -54,10 +54,10 @@ quay.io/devspaces/server-rhel8:3.6-8
    Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=2372957
   Source: https://pkgs.devel.redhat.com/cgit/containers/devspaces-server/commit?id=2cf75df99606c462f5b7c109141bce9bd1d95284
 
-quay.io/devspaces/theia-dev-rhel8:3.6-2
-     NVR: devspaces-theia-dev-rhel8-container-3.6-2
-   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=2370910
-  Source: https://pkgs.devel.redhat.com/cgit/containers/devspaces-theia-dev/commit?id=ed2fb71bbb3e74937a6608ab2ad21c0f0f386beb
+quay.io/devspaces/theia-dev-rhel8:3.6-3
+     NVR: devspaces-theia-dev-rhel8-container-3.6-3
+   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=2372989
+  Source: https://pkgs.devel.redhat.com/cgit/containers/devspaces-theia-dev/commit?id=c85c954b69c080d32347fdb6b02b15737cf8ebcc
 
 quay.io/devspaces/theia-endpoint-rhel8:3.6-1
      NVR: devspaces-theia-endpoint-rhel8-container-3.6-1
