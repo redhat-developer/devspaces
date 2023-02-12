@@ -7945,3 +7945,30 @@
   timeWait: 0 mins
   timeBuild: 3 mins
   timeTotal: 4 mins
+- name: devspaces-theia-rhel8
+  tag: 3.6-3
+  taskId: 50703048
+  timeCreate: Sun Feb 12 06:29:49 2023
+  timeStart: Sun Feb 12 06:30:12 2023
+  timeFinish: Sun Feb 12 07:02:32 2023
+  timeWait: 0 mins
+  timeBuild: 32 mins
+  timeTotal: 32 mins
+- name: devspaces-code-rhel8
+  tag: 3.6-5
+  taskId: 50703087
+  timeCreate: Sun Feb 12 06:42:54 2023
+  timeStart: Sun Feb 12 06:43:09 2023
+  timeFinish: Sun Feb 12 06:50:26 2023
+  timeWait: 0 mins
+  timeBuild: 7 mins
+  timeTotal: 7 mins
+- name: devspaces-operator-bundle
+  tag: 3.6-13
+  taskId: 50703130
+  timeCreate: Sun Feb 12 07:05:32 2023
+  timeStart: Sun Feb 12 07:06:02 2023
+  timeFinish: Sun Feb 12 07:09:51 2023
+  timeWait: 0 mins
+  timeBuild: 3 mins
+  timeTotal: 4 mins
