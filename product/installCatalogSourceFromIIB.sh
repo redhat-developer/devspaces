@@ -261,7 +261,9 @@ fi
 # Add CatalogSource for the IIB
 # Throw it in openshift-operators to make life a little easier for now
 if [ -z "$TO_INSTALL" ]; then
-  CATALOGSOURCE_NAME="iib-${UPSTREAM_IIB##*:}-${OLM_CHANNEL}"
+  IIB_NAME="${UPSTREAM_IIB##*:}"
+  IIB_NAME="${IIB_NAME//_/-}"
+  CATALOGSOURCE_NAME="iib-${IIB_NAME}-${OLM_CHANNEL}"
 else
   CATALOGSOURCE_NAME="${TO_INSTALL}-${OLM_CHANNEL}"
 fi
