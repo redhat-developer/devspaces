@@ -206,7 +206,7 @@ pushBranchAndOrTagGH () {
 				echo "[DEBUG] Updating latest tag of sample ${d} with ${CSV_VERSION}"
 				git tag -d "latest" || true
 				git tag "latest"
-				git push origin "latest"
+				git push origin "latest" -f
 			fi
 		fi
 	fi
