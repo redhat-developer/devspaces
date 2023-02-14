@@ -8098,3 +8098,21 @@
   timeWait: 0 mins
   timeBuild: 3 mins
   timeTotal: 3 mins
+- name: devspaces-code-rhel8
+  tag: 3.6-11
+  taskId: 50750213
+  timeCreate: Tue Feb 14 08:47:36 2023
+  timeStart: Tue Feb 14 08:47:49 2023
+  timeFinish: Tue Feb 14 08:54:52 2023
+  timeWait: 0 mins
+  timeBuild: 7 mins
+  timeTotal: 7 mins
+- name: devspaces-operator-bundle
+  tag: 3.6-22
+  taskId: 50750867
+  timeCreate: Tue Feb 14 09:09:56 2023
+  timeStart: Tue Feb 14 09:10:07 2023
+  timeFinish: Tue Feb 14 09:13:45 2023
+  timeWait: 0 mins
+  timeBuild: 3 mins
+  timeTotal: 3 mins
