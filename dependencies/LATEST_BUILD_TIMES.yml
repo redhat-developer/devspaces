@@ -8170,3 +8170,30 @@
   timeWait: 18 mins
   timeBuild: 4 mins
   timeTotal: 22 mins
+- name: devspaces-operator
+  tag: 3.6-7
+  taskId: 50783326
+  timeCreate: Wed Feb 15 09:45:44 2023
+  timeStart: Wed Feb 15 09:45:49 2023
+  timeFinish: Wed Feb 15 10:01:18 2023
+  timeWait: 0 mins
+  timeBuild: 15 mins
+  timeTotal: 15 mins
+- name: devspaces-server-rhel8
+  tag: 3.6-9
+  taskId: 50783558
+  timeCreate: Wed Feb 15 09:53:28 2023
+  timeStart: Wed Feb 15 09:53:36 2023
+  timeFinish: Wed Feb 15 10:03:01 2023
+  timeWait: 0 mins
+  timeBuild: 9 mins
+  timeTotal: 9 mins
+- name: devspaces-operator-bundle
+  tag: 3.6-26
+  taskId: 50785548
+  timeCreate: Wed Feb 15 10:48:24 2023
+  timeStart: Wed Feb 15 10:48:27 2023
+  timeFinish: Wed Feb 15 10:52:52 2023
+  timeWait: 0 mins
+  timeBuild: 4 mins
+  timeTotal: 4 mins
