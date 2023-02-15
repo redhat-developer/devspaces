@@ -8197,3 +8197,21 @@
   timeWait: 0 mins
   timeBuild: 4 mins
   timeTotal: 4 mins
+- name: devspaces-server-rhel8
+  tag: 3.6-10
+  taskId: 50786407
+  timeCreate: Wed Feb 15 11:16:07 2023
+  timeStart: Wed Feb 15 11:16:49 2023
+  timeFinish: Wed Feb 15 11:25:52 2023
+  timeWait: 0 mins
+  timeBuild: 9 mins
+  timeTotal: 9 mins
+- name: devspaces-operator-bundle
+  tag: 3.6-27
+  taskId: 50787420
+  timeCreate: Wed Feb 15 11:49:56 2023
+  timeStart: Wed Feb 15 11:50:26 2023
+  timeFinish: Wed Feb 15 11:53:48 2023
+  timeWait: 0 mins
+  timeBuild: 3 mins
+  timeTotal: 3 mins
