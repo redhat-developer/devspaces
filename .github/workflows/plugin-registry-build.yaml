@@ -33,7 +33,7 @@ jobs:
           node-version: '16'
 
       - name: Login to the Red Hat Registry
-        uses: azure/docker-login@v1
+        uses: azure/docker-login@83efeb77770c98b620c73055fbb59b2847e17dc0 #v1
         with:
           login-server: registry.redhat.io
           username: ${{ secrets.REGISTRY_REDHAT_IO_USERNAME }}
