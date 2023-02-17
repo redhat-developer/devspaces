@@ -8332,3 +8332,30 @@
   timeWait: 0 mins
   timeBuild: 5 mins
   timeTotal: 5 mins
+- name: devspaces-imagepuller-rhel8
+  tag: 3.6-4
+  taskId: 50837611
+  timeCreate: Fri Feb 17 16:08:18 2023
+  timeStart: Fri Feb 17 16:14:15 2023
+  timeFinish: Fri Feb 17 16:26:00 2023
+  timeWait: 5 mins
+  timeBuild: 11 mins
+  timeTotal: 17 mins
+- name: devspaces-machineexec-rhel8
+  tag: 3.6-6
+  taskId: 50837856
+  timeCreate: Fri Feb 17 16:17:45 2023
+  timeStart: Fri Feb 17 16:21:28 2023
+  timeFinish: Fri Feb 17 16:26:32 2023
+  timeWait: 3 mins
+  timeBuild: 5 mins
+  timeTotal: 8 mins
+- name: devspaces-operator-bundle
+  tag: 3.6-35
+  taskId: 50841104
+  timeCreate: Fri Feb 17 18:45:33 2023
+  timeStart: Fri Feb 17 18:46:13 2023
+  timeFinish: Fri Feb 17 18:49:51 2023
+  timeWait: 0 mins
+  timeBuild: 3 mins
+  timeTotal: 4 mins
