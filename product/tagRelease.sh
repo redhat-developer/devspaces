@@ -199,7 +199,7 @@ pushBranchAndOrTagGH () {
 		if [[ $org == "${samplesRepo}" ]]; then
 			# check all of the 3.*.* tags in the repo, if tag exists with a higher version than the new tag
 			# then latest floating tag should not be updated
-			LATEST_TAG=$(git tag -l -n 3.*.* --sort -version:refname | head -n 1 | grep -o "3.[0-9]*.[0-9]*")
+			LATEST_TAG=$(git tag -l -n 3.*.* --sort -version:refname | head -n 1 | grep -o "^3\.[0-9]*\.[0-9]*")
 			if { echo "${CSV_VERSION}"; echo "${LATEST_TAG}"; } | sort -V --check=silent && [[ "${CSV_VERSION}" != "${LATEST_TAG}" ]];then
 				echo "[DEBUG] Sample version ${d} is less than latest ${LATEST_TAG} version, not updating the latest tag";
 			else
