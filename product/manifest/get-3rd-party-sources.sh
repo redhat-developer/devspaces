@@ -257,19 +257,16 @@ if [[ $PUBLISH -eq 1 ]]; then
 
     # create an empty dir into which we will make subfolders
     empty_dir=$(mktemp -d)
-    pushd "$empty_dir" >/dev/null
-        mv ${WORKSPACE}/sources devspaces-${CSV_VERSION}/
-    popd >/dev/null
 
     # delete old releases before pushing latest one, to keep disk usage low: DO NOT delete 'build-requirements' folder as we use that for storing binaries we can't yet build ourselves in OSBS
     # note that this operation will only REMOVE old versions
-    rsync -aP --delete --exclude=build-requirements --exclude="devspaces-${CSV_VERSION}" "$empty_dir"/ "${REMOTE_USER_AND_HOST}":staging/devspaces/
+    rsync -aP --delete --exclude=build-requirements --exclude="devspaces-${CSV_VERSION}" "$empty_dir"/ "${REMOTE_USER_AND_HOST}:staging/devspaces/"
 
     # next, update existing devspaces-${CSV_VERSION} folder (or create it not exist)
-    rsync -aP "${WORKSPACE}/sources/" "${REMOTE_USER_AND_HOST}":"staging/devspaces/devspaces-${CSV_VERSION}/"
+    rsync -aP "${WORKSPACE}/devspaces-${CSV_VERSION}" "${REMOTE_USER_AND_HOST}:staging/devspaces/"
 
-    # TODO trigger staging 
-    # ssh "${REMOTE_USER_AND_HOST}" "stage-mw-release devspaces-${CSV_VERSION}"
+    # trigger staging 
+    ssh "${REMOTE_USER_AND_HOST}" "stage-mw-release devspaces-${CSV_VERSION}"
 
     # cleanup 
     rm -fr "$empty_dir"
