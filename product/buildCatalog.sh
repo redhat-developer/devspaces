@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Copyright (c) 2022 Red Hat, Inc.
+# Copyright (c) 2022-2023 Red Hat, Inc.
 # This program and the accompanying materials are made
 # available under the terms of the Eclipse Public License 2.0
 # which is available at https://www.eclipse.org/legal/epl-2.0/
@@ -10,7 +10,7 @@
 # Utility script build a catalog image from bundle, channel, and package files rendered
 # by filterIIB.sh. The built catalog contains only operators in files and is
 # thus smaller in size.
-# OPM 4.11 is required to run buildCatalog.sh
+# OPM 4.11 is required to run buildCatalog.sh; OPM 4.12 seems to have problems (see CRW-4063)
 #
 
 usage() {
@@ -91,14 +91,15 @@ fi
 if [ -f ./olm-catalog.Dockerfile ]; then rm -f ./olm-catalog.Dockerfile; fi
 $PODMAN rmi --ignore --force $targetIndexImage >/dev/null 2>&1 || true
 
-# old way for olm 4.10
-# opm alpha generate dockerfile ./olm-catalog
-
 # new way for olm 4.11 - see https://docs.openshift.com/container-platform/4.11/operators/admin/olm-managing-custom-catalogs.html#olm-creating-fb-catalog-image_olm-managing-custom-catalogs
-OSE_VER="${OCP_VER}"
-if [[ $(skopeo inspect docker://registry.redhat.io/openshift4/ose-operator-registry:${OCP_VER} --raw 2>&1 | grep "Not found") != "" ]]; then 
-  OSE_VER="latest"
-fi
+# OSE_VER="${OCP_VER}"
+# if [[ $(skopeo inspect docker://registry.redhat.io/openshift4/ose-operator-registry:${OCP_VER} --raw 2>&1 | grep "Not found") != "" ]]; then 
+#   OSE_VER="latest"
+# fi
+
+# new way for OCP 4.12+
+# CRW-4063 - don't use version newer than 4.11 as it seems to produce catalog sources we can't use in OCP 4.12+
+OSE_VER="4.11" 
 cat <<EOF > olm-catalog.Dockerfile
 # The base image is expected to contain
 # /bin/opm (with a serve subcommand) and /bin/grpc_health_probe
@@ -130,7 +131,6 @@ if [[ $VERBOSE -eq 1 ]]; then
   echo "Index image built and ready for use"
 fi
 echo "[IMG] $targetIndexImage"
-
 
 # cleanup source IIB image; don't delete the target image as we might need to copy it again to a new tag
 # $PODMAN rmi $sourceIndexImage
