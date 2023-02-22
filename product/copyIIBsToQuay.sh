@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Copyright (c) 2022 Red Hat, Inc.
+# Copyright (c) 2022-2023 Red Hat, Inc.
 # This program and the accompanying materials are made
 # available under the terms of the Eclipse Public License 2.0
 # which is available at https://www.eclipse.org/legal/epl-2.0/
@@ -8,7 +8,7 @@
 # SPDX-License-Identifier: EPL-2.0
 #
 # script to query latest IIBs for a given list of OCP versions, then copy those to Quay
-# OPM 4.11 is required to run buildCatalog.sh
+# OPM 4.11 is required to run buildCatalog.sh; OPM 4.12 seems to have problems (See CRW-4063)
 #
 
 SCRIPT_DIR=$(cd "$(dirname "$0")" || exit; pwd)
@@ -27,8 +27,8 @@ Options:
   -p, --push                 : Push IIB(s) to quay registry; default is to show commands but not copy anything
   --force                    : If target image exists, will re-filter and re-push it; otherwise skip to avoid updating image timestamps
   -t PROD_VER                : If x.y version/tag not set, will compute from dependencies/job-config.json file
-  -o 'OCP_VER1 OCP_VER2 ...' : Space-separated list of OCP version(s) (e.g. 'v4.12 v4.11 v4.10') to query and publish; defaults to job-config.json values
-  -e, --extra-tags           : Extra tags to create, such as 3.2.0.RC-08-04
+  -o 'OCP_VER1 OCP_VER2 ...' : Space-separated list of OCP version(s) (e.g. 'v4.13 v4.12 v4.11 v4.10') to query and publish; defaults to job-config.json values
+  -e, --extra-tags           : Extra tags to create, such as 3.5.0.RC-02-21-v4.13-x86_64
   -v                         : Verbose output: include additional information
   -h, --help                 : Show this help
 "
@@ -40,7 +40,7 @@ command -v skopeo >/dev/null 2>&1 || which skopeo >/dev/null 2>&1 || { echo "sko
 command -v jq >/dev/null 2>&1     || which jq >/dev/null 2>&1     || { echo "jq is not installed. Aborting."; exit 1; }
 
 VERBOSEFLAG=""
-EXTRA_TAGS="" # extra tags to set in target image, eg., 3.2.0.RC-08-04-v4.11
+EXTRA_TAGS="" # extra tags to set in target image, eg., 3.5.0.RC-02-21-v4.13-x86_64
 PUSHTOQUAYFORCE=0
 
 MIDSTM_BRANCH=$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "devspaces-3-rhel-8")

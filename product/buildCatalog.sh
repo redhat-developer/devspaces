@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Copyright (c) 2022 Red Hat, Inc.
+# Copyright (c) 2022-2023 Red Hat, Inc.
 # This program and the accompanying materials are made
 # available under the terms of the Eclipse Public License 2.0
 # which is available at https://www.eclipse.org/legal/epl-2.0/
@@ -10,7 +10,7 @@
 # Utility script build a catalog image from bundle, channel, and package files rendered
 # by filterIIB.sh. The built catalog contains only operators in files and is
 # thus smaller in size.
-# OPM 4.11 is required to run buildCatalog.sh
+# OPM 4.11 is required to run buildCatalog.sh; OPM 4.12 seems to have problems (see CRW-4063)
 #
 
 usage() {
