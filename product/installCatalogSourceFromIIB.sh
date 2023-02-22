@@ -308,7 +308,7 @@ spec:
   channel: $OLM_CHANNEL
   installPlanApproval: $INSTALL_PLAN_APPROVAL
   name: $TO_INSTALL
-  source: ${TO_INSTALL}-${OLM_CHANNEL}
+  source: ${CATALOGSOURCE_NAME}
   sourceNamespace: $NAMESPACE
 " > $TMPDIR/Subscription.yml && oc apply -f $TMPDIR/Subscription.yml
 
