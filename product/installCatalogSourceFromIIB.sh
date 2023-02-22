@@ -264,10 +264,12 @@ if [ -z "$TO_INSTALL" ]; then
   IIB_NAME="${UPSTREAM_IIB##*:}"
   IIB_NAME="${IIB_NAME//_/-}"
   IIB_NAME="${IIB_NAME//./-}"
+  IIB_NAME="$(echo "$IIB_NAME" | tr '[:upper:]' '[:lower:]')"
   CATALOGSOURCE_NAME="iib-${IIB_NAME}-${OLM_CHANNEL}"
 else
   CATALOGSOURCE_NAME="${TO_INSTALL}-${OLM_CHANNEL}"
 fi
+# echo "Creating catalog source: $CATALOGSOURCE_NAME ..."
 echo "apiVersion: operators.coreos.com/v1alpha1
 kind: CatalogSource
 metadata:
