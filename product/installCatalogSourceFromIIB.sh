@@ -51,7 +51,7 @@ Options:
   --iib <IIB_IMAGE>            : IIB image to install on the cluster; could be in the form:
                                : * registry-proxy.engineering.redhat.com/rh-osbs/iib:987654 [RH internal],
                                : * brew.registry.redhat.io/rh-osbs/iib:987654 [RH public, auth required], or
-                               : * quay.io/devspaces/iib:3.2-v4.12-987654 or quay.io/devspaces/iib:next-v4.10 [public]
+                               : * quay.io/devspaces/iib:3.2-v4.11-987654 or quay.io/devspaces/iib:next-v4.10 [public]
   --install-operator <NAME>    : Install operator named $NAME after creating CatalogSource
   --channel <CHANNEL>          : Channel to use for operator subscription if installing operator. Default: "fast"
   --manual-updates             : Use "manual" InstallPlanApproval for the CatalogSource instead of "automatic" if installing operator

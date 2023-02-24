@@ -27,7 +27,7 @@ usage () {
 
 Requires:
 * jq 1.6+, yq, sudo
-* opm v1.19.5+ (see https://docs.openshift.com/container-platform/4.12/cli_reference/opm/cli-opm-install.html#cli-opm-install )
+* opm v1.19.5+ (see https://docs.openshift.com/container-platform/4.11/cli_reference/opm/cli-opm-install.html#cli-opm-install )
 
 Usage:
   Using a specific IIB: $0 bundle-image1 [OPTIONS]
@@ -65,7 +65,7 @@ for IIB_IMAGE in $IMAGES; do
     "${SCRIPTPATH}"/containerExtract.sh --delete-before --delete-after "${QUIET}" "${IIB_IMAGE}"
     cd /tmp/"${IMAGE_PATH}"-* || exit 1
 
-    # for newer file-based catalogs like OCP 4.11+
+    # for newer file-based catalogs like OCP 4.11-12
     catalogJson="configs/devspaces/catalog.json"
 
     # for older database catalogs like OCP 4.10

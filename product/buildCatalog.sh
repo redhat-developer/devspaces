@@ -10,7 +10,7 @@
 # Utility script build a catalog image from bundle, channel, and package files rendered
 # by filterIIB.sh. The built catalog contains only operators in files and is
 # thus smaller in size.
-# OPM 4.11+ is required to run buildCatalog.sh (see CRW-4063)
+# OPM 4.11 is required to run buildCatalog.sh; OPM 4.12 seems to have problems (see CRW-4063)
 #
 
 usage() {
@@ -21,7 +21,7 @@ is intended for use in conjunction with filterIIB.sh
 
 Requires:
 * jq 1.6+, podman 2.0+, glibc 2.28+
-* opm v1.19.5+ (see https://docs.openshift.com/container-platform/4.12/cli_reference/opm/cli-opm-install.html#cli-opm-install )
+* opm v1.19.5+ (see https://docs.openshift.com/container-platform/4.11/cli_reference/opm/cli-opm-install.html#cli-opm-install )
 
 Usage: $0 [OPTIONS]
 
@@ -57,15 +57,15 @@ done
 
 if [ -z $OCP_VER ]; then echo "OCP ('-o', '--ocp-ver') version option is required"; exit 1; fi
 
-# install opm if not installed from https://mirror.openshift.com/pub/openshift-v4/$(uname -m)/clients/ocp/latest-4.12/opm-linux.tar.gz
+# install opm if not installed from https://mirror.openshift.com/pub/openshift-v4/$(uname -m)/clients/ocp/latest-4.11/opm-linux.tar.gz
 if [[ ! -x /usr/local/bin/opm ]] && [[ ! -x ${HOME}/.local/bin/opm ]]; then 
     pushd /tmp >/dev/null
-    echo "[INFO] Installing latest opm from https://mirror.openshift.com/pub/openshift-v4/$(uname -m)/clients/ocp/latest-4.12/opm-linux.tar.gz ..."
-    curl -sSLo- https://mirror.openshift.com/pub/openshift-v4/$(uname -m)/clients/ocp/latest-4.12/opm-linux.tar.gz | tar xz; chmod 755 opm
+    echo "[INFO] Installing latest opm from https://mirror.openshift.com/pub/openshift-v4/$(uname -m)/clients/ocp/latest-4.11/opm-linux.tar.gz ..."
+    curl -sSLo- https://mirror.openshift.com/pub/openshift-v4/$(uname -m)/clients/ocp/latest-4.11/opm-linux.tar.gz | tar xz; chmod 755 opm
     sudo cp opm /usr/local/bin/ || cp opm ${HOME}/.local/bin/
     sudo chmod 755 /usr/local/bin/opm || chmod 755 ${HOME}/.local/bin/opm
     if [[ ! -x /usr/local/bin/opm ]] && [[ ! -x ${HOME}/.local/bin/opm ]]; then 
-        echo "[ERROR] Could not install opm v1.19.5 or higher (see https://docs.openshift.com/container-platform/4.12/cli_reference/opm/cli-opm-install.html#cli-opm-install )";
+        echo "[ERROR] Could not install opm v1.19.5 or higher (see https://docs.openshift.com/container-platform/4.11/cli_reference/opm/cli-opm-install.html#cli-opm-install )";
         exit 1
     fi
     popd >/dev/null
@@ -91,14 +91,15 @@ fi
 if [ -f ./olm-catalog.Dockerfile ]; then rm -f ./olm-catalog.Dockerfile; fi
 $PODMAN rmi --ignore --force $targetIndexImage >/dev/null 2>&1 || true
 
-# new way for olm 4.11+ - see https://docs.openshift.com/container-platform/4.12/operators/admin/olm-managing-custom-catalogs.html#olm-creating-fb-catalog-image_olm-managing-custom-catalogs
+# new way for olm 4.11 - see https://docs.openshift.com/container-platform/4.11/operators/admin/olm-managing-custom-catalogs.html#olm-creating-fb-catalog-image_olm-managing-custom-catalogs
 # OSE_VER="${OCP_VER}"
 # if [[ $(skopeo inspect docker://registry.redhat.io/openshift4/ose-operator-registry:${OCP_VER} --raw 2>&1 | grep "Not found") != "" ]]; then 
 #   OSE_VER="latest"
 # fi
 
 # new way for OCP 4.12+
-OSE_VER="v4.12" 
+# CRW-4063 - don't use version newer than 4.11 as it seems to produce catalog sources we can't use in OCP 4.12+
+OSE_VER="v4.11" 
 cat <<EOF > olm-catalog.Dockerfile
 # The base image is expected to contain
 # /bin/opm (with a serve subcommand) and /bin/grpc_health_probe

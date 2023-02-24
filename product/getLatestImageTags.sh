@@ -147,7 +147,7 @@ Usage:
   $0 -b ${DWNSTM_BRANCH} --stage --sort                    | use default list of DS images in RHEC Stage, sorted alphabetically
   $0 -b ${DWNSTM_BRANCH} --arches                          | use default list of DS images in RHEC Prod; show arches
 
-  $0 -c devspaces/iib --quay -o v4.12 --tag ${DS_VERSION}-v4.12          | search for latest Dev Spaces IIBs in quay for a given OCP version
+  $0 -c devspaces/iib --quay -o v4.11 --tag ${DS_VERSION}-v4.11          | search for latest Dev Spaces IIBs in quay for a given OCP version
   $0 -c devspaces/code-rhel8 --quay                            | check latest tag for specific Quay image(s), with branch = ${DWNSTM_BRANCH}
   $0 -c devspaces-operator --osbs                              | check an image from OSBS
   $0 -c devspaces-devspaces-rhel8-operator --nvr               | check an NVR from OSBS
@@ -206,7 +206,7 @@ done
 
 if [[ $CONTAINERS == *"devspaces/iib"* ]]; then
 	if [[ $latestNext == "latest" ]] || [[ $latestNext == "next  " ]]; then
-		echo "[ERROR] For Quay IIB searches, must specify OCP version. For example: '-o v4.12'"; usage; cleanup_temp; exit 2
+		echo "[ERROR] For Quay IIB searches, must specify OCP version. For example: '-o v4.11'"; usage; cleanup_temp; exit 2
 	fi
 fi
 

@@ -41,7 +41,7 @@ usage () {
   echo "
 Usage:
   Using a specific bundle: $0 bundle-image1 [bundle-image2...] [OPTIONS]
-  Using the latest bundle: $0 -t $PROD_VER -o 4.12 [OPTIONS]
+  Using the latest bundle: $0 -t $PROD_VER -o 4.11 [OPTIONS]
 
 Options:
   -t <product tag>     Use getLatestIIBs.sh to fetch latest IIB's contained bundle image, 
@@ -62,9 +62,9 @@ To compare latest image in Quay to latest CSV in bundle in latest IIB:
   IMG=devspaces/dashboard-rhel8; \\
   IMG=devspaces/devfileregistry-rhel8; \\
   img_quay=\$(${SCRIPTPATH}/getLatestImageTags.sh -b devspaces-\${TAG}-rhel-8 --quay --tag \"\${TAG}-\" -c \${IMG}); echo \$img_quay; \\
-  img_iib=\$(${SCRIPTPATH}/checkImagesInCSV.sh --ds -t \${TAG} -o 4.12 -y -qq -i \${IMG}); echo \$img_iib; \\
+  img_iib=\$(${SCRIPTPATH}/checkImagesInCSV.sh --ds -t \${TAG} -o 4.11 -y -qq -i \${IMG}); echo \$img_iib; \\
   if [[ \$img_quay != \$img_iib ]]; then \\
-    ${SCRIPTPATH}/checkImagesInCSV.sh --ds -t \${TAG} -o 4.12 -y -i \${IMG}; \\
+    ${SCRIPTPATH}/checkImagesInCSV.sh --ds -t \${TAG} -o 4.11 -y -i \${IMG}; \\
   fi
 "
 }

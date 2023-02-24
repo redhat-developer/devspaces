@@ -9,7 +9,7 @@
 #
 # Utility script to filter the Dev Spaces, Web Terminal, DevWorkspace (and optionally CodeReady Workspaces) operators
 # from an IIB image. Creates a file tree of json files, one folder per filtered package.
-# OPM 4.11+ is required to run buildCatalog.sh (see CRW-4063)
+# OPM 4.11 is required to run buildCatalog.sh; OPM 4.12 seems to have problems (See CRW-4063)
 #
 
 usage() {
@@ -20,7 +20,7 @@ specified.
 
 Requires:
 * jq 1.6+, podman 2.0+, glibc 2.28+
-* opm v1.19.5+ (see https://docs.openshift.com/container-platform/4.12/cli_reference/opm/cli-opm-install.html#cli-opm-install )
+* opm v1.19.5+ (see https://docs.openshift.com/container-platform/4.11/cli_reference/opm/cli-opm-install.html#cli-opm-install )
 
 Usage: $0 [OPTIONS]
 
@@ -65,16 +65,16 @@ if [[ $VERBOSEFLAG == "-v" ]]; then echo "[DEBUG] Working in $WORKING_DIR"; fi
 pushd "$WORKING_DIR" > /dev/null || exit
 trap 'popd >> /dev/null' EXIT
 
-# install opm if not installed from https://mirror.openshift.com/pub/openshift-v4/$(uname -m)/clients/ocp/latest-4.12/opm-linux.tar.gz
+# install opm if not installed from https://mirror.openshift.com/pub/openshift-v4/$(uname -m)/clients/ocp/latest-4.11/opm-linux.tar.gz
 if [[ ! -x /usr/local/bin/opm ]] && [[ ! -x ${HOME}/.local/bin/opm ]]; then 
     pushd /tmp >/dev/null || exit
-    echo "[INFO] Installing latest opm from https://mirror.openshift.com/pub/openshift-v4/$(uname -m)/clients/ocp/latest-4.12/opm-linux.tar.gz ..."
+    echo "[INFO] Installing latest opm from https://mirror.openshift.com/pub/openshift-v4/$(uname -m)/clients/ocp/latest-4.11/opm-linux.tar.gz ..."
     # shellcheck disable=SC2046
-    curl -sSLo- https://mirror.openshift.com/pub/openshift-v4/$(uname -m)/clients/ocp/latest-4.12/opm-linux.tar.gz | tar xz; chmod 755 opm
+    curl -sSLo- https://mirror.openshift.com/pub/openshift-v4/$(uname -m)/clients/ocp/latest-4.11/opm-linux.tar.gz | tar xz; chmod 755 opm
     sudo cp opm /usr/local/bin/ || cp opm "${HOME}"/.local/bin/
     sudo chmod 755 /usr/local/bin/opm || chmod 755 "${HOME}"/.local/bin/opm
     if [[ ! -x /usr/local/bin/opm ]] && [[ ! -x ${HOME}/.local/bin/opm ]]; then 
-        echo "[ERROR] Could not install opm v1.19.5 or higher (see https://docs.openshift.com/container-platform/4.12/cli_reference/opm/cli-opm-install.html#cli-opm-install )";
+        echo "[ERROR] Could not install opm v1.19.5 or higher (see https://docs.openshift.com/container-platform/4.11/cli_reference/opm/cli-opm-install.html#cli-opm-install )";
         exit 1
     fi
     popd >/dev/null || exit
