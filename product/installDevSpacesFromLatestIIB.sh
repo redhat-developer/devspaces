@@ -440,7 +440,13 @@ else
 
     # compute header from the latest CSV associated with this IIB (also in https://github.com/redhat-developer/devspaces-images/blob/devspaces-3-rhel-8/devspaces-operator-bundle-generated/manifests/devspaces.csv.yaml#L59-L67)
     ${SCRIPT_DIR}/containerExtract.sh --quiet --delete-before --delete-after ${IIB_DS} --tar-flags configs/devspaces/*bundle.json || true
-    bundleImage=$(cat $(ls /tmp/quay.io-devspaces-iib-*/configs/devspaces/*bundle.json | sort -V | tail -1 || true) | jq -r '.image' | sed -r -e "s@registry-proxy.engineering.redhat.com/rh-osbs@quay.io/devspaces@g" || true)
+    if [[ $IIB_DS == *"@"* ]]; then
+      tmpcontainer="$(echo "$IIB_DS" | tr "/:@" "--")"
+    else 
+      tmpcontainer="$(echo "$IIB_DS" | tr "/:" "--")-*"
+    fi
+    # TODO also filter out registry.stage.redhat.io/devspaces ?
+    bundleImage=$(cat $(ls /tmp/${tmpcontainer}/configs/devspaces/*bundle.json | sort -V | tail -1 || true) | jq -r '.image' | sed -r -e "s@registry-proxy.engineering.redhat.com/rh-osbs@quay.io/devspaces@g" || true)
     echo "[INFO] Bundle image SHA: ${bundleImage}"
     bundleImage="$(${SCRIPT_DIR}/getTagForSHA.sh ${bundleImage} --quiet)"
     echo "[INFO] Bundle image TAG: ${bundleImage}"
