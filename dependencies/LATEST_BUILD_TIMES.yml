@@ -9061,3 +9061,21 @@
   timeWait: 58 mins
   timeBuild: 4 mins
   timeTotal: 62 mins
+- name: devspaces-devfileregistry-rhel8
+  tag: 3.6-42
+  taskId: 51053579
+  timeCreate: Tue Feb 28 17:23:17 2023
+  timeStart: Tue Feb 28 18:04:17 2023
+  timeFinish: Tue Feb 28 18:16:30 2023
+  timeWait: 41 mins
+  timeBuild: 12 mins
+  timeTotal: 53 mins
+- name: devspaces-operator-bundle
+  tag: 3.6-73
+  taskId: 51055478
+  timeCreate: Tue Feb 28 18:36:39 2023
+  timeStart: Tue Feb 28 19:39:51 2023
+  timeFinish: Tue Feb 28 19:45:41 2023
+  timeWait: 63 mins
+  timeBuild: 5 mins
+  timeTotal: 69 mins
