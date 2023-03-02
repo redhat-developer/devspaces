@@ -437,6 +437,7 @@ else
 
     # don't set a dashboard header message by default
     dashboardHeaderMessage=""
+    # compute header from the installed CSV associated with the installed IIB, so we can install from brew, quay, or other registries
     dashboardHeaderMessage="$(oc get $(oc get csv -o name | grep devspaces) -o json | jq -r '.metadata.annotations."alm-examples"' | jq -r '[.[1].spec.components]' | yq -y '.[]' | sed -r -e "s/^/    /g" || true)"
 
     # add dashboard note about quay.io fast channel == Tech Preview support
