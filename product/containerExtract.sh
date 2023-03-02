@@ -95,7 +95,7 @@ if [[ ! $container_alt ]]; then
     echo "[INFO] Pulling $container ..."
     ${PODMAN} pull ${QUIET} --tls-verify=false ${ARCH_OVERRIDE} "$container" 2>&1
   else
-    ${PODMAN} pull ${QUIET} --tls-verify=false ${ARCH_OVERRIDE} "$container" 1>/dev/null
+    ${PODMAN} pull ${QUIET} --tls-verify=false ${ARCH_OVERRIDE} "$container" 2>/dev/null 1>/dev/null
   fi
   # throw the same error code that a failed pull throws, in case we're running this in a nested bash shell
   ${PODMAN} image exists "$container" || exit 125
