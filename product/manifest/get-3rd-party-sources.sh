@@ -1,20 +1,21 @@
 #!/bin/bash
-set -x
+# set -x
 set -e
 
 # script to convert previously downloaded dist-git lookaside cached tarballs into format compatible with Legal requirements (NVR.tar.gz)
 
-# TODO: make this script ALSO fetch the tarballs from Jenkins so we can do historical sources
-
 MIDSTM_BRANCH=""
+CSV_VERSION=""
 pduser="devspaces-build"
 DEBUG=0
 CLEAN=1 # by default delete intermediate assets to save disk space
 phases=" 1 2 3 "
+PUBLISH=0 # by default don't publish sources to spmm-util
+REMOTE_USER_AND_HOST="devspaces-build@spmm-util.hosts.stage.psi.bos.redhat.com"
 
 usage () 
 {
-    echo "Usage: $0 -b devspaces-3.y-rhel-8 [--clean] [--debug]"
+    echo "Usage: $0 -b devspaces-3.y-rhel-8 [--clean] [--debug] [--publish] -[w WORKSPACE_DIR]"
     exit
 }
 
@@ -29,9 +30,12 @@ while [[ "$#" -gt 0 ]]; do
   case $1 in
     '-pduser') pduser="$2"; shift 1;;
     '-b') MIDSTM_BRANCH="$2"; shift 1;;
+    '-v') CSV_VERSION="$2"; shift 1;; # 3.y.0
+    '--publish') PUBLISH=1;;
     '--keep-temp') CLEAN=0;;
     '--clean') cleanup;;
     '--debug') DEBUG=1;;
+    '-w') WORKSPACE="$2"; shift 1;;
     *) phases="${phases} $1 ";;
   esac
   shift 1
@@ -40,16 +44,17 @@ done
 if [[ ! "${MIDSTM_BRANCH}" ]]; then usage; fi
 if [[ ! ${phases} ]]; then phases=" 1 2 3 "; fi
 if [[ ! "${WORKSPACE}" ]]; then WORKSPACE=/tmp; fi
+if [[ ! "$CSV_VERSION" ]]; then CSV_VERSION=$(curl -sSLo- "https://raw.githubusercontent.com/redhat-developer/devspaces-images/${MIDSTM_BRANCH}/devspaces-operator-bundle/manifests/devspaces.csv.yaml" | yq -r '.spec.version'); fi
 
-MANIFEST_FILE="${WORKSPACE}"/manifest-srcs.txt
+MANIFEST_FILE="${WORKSPACE}"/devspaces-"${CSV_VERSION}"/sources/manifest-srcs.txt
 
-sudo rm -fr "${MANIFEST_FILE}" "${WORKSPACE}"/nvr-sources/ "${WORKSPACE}"/sources/containers/ "${WORKSPACE}"/sources/vscode/
+sudo rm -fr "${MANIFEST_FILE}" "${WORKSPACE}"/nvr-sources/ "${WORKSPACE}"/devspaces-"${CSV_VERSION}"/sources/containers/ "${WORKSPACE}"/devspaces-"${CSV_VERSION}"/sources/vscode/
+
+mkdir -p "${WORKSPACE}"/devspaces-"${CSV_VERSION}"/sources/
 
 mnf () {
     echo "$1" | tee -a "${MANIFEST_FILE}"
 }
-
-#TODO for historical builds, must query old dockerfiles for the version of tarball used and pull older sources (or regen them)
 
 maketarball () 
 {
@@ -88,8 +93,8 @@ maketarball ()
 
     if [[ -d "${WORKSPACE}"/nvr-sources/"${NVR}" ]]; then
         mnf "Create ${WORKSPACE}/sources/containers/${NVR}.tar.gz"
-        mkdir -p "${WORKSPACE}"/sources/containers/
-        pushd "${WORKSPACE}"/nvr-sources/"${NVR}" >/dev/null && tar czf "${WORKSPACE}"/sources/containers/"${NVR}".tar.gz ./* && popd >/dev/null 
+        mkdir -p "${WORKSPACE}"/devspaces-"${CSV_VERSION}"/sources/containers/
+        pushd "${WORKSPACE}"/nvr-sources/"${NVR}" >/dev/null && tar czf "${WORKSPACE}"/devspaces-"${CSV_VERSION}"/sources/containers/"${NVR}".tar.gz ./* && popd >/dev/null 
         mnf "" 
         if [[ $CLEAN -eq 1 ]]; then df -h "${WORKSPACE}"; sudo rm -fr "${WORKSPACE}"/nvr-sources/"${NVR}"; df -h "${WORKSPACE}"; fi
 
@@ -112,9 +117,6 @@ if [[ ${phases} == *"1"* ]]; then
         ../getLatestImageTags.sh -b "${MIDSTM_BRANCH}" --nvr | tee "${WORKSPACE}"/NVRs.txt
         mnf ""
     fi
-    mnf "Sorted image list"
-    sort "${WORKSPACE}"/NVRs.txt | tee -a "${MANIFEST_FILE}"
-    mnf ""
 
     mkdir -p "${WORKSPACE}"/NVR_CHECKOUTS
     pushd "${WORKSPACE}"/NVR_CHECKOUTS >/dev/null
@@ -144,7 +146,7 @@ if [[ ${phases} == *"2"* ]]; then
     mnf ""
     mnf "Phase 2 - get vsix sources not included in rhpkg sources from GH"
     mnf ""
-    mkdir -p "${WORKSPACE}"/sources/vscode/
+    mkdir -p "${WORKSPACE}"/devspaces-"${CSV_VERSION}"/sources/vscode/
     pushd ../../dependencies/che-plugin-registry >/dev/null
         URLsAll=""
         URLs=""
@@ -167,7 +169,7 @@ if [[ ${phases} == *"2"* ]]; then
                 f=${s#https://}; f=${f//\//__}; # echo "-> $f"
                 echo -n "Fetch GH sources from "
                 mnf $s
-                curl -sSL $s -o "${WORKSPACE}"/sources/vscode/$f
+                curl -sSL $s -o "${WORKSPACE}"/devspaces-"${CSV_VERSION}"/sources/vscode/$f
             done
         fi
     popd >/dev/null
@@ -177,7 +179,7 @@ if [[ ${phases} == *"3"* ]]; then
     mnf ""
     mnf "Phase 3 - get vsix sources not included in rhpkg sources from download.jboss.org (or github)"
     mnf ""
-    mkdir -p "${WORKSPACE}"/sources/vscode/
+    mkdir -p "${WORKSPACE}"/devspaces-"${CSV_VERSION}"/sources/vscode/
     pushd ../../dependencies/che-plugin-registry >/dev/null
         URLsAll=""
         URLs=""
@@ -204,8 +206,8 @@ if [[ ${phases} == *"3"* ]]; then
                     fi
                 fi
                 f=${u#https://}; f=${f//\//__}; # echo "-> $f"
-                mkdir -p "${WORKSPACE}"/sources/vscode/$f
-                pushd "${WORKSPACE}"/sources/vscode/$f >/dev/null
+                mkdir -p "${WORKSPACE}"/devspaces-"${CSV_VERSION}"/sources/vscode/$f
+                pushd "${WORKSPACE}"/devspaces-"${CSV_VERSION}"/sources/vscode/$f >/dev/null
                     # different patterns for source tarballs
                     if [[ ${f} == *"static__jdt.ls__stable"* ]]; then # get from GH
                         # check https://github.com/redhat-developer/vscode-java/archive/v0.57.0.tar.gz
@@ -240,13 +242,33 @@ if [[ ${phases} == *"3"* ]]; then
     popd >/dev/null
 fi
 
-du -shc "${WORKSPACE}"/sources/containers/* "${WORKSPACE}"/sources/vscode/*
+du -shc "${WORKSPACE}"/devspaces-"${CSV_VERSION}"/sources/containers/* "${WORKSPACE}"/devspaces-"${CSV_VERSION}"/sources/vscode/*
 
 ##################################
 
 echo ""
 echo "Short MVN manifest is in file: ${MANIFEST_FILE}"
-echo "NVR Source tarballs are in ${WORKSPACE}/sources/containers/ and ${WORKSPACE}/sources/vscode/"
+echo "NVR Source tarballs are in ${WORKSPACE}/devspaces-${CSV_VERSION}/sources/containers/ and ${WORKSPACE}/devspaces-${CSV_VERSION}/sources/vscode/"
 echo ""
 
 ##################################
+
+# optionally, push files to spmm-util server as part of a GA release
+if [[ $PUBLISH -eq 1 ]]; then
+
+    # create an empty dir into which we will make subfolders
+    empty_dir=$(mktemp -d)
+
+    # delete old releases before pushing latest one, to keep disk usage low: DO NOT delete 'build-requirements' folder as we use that for storing binaries we can't yet build ourselves in OSBS
+    # note that this operation will only REMOVE old versions
+    rsync -aP --delete --exclude=build-requirements --exclude="devspaces-${CSV_VERSION}" "$empty_dir"/ "${REMOTE_USER_AND_HOST}:staging/devspaces/"
+
+    # next, update existing devspaces-${CSV_VERSION} folder (or create it not exist)
+    rsync -aP "${WORKSPACE}/devspaces-${CSV_VERSION}" "${REMOTE_USER_AND_HOST}:staging/devspaces/"
+
+    # trigger staging 
+    ssh "${REMOTE_USER_AND_HOST}" "stage-mw-release devspaces-${CSV_VERSION}"
+
+    # cleanup 
+    rm -fr "$empty_dir"
+fi
