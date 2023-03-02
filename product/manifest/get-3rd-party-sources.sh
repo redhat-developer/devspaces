@@ -5,6 +5,7 @@ set -e
 # script to convert previously downloaded dist-git lookaside cached tarballs into format compatible with Legal requirements (NVR.tar.gz)
 
 MIDSTM_BRANCH=""
+CSV_VERSION=""
 pduser="devspaces-build"
 DEBUG=0
 CLEAN=1 # by default delete intermediate assets to save disk space
@@ -29,6 +30,7 @@ while [[ "$#" -gt 0 ]]; do
   case $1 in
     '-pduser') pduser="$2"; shift 1;;
     '-b') MIDSTM_BRANCH="$2"; shift 1;;
+    '-v') CSV_VERSION="$2"; shift 1;; # 3.y.0
     '--publish') PUBLISH=1;;
     '--keep-temp') CLEAN=0;;
     '--clean') cleanup;;
@@ -42,8 +44,7 @@ done
 if [[ ! "${MIDSTM_BRANCH}" ]]; then usage; fi
 if [[ ! ${phases} ]]; then phases=" 1 2 3 "; fi
 if [[ ! "${WORKSPACE}" ]]; then WORKSPACE=/tmp; fi
-
-CSV_VERSION=$(curl -sSLo- "https://raw.githubusercontent.com/redhat-developer/devspaces-images/${MIDSTM_BRANCH}/devspaces-operator-bundle/manifests/devspaces.csv.yaml" | yq -r '.spec.version')
+if [[ ! "$CSV_VERSION" ]]; then CSV_VERSION=$(curl -sSLo- "https://raw.githubusercontent.com/redhat-developer/devspaces-images/${MIDSTM_BRANCH}/devspaces-operator-bundle/manifests/devspaces.csv.yaml" | yq -r '.spec.version'); fi
 
 MANIFEST_FILE="${WORKSPACE}"/devspaces-"${CSV_VERSION}"/sources/manifest-srcs.txt
 
