@@ -325,12 +325,14 @@ if [[ ${SHOWNVR} -eq 1 ]]; then
 			if [[ $ERRATA_NUM ]]; then
 				prodver="RHOSDS-3-RHEL-8"
 				if [[ $DS_VERSION == "2"* ]]; then prodver="CRW-2.0-RHEL-8"; fi
+				# see API info in https://github.com/red-hat-storage/errata-tool/tree/master/errata_tool
 				cat <<EOT >> /tmp/errata-container-update-$result
 from errata_tool import Erratum
 e = Erratum(errata_id=$ERRATA_NUM)
 e.setState('NEW_FILES')
 e.commit()
 e.addBuilds('$result', release='$prodver', file_types={'$result': ['tar']})
+# print (e.errata_builds)
 EOT
 				python /tmp/errata-container-update-$result
 				rm -f /tmp/errata-container-update-$result
