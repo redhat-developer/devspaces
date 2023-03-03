@@ -437,16 +437,8 @@ else
 
     # don't set a dashboard header message by default
     dashboardHeaderMessage=""
-
-    # compute header from the latest CSV associated with this IIB (also in https://github.com/redhat-developer/devspaces-images/blob/devspaces-3-rhel-8/devspaces-operator-bundle-generated/manifests/devspaces.csv.yaml#L59-L67)
-    ${SCRIPT_DIR}/containerExtract.sh --quiet --delete-before --delete-after ${IIB_DS} --tar-flags configs/devspaces/*bundle.json || true
-    bundleImage=$(cat $(ls /tmp/quay.io-devspaces-iib-*/configs/devspaces/*bundle.json | sort -V | tail -1 || true) | jq -r '.image' | sed -r -e "s@registry-proxy.engineering.redhat.com/rh-osbs@quay.io/devspaces@g" || true)
-    echo "[INFO] Bundle image SHA: ${bundleImage}"
-    bundleImage="$(${SCRIPT_DIR}/getTagForSHA.sh ${bundleImage} --quiet)"
-    echo "[INFO] Bundle image TAG: ${bundleImage}"
-    ${SCRIPT_DIR}/containerExtract.sh --quiet --delete-before --delete-after ${bundleImage} --tar-flags manifests/*csv* || true
-    dashboardHeaderMessage="$(cat /tmp/quay.io-devspaces-devspaces-operator-bundle-*/manifests/devspaces.csv.yaml | yq -r '.metadata.annotations."alm-examples"' | jq -r '[.[1].spec.components]' | yq -y '.[]' | sed -r -e "s/^/    /g" || true)"
-    sudo rm -fr /tmp/quay.io-devspaces-iib-* /tmp/quay.io-devspaces-devspaces-operator-bundle-* || true
+    # compute header from the installed CSV associated with the installed IIB, so we can install from brew, quay, or other registries
+    dashboardHeaderMessage="$(oc get $(oc get csv -o name | grep devspaces) -o json | jq -r '.metadata.annotations."alm-examples"' | jq -r '[.[1].spec.components]' | yq -y '.[]' | sed -r -e "s/^/    /g" || true)"
 
     # add dashboard note about quay.io fast channel == Tech Preview support
     if [[ $CHANNEL_DS == "fast" ]]; then
