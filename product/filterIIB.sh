@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Copyright (c) 2022 Red Hat, Inc.
+# Copyright (c) 2022-2023 Red Hat, Inc.
 # This program and the accompanying materials are made
 # available under the terms of the Eclipse Public License 2.0
 # which is available at https://www.eclipse.org/legal/epl-2.0/
@@ -9,6 +9,7 @@
 #
 # Utility script to filter the Dev Spaces, Web Terminal, DevWorkspace (and optionally CodeReady Workspaces) operators
 # from an IIB image. Creates a file tree of json files, one folder per filtered package.
+# OPM 4.11 is required to run buildCatalog.sh; OPM 4.12 seems to have problems (See CRW-4063)
 #
 
 usage() {
