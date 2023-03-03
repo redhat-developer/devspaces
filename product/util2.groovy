@@ -230,6 +230,15 @@ def installRedHatInternalCerts() {
   ''')
 }
 
+
+// CRW-3598: @since 3.5
+// note that this URL is also in devspaces-chectl/build/scripts/build.sh and devspaces/product/manifest/get-3rd-party-sources.sh
+// also mentioned in dsc.groovy and get-3rd-party-sources.groovy
+def getStagingHost() {
+  return "devspaces-build@spmm-util.hosts.stage.psi.bos.redhat.com"
+}
+
+// deprecated; remove after 3.5 is live and dsc_3.4 job is deleted
 def sshMountRcmGuest(String path="devspaces") {
   DESTHOST="rcm-guest.hosts.prod.psi.bos.redhat.com"
   DESTHOSTMOUNT="devspaces-build@" + DESTHOST

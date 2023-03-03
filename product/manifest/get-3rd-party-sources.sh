@@ -10,10 +10,16 @@ DEBUG=0
 CLEAN=1 # by default delete intermediate assets to save disk space
 phases=" 1 2 3 "
 PUBLISH=0 # by default don't publish sources to spmm-util
+REMOTE_USER_AND_HOST="devspaces-build@spmm-util.hosts.stage.psi.bos.redhat.com"
 
 usage () 
 {
-    echo "Usage: $0 -b devspaces-3.y-rhel-8 [--clean] [--debug] [--publish] -[w WORKSPACE_DIR]"
+    echo "Usage: $0 -b devspaces-3.y-rhel-8 [--clean] [--debug] -[w WORKSPACE_DIR]
+
+Options:
+    --publish                             publish GA bits for a release to $REMOTE_USER_AND_HOST
+    --desthost user@destination-host      specific an alternate destination host for publishing
+"
     exit
 }
 
@@ -30,6 +36,7 @@ while [[ "$#" -gt 0 ]]; do
     '-b') MIDSTM_BRANCH="$2"; shift 1;;
     '-v') CSV_VERSION="$2"; shift 1;; # 3.y.0
     '--publish') PUBLISH=1;;
+    '--desthost') REMOTE_USER_AND_HOST="$2"; shift 1;;
     '--keep-temp') CLEAN=0;;
     '--clean') cleanup;;
     '--debug') DEBUG=1;;
@@ -254,8 +261,6 @@ echo ""
 # optionally, push files to spmm-util server as part of a GA release
 if [[ $PUBLISH -eq 1 ]]; then
     set -x
-    REMOTE_USER_AND_HOST="devspaces-build@spmm-util.hosts.stage.psi.bos.redhat.com"
-
     # create an empty dir into which we will make subfolders
     empty_dir=$(mktemp -d)
 
