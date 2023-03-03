@@ -1,5 +1,4 @@
 #!/bin/bash
-# set -x
 set -e
 
 # script to convert previously downloaded dist-git lookaside cached tarballs into format compatible with Legal requirements (NVR.tar.gz)
@@ -11,7 +10,6 @@ DEBUG=0
 CLEAN=1 # by default delete intermediate assets to save disk space
 phases=" 1 2 3 "
 PUBLISH=0 # by default don't publish sources to spmm-util
-REMOTE_USER_AND_HOST="devspaces-build@spmm-util.hosts.stage.psi.bos.redhat.com"
 
 usage () 
 {
@@ -255,20 +253,25 @@ echo ""
 
 # optionally, push files to spmm-util server as part of a GA release
 if [[ $PUBLISH -eq 1 ]]; then
+    set -x
+
+    REMOTE_USER_AND_HOST="devspaces-build@spmm-util.hosts.stage.psi.bos.redhat.com"
 
     # create an empty dir into which we will make subfolders
     empty_dir=$(mktemp -d)
 
     # delete old releases before pushing latest one, to keep disk usage low: DO NOT delete 'build-requirements' folder as we use that for storing binaries we can't yet build ourselves in OSBS
     # note that this operation will only REMOVE old versions
-    rsync -aP --delete --exclude=build-requirements --exclude="devspaces-${CSV_VERSION}" "$empty_dir"/ "${REMOTE_USER_AND_HOST}:staging/devspaces/"
+    rsync -rlP --delete --exclude=build-requirements --exclude="devspaces-${CSV_VERSION}" "$empty_dir"/ "${REMOTE_USER_AND_HOST}:staging/devspaces/"
 
     # next, update existing devspaces-${CSV_VERSION} folder (or create it not exist)
-    rsync -aP "${WORKSPACE}/devspaces-${CSV_VERSION}" "${REMOTE_USER_AND_HOST}:staging/devspaces/"
+    rsync -rlP "${WORKSPACE}/devspaces-${CSV_VERSION}" "${REMOTE_USER_AND_HOST}:staging/devspaces/"
 
     # trigger staging 
     ssh "${REMOTE_USER_AND_HOST}" "stage-mw-release devspaces-${CSV_VERSION}"
 
     # cleanup 
     rm -fr "$empty_dir"
+
+    set +x
 fi
