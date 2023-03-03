@@ -254,7 +254,6 @@ echo ""
 # optionally, push files to spmm-util server as part of a GA release
 if [[ $PUBLISH -eq 1 ]]; then
     set -x
-
     REMOTE_USER_AND_HOST="devspaces-build@spmm-util.hosts.stage.psi.bos.redhat.com"
 
     # create an empty dir into which we will make subfolders
@@ -272,6 +271,5 @@ if [[ $PUBLISH -eq 1 ]]; then
 
     # cleanup 
     rm -fr "$empty_dir"
-
     set +x
 fi
