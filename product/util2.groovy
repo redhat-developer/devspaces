@@ -230,6 +230,15 @@ def installRedHatInternalCerts() {
   ''')
 }
 
+
+// CRW-3598: @since 3.5
+// note that this URL is also in devspaces-chectl/build/scripts/build.sh and devspaces/product/manifest/get-3rd-party-sources.sh
+// also mentioned in dsc.groovy and get-3rd-party-sources.groovy
+def getStagingHost() {
+  return "devspaces-build@spmm-util.hosts.stage.psi.bos.redhat.com"
+}
+
+// deprecated; remove after 3.5 is live and dsc_3.4 job is deleted
 def sshMountRcmGuest(String path="devspaces") {
   DESTHOST="rcm-guest.hosts.prod.psi.bos.redhat.com"
   DESTHOSTMOUNT="devspaces-build@" + DESTHOST
@@ -308,7 +317,7 @@ fi
 // URL from which to get internal RPM installations
 @Field String pulpRepoURL = "http://rhsm-pulp.corp.redhat.com"
 
-// ./getLatestRPM.sh -r "openshift-clients-4" -u http://rhsm-pulp.corp.redhat.com/content/dist/layered/rhel8/basearch/rhocp/4.11 -s ...
+// ./getLatestRPM.sh -r "openshift-clients-4" -u http://rhsm-pulp.corp.redhat.com/content/dist/layered/rhel8/basearch/rhocp/4.12 -s ...
 def updateOCRpms(String rpmRepoVersion="4.11", String dir="${WORKSPACE}/sources", String branch=MIDSTM_BRANCH, String ARCHES="x86_64 s390x ppc64le") {
   updatedVersion=updateRpms("openshift-clients-4", pulpRepoURL + "/content/dist/layered/rhel8/basearch/rhocp/" + rpmRepoVersion, dir, branch, ARCHES)
   commitChanges(dir, "[rpms] Update to " + updatedVersion, branch)
