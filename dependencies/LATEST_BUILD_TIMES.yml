@@ -8440,3 +8440,39 @@
   timeWait: 0 mins
   timeBuild: 8 mins
   timeTotal: 9 mins
+- name: devspaces-server-rhel8
+  tag: 3.5-22
+  taskId: 51120379
+  timeCreate: Fri Mar 3 14:32:09 2023
+  timeStart: Fri Mar 3 15:43:51 2023
+  timeFinish: Fri Mar 3 15:57:06 2023
+  timeWait: 71 mins
+  timeBuild: 13 mins
+  timeTotal: 84 mins
+- name: devspaces-dashboard-rhel8
+  tag: 3.5-24
+  taskId: 51151561
+  timeCreate: Mon Mar 6 12:07:56 2023
+  timeStart: Mon Mar 6 12:08:35 2023
+  timeFinish: Mon Mar 6 12:41:43 2023
+  timeWait: 0 mins
+  timeBuild: 33 mins
+  timeTotal: 33 mins
+- name: devspaces-devfileregistry-rhel8
+  tag: 3.5-74
+  taskId: 51151780
+  timeCreate: Mon Mar 6 12:10:23 2023
+  timeStart: Mon Mar 6 12:11:06 2023
+  timeFinish: Mon Mar 6 12:22:19 2023
+  timeWait: 0 mins
+  timeBuild: 11 mins
+  timeTotal: 11 mins
+- name: devspaces-operator-bundle
+  tag: 3.5-135
+  taskId: 51152572
+  timeCreate: Mon Mar 6 13:00:01 2023
+  timeStart: Mon Mar 6 13:00:22 2023
+  timeFinish: Mon Mar 6 13:03:47 2023
+  timeWait: 0 mins
+  timeBuild: 3 mins
+  timeTotal: 3 mins
