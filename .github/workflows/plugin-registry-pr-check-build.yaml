@@ -48,7 +48,7 @@ jobs:
         path: | 
           /tmp/che-plugin-registry/download-folder
           /tmp/che-plugin-registry/unpack-folder
-        key: download-unpacked-cache-${{ hashFiles('**/che-theia-plugins.yaml') }}
+        key: download-unpacked-cache-${{ hashFiles('**/che-plugins.yaml') }}
         restore-keys: |
           download-unpacked-cache-
 
