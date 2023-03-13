@@ -9871,3 +9871,21 @@
   timeWait: 0 mins
   timeBuild: 4 mins
   timeTotal: 4 mins
+- name: devspaces-operator
+  tag: 3.6-18
+  taskId: 51284107
+  timeCreate: Mon Mar 13 09:19:42 2023
+  timeStart: Mon Mar 13 09:20:13 2023
+  timeFinish: Mon Mar 13 09:36:38 2023
+  timeWait: 0 mins
+  timeBuild: 16 mins
+  timeTotal: 16 mins
+- name: devspaces-operator-bundle
+  tag: 3.6-109
+  taskId: 51284992
+  timeCreate: Mon Mar 13 09:45:10 2023
+  timeStart: Mon Mar 13 09:47:29 2023
+  timeFinish: Mon Mar 13 09:52:38 2023
+  timeWait: 2 mins
+  timeBuild: 5 mins
+  timeTotal: 7 mins
