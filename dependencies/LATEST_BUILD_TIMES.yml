@@ -9907,3 +9907,21 @@
   timeWait: 9 mins
   timeBuild: 11 mins
   timeTotal: 20 mins
+- name: devspaces-operator
+  tag: 3.6-19
+  taskId: 51305506
+  timeCreate: Tue Mar 14 01:48:33 2023
+  timeStart: Tue Mar 14 01:48:33 2023
+  timeFinish: Tue Mar 14 02:05:39 2023
+  timeWait: 0 mins
+  timeBuild: 17 mins
+  timeTotal: 17 mins
+- name: devspaces-operator-bundle
+  tag: 3.6-111
+  taskId: 51305714
+  timeCreate: Tue Mar 14 02:13:52 2023
+  timeStart: Tue Mar 14 02:34:54 2023
+  timeFinish: Tue Mar 14 02:40:46 2023
+  timeWait: 21 mins
+  timeBuild: 5 mins
+  timeTotal: 26 mins
