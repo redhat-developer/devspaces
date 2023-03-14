@@ -78,6 +78,8 @@ mkdir -p "${WORKSPACE}/${CSV_VERSION}"
 MANIFEST_FILE="${WORKSPACE}/${CSV_VERSION}/manifest.txt"
 LOG_FILE="${WORKSPACE}/${CSV_VERSION}/manifest_log.txt"
 rm -f ${LOG_FILE} ${MANIFEST_FILE} ${MANIFEST_FILE/.txt/-all.txt}
+
+# TODO CRW_3663 remove theia once 3.5 is live 
 for d in mvn rpms theia; do rm -f ${WORKSPACE}/${CSV_VERSION}/${d}/manifest-${d}.txt; done
 
 function log () {
