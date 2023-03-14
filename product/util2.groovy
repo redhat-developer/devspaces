@@ -64,25 +64,6 @@ def globalVar(varNameExpr) {
   }
 }
 
-def getTheiaBuildParam(String property) { 
-  return getVarFromPropertiesFileURL(property, "https://raw.githubusercontent.com/redhat-developer/devspaces-theia/"+MIDSTM_BRANCH+"/BUILD_PARAMS")
-}
-
-// load a property from a remote file, eg., nodeVersion=12.21.0 or yarnVersion=1.21.1 from 
-// https://github.com/redhat-developer/devspaces-theia/blob/devspaces-3-rhel-8/BUILD_PARAMS
-def getVarFromPropertiesFileURL(String property, String tURL) {
-  def data = tURL.toURL().readLines()
-  varVal=""
-  data.each {
-    pair=it.toString().trim()
-    if (pair.matches(property+"=.+")) {
-      varVal=pair.replaceAll(property+"=","")
-      return true
-    }
-  }
-  return varVal
-}
-
 def cloneRepo(String URL, String REPO_PATH, String BRANCH, boolean withPolling=false, String excludeRegions='', String includeRegions='*') {
   if (URL.indexOf("pkgs.devel.redhat.com") == -1) {
     // remove http(s) prefix, then trim any token@ prefix too
