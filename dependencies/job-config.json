@@ -2,15 +2,6 @@
   "Purpose": "To set configurations of jenkins jobs including upstream branches, dependencies and disabled status",
   "Version": 3.6,
   "Jobs": {
-    "backup": {
-      "2.15": {
-        "upstream_branch": [
-          "7.42.x",
-          "7.41.x"
-        ],
-        "disabled": true
-      }
-    },
     "code": {
       "3.4": {
         "upstream_branch": [
@@ -42,13 +33,6 @@
       }
     },
     "configbump": {
-      "2.15": {
-        "upstream_branch": [
-          "7.42.x",
-          "7.41.x"
-        ],
-        "disabled": true
-      },
       "3.4": {
         "upstream_branch": [
           "7.58.x",
@@ -79,13 +63,6 @@
       }
     },
     "dashboard": {
-      "2.15": {
-        "upstream_branch": [
-          "7.42.x",
-          "7.41.x"
-        ],
-        "disabled": true
-      },
       "3.4": {
         "upstream_branch": [
           "7.58.x",
@@ -116,13 +93,6 @@
       }
     },
     "imagepuller": {
-      "2.15": {
-        "upstream_branch": [
-          "7.42.x",
-          "7.41.x"
-        ],
-        "disabled": true
-      },
       "3.4": {
         "upstream_branch": [
           "7.58.x",
@@ -152,23 +122,7 @@
         "disabled": false
       }
     },
-    "jwtproxy": {
-      "2.15": {
-        "upstream_branch": [
-          "7.42.x",
-          "7.41.x"
-        ],
-        "disabled": true
-      }
-    },
     "machineexec": {
-      "2.15": {
-        "upstream_branch": [
-          "7.42.x",
-          "7.41.x"
-        ],
-        "disabled": true
-      },
       "3.4": {
         "upstream_branch": [
           "7.58.x",
@@ -199,13 +153,6 @@
       }
     },
     "operator": {
-      "2.15": {
-        "upstream_branch": [
-          "7.42.x",
-          "7.41.x"
-        ],
-        "disabled": true
-      },
       "3.4": {
         "upstream_branch": [
           "7.58.x",
@@ -236,13 +183,6 @@
       }
     },
     "server": {
-      "2.15": {
-        "upstream_branch": [
-          "7.42.x",
-          "7.41.x"
-        ],
-        "disabled": true
-      },
       "3.4": {
         "upstream_branch": [
           "7.58.x",
@@ -270,25 +210,9 @@
           "main"
         ],
         "disabled": false
-      }
-    },
-    "theia-dev": {
-      "2.15": {
-        "upstream_branch": [
-          "7.42.x",
-          "7.41.x"
-        ],
-        "disabled": true
       }
     },
     "theia": {
-      "2.15": {
-        "upstream_branch": [
-          "7.42.x",
-          "7.41.x"
-        ],
-        "disabled": true
-      },
       "3.4": {
         "upstream_branch": [
           "7.58.x",
@@ -300,41 +224,11 @@
         "upstream_branch": [
           "7.60.x",
           "7.59.x"
-        ],
-        "disabled": true
-      },
-      "3.6": {
-        "upstream_branch": [
-          "7.62.x",
-          "7.61.x"
-        ],
-        "disabled": false
-      },
-      "3.x": {
-        "upstream_branch": [
-          "main",
-          "main"
-        ],
-        "disabled": false
-      }
-    },
-    "theia-endpoint": {
-      "2.15": {
-        "upstream_branch": [
-          "7.42.x",
-          "7.41.x"
         ],
         "disabled": true
       }
     },
     "devfileregistry": {
-      "2.15": {
-        "upstream_branch": [
-          "crw-2.15-rhel-8",
-          "crw-2.15-rhel-8"
-        ],
-        "disabled": true
-      },
       "3.4": {
         "upstream_branch": [
           "devspaces-3.4-rhel-8",
@@ -365,13 +259,6 @@
       }
     },
     "pluginregistry": {
-      "2.15": {
-        "upstream_branch": [
-          "crw-2.15-rhel-8",
-          "crw-2.15-rhel-8"
-        ],
-        "disabled": true
-      },
       "3.4": {
         "upstream_branch": [
           "devspaces-3.4-rhel-8",
@@ -401,104 +288,7 @@
         "disabled": false
       }
     },
-    "plugin-java11": {
-      "2.15": {
-        "upstream_branch": [
-          "crw-2.15-rhel-8",
-          "crw-2.15-rhel-8"
-        ],
-        "disabled": true
-      }
-    },
-    "plugin-java8": {
-      "2.15": {
-        "upstream_branch": [
-          "crw-2.15-rhel-8",
-          "crw-2.15-rhel-8"
-        ],
-        "disabled": true
-      }
-    },
-    "plugin-kubernetes": {
-      "2.15": {
-        "upstream_branch": [
-          "crw-2.15-rhel-8",
-          "crw-2.15-rhel-8"
-        ],
-        "disabled": true
-      }
-    },
-    "plugin-openshift": {
-      "2.15": {
-        "upstream_branch": [
-          "crw-2.15-rhel-8",
-          "crw-2.15-rhel-8"
-        ],
-        "disabled": true
-      }
-    },
-    "stacks-cpp": {
-      "2.15": {
-        "upstream_branch": [
-          "crw-2.15-rhel-8",
-          "crw-2.15-rhel-8"
-        ],
-        "disabled": true
-      }
-    },
-    "stacks-dotnet": {
-      "2.15": {
-        "upstream_branch": [
-          "crw-2.15-rhel-8",
-          "crw-2.15-rhel-8"
-        ],
-        "disabled": true
-      }
-    },
-    "stacks-golang": {
-      "2.15": {
-        "upstream_branch": [
-          "crw-2.15-rhel-8",
-          "crw-2.15-rhel-8"
-        ],
-        "disabled": true
-      }
-    },
-    "stacks-php": {
-      "2.15": {
-        "upstream_branch": [
-          "crw-2.15-rhel-8",
-          "crw-2.15-rhel-8"
-        ],
-        "disabled": true
-      }
-    },
-    "pluginbroker-artifacts": {
-      "2.15": {
-        "upstream_branch": [
-          "v3.4.x",
-          "v3.4.x"
-        ],
-        "disabled": true
-      }
-    },
-    "pluginbroker-metadata": {
-      "2.15": {
-        "upstream_branch": [
-          "v3.4.x",
-          "v3.4.x"
-        ],
-        "disabled": true
-      }
-    },
     "idea": {
-      "2.15": {
-        "upstream_branch": [
-          "20210728",
-          "20210728"
-        ],
-        "disabled": true
-      },
       "3.4": {
         "upstream_branch": [
           "20221111",
@@ -529,13 +319,6 @@
       }
     },
     "traefik": {
-      "2.15": {
-        "upstream_branch": [
-          "v2.5.0",
-          "v2.5.0"
-        ],
-        "disabled": true
-      },
       "3.4": {
         "upstream_branch": [
           "v2.8.1",
@@ -565,15 +348,7 @@
         "disabled": false
       }
     },
-    "theia-akamai": {
-      "2.15": {
-        "disabled": true
-      }
-    },
     "build-all-images": {
-      "2.15": {
-        "disabled": true
-      },
       "3.4": {
         "disabled": true
       },
@@ -619,16 +394,6 @@
     }
   },
   "Management-Jobs": {
-    "crwctl": {
-      "2.15": {
-        "upstream_branch": [
-          "7.42.x",
-          "7.41.x"
-        ],
-        "node_version": "12.22.5",
-        "disabled": true
-      }
-    },
     "dsc": {
       "3.4": {
         "upstream_branch": [
@@ -664,13 +429,6 @@
       }
     },
     "operator-bundle": {
-      "2.15": {
-        "upstream_branch": [
-          "7.42.x",
-          "7.41.x"
-        ],
-        "disabled": true
-      },
       "3.4": {
         "upstream_branch": [
           "7.58.x",
@@ -700,19 +458,7 @@
         "disabled": false
       }
     },
-    "operator-metadata": {
-      "2.15": {
-        "upstream_branch": [
-          "7.42.x",
-          "7.41.x"
-        ],
-        "disabled": true
-      }
-    },
     "get-sources-rhpkg-container-build": {
-      "2.15": {
-        "disabled": true
-      },
       "3.4": {
         "disabled": true
       },
@@ -727,9 +473,6 @@
       }
     },
     "push-latest-container-to-quay": {
-      "2.15": {
-        "disabled": true
-      },
       "3.4": {
         "disabled": true
       },
@@ -744,9 +487,6 @@
       }
     },
     "sync-to-downstream": {
-      "2.15": {
-        "disabled": true
-      },
       "3.4": {
         "disabled": true
       },
@@ -758,11 +498,6 @@
       },
       "3.x": {
         "disabled": false
-      }
-    },
-    "update-digests-in-metadata": {
-      "2.15": {
-        "disabled": true
       }
     },
     "update-digests": {
@@ -780,9 +515,6 @@
       }
     },
     "send-email-qe-build-list": {
-      "2.15": {
-        "disabled": true
-      },
       "3.4": {
         "disabled": true
       },
@@ -799,10 +531,6 @@
   },
   "CSVs": {
     "operator-bundle": {
-      "2.15": {
-        "CSV_VERSION": "2.15.104",
-        "CSV_VERSION_PREV": "2.15.103"
-      },
       "3.4": {
         "CSV_VERSION": "3.4.0",
         "CSV_VERSION_PREV": "3.3.0-0.1673528130.p"
@@ -820,44 +548,33 @@
         "CSV_VERSION_PREV": "3.4.0"
       }
     },
-    "operator-metadata": {
-      "2.15": {
-        "CSV_VERSION": "2.15.4",
-        "CSV_VERSION_PREV": "2.15.3"
-      }
-    }
   },
   "Other": {
     "Errata": {
-      "2.15": "94671",
       "3.4": "107091",
       "3.5": "109208",
       "3.6": "n/a",
       "3.x": "n/a"
     },
     "Epic": {
-      "2.15": "CRW-2962",
       "3.4": "CRW-3446",
       "3.5": "CRW-3644",
       "3.6": "n/a",
       "3.x": "n/a"
     },
     "FLOATING_QUAY_TAGS": {
-      "2.15": "latest",
       "3.4": "3.4",
       "3.5": "latest",
       "3.6": "next",
       "3.x": "next"
     },
     "DEV_WORKSPACE_CONTROLLER": {
-      "2.15": "v0.11.0",
       "3.4": "v0.13.0",
       "3.5": "v0.13.0",
       "3.6": "v0.13.0",
       "3.x": "v0.13.0"
     },
     "DEV_HEADER_REWRITE_TRAEFIK_PLUGIN": {
-      "2.15": "v0.1.2",
       "3.4": "v0.1.2",
       "3.5": "v0.1.2",
       "3.6": "v0.1.2",
@@ -882,34 +599,18 @@
       "3.x": "0.19"
     },
     "@eclipse-che/plugin-registry-generator": {
-      "2.15": "7.42.0",
       "3.4": "7.58.0",
       "3.5": "7.60.1",
       "3.6": "next",
       "3.x": "next"
     },
     "THEIA_BUILD_PARAMS": {
-      "2.15": {
-        "THEIA_BRANCH": "master",
-        "THEIA_GITHUB_REPO": "eclipse-theia/theia",
-        "THEIA_COMMIT_SHA": ""
-      },
       "3.4": {
         "THEIA_BRANCH": "master",
         "THEIA_GITHUB_REPO": "eclipse-theia/theia",
         "THEIA_COMMIT_SHA": ""
       },
       "3.5": {
-        "THEIA_BRANCH": "master",
-        "THEIA_GITHUB_REPO": "eclipse-theia/theia",
-        "THEIA_COMMIT_SHA": ""
-      },
-      "3.6": {
-        "THEIA_BRANCH": "master",
-        "THEIA_GITHUB_REPO": "eclipse-theia/theia",
-        "THEIA_COMMIT_SHA": ""
-      },
-      "3.x": {
         "THEIA_BRANCH": "master",
         "THEIA_GITHUB_REPO": "eclipse-theia/theia",
         "THEIA_COMMIT_SHA": ""
@@ -941,7 +642,6 @@
       ]
     },
     "OPENSHIFT_CONTENT_SET_VERSION": {
-      "2.15": "4.9",
       "3.4": "4.11",
       "3.5": "4.12",
       "3.6": "4.12",
@@ -954,7 +654,6 @@
       "3.x": "4.11"
     },
     "GOLANG_VERSION": {
-      "2.15": "1.16.2",
       "3.4": "1.16.2",
       "3.5": "1.16.2",
       "3.6": "1.16.2",
