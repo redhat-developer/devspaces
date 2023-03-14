@@ -34,6 +34,8 @@ Options:
 "
 }
 
+if [[ "$#" -lt 1 ]]; then usage; exit 1; fi
+
 PODMAN=$(command -v podman)
 if [[ ! -x $PODMAN ]]; then echo "[ERROR] podman is not installed. Aborting."; echo; usage; exit 1; fi
 command -v skopeo >/dev/null 2>&1 || which skopeo >/dev/null 2>&1 || { echo "skopeo is not installed. Aborting."; exit 1; }
