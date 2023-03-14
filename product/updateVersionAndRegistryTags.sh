@@ -143,7 +143,7 @@ computeLatestCSV() {
 # for a given DEVSPACES version, compute the equivalent Che versions that could be compatible 
 computeLatestPackageVersion() {
     found=0
-    BASE_VERSION="$1" # DEVSPACES version to use for computations
+    BASE_VERSION="$1" # Dev Spaces 3.y version to use for computations
     packageName="$2"
     THIS_Y_VALUE="${BASE_VERSION#*.}"; 
     if [[ $THIS_Y_VALUE -le 5 ]]; then # DS 3.5 mapping
@@ -151,7 +151,7 @@ computeLatestPackageVersion() {
       THIS_CHE_Y_LOWER=$(( ${THIS_CHE_Y} - 1 ))
       # echo "For THIS_Y_VALUE = $THIS_Y_VALUE, got THIS_CHE_Y = $THIS_CHE_Y and THIS_CHE_Y_LOWER = $THIS_CHE_Y_LOWER"
     else # mapping for DS 3.6 = 7.44, 3.7 = 7.47, etc. 
-      THIS_CHE_Y=$(( (${THIS_Y_VALUE} * 2) + ${CHE_OFFSET} )); 
+      THIS_CHE_Y=$(( (${THIS_Y_VALUE} * 3) + ${CHE_OFFSET} )); 
       THIS_CHE_Y_LOWER=$(( ${THIS_CHE_Y} - 1 ))
       # echo "For THIS_Y_VALUE = $THIS_Y_VALUE, got THIS_CHE_Y = $THIS_CHE_Y and THIS_CHE_Y_LOWER = $THIS_CHE_Y_LOWER"
     fi
@@ -186,12 +186,19 @@ updateVersion() {
 
     DEVSPACES_Y_VALUE="${DEVSPACES_VERSION#*.}"
 
+    # for 3.4, want 7.58, 7.57
+    # for 3.5, want 7.60, 7.59
+    # for 3.6, want 7.64, 7.63 (ignore 7.62, 7.61)
     # for 3.7, want 7.67, 7.66 (ignore 7.65)
-    # for 3.6, want 7.64, 7.63 (ignore 7.62)
-    UPPER_CHE_Y=$(( (${DEVSPACES_Y_VALUE} * 3 ) + ${CHE_OFFSET} ))
-    LOWER_CHE_Y=$(( ${UPPER_CHE_Y} - 1 ))
-    # echo "For DEVSPACES_Y_VALUE = $DEVSPACES_Y_VALUE, got UPPER_CHE_Y = $UPPER_CHE_Y and LOWER_CHE_Y = $LOWER_CHE_Y"
-
+    if [[ $DEVSPACES_Y_VALUE -le 5 ]]; then
+      UPPER_CHE_Y=$(( (${DEVSPACES_Y_VALUE} * 2 ) + ${CHE_OFFSET} - 4 ))
+      LOWER_CHE_Y=$(( ${UPPER_CHE_Y} - 1 ))
+      # echo "For DEVSPACES_Y_VALUE = $DEVSPACES_Y_VALUE, got UPPER_CHE_Y = $UPPER_CHE_Y and LOWER_CHE_Y = $LOWER_CHE_Y"
+    else
+      UPPER_CHE_Y=$(( (${DEVSPACES_Y_VALUE} * 3 ) + ${CHE_OFFSET} ))
+      LOWER_CHE_Y=$(( ${UPPER_CHE_Y} - 1 ))
+      # echo "For DEVSPACES_Y_VALUE = $DEVSPACES_Y_VALUE, got UPPER_CHE_Y = $UPPER_CHE_Y and LOWER_CHE_Y = $LOWER_CHE_Y"
+    fi
     # CRW-2155, if version is in the json update it for che and devspaces branches
     # otherwise inject new version.
     check=$(cat ${WORKDIR}/dependencies/job-config.json | jq '.Jobs[] | keys' | grep "\"${DEVSPACES_VERSION}\"")
