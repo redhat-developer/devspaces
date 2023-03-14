@@ -24,9 +24,14 @@ DISABLE_DEVSPACES_JOBS_VERSION=""
 DISABLE_DEVSPACES_MGMTJOBS_VERSION=""
 BRANCH="devspaces-3-rhel-8"
 
-# for DS 3.y, take y value, add CHE_OFFSET, and double it to get Che version
-# 3.3 => (3 + 25) * 2 = 56 ==> 7.56
-CHE_OFFSET=25
+# for DS 3.y <=3.5, take y value, double it, and add CHE_OFFSET=50 to get Che 7.y version
+# 3.3 => (3 * 2) + 50 = 56 ==> 7.56
+# 3.4 => (4 * 2) + 50 = 56 ==> 7.58
+# 3.5 => (5 * 2) + 50 = 56 ==> 7.60
+# for DS 3.y >=3.6, take y value, triple it, and add CHE_OFFSET=46 to get Che 7.y version
+# 3.6 => (6 * 3) + 46 = 64 ==> 7.64
+# 3.7 => (7 * 3) + 46 = 67 ==> 7.67
+CHE_OFFSET=46
 
 usage () {
   echo "
@@ -39,7 +44,7 @@ Options:
   -w WORKDIR              work in a different dir than $(pwd)
   -b BRANCH               commit to a different branch than $BRANCH
   -t DEVSPACES_VERSION          use a specific tag; by default, compute from CSV_VERSION
-  --no-commit, -n         do not commit to BRANCH
+  --no-commit, -n         do not commit or push to BRANCH
   --no-push, -p           do not push to BRANCH
   -prb                    set a PR_BRANCH; default: pr-update-version-and-registry-tags-(timestamp)
   -o                      open browser if PR generated
@@ -140,12 +145,17 @@ computeLatestPackageVersion() {
     found=0
     BASE_VERSION="$1" # DEVSPACES version to use for computations
     packageName="$2"
-    if [[ $BASE_VERSION == "2.15" ]]; then 
-      # old mapping for CRW 2.15 = Che 7.42
-      THIS_Y_VALUE="${BASE_VERSION#*.}"; THIS_CHE_Y=$(( (${THIS_Y_VALUE} + 6) * 2 )); THIS_CHE_Y_LOWER=$(( ((${THIS_Y_VALUE} + 6) * 2) - 1 ))
-    else
-      THIS_Y_VALUE="${BASE_VERSION#*.}"; THIS_CHE_Y=$(( (${THIS_Y_VALUE} + ${CHE_OFFSET}) * 2 )); THIS_CHE_Y_LOWER=$(( ((${THIS_Y_VALUE} + ${CHE_OFFSET}) * 2) - 1 ))
+    THIS_Y_VALUE="${BASE_VERSION#*.}"; 
+    if [[ $THIS_Y_VALUE -le 5 ]]; then # DS 3.5 mapping
+      THIS_CHE_Y=$(( (${THIS_Y_VALUE} * 2) + ${CHE_OFFSET} + 4 )); 
+      THIS_CHE_Y_LOWER=$(( ${THIS_CHE_Y} - 1 ))
+      # echo "For THIS_Y_VALUE = $THIS_Y_VALUE, got THIS_CHE_Y = $THIS_CHE_Y and THIS_CHE_Y_LOWER = $THIS_CHE_Y_LOWER"
+    else # mapping for DS 3.6 = 7.44, 3.7 = 7.47, etc. 
+      THIS_CHE_Y=$(( (${THIS_Y_VALUE} * 2) + ${CHE_OFFSET} )); 
+      THIS_CHE_Y_LOWER=$(( ${THIS_CHE_Y} - 1 ))
+      # echo "For THIS_Y_VALUE = $THIS_Y_VALUE, got THIS_CHE_Y = $THIS_CHE_Y and THIS_CHE_Y_LOWER = $THIS_CHE_Y_LOWER"
     fi
+
     # check if .2, .1, .0 version exists in npmjs.com
     for y in $THIS_CHE_Y $THIS_CHE_Y_LOWER; do 
       for z in 2 1 0; do 
@@ -176,13 +186,12 @@ updateVersion() {
 
     DEVSPACES_Y_VALUE="${DEVSPACES_VERSION#*.}"
 
-    if [[ $DEVSPACES_VERSION == "3.2" ]]; then # 7.52
-      UPPER_CHE_Y=$(( (${DEVSPACES_Y_VALUE} + 24) * 2 )) 
-      LOWER_CHE_Y=$(( ((${DEVSPACES_Y_VALUE} + 24) * 2) - 1 ))
-    else
-      UPPER_CHE_Y=$(( (${DEVSPACES_Y_VALUE} + ${CHE_OFFSET}) * 2 ))
-      LOWER_CHE_Y=$(( ((${DEVSPACES_Y_VALUE} + ${CHE_OFFSET}) * 2) - 1 ))
-    fi
+    # for 3.7, want 7.67, 7.66 (ignore 7.65)
+    # for 3.6, want 7.64, 7.63 (ignore 7.62)
+    UPPER_CHE_Y=$(( (${DEVSPACES_Y_VALUE} * 3 ) + ${CHE_OFFSET} ))
+    LOWER_CHE_Y=$(( ${UPPER_CHE_Y} - 1 ))
+    # echo "For DEVSPACES_Y_VALUE = $DEVSPACES_Y_VALUE, got UPPER_CHE_Y = $UPPER_CHE_Y and LOWER_CHE_Y = $LOWER_CHE_Y"
+
     # CRW-2155, if version is in the json update it for che and devspaces branches
     # otherwise inject new version.
     check=$(cat ${WORKDIR}/dependencies/job-config.json | jq '.Jobs[] | keys' | grep "\"${DEVSPACES_VERSION}\"")
@@ -267,11 +276,6 @@ updateVersion() {
         replaceField "${WORKDIR}/dependencies/job-config.json" "(.\"Management-Jobs\"[][\"${VERSION_DISABLE}\"][\"disabled\"]|select(.==false))" 'true'
         #set the previous 'latest' to be its own version
 
-        # don't switch to 2.15 for 2.15; use latest as it's the last latest for that stream
-        if [[ $VERSION_DISABLE != "2.15" ]]; then
-          replaceField "${WORKDIR}/dependencies/job-config.json" ".Other[\"FLOATING_QUAY_TAGS\"][\"${VERSION_DISABLE}\"]" "\"${VERSION_DISABLE}\""
-        fi
-
         # set .2 version of @eclipse-che/plugin-registry-generator if currently set to latest
         if [[ $(jq -r ".Other[\"@eclipse-che/plugin-registry-generator\"][\"${VERSION_DISABLE}\"]" "${WORKDIR}/dependencies/job-config.json") == "latest" ]]; then
           computeLatestPackageVersion $VERSION_DISABLE "@eclipse-che/plugin-registry-generator"
@@ -303,19 +307,6 @@ updateVersion() {
 
     # update CSV_VERSION_PREV values
     computeLatestCSV operator-bundle
-
-    # TODO CRW-2637 remove this block when we're officially done with 2.15.z
-    if [[ $DEVSPACES_VERSION == "2.15" ]]; then
-      # set operator-bundle CSV_VERSION = 2.15.100
-      replaceField "${WORKDIR}/dependencies/job-config.json" \
-        ".CSVs[\"operator-bundle\"][\"${DEVSPACES_VERSION}\"][\"CSV_VERSION\"]" \
-        "\"${DEVSPACES_VERSION}.100\""
-      replaceField "${WORKDIR}/dependencies/job-config.json" \
-        ".CSVs[\"operator-metadata\"][\"${DEVSPACES_VERSION}\"][\"CSV_VERSION\"]" \
-        "\"${DEVSPACES_VERSION}.0\""
-      computeLatestCSV operator-metadata
-    fi
-    # TODO CRW-2637 remove this block when we're officially done with 2.15.z
 
     # optionally, can enable/disable specific job sets for a given version
     if [[ $ENABLE_DEVSPACES_MGMTJOBS_VERSION ]]; then 

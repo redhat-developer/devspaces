@@ -9,7 +9,7 @@
 #
 # Utility script to filter the Dev Spaces, Web Terminal, DevWorkspace (and optionally CodeReady Workspaces) operators
 # from an IIB image. Creates a file tree of json files, one folder per filtered package.
-# OPM 4.11 is required to run buildCatalog.sh; OPM 4.12 seems to have problems (See CRW-4063)
+# OPM 4.11 is required to run buildCatalog.sh; OPM 4.12 seems to have problems (See https://issues.redhat.com/browse/CRW-4063, https://issues.redhat.com/browse/CLOUDWF-8849)
 #
 
 usage() {
@@ -29,7 +29,6 @@ Options:
   --channel-all <channel_name>       : Target channel to use when publishing all operators. If unspecified, channels from IIB are used
   --packages '<package1> <package2>' : Space separated list of packages to filter and include in target image. If 
                                        unspecified, default is 'devworkspace-operator devspaces web-terminal'
-  --include-crw                      : Include CodeReady Workspaces in new index. Useful for testing migration from 2.15 -> 3.x.
   --dir <directory>                  : Output files to <directory>/olm-catalog instead of ./olm-catalog
   -v, --verbose                      : Verbose output: include additional information
   -h, --help                         : Show this help
@@ -52,7 +51,6 @@ while [[ "$#" -gt 0 ]]; do
     '-s'|'--iib') sourceIndexImage="$2"; shift 1;;
     '--channel-all') targetChannelAll="$2"; shift 1;;
     '--packages') PACKAGES="$2"; shift 1;;
-    '--include-crw') INCLUDE_CRW="true";;
     '--dir') WORKING_DIR="$2"; shift 1;;
     '-v'|'--verbose') VERBOSE=1;;
     '-h'|'--help') usage;;
@@ -116,17 +114,6 @@ for PACKAGE in ${PACKAGES}; do
     jq --arg BUNDLE $BUNDLE 'select(.name == $BUNDLE) | select(.schema == "olm.bundle")' render.json > "./olm-catalog/$PACKAGE/$BUNDLE.bundle.json"
   done
 done
-
-# Grab CRW if needed
-if [[ "$INCLUDE_CRW" == "true" ]]; then
-  mkdir -p olm-catalog/codeready-workspaces
-  jq 'select(.schema == "olm.package") | select(.name == "codeready-workspaces")' render.json > olm-catalog/codeready-workspaces/package.json
-  jq 'select(.package == "codeready-workspaces") | select(.schema == "olm.channel")' render.json > olm-catalog/codeready-workspaces/channel.json
-  for bundle in $(jq -r 'select(.package == "codeready-workspaces") | select(.schema == "olm.bundle") | .name' render.json); do
-    # shellcheck disable=SC2086
-    jq --arg bundle $bundle 'select(.name == $bundle) | select(.schema == "olm.bundle")' render.json > "olm-catalog/codeready-workspaces/$bundle.bundle.json"
-  done
-fi
 
 replaceField()
 {

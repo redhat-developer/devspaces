@@ -128,14 +128,6 @@ preflight() {
     rm -fr /tmp/dsc-${DSC_VER}/; mkdir -p /tmp/dsc-${DSC_VER}/
     pushd /tmp/dsc-${DSC_VER}/ >/dev/null
       asset_dir="${DSC_VER}-dsc-assets"
-      # old folder format
-      # echo "curl https://github.com/redhat-developer/devspaces-chectl/releases/download/${asset_dir}/devspaces-${DSC_VER/-CI/}-quay-dsc-linux-x64.tar.gz ... "
-      if [[ $(curl -sSIk https://github.com/redhat-developer/devspaces-chectl/releases/download/${asset_dir}/devspaces-${DSC_VER/-CI/}-quay-dsc-linux-x64.tar.gz | grep HTTP/ | grep 404) ]]; then 
-        # https://github.com/redhat-developer/devspaces-chectl/releases/download/2.15.4-crwctl-assets/codeready-workspaces-2.15.4-GA-quay-crwctl-linux-x64.tar.gz
-        asset_dir="${asset_dir/-GA/}"
-        # https://github.com/redhat-developer/devspaces-chectl/releases/download/2.15.4-crwctl-CI-assets/codeready-workspaces-2.15.4-CI-quay-crwctl-linux-x64.tar.gz
-        asset_dir="${asset_dir/CI-dsc/dsc-CI}"
-      fi
       # echo "curl https://github.com/redhat-developer/devspaces-chectl/releases/download/${asset_dir}/devspaces-${DSC_VER/-CI/}-quay-dsc-linux-x64.tar.gz ... "
       if [[ ! $(curl -sSIk https://github.com/redhat-developer/devspaces-chectl/releases/download/${asset_dir}/devspaces-${DSC_VER/-CI/}-quay-dsc-linux-x64.tar.gz | grep HTTP/ | grep 404) ]]; then 
         curl -sSLko- https://github.com/redhat-developer/devspaces-chectl/releases/download/${asset_dir}/devspaces-${DSC_VER/-CI/}-quay-dsc-linux-x64.tar.gz | tar xz || true

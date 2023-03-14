@@ -34,7 +34,6 @@ Options:
   -c 'csv1 csv2 ...'  Defaults to 'operator-bundle'; used to filter results
 
   --ds                Sets PROD_NAME to 'Dev Spaces' and IMAGE_PREFIX to 'devspaces' (default behaviour)
-  --crw               Sets PROD_NAME to 'CodeReady Workspaces' and IMAGE_PREFIX to 'codeready-workspaces'
   --dwo               Sets PROD_NAME to 'DevWorkspace Operator' and IMAGE_PREFIX to 'devworkspace'
   --wto               Sets PROD_NAME to 'Web Terminal Operator' and IMAGE_PREFIX to 'web-terminal'
 
@@ -105,13 +104,6 @@ runCommand() {
   fi
 }
 
-crwDefaults () {
-  PROD_VER="2.15"
-  PROD_NAME="CodeReady Workspaces"
-  IMAGE_PREFIX="codeready-workspaces"
-  CSVs="operator-metadata operator-bundle"
-}
-
 dsDefaults() {
   PROD_NAME="Dev Spaces"
   IMAGE_PREFIX="devspaces"
@@ -142,7 +134,6 @@ while [[ "$#" -gt 0 ]]; do
     '-v') VERBOSE=1; QUIET="none"; shift 0;;
     '-q'|'-qi') VERBOSE=0; QUIET="index"; shift 0;;
     '-qb') VERBOSE=0; QUIET="bundle"; shift 0;;
-    '--crw') crwDefaults;;
     '--ds')   dsDefaults;;
     '--dwo') dwoDefaults;;
     '--wto') wtoDefaults;;
@@ -153,9 +144,6 @@ while [[ "$#" -gt 0 ]]; do
 done
 
 if [[ -z ${PROD_VER} ]]; then usage; exit 1; fi
-
-# override for old releases
-if [[ $PROD_VER == "2.15" ]]; then crwDefaults; fi
 
 for csv in $CSVs; do
   runCommand $TIMEOUT $INTERVAL
