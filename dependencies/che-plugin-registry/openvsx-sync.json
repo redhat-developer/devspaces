@@ -24,7 +24,20 @@
         "id": "bmewburn.vscode-intelephense-client"
     },
     {
-        "id": "ms-python.python"
+        "id": "ms-python.python",
+        "version":"2022.20.1"
+    },
+    {
+        "id": "ms-toolsai.jupyter",
+        "version": "2022.10.110"
+    },
+    {
+        "id": "ms-toolsai.jupyter-keymap",
+        "version": "1.0.0"
+    },
+    {
+        "id": "ms-toolsai.jupyter-renderers",
+        "version": "1.0.12"
     },
     {
         "id": "golang.go"
@@ -118,15 +131,6 @@
     },
     {
         "id": "esbenp.prettier-vscode"
-    },
-    {
-        "id": "ms-toolsai.jupyter"
-    },
-    {
-        "id": "ms-toolsai.jupyter-renderers"
-    },
-    {
-        "id": "ms-toolsai.jupyter-keymap"
     },
     {
         "id": "eamodio.gitlens"
