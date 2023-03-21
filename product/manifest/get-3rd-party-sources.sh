@@ -1,7 +1,21 @@
 #!/bin/bash
+#
+# Copyright (c) 2021-2023 Red Hat, Inc.
+# This program and the accompanying materials are made
+# available under the terms of the Eclipse Public License 2.0
+# which is available at https://www.eclipse.org/legal/epl-2.0/
+#
+# SPDX-License-Identifier: EPL-2.0
+#
+# Contributors:
+#   Red Hat, Inc. - initial API and implementation
+#
+# script to convert previously downloaded dist-git lookaside cached tarballs into format compatible with Legal requirements (NVR.tar.gz)
+
 set -e
 
-# script to convert previously downloaded dist-git lookaside cached tarballs into format compatible with Legal requirements (NVR.tar.gz)
+# today's date in yyyy-mm-dd format to use to ensure each GA push is a unique folder
+today=$(date +%Y-%m-%d)
 
 MIDSTM_BRANCH=""
 CSV_VERSION=""
@@ -51,11 +65,14 @@ if [[ ! ${phases} ]]; then phases=" 1 2 3 "; fi
 if [[ ! "${WORKSPACE}" ]]; then WORKSPACE=/tmp; fi
 if [[ ! "$CSV_VERSION" ]]; then CSV_VERSION=$(curl -sSLo- "https://raw.githubusercontent.com/redhat-developer/devspaces-images/${MIDSTM_BRANCH}/devspaces-operator-bundle/manifests/devspaces.csv.yaml" | yq -r '.spec.version'); fi
 
-MANIFEST_FILE="${WORKSPACE}"/devspaces-"${CSV_VERSION}"/sources/manifest-srcs.txt
+TARBALL_PREFIX="devspaces-${CSV_VERSION}"
+TODAY_DIR="${WORKSPACE}/${TARBALL_PREFIX}.${today}/"
 
-sudo rm -fr "${MANIFEST_FILE}" "${WORKSPACE}"/nvr-sources/ "${WORKSPACE}"/devspaces-"${CSV_VERSION}"/sources/containers/ "${WORKSPACE}"/devspaces-"${CSV_VERSION}"/sources/vscode/
+MANIFEST_FILE="${TODAY_DIR}"/sources/manifest-srcs.txt
 
-mkdir -p "${WORKSPACE}"/devspaces-"${CSV_VERSION}"/sources/
+sudo rm -fr "${MANIFEST_FILE}" "${WORKSPACE}"/nvr-sources/ "${TODAY_DIR}"/sources/containers/ "${TODAY_DIR}"/sources/vscode/
+
+mkdir -p "${TODAY_DIR}"/sources/
 
 mnf () {
     echo "$1" | tee -a "${MANIFEST_FILE}"
@@ -98,8 +115,8 @@ maketarball ()
 
     if [[ -d "${WORKSPACE}"/nvr-sources/"${NVR}" ]]; then
         mnf "Create ${WORKSPACE}/sources/containers/${NVR}.tar.gz"
-        mkdir -p "${WORKSPACE}"/devspaces-"${CSV_VERSION}"/sources/containers/
-        pushd "${WORKSPACE}"/nvr-sources/"${NVR}" >/dev/null && tar czf "${WORKSPACE}"/devspaces-"${CSV_VERSION}"/sources/containers/"${NVR}".tar.gz ./* && popd >/dev/null 
+        mkdir -p "${TODAY_DIR}"/sources/containers/
+        pushd "${WORKSPACE}"/nvr-sources/"${NVR}" >/dev/null && tar czf "${TODAY_DIR}"/sources/containers/"${NVR}".tar.gz ./* && popd >/dev/null 
         mnf "" 
         if [[ $CLEAN -eq 1 ]]; then df -h "${WORKSPACE}"; sudo rm -fr "${WORKSPACE}"/nvr-sources/"${NVR}"; df -h "${WORKSPACE}"; fi
 
@@ -151,7 +168,7 @@ if [[ ${phases} == *"2"* ]]; then
     mnf ""
     mnf "Phase 2 - get vsix sources not included in rhpkg sources from GH"
     mnf ""
-    mkdir -p "${WORKSPACE}"/devspaces-"${CSV_VERSION}"/sources/vscode/
+    mkdir -p "${TODAY_DIR}"/sources/vscode/
     pushd ../../dependencies/che-plugin-registry >/dev/null
         URLsAll=""
         URLs=""
@@ -174,7 +191,7 @@ if [[ ${phases} == *"2"* ]]; then
                 f=${s#https://}; f=${f//\//__}; # echo "-> $f"
                 echo -n "Fetch GH sources from "
                 mnf $s
-                curl -sSL $s -o "${WORKSPACE}"/devspaces-"${CSV_VERSION}"/sources/vscode/$f
+                curl -sSL $s -o "${TODAY_DIR}"/sources/vscode/$f
             done
         fi
     popd >/dev/null
@@ -184,7 +201,7 @@ if [[ ${phases} == *"3"* ]]; then
     mnf ""
     mnf "Phase 3 - get vsix sources not included in rhpkg sources from download.jboss.org (or github)"
     mnf ""
-    mkdir -p "${WORKSPACE}"/devspaces-"${CSV_VERSION}"/sources/vscode/
+    mkdir -p "${TODAY_DIR}"/sources/vscode/
     pushd ../../dependencies/che-plugin-registry >/dev/null
         URLsAll=""
         URLs=""
@@ -211,8 +228,8 @@ if [[ ${phases} == *"3"* ]]; then
                     fi
                 fi
                 f=${u#https://}; f=${f//\//__}; # echo "-> $f"
-                mkdir -p "${WORKSPACE}"/devspaces-"${CSV_VERSION}"/sources/vscode/$f
-                pushd "${WORKSPACE}"/devspaces-"${CSV_VERSION}"/sources/vscode/$f >/dev/null
+                mkdir -p "${TODAY_DIR}"/sources/vscode/$f
+                pushd "${TODAY_DIR}"/sources/vscode/$f >/dev/null
                     # different patterns for source tarballs
                     if [[ ${f} == *"static__jdt.ls__stable"* ]]; then # get from GH
                         # check https://github.com/redhat-developer/vscode-java/archive/v0.57.0.tar.gz
@@ -247,13 +264,13 @@ if [[ ${phases} == *"3"* ]]; then
     popd >/dev/null
 fi
 
-du -shc "${WORKSPACE}"/devspaces-"${CSV_VERSION}"/sources/containers/* "${WORKSPACE}"/devspaces-"${CSV_VERSION}"/sources/vscode/*
+du -shc "${TODAY_DIR}"/sources/containers/* "${TODAY_DIR}"/sources/vscode/*
 
 ##################################
 
 echo ""
 echo "Short MVN manifest is in file: ${MANIFEST_FILE}"
-echo "NVR Source tarballs are in ${WORKSPACE}/devspaces-${CSV_VERSION}/sources/containers/ and ${WORKSPACE}/devspaces-${CSV_VERSION}/sources/vscode/"
+echo "NVR Source tarballs are in ${TODAY_DIR}/sources/containers/ and ${TODAY_DIR}/sources/vscode/"
 echo ""
 
 ##################################
@@ -266,13 +283,13 @@ if [[ $PUBLISH -eq 1 ]]; then
 
     # delete old releases before pushing latest one, to keep disk usage low: DO NOT delete 'build-requirements' folder as we use that for storing binaries we can't yet build ourselves in OSBS
     # note that this operation will only REMOVE old versions
-    rsync -rlP --delete --exclude=build-requirements --exclude="devspaces-${CSV_VERSION}" "$empty_dir"/ "${REMOTE_USER_AND_HOST}:staging/devspaces/"
+    rsync -rlP --delete --exclude=build-requirements --exclude="${TARBALL_PREFIX}.${today}" "$empty_dir"/ "${REMOTE_USER_AND_HOST}:staging/devspaces/"
 
-    # next, update existing devspaces-${CSV_VERSION} folder (or create it not exist)
-    rsync -rlP "${WORKSPACE}/devspaces-${CSV_VERSION}" "${REMOTE_USER_AND_HOST}:staging/devspaces/"
+    # next, update existing ${TARBALL_PREFIX}.${today} folder (or create it not exist)
+    rsync -rlP "${TODAY_DIR}" "${REMOTE_USER_AND_HOST}:staging/devspaces/"
 
     # trigger staging 
-    ssh "${REMOTE_USER_AND_HOST}" "stage-mw-release devspaces-${CSV_VERSION}"
+    ssh "${REMOTE_USER_AND_HOST}" "stage-mw-release ${TARBALL_PREFIX}.${today}"
 
     # cleanup 
     rm -fr "$empty_dir"
