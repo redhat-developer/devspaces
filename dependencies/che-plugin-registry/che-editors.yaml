@@ -13,12 +13,12 @@ editors:
         repository: https://github.com/eclipse-che/che-theia
         firstPublicationDate: '2019-03-07'
     commands:
-      - id: init-remote-runtime-injector
+      - id: init-container-command
         apply:
           component: remote-runtime-injector
     events:
       preStart:
-        - init-remote-runtime-injector
+        - init-container-command
     components:
       - name: theia-ide
         container:
