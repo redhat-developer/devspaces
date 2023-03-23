@@ -10,7 +10,7 @@ icon: /images/default.png
 category: Editor
 repository: https://github.com/eclipse-che/che-theia
 firstPublicationDate: '2019-03-07'
-latestUpdateDate: '2023-03-12'
+latestUpdateDate: '2023-03-23'
 spec:
   endpoints:
     - name: theia
@@ -159,3 +159,10 @@ spec:
           mountPath: /remote-endpoint
           ephemeral: true
       name: remote-runtime-injector
+  commands:
+    - id: init-container-command
+      apply:
+        component: remote-runtime-injector
+  events:
+    preStart:
+      - init-container-command
