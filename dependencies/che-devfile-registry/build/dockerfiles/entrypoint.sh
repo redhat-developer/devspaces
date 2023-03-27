@@ -38,11 +38,11 @@ INDEX_JSON="${DEVFILES_DIR}/index.json"
 
 # Regex used to break an image reference into groups:
 #   \1 - Whitespace and (optional) quotation preceding image reference
-#   \2 - Registry portion of image, e.g. (quay.io)/eclipse/che-theia:tag
-#   \3 - Organization portion of image, e.g. quay.io/(eclipse)/che-theia:tag
-#   \4 - Image name portion of image, e.g. quay.io/eclipse/(che-theia):tag
-#   \5 - Optional image digest identifier (empty for tags), e.g. quay.io/eclipse/che-theia(@sha256):digest
-#   \6 - Tag of image or digest, e.g. quay.io/eclipse/che-theia:(tag)
+#   \2 - Registry portion of image, e.g. (quay.io)/che-incubator/che-code:tag
+#   \3 - Organization portion of image, e.g. quay.io/(che-incubator)/che-code:tag
+#   \4 - Image name portion of image, e.g. quay.io/che-incubator/(che-code):tag
+#   \5 - Optional image digest identifier (empty for tags), e.g. quay.io/che-incubator/che-code(@sha256):digest
+#   \6 - Tag of image or digest, e.g. quay.io/che-incubator/che-code:(tag)
 #   \7 - Optional quotation following image reference
 IMAGE_REGEX='([[:space:]]*"?)([._:a-zA-Z0-9-]*)/([._a-zA-Z0-9-]*)/([._a-zA-Z0-9-]*)(@sha256)?:([._a-zA-Z0-9-]*)("?)'
 
