@@ -72,10 +72,7 @@ usage () {
 	echo "Downstream Example: $0 -b ${SOURCES_BRANCH} -w \$(pwd) -f rhel.Dockerfile -maxdepth 2"
 	echo "Upstream Examples:
 
-$0 -b 7.yy.x -w dockerfiles/ -f \*from.dockerfile -maxdepth 5 -o # che-theia
-$0 -b master -w \$(pwd) -f rhel.Dockerfile -maxdepth 4 -o # che-plugin-broker
-$0 -b 7.yy.x -w \$(pwd) -f Dockerfile      -maxdepth 1 --tag '1\.13|8\.[0-9]-' --no-commit # che-operator
-
+$0 -b 7.yy.x -w \$(pwd) -f \*ockerfile -maxdepth 5 -o 
 "
 	echo "Options: 
 	--sources-branch, -b  set sources branch (project to update), eg., 7.yy.x
@@ -216,7 +213,7 @@ for d in $(find "${WORKDIR}/" -maxdepth "${MAXDEPTH}" -name "${DOCKERFILE}" | so
 		FROMPREFIX=""
 		LATESTTAG=""
 		# shellcheck disable=SC2002
-		URLs=$(grep "FROM" -B1 "$d" || true) # don't fail if no FROM found, eg., if parsing theia dockerfile fragments/template files
+		URLs=$(grep "FROM" -B1 "$d" || true) # don't fail if no FROM found
 		for URL in $URLs; do
 			URL=${URL#registry.access.redhat.com/}
 			URL=${URL#registry.redhat.io/}

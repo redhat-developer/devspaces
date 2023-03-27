@@ -173,6 +173,7 @@ if [[ ${phases} == *"2"* ]]; then
         URLsAll=""
         URLs=""
         for d in $(find . -name \*.yaml | sort); do 
+            # TODO CRW_3663 remove theia once 3.5 is live 
             URLsAll="${URLsAll} $(grep -E "\.vsix|\.theia" "$d" | grep github | grep releases | sed -r -e "s@- @@" -e "s@extension: @@" | tr -d "'\"")"
         done
         if [[ $URLsAll ]]; then

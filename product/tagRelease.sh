@@ -230,6 +230,7 @@ updatePNCBuildConfigs() {
 }
 
 # tag pkgs.devel repos only (branches are created by SPMM ticket, eg., https://projects.engineering.redhat.com/browse/SPMM-2517)
+# TODO CRW_3663 remove theia once 3.5 is live 
 if [[ "${pkgs_devel_branch}" ]] && [[ "${CSV_VERSION}" ]]; then
 	for repo in \
 	devspaces-code \

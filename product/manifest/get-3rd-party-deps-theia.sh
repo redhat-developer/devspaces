@@ -1,6 +1,7 @@
 #!/bin/bash
 
 # script to generate a manifest of all the 3rd party deps not built in OSBS, but built in Jenkins or imported from upstream community.
+# TODO CRW_3663 remove this file and refs to it, once 3.5 is live
 
 JENKINS=https://main-jenkins-csb-crwqe.apps.ocp-c1.prod.psi.redhat.com/job/DS_CI/job
 

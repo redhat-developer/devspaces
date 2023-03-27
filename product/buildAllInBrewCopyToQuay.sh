@@ -89,15 +89,12 @@ if [[ $PHASES == *"1"* ]]; then
         devspaces-operator \
         devspaces-pluginregistry \
         devspaces-server \
-        devspaces-theia-dev \
         devspaces-traefik \
         devspaces-udi"
 fi
 
-# theia images depend on theia-dev; operator-bundle is built last after everything else is done
+# operator-bundle is built last after everything else is done
 if [[ $PHASES == *"2"* ]]; then 
-    doBuild "devspaces-theia"
-    doBuild "devspaces-theia-endpoint"
     doBuild "devspaces-operator-bundle"
 fi
 
