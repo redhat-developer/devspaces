@@ -2,7 +2,15 @@ Latest icons and wordmarks were developed by Brand and UX teams.
 
 See https://issues.redhat.com/browse/DTUX-1193
 
-Branding elements are now defined in the Dashboard and in Theia:
+## Branding
 
-* https://github.com/redhat-developer/devspaces-images/tree/devspaces-3-rhel-8/devspaces-dashboard/packages/dashboard-frontend/assets/branding
-* https://github.com/redhat-developer/devspaces-theia/tree/devspaces-3-rhel-8/conf/theia/branding
+Branding is currently in two places.
+
+### Dashboard
+
+To reskin link:https://github.com/eclipse-che/che-dashboard[Che Dashboard], see link:https://github.com/redhat-developer/devspaces-images/tree/devspaces-3-rhel-8/devspaces-dashboard/README.adoc[dashboard].
+
+### Microsoft Visual Studio Code - Open Source IDE
+
+To reskin link:https://github.com/che-incubator/che-code/[che-code], which is built from link:https://github.com/microsoft/vscode[Microsoft Visual Studio Code - Open Source IDE], see https://github.com/redhat-developer/devspaces-images/tree/devspaces-3-rhel-8/devspaces-code/branding[devspaces-images/devspaces-code/branding].
+
