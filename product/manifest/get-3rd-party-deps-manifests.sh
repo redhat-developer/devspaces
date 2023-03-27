@@ -79,8 +79,7 @@ MANIFEST_FILE="${WORKSPACE}/${CSV_VERSION}/manifest.txt"
 LOG_FILE="${WORKSPACE}/${CSV_VERSION}/manifest_log.txt"
 rm -f ${LOG_FILE} ${MANIFEST_FILE} ${MANIFEST_FILE/.txt/-all.txt}
 
-# TODO CRW_3663 remove theia once 3.5 is live 
-for d in mvn rpms theia; do rm -f ${WORKSPACE}/${CSV_VERSION}/${d}/manifest-${d}.txt; done
+for d in mvn rpms; do rm -f ${WORKSPACE}/${CSV_VERSION}/${d}/manifest-${d}.txt; done
 
 function log () {
 	echo "$1" | tee -a ${LOG_FILE}
@@ -190,11 +189,8 @@ if [[ ${phases} == *"1"* ]]; then
 	devspaces-operator \
 	devspaces-operator-bundle \
 	devspaces-pluginregistry \
-	devspaces-server \
 	\
-	devspaces-theia-dev \
-	devspaces-theia-endpoint \
-	devspaces-theia \
+	devspaces-server \
 	devspaces-traefik \
 	devspaces-udi \
 	; do
@@ -337,29 +333,19 @@ fi
 
 ##################################
 
-if [[ ${phases} == *"9"* ]]; then
-	log ""
-	log "9. Collect Theia deps"
-	log ""
-	cd /tmp
-	${SCRIPTPATH}/${0/manifests/theia} -v "${CSV_VERSION}" -b "${MIDSTM_BRANCH}"
-fi
-
-##################################
-
-# append mvn, npm, and theia logs to the short manifest
-if [[ ${phases} == *"7"* ]] || [[ ${phases} == *"8"* ]] || [[ ${phases} == *"9"* ]]; then
-	for d in mvn npm theia; do
+# append mvn, npm logs to the short manifest
+if [[ ${phases} == *"7"* ]] || [[ ${phases} == *"8"* ]]; then
+	for d in mvn npm; do
 		if [[ -f ${WORKSPACE}/${CSV_VERSION}/${d}/manifest-${d}.txt ]]; then
 			cat ${WORKSPACE}/${CSV_VERSION}/${d}/manifest-${d}.txt >> ${MANIFEST_FILE}
 		fi
 	done
 fi
 
-# append mvn, npm, and theia logs to the long manifest, but NOT the RPMs (See CRW-3250)
+# append mvn, npm logs to the long manifest, but NOT the RPMs (See CRW-3250)
 touch ${MANIFEST_FILE/.txt/-all.txt}
-if [[ ${phases} == *"6"* ]] || [[ ${phases} == *"7"* ]] || [[ ${phases} == *"8"* ]] || [[ ${phases} == *"9"* ]]; then
-	for d in mvn npm theia; do
+if [[ ${phases} == *"6"* ]] || [[ ${phases} == *"7"* ]] || [[ ${phases} == *"8"* ]]; then
+	for d in mvn npm; do
 		if [[ -f ${WORKSPACE}/${CSV_VERSION}/${d}/manifest-${d}.txt ]]; then
 			cat ${WORKSPACE}/${CSV_VERSION}/${d}/manifest-${d}.txt >> ${MANIFEST_FILE/.txt/-all.txt}
 		fi

@@ -173,8 +173,7 @@ if [[ ${phases} == *"2"* ]]; then
         URLsAll=""
         URLs=""
         for d in $(find . -name \*.yaml | sort); do 
-            # TODO CRW_3663 remove theia once 3.5 is live 
-            URLsAll="${URLsAll} $(grep -E "\.vsix|\.theia" "$d" | grep github | grep releases | sed -r -e "s@- @@" -e "s@extension: @@" | tr -d "'\"")"
+            URLsAll="${URLsAll} $(grep -E "\.vsix" "$d" | grep github | grep releases | sed -r -e "s@- @@" -e "s@extension: @@" | tr -d "'\"")"
         done
         if [[ $URLsAll ]]; then
             for u in $URLsAll; do 
@@ -207,7 +206,7 @@ if [[ ${phases} == *"3"* ]]; then
         URLsAll=""
         URLs=""
         for d in $(find . -name meta.yaml | sort); do 
-            URLsAll="${URLsAll} $(grep -E "\.vsix|\.theia" "$d" | grep download.jboss.org | sed -e "s@- @@" | sort -V)"
+            URLsAll="${URLsAll} $(grep -E "\.vsix" "$d" | grep download.jboss.org | sed -e "s@- @@" | sort -V)"
         done
         if [[ $URLsAll ]]; then
             for u in $URLsAll; do 

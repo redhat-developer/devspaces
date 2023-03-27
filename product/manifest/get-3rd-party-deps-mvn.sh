@@ -23,14 +23,14 @@ if [[ ! ${CSV_VERSION} ]]; then
   CSV_VERSION=$(curl -sSLo - https://raw.githubusercontent.com/redhat-developer/devspaces-operator/${MIDSTM_BRANCH}/manifests/devspaces.csv.yaml | yq -r .spec.version)
 fi
 
-# use x.y (not x.y.z) version, eg., 2.3
-DS_VERSION=$(curl -sSLo - https://raw.githubusercontent.com/redhat-developer/devspaces/${MIDSTM_BRANCH}/dependencies/VERSION)
-DS_TAG_OR_BRANCH=${MIDSTM_BRANCH}
+# get job-config.json for the current branch
+curl -sSLo /tmp/jcj "https://raw.githubusercontent.com/redhat-developer/devspaces/${MIDSTM_BRANCH}/dependencies/job-config.json"
 
-# load SOURCE_BRANCH from theia BUILD_PARAMS
-for d in $(curl -sSLo - https://raw.githubusercontent.com/redhat-developer/devspaces-theia/${MIDSTM_BRANCH}/BUILD_PARAMS); do
-	export $d
-done
+# load DS_VERSION (3.yy)
+DS_VERSION="$(yq -r .Version /tmp/jcj)"
+
+# load SOURCE_BRANCH
+SOURCE_BRANCH="$(yq -r '.Jobs["dashboard"]["'"${DS_VERSION}"'"].upstream_branch[0]' /tmp/jcj)"
 
 # use x.y.z version, eg., 7.30.2
 CHE_VERSION=$(curl -sSLo - https://raw.githubusercontent.com/eclipse-che/che-server/${SOURCE_BRANCH}/pom.xml | grep "<che.version>" | sed -r -e "s#.*<che.version>(.+)</che.version>.*#\1#")
