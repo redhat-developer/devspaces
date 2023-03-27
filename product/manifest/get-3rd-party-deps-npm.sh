@@ -51,11 +51,8 @@ devspaces-idea \
 devspaces-imagepuller \
 devspaces-machineexec \
 devspaces-pluginregistry \
-devspaces-server \
 \
-devspaces-theia-dev \
-devspaces-theia-endpoint \
-devspaces-theia \
+devspaces-server \
 devspaces-traefik \
 devspaces-udi \
 ; do
