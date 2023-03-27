@@ -66,7 +66,7 @@ if [[ ! "${WORKSPACE}" ]]; then WORKSPACE=/tmp; fi
 if [[ ! "$CSV_VERSION" ]]; then CSV_VERSION=$(curl -sSLo- "https://raw.githubusercontent.com/redhat-developer/devspaces-images/${MIDSTM_BRANCH}/devspaces-operator-bundle/manifests/devspaces.csv.yaml" | yq -r '.spec.version'); fi
 
 TARBALL_PREFIX="devspaces-${CSV_VERSION}"
-TODAY_DIR="${WORKSPACE}/${TARBALL_PREFIX}.${today}/"
+TODAY_DIR="${WORKSPACE}/${TARBALL_PREFIX}.${today}"
 
 MANIFEST_FILE="${TODAY_DIR}"/sources/manifest-srcs.txt
 
