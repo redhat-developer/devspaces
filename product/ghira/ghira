@@ -172,7 +172,7 @@ class IssueToJIRA:
 
   # for debugging, dump json for a complete issue to help figure out field names
   # can also use JQL to see mapping of field name to field ID
-  # i=j.issue("CRW-3643")
+  # i=j.issue("CRW-4150")
   # print(json.dumps(i.raw,indent=2))
 
   # map github issue to jira issue
@@ -187,8 +187,12 @@ class IssueToJIRA:
     'project': 'CRW',
     'issuetype': {'name': 'Task'},
     'components': [{"name": "docs"}],
+    # Affects = Release Notes
+    'customfield_12310031': [{"self": "https://issues.redhat.com/rest/api/2/customFieldOption/10090", "value": "Release Notes", "id": "10090", "disabled": False}],
+    # "Release Note Text_Old" (will set this to a better value later)
+    #'customfield_12310211': 'To be written by team lead or assignee',
     # "Release Note Text" (will set this to a better value later)
-    'customfield_12310211': 'To be written by team lead or assignee',
+    'customfield_12317313': 'To be written by team lead or assignee',
     # "Release Note Status"
     'customfield_12310213': {'value': 'Proposed'}
     # TODO can we guess this from the upstream issue labels / body / comments?
@@ -420,7 +424,7 @@ for i in pending_issues:
       customfields[k] = v
   # set the release notes text field to the value of the upstream issue + release notes text content in the uptream issue description, if available
   # scrape out just the content after RELEASE NOTES TEXT line
-  customfields["customfield_12310211"] = "= " + new_jira["summary"] + new_jira["description"].partition("Release Notes Text")[2]
+  customfields["customfield_12317313"] = "= " + new_jira["summary"] + new_jira["description"].partition("Release Notes Text")[2]
   for k in customfields.keys():
     del new_jira[k]
 
