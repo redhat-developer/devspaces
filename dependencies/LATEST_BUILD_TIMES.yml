@@ -10501,3 +10501,30 @@
   timeWait: 0 mins
   timeBuild: 3 mins
   timeTotal: 3 mins
+- name: devspaces-dashboard-rhel8
+  tag: 3.6-27
+  taskId: 51749919
+  timeCreate: Sun Apr 2 04:51:43 2023
+  timeStart: Sun Apr 2 04:52:19 2023
+  timeFinish: Sun Apr 2 05:13:30 2023
+  timeWait: 0 mins
+  timeBuild: 21 mins
+  timeTotal: 21 mins
+- name: devspaces-traefik-rhel8
+  tag: 3.6-8
+  taskId: 51749920
+  timeCreate: Sun Apr 2 04:52:18 2023
+  timeStart: Sun Apr 2 04:52:20 2023
+  timeFinish: Sun Apr 2 05:14:17 2023
+  timeWait: 0 mins
+  timeBuild: 21 mins
+  timeTotal: 21 mins
+- name: devspaces-operator-bundle
+  tag: 3.6-138
+  taskId: 51750912
+  timeCreate: Sun Apr 2 10:52:07 2023
+  timeStart: Sun Apr 2 10:52:31 2023
+  timeFinish: Sun Apr 2 10:55:51 2023
+  timeWait: 0 mins
+  timeBuild: 3 mins
+  timeTotal: 3 mins
