@@ -1,6 +1,6 @@
 # Red Hat OpenShift Dev Spaces (formerly CodeReady Workspaces) devfile registry
 
-This repository holds ready-to-use Devfiles for different languages and technologies.
+This repository holds meta.yaml files that refer to the samples with Devfiles.
 
 ## Build registry container image
 

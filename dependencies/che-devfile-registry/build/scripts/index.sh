@@ -17,8 +17,7 @@ for meta in "${metas[@]}"; do
       # Ignore double quotes warning for yq expression
       # shellcheck disable=SC2016,SC2094
       cat <<< "$(yq -y --arg metadir "${META_DIR}" '.links.devWorkspaces |= . +
-      {"eclipse/che-theia/latest": "/\($metadir)/devworkspace-che-theia-latest.yaml",
-      "eclipse/che-idea/latest": "/\($metadir)/devworkspace-che-idea-latest.yaml",
+      {"che-incubator/che-idea/latest": "/\($metadir)/devworkspace-che-idea-latest.yaml",
       "che-incubator/che-code/insiders": "/\($metadir)/devworkspace-che-code-insiders.yaml",
       "che-incubator/che-code/latest": "/\($metadir)/devworkspace-che-code-latest.yaml"}' "${meta}")" > "${meta}"
     fi
