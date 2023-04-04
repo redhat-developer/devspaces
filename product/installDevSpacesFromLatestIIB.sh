@@ -309,7 +309,7 @@ addRequiredRegistries() {
 
   # Check to see if the Cluster Configuration is restricted to a specific list of registries
   if [[ $(echo -n ${imageRegistries} | jq '.spec.registrySources.allowedRegistries | length') -eq 0 ]]; then
-    echo "[INFO] OpenShift environment does not have restricted registries - continuing..."
+    echo "[INFO] OpenShift environment does not have restricted registries - nothing to add."
     return 0
   fi
 
@@ -329,7 +329,7 @@ addRequiredRegistries() {
 
   echo -n "${imageRegistries}" | oc apply -f -
 
-  echo "[INFO] OpenShift Cluster image registries updated."
+  echo "[INFO] OpenShift Cluster image registries updated to include: ${ADDITIONAL_REGISTRIES[*]}"
 }
 
 addRequiredRegistries
