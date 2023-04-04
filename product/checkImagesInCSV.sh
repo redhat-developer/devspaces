@@ -122,7 +122,7 @@ for imageAndTag in $IMAGES; do
     fi
     rm -fr /tmp/${SOURCE_CONTAINER//\//-}-${containerTag}-*/
     "${SCRIPTPATH}"/containerExtract.sh ${SOURCE_CONTAINER}:${containerTag} --delete-before --delete-after >/dev/null 2>&1 || true
-    related_images=$(cat /tmp/${SOURCE_CONTAINER//\//-}-${containerTag}-*/manifests/*.{csv,clusterserviceversion}.yaml 2>/dev/null | grep sha256: | sed -re "s@.+(value|mage): @@" | sort -uV)
+    related_images=$(cat /tmp/${SOURCE_CONTAINER//\//-}-${containerTag}-*/manifests/*.{csv,clusterserviceversion}.yaml 2>/dev/null | grep sha256: | sed -r -e "s@.+(value|mage\"*): @@" -e "s@\"(.+)\".+@\1@" | sort -uV)
     for related_image in $related_images; do 
         if [[ $REGEX_FILTER ]]; then related_image=$(echo "$related_image" | grep -E "$REGEX_FILTER"); fi
         if [[ "${related_image}" ]]; then
