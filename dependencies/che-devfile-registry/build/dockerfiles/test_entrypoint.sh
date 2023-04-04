@@ -79,14 +79,14 @@ extract_and_use_related_images_env_variables_with_image_digest_info
 assertFileContentEquals "${DEVFILES_DIR}/external_images.txt" "${expected_externalImagesTxt}"
 
 #################################################################
-initTest "Should replace image references in devworkspace-che-theia-latest.yaml with RELATED_IMAGE env vars"
+initTest "Should replace image references in devworkspace-che-code-latest.yaml with RELATED_IMAGE env vars"
 
 externalImagesTxt=$(cat <<-END
-registry.redhat.io/devspaces/theia-rhel8:2.15
+registry.redhat.io/devspaces/code-rhel8:3.5
 END
 )
 expected_externalImagesTxt=$(cat <<-END
-registry.redhat.io/devspaces/theia-rhel8@sha256:833f332f1e7f9a669b658bd6d1bf7f236c52ecf141a7006637fbda9f86fc5369
+'registry.redhat.io/devspaces/code-rhel8@sha256:debc18de31a6b3b575e42cc485f6c2241ee4d3d6988fad4e4e9837edba24f89f'
 END
 )
 
@@ -94,7 +94,7 @@ devworkspace=$(cat <<-END
 apiVersion: workspace.devfile.io/v1alpha2
 kind: DevWorkspaceTemplate
 metadata:
-  name: theia-ide-python-hello-world
+  name: che-code-python-hello-world
 spec:
   commands:
     - id: init-container-command
@@ -104,9 +104,9 @@ spec:
     preStart:
       - init-container-command
   components:
-    - name: theia-ide
+    - name: che-code-injector
       container:
-        image: registry.redhat.io/devspaces/theia-rhel8:2.15
+        image: registry.redhat.io/devspaces/code-rhel8:3.5
 END
 )
 
@@ -114,7 +114,7 @@ expected_devworkspace=$(cat <<-END
 apiVersion: workspace.devfile.io/v1alpha2
 kind: DevWorkspaceTemplate
 metadata:
-  name: theia-ide-python-hello-world
+  name: che-code-python-hello-world
 spec:
   commands:
     - id: init-container-command
@@ -124,25 +124,25 @@ spec:
     preStart:
       - init-container-command
   components:
-    - name: theia-ide
+    - name: che-code-injector
       container:
-        image: registry.redhat.io/devspaces/theia-rhel8@sha256:833f332f1e7f9a669b658bd6d1bf7f236c52ecf141a7006637fbda9f86fc5369
+        image: registry.redhat.io/devspaces/code-rhel8@sha256:debc18de31a6b3b575e42cc485f6c2241ee4d3d6988fad4e4e9837edba24f89f
 END
 )
 
 echo "$externalImagesTxt" > "${DEVFILES_DIR}/external_images.txt"
-echo "$devworkspace" > "${DEVFILES_DIR}/devworkspace-che-theia-latest.yaml"
+echo "$devworkspace" > "${DEVFILES_DIR}/devworkspace-che-code-latest.yaml"
 
 # NOTE: GIXDCNQK | base 32 -d = 2.16; GIXDCMIK | base 32 -d = 2.11 
-export RELATED_IMAGE_devspaces_theia_devfile_registry_image_GIXDCNIK='registry.redhat.io/devspaces/theia-rhel8@sha256:833f332f1e7f9a669b658bd6d1bf7f236c52ecf141a7006637fbda9f86fc5369'
+export RELATED_IMAGE_devspaces_code_devfile_registry_image_GMXDKCQ_='registry.redhat.io/devspaces/code-rhel8@sha256:debc18de31a6b3b575e42cc485f6c2241ee4d3d6988fad4e4e9837edba24f89f'
 
 # shellcheck disable=SC1090
 source "${script_dir}/entrypoint.sh"
 extract_and_use_related_images_env_variables_with_image_digest_info
-assertFileContentEquals "${DEVFILES_DIR}/devworkspace-che-theia-latest.yaml" "${expected_devworkspace}"
+assertFileContentEquals "${DEVFILES_DIR}/devworkspace-che-code-latest.yaml" "${expected_devworkspace}"
 
 #######################################################################################
-initTest "Should replace INTERNAL_URL in devworkspace-che-theia-latest.yaml"
+initTest "Should replace INTERNAL_URL in devworkspace-che-code-latest.yaml"
 
 devworkspace=$(cat <<-END
 apiVersion: workspace.devfile.io/v1alpha2
@@ -157,10 +157,10 @@ spec:
         container:
           image: quay.io/devfile/universal-developer-image:ubi8-0e189d9
           memoryLimit: 3Gi
-      - name: theia-ide-bash
+      - name: code-ide-bash
         plugin:
           kubernetes:
-            name: theia-ide-bash
+            name: code-ide-bash
     projects:
       - name: bash
         zip:
@@ -181,10 +181,10 @@ spec:
         container:
           image: quay.io/devfile/universal-developer-image:ubi8-0e189d9
           memoryLimit: 3Gi
-      - name: theia-ide-bash
+      - name: code-ide-bash
         plugin:
           kubernetes:
-            name: theia-ide-bash
+            name: code-ide-bash
     projects:
       - name: bash
         zip:
@@ -192,7 +192,7 @@ spec:
 END
 )
 
-echo "$devworkspace" > "${DEVFILES_DIR}/devworkspace-che-theia-latest.yaml"
+echo "$devworkspace" > "${DEVFILES_DIR}/devworkspace-che-code-latest.yaml"
 touch "${DEVFILES_DIR}/index.json"
 
 # NOTE: GIXDCNQK | base 32 -d = 2.16; GIXDCMIK | base 32 -d = 2.11 
@@ -201,4 +201,4 @@ export CHE_DEVFILE_REGISTRY_INTERNAL_URL='http://devfile-registry.devspaces.svc:
 # shellcheck disable=SC1090
 source "${script_dir}/entrypoint.sh"
 set_internal_url
-assertFileContentEquals "${DEVFILES_DIR}/devworkspace-che-theia-latest.yaml" "${expected_devworkspace}"
+assertFileContentEquals "${DEVFILES_DIR}/devworkspace-che-code-latest.yaml" "${expected_devworkspace}"
