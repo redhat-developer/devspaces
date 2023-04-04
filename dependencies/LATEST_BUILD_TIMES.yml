@@ -10663,3 +10663,30 @@
   timeWait: 5 mins
   timeBuild: 3 mins
   timeTotal: 8 mins
+- name: devspaces-operator
+  tag: 3.6-23
+  taskId: 51783684
+  timeCreate: Tue Apr 4 02:06:38 2023
+  timeStart: Tue Apr 4 02:07:06 2023
+  timeFinish: Tue Apr 4 02:22:02 2023
+  timeWait: 0 mins
+  timeBuild: 14 mins
+  timeTotal: 15 mins
+- name: devspaces-code-rhel8
+  tag: 3.6-44
+  taskId: 51786319
+  timeCreate: Tue Apr 4 03:56:16 2023
+  timeStart: Tue Apr 4 03:56:24 2023
+  timeFinish: Tue Apr 4 04:05:37 2023
+  timeWait: 0 mins
+  timeBuild: 9 mins
+  timeTotal: 9 mins
+- name: devspaces-operator-bundle
+  tag: 3.6-147
+  taskId: 51786805
+  timeCreate: Tue Apr 4 04:12:23 2023
+  timeStart: Tue Apr 4 04:12:38 2023
+  timeFinish: Tue Apr 4 04:16:43 2023
+  timeWait: 0 mins
+  timeBuild: 4 mins
+  timeTotal: 4 mins
