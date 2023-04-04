@@ -52,17 +52,6 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-yarn-
 
-      - uses: actions/cache@v2
-        name: Cache vsix dependencies
-        id: download-unpacked-cache
-        with:
-          path: | 
-            /tmp/che-plugin-registry/download-folder
-            /tmp/che-plugin-registry/unpack-folder
-          key: download-unpacked-cache-${{ hashFiles('**/che-theia-plugins.yaml') }}
-          restore-keys: |
-            download-unpacked-cache-
-
       - name: image-build
         run: |
           BUILDER=docker SKIP_FORMAT=true SKIP_LINT=true SKIP_TEST=true ./build.sh --tag next-gh-action --offline
