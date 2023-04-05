@@ -108,11 +108,13 @@ git remote set-url origin ''' + AUTH_URL_SHELL + '''
     if (!fileExists(REPO_PATH)) {
       sh('''#!/bin/bash -xe
 export KRB5CCNAME=/var/tmp/devspaces-build_ccache
+kinit -k -t /home/hudson/devspaces-build-keytab devspaces-build@IPA.REDHAT.COM || true; klist
 git clone ''' + URL + ''' ''' + REPO_PATH
       )
     }
     sh('''#!/bin/bash -xe
 export KRB5CCNAME=/var/tmp/devspaces-build_ccache
+kinit -k -t /home/hudson/devspaces-build-keytab devspaces-build@IPA.REDHAT.COM || true; klist
 cd ''' + REPO_PATH + '''
 git checkout --track origin/''' + BRANCH + ''' || true
 git config user.email devspaces-build@redhat.com
@@ -169,6 +171,7 @@ cd ''' + REPO_PATH + '''; git remote -v | grep pkgs.devel.redhat.com || true''',
   if (is_pkgsdevel?.trim()) {
     sh('''#!/bin/bash -xe
 export KRB5CCNAME=/var/tmp/devspaces-build_ccache
+kinit -k -t /home/hudson/devspaces-build-keytab devspaces-build@IPA.REDHAT.COM || true; klist
 ''' + updateBaseImages_cmd
     )
   } else {
@@ -211,7 +214,6 @@ def installRedHatInternalCerts() {
   ''')
 }
 
-
 // CRW-3598: @since 3.5
 // note that this URL is also in devspaces-chectl/build/scripts/build.sh and devspaces/product/manifest/get-3rd-party-sources.sh
 // also mentioned in dsc.groovy and get-3rd-party-sources.groovy
@@ -219,28 +221,6 @@ def getStagingHost() {
   return "devspaces-build@spmm-util.hosts.stage.psi.bos.redhat.com"
 }
 
-// deprecated; remove after 3.5 is live and dsc_3.4 job is deleted
-def sshMountRcmGuest(String path="devspaces") {
-  DESTHOST="rcm-guest.hosts.prod.psi.bos.redhat.com"
-  DESTHOSTMOUNT="devspaces-build@" + DESTHOST
-  sh('''#!/bin/bash -xe
-export KRB5CCNAME=/var/tmp/devspaces-build_ccache
-
-# set up sshfs mount
-RCMG="''' + DESTHOSTMOUNT + ''':/mnt/rcm-guest/staging/''' + path + '''"
-sshfs --version
-for mnt in RCMG; do 
-  mkdir -p ${WORKSPACE}/${mnt}-ssh; 
-  if [[ $(file ${WORKSPACE}/${mnt}-ssh 2>&1) == *"Transport endpoint is not connected"* ]]; then fusermount -uz ${WORKSPACE}/${mnt}-ssh; fi
-  if [[ ! -d ${WORKSPACE}/${mnt}-ssh/''' + path + ''' ]]; then  sshfs ${!mnt} ${WORKSPACE}/${mnt}-ssh; fi
-done
-
-# CRW-2869 copy keytab from home dir to remote
-rsync -q ~/devspaces-build-keytab rcm-guest.hosts.prod.psi.bos.redhat.com:~/
-''')
-  // don't include the user, since that's set in ~/.ssh/config file now
-  return DESTHOST
-}
 def notifyBuildFailed() {
     emailext (
         subject: "Build failed in Jenkins: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
