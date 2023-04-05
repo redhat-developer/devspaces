@@ -37,39 +37,49 @@ initVariables() {
   # init variables used by both flows
   product_version=$DS_VERSION
   product_name="RHOSDS"
-  project_name="devspaces-server"
+  project_name="devspaces-server" # maps to project id = 1274
+  project_id="1274"
 }
 
 configureProductVersion() {
+  local product_version="$1"
   product_id=$(pnc product list --query "abbreviation==$product_name" | yq -r '.[].id')
-  product_id_version=$(pnc product list-versions "$product_id" | yq -r '.[] | select(.version == "'"$DS_VERSION"'") | .id')
+  product_id_version=$(pnc product list-versions "$product_id" | yq -r '.[] | select(.version == "'"$product_version"'") | .id')
   if [[ $product_id_version ]]; then
-    echo "[INFO] detected existing PNC version for $DS_VERSION, id - $product_id_version"
+    echo "[INFO] detected existing PNC version for $product_version: https://orch.psi.redhat.com/pnc-web/#/products/166/versions/${product_id_version}"
   else
-    echo "[INFO] creating PNC version for $DS_VERSION"
+    echo "[INFO] creating PNC version for $product_version"
     product_id_version=$(pnc product-version create --product-id="$product_id" "$product_version" | yq -r '.id')
-    echo "[INFO] creadted PNC version for $DS_VERSION, id - $product_id_version"
+    echo "[INFO] created PNC version for $product_version, id - $product_id_version"
   fi
 }
 
 configureLatestBuildConfig() {
+  local product_version="$1"
+  curl -sSLo /tmp/job-config.json https://raw.githubusercontent.com/redhat-developer/devspaces/devspaces-3-rhel-8/dependencies/job-config.json
   build_config_id=$(pnc build-config list --query "project.name==$project_name;productVersion.version==$product_version" | yq -r '.[].id')
   if [[ $build_config_id ]]; then
-    echo "[INFO] detected existing PNC build-config for $product_version, id - $build_config_id"
+    echo "[INFO] detected existing PNC build-config for $product_version: https://orch.psi.redhat.com/pnc-web/#/projects/${project_id}/build-configs/${build_config_id}"
   else
     echo "[INFO] cloning PNC build config for $product_version"
     # get previous build config for latest build to base the clone from
-    [[ ${DS_VERSION} =~ ^([0-9]+)\.([0-9]+)$ ]] && BASE=${BASH_REMATCH[1]}; NEXT=${BASH_REMATCH[2]}; (( NEXT=NEXT-1 )) 
+    [[ ${product_version} =~ ^([0-9]+)\.([0-9]+)$ ]] && BASE=${BASH_REMATCH[1]}; NEXT=${BASH_REMATCH[2]}; (( NEXT=NEXT-1 )) 
     old_product_version=${BASE}.${NEXT}
     old_build_config_id=$(pnc build-config list --query "project.name==$project_name;productVersion.version==$old_product_version" | yq -r '.[].id')
     # fetch job-config.json, where new upstream version is listed
-    curl -sSLo /tmp/job-config.json https://raw.githubusercontent.com/redhat-developer/devspaces/devspaces-3-rhel-8/dependencies/job-config.json
     new_build_config_scmRevision=$(jq -r '.Jobs.server."'"$product_version"'".upstream_branch[0]' /tmp/job-config.json)
     new_build_config_name="devspaces-server-build-$new_build_config_scmRevision"
-    build_config_id=$(pnc build-config clone --buildConfigName="$new_build_config_name" --scmRevision="$new_build_config_scmRevision" "$old_build_config_id" | yq -r '.id')
+    build_config_id=$(pnc build-config clone --product-version-id="$product_id_version" --buildConfigName="$new_build_config_name" --scm-revision="$new_build_config_scmRevision" "$old_build_config_id" | yq -r '.id')
+  fi
+  if [[ $build_config_id ]]; then
     # update config to point to new product version
-    pnc build-config update --product-version-id="$product_id_version" "$build_config_id"
-    echo "[INFO] created PNC build config for $product_version, id - $build_config_id"
+    new_build_config_scmRevision=$(jq -r '.Jobs.server."'"$product_version"'".upstream_branch[0]' /tmp/job-config.json)
+    new_build_config_name="devspaces-server-build-$new_build_config_scmRevision"
+    pnc build-config update --product-version-id="$product_id_version" --buildConfigName="$new_build_config_name" --scm-revision="$new_build_config_scmRevision" "$build_config_id"
+    echo "[INFO] updated PNC build config for $product_version: https://orch.psi.redhat.com/pnc-web/#/projects/${project_id}/build-configs/${build_config_id}"
+  else 
+    echo "[ERROR] could not compute build_config_id for product version $product_version !"
+    exit 1
   fi
 }
 
@@ -77,11 +87,11 @@ configureNextBuildConfig() {
   build_config_name="devspaces-server-build-main"
   build_config_id=$(pnc build-config list --query "project.name==$project_name;name==$build_config_name" | yq -r '.[].id')
   if [[ $build_config_id ]]; then
-    echo "[INFO] detected existing PNC build-config for $product_version, id - $build_config_id"
-    echo "[INFO] updating PNC build config for $product_version"
+    echo "[INFO] detected existing PNC build-config for $product_version: https://orch.psi.redhat.com/pnc-web/#/projects/${project_id}/build-configs/${build_config_id}"
+    # echo "[INFO] updating PNC build config for $product_version"
     # update config to point to new product version
     pnc build-config update --product-version-id="$product_id_version" "$build_config_id"
-    echo "[INFO] updated PNC build config for $product_version, id - $build_config_id"
+    echo "[INFO] updated PNC build config for $product_version: https://orch.psi.redhat.com/pnc-web/#/projects/${project_id}/build-configs/${build_config_id}"
   fi
 }
 
@@ -95,11 +105,17 @@ if [[ -z ${DS_VERSION} ]] || [[ -z ${NEXT_UPDATE} && -z ${LATEST_UPDATE} ]]; the
 fi
 
 initVariables
-configureProductVersion
+product_version="${DS_VERSION}"
+configureProductVersion "$product_version"
 if [[ $LATEST_UPDATE ]]; then
-  configureLatestBuildConfig
+  configureLatestBuildConfig "$product_version"
 elif [[ $NEXT_UPDATE ]]; then
   configureNextBuildConfig
+  # now update the :latest entry using the 3.y-1 version
+  [[ ${DS_VERSION} =~ ^([0-9]+)\.([0-9]+)$ ]] && BASE=${BASH_REMATCH[1]}; NEXT=${BASH_REMATCH[2]}; (( NEXT=NEXT-1 )) 
+  product_version="${BASE}.${NEXT}"
+  configureProductVersion "$product_version"
+  configureLatestBuildConfig "$product_version"
 fi
 cleanup
 
