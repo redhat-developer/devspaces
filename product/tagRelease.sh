@@ -215,7 +215,7 @@ pushBranchAndOrTagGH () {
 
 updatePNCBuildConfigs() {
   if [[ ! -x ${SCRIPTPATH}/updatePNCBuildConfigs.sh ]]; then
-    curl -sSLO https://raw.githubusercontent.com/redhat-developer/devspaces/${MIDSTM_BRANCH}/product/updatePNCBuildConfigs.sh --output-dir /tmp
+    curl -sSLo /tmp/updatePNCBuildConfigs.sh https://raw.githubusercontent.com/redhat-developer/devspaces/${MIDSTM_BRANCH}/product/updatePNCBuildConfigs.sh
     chmod +x /tmp/updatePNCBuildConfigs.sh
     PNC_SCRIPT_LOCATION="/tmp/updatePNCBuildConfigs.sh"
   else
