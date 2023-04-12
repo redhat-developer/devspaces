@@ -281,6 +281,20 @@
         "disabled": false
       }
     },
+    "pluginregistry-plugins": {
+      "3.5": {
+        "disabled": true
+      },
+      "3.6": {
+        "disabled": false
+      },
+      "3.7": {
+        "disabled": false
+      },
+      "3.x": {
+        "disabled": false
+      }
+    },
     "idea": {
       "3.5": {
         "upstream_branch": [
