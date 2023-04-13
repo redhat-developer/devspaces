@@ -99,7 +99,8 @@ $PODMAN rmi --ignore --force $targetIndexImage >/dev/null 2>&1 || true
 
 # new way for OCP 4.12+
 # CRW-4063 - don't use version newer than 4.11 as it seems to produce catalog sources we can't use in OCP 4.12+
-OSE_VER="v4.11" 
+# CRW-4192 - hardcode to a specific tag which uses an older golang 1.18.7 (before fixing https://pkg.go.dev/vuln/GO-2022-1143 -> 1.18.9)
+OSE_VER="v4.11.0-202302271715.p0.g7fdc3c5.assembly.stream" 
 cat <<EOF > olm-catalog.Dockerfile
 # The base image is expected to contain
 # /bin/opm (with a serve subcommand) and /bin/grpc_health_probe
