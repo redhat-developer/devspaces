@@ -11437,3 +11437,21 @@
   timeWait: 15 mins
   timeBuild: 4 mins
   timeTotal: 19 mins
+- name: devspaces-server-rhel8
+  tag: 3.7-4
+  taskId: 51979946
+  timeCreate: Thu Apr 13 03:20:01 2023
+  timeStart: Thu Apr 13 03:20:28 2023
+  timeFinish: Thu Apr 13 03:27:50 2023
+  timeWait: 0 mins
+  timeBuild: 7 mins
+  timeTotal: 7 mins
+- name: devspaces-operator-bundle
+  tag: 3.7-29
+  taskId: 51980023
+  timeCreate: Thu Apr 13 03:34:48 2023
+  timeStart: Thu Apr 13 03:50:40 2023
+  timeFinish: Thu Apr 13 03:55:37 2023
+  timeWait: 15 mins
+  timeBuild: 4 mins
+  timeTotal: 20 mins
