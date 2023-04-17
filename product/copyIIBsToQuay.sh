@@ -44,6 +44,7 @@ command -v jq >/dev/null 2>&1     || which jq >/dev/null 2>&1     || { echo "jq 
 VERBOSEFLAG=""
 EXTRA_TAGS="" # extra tags to set in target image, eg., 3.5.0.RC-02-21-v4.13-x86_64
 PUSHTOQUAYFORCE=0
+targetIndexImage=""
 
 MIDSTM_BRANCH=$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "devspaces-3-rhel-8")
 if [[ ${MIDSTM_BRANCH} != "devspaces-"*"-rhel-"* ]]; then MIDSTM_BRANCH="devspaces-3-rhel-8"; fi
@@ -53,24 +54,24 @@ if [[ -f dependencies/job-config.json ]]; then
 elif [[ -f ${SCRIPT_DIR}/../dependencies/job-config.json ]]; then
     jobconfigjson=${SCRIPT_DIR}/../dependencies/job-config.json
 else
-    pushd /tmp >/dev/null
-    curl -sSLO https://raw.githubusercontent.com/redhat-developer/devspaces/${MIDSTM_BRANCH}/dependencies/job-config.json
+    pushd /tmp >/dev/null || exit
+    curl -sSLO https://raw.githubusercontent.com/redhat-developer/devspaces/"${MIDSTM_BRANCH}"/dependencies/job-config.json
     jobconfigjson=/tmp/job-config.json
-    popd >/dev/null
+    popd >/dev/null || exit 
 fi
 
 # collect defaults from dependencies/job-config.json file
 # product Version
-DS_VERSION=$(jq -r '.Version' ${jobconfigjson})
-DWO_VERSION=$(jq -r --arg VERSION "${DS_VERSION}" '.Other.DEV_WORKSPACE_OPERATOR_TAG[$VERSION]' ${jobconfigjson})
+DS_VERSION=$(jq -r '.Version' "${jobconfigjson}")
+DWO_VERSION=$(jq -r --arg VERSION "${DS_VERSION}" '.Other.DEV_WORKSPACE_OPERATOR_TAG[$VERSION]' "${jobconfigjson}")
 if [[ $DWO_VERSION == "null" ]]; then DWO_VERSION="0."; fi
 
 setDefaults() {
     # list of OCP versions
-    OCP_VERSIONS_DEFAULT="$(jq -r --arg VERSION "${DS_VERSION}" '.Other.OPENSHIFT_VERSIONS_SUPPORTED[$VERSION]|@tsv' ${jobconfigjson} | tr "\t" " ")"
+    OCP_VERSIONS_DEFAULT="$(jq -r --arg VERSION "${DS_VERSION}" '.Other.OPENSHIFT_VERSIONS_SUPPORTED[$VERSION]|@tsv' "${jobconfigjson}" | tr "\t" " ")"
     if [[ $OCP_VERSIONS_DEFAULT == "null" ]]; then OCP_VERSIONS_DEFAULT=""; fi
     # next or latest tag to set
-    FLOATING_QUAY_TAGS="$(jq -r --arg VERSION "${DS_VERSION}" '.Other.FLOATING_QUAY_TAGS[$VERSION]' ${jobconfigjson})"
+    FLOATING_QUAY_TAGS="$(jq -r --arg VERSION "${DS_VERSION}" '.Other.FLOATING_QUAY_TAGS[$VERSION]' "${jobconfigjson}")"
     if [[ $FLOATING_QUAY_TAGS == "null" ]]; then FLOATING_QUAY_TAGS=""; fi
 }
 setDefaults
@@ -109,17 +110,17 @@ if [[ $VERBOSEFLAG == "-v" ]]; then
 fi
 
 # install opm if not installed from https://mirror.openshift.com/pub/openshift-v4/$(uname -m)/clients/ocp/latest-4.11/opm-linux.tar.gz
-if [[ ! -x /usr/local/bin/opm ]] && [[ ! -x ${HOME}/.local/bin/opm ]]; then
-    pushd /tmp >/dev/null
+if [[ ! -x /usr/local/bin/opm ]] && [[ ! -x "${HOME}"/.local/bin/opm ]]; then
+    pushd /tmp >/dev/null || exit
     echo "[INFO] Installing latest opm from https://mirror.openshift.com/pub/openshift-v4/$(uname -m)/clients/ocp/latest-4.11/opm-linux.tar.gz ..."
-    curl -sSLo- https://mirror.openshift.com/pub/openshift-v4/$(uname -m)/clients/ocp/latest-4.11/opm-linux.tar.gz | tar xz; chmod 755 opm
-    sudo cp opm /usr/local/bin/ || cp opm ${HOME}/.local/bin/
-    sudo chmod 755 /usr/local/bin/opm || chmod 755 ${HOME}/.local/bin/opm
-    if [[ ! -x /usr/local/bin/opm ]] && [[ ! -x ${HOME}/.local/bin/opm ]]; then
+    curl -sSLo- "https://mirror.openshift.com/pub/openshift-v4/$(uname -m)/clients/ocp/latest-4.11/opm-linux.tar.gz" | tar xz; chmod 755 opm
+    sudo cp opm /usr/local/bin/ || cp opm "${HOME}"/.local/bin/
+    sudo chmod 755 /usr/local/bin/opm || chmod 755 "${HOME}"/.local/bin/opm
+    if [[ ! -x /usr/local/bin/opm ]] && [[ ! -x "${HOME}"/.local/bin/opm ]]; then
         echo "[ERROR] Could not install opm v1.19.5 or higher (see https://docs.openshift.com/container-platform/4.11/cli_reference/opm/cli-opm-install.html#cli-opm-install )";
         exit 1
     fi
-    popd >/dev/null
+    popd >/dev/null || exit
 fi
 
 checkVersion() {
@@ -135,15 +136,15 @@ checkVersion 1.1 "$(skopeo --version | sed -e "s/skopeo version //")" skopeo
 
 getScript () {
     scriptFile=$1
-    if [[ -x ${SCRIPT_DIR}/${scriptFile} ]]; then
-        getScript_return=${SCRIPT_DIR}/${scriptFile}
+    if [[ -x ${SCRIPT_DIR}/"${scriptFile}" ]]; then
+        getScript_return=${SCRIPT_DIR}/"${scriptFile}"
     else
         if [[ $VERBOSEFLAG == "-v" ]]; then echo "Downloading ${scriptFile} script from Github"; fi
-        pushd /tmp >/dev/null
-        curl -sSLO https://raw.githubusercontent.com/redhat-developer/devspaces/${MIDSTM_BRANCH}/product/${scriptFile} && \
-        chmod +x ${scriptFile}
-        getScript_return=/tmp/${scriptFile}
-        popd >/dev/null
+        pushd /tmp >/dev/null || exit
+        curl -sSLO https://raw.githubusercontent.com/redhat-developer/devspaces/"${MIDSTM_BRANCH}"/product/"${scriptFile}" && \
+        chmod +x "${scriptFile}"
+        getScript_return=/tmp/"${scriptFile}"
+        popd >/dev/null || exit
     fi
 }
 
@@ -164,16 +165,16 @@ fi
 for OCP_VER in ${OCP_VERSIONS}; do
     PUSHTOQUAYFORCE_LOCAL=${PUSHTOQUAYFORCE}
     # registry-proxy.engineering.redhat.com/rh-osbs/iib:286641
-    LATEST_IIB=$(${getIIBsForBundle}  --ds -t ${DS_VERSION} -o ${OCP_VER} -qi | sort -uV | tail -1) # return quietly, just the index bundle
+    LATEST_IIB=$(${getIIBsForBundle}  --ds -t "${DS_VERSION}" -o "${OCP_VER}" -qi | sort -uV | tail -1) # return quietly, just the index bundle
     if [[ ! $LATEST_IIB ]] || [[ $LATEST_IIB == *"Could not fetch ref_url"* ]]; then # fall back to getLatestIIBs.sh
-        LATEST_IIB=$(${getLatestIIBs} --ds -t ${DS_VERSION} -o ${OCP_VER} -qi | sort -uV | tail -1) # return quietly, just the index bundle
+        LATEST_IIB=$(${getLatestIIBs} --ds -t "${DS_VERSION}" -o "${OCP_VER}" -qi | sort -uV | tail -1) # return quietly, just the index bundle
     fi
     LATEST_IIB_NUM=${LATEST_IIB##*:}
     # Get DevWorkspace Operator IIB separately to enable DWO RC testing
     # don't wait the usual 30 mins to see if new DWO is published; instead just check once and give up if not found
-    LATEST_DWO_IIB=$(${getIIBsForBundle}  --dwo -t ${DWO_VERSION} -c 'devworkspace-operator-bundle' -o ${OCP_VER} -qi | sort -uV | tail -1) # return quietly, just the index bundle
+    LATEST_DWO_IIB=$(${getIIBsForBundle}  --dwo -t "${DWO_VERSION}" -c 'devworkspace-operator-bundle' -o "${OCP_VER}" -qi | sort -uV | tail -1) # return quietly, just the index bundle
     if [[ ! $LATEST_DWO_IIB ]] || [[ $LATEST_DWO_IIB == *"Could not fetch ref_url"* ]]; then # fall back to getLatestIIBs.sh
-        LATEST_DWO_IIB=$(${getLatestIIBs} --dwo -t ${DWO_VERSION} -c 'devworkspace-operator-bundle' -o ${OCP_VER} -qi --timeout 2 --interval 1 | sort -uV | tail -1) # return quietly, just the index bundle
+        LATEST_DWO_IIB=$(${getLatestIIBs} --dwo -t "${DWO_VERSION}" -c 'devworkspace-operator-bundle' -o "${OCP_VER}" -qi --timeout 2 --interval 1 | sort -uV | tail -1) # return quietly, just the index bundle
     fi
     LATEST_DWO_IIB_NUM=${LATEST_DWO_IIB##*:}
 
@@ -211,21 +212,23 @@ for OCP_VER in ${OCP_VERSIONS}; do
     if [[ $VERBOSEFLAG == "-v" ]]; then echo "[DEBUG] Rendering catalog to: $CATALOG_DIR"; fi
     # if we have a latest DWO IIB, use that for DWO operator
     if [[ $LATEST_DWO_IIB_NUM ]]; then
-        ${filterIIB} -s ${LATEST_IIB} --channel-all fast --dir $CATALOG_DIR --packages "devspaces web-terminal" ${VERBOSEFLAG}
-        ${filterIIB} -s ${LATEST_DWO_IIB} --channel-all fast --dir $CATALOG_DIR --packages "devworkspace-operator" ${VERBOSEFLAG}
+        ${filterIIB} -s "${LATEST_IIB}" --channel-all fast --dir "$CATALOG_DIR" --packages "devspaces web-terminal" ${VERBOSEFLAG}
+        ${filterIIB} -s "${LATEST_DWO_IIB}" --channel-all fast --dir "$CATALOG_DIR" --packages "devworkspace-operator" ${VERBOSEFLAG}
     # or, if no DWO IIB exists, fall back to latest DWO operator in the devspaces IIB
     else 
-        ${filterIIB} -s ${LATEST_IIB} --channel-all fast --dir $CATALOG_DIR --packages "devworkspace-operator devspaces web-terminal" ${VERBOSEFLAG}
+        ${filterIIB} -s "${LATEST_IIB}" --channel-all fast --dir "$CATALOG_DIR" --packages "devworkspace-operator devspaces web-terminal" ${VERBOSEFLAG}
     fi
 
+    # shellcheck disable=SC2086
     if [[ "$PUSH" != "true" ]]; then
-        ${buildCatalog} -t ${LATEST_IIB_QUAY} ${VERBOSEFLAG} --dir $CATALOG_DIR --ocp-ver $OCP_VER
+        ${buildCatalog} -t "${LATEST_IIB_QUAY}" ${VERBOSEFLAG} --dir "$CATALOG_DIR" --ocp-ver $OCP_VER
         # If we're not pushing, we're done processing the IIB for this OCP_VER -- skopeo inspect and copy fail if the image
         # has not been pushed.
         continue
     fi
     # $PUSH == true
     # check if destination already exists in quay
+    # shellcheck disable=SC2086
     if [[ $(skopeo --insecure-policy inspect docker://${LATEST_IIB_QUAY} 2>&1) == *"Error"* ]] || [[ ${PUSHTOQUAYFORCE} -eq 1 ]]; then
         ${buildCatalog} -t ${LATEST_IIB_QUAY} --push ${VERBOSEFLAG} --dir $CATALOG_DIR --ocp-ver $OCP_VER
         PUSHTOQUAYFORCE_LOCAL=1
@@ -233,6 +236,7 @@ for OCP_VER in ${OCP_VERSIONS}; do
         if [[ $VERBOSEFLAG == "-v" ]]; then echo "Copy ${LATEST_IIB_QUAY} - already exists, nothing to do"; fi
         echo "[IMG] ${LATEST_IIB_QUAY}"
     fi
+    # shellcheck disable=SC2086
     if [[ $(skopeo --insecure-policy inspect docker://${LATEST_IIB_QUAY} 2>&1) == *"Error"* ]]; then
         echo "[ERROR] Cannot find image ${LATEST_IIB_QUAY} to copy!"
         echo "[ERROR] Check output of this command for an idea of what went wrong:"
@@ -250,6 +254,7 @@ for OCP_VER in ${OCP_VERSIONS}; do
     done
 
     for qtag in ${ALL_TAGS}; do
+        # shellcheck disable=SC2086
         if [[ $(skopeo --insecure-policy inspect docker://quay.io/devspaces/iib:${qtag} 2>&1) == *"Error"* ]] || [[ ${PUSHTOQUAYFORCE_LOCAL} -eq 1 ]]; then
             CMD="skopeo --insecure-policy copy --all docker://${LATEST_IIB_QUAY} docker://quay.io/devspaces/iib:${qtag}"
             if [[ $VERBOSE -eq 1 ]]; then
@@ -265,6 +270,7 @@ for OCP_VER in ${OCP_VERSIONS}; do
     done
 
     # cleanup images
+    # shellcheck disable=SC2086
     $PODMAN rmi --ignore --force ${LATEST_IIB} $targetIndexImage >/dev/null 2>&1 || true
 done
 

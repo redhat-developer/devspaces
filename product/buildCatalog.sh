@@ -55,32 +55,34 @@ while [[ "$#" -gt 0 ]]; do
   shift 1
 done
 
+# shellcheck disable=SC2086
 if [ -z $OCP_VER ]; then echo "OCP ('-o', '--ocp-ver') version option is required"; exit 1; fi
 
 # install opm if not installed from https://mirror.openshift.com/pub/openshift-v4/$(uname -m)/clients/ocp/latest-4.11/opm-linux.tar.gz
 if [[ ! -x /usr/local/bin/opm ]] && [[ ! -x ${HOME}/.local/bin/opm ]]; then 
-    pushd /tmp >/dev/null
+    pushd /tmp >/dev/null || exit
     echo "[INFO] Installing latest opm from https://mirror.openshift.com/pub/openshift-v4/$(uname -m)/clients/ocp/latest-4.11/opm-linux.tar.gz ..."
-    curl -sSLo- https://mirror.openshift.com/pub/openshift-v4/$(uname -m)/clients/ocp/latest-4.11/opm-linux.tar.gz | tar xz; chmod 755 opm
-    sudo cp opm /usr/local/bin/ || cp opm ${HOME}/.local/bin/
-    sudo chmod 755 /usr/local/bin/opm || chmod 755 ${HOME}/.local/bin/opm
-    if [[ ! -x /usr/local/bin/opm ]] && [[ ! -x ${HOME}/.local/bin/opm ]]; then 
+    curl -sSLo- "https://mirror.openshift.com/pub/openshift-v4/$(uname -m)/clients/ocp/latest-4.11/opm-linux.tar.gz" | tar xz; chmod 755 opm
+    sudo cp opm /usr/local/bin/ || cp opm "${HOME}"/.local/bin/
+    sudo chmod 755 /usr/local/bin/opm || chmod 755 "${HOME}"/.local/bin/opm
+    if [[ ! -x /usr/local/bin/opm ]] && [[ ! -x "${HOME}"/.local/bin/opm ]]; then 
         echo "[ERROR] Could not install opm v1.19.5 or higher (see https://docs.openshift.com/container-platform/4.11/cli_reference/opm/cli-opm-install.html#cli-opm-install )";
         exit 1
     fi
-    popd >/dev/null
+    popd >/dev/null || exit
 fi
 
 PODMAN=$(command -v podman)
 if [[ ! -x $PODMAN ]]; then echo "[ERROR] podman is not installed. Aborting."; echo; usage; exit 1; fi
 command -v jq >/dev/null 2>&1     || which jq >/dev/null 2>&1     || { echo "jq is not installed. Aborting."; exit 1; }
 
-if [ -z $targetIndexImage ]; then 
+# shellcheck disable=SC2086
+if [ -z $targetIndexImage ]; then
   targetIndexImage="quay.io/devspaces/$(date +%s)"
   echo "No target image specified: using ${targetIndexImage}"
 fi
 
-pushd $WORKING_DIR > /dev/null
+pushd "$WORKING_DIR" > /dev/null || exit
 trap 'popd > /dev/null' EXIT
 
 if [ ! -d ./olm-catalog ]; then
@@ -89,6 +91,7 @@ if [ ! -d ./olm-catalog ]; then
 fi
 
 if [ -f ./olm-catalog.Dockerfile ]; then rm -f ./olm-catalog.Dockerfile; fi
+# shellcheck disable=SC2086
 $PODMAN rmi --ignore --force $targetIndexImage >/dev/null 2>&1 || true
 
 # new way for olm 4.11 - see https://docs.openshift.com/container-platform/4.11/operators/admin/olm-managing-custom-catalogs.html#olm-creating-fb-catalog-image_olm-managing-custom-catalogs
@@ -123,9 +126,12 @@ if [[ $VERBOSE -eq 1 ]]; then
 fi
 
 validation=$(opm validate olm-catalog && echo $?)
+# shellcheck disable=SC2086
 if [[ $validation -ne 0 ]]; then echo "[ERROR] 'opm validate olm-catalog' returned exit code: $validation"; exit $validation; fi
 
+# shellcheck disable=SC2086
 $PODMAN build -t $targetIndexImage -f olm-catalog.Dockerfile . -q
+# shellcheck disable=SC2086
 if [[ "$PUSH" == "true" ]]; then $PODMAN push $targetIndexImage -q; fi
 
 if [[ $VERBOSE -eq 1 ]]; then
