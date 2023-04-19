@@ -63,7 +63,7 @@ if [[ $VERBOSEFLAG == "-v" ]]; then echo "[DEBUG] Working in $WORKING_DIR"; fi
 pushd "$WORKING_DIR" > /dev/null || exit
 trap 'popd >> /dev/null' EXIT
 
-# install opm if not installed from https://mirror.openshift.com/pub/openshift-v4/$(uname -m)/clients/ocp/latest-4.12/opm-linux.tar.gz
+# install opm if not installed by ansible https://gitlab.cee.redhat.com/codeready-workspaces/ansible-scripts/-/blob/master/roles/users/tasks/profile-hudson/main.yml#L107 to /usr/local/bin/opm
 if [[ ! -x /usr/local/bin/opm ]] && [[ ! -x ${HOME}/.local/bin/opm ]]; then 
     pushd /tmp >/dev/null || exit
     echo "[INFO] Installing latest opm from https://mirror.openshift.com/pub/openshift-v4/$(uname -m)/clients/ocp/latest-4.12/opm-linux.tar.gz ..."
