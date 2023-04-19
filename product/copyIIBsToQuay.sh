@@ -8,7 +8,7 @@
 # SPDX-License-Identifier: EPL-2.0
 #
 # script to query latest IIBs for a given list of OCP versions, then copy those to Quay
-# OPM 4.11 is required to run buildCatalog.sh; OPM 4.12 seems to have problems (See CRW-4063)
+# OPM from 4.12 (>v1.26.3 upstream version) is required to run buildCatalog.sh (CRW-4192, OCPBUGS-11841)
 #
 
 SCRIPT_DIR=$(cd "$(dirname "$0")" || exit; pwd)
@@ -18,7 +18,7 @@ usage () {
 
 Requires:
 * jq 1.6+, skopeo 1.1.1+, podman 2.0+, glibc 2.28+
-* opm v1.19.5+ (see https://docs.openshift.com/container-platform/4.11/cli_reference/opm/cli-opm-install.html#cli-opm-install )
+* opm v1.26.3+ (see https://docs.openshift.com/container-platform/4.12/cli_reference/opm/cli-opm-install.html#cli-opm-install )
 
 Usage:
   $0 [OPTIONS]
@@ -27,7 +27,7 @@ Options:
   -p, --push                 : Push IIB(s) to quay registry; default is to show commands but not copy anything
   --force                    : If target image exists, will re-filter and re-push it; otherwise skip to avoid updating image timestamps
   -t PROD_VER                : If x.y version/tag not set, will compute from dependencies/job-config.json file
-  -o 'OCP_VER1 OCP_VER2 ...' : Space-separated list of OCP version(s) (e.g. 'v4.13 v4.12 v4.11 v4.10') to query and publish; defaults to job-config.json values
+  -o 'OCP_VER1 OCP_VER2 ...' : Space-separated list of OCP version(s) (e.g. 'v4.13 v4.12') to query and publish; defaults to job-config.json values
   -e, --extra-tags           : Extra tags to create, such as 3.5.0.RC-02-21-v4.13-x86_64
   -v                         : Verbose output: include additional information
   -h, --help                 : Show this help
@@ -108,15 +108,15 @@ if [[ $VERBOSEFLAG == "-v" ]]; then
     if [[ $EXTRA_TAGS ]]; then echo "[DEBUG] EXTRA_TAGS = $EXTRA_TAGS"; fi
 fi
 
-# install opm if not installed from https://mirror.openshift.com/pub/openshift-v4/$(uname -m)/clients/ocp/latest-4.11/opm-linux.tar.gz
-if [[ ! -x /usr/local/bin/opm ]] && [[ ! -x ${HOME}/.local/bin/opm ]]; then
-    pushd /tmp >/dev/null
-    echo "[INFO] Installing latest opm from https://mirror.openshift.com/pub/openshift-v4/$(uname -m)/clients/ocp/latest-4.11/opm-linux.tar.gz ..."
-    curl -sSLo- https://mirror.openshift.com/pub/openshift-v4/$(uname -m)/clients/ocp/latest-4.11/opm-linux.tar.gz | tar xz; chmod 755 opm
-    sudo cp opm /usr/local/bin/ || cp opm ${HOME}/.local/bin/
-    sudo chmod 755 /usr/local/bin/opm || chmod 755 ${HOME}/.local/bin/opm
-    if [[ ! -x /usr/local/bin/opm ]] && [[ ! -x ${HOME}/.local/bin/opm ]]; then
-        echo "[ERROR] Could not install opm v1.19.5 or higher (see https://docs.openshift.com/container-platform/4.11/cli_reference/opm/cli-opm-install.html#cli-opm-install )";
+# install opm if not installed by ansible https://gitlab.cee.redhat.com/codeready-workspaces/ansible-scripts/-/blob/master/roles/users/tasks/profile-hudson/main.yml#L107 to /usr/local/bin/opm
+if [[ ! -x /usr/local/bin/opm ]] && [[ ! -x "${HOME}"/.local/bin/opm ]]; then
+    pushd /tmp >/dev/null || exit
+    echo "[INFO] Installing latest opm from https://mirror.openshift.com/pub/openshift-v4/$(uname -m)/clients/ocp/latest-4.12/opm-linux.tar.gz ..."
+    curl -sSLo- "https://mirror.openshift.com/pub/openshift-v4/$(uname -m)/clients/ocp/latest-4.12/opm-linux.tar.gz" | tar xz; chmod 755 opm
+    sudo cp opm /usr/local/bin/ || cp opm "${HOME}"/.local/bin/
+    sudo chmod 755 /usr/local/bin/opm || chmod 755 "${HOME}"/.local/bin/opm
+    if [[ ! -x /usr/local/bin/opm ]] && [[ ! -x "${HOME}"/.local/bin/opm ]]; then
+        echo "[ERROR] Could not install opm v1.26.3 or higher (see https://docs.openshift.com/container-platform/4.12/cli_reference/opm/cli-opm-install.html#cli-opm-install )";
         exit 1
     fi
     popd >/dev/null
