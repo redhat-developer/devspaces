@@ -100,8 +100,8 @@ Options:
   --iib-ds <IIB_URL>  : Dev Spaces IIB from which to install; default: computed from DS version; options:
                       : * registry-proxy.engineering.redhat.com/rh-osbs/iib:987654 [RH internal],
                       : * brew.registry.redhat.io/rh-osbs/iib:987654 [RH public, auth required], or
-                      : * quay.io/devspaces/iib:3.3-v4.11-987654-x86_64 [public], or 
-                      : * quay.io/devspaces/iib:next-v4.10-ppc64le [public]
+                      : * quay.io/devspaces/iib:3.7-v4.13-480383-476121-x86_64 [public], or 
+                      : * quay.io/devspaces/iib:next-v4.12-x86_64 [public]
 
   --quay, --fast      : Install from quay.io/devspaces/iib:<DS_VERSION>-v4.yy-<OS_ARCH> (detected OCP version + arch) from fast channel
                       : Resolve images from quay.io using ImageContentSourcePolicy
