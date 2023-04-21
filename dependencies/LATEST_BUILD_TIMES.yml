@@ -12256,3 +12256,21 @@
   timeWait: 0 mins
   timeBuild: 4 mins
   timeTotal: 4 mins
+- name: devspaces-operator
+  tag: 3.7-9
+  taskId: 52160267
+  timeCreate: Fri Apr 21 02:18:45 2023
+  timeStart: Fri Apr 21 02:18:59 2023
+  timeFinish: Fri Apr 21 02:35:32 2023
+  timeWait: 0 mins
+  timeBuild: 16 mins
+  timeTotal: 16 mins
+- name: devspaces-operator-bundle
+  tag: 3.7-73
+  taskId: 52160396
+  timeCreate: Fri Apr 21 02:41:35 2023
+  timeStart: Fri Apr 21 02:42:20 2023
+  timeFinish: Fri Apr 21 02:45:50 2023
+  timeWait: 0 mins
+  timeBuild: 3 mins
+  timeTotal: 4 mins
