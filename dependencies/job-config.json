@@ -15,7 +15,7 @@
           "7.64.x",
           "7.63.x"
         ],
-        "disabled": false
+        "disabled": true
       },
       "3.7": {
         "upstream_branch": [
@@ -45,7 +45,7 @@
           "7.64.x",
           "7.63.x"
         ],
-        "disabled": false
+        "disabled": true
       },
       "3.7": {
         "upstream_branch": [
@@ -75,7 +75,7 @@
           "7.64.x",
           "7.63.x"
         ],
-        "disabled": false
+        "disabled": true
       },
       "3.7": {
         "upstream_branch": [
@@ -105,7 +105,7 @@
           "7.64.x",
           "7.63.x"
         ],
-        "disabled": false
+        "disabled": true
       },
       "3.7": {
         "upstream_branch": [
@@ -135,7 +135,7 @@
           "7.64.x",
           "7.63.x"
         ],
-        "disabled": false
+        "disabled": true
       },
       "3.7": {
         "upstream_branch": [
@@ -165,7 +165,7 @@
           "7.64.x",
           "7.63.x"
         ],
-        "disabled": false
+        "disabled": true
       },
       "3.7": {
         "upstream_branch": [
@@ -195,7 +195,7 @@
           "7.64.x",
           "7.63.x"
         ],
-        "disabled": false
+        "disabled": true
       },
       "3.7": {
         "upstream_branch": [
@@ -234,7 +234,7 @@
           "devspaces-3.6-rhel-8",
           "devspaces-3.6-rhel-8"
         ],
-        "disabled": false
+        "disabled": true
       },
       "3.7": {
         "upstream_branch": [
@@ -264,7 +264,7 @@
           "devspaces-3.6-rhel-8",
           "devspaces-3.6-rhel-8"
         ],
-        "disabled": false
+        "disabled": true
       },
       "3.7": {
         "upstream_branch": [
@@ -294,7 +294,7 @@
           "20221111",
           "20221111"
         ],
-        "disabled": false
+        "disabled": true
       },
       "3.7": {
         "upstream_branch": [
@@ -324,7 +324,7 @@
           "v2.8.1",
           "v2.8.1"
         ],
-        "disabled": false
+        "disabled": true
       },
       "3.7": {
         "upstream_branch": [
@@ -368,7 +368,7 @@
           "devspaces-3.6-rhel-8",
           "devspaces-3.6-rhel-8"
         ],
-        "disabled": false
+        "disabled": true
       },
       "3.7": {
         "upstream_branch": [
@@ -402,7 +402,7 @@
           "7.63.x"
         ],
         "node_version": "16.13.2",
-        "disabled": false
+        "disabled": true
       },
       "3.7": {
         "upstream_branch": [
@@ -434,7 +434,7 @@
           "7.64.x",
           "7.63.x"
         ],
-        "disabled": false
+        "disabled": true
       },
       "3.7": {
         "upstream_branch": [
@@ -449,7 +449,7 @@
         "disabled": true
       },
       "3.6": {
-        "disabled": false
+        "disabled": true
       },
       "3.7": {
         "disabled": false
@@ -463,7 +463,7 @@
         "disabled": true
       },
       "3.6": {
-        "disabled": false
+        "disabled": true
       },
       "3.7": {
         "disabled": false
@@ -477,7 +477,7 @@
         "disabled": true
       },
       "3.6": {
-        "disabled": false
+        "disabled": true
       },
       "3.7": {
         "disabled": false
@@ -491,7 +491,7 @@
         "disabled": true
       },
       "3.6": {
-        "disabled": false
+        "disabled": true
       },
       "3.7": {
         "disabled": false
@@ -505,7 +505,7 @@
         "disabled": true
       },
       "3.6": {
-        "disabled": false
+        "disabled": true
       },
       "3.7": {
         "disabled": false
@@ -586,7 +586,7 @@
     },
     "@eclipse-che/plugin-registry-generator": {
       "3.5": "7.60.1",
-      "3.6": "7.63.0",
+      "3.6": "7.64.0",
       "3.7": "next",
       "3.x": "next"
     },
