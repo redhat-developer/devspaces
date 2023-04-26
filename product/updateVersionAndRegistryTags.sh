@@ -131,11 +131,25 @@ computeLatestCSV() {
     CSV_VERSION_PREV=$(yq -r '.spec.version' /tmp/${SOURCE_CONTAINER//\//-}-${containerTag}-*/manifests/devspaces.csv.yaml 2>/dev/null | tr "+" "-")
     rm -fr /tmp/${SOURCE_CONTAINER//\//-}-${containerTag}-*/
   fi
-  # remove freshmaker suffix (can break CVP tests if image doesn't exist for all OCP versions or hasn't been released yet to RHEC)
-  CSV_VERSION_PREV=${CSV_VERSION_PREV%-*.p}
+  # CRW-4324 keep freshmaker suffix for previous CSV version
+  # note that this MIGHT break CVP tests if the image doesn't exist for all OCP versions or hasn't been released yet to RHEC
+  # but since we now ship using open-ended OCP version range this should be mitigated (see com.redhat.openshift.versions 
+  # in https://github.com/redhat-developer/devspaces-images/blob/devspaces-3-rhel-8/devspaces-operator-bundle/Dockerfile#L31)
+  # CSV_VERSION_PREV=${CSV_VERSION_PREV%-*.p}
   echo "Found CSV_VERSION_PREV = ${CSV_VERSION_PREV}"
 
-  # update CSVs["${image}"].$version.CSV_VERSION_PREV
+  # update CSVs["${image}"].$version.CSV_VERSION_PREV for current stable version and 3.x versions
+  DEVSPACES_VERSION_PREV="${DEVSPACES_VERSION}"
+  if [[ $DEVSPACES_VERSION =~ ^([0-9]+)\.([0-9]+) ]]; then # reduce the z digit, remove the snapshot suffix
+    XX=${BASH_REMATCH[1]}
+    YY=${BASH_REMATCH[2]}
+    let YY=YY-1 || YY=0; if [[ $YY -lt 0 ]]; then YY=0; fi # if result of a let == 0, bash returns 1
+    DEVSPACES_VERSION_PREV="${XX}.${YY}"
+    COMMIT_MSG="${COMMIT_MSG}; update previous CSV to ${CSV_VERSION_PREV} for ${DEVSPACES_VERSION_PREV}+"
+    replaceField "${WORKDIR}/dependencies/job-config.json" "(.CSVs[\"${image}\"][\"${DEVSPACES_VERSION_PREV}\"].CSV_VERSION_PREV)" "\"${CSV_VERSION_PREV}\""
+  else
+    COMMIT_MSG="${COMMIT_MSG}; update previous CSV to ${CSV_VERSION_PREV} for ${DEVSPACES_VERSION}+"
+  fi
   replaceField "${WORKDIR}/dependencies/job-config.json" "(.CSVs[\"${image}\"][\"${DEVSPACES_VERSION}\"].CSV_VERSION_PREV)" "\"${CSV_VERSION_PREV}\""
   replaceField "${WORKDIR}/dependencies/job-config.json" "(.CSVs[\"${image}\"][\"3.x\"].CSV_VERSION_PREV)" "\"${CSV_VERSION_PREV}\""
 }
