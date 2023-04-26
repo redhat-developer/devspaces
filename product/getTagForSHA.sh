@@ -43,13 +43,14 @@ checkImage () {
     local imageAndSHA="$1"
     if [[ $QUIET -eq 0 ]]; then echo "For $imageAndSHA"; fi
     image=${imageAndSHA%%@*}
+    # echo "[DEBUG] Got image = $image"
     # shellcheck disable=SC2086
     if [[ $QUIET -eq 1 ]]; then 
         URL=$(skopeo inspect docker://${imageAndSHA} 2>/dev/null | jq -r '.Labels.url')
     else
         URL=$(skopeo inspect docker://${imageAndSHA} | jq -r '.Labels.url')
     fi
-    # echo "Got $URL"
+    # echo "[DEBUG] Got URL = $URL"
     if [[ $URL ]]; then
         container=${URL}
         container=${image}:${container##*/images/}
@@ -74,7 +75,10 @@ for imageAndSHA in $imageAndSHAs; do
     checkImage "${imageAndSHA}"
     if [[ "$checkImage_result" == "false" ]] || [[ "$USE_QUAY_TOO" == "true" ]]; then
         if [[ "${imageAndSHA}" != "quay.io/"* ]]; then # don't check quay again if we already did!
-            checkImage "quay.io/${imageAndSHA#*/}"
+            quayImage="${imageAndSHA#*/}"
+            # transform brew rh-osbs/foo-operator to quay foo/foo-operator
+            quayImage="$(echo "$quayImage" | sed -r -e "s@rh-osbs/([^-]+)-(.+)@\1/\1-\2@")"
+            checkImage "quay.io/${quayImage}"
         fi
     fi
 done
