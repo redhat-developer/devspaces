@@ -442,6 +442,13 @@
           "7.66.x"
         ],
         "disabled": false
+      },
+      "3.x": {
+        "upstream_branch": [
+          "main",
+          "main"
+        ],
+        "disabled": false
       }
     },
     "get-sources-rhpkg-container-build": {
