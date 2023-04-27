@@ -62,17 +62,31 @@ configureLatestBuildConfig() {
     echo "[INFO] detected existing PNC build-config for $product_version: https://orch.psi.redhat.com/pnc-web/#/projects/${project_id}/build-configs/${build_config_id}"
   else
     echo "[INFO] cloning PNC build config for $product_version"
-    # get previous build config for latest build to base the clone from
-    [[ ${product_version} =~ ^([0-9]+)\.([0-9]+)$ ]] && BASE=${BASH_REMATCH[1]}; NEXT=${BASH_REMATCH[2]}; (( NEXT=NEXT-1 )) 
-    old_product_version=${BASE}.${NEXT}
-    old_build_config_id=$(pnc build-config list --query "project.name==$project_name;productVersion.version==$old_product_version" | yq -r '.[].id')
-    # fetch job-config.json, where new upstream version is listed
-    new_build_config_scmRevision=$(jq -r '.Jobs.server."'"$product_version"'".upstream_branch[0]' /tmp/job-config.json)
-    new_build_config_name="devspaces-server-build-$new_build_config_scmRevision"
-    build_config_id=$(pnc build-config clone --product-version-id="$product_id_version" --buildConfigName="$new_build_config_name" --scm-revision="$new_build_config_scmRevision" "$old_build_config_id" | yq -r '.id')
+
+    # first, check for reusable orphans with no productVersion or scmRevision
+    # pnc build-config list --query "project.name==devspaces-server" | yq -r '.[]|select(.productVersion==null)|.id' ==> 10922
+    # pnc build-config list --query "project.name==devspaces-server" | yq -r '.[]|select(.scmRevision=="none")|.id' ==> 10922
+    old_build_config_id=$(pnc build-config list --query "project.name==$project_name" | yq -r '.[]|select(.productVersion==null)|.id')
+    if [[ ! $old_build_config_id ]]; then
+      old_build_config_id=$(pnc build-config list --query "project.name==$project_name" | yq -r '.[]|select(scmRevision=="none")|.id')
+    fi
+    # if found, repurpose this old build-config as the new one
+    if [[ $old_build_config_id ]]; then
+      echo "[INFO] found orphaned PNC build config https://orch.psi.redhat.com/pnc-web/#/projects/1274/build-configs/$old_build_config_id to reuse!" 
+      build_config_id="${old_build_config_id}"
+    else
+      # get previous build config for latest build to base the clone from
+      [[ ${product_version} =~ ^([0-9]+)\.([0-9]+)$ ]] && BASE=${BASH_REMATCH[1]}; NEXT=${BASH_REMATCH[2]}; (( NEXT=NEXT-1 )) 
+      old_product_version=${BASE}.${NEXT}
+      old_build_config_id=$(pnc build-config list --query "project.name==$project_name;productVersion.version==$old_product_version;name!=devspaces-server-build-main" | yq -r '.[].id')
+      # fetch job-config.json, where new upstream version is listed
+      new_build_config_scmRevision=$(jq -r '.Jobs.server."'"$product_version"'".upstream_branch[0]' /tmp/job-config.json)
+      new_build_config_name="devspaces-server-build-$new_build_config_scmRevision"
+      build_config_id=$(pnc build-config clone --product-version-id="$product_id_version" --buildConfigName="$new_build_config_name" --scm-revision="$new_build_config_scmRevision" "$old_build_config_id" | yq -r '.id')
+    fi
   fi
   if [[ $build_config_id ]]; then
-    # update config to point to new product version
+    # update config to set new name, new product version and scm revision
     new_build_config_scmRevision=$(jq -r '.Jobs.server."'"$product_version"'".upstream_branch[0]' /tmp/job-config.json)
     new_build_config_name="devspaces-server-build-$new_build_config_scmRevision"
     pnc build-config update --product-version-id="$product_id_version" --buildConfigName="$new_build_config_name" --scm-revision="$new_build_config_scmRevision" "$build_config_id"
