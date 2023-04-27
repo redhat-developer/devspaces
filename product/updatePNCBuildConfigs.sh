@@ -57,7 +57,7 @@ configureProductVersion() {
 configureLatestBuildConfig() {
   local product_version="$1"
   curl -sSLo /tmp/job-config.json https://raw.githubusercontent.com/redhat-developer/devspaces/devspaces-3-rhel-8/dependencies/job-config.json
-  build_config_id=$(pnc build-config list --query "project.name==$project_name;productVersion.version==$product_version" | yq -r '.[].id')
+  build_config_id=$(pnc build-config list --query "project.name==$project_name;productVersion.version==$product_version;name!=devspaces-server-build-main" | yq -r '.[].id')
   if [[ $build_config_id ]]; then
     echo "[INFO] detected existing PNC build-config for $product_version: https://orch.psi.redhat.com/pnc-web/#/projects/${project_id}/build-configs/${build_config_id}"
   else
