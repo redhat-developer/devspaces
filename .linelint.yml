@@ -7,6 +7,7 @@ ignore:
   - '**/product/manifest/2*/'
   - '**/product/manifest/2*/*.txt'
   - '**/product/manifest/2*/*/*.txt'
+  - '**/*.sh'
 
 rules:
   # checks if file ends in a newline character
