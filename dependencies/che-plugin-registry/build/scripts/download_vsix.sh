@@ -3,6 +3,13 @@
 set -e
 set -o pipefail
 
+scriptsBranch="$(git rev-parse --abbrev-ref HEAD 2>/dev/null || true)"
+if [[ $scriptsBranch != "devspaces-3."*"-rhel-8" ]]; then
+    scriptsBranch="devspaces-3-rhel-8"
+fi
+codeVersion=$(curl -sSlko- https://raw.githubusercontent.com/redhat-developer/devspaces-images/"${scriptsBranch}"/devspaces-code/code/package.json | jq -r '.version')
+echo "Che Code version=${codeVersion}"
+
 # pull vsix from OpenVSX
 mkdir -p /tmp/vsix
 openVsxSyncFileContent=$(cat "/openvsx-server/openvsx-sync.json")
@@ -41,6 +48,20 @@ for i in $(seq 0 "$((numberOfExtensions - 1))"); do
             exit 1
         fi
         
+        # extract the engine version from the json metadata
+        vscodeEngineVersion=$(echo "${vsixMetadata}" | jq -r '.engines.vscode')
+        # remove ^ from the engine version
+        vscodeEngineVersion="${vscodeEngineVersion//^/}"
+        # replace x by 0 in the engine version
+        vscodeEngineVersion="${vscodeEngineVersion//x/0}"
+        # check if the extension's engine version is compatible with the code version
+        # if the extension's engine version is ahead of the code version, exit with error
+        if [[ "ahead" == "$(echo | awk "(${codeVersion} < ${vscodeEngineVersion}) { print \"ahead\"; }")" ]]; then
+            echo "Engine version is ${vscodeEngineVersion} in ${vsixFullName}, it is ahead of the Che Code version which is ${codeVersion}"
+            echo "Need to use more recent version of Che Code editor or downgrade ${vsixFullName} extension"
+            exit 1
+        fi
+
         # extract the download link from the json metadata
         vsixDownloadLink=$(echo "${vsixMetadata}" | jq -r '.files.download')
         # get universal download link
