@@ -13480,12 +13480,30 @@
   timeWait: 0 mins
   timeBuild: 25 mins
   timeTotal: 26 mins
+- name: devspaces-dashboard-rhel8
+  tag: 3.7-30
+  taskId: 52427898
+  timeCreate: Thu May 4 10:00:58 2023
+  timeStart: Thu May 4 10:01:38 2023
+  timeFinish: Thu May 4 10:24:35 2023
+  timeWait: 0 mins
+  timeBuild: 22 mins
+  timeTotal: 23 mins
 - name: devspaces-operator-bundle
   tag: 3.7-138
   taskId: 52428004
   timeCreate: Thu May 4 10:08:25 2023
   timeStart: Thu May 4 10:08:34 2023
   timeFinish: Thu May 4 10:12:16 2023
+  timeWait: 0 mins
+  timeBuild: 3 mins
+  timeTotal: 3 mins
+- name: devspaces-operator-bundle
+  tag: 3.7-139
+  taskId: 52428813
+  timeCreate: Thu May 4 10:34:54 2023
+  timeStart: Thu May 4 10:35:07 2023
+  timeFinish: Thu May 4 10:38:38 2023
   timeWait: 0 mins
   timeBuild: 3 mins
   timeTotal: 3 mins
