@@ -131,12 +131,16 @@ computeLatestCSV() {
     CSV_VERSION_PREV=$(yq -r '.spec.version' /tmp/${SOURCE_CONTAINER//\//-}-${containerTag}-*/manifests/devspaces.csv.yaml 2>/dev/null | tr "+" "-")
     rm -fr /tmp/${SOURCE_CONTAINER//\//-}-${containerTag}-*/
   fi
-  # CRW-4324 keep freshmaker suffix for previous CSV version
-  # note that this MIGHT break CVP tests if the image doesn't exist for all OCP versions or hasn't been released yet to RHEC
-  # but since we now ship using open-ended OCP version range this should be mitigated (see com.redhat.openshift.versions 
+
+  # CRW-4324, CRW-4354 DO NOT keep freshmaker suffix for previous CSV versions!!! 
+  # Using FM versions WILL break CVP tests when the image doesn't exist for all OCP versions or hasn't been released yet to RHEC (which happens intermittently)
+  # We ship using open-ended OCP version range: see com.redhat.openshift.versions 
   # in https://github.com/redhat-developer/devspaces-images/blob/devspaces-3-rhel-8/devspaces-operator-bundle/Dockerfile#L31)
-  # CSV_VERSION_PREV=${CSV_VERSION_PREV%-*.p}
+  # We must assume that the Freshmaker lifecycle will do its own thing with olm.substitutesFor (grafting their fixes onto our single-stream graph) rather than injecting itself into our graph directly and pruning out older releases
+  # See also https://issues.redhat.com/browse/CWFHEALTH-2003 https://issues.redhat.com/browse/CLOUDWF-9099 https://issues.redhat.com/browse/CLOUDDST-18632
   echo "Found CSV_VERSION_PREV = ${CSV_VERSION_PREV}"
+  CSV_VERSION_PREV=${CSV_VERSION_PREV%-*.p} # remove freshmaker suffix
+  echo "Using CSV_VERSION_PREV = ${CSV_VERSION_PREV}"
 
   # update CSVs["${image}"].$version.CSV_VERSION_PREV for current stable version and 3.x versions
   DEVSPACES_VERSION_PREV="${DEVSPACES_VERSION}"
