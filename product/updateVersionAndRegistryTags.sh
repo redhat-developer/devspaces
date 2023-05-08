@@ -131,11 +131,29 @@ computeLatestCSV() {
     CSV_VERSION_PREV=$(yq -r '.spec.version' /tmp/${SOURCE_CONTAINER//\//-}-${containerTag}-*/manifests/devspaces.csv.yaml 2>/dev/null | tr "+" "-")
     rm -fr /tmp/${SOURCE_CONTAINER//\//-}-${containerTag}-*/
   fi
-  # remove freshmaker suffix (can break CVP tests if image doesn't exist for all OCP versions or hasn't been released yet to RHEC)
-  CSV_VERSION_PREV=${CSV_VERSION_PREV%-*.p}
-  echo "Found CSV_VERSION_PREV = ${CSV_VERSION_PREV}"
 
-  # update CSVs["${image}"].$version.CSV_VERSION_PREV
+  # CRW-4324, CRW-4354 DO NOT keep freshmaker suffix for previous CSV versions!!! 
+  # Using FM versions WILL break CVP tests when the image doesn't exist for all OCP versions or hasn't been released yet to RHEC (which happens intermittently)
+  # We ship using open-ended OCP version range: see com.redhat.openshift.versions 
+  # in https://github.com/redhat-developer/devspaces-images/blob/devspaces-3-rhel-8/devspaces-operator-bundle/Dockerfile#L31)
+  # We must assume that the Freshmaker lifecycle will do its own thing with olm.substitutesFor (grafting their fixes onto our single-stream graph) rather than injecting itself into our graph directly and pruning out older releases
+  # See also https://issues.redhat.com/browse/CWFHEALTH-2003 https://issues.redhat.com/browse/CLOUDWF-9099 https://issues.redhat.com/browse/CLOUDDST-18632
+  echo "Found CSV_VERSION_PREV = ${CSV_VERSION_PREV}"
+  CSV_VERSION_PREV=${CSV_VERSION_PREV%-*.p} # remove freshmaker suffix
+  echo "Using CSV_VERSION_PREV = ${CSV_VERSION_PREV}"
+
+  # update CSVs["${image}"].$version.CSV_VERSION_PREV for current stable version and 3.x versions
+  DEVSPACES_VERSION_PREV="${DEVSPACES_VERSION}"
+  if [[ $DEVSPACES_VERSION =~ ^([0-9]+)\.([0-9]+) ]]; then # reduce the z digit, remove the snapshot suffix
+    XX=${BASH_REMATCH[1]}
+    YY=${BASH_REMATCH[2]}
+    let YY=YY-1 || YY=0; if [[ $YY -lt 0 ]]; then YY=0; fi # if result of a let == 0, bash returns 1
+    DEVSPACES_VERSION_PREV="${XX}.${YY}"
+    COMMIT_MSG="${COMMIT_MSG}; update previous CSV to ${CSV_VERSION_PREV} for ${DEVSPACES_VERSION_PREV}+"
+    replaceField "${WORKDIR}/dependencies/job-config.json" "(.CSVs[\"${image}\"][\"${DEVSPACES_VERSION_PREV}\"].CSV_VERSION_PREV)" "\"${CSV_VERSION_PREV}\""
+  else
+    COMMIT_MSG="${COMMIT_MSG}; update previous CSV to ${CSV_VERSION_PREV} for ${DEVSPACES_VERSION}+"
+  fi
   replaceField "${WORKDIR}/dependencies/job-config.json" "(.CSVs[\"${image}\"][\"${DEVSPACES_VERSION}\"].CSV_VERSION_PREV)" "\"${CSV_VERSION_PREV}\""
   replaceField "${WORKDIR}/dependencies/job-config.json" "(.CSVs[\"${image}\"][\"3.x\"].CSV_VERSION_PREV)" "\"${CSV_VERSION_PREV}\""
 }
