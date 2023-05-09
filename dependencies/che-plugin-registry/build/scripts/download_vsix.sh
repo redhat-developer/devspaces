@@ -33,14 +33,52 @@ for i in $(seq 0 "$((numberOfExtensions - 1))"); do
         # if version wasn't set, use latest
         if [[ $vsixVersion == null ]]; then
             vsixMetadata=$(curl -sLS "https://open-vsx.org/api/${vsixName}/latest")
-            
             # if version wasn't set in json, grab it from metadata and add it into the file
-            vsixVersion=$(echo "${vsixMetadata}" | jq -r '.version')
+            # get all versions of the extension
+            allVersions=$(echo "${vsixMetadata}" | jq -r '.allVersions')
+            key_value_pairs=$(echo "$allVersions" | jq -r 'to_entries[] | [ .key, .value ] | @tsv')
+            
+            # go through all versions of the extension to find the latest stable version that is compatible with the VS Code version
+            while IFS=$'\t' read -r key value; do
+                # get metadata for the version
+                vsixMetadata=$(curl -sLS "https://open-vsx.org/api/${vsixName}/${key}")
+                # check there is no error field in the metadata
+                if [[ $(echo "${vsixMetadata}" | jq -r ".error") != null ]]; then
+                    echo "Error while getting metadata for ${vsixFullName} version ${key}"
+                    continue
+                fi
+      
+                # check if the version is pre-release
+                preRelease=$(echo "${vsixMetadata}" | jq -r '.preRelease')
+                if [[ $preRelease == true ]]; then
+                    echo "Skipping pre-release version ${value}"
+                    continue
+                fi
+
+                # extract the engine version from the json metadata
+                vscodeEngineVersion=$(echo "${vsixMetadata}" | jq -r '.engines.vscode')
+                # remove ^ from the engine version
+                vscodeEngineVersion="${vscodeEngineVersion//^/}"
+                # replace x by 0 in the engine version
+                vscodeEngineVersion="${vscodeEngineVersion//x/0}"
+                # check if the extension's engine version is compatible with the code version
+                # if the extension's engine version is ahead of the code version, exit with error
+                if [[  "$vscodeEngineVersion" = "$(echo -e "$vscodeEngineVersion\n$codeVersion" | sort -V | head -n1)" ]]; then
+                    #VS Code version >= Engine version, can proceed."
+                    vsixVersion=$(echo "${vsixMetadata}" | jq -r ".version")
+                    break
+                else 
+                    echo "Neither version of $vsixFullName is not compatible with the current version of VS Code editor which is $codeVersion"
+                    exit 1
+                fi
+            done <<< "$key_value_pairs"
+
             jq --argjson i "$i" --arg version "$vsixVersion" '.[$i] += { "version": $version }' /openvsx-server/openvsx-sync.json > tmp.json
             mv tmp.json /openvsx-server/openvsx-sync.json
         else
             vsixMetadata=$(curl -sLS "https://open-vsx.org/api/${vsixName}/${vsixVersion}")
         fi 
+        
         # check there is no error field in the metadata
         if [[ $(echo "${vsixMetadata}" | jq -r ".error") != null ]]; then
             echo "Error while getting metadata for ${vsixFullName}"
@@ -48,20 +86,6 @@ for i in $(seq 0 "$((numberOfExtensions - 1))"); do
             exit 1
         fi
         
-        # extract the engine version from the json metadata
-        vscodeEngineVersion=$(echo "${vsixMetadata}" | jq -r '.engines.vscode')
-        # remove ^ from the engine version
-        vscodeEngineVersion="${vscodeEngineVersion//^/}"
-        # replace x by 0 in the engine version
-        vscodeEngineVersion="${vscodeEngineVersion//x/0}"
-        # check if the extension's engine version is compatible with the code version
-        # if the extension's engine version is ahead of the code version, exit with error
-        if [[ "ahead" == "$(echo | awk "(${codeVersion} < ${vscodeEngineVersion}) { print \"ahead\"; }")" ]]; then
-            echo "Engine version is ${vscodeEngineVersion} in ${vsixFullName}, it is ahead of the Che Code version which is ${codeVersion}"
-            echo "Need to use more recent version of Che Code editor or downgrade ${vsixFullName} extension"
-            exit 1
-        fi
-
         # extract the download link from the json metadata
         vsixDownloadLink=$(echo "${vsixMetadata}" | jq -r '.files.download')
         # get universal download link
