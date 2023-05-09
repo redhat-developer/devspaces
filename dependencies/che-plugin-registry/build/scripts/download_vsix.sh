@@ -39,6 +39,7 @@ for i in $(seq 0 "$((numberOfExtensions - 1))"); do
             key_value_pairs=$(echo "$allVersions" | jq -r 'to_entries[] | [ .key, .value ] | @tsv')
             
             # go through all versions of the extension to find the latest stable version that is compatible with the VS Code version
+            resultedVersion=null
             while IFS=$'\t' read -r key value; do
                 # get metadata for the version
                 vsixMetadata=$(curl -sLS "https://open-vsx.org/api/${vsixName}/${key}")
@@ -62,16 +63,23 @@ for i in $(seq 0 "$((numberOfExtensions - 1))"); do
                 # replace x by 0 in the engine version
                 vscodeEngineVersion="${vscodeEngineVersion//x/0}"
                 # check if the extension's engine version is compatible with the code version
-                # if the extension's engine version is ahead of the code version, exit with error
+                # if the extension's engine version is ahead of the code version, check a next version of the extension
                 if [[  "$vscodeEngineVersion" = "$(echo -e "$vscodeEngineVersion\n$codeVersion" | sort -V | head -n1)" ]]; then
                     #VS Code version >= Engine version, can proceed."
-                    vsixVersion=$(echo "${vsixMetadata}" | jq -r ".version")
+                    resultedVersion=$(echo "${vsixMetadata}" | jq -r ".version")
                     break
                 else 
-                    echo "Neither version of $vsixFullName is not compatible with the current version of VS Code editor which is $codeVersion"
-                    exit 1
+                    echo "Skipping ${value}, it is not compatible with VS Code editor $codeVersion"
+                    continue
                 fi
             done <<< "$key_value_pairs"
+
+            if [[ $resultedVersion == null ]]; then
+                echo "[ERROR] No stable version of $vsixFullName is compatible with VS Code editor verision $codeVersion; must exit!"
+                exit 1
+            else
+                vsixVersion=$resultedVersion
+            fi
 
             jq --argjson i "$i" --arg version "$vsixVersion" '.[$i] += { "version": $version }' /openvsx-server/openvsx-sync.json > tmp.json
             mv tmp.json /openvsx-server/openvsx-sync.json
