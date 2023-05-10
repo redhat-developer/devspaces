@@ -60,6 +60,8 @@ for i in $(seq 0 "$((numberOfExtensions - 1))"); do
                 vscodeEngineVersion=$(echo "${vsixMetadata}" | jq -r '.engines.vscode')
                 # remove ^ from the engine version
                 vscodeEngineVersion="${vscodeEngineVersion//^/}"
+                # remove >= from the engine version
+                vscodeEngineVersion="${vscodeEngineVersion//>=/}"
                 # replace x by 0 in the engine version
                 vscodeEngineVersion="${vscodeEngineVersion//x/0}"
                 # check if the extension's engine version is compatible with the code version
