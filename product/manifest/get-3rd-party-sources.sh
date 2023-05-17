@@ -264,7 +264,7 @@ if [[ ${phases} == *"3"* ]]; then
     popd >/dev/null
 fi
 
-du -shc "${TODAY_DIR}"/sources/containers/* "${TODAY_DIR}"/sources/vscode/*
+du -shc "${TODAY_DIR}"/sources/containers/* "${TODAY_DIR}"/sources/vscode/* || true
 
 ##################################
 
