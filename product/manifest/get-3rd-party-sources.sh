@@ -92,7 +92,7 @@ maketarball ()
     git pull origin "${MIDSTM_BRANCH}" -q || true
 
     # pull tarballs, but only if there's a sources and .spec file
-    if [[ -f sources ]] && [[ -f sources.spec ]]; then rm -f sources.spec; rhpkg sources; fi
+    if [[ -f sources ]] && [[ -f sources.spec ]]; then rhpkg sources; fi
 
     # unpack 3rd party dep tarballs
     # shellcheck disable=SC2044
