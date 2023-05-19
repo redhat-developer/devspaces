@@ -15190,6 +15190,15 @@
   timeWait: 0 mins
   timeBuild: 16 mins
   timeTotal: 16 mins
+- name: devspaces-udi-rhel8
+  tag: 3.7-12
+  taskId: 52746432
+  timeCreate: Fri May 19 22:09:16 2023
+  timeStart: Fri May 19 22:09:54 2023
+  timeFinish: Fri May 19 22:55:47 2023
+  timeWait: 0 mins
+  timeBuild: 45 mins
+  timeTotal: 46 mins
 - name: devspaces-imagepuller-rhel8
   tag: 3.7-8
   taskId: 52746433
@@ -15250,6 +15259,15 @@
   timeCreate: Fri May 19 18:44:43 2023
   timeStart: Fri May 19 18:45:23 2023
   timeFinish: Fri May 19 18:48:12 2023
+  timeWait: 0 mins
+  timeBuild: 2 mins
+  timeTotal: 3 mins
+- name: devspaces-operator-bundle
+  tag: 3.7-229
+  taskId: 52746886
+  timeCreate: Fri May 19 23:18:31 2023
+  timeStart: Fri May 19 23:19:12 2023
+  timeFinish: Fri May 19 23:21:52 2023
   timeWait: 0 mins
   timeBuild: 2 mins
   timeTotal: 3 mins
