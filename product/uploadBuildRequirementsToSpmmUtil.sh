@@ -7,7 +7,7 @@
 
 # requires:
     # spmm-util-users account - see https://issues.redhat.com/browse/SPMM-13576 and https://spmm.pages.redhat.com/util-ansible/#access-prerequisites
-    # pig/bacon/pnc cli - see https://project-ncl.github.io/bacon/#installation-and-usage
+    # curl
     # rsync
 
 set -e
