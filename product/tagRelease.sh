@@ -258,6 +258,7 @@ for repo in \
 devspaces \
 devspaces-chectl \
 devspaces-images \
+devspaces-vscode-extensions \
 ; do
 	pushBranchAndOrTagGH $repo "redhat-developer"
 done
