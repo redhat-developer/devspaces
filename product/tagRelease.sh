@@ -276,6 +276,7 @@ php-hello-world \
 python-hello-world \
 quarkus-quickstarts \
 web-nodejs-sample \
+ansible-devspace-demo \
 "
 
 # create branches for devspaces samples, located under https://github.com/${samplesRepo}/
