@@ -1,0 +1,59 @@
+schemaVersion: 2.2.0
+metadata:
+  name: ds-plugin-registry-dev
+components:
+  - name: builder
+    container:
+      image: quay.io/devfile/universal-developer-image:ubi8-latest
+      memoryRequest: 256Mi
+      memoryLimit: 8Gi
+      cpuRequest: 100m
+      cpuLimit: 2000m
+      env:
+        - name: CONCURRENTLY_OPTS
+          value: -m 1
+      endpoints:
+        - name: openvsx
+          exposure: internal
+          targetPort: 5432
+commands:
+  - id: podman-login
+    exec:
+      label: "1. Login to registry.redhat.io"
+      commandLine: podman login registry.redhat.io
+      component: builder
+  - id: build
+    exec:
+      label: "2. Build and Publish a Custom Plugin Registry"
+      component: builder
+      workingDir: ${PROJECTS_ROOT}/devspaces/dependencies/che-plugin-registry
+      commandLine: |
+          set -o xtrace;
+          rm -rf output;
+          mkdir output;
+          BUILDER=podman SKIP_TEST=true SKIP_FORMAT=true SKIP_LINT=true NODE_BUILD_OPTIONS="-max-old-space-size=1024" ./build.sh &&
+          export IMAGE=image-registry.openshift-image-registry.svc:5000/$(kubectl get sa default -o json | jq -r '.metadata.namespace')/che-plugin-registry &&
+          podman tag quay.io/devspaces/pluginregistry-rhel8:next ${IMAGE} &&
+          podman login --tls-verify=false -u $(oc whoami | tr -d :) -p $(oc whoami -t) image-registry.openshift-image-registry.svc:5000 &&
+          podman push --tls-verify=false "${IMAGE}"
+  - id: configure-custom-plugin-registry
+    exec:
+      label: "3. Configure Che to use the Custom Plugin Registry"
+      component: builder
+      workingDir: ${PROJECTS_ROOT}/devspaces/dependencies/che-plugin-registry
+      commandLine: |
+          export IMAGE=image-registry.openshift-image-registry.svc:5000/$(kubectl get sa default -o json | jq -r '.metadata.namespace')/che-plugin-registry &&
+          export CHECLUSTER_NAMESPACE="$(kubectl get checluster --all-namespaces -o json | jq -r '.items[0].metadata.namespace')" &&
+          kubectl create secret -n "${CHECLUSTER_NAMESPACE}" docker-registry regcred --docker-server=image-registry.openshift-image-registry.svc:5000 --docker-username=$(oc whoami | tr -d :) --docker-password=$(oc whoami -t) &&
+          kubectl patch serviceaccount default -n "${CHECLUSTER_NAMESPACE}" -p '{"imagePullSecrets": [{"name": "regcred"}]}' &&
+          ./patch-cluster.sh "${IMAGE}"
+  - id: enable-embedded-openvsx
+    exec:
+      label: "4. Configure Che to use the embedded Eclipse Open VSX server"
+      component: builder
+      workingDir: ${PROJECTS_ROOT}/devspaces/dependencies/che-plugin-registry
+      commandLine: |
+          export CHECLUSTER_NAME="$(kubectl get checluster --all-namespaces -o json | jq -r '.items[0].metadata.name')" &&
+          export CHECLUSTER_NAMESPACE="$(kubectl get checluster --all-namespaces -o json | jq -r '.items[0].metadata.namespace')" &&
+          export PATCH='{"spec":{"components":{"pluginRegistry":{"openVSXURL":""}}}}' &&
+          kubectl patch checluster "${CHECLUSTER_NAME}" --type=merge --patch "${PATCH}" -n "${CHECLUSTER_NAMESPACE}"
