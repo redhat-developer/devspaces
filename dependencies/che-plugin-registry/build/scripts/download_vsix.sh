@@ -3,16 +3,45 @@
 set -e
 set -o pipefail
 
-scriptsBranch="$(git rev-parse --abbrev-ref HEAD 2>/dev/null || true)"
-if [[ $scriptsBranch != "devspaces-3."*"-rhel-8" ]]; then
-    scriptsBranch="devspaces-3-rhel-8"
+downloadVsix=1
+openvsxJson="/openvsx-server/openvsx-sync.json"
+
+usage()
+{
+    echo "Usage: $0 -b devspaces-3.y-rhel-8 -j /path/to/openvsx-sync.json --no-download
+
+All arguments are optional.
+
+-b|--branch     Specify a devspaces branch. Otherwise will be computed from local git directory
+-j|--json       Specify a path for openvsx-sync.json. Default: /openvsx-server/openvsx-sync.json
+--no-download   Do not download vsix files, only update versions in the openvsx-sync.json"
+    exit
+}
+
+# commandline args
+while [[ "$#" -gt 0 ]]; do
+  case $1 in
+    '-b'|'--branch') scriptsBranch="$2"; shift 1;;
+    '-j'|'--json') openvsxJson="$2"; shift 1;;
+    '--no-download') downloadVsix=0;;
+    '-h'|'--help') usage;;
+  esac
+  shift 1
+done
+
+if [[ ! "${scriptsbranch}" ]]; then 
+    scriptsBranch="$(git rev-parse --abbrev-ref HEAD 2>/dev/null || true)"
+    if [[ $scriptsBranch != "devspaces-3."*"-rhel-8" ]]; then
+        scriptsBranch="devspaces-3-rhel-8"
+    fi
 fi
+
 codeVersion=$(curl -sSlko- https://raw.githubusercontent.com/redhat-developer/devspaces-images/"${scriptsBranch}"/devspaces-code/code/package.json | jq -r '.version')
 echo "Che Code version=${codeVersion}"
 
 # pull vsix from OpenVSX
 mkdir -p /tmp/vsix
-openVsxSyncFileContent=$(cat "/openvsx-server/openvsx-sync.json")
+openVsxSyncFileContent=$(cat "$openvsxJson")
 numberOfExtensions=$(echo "${openVsxSyncFileContent}" | jq ". | length")
 IFS=$'\n' 
 
@@ -105,8 +134,10 @@ for i in $(seq 0 "$((numberOfExtensions - 1))"); do
         fi
     fi
 
-    echo "Downloading ${vsixDownloadLink} into ${vsixPublisher} folder..."
-    vsixFilename="/tmp/vsix/${vsixFullName}-${vsixVersion}.vsix"
-    # download the latest vsix file in the publisher directory
-    curl -sLS "${vsixDownloadLink}" -o "${vsixFilename}"
+    if [[ downloadVsix = 1 ]]; then
+        echo "Downloading ${vsixDownloadLink} into ${vsixPublisher} folder..."
+        vsixFilename="/tmp/vsix/${vsixFullName}-${vsixVersion}.vsix"
+        # download the latest vsix file in the publisher directory
+        curl -sLS "${vsixDownloadLink}" -o "${vsixFilename}"
+    fi
 done;
