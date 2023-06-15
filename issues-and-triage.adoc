@@ -62,6 +62,16 @@ For some issues, you may be able to add even more information:
 Don't change priority if the issue has a label `need-PM/Support-triage`. Instead, talk to the Product Manager or Support person for the related product (Dev Spaces, DWO, or WTO). You can message on Slack if they're online, or leave a comment on the JIRA for them if they're not.
 ====
 +
+
++
+[NOTE]
+====
+- label `cee_high` has priority = [mostly `Critical`, but could be `Blocker`]
+- label `cee_medium` has priority = [mostly `Major`, but could be `Critical`]
+- label `cee_low` has priority = `Major` or lower
+====
++
+
 . Set **release note fields** if relevant:
     - Affects: Release Notes
     - Release Note Text
