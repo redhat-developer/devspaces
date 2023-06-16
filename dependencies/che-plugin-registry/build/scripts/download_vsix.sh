@@ -29,7 +29,7 @@ while [[ "$#" -gt 0 ]]; do
   shift 1
 done
 
-if [[ ! "${scriptsbranch}" ]]; then 
+if [[ ! "${scriptsBranch}" ]]; then 
     scriptsBranch="$(git rev-parse --abbrev-ref HEAD 2>/dev/null || true)"
     if [[ $scriptsBranch != "devspaces-3."*"-rhel-8" ]]; then
         scriptsBranch="devspaces-3-rhel-8"
