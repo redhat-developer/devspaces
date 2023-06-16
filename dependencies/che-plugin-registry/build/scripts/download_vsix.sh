@@ -112,8 +112,8 @@ for i in $(seq 0 "$((numberOfExtensions - 1))"); do
                 vsixVersion=$resultedVersion
             fi
 
-            jq --argjson i "$i" --arg version "$vsixVersion" '.[$i] += { "version": $version }' $openvsxJson > tmp.json
-            mv tmp.json $openvsxJson
+            jq --argjson i "$i" --arg version "$vsixVersion" '.[$i] += { "version": $version }' "$openvsxJson" > tmp.json
+            mv tmp.json "$openvsxJson"
         else
             vsixMetadata=$(curl -sLS "https://open-vsx.org/api/${vsixName}/${vsixVersion}")
         fi 
