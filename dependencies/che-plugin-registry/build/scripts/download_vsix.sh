@@ -112,8 +112,8 @@ for i in $(seq 0 "$((numberOfExtensions - 1))"); do
                 vsixVersion=$resultedVersion
             fi
 
-            jq --argjson i "$i" --arg version "$vsixVersion" '.[$i] += { "version": $version }' /openvsx-server/openvsx-sync.json > tmp.json
-            mv tmp.json /openvsx-server/openvsx-sync.json
+            jq --argjson i "$i" --arg version "$vsixVersion" '.[$i] += { "version": $version }' $openvsxJson > tmp.json
+            mv tmp.json $openvsxJson
         else
             vsixMetadata=$(curl -sLS "https://open-vsx.org/api/${vsixName}/${vsixVersion}")
         fi 
@@ -134,7 +134,7 @@ for i in $(seq 0 "$((numberOfExtensions - 1))"); do
         fi
     fi
 
-    if [[ downloadVsix = 1 ]]; then
+    if [[ $downloadVsix = 1 ]]; then
         echo "Downloading ${vsixDownloadLink} into ${vsixPublisher} folder..."
         vsixFilename="/tmp/vsix/${vsixFullName}-${vsixVersion}.vsix"
         # download the latest vsix file in the publisher directory
