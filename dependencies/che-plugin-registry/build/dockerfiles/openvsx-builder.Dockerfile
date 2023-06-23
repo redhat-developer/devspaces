@@ -25,9 +25,13 @@ RUN mkdir /openvsx-server && \
 
 RUN cd /openvsx-server && jar -xf openvsx-server.jar && rm openvsx-server.jar
 
-# Pull vsix files from openvsx
+COPY /current_branch /current_branch
 COPY /openvsx-sync.json /openvsx-server/
 COPY /build/scripts/download_vsix.sh /tmp
-RUN /tmp/download_vsix.sh && mv /tmp/vsix /openvsx-server
+RUN \
+    branch=$(cat /current_branch) && \
+    # Pull vsix files from openvsx
+    /tmp/download_vsix.sh $branch $ && mv /tmp/vsix /openvsx-server && \
+    rm /current_branch
 
 RUN tar -czvf openvsx-server.tar.gz openvsx-server \
