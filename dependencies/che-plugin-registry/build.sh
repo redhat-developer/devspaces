@@ -143,7 +143,15 @@ prepareOpenvsxPackagingAsset() {
         rm "$OPENVSX_ASSET_DEST"
     fi
 
+    SCRIPT_BRANCH="$(git rev-parse --abbrev-ref HEAD 2>/dev/null || true)"
+    if [[ $SCRIPT_BRANCH != "devspaces-3."*"-rhel-8" ]]; then
+        SCRIPT_BRANCH="devspaces-3-rhel-8"
+    fi
+
+    # save current branch name to the temporary file
+    echo "$SCRIPT_BRANCH" > current_branch
     ${BUILDER} ${BUILD_COMMAND} --progress=plain --no-cache -f build/dockerfiles/openvsx-builder.Dockerfile -t "$OPENVSX_BUILDER_IMAGE" .
+    rm current_branch 
     # shellcheck disable=SC2181
     if [[ $? -eq 0 ]]; then
         echo "Container '$OPENVSX_BUILDER_IMAGE' successfully built"

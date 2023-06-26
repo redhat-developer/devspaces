@@ -21,7 +21,7 @@ All arguments are optional.
 # commandline args
 while [[ "$#" -gt 0 ]]; do
   case $1 in
-    '-b'|'--branch') scriptsBranch="$2"; shift 1;;
+    '-b'|'--branch') scriptBranch="$2"; shift 1;;
     '-j'|'--json') openvsxJson="$2"; shift 1;;
     '--no-download') downloadVsix=0;;
     '-h'|'--help') usage;;
@@ -29,14 +29,8 @@ while [[ "$#" -gt 0 ]]; do
   shift 1
 done
 
-if [[ ! "${scriptsBranch}" ]]; then 
-    scriptsBranch="$(git rev-parse --abbrev-ref HEAD 2>/dev/null || true)"
-    if [[ $scriptsBranch != "devspaces-3."*"-rhel-8" ]]; then
-        scriptsBranch="devspaces-3-rhel-8"
-    fi
-fi
-
-codeVersion=$(curl -sSlko- https://raw.githubusercontent.com/redhat-developer/devspaces-images/"${scriptsBranch}"/devspaces-code/code/package.json | jq -r '.version')
+echo "Scripts branch=${scriptBranch}"
+codeVersion=$(curl -sSlko- https://raw.githubusercontent.com/redhat-developer/devspaces-images/"${scriptBranch}"/devspaces-code/code/package.json | jq -r '.version')
 echo "Che Code version=${codeVersion}"
 
 # pull vsix from OpenVSX
@@ -131,6 +125,12 @@ for i in $(seq 0 "$((numberOfExtensions - 1))"); do
         vsixUniversalDownloadLink=$(echo "${vsixMetadata}" | jq -r '.downloads."universal"')
         if [[ $vsixUniversalDownloadLink != null ]]; then
             vsixDownloadLink=$vsixUniversalDownloadLink
+        else
+            # get linux download link
+            vsixLinuxDownloadLink=$(echo "${vsixMetadata}" | jq -r '.downloads."linux-x64"')
+            if [[ $vsixLinuxDownloadLink != null ]]; then
+                vsixDownloadLink=$vsixLinuxDownloadLink
+            fi
         fi
     fi
 
