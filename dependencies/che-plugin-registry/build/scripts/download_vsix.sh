@@ -2,12 +2,9 @@
 
 set -e
 set -o pipefail
-
-scriptsBranch="$(git rev-parse --abbrev-ref HEAD 2>/dev/null || true)"
-if [[ $scriptsBranch != "devspaces-3."*"-rhel-8" ]]; then
-    scriptsBranch="devspaces-3-rhel-8"
-fi
-codeVersion=$(curl -sSlko- https://raw.githubusercontent.com/redhat-developer/devspaces-images/"${scriptsBranch}"/devspaces-code/code/package.json | jq -r '.version')
+scriptBranch="$1"
+echo "Scripts branch=${scriptBranch}"
+codeVersion=$(curl -sSlko- https://raw.githubusercontent.com/redhat-developer/devspaces-images/"${scriptBranch}"/devspaces-code/code/package.json | jq -r '.version')
 echo "Che Code version=${codeVersion}"
 
 # pull vsix from OpenVSX
@@ -102,6 +99,12 @@ for i in $(seq 0 "$((numberOfExtensions - 1))"); do
         vsixUniversalDownloadLink=$(echo "${vsixMetadata}" | jq -r '.downloads."universal"')
         if [[ $vsixUniversalDownloadLink != null ]]; then
             vsixDownloadLink=$vsixUniversalDownloadLink
+        else
+            # get linux download link
+            vsixLinuxDownloadLink=$(echo "${vsixMetadata}" | jq -r '.downloads."linux-x64"')
+            if [[ $vsixLinuxDownloadLink != null ]]; then
+                vsixDownloadLink=$vsixLinuxDownloadLink
+            fi
         fi
     fi
 
