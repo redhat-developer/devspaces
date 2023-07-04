@@ -15622,3 +15622,39 @@
   timeWait: 0 mins
   timeBuild: 5 mins
   timeTotal: 5 mins
+- name: devspaces-configbump-rhel8
+  tag: 3.7-11
+  taskId: 53707624
+  timeCreate: Tue Jul 4 11:46:02 2023
+  timeStart: Tue Jul 4 11:46:43 2023
+  timeFinish: Tue Jul 4 12:05:04 2023
+  timeWait: 0 mins
+  timeBuild: 18 mins
+  timeTotal: 19 mins
+- name: devspaces-dashboard-rhel8
+  tag: 3.7-46
+  taskId: 53707627
+  timeCreate: Tue Jul 4 11:46:12 2023
+  timeStart: Tue Jul 4 11:46:44 2023
+  timeFinish: Tue Jul 4 12:13:01 2023
+  timeWait: 0 mins
+  timeBuild: 26 mins
+  timeTotal: 26 mins
+- name: devspaces-server-rhel8
+  tag: 3.7-25
+  taskId: 53707860
+  timeCreate: Tue Jul 4 11:52:33 2023
+  timeStart: Tue Jul 4 13:06:35 2023
+  timeFinish: Tue Jul 4 13:16:07 2023
+  timeWait: 74 mins
+  timeBuild: 9 mins
+  timeTotal: 83 mins
+- name: devspaces-operator-bundle
+  tag: 3.7-249
+  taskId: 53708146
+  timeCreate: Tue Jul 4 12:23:44 2023
+  timeStart: Tue Jul 4 13:12:53 2023
+  timeFinish: Tue Jul 4 13:17:13 2023
+  timeWait: 49 mins
+  timeBuild: 4 mins
+  timeTotal: 53 mins
