@@ -15595,3 +15595,30 @@
   timeWait: 0 mins
   timeBuild: 3 mins
   timeTotal: 4 mins
+- name: devspaces-udi-rhel8
+  tag: 3.7-15
+  taskId: 53690361
+  timeCreate: Mon Jul 3 02:17:04 2023
+  timeStart: Mon Jul 3 21:37:55 2023
+  timeFinish: Mon Jul 3 22:23:46 2023
+  timeWait: 1160 mins
+  timeBuild: 45 mins
+  timeTotal: 1206 mins
+- name: devspaces-idea-rhel8
+  tag: 3.7-9
+  taskId: 53690374
+  timeCreate: Mon Jul 3 02:30:14 2023
+  timeStart: Mon Jul 3 21:38:41 2023
+  timeFinish: Mon Jul 3 21:57:06 2023
+  timeWait: 1148 mins
+  timeBuild: 18 mins
+  timeTotal: 1166 mins
+- name: devspaces-operator-bundle
+  tag: 3.7-248
+  taskId: 53696081
+  timeCreate: Tue Jul 4 04:38:03 2023
+  timeStart: Tue Jul 4 04:38:17 2023
+  timeFinish: Tue Jul 4 04:43:24 2023
+  timeWait: 0 mins
+  timeBuild: 5 mins
+  timeTotal: 5 mins
