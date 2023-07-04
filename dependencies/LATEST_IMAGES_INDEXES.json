@@ -6,6 +6,22 @@
                     "iibURL": "registry-proxy.engineering.redhat.com/rh-osbs/iib:529401",
                     "iibTag": "529401"
                 },
+                "v4.11": {
+                    "iibURL": "registry-proxy.engineering.redhat.com/rh-osbs/iib:529404",
+                    "iibTag": "529404"
+                },
+                "v4.12": {
+                    "iibURL": "registry-proxy.engineering.redhat.com/rh-osbs/iib:529412",
+                    "iibTag": "529412"
+                },
+                "v4.13": {
+                    "iibURL": "registry-proxy.engineering.redhat.com/rh-osbs/iib:529413",
+                    "iibTag": "529413"
+                },
+                "v4.14": {
+                    "iibURL": "registry-proxy.engineering.redhat.com/rh-osbs/iib:529416",
+                    "iibTag": "529416"
+                },
                 "OSBSImage": "registry-proxy.engineering.redhat.com/rh-osbs/devspaces-devspaces-operator-bundle:3.7-249",
                 "quayImage": "quay.io/devspaces/devspaces-operator-bundle:3.7-249",
                 "tag": "3.7-249"
