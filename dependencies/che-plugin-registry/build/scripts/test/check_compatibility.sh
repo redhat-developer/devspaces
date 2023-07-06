@@ -1,9 +1,12 @@
 #!/bin/bash
+#
+# Copyright (c) 2023 Red Hat, Inc.
+# This program and the accompanying materials are made
 # available under the terms of the Eclipse Public License 2.0
 # which is available at https://www.eclipse.org/legal/epl-2.0/
 #
 # SPDX-License-Identifier: EPL-2.0
-# 
+#
 # The script is used by openvsx-builder.Dockerfile, 
 # it validates the compatibility between the engine versions of VS Code extensions (stored in .vsix archives) 
 # and a Che Code version used in the current DS version. 
