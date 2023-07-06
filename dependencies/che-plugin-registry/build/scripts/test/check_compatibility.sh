@@ -72,7 +72,7 @@ for archive in $vsixArchives; do
     #VS Code version >= Engine version, can proceed."
     echo -e "${GREEN}${EMOJI_PASS}${RESETSTYLE} compatible."
   else 
-    echo -e "Extension's engine version is ahead of Che Code version ($codeVersion)."
+    echo -e "Extension requires a newer engine version than Che Code version ($codeVersion)."
     echo -e "${RED}${EMOJI_FAIL}${RESETSTYLE} Test failed!"
     exit 1
   fi
