@@ -70,7 +70,7 @@ for archive in $vsixArchives; do
   # if the extension's engine version is ahead of the code version, check a next version of the extension
   if [[  "$vscodeEngineVersion" = "$(echo -e "$vscodeEngineVersion\n$codeVersion" | sort -V | head -n1)" ]]; then
     #VS Code version >= Engine version, can proceed."
-    echo -e "${GREEN}${EMOJI_PASS}${RESETSTYLE} The engine versin is compatible in $archive!"
+    echo -e "${GREEN}${EMOJI_PASS}${RESETSTYLE} compatible."
   else 
     echo -e "Extension's engine version is ahead of Che Code version ($codeVersion)."
     echo -e "${RED}${EMOJI_FAIL}${RESETSTYLE} Test failed!"
