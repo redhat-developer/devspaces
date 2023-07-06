@@ -34,7 +34,7 @@ DEFAULT_EMOJI_FAIL="✘" # could be overriden with EMOJI_FAIL="[FAIL]"
 EMOJI_FAIL=${EMOJI_FAIL:-$DEFAULT_EMOJI_FAIL}
 
 function initTest() {
-  echo -e "${BOLD}\n${EMOJI_HEADER} ${1}${RESETSTYLE}"
+  echo -n -e "${BOLD}\n${EMOJI_HEADER} ${1}${RESETSTYLE} ... "
 }
 
 # Check if the information about the current branch is empty
