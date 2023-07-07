@@ -1,5 +1,7 @@
 #!/bin/bash
 
+trap EXIT
+
 set -e
 set -o pipefail
 
@@ -29,9 +31,31 @@ while [[ "$#" -gt 0 ]]; do
   shift 1
 done
 
+RED="\e[31m"
+GREEN="\e[32m"
+RESETSTYLE="\e[0m"
+BOLD="\e[1m"
+DEFAULT_EMOJI_HEADER="🏃" # could be overiden with EMOJI_HEADER="-"
+EMOJI_HEADER=${EMOJI_HEADER:-$DEFAULT_EMOJI_HEADER}
+DEFAULT_EMOJI_PASS="✔" # could be overriden with EMOJI_PASS="[PASS]"
+EMOJI_PASS=${EMOJI_PASS:-$DEFAULT_EMOJI_PASS}
+DEFAULT_EMOJI_FAIL="✘" # could be overriden with EMOJI_FAIL="[FAIL]"
+EMOJI_FAIL=${EMOJI_FAIL:-$DEFAULT_EMOJI_FAIL}
+
+function initTest() {
+  echo -n -e "${BOLD}\n${EMOJI_HEADER} ${1}${RESETSTYLE} ... "
+}
+
 echo "Scripts branch=${scriptBranch}"
 codeVersion=$(curl -sSlko- https://raw.githubusercontent.com/redhat-developer/devspaces-images/"${scriptBranch}"/devspaces-code/code/package.json | jq -r '.version')
 echo "Che Code version=${codeVersion}"
+
+# Check if the information about the current branch is empty
+if [[ -z "$scriptBranch" ]]; then
+    echo -e "The branch is not defined. It is not possible to get Che Code version."
+    echo -e "${RED}${EMOJI_FAIL}${RESETSTYLE} Test failed!"
+    exit 1
+fi
 
 # pull vsix from OpenVSX
 mkdir -p /tmp/vsix
@@ -139,5 +163,27 @@ for i in $(seq 0 "$((numberOfExtensions - 1))"); do
         vsixFilename="/tmp/vsix/${vsixFullName}-${vsixVersion}.vsix"
         # download the latest vsix file in the publisher directory
         curl -sLS "${vsixDownloadLink}" -o "${vsixFilename}"
+
+        initTest "Checking $vsixFilename"
+  
+        # Extract the supported version of VS Code engine from the package.json
+        vscodeEngineVersion=$(unzip -p "$vsixFilename" "extension/package.json" | jq -r '.engines.vscode')
+
+        # remove ^ from the engine version
+        vscodeEngineVersion="${vscodeEngineVersion//^/}"
+        # remove >= from the engine version
+        vscodeEngineVersion="${vscodeEngineVersion//>=/}"
+        # replace x by 0 in the engine version
+        vscodeEngineVersion="${vscodeEngineVersion//x/0}"
+        # check if the extension's engine version is compatible with the code version
+        # if the extension's engine version is ahead of the code version, check a next version of the extension
+        if [[  "$vscodeEngineVersion" = "$(echo -e "$vscodeEngineVersion\n$codeVersion" | sort -V | head -n1)" ]]; then
+            #VS Code version >= Engine version, can proceed."
+            echo -e "${GREEN}${EMOJI_PASS}${RESETSTYLE} compatible."
+        else 
+            echo -e "Extension requires a newer engine version than Che Code version ($codeVersion)."
+            echo -e "${RED}${EMOJI_FAIL}${RESETSTYLE} Test failed!"
+            exit 1
+        fi
     fi
 done;

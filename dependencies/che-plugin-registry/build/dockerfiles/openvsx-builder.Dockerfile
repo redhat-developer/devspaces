@@ -31,13 +31,7 @@ COPY /build/scripts/download_vsix.sh /tmp
 RUN \
     branch=$(cat /current_branch) && \
     # Pull vsix files from openvsx
-    /tmp/download_vsix.sh -b $branch && mv /tmp/vsix /openvsx-server
-
-# Validate vsix files
-COPY /build/scripts/test/check_compatibility.sh /openvsx-server/vsix
-RUN \
-    branch=$(cat /current_branch) && \
-    /openvsx-server/vsix/check_compatibility.sh -b $branch && \
-    rm /openvsx-server/vsix/check_compatibility.sh /current_branch
+    /tmp/download_vsix.sh -b $branch && mv /tmp/vsix /openvsx-server && \
+    rm /current_branch
 
 RUN tar -czvf openvsx-server.tar.gz openvsx-server \
