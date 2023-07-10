@@ -6,8 +6,8 @@
 # SPDX-License-Identifier: EPL-2.0
 #
 
-# https://registry.access.redhat.com/ubi8/nodejs-16
-FROM registry.access.redhat.com/ubi8/nodejs-16:1-82.1675799501 as builder
+# https://registry.access.redhat.com/ubi8/nodejs-18
+FROM registry.access.redhat.com/ubi8/nodejs-18:1-54 as builder
 USER 1001
 # TODO: do we need to use a cache folder here? 
 ENV npm_config_cache=/tmp/opt/cache

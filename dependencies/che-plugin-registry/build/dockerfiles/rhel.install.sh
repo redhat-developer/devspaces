@@ -9,9 +9,9 @@
 #
 set -x
 
-# set same version in Dockerfiles, eg., base image ubi8/python-38
-PYTHON_VERSION="3.8"
-NODEJS_VERSION="16"
+# set same version in Dockerfiles, eg., base image ubi8/python-311
+PYTHON_VERSION="3.11"
+NODEJS_VERSION="18"
 
 DNF="dnf -q"
 # shellcheck disable=SC2086
@@ -32,8 +32,7 @@ minrate=1
 retries=20
 timeout=60
 " > /etc/yum.conf
-if [[ $DNF != "microdnf" ]]; then $DNF -y module reset python${PYTHON_VERSION/./}; $DNF -y module enable python${PYTHON_VERSION/./}:${PYTHON_VERSION}; fi
-${DNF} -y install python${PYTHON_VERSION/./} python${PYTHON_VERSION/./}-devel python${PYTHON_VERSION/./}-setuptools python${PYTHON_VERSION/./}-pip --exclude=unbound-libs || exit 1
+${DNF} -y install python${PYTHON_VERSION} python${PYTHON_VERSION}-devel python${PYTHON_VERSION}-setuptools python${PYTHON_VERSION}-pip --exclude=unbound-libs || exit 1
 
 # shellcheck disable=SC2010
 PYTHON_BIN=$(ls -1 /usr/bin | grep -E "^python3.[0-9]$" | sort -V | tail -1 || true) # 3.6, 3.7, 3.8, etc.
@@ -66,7 +65,7 @@ if [[ -f /tmp/root-local.tgz ]] || [[ ${BOOTSTRAP} == "true" ]]; then
         tar xf /tmp/root-local.tgz -C "${HOME}"/.local
         rm -fr /tmp/root-local.tgz
     fi
-    /usr/bin/"${PYTHON_BIN}" -m pip install --user yq argcomplete
+    /usr/bin/"${PYTHON_BIN}" -m pip install --user yq argcomplete pip --upgrade
     # NOTE: using bootstrap.Dockerfile + ubi8/python-38      image, copy from /opt/app-root/src/.local == ~/.local
     # NOTE: using           Dockerfile + rhel8/postgresql-13 image, copy from /var/lib/pgsql/.local == ~/.local
     # shellcheck disable=SC2043
