@@ -9,9 +9,9 @@
 #
 set -x
 
-# set same version in Dockerfiles, eg., base image ubi8/python-38
-PYTHON_VERSION="3.8"
-NODEJS_VERSION="16"
+# set same version in Dockerfiles, eg., base image ubi8/python-311
+PYTHON_VERSION="3.11"
+NODEJS_VERSION="18"
 
 DNF="dnf -q"
 # shellcheck disable=SC2086
@@ -66,7 +66,7 @@ if [[ -f /tmp/root-local.tgz ]] || [[ ${BOOTSTRAP} == "true" ]]; then
         tar xf /tmp/root-local.tgz -C "${HOME}"/.local
         rm -fr /tmp/root-local.tgz
     fi
-    /usr/bin/"${PYTHON_BIN}" -m pip install --user yq argcomplete
+    /usr/bin/"${PYTHON_BIN}" -m pip install --user yq argcomplete pip --upgrade
     # NOTE: using bootstrap.Dockerfile + ubi8/python-38      image, copy from /opt/app-root/src/.local == ~/.local
     # NOTE: using           Dockerfile + rhel8/postgresql-13 image, copy from /var/lib/pgsql/.local == ~/.local
     # shellcheck disable=SC2043

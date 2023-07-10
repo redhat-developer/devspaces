@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Copyright (c) 2018-2022 Red Hat, Inc.
+# Copyright (c) 2018-2023 Red Hat, Inc.
 # This program and the accompanying materials are made
 # available under the terms of the Eclipse Public License 2.0
 # which is available at https://www.eclipse.org/legal/epl-2.0/
@@ -9,8 +9,8 @@
 #
 set -x
 
-# set same version in Dockefiles, eg., base image ubi8/python-38
-PYTHON_VERSION="3.8"
+# set same version in Dockefiles, eg., base image ubi8/python-311
+PYTHON_VERSION="3.11"
 
 DNF="dnf -q"
 if [[ ! -x $(command -v $DNF || true) ]]; then   DNF="yum -q"
@@ -53,7 +53,7 @@ if [[ -f /tmp/root-local.tgz ]] || [[ ${BOOTSTRAP} == "true" ]]; then
         tar xf /tmp/root-local.tgz -C /opt/app-root/src/.local
         rm -fr /tmp/root-local.tgz
     fi
-    /usr/bin/python -m pip install --user yq argcomplete
+    /usr/bin/python -m pip install --user yq argcomplete pip --upgrade
     # NOTE: used to be in /root/.local but now can be found in /opt/app-root/src/.local
     # shellcheck disable=SC2043
     for d in /opt/app-root/src/.local; do
