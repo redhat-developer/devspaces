@@ -32,7 +32,6 @@ minrate=1
 retries=20
 timeout=60
 " > /etc/yum.conf
-if [[ $DNF != "microdnf" ]]; then $DNF -y module reset python${PYTHON_VERSION/./}; $DNF -y module enable python${PYTHON_VERSION/./}:${PYTHON_VERSION}; fi
 ${DNF} -y install python${PYTHON_VERSION/./} python${PYTHON_VERSION/./}-devel python${PYTHON_VERSION/./}-setuptools python${PYTHON_VERSION/./}-pip --exclude=unbound-libs || exit 1
 
 # shellcheck disable=SC2010
