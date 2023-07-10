@@ -82,7 +82,7 @@ configureLatestBuildConfig() {
       # fetch job-config.json, where new upstream version is listed
       new_build_config_scmRevision=$(jq -r '.Jobs.server."'"$product_version"'".upstream_branch[0]' /tmp/job-config.json)
       new_build_config_name="devspaces-server-build-$new_build_config_scmRevision"
-      build_config_id=$(pnc build-config clone --product-version-id="$product_id_version" --buildConfigName="$new_build_config_name" --scm-revision="$new_build_config_scmRevision" "$old_build_config_id" | yq -r '.id')
+      build_config_id=$(pnc build-config clone --buildConfigName="$new_build_config_name" --scmRevision="$new_build_config_scmRevision" "$old_build_config_id" | yq -r '.id')
     fi
   fi
   if [[ $build_config_id ]]; then
