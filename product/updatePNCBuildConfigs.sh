@@ -68,7 +68,7 @@ configureLatestBuildConfig() {
     # pnc build-config list --query "project.name==devspaces-server" | yq -r '.[]|select(.scmRevision=="none")|.id' ==> 10922
     old_build_config_id=$(pnc build-config list --query "project.name==$project_name" | yq -r '.[]|select(.productVersion==null)|.id')
     if [[ ! $old_build_config_id ]]; then
-      old_build_config_id=$(pnc build-config list --query "project.name==$project_name" | yq -r '.[]|select(scmRevision=="none")|.id')
+      old_build_config_id=$(pnc build-config list --query "project.name==$project_name" | yq -r '.[]|select(.scmRevision=="none")|.id')
     fi
     # if found, repurpose this old build-config as the new one
     if [[ $old_build_config_id ]]; then
