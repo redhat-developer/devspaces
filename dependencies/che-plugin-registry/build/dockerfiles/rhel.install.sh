@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Copyright (c) 2018-2022 Red Hat, Inc.
+# Copyright (c) 2018-2023 Red Hat, Inc.
 # This program and the accompanying materials are made
 # available under the terms of the Eclipse Public License 2.0
 # which is available at https://www.eclipse.org/legal/epl-2.0/
@@ -32,15 +32,13 @@ minrate=1
 retries=20
 timeout=60
 " > /etc/yum.conf
-${DNF} -y install python${PYTHON_VERSION} python${PYTHON_VERSION}-devel python${PYTHON_VERSION}-setuptools python${PYTHON_VERSION}-pip --exclude=unbound-libs || exit 1
+${DNF} -y install \
+    python${PYTHON_VERSION} python${PYTHON_VERSION}-devel python${PYTHON_VERSION}-setuptools python${PYTHON_VERSION}-pip --exclude=unbound-libs || exit 1
 
 # shellcheck disable=SC2010
 PYTHON_BIN=$(ls -1 /usr/bin | grep -E "^python3.[0-9]$" | sort -V | tail -1 || true) # 3.6, 3.7, 3.8, etc.
 if [[ ! ${PYTHON_BIN} ]]; then
-    PYTHON_BIN=$(/usr/bin/python3 -V | sed -r -e "s#Python ##" -e "s#([0-9])\.([0-9]+)\.([0-9]+)#\1.\2#")
-    if [[ ! ${PYTHON_BIN} ]]; then
-        PYTHON_BIN=$(/usr/bin/python -V | sed -r -e "s#Python ##" -e "s#([0-9])\.([0-9]+)\.([0-9]+)#\1.\2#")
-    fi
+    PYTHON_BIN=python$(/usr/bin/python3 -V | sed -r -e "s#Python ##" -e "s#([0-9])\.([0-9]+)\.([0-9]+)#\1.\2#")
 fi
 if [[ ! -L /usr/bin/python ]]; then
     ln -s /usr/bin/"${PYTHON_BIN}" /usr/bin/python
@@ -60,6 +58,7 @@ ${DNF} -y module reset nodejs && \
 
 # install yq (depends on jq and pyyaml - if jq and pyyaml not already installed, this will try to compile it)
 if [[ -f /tmp/root-local.tgz ]] || [[ ${BOOTSTRAP} == "true" ]]; then
+    # NOTE: for devfile registry, use /opt/app-root/src/.local instead of ~/.local
     mkdir -p "${HOME}"/.local
     if [[ -f /tmp/root-local.tgz ]]; then
         tar xf /tmp/root-local.tgz -C "${HOME}"/.local
