@@ -28,10 +28,13 @@ BRANCH="devspaces-3-rhel-8"
 # 3.3 => (3 * 2) + 50 = 56 ==> 7.56
 # 3.4 => (4 * 2) + 50 = 56 ==> 7.58
 # 3.5 => (5 * 2) + 50 = 56 ==> 7.60
-# for DS 3.y >=3.6, take y value, triple it, and add CHE_OFFSET=46 to get Che 7.y version
+# for DS 3.6 and 3.7 take y value, triple it, and add CHE_OFFSET=46 to get Che 7.y version
 # 3.6 => (6 * 3) + 46 = 64 ==> 7.64
 # 3.7 => (7 * 3) + 46 = 67 ==> 7.67
-CHE_OFFSET=46
+# for DS 3.y >= 3.8 take the y value, triple it, and add CHE_OFFSET=48 to get Che 7.y version
+# 3.8 => (8 * 3) + 48 = 72 ==> 7.72 
+# 3.9 => (9 * 3) + 48 = 75 ==> 7.75
+CHE_OFFSET=48
 
 usage () {
   echo "
