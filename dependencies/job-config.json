@@ -52,7 +52,7 @@
           "7.67.x",
           "7.66.x"
         ],
-        "disabled": false
+        "disabled": true
       },
       "3.8": {
         "upstream_branch": [
@@ -126,7 +126,7 @@
           "7.67.x",
           "7.66.x"
         ],
-        "disabled": false
+        "disabled": true
       },
       "3.8": {
         "upstream_branch": [
@@ -163,7 +163,7 @@
           "7.67.x",
           "7.66.x"
         ],
-        "disabled": false
+        "disabled": true
       },
       "3.8": {
         "upstream_branch": [
@@ -200,7 +200,7 @@
           "7.67.x",
           "7.66.x"
         ],
-        "disabled": false
+        "disabled": true
       },
       "3.8": {
         "upstream_branch": [
@@ -385,7 +385,7 @@
           "v2.9.6",
           "v2.9.6"
         ],
-        "disabled": false
+        "disabled": true
       },
       "3.8": {
         "upstream_branch": [
@@ -480,7 +480,7 @@
           "7.66.x"
         ],
         "node_version": "16.13.2",
-        "disabled": false
+        "disabled": true
       },
       "3.8": {
         "upstream_branch": [
@@ -520,7 +520,7 @@
           "7.67.x",
           "7.66.x"
         ],
-        "disabled": false
+        "disabled": true
       },
       "3.8": {
         "upstream_branch": [
@@ -549,7 +549,7 @@
         "disabled": true
       },
       "3.7": {
-        "disabled": false
+        "disabled": true
       },
       "3.8": {
         "disabled": false
@@ -566,7 +566,7 @@
         "disabled": true
       },
       "3.7": {
-        "disabled": false
+        "disabled": true
       },
       "3.8": {
         "disabled": false
@@ -583,7 +583,7 @@
         "disabled": true
       },
       "3.7": {
-        "disabled": false
+        "disabled": true
       },
       "3.8": {
         "disabled": false
@@ -600,7 +600,7 @@
         "disabled": true
       },
       "3.7": {
-        "disabled": false
+        "disabled": true
       },
       "3.8": {
         "disabled": false
@@ -617,7 +617,7 @@
         "disabled": true
       },
       "3.7": {
-        "disabled": false
+        "disabled": true
       },
       "3.8": {
         "disabled": false
@@ -642,15 +642,15 @@
       },
       "3.8": {
         "CSV_VERSION": "3.8.0",
-        "CSV_VERSION_PREV": ""
+        "CSV_VERSION_PREV": "3.7.0"
       },
       "3.9": {
         "CSV_VERSION": "3.9.0",
-        "CSV_VERSION_PREV": ""
+        "CSV_VERSION_PREV": "3.7.0"
       },
       "3.x": {
         "CSV_VERSION": "3.9.0",
-        "CSV_VERSION_PREV": ""
+        "CSV_VERSION_PREV": "3.7.0"
       }
     }
   },
