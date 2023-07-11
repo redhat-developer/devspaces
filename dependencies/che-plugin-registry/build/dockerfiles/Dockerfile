@@ -42,9 +42,6 @@ COPY ./build/dockerfiles/content_set*.repo /etc/yum.repos.d/
 COPY ./build/dockerfiles/rhel.install.sh /tmp
 RUN /tmp/rhel.install.sh && rm -f /tmp/rhel.install.sh
 
-# Use the final root filesystem as default directory
-WORKDIR /
-
 # Copy OpenVSX server files
 COPY --chown=0:0 /openvsx-server.tar.gz .
 RUN tar --no-same-owner -xf openvsx-server.tar.gz && rm openvsx-server.tar.gz
