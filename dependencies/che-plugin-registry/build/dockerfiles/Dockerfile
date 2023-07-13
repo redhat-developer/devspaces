@@ -42,12 +42,9 @@ COPY ./build/dockerfiles/content_set*.repo /etc/yum.repos.d/
 COPY ./build/dockerfiles/rhel.install.sh /tmp
 RUN /tmp/rhel.install.sh && rm -f /tmp/rhel.install.sh
 
-# Use the final root filesystem as default directory
-WORKDIR /
-
 # Copy OpenVSX server files
 COPY --chown=0:0 /openvsx-server.tar.gz .
-RUN tar -xf openvsx-server.tar.gz && rm openvsx-server.tar.gz
+RUN tar --no-same-owner -xf openvsx-server.tar.gz && rm openvsx-server.tar.gz
 # Copy our configuration file for OpenVSX server
 COPY /build/dockerfiles/application.yaml /openvsx-server/config/
 RUN chmod -R g+rwx /openvsx-server
@@ -76,7 +73,7 @@ COPY README.md .htaccess /var/www/html/
 COPY /build/scripts/*.sh resources.tgz che-*.yaml /build/
 
 RUN chmod 755 /usr/local/bin/*.sh && \
-    tar -xvf /build/resources.tgz -C /build/ && \
+    tar --no-same-owner -xvf /build/resources.tgz -C /build/ && \
     rm -rf /build/output/v3/che-editors.yaml && \
     /build/list_referenced_images.sh /build/output/v3 --use-generated-content > /build/output/v3/external_images.txt && cat /build/output/v3/external_images.txt && \
     chmod -R g+rwX /build && \
