@@ -36,7 +36,7 @@ ${DNF} -y install \
     python${PYTHON_VERSION} python${PYTHON_VERSION}-devel python${PYTHON_VERSION}-setuptools python${PYTHON_VERSION}-pip --exclude=unbound-libs || exit 1
 
 # shellcheck disable=SC2010
-PYTHON_BIN=$(ls -1 /usr/bin | grep -E "^python3.[0-9]$" | sort -V | tail -1 || true) # 3.6, 3.7, 3.8, etc.
+PYTHON_BIN=$(ls -1 /usr/bin | grep -E "^python3.[0-9]+$" | sort -V | tail -1 || true) # 3.6, 3.7, 3.8, etc.
 if [[ ! ${PYTHON_BIN} ]]; then
     PYTHON_BIN=python$(/usr/bin/python3 -V | sed -r -e "s#Python ##" -e "s#([0-9])\.([0-9]+)\.([0-9]+)#\1.\2#")
 fi
