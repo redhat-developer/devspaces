@@ -31,6 +31,7 @@ will force the build to use `buildah`. If `BUILDER` is not specified, the script
 
 Note that the Dockerfiles in this repository utilize multi-stage builds, so Docker version 17.05 or higher is required.
 
+In case the devfile registry is going to be used in a specific DevSpaces version, such as 3.x, before building, it is necessary to switch to the appropriate branch, such as devspaces-3.x-rhel-8. It is essential to have correct tags and references to the images.
 
 ### Build in Brew
 
