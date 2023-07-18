@@ -8,7 +8,7 @@
           "7.67.x",
           "7.66.x"
         ],
-        "disabled": false
+        "disabled": true
       },
       "3.8": {
         "upstream_branch": [
@@ -158,7 +158,7 @@
           "7.67.x",
           "7.66.x"
         ],
-        "disabled": false
+        "disabled": true
       },
       "3.8": {
         "upstream_branch": [
@@ -248,7 +248,7 @@
           "devspaces-3.7-rhel-8",
           "devspaces-3.7-rhel-8"
         ],
-        "disabled": false
+        "disabled": true
       },
       "3.8": {
         "upstream_branch": [
@@ -278,7 +278,7 @@
           "20221111",
           "20221111"
         ],
-        "disabled": false
+        "disabled": true
       },
       "3.8": {
         "upstream_branch": [
@@ -352,7 +352,7 @@
           "devspaces-3.7-rhel-8",
           "devspaces-3.7-rhel-8"
         ],
-        "disabled": false
+        "disabled": true
       },
       "3.8": {
         "upstream_branch": [
@@ -385,7 +385,7 @@
           "7.66.x"
         ],
         "node_version": "16.13.2",
-        "disabled": false
+        "disabled": true
       },
       "3.8": {
         "upstream_branch": [
@@ -418,7 +418,7 @@
           "7.67.x",
           "7.66.x"
         ],
-        "disabled": false
+        "disabled": true
       },
       "3.8": {
         "upstream_branch": [
@@ -444,7 +444,7 @@
     },
     "get-sources-rhpkg-container-build": {
       "3.7": {
-        "disabled": false
+        "disabled": true
       },
       "3.8": {
         "disabled": false
@@ -458,7 +458,7 @@
     },
     "push-latest-container-to-quay": {
       "3.7": {
-        "disabled": false
+        "disabled": true
       },
       "3.8": {
         "disabled": false
@@ -472,7 +472,7 @@
     },
     "sync-to-downstream": {
       "3.7": {
-        "disabled": false
+        "disabled": true
       },
       "3.8": {
         "disabled": false
@@ -486,7 +486,7 @@
     },
     "update-digests": {
       "3.7": {
-        "disabled": false
+        "disabled": true
       },
       "3.8": {
         "disabled": false
@@ -500,7 +500,7 @@
     },
     "send-email-qe-build-list": {
       "3.7": {
-        "disabled": false
+        "disabled": true
       },
       "3.8": {
         "disabled": false
@@ -584,7 +584,7 @@
     },
     "@eclipse-che/plugin-registry-generator": {
       "3.7": "7.67.0",
-      "3.8": "7.72.0",
+      "3.8": "7.71.0",
       "3.9": "next",
       "3.x": "next"
     },
