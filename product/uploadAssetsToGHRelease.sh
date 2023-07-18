@@ -134,7 +134,7 @@ if [[ $PUBLISH_ASSETS -eq 1 ]]; then
   # upload artifacts for each platform 
   countToUpload=0
   for fileToPush in $fileList; do
-    countToUpload=$(( countToUpload++ ))
+    countToUpload=$(( countToUpload + 1 ))
     # attempt to upload a new file
     echo "[INFO] [$countToUpload] Upload new asset $fileToPush (1/3)"
     try=$(hub release edit -a ${fileToPush} "${CSV_VERSION}-${ASSET_NAME}-assets" \
