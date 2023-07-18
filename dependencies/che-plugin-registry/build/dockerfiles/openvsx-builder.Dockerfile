@@ -9,7 +9,7 @@
 # https://registry.access.redhat.com/ubi8/ubi
 FROM registry.access.redhat.com/ubi8/ubi:8.8-1009 as builder
 
-RUN yum install java-11-openjdk-devel git jq unzip curl -y --nodocs && \
+RUN yum install java-17-openjdk-devel git jq unzip curl -y --nodocs && \
     yum update -q -y 
 
 RUN cd /tmp && \

@@ -48,6 +48,3 @@ done;
 
 # disable the personal access token
 psql -c "UPDATE personal_access_token SET active = false;"
-
-# cleanup temporary files 
-rm -rf /tmp/extension_*.vsix
