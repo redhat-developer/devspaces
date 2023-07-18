@@ -11,8 +11,8 @@
 #   IBM Corporation - implementation
 #
 
-# https://registry.access.redhat.com/rhel8/postgresql-13
-FROM registry.redhat.io/rhel8/postgresql-13:1-130
+# https://registry.access.redhat.com/rhel8/postgresql-15
+FROM registry.redhat.io/rhel8/postgresql-15:1-15
 USER 0
 WORKDIR /
 
