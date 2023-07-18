@@ -132,9 +132,11 @@ if [[ $PUBLISH_ASSETS -eq 1 ]]; then
   fi
 
   # upload artifacts for each platform 
+  countToUpload=0
   for fileToPush in $fileList; do
+    countToUpload=$(( countToUpload++ ))
     # attempt to upload a new file
-    echo "[INFO] Upload new asset $fileToPush (1/3)"
+    echo "[INFO] [$countToUpload] Upload new asset $fileToPush (1/3)"
     try=$(hub release edit -a ${fileToPush} "${CSV_VERSION}-${ASSET_NAME}-assets" \
       -m "Assets for the ${CSV_VERSION} ${ASSET_NAME} release" -m "${ASSET_TYPE} for ${CSV_VERSION}" 2>&1 || true)
     echo "[INFO] $try"
@@ -149,7 +151,7 @@ if [[ $PUBLISH_ASSETS -eq 1 ]]; then
           ${PRE_RELEASE} "${CSV_VERSION}-${ASSET_NAME}-assets" || true
       fi
       sleep 10s
-      echo "[INFO] Upload new asset $fileToPush (2/3)"
+      echo "[INFO] [$countToUpload] Upload new asset $fileToPush (2/3)"
       tryAgain=$(hub release edit -a ${fileToPush} "${CSV_VERSION}-${ASSET_NAME}-assets" \
       -m "Assets for the ${CSV_VERSION} ${ASSET_NAME} release" -m "${ASSET_TYPE} for ${CSV_VERSION}"  2>&1 || true)
       echo "[INFO] $tryAgain"
@@ -164,7 +166,7 @@ if [[ $PUBLISH_ASSETS -eq 1 ]]; then
           ${PRE_RELEASE} "${CSV_VERSION}-${ASSET_NAME}-assets" || true
       fi
       sleep 10s
-      echo "[INFO] Upload new asset $fileToPush (3/3)"
+      echo "[INFO] [$countToUpload] Upload new asset $fileToPush (3/3)"
       hub release edit -a ${fileToPush} "${CSV_VERSION}-${ASSET_NAME}-assets" \
       -m "Assets for the ${CSV_VERSION} ${ASSET_NAME} release" -m "${ASSET_TYPE} for ${CSV_VERSION}" || \
       { echo "[ERROR] Failed to push ${fileToPush} to '${CSV_VERSION}-${ASSET_NAME}-assets' release!"; exit 1; }
