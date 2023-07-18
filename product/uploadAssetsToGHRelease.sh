@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Copyright (c) 2021 Red Hat, Inc.
+# Copyright (c) 2021-2023 Red Hat, Inc.
 # This program and the accompanying materials are made
 # available under the terms of the Eclipse Public License 2.0
 # which is available at https://www.eclipse.org/legal/epl-2.0/
@@ -132,33 +132,41 @@ if [[ $PUBLISH_ASSETS -eq 1 ]]; then
   fi
 
   # upload artifacts for each platform 
+  countToUpload=0
   for fileToPush in $fileList; do
+    countToUpload=$(( countToUpload++ ))
     # attempt to upload a new file
-    echo "[INFO] Upload new asset $fileToPush (1/3)"
+    echo "[INFO] [$countToUpload] Upload new asset $fileToPush (1/3)"
     try=$(hub release edit -a ${fileToPush} "${CSV_VERSION}-${ASSET_NAME}-assets" \
       -m "Assets for the ${CSV_VERSION} ${ASSET_NAME} release" -m "${ASSET_TYPE} for ${CSV_VERSION}" 2>&1 || true)
     echo "[INFO] $try"
 
-    # if release doesn't exist, create it
-    if [[ $try == *"nable to find release with tag name"* ]]; then
-      echo "[WARNING] GH release 'Assets for the ${CSV_VERSION} ${ASSET_NAME} release' does not exist: create it (1)"
-      hub release create -t "${MIDSTM_BRANCH}" \
-        -m "Assets for the ${CSV_VERSION} ${ASSET_NAME} release" -m "${ASSET_TYPE} for ${CSV_VERSION}" \
-        ${PRE_RELEASE} "${CSV_VERSION}-${ASSET_NAME}-assets" || true
+    # if release doesn't exist (or upload failed), try again
+    if [[ $try == *"nable to find release with tag name"* ]] || [[ $try == *"unexpected end of JSON input"* ]]; then
+      # if release doesn't exist, create it
+      if [[ $try == *"nable to find release with tag name"* ]]; then
+        echo "[WARNING] GH release 'Assets for the ${CSV_VERSION} ${ASSET_NAME} release' does not exist: create it (1)"
+        hub release create -t "${MIDSTM_BRANCH}" \
+          -m "Assets for the ${CSV_VERSION} ${ASSET_NAME} release" -m "${ASSET_TYPE} for ${CSV_VERSION}" \
+          ${PRE_RELEASE} "${CSV_VERSION}-${ASSET_NAME}-assets" || true
+      fi
       sleep 10s
-      echo "[INFO] Upload new asset $fileToPush (2/3)"
+      echo "[INFO] [$countToUpload] Upload new asset $fileToPush (2/3)"
       tryAgain=$(hub release edit -a ${fileToPush} "${CSV_VERSION}-${ASSET_NAME}-assets" \
       -m "Assets for the ${CSV_VERSION} ${ASSET_NAME} release" -m "${ASSET_TYPE} for ${CSV_VERSION}"  2>&1 || true)
       echo "[INFO] $tryAgain"
     fi
-    # if release STILL doesn't exist, create it again (?)
-    if [[ $tryAgain == *"nable to find release with tag name"* ]]; then
-      echo "[WARNING] GH release 'Assets for the ${CSV_VERSION} ${ASSET_NAME} release' does not exist: create it (2)"
-      hub release create -t "${MIDSTM_BRANCH}" \
-        -m "Assets for the ${CSV_VERSION} ${ASSET_NAME} release" -m "${ASSET_TYPE} for ${CSV_VERSION}" \
-        ${PRE_RELEASE} "${CSV_VERSION}-${ASSET_NAME}-assets" || true
+    # if release STILL doesn't exist (or upload failed again), try again
+    if [[ $try == *"nable to find release with tag name"* ]] || [[ $try == *"unexpected end of JSON input"* ]]; then
+      # if release STILL doesn't exist, create it again (?)
+      if [[ $tryAgain == *"nable to find release with tag name"* ]]; then
+        echo "[WARNING] GH release 'Assets for the ${CSV_VERSION} ${ASSET_NAME} release' does not exist: create it (2)"
+        hub release create -t "${MIDSTM_BRANCH}" \
+          -m "Assets for the ${CSV_VERSION} ${ASSET_NAME} release" -m "${ASSET_TYPE} for ${CSV_VERSION}" \
+          ${PRE_RELEASE} "${CSV_VERSION}-${ASSET_NAME}-assets" || true
+      fi
       sleep 10s
-      echo "[INFO] Upload new asset $fileToPush (3/3)"
+      echo "[INFO] [$countToUpload] Upload new asset $fileToPush (3/3)"
       hub release edit -a ${fileToPush} "${CSV_VERSION}-${ASSET_NAME}-assets" \
       -m "Assets for the ${CSV_VERSION} ${ASSET_NAME} release" -m "${ASSET_TYPE} for ${CSV_VERSION}" || \
       { echo "[ERROR] Failed to push ${fileToPush} to '${CSV_VERSION}-${ASSET_NAME}-assets' release!"; exit 1; }
