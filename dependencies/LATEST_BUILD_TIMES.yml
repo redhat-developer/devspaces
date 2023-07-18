@@ -16180,3 +16180,30 @@
   timeWait: 13 mins
   timeBuild: 5 mins
   timeTotal: 19 mins
+- name: devspaces-configbump-rhel8
+  tag: 3.9-2
+  taskId: 54012238
+  timeCreate: Tue Jul 18 16:10:32 2023
+  timeStart: Tue Jul 18 16:19:01 2023
+  timeFinish: Tue Jul 18 16:36:07 2023
+  timeWait: 8 mins
+  timeBuild: 17 mins
+  timeTotal: 25 mins
+- name: devspaces-operator
+  tag: 3.9-3
+  taskId: 54013132
+  timeCreate: Tue Jul 18 16:38:20 2023
+  timeStart: Tue Jul 18 16:42:16 2023
+  timeFinish: Tue Jul 18 17:01:30 2023
+  timeWait: 3 mins
+  timeBuild: 19 mins
+  timeTotal: 23 mins
+- name: devspaces-operator-bundle
+  tag: 3.9-2
+  taskId: 54013926
+  timeCreate: Tue Jul 18 17:00:59 2023
+  timeStart: Tue Jul 18 17:04:28 2023
+  timeFinish: Tue Jul 18 17:09:30 2023
+  timeWait: 3 mins
+  timeBuild: 5 mins
+  timeTotal: 8 mins
