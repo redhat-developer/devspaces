@@ -52,11 +52,11 @@ function getMetadata(){
     key=$2
 
     # check there is no error field in the metadata and retry if there is
-    for i in 1 2 3 4 5
+    for j in 1 2 3 4 5
     do
         vsixMetadata=$(curl -sLS "https://open-vsx.org/api/${vsixName}/${key}")
         if [[ $(echo "${vsixMetadata}" | jq -r ".error") != null ]]; then
-            echo "Attempt $i/5: Error while getting metadata for ${vsixFullName} version ${key}"
+            echo "Attempt $j/5: Error while getting metadata for ${vsixFullName} version ${key}"
             continue
         else
             break
