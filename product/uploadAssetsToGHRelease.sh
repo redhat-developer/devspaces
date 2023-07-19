@@ -128,7 +128,7 @@ if [[ $PUBLISH_ASSETS -eq 1 ]]; then
     #no existing release, create it
     hub release create -t "${MIDSTM_BRANCH}" \
       -m "Assets for the ${CSV_VERSION} ${ASSET_NAME} release" -m "${ASSET_TYPE} for ${CSV_VERSION}" \
-      ${PRE_RELEASE} "${CSV_VERSION}-${ASSET_NAME}-assets"
+      ${PRE_RELEASE} "${CSV_VERSION}-${ASSET_NAME}-assets" || true
   fi
 
   # upload artifacts for each platform 
