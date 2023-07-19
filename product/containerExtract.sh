@@ -21,15 +21,15 @@ usage ()
 Examples:
   $0 quay.io/devspaces/devspaces-operator-bundle:latest
   $0 quay.io/devworkspace/devworkspace-operator-bundle:next
-  $0 quay.io/devspaces/devfileregistry-rhel8:latest --tar-flags var/www/html/*/external_images.txt --override-arch ppc64le
+  $0 quay.io/devspaces/devfileregistry-rhel8:latest --tar-flags var/www/html/*/external_images.txt --arch ppc64le
 
 Options:
-  --delete-before    remove any local images before attempting to pull and extract a new copy
-  --delete-after     remove any local images after attempting to pull and extract the container
-  --override-arch    set a different arch than the current one, eg., s390x or ppc64le
-  --tar-flags        pass flags to the tar extraction process
-  --tmpdir           use a different folder for extraction than /tmp/
-  -q, --quiet        quieter output
+  --delete-before  remove any local images before attempting to pull and extract a new copy
+  --delete-after   remove any local images after attempting to pull and extract the container
+  --arch           set a different arch than the current one, eg., s390x or ppc64le
+  --tar-flags      pass flags to the tar extraction process
+  --tmpdir         use a different folder for extraction than /tmp/
+  -q, --quiet      quieter output
   "
   exit
 }
@@ -40,7 +40,7 @@ while [[ "$#" -gt 0 ]]; do
   case $1 in
     '--delete-before') DELETE_LOCAL_IMAGE="${DELETE_LOCAL_IMAGE} before";;
     '--delete-after') DELETE_LOCAL_IMAGE="${DELETE_LOCAL_IMAGE} after";;
-    '--override-arch') ARCH_OVERRIDE="--override-arch $2"; shift 1;;
+    '--override-arch'|'--arch') ARCH_OVERRIDE="--arch $2"; shift 1;;
     '--tar-flags'   ) TAR_FLAGS="$2"; shift 1;;
     '--tmpdir') TMPDIR="$2"; mkdir -p "$TMPDIR"; shift 1;;
     '-h') usage;;
@@ -60,10 +60,6 @@ if [[ ! -x $PODMAN ]]; then
   if [[ ! -x $PODMAN ]]; then
     echo "[ERROR] docker is not installed. Aborting."; exit 1
   fi
-fi
-
-if [[ ${ARCH_OVERRIDE} == "" ]] && [[ ${container} == *"-openj9"* ]]; then
-  ARCH_OVERRIDE="--override-arch s390x"
 fi
 
 if [[ $container == *"@"* ]]; then
