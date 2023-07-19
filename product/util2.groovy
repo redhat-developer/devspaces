@@ -221,10 +221,12 @@ def getStagingHost() {
   return "devspaces-build@spmm-util.hosts.stage.psi.bos.redhat.com"
 }
 
-def notifyBuildFailed() {
+@Field String defaultFailedEmailRecipients='sdawley@redhat.com, nboldt@redhat.com'
+def notifyBuildFailed(String details="", String toRecipients=defaultFailedEmailRecipients) {
     emailext (
         subject: "Build failed in Jenkins: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
-        body: """
+        body: details + """
+
 Build failed in Jenkins: ${env.JOB_NAME} #${env.BUILD_NUMBER}
 
 Build:   ${env.BUILD_URL}
@@ -235,8 +237,9 @@ Console: ${env.BUILD_URL}/console
 
 Rebuild: ${env.BUILD_URL}/rebuild
 """,
-        recipientProviders: [culprits(), developers(), requestor()]
         // [$class: 'CulpritsRecipientProvider'],[$class: 'DevelopersRecipientProvider']]
+        recipientProviders: [culprits(), developers(), requestor()],
+        to: toRecipients
     )
 }
 
@@ -334,7 +337,7 @@ def runJob(String jobPath, boolean doWait=false, boolean doPropagateStatus=true,
       println("--x Job ${JENKINS_URL}${jobLink}/console failed!")
       currentBuild.description+="<br/>* <b style='color:red'>FAILED: <a href=${jobLink}/console>" + (jobLink.replaceAll("/job/","/")) + "</a></b>"
       currentBuild.result = 'FAILED'
-      notifyBuildFailed()
+      notifyBuildFailed(currentBuild.description,defaultFailedEmailRecipients)
     }
     println("++> Job ${JENKINS_URL}${jobLink}/console completed.")
   } else {
