@@ -157,7 +157,7 @@ if [[ $PUBLISH_ASSETS -eq 1 ]]; then
       echo "[INFO] $tryAgain"
     fi
     # if release STILL doesn't exist (or upload failed again), try again
-    if [[ $try == *"nable to find release with tag name"* ]] || [[ $try == *"unexpected end of JSON input"* ]]; then
+    if [[ $tryAgain == *"nable to find release with tag name"* ]] || [[ $tryAgain == *"unexpected end of JSON input"* ]]; then
       # if release STILL doesn't exist, create it again (?)
       if [[ $tryAgain == *"nable to find release with tag name"* ]]; then
         echo "[WARNING] GH release 'Assets for the ${CSV_VERSION} ${ASSET_NAME} release' does not exist: create it (2)"
