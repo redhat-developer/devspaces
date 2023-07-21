@@ -58,7 +58,7 @@ function getMetadata(){
         if [[ $(echo "${vsixMetadata}" | jq -r ".error") != null ]]; then
             echo "Attempt $j/5: Error while getting metadata for ${vsixFullName} version ${key}"
 
-            if [[ $j = 5 ]]; then
+            if [[ $j -eq 5 ]]; then
                 echo "[ERROR] Maximum of 5 attempts reached - must exit with failure!"
                 exit 1
             fi
