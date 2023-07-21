@@ -59,7 +59,7 @@ function getMetadata(){
             echo "Attempt $j/5: Error while getting metadata for ${vsixFullName} version ${key}"
 
             if [[ $j = 5 ]]; then
-                echo "[ERROR] Maximum attempts reached."
+                echo "[ERROR] Maximum of 5 attempts reached - must exit with failure!"
                 exit 1
             fi
             continue
