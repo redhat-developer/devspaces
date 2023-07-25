@@ -16495,3 +16495,21 @@
   timeWait: 31 mins
   timeBuild: 5 mins
   timeTotal: 36 mins
+- name: devspaces-machineexec-rhel8
+  tag: 3.8-9
+  taskId: 54175226
+  timeCreate: Tue Jul 25 15:37:57 2023
+  timeStart: Tue Jul 25 15:53:38 2023
+  timeFinish: Tue Jul 25 16:02:17 2023
+  timeWait: 15 mins
+  timeBuild: 8 mins
+  timeTotal: 24 mins
+- name: devspaces-operator-bundle
+  tag: 3.8-44
+  taskId: 54176274
+  timeCreate: Tue Jul 25 16:14:26 2023
+  timeStart: Tue Jul 25 16:31:02 2023
+  timeFinish: Tue Jul 25 16:35:38 2023
+  timeWait: 16 mins
+  timeBuild: 4 mins
+  timeTotal: 21 mins
