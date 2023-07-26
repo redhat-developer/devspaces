@@ -16513,3 +16513,21 @@
   timeWait: 16 mins
   timeBuild: 4 mins
   timeTotal: 21 mins
+- name: devspaces-server-rhel8
+  tag: 3.8-13
+  taskId: 54188972
+  timeCreate: Wed Jul 26 01:39:26 2023
+  timeStart: Wed Jul 26 01:40:11 2023
+  timeFinish: Wed Jul 26 01:49:21 2023
+  timeWait: 0 mins
+  timeBuild: 9 mins
+  timeTotal: 9 mins
+- name: devspaces-operator-bundle
+  tag: 3.8-45
+  taskId: 54189424
+  timeCreate: Wed Jul 26 02:01:31 2023
+  timeStart: Wed Jul 26 02:02:00 2023
+  timeFinish: Wed Jul 26 02:07:49 2023
+  timeWait: 0 mins
+  timeBuild: 5 mins
+  timeTotal: 6 mins
