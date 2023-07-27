@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Copyright (c) 2023 Red Hat, Inc.
+# Copyright (c) 2021-2023 Red Hat, Inc.
 # This program and the accompanying materials are made
 # available under the terms of the Eclipse Public License 2.0
 # which is available at https://www.eclipse.org/legal/epl-2.0/
@@ -220,9 +220,11 @@ updateVersion() {
     check=$(cat ${WORKDIR}/dependencies/job-config.json | jq '.Jobs[] | keys' | grep "\"${DEVSPACES_VERSION}\"")
     if [[ ${check} ]]; then #just updating
       COMMIT_MSG="ci: update ${DEVSPACES_VERSION}"
+      replaceField "${WORKDIR}/dependencies/job-config.json" "(.Jobs[][\"${DEVSPACES_VERSION}\"][\"upstream_branch\"]|select(.[]?==\"main\"))" "[\"7.${CHE_Y}.x\",\"main\"]"
       replaceField "${WORKDIR}/dependencies/job-config.json" "(.Jobs[][\"${DEVSPACES_VERSION}\"][\"upstream_branch\"]|select(.[]?|contains(\".x\")))" "[\"7.${CHE_Y}.x\",\"main\"]"
       replaceField "${WORKDIR}/dependencies/job-config.json" "(.Jobs[][\"${DEVSPACES_VERSION}\"][\"upstream_branch\"]|select(.[]?==\"devspaces-3-rhel-8\"))" "[\"devspaces-${DEVSPACES_VERSION}-rhel-8\",\"devspaces-${DEVSPACES_VERSION}-rhel-8\"]"
 
+      replaceField "${WORKDIR}/dependencies/job-config.json" "(.\"Management-Jobs\"[][\"${DEVSPACES_VERSION}\"][\"upstream_branch\"]|select(.[]?==\"main\"))" "[\"7.${CHE_Y}.x\",\"main\"]"
       replaceField "${WORKDIR}/dependencies/job-config.json" "(.\"Management-Jobs\"[][\"${DEVSPACES_VERSION}\"][\"upstream_branch\"]|select(.[]?|contains(\".x\")))" "[\"7.${CHE_Y}.x\",\"main\"]"
       replaceField "${WORKDIR}/dependencies/job-config.json" "(.\"Management-Jobs\"[][\"${DEVSPACES_VERSION}\"][\"upstream_branch\"]|select(.[]?==\"devspaces-3-rhel-8\"))" "[\"devspaces-${DEVSPACES_VERSION}-rhel-8\",\"devspaces-${DEVSPACES_VERSION}-rhel-8\"]"
 
@@ -262,9 +264,11 @@ updateVersion() {
           done
         fi
       done
+      replaceField "${WORKDIR}/dependencies/job-config.json" "(.Jobs[][\"${DEVSPACES_VERSION}\"][\"upstream_branch\"]|select(.[]?==\"main\"))" "[\"7.${CHE_Y}.x\",\"main\"]"
       replaceField "${WORKDIR}/dependencies/job-config.json" "(.Jobs[][\"${DEVSPACES_VERSION}\"][\"upstream_branch\"]|select(.[]?|contains(\".x\")))" "[\"7.${CHE_Y}.x\",\"main\"]"
       replaceField "${WORKDIR}/dependencies/job-config.json" "(.Jobs[][\"${DEVSPACES_VERSION}\"][\"upstream_branch\"]|select(.[]?==\"devspaces-3-rhel-8\"))" "[\"devspaces-${DEVSPACES_VERSION}-rhel-8\",\"devspaces-${DEVSPACES_VERSION}-rhel-8\"]"
 
+      replaceField "${WORKDIR}/dependencies/job-config.json" "(.\"Management-Jobs\"[][\"${DEVSPACES_VERSION}\"][\"upstream_branch\"]|select(.[]?==\"main\"))" "[\"7.${CHE_Y}.x\",\"main\"]"
       replaceField "${WORKDIR}/dependencies/job-config.json" "(.\"Management-Jobs\"[][\"${DEVSPACES_VERSION}\"][\"upstream_branch\"]|select(.[]?|contains(\".x\")))" "[\"7.${CHE_Y}.x\",\"main\"]"
       replaceField "${WORKDIR}/dependencies/job-config.json" "(.\"Management-Jobs\"[][\"${DEVSPACES_VERSION}\"][\"upstream_branch\"]|select(.[]?==\"devspaces-3-rhel-8\"))" "[\"devspaces-${DEVSPACES_VERSION}-rhel-8\",\"devspaces-${DEVSPACES_VERSION}-rhel-8\"]"
 
