@@ -4,30 +4,30 @@ quay.io/devspaces/code-rhel8:3.8-24
    Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=2607443
   Source: https://pkgs.devel.redhat.com/cgit/containers/devspaces-code/commit?id=e3cfce7441a69e782565fba4e3e98146b848f48e
 
-quay.io/devspaces/configbump-rhel8:3.8-10
-     NVR: devspaces-configbump-rhel8-container-3.8-10
-   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=2607395
-  Source: https://pkgs.devel.redhat.com/cgit/containers/devspaces-configbump/commit?id=9d8cd74b45fdd503d1c0fc7434c2c6e83c751408
+quay.io/devspaces/configbump-rhel8:3.8-11
+     NVR: devspaces-configbump-rhel8-container-3.8-11
+   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=2616068
+  Source: https://pkgs.devel.redhat.com/cgit/containers/devspaces-configbump/commit?id=852b3414d130312a84d999f4717654f7d3eed7b7
 
-quay.io/devspaces/devspaces-rhel8-operator:3.8-12
-     NVR: devspaces-rhel8-operator-container-3.8-12
-   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=2607399
-  Source: https://pkgs.devel.redhat.com/cgit/containers/devspaces-operator/commit?id=59e24c52908405922857387d67a5d4c5f5913c9a
+quay.io/devspaces/devspaces-rhel8-operator:3.8-13
+     NVR: devspaces-rhel8-operator-container-3.8-13
+   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=2616078
+  Source: https://pkgs.devel.redhat.com/git/cgit/containers/devspaces-operator/commit?id=06acfe1f20f0c0856b75cdec9a256555e94984cf
 
-quay.io/devspaces/devspaces-operator-bundle:3.8-47
-     NVR: devspaces-operator-bundle-container-3.8-47
-   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=2615731
-  Source: https://pkgs.devel.redhat.com/cgit/containers/devspaces-operator-bundle/commit?id=4a518d83b0fd5a3105fcb94a3807626455ab69e6
+quay.io/devspaces/devspaces-operator-bundle:3.8-48
+     NVR: devspaces-operator-bundle-container-3.8-48
+   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=2616339
+  Source: https://pkgs.devel.redhat.com/git/cgit/containers/devspaces-operator-bundle/commit?id=ce96899ba10c45e18fb2ef5aa457edd2964ce166
 
 quay.io/devspaces/dashboard-rhel8:3.8-9
      NVR: devspaces-dashboard-rhel8-container-3.8-9
    Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=2607391
   Source: https://pkgs.devel.redhat.com/cgit/containers/devspaces-dashboard/commit?id=d23aca5c538426d342acb115ca2188ef163977a5
 
-quay.io/devspaces/devfileregistry-rhel8:3.8-20
-     NVR: devspaces-devfileregistry-rhel8-container-3.8-20
-   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=2615717
-  Source: https://pkgs.devel.redhat.com/cgit/containers/devspaces-devfileregistry/commit?id=e41fac15194a1dc0ec4a064c21324324a8c9f620
+quay.io/devspaces/devfileregistry-rhel8:3.8-21
+     NVR: devspaces-devfileregistry-rhel8-container-3.8-21
+   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=2616075
+  Source: https://pkgs.devel.redhat.com/git/cgit/containers/devspaces-devfileregistry/commit?id=224b0f8126f45c90aec499b6ca5559c4f7b86dc5
 
 quay.io/devspaces/idea-rhel8:3.8-5
      NVR: devspaces-idea-rhel8-container-3.8-5
@@ -39,27 +39,27 @@ quay.io/devspaces/imagepuller-rhel8:3.8-7
    Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=2607396
   Source: https://pkgs.devel.redhat.com/cgit/containers/devspaces-imagepuller/commit?id=ba5840d88d7eeacaf42279a59a716f53e2fc3afb
 
-quay.io/devspaces/machineexec-rhel8:3.8-9
-     NVR: devspaces-machineexec-rhel8-container-3.8-9
-   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=2610979
-  Source: https://pkgs.devel.redhat.com/cgit/containers/devspaces-machineexec/commit?id=9982c2e999db8e10cc540290dcf3c58f0931d314
+quay.io/devspaces/machineexec-rhel8:3.8-10
+     NVR: devspaces-machineexec-rhel8-container-3.8-10
+   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=2616060
+  Source: https://pkgs.devel.redhat.com/cgit/containers/devspaces-machineexec/commit?id=3004a283b8721833c69cb48b747887da2f82aca1
 
-quay.io/devspaces/pluginregistry-rhel8:3.8-14
-     NVR: devspaces-pluginregistry-rhel8-container-3.8-14
-   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=2614557
-  Source: https://pkgs.devel.redhat.com/cgit/containers/devspaces-pluginregistry/commit?id=490ed6ec7734783af6b6bfbf9eac8a0507093469
+quay.io/devspaces/pluginregistry-rhel8:3.8-15
+     NVR: devspaces-pluginregistry-rhel8-container-3.8-15
+   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=2616103
+  Source: https://pkgs.devel.redhat.com/git/cgit/containers/devspaces-pluginregistry/commit?id=e074c35c114dd660f96d72eec06f686b9eb863be
 
-quay.io/devspaces/server-rhel8:3.8-13
-     NVR: devspaces-server-rhel8-container-3.8-13
-   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=2611841
-  Source: https://pkgs.devel.redhat.com/cgit/containers/devspaces-server/commit?id=675c71aafe37ddeb77461d97d006dc969bb39061
+quay.io/devspaces/server-rhel8:3.8-14
+     NVR: devspaces-server-rhel8-container-3.8-14
+   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=2616280
+  Source: https://pkgs.devel.redhat.com/cgit/containers/devspaces-server/commit?id=bc3c8b5e16717cff50ba4a44644d583658faf5da
 
-quay.io/devspaces/traefik-rhel8:3.8-11
-     NVR: devspaces-traefik-rhel8-container-3.8-11
-   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=2607392
-  Source: https://pkgs.devel.redhat.com/cgit/containers/devspaces-traefik/commit?id=973c2398c757611bd56ac8568b9e16a4615f7cf7
+quay.io/devspaces/traefik-rhel8:3.8-12
+     NVR: devspaces-traefik-rhel8-container-3.8-12
+   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=2616067
+  Source: https://pkgs.devel.redhat.com/cgit/containers/devspaces-traefik/commit?id=2cecc3ec3c7a8b2d4e17151fefa6c09763319984
 
-quay.io/devspaces/udi-rhel8:3.8-25
-     NVR: devspaces-udi-rhel8-container-3.8-25
-   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=2607390
-  Source: https://pkgs.devel.redhat.com/cgit/containers/devspaces-udi/commit?id=d2864e57f1d6993812cc160d5d1968737450822e
+quay.io/devspaces/udi-rhel8:3.8-26
+     NVR: devspaces-udi-rhel8-container-3.8-26
+   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=2616064
+  Source: https://pkgs.devel.redhat.com/cgit/containers/devspaces-udi/commit?id=7f942512ba47d53ce3f1a1d411e1af6505af67e0
