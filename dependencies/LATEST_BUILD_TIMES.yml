@@ -16675,6 +16675,15 @@
   timeWait: 0 mins
   timeBuild: 14 mins
   timeTotal: 14 mins
+- name: devspaces-udi-rhel8
+  tag: 3.8-27
+  taskId: 54275805
+  timeCreate: Sat Jul 29 11:51:45 2023
+  timeStart: Sat Jul 29 11:52:14 2023
+  timeFinish: Sat Jul 29 12:37:25 2023
+  timeWait: 0 mins
+  timeBuild: 45 mins
+  timeTotal: 45 mins
 - name: devspaces-machineexec-rhel8
   tag: 3.8-11
   taskId: 54275812
@@ -16738,3 +16747,12 @@
   timeWait: 0 mins
   timeBuild: 3 mins
   timeTotal: 4 mins
+- name: devspaces-operator-bundle
+  tag: 3.8-50
+  taskId: 54275989
+  timeCreate: Sat Jul 29 12:58:34 2023
+  timeStart: Sat Jul 29 12:58:46 2023
+  timeFinish: Sat Jul 29 13:04:20 2023
+  timeWait: 0 mins
+  timeBuild: 5 mins
+  timeTotal: 5 mins
