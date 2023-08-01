@@ -1,3 +1,21 @@
+- name: devspaces-dashboard-rhel8
+  tag: 3.8-9
+  taskId: 54126468
+  timeCreate: Sat Jul 22 11:53:16 2023
+  timeStart: Sat Jul 22 11:53:42 2023
+  timeFinish: Sat Jul 22 12:16:38 2023
+  timeWait: 0 mins
+  timeBuild: 22 mins
+  timeTotal: 23 mins
+- name: devspaces-imagepuller-rhel8
+  tag: 3.8-7
+  taskId: 54126470
+  timeCreate: Sat Jul 22 11:54:42 2023
+  timeStart: Sat Jul 22 11:55:14 2023
+  timeFinish: Sat Jul 22 12:07:18 2023
+  timeWait: 0 mins
+  timeBuild: 12 mins
+  timeTotal: 12 mins
 - name: devspaces-idea-rhel8
   tag: 3.8-5
   taskId: 54168070
@@ -313,3 +331,21 @@
   timeWait: 0 mins
   timeBuild: 4 mins
   timeTotal: 4 mins
+- name: devspaces-server-rhel8
+  tag: 3.8-16
+  taskId: 54347120
+  timeCreate: Tue Aug 1 14:52:36 2023
+  timeStart: Tue Aug 1 16:06:19 2023
+  timeFinish: Tue Aug 1 16:16:08 2023
+  timeWait: 73 mins
+  timeBuild: 9 mins
+  timeTotal: 83 mins
+- name: devspaces-operator-bundle
+  tag: 3.8-53
+  taskId: 54349965
+  timeCreate: Tue Aug 1 16:25:11 2023
+  timeStart: Tue Aug 1 17:26:36 2023
+  timeFinish: Tue Aug 1 17:31:19 2023
+  timeWait: 61 mins
+  timeBuild: 4 mins
+  timeTotal: 66 mins
