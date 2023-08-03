@@ -367,3 +367,21 @@
   timeWait: 0 mins
   timeBuild: 4 mins
   timeTotal: 5 mins
+- name: devspaces-configbump-rhel8
+  tag: 3.8-13
+  taskId: 54397902
+  timeCreate: Thu Aug 3 04:12:40 2023
+  timeStart: Thu Aug 3 04:13:08 2023
+  timeFinish: Thu Aug 3 04:28:05 2023
+  timeWait: 0 mins
+  timeBuild: 14 mins
+  timeTotal: 15 mins
+- name: devspaces-operator-bundle
+  tag: 3.8-55
+  taskId: 54401309
+  timeCreate: Thu Aug 3 06:24:50 2023
+  timeStart: Thu Aug 3 06:25:09 2023
+  timeFinish: Thu Aug 3 06:29:45 2023
+  timeWait: 0 mins
+  timeBuild: 4 mins
+  timeTotal: 4 mins
