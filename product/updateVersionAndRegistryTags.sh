@@ -163,7 +163,6 @@ computeLatestPackageVersion() {
     THIS_Y_VALUE="${BASE_VERSION#*.}"; 
     # 3.7 and 3.8 are both different so hardcode and we can take them out as they become irrelevant
     # note that these values are used for versions where main doesn't make sense, such as  @eclipse-che/plugin-registry-generator
-
     if [[ $THIS_Y_VALUE -eq 8 ]]; then # Check DS 3.8 first, will be relevant longer.
       THIS_CHE_Y=72
       THIS_CHE_Y_LOWER=71
