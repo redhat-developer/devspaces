@@ -15,7 +15,7 @@
           "7.72.x",
           "main"
         ],
-        "disabled": false
+        "disabled": true
       },
       "3.9": {
         "upstream_branch": [
@@ -45,7 +45,7 @@
           "7.72.x",
           "main"
         ],
-        "disabled": false
+        "disabled": true
       },
       "3.9": {
         "upstream_branch": [
@@ -75,7 +75,7 @@
           "7.72.x",
           "main"
         ],
-        "disabled": false
+        "disabled": true
       },
       "3.9": {
         "upstream_branch": [
@@ -105,7 +105,7 @@
           "7.72.x",
           "main"
         ],
-        "disabled": false
+        "disabled": true
       },
       "3.9": {
         "upstream_branch": [
@@ -135,7 +135,7 @@
           "7.72.x",
           "main"
         ],
-        "disabled": false
+        "disabled": true
       },
       "3.9": {
         "upstream_branch": [
@@ -165,7 +165,7 @@
           "7.72.x",
           "main"
         ],
-        "disabled": false
+        "disabled": true
       },
       "3.9": {
         "upstream_branch": [
@@ -195,7 +195,7 @@
           "7.72.x",
           "main"
         ],
-        "disabled": false
+        "disabled": true
       },
       "3.9": {
         "upstream_branch": [
@@ -225,7 +225,7 @@
           "devspaces-3.8-rhel-8",
           "devspaces-3.8-rhel-8"
         ],
-        "disabled": false
+        "disabled": true
       },
       "3.9": {
         "upstream_branch": [
@@ -255,7 +255,7 @@
           "devspaces-3.8-rhel-8",
           "devspaces-3.8-rhel-8"
         ],
-        "disabled": false
+        "disabled": true
       },
       "3.9": {
         "upstream_branch": [
@@ -285,7 +285,7 @@
           "20221111",
           "20221111"
         ],
-        "disabled": false
+        "disabled": true
       },
       "3.9": {
         "upstream_branch": [
@@ -315,7 +315,7 @@
           "v2.9.6",
           "v2.9.6"
         ],
-        "disabled": false
+        "disabled": true
       },
       "3.9": {
         "upstream_branch": [
@@ -337,7 +337,7 @@
         "disabled": true
       },
       "3.8": {
-        "disabled": false
+        "disabled": true
       },
       "3.9": {
         "disabled": false
@@ -359,7 +359,7 @@
           "devspaces-3.8-rhel-8",
           "devspaces-3.8-rhel-8"
         ],
-        "disabled": false
+        "disabled": true
       },
       "3.9": {
         "upstream_branch": [
@@ -393,7 +393,7 @@
           "main"
         ],
         "node_version": "16.13.2",
-        "disabled": false
+        "disabled": true
       },
       "3.9": {
         "upstream_branch": [
@@ -425,7 +425,7 @@
           "7.72.x",
           "main"
         ],
-        "disabled": false
+        "disabled": true
       },
       "3.9": {
         "upstream_branch": [
@@ -447,7 +447,7 @@
         "disabled": true
       },
       "3.8": {
-        "disabled": false
+        "disabled": true
       },
       "3.9": {
         "disabled": false
@@ -461,7 +461,7 @@
         "disabled": true
       },
       "3.8": {
-        "disabled": false
+        "disabled": true
       },
       "3.9": {
         "disabled": false
@@ -475,7 +475,7 @@
         "disabled": true
       },
       "3.8": {
-        "disabled": false
+        "disabled": true
       },
       "3.9": {
         "disabled": false
@@ -489,7 +489,7 @@
         "disabled": true
       },
       "3.8": {
-        "disabled": false
+        "disabled": true
       },
       "3.9": {
         "disabled": false
@@ -503,7 +503,7 @@
         "disabled": true
       },
       "3.8": {
-        "disabled": false
+        "disabled": true
       },
       "3.9": {
         "disabled": false
@@ -516,7 +516,7 @@
   "CSVs": {
     "operator-bundle": {
       "3.7": {
-        "CSV_VERSION": "3.7.1",
+        "CSV_VERSION": "3.7.2",
         "CSV_VERSION_PREV": "3.7.1"
       },
       "3.8": {
@@ -535,13 +535,13 @@
   },
   "Other": {
     "Errata": {
-      "3.7": "117002",
+      "3.7": "118664",
       "3.8": "116894",
       "3.9": "n/a",
       "3.x": "n/a"
     },
     "Epic": {
-      "3.7": "CRW-4379",
+      "3.7": "CRW-4792",
       "3.8": "CRW-4586",
       "3.9": "n/a",
       "3.x": "n/a"
@@ -576,6 +576,11 @@
       "3.9": "3.1.6",
       "3.x": "3.1.6"
     },
+    "kubedock": {
+      "3.8": "0.11.0",
+      "3.9": "0.11.0",
+      "3.x": "0.11.0"
+    },
     "DEV_WORKSPACE_OPERATOR_TAG": {
       "3.7": "0.21",
       "3.8": "0.21",
@@ -584,7 +589,7 @@
     },
     "@eclipse-che/plugin-registry-generator": {
       "3.7": "7.67.0",
-      "3.8": "7.71.0",
+      "3.8": "7.72.0",
       "3.9": "next",
       "3.x": "next"
     },
