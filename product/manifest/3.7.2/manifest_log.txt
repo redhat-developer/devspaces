@@ -49,7 +49,7 @@ https://github.com/redhat-developer/devtools-productization/tree/main/codeready-
 $ php composer.phar require jetbrains/phpstorm-stubs:dev-master
 $ php composer.phar require felixfbecker/language-server:
 
-jetbrains/phpstorm-stubs dev-master 57e00c6 PHP runtime & extensions head...
+jetbrains/phpstorm-stubs dev-master 6d1accb PHP runtime & extensions head...
 
  == python ==
 
@@ -61,27 +61,27 @@ Defaulting to user installation because normal site-packages is not writeable
 
 Package              Version
 -------------------- --------
-ansible              4.10.0
-ansible-core         2.11.12
+ansible              4.9.0
+ansible-core         2.11.6
 appdirs              1.4.4
 argcomplete          1.9.3
 Babel                2.5.1
-blivet               3.4.0
+blivet               3.6.0
 Brlapi               0.6.7
 CCColUtils           1.5
-cffi                 1.15.1
+cffi                 1.15.0
 chardet              3.0.4
 chrome-gnome-shell   0.0.0
 cloud-init           22.1
 configobj            5.0.6
-cryptography         40.0.2
+cryptography         36.0.0
 cupshelpers          1.0
 dasbus               1.2
 dbus-python          1.2.4
-debtcollector        2.5.0
+debtcollector        2.3.0
 decorator            4.2.1
 distro               1.4.0
-dogpile.cache        1.1.8
+dogpile.cache        1.1.4
 ethtool              0.14
 file-magic           0.3.0
 gitdb                4.0.1
@@ -89,28 +89,28 @@ GitPython            3.0.9
 gpg                  1.13.1
 gssapi               1.5.1
 idna                 2.5
-importlib-metadata   4.8.3
+importlib-metadata   4.8.2
 importlib-resources  5.4.0
 iniparse             0.4
 initial-setup        0.3.81.7
 isc                  2.0
-iso8601              1.1.0
+iso8601              1.0.2
 Jinja2               2.10.1
 jmespath             0.10.0
 jsonpatch            1.21
 jsonpointer          1.10
 jsonschema           2.6.0
 kerberos             1.3.0
-keystoneauth1        5.1.2
-kobo                 0.24.0
+keystoneauth1        4.4.0
+kobo                 0.28.0
 koji                 1.32.0
 langtable            0.0.51
 libcomps             0.1.18
 MarkupSafe           0.23
-msgpack              1.0.5
+msgpack              1.0.3
 munch                2.5.0
 netaddr              0.8.0
-netifaces            0.10.6
+netifaces            0.11.0
 ntlm-auth            1.5.0
 ntplib               0.3.3
 oauthlib             2.1.0
@@ -118,15 +118,16 @@ openstacksdk         0.27.0
 ordered-set          2.0.2
 os-service-types     1.7.0
 oslo.i18n            5.1.0
-oslo.serialization   4.3.0
-oslo.utils           4.13.0
+oslo.serialization   4.2.0
+oslo.utils           4.12.0
 packaging            21.3
-pbr                  5.11.1
+pbr                  5.8.0
 perf                 0.1
 pexpect              4.6.0
 pid                  2.1.1
 pip                  21.3.1
 ply                  3.9
+podman               4.4.1
 prettytable          0.7.2
 productmd            1.35
 ptyprocess           0.5.2
@@ -140,8 +141,8 @@ PyGObject            3.28.3
 pyinotify            0.9.6
 PyJWT                1.6.1
 pykickstart          3.16.15
-pyOpenSSL            23.1.1
-pyparsing            3.0.9
+pyOpenSSL            21.0.0
+pyparsing            3.0.6
 pyparted             3.11.7
 pyroute2             0.5.13
 pyserial             3.1.1
@@ -150,13 +151,15 @@ python-bugzilla      3.2.0
 python-cinderclient  4.1.0
 python-dateutil      2.6.1
 python-dmidecode     3.12.2
-python-glanceclient  3.6.0
+python-glanceclient  3.5.0
 python-linux-procfs  0.7.0
 python-meh           0.47.2
 python-novaclient    7.1.0
+python-qpid-proton   0.37.0
+pytoml               0.1.14
 pytz                 2017.2
 pyudev               0.21.0
-pywinrm              0.4.3
+pywinrm              0.4.2
 pyxdg                0.25
 PyYAML               3.12
 requests             2.20.0
@@ -167,6 +170,7 @@ requests-kerberos    0.12.0
 requests-ntlm        1.1.0
 requestsexceptions   1.4.0
 resolvelib           0.5.4
+rhmsg                0.13.1
 rhpkg                1.44
 rpkg                 1.66
 rpm                  4.14.3
@@ -175,23 +179,25 @@ sepolicy             1.1
 setools              4.3.0
 setroubleshoot       1.1
 setuptools           39.2.0
-simplejson           3.19.1
-simpleline           1.1.1
+simplejson           3.17.6
+simpleline           1.1.3
 six                  1.11.0
 slip                 0.6.4
 slip.dbus            0.6.4
 smmap                3.0.1
-sos                  4.5.1
-stevedore            3.5.2
-subscription-manager 1.28.32
-syspurpose           1.28.32
+sos                  4.5.5
+stevedore            3.5.0
+subscription-manager 1.28.36
+syspurpose           1.28.36
 systemd-python       234
 templated-dictionary 1.1
-typing_extensions    4.1.1
+toml                 0.10.2
+typing_extensions    4.0.0
+udica                0.2.6
 urllib3              1.24.2
 warlock              1.3.3
-wrapt                1.15.0
-xmltodict            0.13.0
+wrapt                1.13.3
+xmltodict            0.12.0
 zipp                 3.6.0
 
 6. Collect RPM deps
