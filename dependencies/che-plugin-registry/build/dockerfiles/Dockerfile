@@ -110,7 +110,7 @@ USER postgres
 ENV LC_ALL=en_US.UTF-8 \
     LANG=en_US.UTF-8 \
     LANGUAGE=en_US.UTF-8 \
-    PGDATA=/var/lib/pgsql/13/data/database \
+    PGDATA=/var/lib/pgsql/15/data/database \
     PATH="/tmp/opt/ovsx/bin:$PATH" \
     # use a cached version of the license list and not go over the internet
     # it's needed for openvsx server when vsix is publishing on AirGap environment
@@ -123,7 +123,18 @@ RUN \
     echo "======================" \
     echo -n "ovsx:  "; /tmp/opt/ovsx/bin/ovsx --version && \
     echo "======================"
-RUN chmod 777 /var/run/postgresql
+
+RUN chmod 777 /var/run/postgresql && \
+    initdb && \
+    /usr/local/bin/import_vsix.sh && \
+    chmod -R 777 /tmp/file && \
+    rm /var/lib/pgsql/15/data/database/postmaster.pid && \
+    rm /var/run/postgresql/.s.PGSQL* && \
+    rm /tmp/.s.PGSQL* && \
+    rm /tmp/.lock && \
+    chmod -R g+rwx /var/lib/pgsql && \
+    chgrp -R 0 /var/lib/pgsql && \
+    mv /var/lib/pgsql/15/data/database /var/lib/pgsql/15/data/old
 
 ARG DS_BRANCH=devspaces-3-rhel-8
 ENV DS_BRANCH=${DS_BRANCH}
