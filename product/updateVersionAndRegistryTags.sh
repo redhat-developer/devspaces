@@ -304,6 +304,9 @@ updateVersion() {
 
     replaceField "${WORKDIR}/dependencies/job-config.json" ".Other[\"FLOATING_QUAY_TAGS\"][\"${LATEST_VERSION}\"]" "\"latest\""
 
+    # set slack notifications to true for latest version
+    replaceField "${WORKDIR}/dependencies/job-config.json" ".Other[\"slack_notification\"][\"${LATEST_VERSION}\"]" "\"true\""
+
     # search for latest released tag to use for stable builds
     computeLatestPackageVersion $LATEST_VERSION "@eclipse-che/plugin-registry-generator"
     # or use "latest" release with replaceField "${WORKDIR}/dependencies/job-config.json" ".Other[\"@eclipse-che/plugin-registry-generator\"][\"${LATEST_VERSION}\"]" "\"latest\""
