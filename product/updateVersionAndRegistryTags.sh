@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Copyright (c) 2021 Red Hat, Inc.
+# Copyright (c) 2021-2023 Red Hat, Inc.
 # This program and the accompanying materials are made
 # available under the terms of the Eclipse Public License 2.0
 # which is available at https://www.eclipse.org/legal/epl-2.0/
@@ -24,17 +24,11 @@ DISABLE_DEVSPACES_JOBS_VERSION=""
 DISABLE_DEVSPACES_MGMTJOBS_VERSION=""
 BRANCH="devspaces-3-rhel-8"
 
-# for DS 3.y <=3.5, take y value, double it, and add CHE_OFFSET=50 to get Che 7.y version
-# 3.3 => (3 * 2) + 50 = 56 ==> 7.56
-# 3.4 => (4 * 2) + 50 = 56 ==> 7.58
-# 3.5 => (5 * 2) + 50 = 56 ==> 7.60
-# for DS 3.6 and 3.7 take y value, triple it, and add CHE_OFFSET=46 to get Che 7.y version
-# 3.6 => (6 * 3) + 46 = 64 ==> 7.64
-# 3.7 => (7 * 3) + 46 = 67 ==> 7.67
-# for DS 3.y >= 3.8 take the y value, triple it, and add CHE_OFFSET=48 to get Che 7.y version
-# 3.8 => (8 * 3) + 48 = 72 ==> 7.72 
-# 3.9 => (9 * 3) + 48 = 75 ==> 7.75
-CHE_OFFSET=48
+# for DS 3.y = 3.8 Che is 7.72 
+# For DS 3.9+ We are moving to 3 week sprints so the math is changing again.
+# 3.9 => (9 * 2) + 56 = 74 ==> 7.74
+# 3.10 => (10 * 2) + 56 = 76 ==> 7.76
+CHE_OFFSET=56
 
 usage () {
   echo "
@@ -167,13 +161,17 @@ computeLatestPackageVersion() {
     BASE_VERSION="$1" # Dev Spaces 3.y version to use for computations
     packageName="$2"
     THIS_Y_VALUE="${BASE_VERSION#*.}"; 
-    if [[ $THIS_Y_VALUE -le 5 ]]; then # DS 3.5 mapping
-      THIS_CHE_Y=$(( (${THIS_Y_VALUE} * 2) + ${CHE_OFFSET} + 4 )); 
-      THIS_CHE_Y_LOWER=$(( ${THIS_CHE_Y} - 1 ))
-      # echo "For THIS_Y_VALUE = $THIS_Y_VALUE, got THIS_CHE_Y = $THIS_CHE_Y and THIS_CHE_Y_LOWER = $THIS_CHE_Y_LOWER"
-    else # mapping for DS 3.6 = 7.44, 3.7 = 7.47, etc. 
-      THIS_CHE_Y=$(( (${THIS_Y_VALUE} * 3) + ${CHE_OFFSET} )); 
-      THIS_CHE_Y_LOWER=$(( ${THIS_CHE_Y} - 1 ))
+    # 3.7 and 3.8 are both different so hardcode and we can take them out as they become irrelevant
+    # note that these values are used for versions where main doesn't make sense, such as  @eclipse-che/plugin-registry-generator
+    if [[ $THIS_Y_VALUE -eq 8 ]]; then # Check DS 3.8 first, will be relevant longer.
+      THIS_CHE_Y=72
+      THIS_CHE_Y_LOWER=71
+    elif [[ $THIS_Y_VALUE -eq 7 ]]; then # DS 3.7 Mapping
+      THIS_CHE_Y=67
+      THIS_CHE_Y_LOWER=66
+    else # DS 3.9+ Mapping
+      THIS_CHE_Y=$(( (${THIS_Y_VALUE} * 2) + ${CHE_OFFSET} )); 
+      THIS_CHE_Y_LOWER=$(( ${THIS_CHE_Y} - 1 ));
       # echo "For THIS_Y_VALUE = $THIS_Y_VALUE, got THIS_CHE_Y = $THIS_CHE_Y and THIS_CHE_Y_LOWER = $THIS_CHE_Y_LOWER"
     fi
 
@@ -207,34 +205,26 @@ updateVersion() {
 
     DEVSPACES_Y_VALUE="${DEVSPACES_VERSION#*.}"
 
-    # for 3.4, want 7.58, 7.57
-    # for 3.5, want 7.60, 7.59
-    # for 3.6, want 7.64, 7.63 (ignore 7.62, 7.61)
     # for 3.7, want 7.67, 7.66 (ignore 7.65)
-    if [[ $DEVSPACES_Y_VALUE -le 5 ]]; then
-      UPPER_CHE_Y=$(( (${DEVSPACES_Y_VALUE} * 2 ) + ${CHE_OFFSET} - 4 ))
-      LOWER_CHE_Y=$(( ${UPPER_CHE_Y} - 1 ))
-      # echo "For DEVSPACES_Y_VALUE = $DEVSPACES_Y_VALUE, got UPPER_CHE_Y = $UPPER_CHE_Y and LOWER_CHE_Y = $LOWER_CHE_Y"
+    # for 3.8, want 7.72 or main if 7.72 hasn't been released
+    # for 3.9, want 7.74 or main 
+    if [[ $DEVSPACES_Y_VALUE -eq 8 ]]; then
+      CHE_Y=72
+    elif [[ $DEVSPACES_Y_VALUE -eq 7 ]]; then
+      CHE_Y=67
     else
-      UPPER_CHE_Y=$(( (${DEVSPACES_Y_VALUE} * 3 ) + ${CHE_OFFSET} ))
-      LOWER_CHE_Y=$(( ${UPPER_CHE_Y} - 1 ))
-      # echo "For DEVSPACES_Y_VALUE = $DEVSPACES_Y_VALUE, got UPPER_CHE_Y = $UPPER_CHE_Y and LOWER_CHE_Y = $LOWER_CHE_Y"
+      CHE_Y=$(( (${DEVSPACES_Y_VALUE} * 2 ) + ${CHE_OFFSET} ))
+      # echo "For DEVSPACES_Y_VALUE = $DEVSPACES_Y_VALUE, got CHE_Y = $CHE_Y"
     fi
     # CRW-2155, if version is in the json update it for che and devspaces branches
     # otherwise inject new version.
     check=$(cat ${WORKDIR}/dependencies/job-config.json | jq '.Jobs[] | keys' | grep "\"${DEVSPACES_VERSION}\"")
     if [[ ${check} ]]; then #just updating
       COMMIT_MSG="ci: update ${DEVSPACES_VERSION}"
-      replaceField "${WORKDIR}/dependencies/job-config.json" "(.Jobs[][\"${DEVSPACES_VERSION}\"][\"upstream_branch\"]|select(.[]?==\"main\"))" "[\"7.${UPPER_CHE_Y}.x\",\"7.${LOWER_CHE_Y}.x\"]"
+      replaceField "${WORKDIR}/dependencies/job-config.json" "(.Jobs[][\"${DEVSPACES_VERSION}\"][\"upstream_branch\"]|select(.[]?|contains(\".x\")))" "[\"7.${CHE_Y}.x\",\"main\"]"
       replaceField "${WORKDIR}/dependencies/job-config.json" "(.Jobs[][\"${DEVSPACES_VERSION}\"][\"upstream_branch\"]|select(.[]?==\"devspaces-3-rhel-8\"))" "[\"devspaces-${DEVSPACES_VERSION}-rhel-8\",\"devspaces-${DEVSPACES_VERSION}-rhel-8\"]"
-      # if code <= 3.2 use devspaces-3.2-rhel-8 branch; as of 3.3 use 7.yy.x convention
-      if [[ $DEVSPACES_VERSION == "3.2" ]]; then
-        replaceField "${WORKDIR}/dependencies/job-config.json" "(.Jobs[\"code\"][\"${DEVSPACES_VERSION}\"][\"upstream_branch\"]|select(.[]))" "[\"devspaces-${DEVSPACES_VERSION}-rhel-8\",\"devspaces-${DEVSPACES_VERSION}-rhel-8\"]"
-      else
-        replaceField "${WORKDIR}/dependencies/job-config.json" "(.Jobs[\"code\"][\"${DEVSPACES_VERSION}\"][\"upstream_branch\"]|select(.[]))" "[\"7.${UPPER_CHE_Y}.x\",\"7.${LOWER_CHE_Y}.x\"]"
-      fi
 
-      replaceField "${WORKDIR}/dependencies/job-config.json" "(.\"Management-Jobs\"[][\"${DEVSPACES_VERSION}\"][\"upstream_branch\"]|select(.[]?==\"main\"))" "[\"7.${UPPER_CHE_Y}.x\",\"7.${LOWER_CHE_Y}.x\"]"
+      replaceField "${WORKDIR}/dependencies/job-config.json" "(.\"Management-Jobs\"[][\"${DEVSPACES_VERSION}\"][\"upstream_branch\"]|select(.[]?|contains(\".x\")))" "[\"7.${CHE_Y}.x\",\"main\"]"
       replaceField "${WORKDIR}/dependencies/job-config.json" "(.\"Management-Jobs\"[][\"${DEVSPACES_VERSION}\"][\"upstream_branch\"]|select(.[]?==\"devspaces-3-rhel-8\"))" "[\"devspaces-${DEVSPACES_VERSION}-rhel-8\",\"devspaces-${DEVSPACES_VERSION}-rhel-8\"]"
 
       #make sure jobs are enabled
@@ -273,16 +263,10 @@ updateVersion() {
           done
         fi
       done
-      replaceField "${WORKDIR}/dependencies/job-config.json" "(.Jobs[][\"${DEVSPACES_VERSION}\"][\"upstream_branch\"]|select(.[]?==\"main\"))" "[\"7.${UPPER_CHE_Y}.x\",\"7.${LOWER_CHE_Y}.x\"]"
+      replaceField "${WORKDIR}/dependencies/job-config.json" "(.Jobs[][\"${DEVSPACES_VERSION}\"][\"upstream_branch\"]|select(.[]?==\"main\"))" "[\"7.${CHE_Y}.x\",\"main\"]"
       replaceField "${WORKDIR}/dependencies/job-config.json" "(.Jobs[][\"${DEVSPACES_VERSION}\"][\"upstream_branch\"]|select(.[]?==\"devspaces-3-rhel-8\"))" "[\"devspaces-${DEVSPACES_VERSION}-rhel-8\",\"devspaces-${DEVSPACES_VERSION}-rhel-8\"]"
-      # if code <= 3.2 use devspaces-3.2-rhel-8 branch; as of 3.3 use 7.yy.x convention
-      if [[ $DEVSPACES_VERSION == "3.2" ]]; then
-        replaceField "${WORKDIR}/dependencies/job-config.json" "(.Jobs[\"code\"][\"${DEVSPACES_VERSION}\"][\"upstream_branch\"]|select(.[]))" "[\"devspaces-${DEVSPACES_VERSION}-rhel-8\",\"devspaces-${DEVSPACES_VERSION}-rhel-8\"]"
-      else
-        replaceField "${WORKDIR}/dependencies/job-config.json" "(.Jobs[\"code\"][\"${DEVSPACES_VERSION}\"][\"upstream_branch\"]|select(.[]))" "[\"7.${UPPER_CHE_Y}.x\",\"7.${LOWER_CHE_Y}.x\"]"
-      fi
 
-      replaceField "${WORKDIR}/dependencies/job-config.json" "(.\"Management-Jobs\"[][\"${DEVSPACES_VERSION}\"][\"upstream_branch\"]|select(.[]?==\"main\"))" "[\"7.${UPPER_CHE_Y}.x\",\"7.${LOWER_CHE_Y}.x\"]"
+      replaceField "${WORKDIR}/dependencies/job-config.json" "(.\"Management-Jobs\"[][\"${DEVSPACES_VERSION}\"][\"upstream_branch\"]|select(.[]?==\"main\"))" "[\"7.${CHE_Y}.x\",\"main\"]"
       replaceField "${WORKDIR}/dependencies/job-config.json" "(.\"Management-Jobs\"[][\"${DEVSPACES_VERSION}\"][\"upstream_branch\"]|select(.[]?==\"devspaces-3-rhel-8\"))" "[\"devspaces-${DEVSPACES_VERSION}-rhel-8\",\"devspaces-${DEVSPACES_VERSION}-rhel-8\"]"
 
       #make sure new builds are enabled
