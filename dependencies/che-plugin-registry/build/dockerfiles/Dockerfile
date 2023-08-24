@@ -131,7 +131,10 @@ RUN chmod 777 /var/run/postgresql && \
     rm /var/lib/pgsql/15/data/database/postmaster.pid && \
     rm /var/run/postgresql/.s.PGSQL* && \
     rm /tmp/.s.PGSQL* && \
-    rm /tmp/.lock && \
+    rm /tmp/.lock
+
+RUN \
+    echo "Change permissions for postgres user" && \
     chmod -R g+rwx /var/lib/pgsql && \
     chgrp -R 0 /var/lib/pgsql && \
     mv /var/lib/pgsql/15/data/database /var/lib/pgsql/15/data/old
