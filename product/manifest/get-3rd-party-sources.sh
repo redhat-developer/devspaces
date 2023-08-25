@@ -281,9 +281,10 @@ if [[ $PUBLISH -eq 1 ]]; then
     # create an empty dir into which we will make subfolders
     empty_dir=$(mktemp -d)
 
-    # delete old releases before pushing latest one, to keep disk usage low: DO NOT delete 'build-requirements' folder as we use that for storing binaries we can't yet build ourselves in OSBS
+    # delete old releases before pushing latest one, to keep disk usage low: DO NOT delete 'CI' or 'build-requirements' folders as we use them
+    # for storing CI builds and binaries we can't yet build ourselves in OSBS
     # note that this operation will only REMOVE old versions
-    rsync -rlP --delete --exclude=build-requirements --exclude="${TARBALL_PREFIX}.${today}" "$empty_dir"/ "${REMOTE_USER_AND_HOST}:staging/devspaces/"
+    rsync -rlP --delete --exclude=CI --exclude=build-requirements --exclude="${TARBALL_PREFIX}.${today}" "$empty_dir"/ "${REMOTE_USER_AND_HOST}:staging/devspaces/"
 
     # next, update existing ${TARBALL_PREFIX}.${today} folder (or create it not exist)
     rsync -rlP "${TODAY_DIR}" "${REMOTE_USER_AND_HOST}:staging/devspaces/"
