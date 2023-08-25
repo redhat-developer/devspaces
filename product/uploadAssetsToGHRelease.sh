@@ -13,6 +13,7 @@
 # push locally built asset* files to github
 
 set -e
+set -x
 
 TARGETDIR=$(pwd)
 
@@ -126,9 +127,13 @@ if [[ $PUBLISH_ASSETS -eq 1 ]]; then
   # check if release exists
   if [[ ! $(hub release | grep ${CSV_VERSION}-${ASSET_NAME}-assets) ]]; then
     #no existing release, create it
-    hub release create -t "${MIDSTM_BRANCH}" \
+    try=$(hub release create -t "${MIDSTM_BRANCH}" \
       -m "Assets for the ${CSV_VERSION} ${ASSET_NAME} release" -m "${ASSET_TYPE} for ${CSV_VERSION}" \
-      ${PRE_RELEASE} "${CSV_VERSION}-${ASSET_NAME}-assets"
+      ${PRE_RELEASE} "${CSV_VERSION}-${ASSET_NAME}-assets")
+    echo "[DEBUG] hub release create -t ${MIDSTM_BRANCH} ${PRE_RELEASE} ${CSV_VERSION}-${ASSET_NAME}-assets
+=====
+$try
+====="
   fi
 
   # upload artifacts for each platform 
@@ -139,37 +144,55 @@ if [[ $PUBLISH_ASSETS -eq 1 ]]; then
     echo "[INFO] [$countToUpload] Upload new asset $fileToPush (1/3)"
     try=$(hub release edit -a ${fileToPush} "${CSV_VERSION}-${ASSET_NAME}-assets" \
       -m "Assets for the ${CSV_VERSION} ${ASSET_NAME} release" -m "${ASSET_TYPE} for ${CSV_VERSION}" 2>&1 || true)
-    echo "[INFO] $try"
+    echo "[DEBUG] hub release edit -a ${fileToPush} ${CSV_VERSION}-${ASSET_NAME}-assets
+=====
+$try
+====="
 
     # if release doesn't exist (or upload failed), try again
     if [[ $try == *"nable to find release with tag name"* ]] || [[ $try == *"unexpected end of JSON input"* ]]; then
       # if release doesn't exist, create it
       if [[ $try == *"nable to find release with tag name"* ]]; then
         echo "[WARNING] GH release 'Assets for the ${CSV_VERSION} ${ASSET_NAME} release' does not exist: create it (1)"
-        hub release create -t "${MIDSTM_BRANCH}" \
+        tryAgain=$(hub release create -t "${MIDSTM_BRANCH}" \
           -m "Assets for the ${CSV_VERSION} ${ASSET_NAME} release" -m "${ASSET_TYPE} for ${CSV_VERSION}" \
-          ${PRE_RELEASE} "${CSV_VERSION}-${ASSET_NAME}-assets" || true
+          ${PRE_RELEASE} "${CSV_VERSION}-${ASSET_NAME}-assets" || true)
+        echo "[DEBUG] hub release create -t ${MIDSTM_BRANCH} ${PRE_RELEASE} ${CSV_VERSION}-${ASSET_NAME}-assets
+=====
+$tryAgain
+====="
       fi
       sleep 10s
       echo "[INFO] [$countToUpload] Upload new asset $fileToPush (2/3)"
       tryAgain=$(hub release edit -a ${fileToPush} "${CSV_VERSION}-${ASSET_NAME}-assets" \
       -m "Assets for the ${CSV_VERSION} ${ASSET_NAME} release" -m "${ASSET_TYPE} for ${CSV_VERSION}"  2>&1 || true)
-      echo "[INFO] $tryAgain"
+      echo "[DEBUG] hub release edit -a ${fileToPush} ${CSV_VERSION}-${ASSET_NAME}-assets
+=====
+$tryAgain
+====="
     fi
     # if release STILL doesn't exist (or upload failed again), try again
     if [[ $tryAgain == *"nable to find release with tag name"* ]] || [[ $tryAgain == *"unexpected end of JSON input"* ]]; then
       # if release STILL doesn't exist, create it again (?)
       if [[ $tryAgain == *"nable to find release with tag name"* ]]; then
         echo "[WARNING] GH release 'Assets for the ${CSV_VERSION} ${ASSET_NAME} release' does not exist: create it (2)"
-        hub release create -t "${MIDSTM_BRANCH}" \
+        tryAgain=$(hub release create -t "${MIDSTM_BRANCH}" \
           -m "Assets for the ${CSV_VERSION} ${ASSET_NAME} release" -m "${ASSET_TYPE} for ${CSV_VERSION}" \
-          ${PRE_RELEASE} "${CSV_VERSION}-${ASSET_NAME}-assets" || true
+          ${PRE_RELEASE} "${CSV_VERSION}-${ASSET_NAME}-assets" || true)
+      echo "[DEBUG] hub release create -t ${MIDSTM_BRANCH} ${PRE_RELEASE} ${CSV_VERSION}-${ASSET_NAME}-assets
+=====
+$tryAgain
+====="
       fi
       sleep 10s
       echo "[INFO] [$countToUpload] Upload new asset $fileToPush (3/3)"
-      hub release edit -a ${fileToPush} "${CSV_VERSION}-${ASSET_NAME}-assets" \
+      tryAgain=$(hub release edit -a ${fileToPush} "${CSV_VERSION}-${ASSET_NAME}-assets" \
       -m "Assets for the ${CSV_VERSION} ${ASSET_NAME} release" -m "${ASSET_TYPE} for ${CSV_VERSION}" || \
-      { echo "[ERROR] Failed to push ${fileToPush} to '${CSV_VERSION}-${ASSET_NAME}-assets' release!"; exit 1; }
+      { echo "[ERROR] Failed to push ${fileToPush} to '${CSV_VERSION}-${ASSET_NAME}-assets' release!"; exit 1; })
+      echo "[DEBUG] hub release edit -a ${fileToPush} ${CSV_VERSION}-${ASSET_NAME}-assets
+=====
+$tryAgain
+====="
     fi
   done
 fi
