@@ -128,8 +128,7 @@ if [[ $PUBLISH_ASSETS -eq 1 ]]; then
   if [[ -z $fileList ]]; then echo "Error: no files specified to publish!"; usage; exit 1; fi
   # check if release exists
   if [[ ! $(hub release | grep ${CSV_VERSION}-${ASSET_NAME}-assets) ]]; then
-    #no existing release, create it (but make sure the tag is also really deleted first)
-    hub push origin :"${CSV_VERSION}-${ASSET_NAME}-assets" || true
+    # no existing release, create it
     try=$(hub release create -t "${MIDSTM_BRANCH}" \
       -m "Assets for the ${CSV_VERSION} ${ASSET_NAME} release" -m "${ASSET_TYPE} for ${CSV_VERSION}" \
       ${PRE_RELEASE} "${CSV_VERSION}-${ASSET_NAME}-assets" 2>&1 || true)
@@ -157,8 +156,6 @@ $try
       # if release doesn't exist, create it
       if [[ $try == *"nable to find release with tag name"* ]]; then
         echo "[WARNING] GH release 'Assets for the ${CSV_VERSION} ${ASSET_NAME} release' does not exist: create it (1)"
-        # make sure the tag is also really deleted first
-        hub push origin :"${CSV_VERSION}-${ASSET_NAME}-assets" || true
         tryAgain=$(hub release create -t "${MIDSTM_BRANCH}" \
           -m "Assets for the ${CSV_VERSION} ${ASSET_NAME} release" -m "${ASSET_TYPE} for ${CSV_VERSION}" \
           ${PRE_RELEASE} "${CSV_VERSION}-${ASSET_NAME}-assets" 2>&1 || true)
@@ -181,8 +178,6 @@ $tryAgain
       # if release STILL doesn't exist, create it again (?)
       if [[ $tryAgain == *"nable to find release with tag name"* ]]; then
         echo "[WARNING] GH release 'Assets for the ${CSV_VERSION} ${ASSET_NAME} release' does not exist: create it (2)"
-        # make sure the tag is also really deleted first
-        hub push origin :"${CSV_VERSION}-${ASSET_NAME}-assets" || true
         tryAgain=$(hub release create -t "${MIDSTM_BRANCH}" \
           -m "Assets for the ${CSV_VERSION} ${ASSET_NAME} release" -m "${ASSET_TYPE} for ${CSV_VERSION}" \
           ${PRE_RELEASE} "${CSV_VERSION}-${ASSET_NAME}-assets" 2>&1 || true)
