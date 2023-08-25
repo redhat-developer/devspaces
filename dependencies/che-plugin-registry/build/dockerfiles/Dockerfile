@@ -135,8 +135,8 @@ RUN chmod 777 /var/run/postgresql && \
 
 RUN \
     echo "Change permissions for postgres user" && \
-    chmod -R g+rwx /var/lib/pgsql && \
-    chgrp -R 0 /var/lib/pgsql && \
+    chmod -R g+rwx /var/lib/pgsql/15 /var/lib/pgsql/data /var/lib/pgsql/backups && \
+    chgrp -R 0 /var/lib/pgsql/15 /var/lib/pgsql/data /var/lib/pgsql/backups && \
     mv /var/lib/pgsql/15/data/database /var/lib/pgsql/15/data/old
 
 ARG DS_BRANCH=devspaces-3-rhel-8
