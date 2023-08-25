@@ -129,7 +129,7 @@ if [[ $PUBLISH_ASSETS -eq 1 ]]; then
     #no existing release, create it
     try=$(hub release create -t "${MIDSTM_BRANCH}" \
       -m "Assets for the ${CSV_VERSION} ${ASSET_NAME} release" -m "${ASSET_TYPE} for ${CSV_VERSION}" \
-      ${PRE_RELEASE} "${CSV_VERSION}-${ASSET_NAME}-assets")
+      ${PRE_RELEASE} "${CSV_VERSION}-${ASSET_NAME}-assets" 2>&1 || true)
     echo "[DEBUG] hub release create -t ${MIDSTM_BRANCH} ${PRE_RELEASE} ${CSV_VERSION}-${ASSET_NAME}-assets
 =====
 $try
@@ -156,7 +156,7 @@ $try
         echo "[WARNING] GH release 'Assets for the ${CSV_VERSION} ${ASSET_NAME} release' does not exist: create it (1)"
         tryAgain=$(hub release create -t "${MIDSTM_BRANCH}" \
           -m "Assets for the ${CSV_VERSION} ${ASSET_NAME} release" -m "${ASSET_TYPE} for ${CSV_VERSION}" \
-          ${PRE_RELEASE} "${CSV_VERSION}-${ASSET_NAME}-assets" || true)
+          ${PRE_RELEASE} "${CSV_VERSION}-${ASSET_NAME}-assets" 2>&1 || true)
         echo "[DEBUG] hub release create -t ${MIDSTM_BRANCH} ${PRE_RELEASE} ${CSV_VERSION}-${ASSET_NAME}-assets
 =====
 $tryAgain
@@ -165,7 +165,7 @@ $tryAgain
       sleep 10s
       echo "[INFO] [$countToUpload] Upload new asset $fileToPush (2/3)"
       tryAgain=$(hub release edit -a ${fileToPush} "${CSV_VERSION}-${ASSET_NAME}-assets" \
-      -m "Assets for the ${CSV_VERSION} ${ASSET_NAME} release" -m "${ASSET_TYPE} for ${CSV_VERSION}"  2>&1 || true)
+      -m "Assets for the ${CSV_VERSION} ${ASSET_NAME} release" -m "${ASSET_TYPE} for ${CSV_VERSION}" 2>&1 || true)
       echo "[DEBUG] hub release edit -a ${fileToPush} ${CSV_VERSION}-${ASSET_NAME}-assets
 =====
 $tryAgain
@@ -178,7 +178,7 @@ $tryAgain
         echo "[WARNING] GH release 'Assets for the ${CSV_VERSION} ${ASSET_NAME} release' does not exist: create it (2)"
         tryAgain=$(hub release create -t "${MIDSTM_BRANCH}" \
           -m "Assets for the ${CSV_VERSION} ${ASSET_NAME} release" -m "${ASSET_TYPE} for ${CSV_VERSION}" \
-          ${PRE_RELEASE} "${CSV_VERSION}-${ASSET_NAME}-assets" || true)
+          ${PRE_RELEASE} "${CSV_VERSION}-${ASSET_NAME}-assets" 2>&1 || true)
       echo "[DEBUG] hub release create -t ${MIDSTM_BRANCH} ${PRE_RELEASE} ${CSV_VERSION}-${ASSET_NAME}-assets
 =====
 $tryAgain
@@ -187,7 +187,7 @@ $tryAgain
       sleep 10s
       echo "[INFO] [$countToUpload] Upload new asset $fileToPush (3/3)"
       tryAgain=$(hub release edit -a ${fileToPush} "${CSV_VERSION}-${ASSET_NAME}-assets" \
-      -m "Assets for the ${CSV_VERSION} ${ASSET_NAME} release" -m "${ASSET_TYPE} for ${CSV_VERSION}" || \
+      -m "Assets for the ${CSV_VERSION} ${ASSET_NAME} release" -m "${ASSET_TYPE} for ${CSV_VERSION}" 2>&1 || \
       { echo "[ERROR] Failed to push ${fileToPush} to '${CSV_VERSION}-${ASSET_NAME}-assets' release!"; exit 1; })
       echo "[DEBUG] hub release edit -a ${fileToPush} ${CSV_VERSION}-${ASSET_NAME}-assets
 =====
