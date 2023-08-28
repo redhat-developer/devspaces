@@ -118,6 +118,7 @@ if [[ $DELETE_ASSETS -eq 1 ]]; then
   if [[ $(hub release | grep ${CSV_VERSION}-${ASSET_NAME}-assets) ]]; then
     echo "Delete release ${CSV_VERSION}-${ASSET_NAME}-assets"
     hub release delete "${CSV_VERSION}-${ASSET_NAME}-assets"
+    hub tag --delete "${CSV_VERSION}-${ASSET_NAME}-assets"
     hub push origin :"${CSV_VERSION}-${ASSET_NAME}-assets"
   else
     echo "No release with tag ${CSV_VERSION}-${ASSET_NAME}-assets"
