@@ -115,14 +115,10 @@ export GITHUB_TOKEN=${GITHUB_TOKEN}
 # this also deletes the release in which the assets are stored
 if [[ $DELETE_ASSETS -eq 1 ]]; then
   #check if release exists
-  if [[ $(hub release | grep ${CSV_VERSION}-${ASSET_NAME}-assets) ]]; then
-    echo "Delete release ${CSV_VERSION}-${ASSET_NAME}-assets"
-    hub release delete "${CSV_VERSION}-${ASSET_NAME}-assets"
-    hub tag --delete "${CSV_VERSION}-${ASSET_NAME}-assets"
-    hub push origin :"${CSV_VERSION}-${ASSET_NAME}-assets"
-  else
-    echo "No release with tag ${CSV_VERSION}-${ASSET_NAME}-assets"
-  fi
+    echo "Delete release and tag ${CSV_VERSION}-${ASSET_NAME}-assets"
+    hub release delete "${CSV_VERSION}-${ASSET_NAME}-assets" || true
+    hub tag --delete "${CSV_VERSION}-${ASSET_NAME}-assets" || true
+    hub push origin :"${CSV_VERSION}-${ASSET_NAME}-assets" || true
 fi
 
 if [[ $PUBLISH_ASSETS -eq 1 ]]; then
