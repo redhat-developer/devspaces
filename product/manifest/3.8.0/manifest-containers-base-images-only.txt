@@ -1,0 +1,23 @@
+containers/devspaces-code-rhel8-container:3.8.0/ubi8:8.8-1009 as ubi-builder
+containers/devspaces-code-rhel8-container:3.8.0/ubi8-minimal:8.8-1014
+containers/devspaces-configbump-rhel8-container:3.8.0/registry.access.redhat.com/ubi8/go-toolset:1.19.10-3 as builder
+containers/devspaces-configbump-rhel8-container:3.8.0/registry.access.redhat.com/ubi8-minimal:8.8-1014 as runtime
+containers/devspaces-dashboard-rhel8-container:3.8.0/ubi8/nodejs-16:1-111.1690901930 as builder
+containers/devspaces-dashboard-rhel8-container:3.8.0/ubi8/nodejs-16:1-111.1690901930
+containers/devspaces-devfileregistry-rhel8-container:3.8.0/ubi8/python-38:1-129 as builder
+containers/devspaces-devfileregistry-rhel8-container:3.8.0/rhel8/httpd-24:1-268.1689584944 AS registry
+containers/devspaces-idea-rhel8-container:3.8.0/ubi8:8.8-1032 as ubi-builder
+containers/devspaces-idea-rhel8-container:3.8.0/ubi8-minimal:8.8-1037
+containers/devspaces-imagepuller-rhel8-container:3.8.0/rhel8/go-toolset:1.19.10-3 as builder
+containers/devspaces-imagepuller-rhel8-container:3.8.0/ubi8-minimal:8.8-1014
+containers/devspaces-machineexec-rhel8-container:3.8.0/rhel8/go-toolset:1.19.10-3 as builder
+containers/devspaces-machineexec-rhel8-container:3.8.0/registry.access.redhat.com/ubi8-minimal:8.8-1014 as runtime
+containers/devspaces-operator-rhel8-container:3.8.0/rhel8/go-toolset:1.19.10-3 as builder
+containers/devspaces-operator-rhel8-container:3.8.0/ubi8-minimal:8.8-1014
+containers/devspaces-operator-bundle-rhel8-container:3.8.0/scratch
+containers/devspaces-pluginregistry-rhel8-container:3.8.0/rhel8/postgresql-15:1-20
+containers/devspaces-server-rhel8-container:3.8.0/ubi8-minimal:8.8-1014
+containers/devspaces-traefik-rhel8-container:3.8.0/ubi8-minimal:8.8-1014 as builder
+containers/devspaces-traefik-rhel8-container:3.8.0/ubi8-minimal:8.8-1014 
+containers/devspaces-udi-rhel8-container:3.8.0/rhel8/go-toolset:1.19.10-10 as go-builder
+containers/devspaces-udi-rhel8-container:3.8.0/ubi8-minimal:8.8-1037

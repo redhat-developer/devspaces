@@ -1,0 +1,201 @@
+containers/devspaces-code-rhel8-container:3.8.0/ubi8:8.8-1009 as ubi-builder
+containers/devspaces-code-rhel8-container:3.8.0/ubi8-minimal:8.8-1014
+FROM ubi8:8.8-1009 as ubi-builder
+RUN yum install --installroot /mnt/rootfs tar gzip brotli libstdc++ coreutils glibc-minimal-langpack --releasever 8 --setopt install_weak_deps=false --nodocs -y && yum --installroot /mnt/rootfs clean all
+RUN rm -rf /mnt/rootfs/var/cache/* /mnt/rootfs/var/log/dnf* /mnt/rootfs/var/log/yum.*
+COPY /build/scripts/entrypoint*.sh /mnt/rootfs/
+COPY asset-*.tar.gz /tmp/assets/
+FROM ubi8-minimal:8.8-1014
+COPY --from=ubi-builder /mnt/rootfs/ /
+
+containers/devspaces-configbump-rhel8-container:3.8.0/registry.access.redhat.com/ubi8/go-toolset:1.19.10-3 as builder
+containers/devspaces-configbump-rhel8-container:3.8.0/registry.access.redhat.com/ubi8-minimal:8.8-1014 as runtime
+FROM registry.access.redhat.com/ubi8/go-toolset:1.19.10-3 as builder
+COPY $REMOTE_SOURCES $REMOTE_SOURCES_DIR
+    GOOS=linux GOARCH=${ARCH} go build -a -ldflags '-w -s' -a -installsuffix cgo -o configbump cmd/configbump/main.go && \
+FROM registry.access.redhat.com/ubi8-minimal:8.8-1014 as runtime
+RUN microdnf -y install shadow-utils && \
+    adduser appuser && \
+    microdnf -y clean all && rm -rf /var/cache/yum && \
+    echo "Installed Packages" && rpm -qa | sort -V && echo "End Of Installed Packages"
+COPY --from=builder /usr/local/bin/configbump /usr/local/bin/configbump
+
+containers/devspaces-dashboard-rhel8-container:3.8.0/ubi8/nodejs-16:1-111.1690901930 as builder
+containers/devspaces-dashboard-rhel8-container:3.8.0/ubi8/nodejs-16:1-111.1690901930
+FROM ubi8/nodejs-16:1-111.1690901930 as builder
+RUN dnf module install -y nodejs:16/development
+COPY $REMOTE_SOURCES $REMOTE_SOURCES_DIR
+COPY .yarn/releases $REMOTE_SOURCES_DIR/devspaces-images-dashboard/app/devspaces-dashboard/.yarn/releases/
+RUN yarn config set nodedir /usr; yarn config set unsafe-perm true && yarn install
+FROM ubi8/nodejs-16:1-111.1690901930
+    yum -y -q update && \
+    yum -y -q clean all && rm -rf /var/cache/yum && \
+    echo "Installed Packages" && rpm -qa | sort -V && echo "End Of Installed Packages"
+COPY --from=builder ${BACKEND_LIB} /backend
+COPY --from=builder ${FRONTEND_LIB} /public
+COPY --from=builder ${DEVFILE_REGISTRY} /public/dashboard/devfile-registry
+
+containers/devspaces-devfileregistry-rhel8-container:3.8.0/ubi8/python-38:1-129 as builder
+containers/devspaces-devfileregistry-rhel8-container:3.8.0/rhel8/httpd-24:1-268.1689584944 AS registry
+FROM ubi8/python-38:1-129 as builder
+COPY root-local.tgz /tmp/root-local.tgz
+COPY ./build/dockerfiles/content_sets_rhel8.repo /etc/yum.repos.d/
+COPY ./build/dockerfiles/rhel.install.sh /tmp
+RUN /tmp/rhel.install.sh && rm -f /tmp/rhel.install.sh
+COPY ./build/scripts /build/
+COPY ./devfiles /build/devfiles
+COPY ./build/dockerfiles/rhel.cache_projects.sh resources.tgz /tmp/ 
+FROM rhel8/httpd-24:1-268.1689584944 AS registry
+    yum -y -q update && \
+    yum -y -q clean all && rm -rf /var/cache/yum && \
+    echo "Installed Packages" && rpm -qa | sort -V && echo "End Of Installed Packages"
+COPY README.md .htaccess /var/www/html/
+COPY --from=builder /build/devfiles /var/www/html/devfiles
+COPY --from=builder /build/resources /var/www/html/resources
+COPY ./images /var/www/html/images
+
+containers/devspaces-idea-rhel8-container:3.8.0/ubi8:8.8-1032 as ubi-builder
+containers/devspaces-idea-rhel8-container:3.8.0/ubi8-minimal:8.8-1037
+FROM ubi8:8.8-1032 as ubi-builder
+COPY --chown=0:0 asset-required-rpms.txt /tmp/asset-required-rpms.txt
+RUN yum install unzip -y --nodocs && \
+    yum install --installroot /mnt/rootfs \
+            --releasever 8 --setopt install_weak_deps=false --nodocs -y && \
+    yum --installroot /mnt/rootfs clean all
+RUN rm -rf /mnt/rootfs/var/cache/* /mnt/rootfs/var/log/dnf* /mnt/rootfs/var/log/yum.*
+COPY --chown=0:0 asset-ide-packaging.tar.gz .
+COPY --chown=0:0 asset-projector-server-assembly.zip .
+COPY --chown=0:0 asset-static-assembly.tar.gz .
+COPY --chown=0:0 asset-che-plugin-assembly.zip .
+COPY --chown=0:0 asset-machine-exec ide/bin/machine-exec
+FROM ubi8-minimal:8.8-1037
+COPY --from=ubi-builder /mnt/rootfs/ /
+
+containers/devspaces-imagepuller-rhel8-container:3.8.0/rhel8/go-toolset:1.19.10-3 as builder
+containers/devspaces-imagepuller-rhel8-container:3.8.0/ubi8-minimal:8.8-1014
+FROM rhel8/go-toolset:1.19.10-3 as builder
+COPY $REMOTE_SOURCES $REMOTE_SOURCES_DIR
+RUN adduser appuser && \
+FROM ubi8-minimal:8.8-1014
+RUN microdnf -y update && microdnf clean all && rm -rf /var/cache/yum && echo "Installed Packages" && rpm -qa | sort -V && echo "End Of Installed Packages"
+COPY --from=builder /etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem /etc/pki/ca-trust/extracted/pem/
+COPY --from=builder /etc/pki/tls/certs/ca-bundle.crt /etc/pki/tls/certs/
+COPY --from=builder /etc/passwd /etc/passwd
+COPY --from=builder $REMOTE_SOURCES_DIR/devspaces-images-imagepuller/app/devspaces-imagepuller/bin/kubernetes-image-puller /
+COPY --from=builder $REMOTE_SOURCES_DIR/devspaces-images-imagepuller/app/devspaces-imagepuller/bin/sleep /bin/sleep
+
+containers/devspaces-machineexec-rhel8-container:3.8.0/rhel8/go-toolset:1.19.10-3 as builder
+containers/devspaces-machineexec-rhel8-container:3.8.0/registry.access.redhat.com/ubi8-minimal:8.8-1014 as runtime
+FROM rhel8/go-toolset:1.19.10-3 as builder
+COPY . .
+RUN adduser unprivilegeduser && \
+    GOOS=linux go build -mod=vendor -a -ldflags '-w -s' -a -installsuffix cgo -o che-machine-exec . && \
+FROM registry.access.redhat.com/ubi8-minimal:8.8-1014 as runtime
+COPY --from=builder /rootfs /
+RUN microdnf install -y openssl; microdnf clean -y all
+
+containers/devspaces-operator-rhel8-container:3.8.0/rhel8/go-toolset:1.19.10-3 as builder
+containers/devspaces-operator-rhel8-container:3.8.0/ubi8-minimal:8.8-1014
+FROM rhel8/go-toolset:1.19.10-3 as builder
+COPY $REMOTE_SOURCES $REMOTE_SOURCES_DIR
+COPY go.mod go.mod
+COPY go.sum go.sum
+COPY main.go main.go
+COPY vendor/ vendor/
+COPY mocks/ mocks/
+COPY api/ api/
+COPY config/ config/
+COPY controllers/ controllers/
+COPY pkg/ pkg/
+FROM ubi8-minimal:8.8-1014
+COPY --from=builder /tmp/devworkspace-operator/templates /tmp/devworkspace-operator/templates
+COPY --from=builder /tmp/header-rewrite-traefik-plugin /tmp/header-rewrite-traefik-plugin
+COPY --from=builder $REMOTE_SOURCES_DIR/devspaces-images-operator/app/devspaces-operator/che-operator /manager
+
+containers/devspaces-operator-bundle-rhel8-container:3.8.0/scratch
+FROM scratch
+COPY manifests /manifests/
+COPY metadata /metadata/
+
+containers/devspaces-pluginregistry-rhel8-container:3.8.0/rhel8/postgresql-15:1-20
+FROM rhel8/postgresql-15:1-20
+COPY root-local.tgz /tmp/root-local.tgz
+COPY ./build/dockerfiles/content_sets_rhel8.repo /etc/yum.repos.d/
+COPY ./build/dockerfiles/rhel.install.sh /tmp
+RUN /tmp/rhel.install.sh && rm -f /tmp/rhel.install.sh
+COPY --chown=0:0 /openvsx-server.tar.gz .
+COPY /build/dockerfiles/application.yaml /openvsx-server/config/
+COPY --chown=0:0 /ovsx.tar.gz .
+COPY /build/scripts/import_vsix.sh /usr/local/bin
+COPY /build/scripts/start_services.sh /usr/local/bin/
+COPY /build/dockerfiles/openvsx.conf /etc/httpd/conf.d/
+COPY README.md .htaccess /var/www/html/
+COPY /build/scripts/*.sh resources.tgz che-*.yaml /build/
+COPY v3/plugins/ /var/www/html/v3/plugins/
+COPY v3/images/*.png /var/www/html/v3/images/
+
+containers/devspaces-server-rhel8-container:3.8.0/ubi8-minimal:8.8-1014
+FROM ubi8-minimal:8.8-1014
+RUN microdnf install java-17-openjdk-headless tar gzip shadow-utils findutils && \
+    microdnf -y clean all && rm -rf /var/cache/yum && echo "Installed Packages" && rpm -qa | sort -V && echo "End Of Installed Packages" && \
+    adduser -G root user && mkdir -p /home/user/devspaces
+COPY artifacts/assembly-main.tar.gz /tmp/assembly-main.tar.gz
+
+containers/devspaces-traefik-rhel8-container:3.8.0/ubi8-minimal:8.8-1014 as builder
+containers/devspaces-traefik-rhel8-container:3.8.0/ubi8-minimal:8.8-1014 
+FROM ubi8-minimal:8.8-1014 as builder
+COPY $REMOTE_SOURCES $REMOTE_SOURCES_DIR
+ENV NODEJS_VERSION="12:8020020200326104117/development"
+RUN microdnf -y install dnf && \
+    dnf -y -q install python2 golang make gcc-c++ openssl-devel && \
+    dnf -y -q module install nodejs:$NODEJS_VERSION && \
+    yarn install && \
+FROM ubi8-minimal:8.8-1014 
+COPY --from=builder $REMOTE_SOURCES_DIR/devspaces-images-traefik/app/devspaces-traefik/script/ca-certificates.crt /etc/ssl/certs/
+COPY --from=builder $REMOTE_SOURCES_DIR/devspaces-images-traefik/app/devspaces-traefik/traefik /traefik
+    microdnf -y clean all && rm -rf /var/cache/yum && echo "Installed Packages" && rpm -qa | sort -V && echo "End Of Installed Packages" 
+    TRAEFIK_VERSION="v2.9.6" \
+
+containers/devspaces-udi-rhel8-container:3.8.0/rhel8/go-toolset:1.19.10-10 as go-builder
+containers/devspaces-udi-rhel8-container:3.8.0/ubi8-minimal:8.8-1037
+FROM rhel8/go-toolset:1.19.10-10 as go-builder
+COPY $REMOTE_SOURCES $REMOTE_SOURCES_DIR
+    dnf -y -q install golang make gzip which openshift-clients && \
+FROM ubi8-minimal:8.8-1037
+    NODEJS_VERSION="16" \
+    PYTHON_VERSION="3.9" \
+    PHP_VERSION="7.4" \
+    XDEBUG_VERSION="3.1.6" \
+ADD etc/storage.conf $HOME/.config/containers/storage.conf
+COPY $REMOTE_SOURCES $REMOTE_SOURCES_DIR
+COPY etc/docker.sh /usr/local/bin/docker
+    microdnf install -y dnf && \
+    dnf -y -q module install container-tools:rhel8 maven:3.6 nodejs:$NODEJS_VERSION python39:${PYTHON_VERSION} php:$PHP_VERSION && \
+    dnf -y -q install --setopt=tsflags=nodocs \
+        php php-cli php-fpm php-opcache php-devel php-pear php-gd php-intl php-mysqli php-zlib php-curl \
+        bash tar gzip unzip bzip2 which shadow-utils findutils wget curl sudo git git-lfs procps-ng tree \
+    dnf -y -q reinstall shadow-utils && \
+    dnf -y -q clean all && rm -rf /var/cache/yum && \
+    sed -i -e 's|^#mount_program|mount_program|g' -e '/additionalimage.*/a "/var/lib/shared",' /etc/containers/storage.conf && \
+    python${PYTHON_VERSION} -m pip install --user --no-cache-dir --upgrade pip setuptools pytest flake8 virtualenv yq && \
+    echo -e "#/usr/bin/bash\n/usr/bin/python${PYTHON_VERSION} -m pip \$*" | sed -r -e "s@#@#\!@" > /usr/bin/pip && \
+    echo -e "#/usr/bin/bash\n/usr/bin/python${PYTHON_VERSION} -m pip \$*" | sed -r -e "s@#@#\!@" > /usr/bin/pip${PYTHON_VERSION} && \
+    echo -e "#/usr/bin/bash\n/usr/bin/python${PYTHON_VERSION} -m flake8 \$*" | sed -r -e "s@#@#\!@" > /usr/bin/flake8 && \
+    echo -e "#/usr/bin/bash\n/usr/bin/python${PYTHON_VERSION} -m flake8 \$*" | sed -r -e "s@#@#\!@" > /usr/bin/flake8${PYTHON_VERSION} && \
+    echo -e "#/usr/bin/bash\n/usr/bin/python${PYTHON_VERSION} -m pytest \$*" | sed -r -e "s@#@#\!@" > /usr/bin/pytest && \
+    echo -e "#/usr/bin/bash\n/usr/bin/python${PYTHON_VERSION} -m pytest \$*" | sed -r -e "s@#@#\!@" > /usr/bin/pytest${PYTHON_VERSION} && \
+    echo -e "#/usr/bin/bash\n/usr/bin/python${PYTHON_VERSION} -m yq \$*" | sed -r -e "s@#@#\!@" > /usr/bin/yq && \
+    SL=/usr/local/bin/python; if [[ ! -f ${SL} ]] && [[ ! -L ${SL} ]]; then ln -s /usr/bin/python${PYTHON_VERSION} ${SL}; else ls -la ${SL}; fi && \
+    SL=/usr/local/bin/pip; if [[ ! -f ${SL} ]] && [[ ! -L ${SL} ]]; then ln -s /usr/bin/pip${PYTHON_VERSION} ${SL}; else ls -la ${SL}; fi && \
+    SL=/usr/local/bin/flake8; if [[ ! -f ${SL} ]] && [[ ! -L ${SL} ]]; then ln -s /usr/bin/flake8${PYTHON_VERSION} ${SL}; else ls -la ${SL}; fi && \
+    SL=/usr/local/bin/pytest; if [[ ! -f ${SL} ]] && [[ ! -L ${SL} ]]; then ln -s /usr/bin/pytest${PYTHON_VERSION} ${SL}; else ls -la ${SL}; fi && \
+    mkdir -p /home/user; cd /home/user; /usr/bin/python${PYTHON_VERSION} -m venv .venv && \
+        dnf -y -q --setopt=tsflags=nodocs install dotnet dotnet-sdk-6.0 dotnet-sdk-7.0; \
+        dnf -y -q --setopt=tsflags=nodocs install dotnet dotnet-sdk-6.0 dotnet-sdk-7.0; \
+        dnf -y -q --setopt=tsflags=nodocs install dotnet dotnet-sdk-7.0; \
+    ./configure --enable-xdebug; make; make install && \
+COPY --from=go-builder $REMOTE_SOURCES_DIR/gopls/app/gopls/gopls $HOME/go/bin/gopls
+    echo "Installed Packages" && rpm -qa | sort -V && echo "End Of Installed Packages" && \
+    echo "python basic install:"; python -V; \
+    echo "python venv install:"; source ${HOME}/.venv/bin/activate && python -V; \
+
