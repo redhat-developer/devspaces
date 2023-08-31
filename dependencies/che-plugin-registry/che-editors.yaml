@@ -29,7 +29,7 @@ editors:
     components:
       - name: idea-rhel8
         container:
-          image: 'registry.redhat.io/devspaces/udi-rhel8:3.9'
+          image: 'registry.redhat.io/devspaces/udi-rhel8:3.10'
           env:
             - name: PROJECTOR_ASSEMBLY_DIR
               value: /projector
@@ -91,7 +91,7 @@ editors:
         volume: { }
       - name: idea-rhel8-injector
         container:
-          image: 'registry.redhat.io/devspaces/idea-rhel8:3.9'
+          image: 'registry.redhat.io/devspaces/idea-rhel8:3.10'
           command: ["/projector/entrypoint-init-container.sh"]
           env:
             - name: PROJECTOR_VOLUME_MOUNT
@@ -134,7 +134,7 @@ editors:
     components:
       - name: che-code-injector
         container:
-          image: 'registry.redhat.io/devspaces/code-rhel8:3.9'
+          image: 'registry.redhat.io/devspaces/code-rhel8:3.10'
           command: ["/entrypoint-init-container.sh"]
           volumeMounts:
             - name: checode
@@ -145,7 +145,7 @@ editors:
           cpuRequest: 30m
       - name: che-code-runtime-description
         container:
-          image: 'registry.redhat.io/devspaces/udi-rhel8:3.9'
+          image: 'registry.redhat.io/devspaces/udi-rhel8:3.10'
           memoryLimit: 1024Mi
           memoryRequest: 256Mi
           cpuLimit: 500m
@@ -220,7 +220,7 @@ editors:
     components:
       - name: che-code-injector
         container:
-          image: 'registry.redhat.io/devspaces/code-rhel8:3.9'
+          image: 'registry.redhat.io/devspaces/code-rhel8:3.10'
           command: ["/entrypoint-init-container.sh"]
           volumeMounts:
             - name: checode
@@ -231,7 +231,7 @@ editors:
           cpuRequest: 30m
       - name: che-code-runtime-description
         container:
-          image: 'registry.redhat.io/devspaces/udi-rhel8:3.9'
+          image: 'registry.redhat.io/devspaces/udi-rhel8:3.10'
           memoryLimit: 1024Mi
           memoryRequest: 256Mi
           cpuLimit: 500m
