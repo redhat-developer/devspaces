@@ -100,7 +100,7 @@ replaceField()
   updateVal="$3"
   # shellcheck disable=SC2016 disable=SC2002 disable=SC2086
   if [[ ${theFile} == *".json" ]]; then
-    changed=$(cat "${theFile}" | jq ${updateName}' |= '"$updateVal")
+    changed=$(jq --arg updateVal "$updateVal" '.Version = $updateVal' "$theFile")
     echo "${changed}" > "${theFile}"
   elif [[ ${theFile} == *".yml" ]] || [[ ${theFile} == *".yaml" ]]; then
     changed=$(cat "${theFile}" | yq -Y --arg updateName "${updateName}" --arg updateVal "${updateVal}" ${updateName}' = $updateVal')
