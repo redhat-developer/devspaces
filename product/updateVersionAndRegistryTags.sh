@@ -200,7 +200,11 @@ updateVersion() {
     # deprecated, @since 2.11
     echo "${DEVSPACES_VERSION}" > "${WORKDIR}/dependencies/VERSION"
     # @since 2.11
-    replaceField "${WORKDIR}/dependencies/job-config.json" '.Version' "${DEVSPACES_VERSION}"
+    
+    # replace value of .Version in job-config.json, we need arg to save quotes
+    changed=$(jq --arg version "$DEVSPACES_VERSION" ".Version = \$version" "${WORKDIR}/dependencies/job-config.json")
+    echo "${changed}" > "${WORKDIR}/dependencies/job-config.json"
+    
     replaceField "${WORKDIR}/dependencies/job-config.json" '.Copyright' "[\"${COPYRIGHT}\"]"
 
     DEVSPACES_Y_VALUE="${DEVSPACES_VERSION#*.}"
