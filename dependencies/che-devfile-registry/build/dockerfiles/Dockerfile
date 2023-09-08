@@ -13,7 +13,7 @@
 
 # Builder: check meta.yamls and create index.json
 # https://registry.access.redhat.com/ubi8/python-311
-FROM registry.access.redhat.com/ubi8/python-311:1-13 as builder
+FROM registry.access.redhat.com/ubi8/python-311:1-18.1692783648 as builder
 USER 0
 
 ################# 
