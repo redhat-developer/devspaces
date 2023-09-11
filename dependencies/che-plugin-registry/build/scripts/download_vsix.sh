@@ -102,10 +102,10 @@ for i in $(seq 0 "$((numberOfExtensions - 1))"); do
         # grab metadata for the vsix file
         # if version wasn't set, use latest
         if [[ $vsixVersion == null ]]; then
-            getMetadata "${vsixName}" "latest"
+            versionsPage=$(curl -sLS "https://open-vsx.org/api/${vsixName}/versions?size=500")
             # if version wasn't set in json, grab it from metadata and add it into the file
             # get all versions of the extension
-            allVersions=$(echo "${vsixMetadata}" | jq -r '.allVersions')
+            allVersions=$(echo "${versionsPage}" | jq -r '.versions')
             key_value_pairs=$(echo "$allVersions" | jq -r 'to_entries[] | [ .key, .value ] | @tsv')
             
             # go through all versions of the extension to find the latest stable version that is compatible with the VS Code version
