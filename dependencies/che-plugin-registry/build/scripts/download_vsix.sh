@@ -7,7 +7,6 @@ set -o pipefail
 
 downloadVsix=1
 openvsxJson="/openvsx-server/openvsx-sync.json"
-vsixMetadata="" #now global so it can be set/checked via function
 
 usage()
 {
@@ -47,15 +46,23 @@ function initTest() {
   echo -n -e "${BOLD}\n${EMOJI_HEADER} ${1}${RESETSTYLE} ... "
 }
 
-function getMetadata(){
+function getOpenVSXData(){
     vsixName=$1
     key=$2
+    parameters=$3
+
+    # build the request url
+    if [[ -n "$parameters" ]]; then
+        url="https://open-vsx.org/api/${vsixName}/${key}?${parameters}"
+    else
+        url="https://open-vsx.org/api/${vsixName}/${key}"
+    fi
 
     # check there is no error field in the metadata and retry if there is
     for j in 1 2 3 4 5
     do
-        vsixMetadata=$(curl -sLS "https://open-vsx.org/api/${vsixName}/${key}")
-        if [[ $(echo "${vsixMetadata}" | jq -r ".error") != null ]]; then
+        result=$(curl -sLS "${url}")
+        if [[ $(echo "${result}" | jq -r ".error") != null ]]; then
             echo "Attempt $j/5: Error while getting metadata for ${vsixFullName} version ${key}"
 
             if [[ $j -eq 5 ]]; then
@@ -64,6 +71,7 @@ function getMetadata(){
             fi
             continue
         else
+            echo "$result"
             break
         fi
     done
@@ -102,17 +110,22 @@ for i in $(seq 0 "$((numberOfExtensions - 1))"); do
         # grab metadata for the vsix file
         # if version wasn't set, use latest
         if [[ $vsixVersion == null ]]; then
-            versionsPage=$(curl -sLS "https://open-vsx.org/api/${vsixName}/versions?size=500")
+            versionsPage=$(getOpenVSXData "${vsixName}" "versions" "size=200")
+
             # if version wasn't set in json, grab it from metadata and add it into the file
             # get all versions of the extension
             allVersions=$(echo "${versionsPage}" | jq -r '.versions')
+            if [[ "$allVersions" == "{}" ]]; then
+                echo "No versions found for ${vsixName}"
+                exit 1
+            fi
             key_value_pairs=$(echo "$allVersions" | jq -r 'to_entries[] | [ .key, .value ] | @tsv')
             
             # go through all versions of the extension to find the latest stable version that is compatible with the VS Code version
             resultedVersion=null
             while IFS=$'\t' read -r key value; do
                 # get metadata for the version
-                getMetadata "${vsixName}" "${key}"
+                vsixMetadata=$(getOpenVSXData "${vsixName}" "${key}")
       
                 # check if the version is pre-release
                 preRelease=$(echo "${vsixMetadata}" | jq -r '.preRelease')
@@ -151,7 +164,7 @@ for i in $(seq 0 "$((numberOfExtensions - 1))"); do
             jq --argjson i "$i" --arg version "$vsixVersion" '.[$i] += { "version": $version }' "$openvsxJson" > tmp.json
             mv tmp.json "$openvsxJson"
         else
-            getMetadata "${vsixName}" "${vsixVersion}"
+            vsixMetadata=$(getOpenVSXData "${vsixName}" "${vsixVersion}")
         fi 
         
         # extract the download link from the json metadata
