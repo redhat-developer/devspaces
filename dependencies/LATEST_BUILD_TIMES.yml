@@ -1,0 +1,180 @@
+- name: devspaces-machineexec-rhel8
+  tag: 3.10-1
+  taskId: 55186863
+  timeCreate: Thu Sep 7 13:24:49 2023
+  timeStart: Thu Sep 7 13:24:54 2023
+  timeFinish: Thu Sep 7 13:30:37 2023
+  timeWait: 0 mins
+  timeBuild: 5 mins
+  timeTotal: 5 mins
+- name: devspaces-imagepuller-rhel8
+  tag: 3.10-1
+  taskId: 55187173
+  timeCreate: Thu Sep 7 13:35:32 2023
+  timeStart: Thu Sep 7 13:35:33 2023
+  timeFinish: Thu Sep 7 13:47:33 2023
+  timeWait: 0 mins
+  timeBuild: 12 mins
+  timeTotal: 12 mins
+- name: devspaces-traefik-rhel8
+  tag: 3.10-1
+  taskId: 55187174
+  timeCreate: Thu Sep 7 13:35:34 2023
+  timeStart: Thu Sep 7 13:36:19 2023
+  timeFinish: Thu Sep 7 14:02:30 2023
+  timeWait: 0 mins
+  timeBuild: 26 mins
+  timeTotal: 26 mins
+- name: devspaces-pluginregistry-rhel8
+  tag: 3.10-2
+  taskId: 55188784
+  timeCreate: Thu Sep 7 15:07:42 2023
+  timeStart: Thu Sep 7 15:08:29 2023
+  timeFinish: Thu Sep 7 15:40:44 2023
+  timeWait: 0 mins
+  timeBuild: 32 mins
+  timeTotal: 33 mins
+- name: devspaces-configbump-rhel8
+  tag: 3.10-3
+  taskId: 55195237
+  timeCreate: Thu Sep 7 20:18:55 2023
+  timeStart: Thu Sep 7 20:19:32 2023
+  timeFinish: Thu Sep 7 20:31:23 2023
+  timeWait: 0 mins
+  timeBuild: 11 mins
+  timeTotal: 12 mins
+- name: devspaces-idea-rhel8
+  tag: 3.10-1
+  taskId: 55195609
+  timeCreate: Thu Sep 7 20:45:10 2023
+  timeStart: Thu Sep 7 20:45:27 2023
+  timeFinish: Thu Sep 7 21:00:51 2023
+  timeWait: 0 mins
+  timeBuild: 15 mins
+  timeTotal: 15 mins
+- name: devspaces-udi-rhel8
+  tag: 3.10-3
+  taskId: 55195638
+  timeCreate: Thu Sep 7 21:00:34 2023
+  timeStart: Thu Sep 7 21:00:38 2023
+  timeFinish: Thu Sep 7 21:49:59 2023
+  timeWait: 0 mins
+  timeBuild: 49 mins
+  timeTotal: 49 mins
+- name: devspaces-code-rhel8
+  tag: 3.10-3
+  taskId: 55205929
+  timeCreate: Fri Sep 8 08:26:12 2023
+  timeStart: Fri Sep 8 08:26:47 2023
+  timeFinish: Fri Sep 8 08:33:53 2023
+  timeWait: 0 mins
+  timeBuild: 7 mins
+  timeTotal: 7 mins
+- name: devspaces-dashboard-rhel8
+  tag: 3.10-8
+  taskId: 55208051
+  timeCreate: Fri Sep 8 10:10:10 2023
+  timeStart: Fri Sep 8 10:10:22 2023
+  timeFinish: Fri Sep 8 10:34:14 2023
+  timeWait: 0 mins
+  timeBuild: 23 mins
+  timeTotal: 24 mins
+- name: devspaces-devfileregistry-rhel8
+  tag: 3.10-1
+  taskId: 55209428
+  timeCreate: Fri Sep 8 11:05:25 2023
+  timeStart: Fri Sep 8 11:05:45 2023
+  timeFinish: Fri Sep 8 11:16:06 2023
+  timeWait: 0 mins
+  timeBuild: 10 mins
+  timeTotal: 10 mins
+- name: devspaces-imagepuller-rhel8
+  tag: 3.10-3
+  taskId: 55222914
+  timeCreate: Sun Sep 10 05:52:30 2023
+  timeStart: Sun Sep 10 05:52:35 2023
+  timeFinish: Sun Sep 10 06:04:19 2023
+  timeWait: 0 mins
+  timeBuild: 11 mins
+  timeTotal: 11 mins
+- name: devspaces-udi-rhel8
+  tag: 3.10-4
+  taskId: 55222927
+  timeCreate: Sun Sep 10 05:54:20 2023
+  timeStart: Sun Sep 10 05:54:54 2023
+  timeFinish: Sun Sep 10 06:43:14 2023
+  timeWait: 0 mins
+  timeBuild: 48 mins
+  timeTotal: 48 mins
+- name: devspaces-traefik-rhel8
+  tag: 3.10-3
+  taskId: 55222929
+  timeCreate: Sun Sep 10 05:54:56 2023
+  timeStart: Sun Sep 10 05:55:40 2023
+  timeFinish: Sun Sep 10 06:19:44 2023
+  timeWait: 0 mins
+  timeBuild: 24 mins
+  timeTotal: 24 mins
+- name: devspaces-dashboard-rhel8
+  tag: 3.10-9
+  taskId: 55222930
+  timeCreate: Sun Sep 10 05:55:06 2023
+  timeStart: Sun Sep 10 05:55:41 2023
+  timeFinish: Sun Sep 10 06:19:28 2023
+  timeWait: 0 mins
+  timeBuild: 23 mins
+  timeTotal: 24 mins
+- name: devspaces-machineexec-rhel8
+  tag: 3.10-3
+  taskId: 55222938
+  timeCreate: Sun Sep 10 05:55:43 2023
+  timeStart: Sun Sep 10 05:56:28 2023
+  timeFinish: Sun Sep 10 06:01:55 2023
+  timeWait: 0 mins
+  timeBuild: 5 mins
+  timeTotal: 6 mins
+- name: devspaces-pluginregistry-rhel8
+  tag: 3.10-3
+  taskId: 55222996
+  timeCreate: Sun Sep 10 06:04:54 2023
+  timeStart: Sun Sep 10 06:04:54 2023
+  timeFinish: Sun Sep 10 06:36:44 2023
+  timeWait: 0 mins
+  timeBuild: 31 mins
+  timeTotal: 31 mins
+- name: devspaces-code-rhel8
+  tag: 3.10-7
+  taskId: 55233494
+  timeCreate: Mon Sep 11 07:58:40 2023
+  timeStart: Mon Sep 11 07:58:58 2023
+  timeFinish: Mon Sep 11 08:06:26 2023
+  timeWait: 0 mins
+  timeBuild: 7 mins
+  timeTotal: 7 mins
+- name: devspaces-configbump-rhel8
+  tag: 3.10-5
+  taskId: 55250400
+  timeCreate: Mon Sep 11 18:43:44 2023
+  timeStart: Mon Sep 11 18:44:10 2023
+  timeFinish: Mon Sep 11 18:56:25 2023
+  timeWait: 0 mins
+  timeBuild: 12 mins
+  timeTotal: 12 mins
+- name: devspaces-operator
+  tag: 3.10-1
+  taskId: 55250847
+  timeCreate: Mon Sep 11 18:58:10 2023
+  timeStart: Mon Sep 11 18:58:50 2023
+  timeFinish: Mon Sep 11 19:14:49 2023
+  timeWait: 0 mins
+  timeBuild: 15 mins
+  timeTotal: 16 mins
+- name: devspaces-devfileregistry-rhel8
+  tag: 3.10-9
+  taskId: 55251168
+  timeCreate: Mon Sep 11 19:31:13 2023
+  timeStart: Mon Sep 11 19:31:39 2023
+  timeFinish: Mon Sep 11 19:40:07 2023
+  timeWait: 0 mins
+  timeBuild: 8 mins
+  timeTotal: 8 mins
