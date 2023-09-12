@@ -150,6 +150,7 @@ done
 
 if [[ ${COMMIT_CHANGES} -eq 1 ]]; then
   # CRW-1621 if any gz resources are larger than 10485760b, must use MaxFileSize to force dist-git to shut up and take my sources!
+  git add dependencies/LATEST_* || true
   if [[ $(git commit -s -m "chore: Update dependencies/LATEST_IMAGES, COMMITS, DIGESTS, INDEXES, BUILD_TIMES" dependencies/LATEST_IMAGES* dependencies/LATEST_BUILD_TIMES* || true) == *"nothing to commit, working tree clean"* ]]; then
     echo "[INFO] No changes to commit."
   else
