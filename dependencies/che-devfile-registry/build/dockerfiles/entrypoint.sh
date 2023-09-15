@@ -61,6 +61,9 @@ function run_main() {
     # Add PUBLIC_URL at the begining of 'icon' and 'self' fields
     sed -i "s|\"icon\": \"/images/|\"icon\": \"${PUBLIC_URL}/images/|" "$INDEX_JSON"
     sed -i "s|\"self\": \"/devfiles/|\"self\": \"${PUBLIC_URL}/devfiles/|" "$INDEX_JSON"
+    sed -i "s|\"che-incubator/che-code/insiders\": \"/devfiles/|\"che-incubator/che-code/insiders\": \"${PUBLIC_URL}/devfiles/|" "$INDEX_JSON"
+    sed -i "s|\"che-incubator/che-code/latest\": \"/devfiles/|\"che-incubator/che-code/latest\": \"${PUBLIC_URL}/devfiles/|" "$INDEX_JSON"
+    sed -i "s|\"che-incubator/che-idea/latest\": \"/devfiles/|\"che-incubator/che-idea/latest\": \"${PUBLIC_URL}/devfiles/|" "$INDEX_JSON"
   else
     if grep -q '{{ DEVFILE_REGISTRY_URL }}' "${templates[@]}"; then
       echo "WARNING: environment variable 'CHE_DEVFILE_REGISTRY_URL' not configured" \
