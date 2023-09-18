@@ -508,6 +508,20 @@
       "3.x": {
         "disabled": true
       }
+    },
+    "slack_notification": {
+      "3.8": {
+        "disabled": true
+      },
+      "3.9": {
+        "disabled": false
+      },
+      "3.10": {
+        "disabled": true
+      },
+      "3.x": {
+        "disabled": true
+      }
     }
   },
   "CSVs": {
@@ -647,12 +661,6 @@
       "3.9": "1.22.19",
       "3.10": "1.22.19",
       "3.x": "1.22.19"
-    },
-    "slack_notification": {
-      "3.8": true,
-      "3.9": true,
-      "3.10": false,
-      "3.x": false
     }
   },
   "Copyright": [
