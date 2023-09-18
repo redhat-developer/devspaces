@@ -1060,3 +1060,21 @@
   timeWait: 0 mins
   timeBuild: 4 mins
   timeTotal: 4 mins
+- name: devspaces-configbump-rhel8
+  tag: 3.10-11
+  taskId: 55555791
+  timeCreate: Mon Sep 18 16:32:40 2023
+  timeStart: Mon Sep 18 16:33:19 2023
+  timeFinish: Mon Sep 18 16:45:14 2023
+  timeWait: 0 mins
+  timeBuild: 11 mins
+  timeTotal: 12 mins
+- name: devspaces-operator-bundle
+  tag: 3.10-41
+  taskId: 55557311
+  timeCreate: Mon Sep 18 17:04:35 2023
+  timeStart: Mon Sep 18 17:05:16 2023
+  timeFinish: Mon Sep 18 17:08:56 2023
+  timeWait: 0 mins
+  timeBuild: 3 mins
+  timeTotal: 4 mins
