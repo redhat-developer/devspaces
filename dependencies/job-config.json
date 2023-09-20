@@ -15,7 +15,7 @@
           "7.74.x",
           "main"
         ],
-        "disabled": false
+        "disabled": true
       },
       "3.10": {
         "upstream_branch": [
@@ -45,7 +45,7 @@
           "7.74.x",
           "main"
         ],
-        "disabled": false
+        "disabled": true
       },
       "3.10": {
         "upstream_branch": [
@@ -75,7 +75,7 @@
           "7.74.x",
           "main"
         ],
-        "disabled": false
+        "disabled": true
       },
       "3.10": {
         "upstream_branch": [
@@ -105,7 +105,7 @@
           "7.74.x",
           "main"
         ],
-        "disabled": false
+        "disabled": true
       },
       "3.10": {
         "upstream_branch": [
@@ -135,7 +135,7 @@
           "7.74.x",
           "main"
         ],
-        "disabled": false
+        "disabled": true
       },
       "3.10": {
         "upstream_branch": [
@@ -165,7 +165,7 @@
           "7.74.x",
           "main"
         ],
-        "disabled": false
+        "disabled": true
       },
       "3.10": {
         "upstream_branch": [
@@ -195,7 +195,7 @@
           "7.74.x",
           "main"
         ],
-        "disabled": false
+        "disabled": true
       },
       "3.10": {
         "upstream_branch": [
@@ -225,7 +225,7 @@
           "devspaces-3.9-rhel-8",
           "devspaces-3.9-rhel-8"
         ],
-        "disabled": false
+        "disabled": true
       },
       "3.10": {
         "upstream_branch": [
@@ -255,7 +255,7 @@
           "devspaces-3.9-rhel-8",
           "devspaces-3.9-rhel-8"
         ],
-        "disabled": false
+        "disabled": true
       },
       "3.10": {
         "upstream_branch": [
@@ -285,7 +285,7 @@
           "20221111",
           "20221111"
         ],
-        "disabled": false
+        "disabled": true
       },
       "3.10": {
         "upstream_branch": [
@@ -315,7 +315,7 @@
           "v2.9.6",
           "v2.9.6"
         ],
-        "disabled": false
+        "disabled": true
       },
       "3.10": {
         "upstream_branch": [
@@ -337,7 +337,7 @@
         "disabled": true
       },
       "3.9": {
-        "disabled": false
+        "disabled": true
       },
       "3.10": {
         "disabled": true
@@ -359,7 +359,7 @@
           "devspaces-3.9-rhel-8",
           "devspaces-3.9-rhel-8"
         ],
-        "disabled": false
+        "disabled": true
       },
       "3.10": {
         "upstream_branch": [
@@ -532,15 +532,15 @@
       },
       "3.9": {
         "CSV_VERSION": "3.9.0",
-        "CSV_VERSION_PREV": "3.8.0"
+        "CSV_VERSION_PREV": ""
       },
       "3.10": {
         "CSV_VERSION": "3.10.0",
-        "CSV_VERSION_PREV": "3.8.0"
+        "CSV_VERSION_PREV": ""
       },
       "3.x": {
         "CSV_VERSION": "3.10.0",
-        "CSV_VERSION_PREV": "3.8.0"
+        "CSV_VERSION_PREV": ""
       }
     }
   },
@@ -661,6 +661,9 @@
       "3.9": "1.22.19",
       "3.10": "1.22.19",
       "3.x": "1.22.19"
+    },
+    "slack_notification": {
+      "3.8": true
     }
   },
   "Copyright": [
