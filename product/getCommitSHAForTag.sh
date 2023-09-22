@@ -20,7 +20,7 @@ fi
 
 usage () {
 	echo "
-Usage: for 1 or more contains in quay or Pulp, compute the NVR, Build URL, and Source commit for that build. eg.,
+Usage: for 1 or more containers in quay or Pulp, compute the NVR, Build URL, and Source commit for that build. eg.,
   $0  quay.io/devspaces/udi-rhel8:3.y-1 quay.io/devspaces/udi-rhel8:3.y-1 ...
   $0  registry-proxy.engineering.redhat.com/rh-osbs/devspaces-udi-rhel8 -j 3.y -n 2      | show last 2 tags
 "
