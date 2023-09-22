@@ -20,7 +20,7 @@ fi
 
 usage () {
 	echo "
-Usage: for 1 or more containes in quay or Pulp, compute the NVR, Build URL, and Source commit for that build. eg., 
+Usage: for 1 or more contains in quay or Pulp, compute the NVR, Build URL, and Source commit for that build. eg.,
   $0  quay.io/devspaces/udi-rhel8:3.y-1 quay.io/devspaces/udi-rhel8:3.y-1 ...
   $0  registry-proxy.engineering.redhat.com/rh-osbs/devspaces-udi-rhel8 -j 3.y -n 2      | show last 2 tags
 "
@@ -90,6 +90,6 @@ for d in $CONTAINERS; do
 		# get the BUILD URL
 		echo "   Build: "$(brew buildinfo $NVR | grep "BUILD" | sed -e "s#.\+\[\([0-9]\+\)\].*#https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=\1#")
 		# get the sources URL
-		echo -n "  "; brew buildinfo $NVR | grep Source | sed -e "s#/containers#/cgit/containers#" -e "s#git:#https:#" -e "s%#%/commit?id=%"
+		echo -n "  "; brew buildinfo $NVR | grep Source | sed -e "s#/git/containers#/cgit/containers#" -e "s#git:#https:#" -e "s%#%/commit?id=%"
 	done
 done
