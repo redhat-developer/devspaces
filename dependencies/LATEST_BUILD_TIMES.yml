@@ -1510,3 +1510,21 @@
   timeWait: 0 mins
   timeBuild: 3 mins
   timeTotal: 3 mins
+- name: devspaces-operator
+  tag: 3.10-8
+  taskId: 55698220
+  timeCreate: Fri Sep 22 08:33:37 2023
+  timeStart: Fri Sep 22 08:34:09 2023
+  timeFinish: Fri Sep 22 08:49:04 2023
+  timeWait: 0 mins
+  timeBuild: 14 mins
+  timeTotal: 15 mins
+- name: devspaces-operator-bundle
+  tag: 3.10-63
+  taskId: 55698641
+  timeCreate: Fri Sep 22 09:00:38 2023
+  timeStart: Fri Sep 22 09:01:21 2023
+  timeFinish: Fri Sep 22 09:04:21 2023
+  timeWait: 0 mins
+  timeBuild: 3 mins
+  timeTotal: 3 mins
