@@ -8,16 +8,6 @@
 #
 #  Contributors:
 #    Red Hat, Inc. - initial API and implementation
-#
-# Copyright (c) 2018-2023 Red Hat, Inc.
-#    This program and the accompanying materials are made
-#    available under the terms of the Eclipse Public License 2.0
-#    which is available at https://www.eclipse.org/legal/epl-2.0/
-#
-#  SPDX-License-Identifier: EPL-2.0
-#
-#  Contributors:
-#    Red Hat, Inc. - initial API and implementation
 apiVersion: v1
 kind: Template
 metadata:
@@ -127,7 +117,7 @@ parameters:
     description: Red Hat OpenShift Dev Spaces plugin registry container image. Defaults
       to registry.redhat.io/devspaces/pluginregistry-rhel8
   - name: IMAGE_TAG
-    value: '3.9'
+    value: '3.10'
     displayName: Red Hat OpenShift Dev Spaces plugin registry version
     description: Red Hat OpenShift Dev Spaces plugin registry version
   - name: MEMORY_LIMIT
