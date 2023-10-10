@@ -12,8 +12,8 @@ kind: Template
 metadata:
   name: devspaces-devfile-registry
 objects:
-  - apiVersion: v1
-    kind: DeploymentConfig
+  - apiVersion: apps/v1
+    kind: Deployment
     metadata:
       labels:
         app: devspaces
@@ -22,16 +22,17 @@ objects:
     spec:
       replicas: 1
       selector:
-        app: devspaces
-        component: devfile-registry
+        matchLabels:
+          app: devspaces
+          component: devfile-registry
       strategy:
-        rollingParams:
+        type: RollingUpdate
+        rollingUpdate:
           intervalSeconds: 1
           maxSurge: 25%
           maxUnavailable: 25%
           timeoutSeconds: 600
           updatePeriodSeconds: 1
-        type: Rolling
       template:
         metadata:
           labels:

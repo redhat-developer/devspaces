@@ -13,8 +13,8 @@ kind: Template
 metadata:
   name: devspaces-plugin-registry
 objects:
-  - apiVersion: v1
-    kind: DeploymentConfig
+  - apiVersion: apps/v1
+    kind: Deployment
     metadata:
       labels:
         app: devspaces
@@ -23,16 +23,17 @@ objects:
     spec:
       replicas: 1
       selector:
-        app: devspaces
-        component: plugin-registry
+        matchLabels:
+          app: devspaces
+          component: plugin-registry
       strategy:
-        rollingParams:
+        type: RollingUpdate
+        rollingUpdate:
           intervalSeconds: 1
           maxSurge: 25%
           maxUnavailable: 25%
           timeoutSeconds: 600
           updatePeriodSeconds: 1
-        type: Rolling
       template:
         metadata:
           labels:
@@ -47,24 +48,28 @@ objects:
                 - containerPort: 8080
               livenessProbe:
                 httpGet:
-                  path: /plugins/
+                  path: /v3/plugins/
                   port: 8080
                 initialDelaySeconds: 30
                 periodSeconds: 10
                 timeoutSeconds: 3
+                successThreshold: 1
+                failureThreshold: 10
               readinessProbe:
                 httpGet:
-                  path: /plugins/
+                  path: /v3/plugins/
                   port: 8080
                 initialDelaySeconds: 3
                 periodSeconds: 10
                 timeoutSeconds: 3
+                successThreshold: 1
+                failureThreshold: 10
               resources:
                 requests:
-                  cpu: 1m
-                  memory: 5Mi
-                limits:
                   cpu: 100m
+                  memory: 512Mi
+                limits:
+                  cpu: 500m
                   memory: ${MEMORY_LIMIT}
               envFrom:
                 - configMapRef:
@@ -107,9 +112,7 @@ objects:
     metadata:
       name: plugin-registry
     data:
-      DS_SIDECAR_CONTAINERS_REGISTRY_URL: ${DS_SIDECAR_CONTAINERS_REGISTRY_URL}
-      DS_SIDECAR_CONTAINERS_REGISTRY_ORGANIZATION: ${DS_SIDECAR_CONTAINERS_REGISTRY_ORGANIZATION}
-      DS_SIDECAR_CONTAINERS_REGISTRY_TAG: ${DS_SIDECAR_CONTAINERS_REGISTRY_TAG}
+      START_OPENVSX: ${START_OPENVSX}
 parameters:
   - name: IMAGE
     value: registry.redhat.io/devspaces/pluginregistry-rhel8
@@ -121,22 +124,14 @@ parameters:
     displayName: Red Hat OpenShift Dev Spaces plugin registry version
     description: Red Hat OpenShift Dev Spaces plugin registry version
   - name: MEMORY_LIMIT
-    value: 256Mi
+    value: 1024Mi
     displayName: Memory Limit
     description: Maximum amount of memory the container can use. Defaults 256Mi
   - name: PULL_POLICY
     value: Always
     displayName: Red Hat OpenShift Dev Spaces plugin registry image pull policy
     description: Always pull by default. Can be IfNotPresent
-  - name: DS_SIDECAR_CONTAINERS_REGISTRY_URL
-    displayName: Sidecar image registry URL
-    description: URL of docker registry containing plugin sidecar images; used to
-      override sidecars in plugins
-  - name: DS_SIDECAR_CONTAINERS_REGISTRY_ORGANIZATION
-    displayName: Sidecar image registry organization
-    description: Organization containing plugin sidecar images; used to override base
-      images in plugins
-  - name: DS_SIDECAR_CONTAINERS_REGISTRY_TAG
-    displayName: Plugin sidecar images tag
-    description: Tag used for overridden sidecar images; used to override base images
-      in plugins
+  - name: START_OPENVSX
+    value: "false"
+    displayName: Start embedded OpenVSX registry
+    description: If true, an embedded OpenVSX registry will be started
