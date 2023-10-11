@@ -8,7 +8,7 @@
 #
 #  Contributors:
 #    Red Hat, Inc. - initial API and implementation
-apiVersion: v1
+apiVersion: template.openshift.io/v1
 kind: Template
 metadata:
   name: devspaces-plugin-registry
