@@ -2797,3 +2797,39 @@
   timeWait: 0 mins
   timeBuild: 3 mins
   timeTotal: 3 mins
+- name: devspaces-configbump-rhel8
+  tag: 3.10-13
+  taskId: 56216544
+  timeCreate: Sun Oct 15 08:53:21 2023
+  timeStart: Sun Oct 15 08:53:41 2023
+  timeFinish: Sun Oct 15 09:06:16 2023
+  timeWait: 0 mins
+  timeBuild: 12 mins
+  timeTotal: 12 mins
+- name: devspaces-imagepuller-rhel8
+  tag: 3.10-6
+  taskId: 56216548
+  timeCreate: Sun Oct 15 08:54:41 2023
+  timeStart: Sun Oct 15 08:55:14 2023
+  timeFinish: Sun Oct 15 09:07:03 2023
+  timeWait: 0 mins
+  timeBuild: 11 mins
+  timeTotal: 12 mins
+- name: devspaces-traefik-rhel8
+  tag: 3.10-7
+  taskId: 56216549
+  timeCreate: Sun Oct 15 08:54:51 2023
+  timeStart: Sun Oct 15 08:55:16 2023
+  timeFinish: Sun Oct 15 09:20:17 2023
+  timeWait: 0 mins
+  timeBuild: 25 mins
+  timeTotal: 25 mins
+- name: devspaces-operator-bundle
+  tag: 3.10-128
+  taskId: 56216720
+  timeCreate: Sun Oct 15 09:29:21 2023
+  timeStart: Sun Oct 15 09:29:26 2023
+  timeFinish: Sun Oct 15 09:32:42 2023
+  timeWait: 0 mins
+  timeBuild: 3 mins
+  timeTotal: 3 mins
