@@ -13,6 +13,7 @@ usage () {
 VERBOSE=0
 CLEANUP=1
 SCRATCH_FLAGS=""
+TARGET_FLAGS=""
 doRhpkgContainerBuild=1
 
 if [[ ! $WORKSPACE ]]; then
@@ -46,21 +47,30 @@ if [[ ${doRhpkgContainerBuild} -eq 1 ]]; then
     if [[ ${JOB_BRANCH} == "3" ]]; then JOB_BRANCH="3.x"; fi
   fi
 
-  if [[ $SCRATCH_FLAGS ]]; then
-    if [[ $JOB_BRANCH == "3.x" ]] || [[ $JOB_BRANCH == "" ]]; then 
-      SCRATCH_FLAGS="${SCRATCH_FLAGS} --target devspaces-3-rhel-8-containers-candidate"
-    else
-      SCRATCH_FLAGS="${SCRATCH_FLAGS} --target devspaces-${JOB_BRANCH}-rhel-8-containers-candidate"
-    fi
-  fi
-
   pushd ${SOURCEDIR} >/dev/null
-    # REQUIRE: rhpkg
-    # get latest from Jenkins, then trigger a new OSBS build. Note: do not wrap JOB_BRANCH in quotes in case it includes trailing \n
     if [[ -f get-sources.sh ]]; then 
-      ./get-sources.sh ${SCRATCH_FLAGS} --force-build -v ${CSV_VERSION} | tee "${LOGFILE}"
+      # TODO remove these extra --target flags when we mave fully migrated to Cachito 
+      # and no longer need a get-sources.sh script to run rhpkg
+      if [[ $SCRATCH_FLAGS ]]; then
+        if [[ $JOB_BRANCH == "3.x" ]] || [[ $JOB_BRANCH == "" ]]; then 
+          TARGET_FLAGS="--target devspaces-3-rhel-8-containers-candidate"
+        else
+          TARGET_FLAGS="--target devspaces-${JOB_BRANCH}-rhel-8-containers-candidate"
+        fi
+      fi
+      # invoke a non-cachito-friendly build with a special get-sources.sh
+      # REQUIRE: rhpkg brewkoji
+      ./get-sources.sh ${SCRATCH_FLAGS} --force-build -v ${CSV_VERSION} ${TARGET_FLAGS} | tee "${LOGFILE}"
     else 
-      echo "[ERROR] Could not run get-sources.sh!"; exit 1
+      # invoke brew container-build
+      # REQUIRE: brewkoji koji-containerbuild
+      gitbranch="$(git rev-parse --abbrev-ref HEAD)"
+      if [[ $SCRATCH_FLAGS == "--scratch" ]]; then gitbranch="devspaces-3-rhel-8"; fi
+      target=${gitbranch}-containers-candidate
+      repo="$(git remote -v | grep origin | head -1 | sed -r -e "s#.+/containers/(.+) \(fetch.+#\1#")"
+      sha="$(git rev-parse HEAD)"
+      brew container-build ${target} git+https://pkgs.devel.redhat.com/git/containers/${repo}#${sha} --git-branch ${gitbranch} --nowait ${SCRATCH_FLAGS} 2>/dev/null | tee 2>&1 "${LOGFILE}"
+      taskID=$(grep "Created task:" "${LOGFILE}" | sed -e "s#Created task:##") && brew watch-logs $taskID | tee 2>&1 "${LOGFILE}"
     fi
     wait
     cd ..
