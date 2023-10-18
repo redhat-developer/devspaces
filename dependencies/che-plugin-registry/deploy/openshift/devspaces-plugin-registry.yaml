@@ -132,6 +132,6 @@ parameters:
     displayName: Red Hat OpenShift Dev Spaces plugin registry image pull policy
     description: Always pull by default. Can be IfNotPresent
   - name: START_OPENVSX
-    value: "false"
+    value: 'false'
     displayName: Start embedded OpenVSX registry
     description: If true, an embedded OpenVSX registry will be started
