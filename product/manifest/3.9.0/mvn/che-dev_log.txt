@@ -1,0 +1,40 @@
+[INFO] Scanning for projects...
+[INFO] ------------------------------------------------------------------------
+[INFO] Reactor Build Order:
+[INFO] 
+[INFO] Development Resources for Eclipse Che projects                     [pom]
+[INFO] Eclipse license codestyle                                          [jar]
+[INFO] Che codestyle resources                                            [jar]
+[INFO] 
+[INFO] ------------< org.eclipse.che.dev:che-dev-resources-parent >------------
+[INFO] Building Development Resources for Eclipse Che projects 20         [1/3]
+[INFO] --------------------------------[ pom ]---------------------------------
+[INFO] 
+[INFO] --- maven-dependency-plugin:2.8:tree (default-cli) @ che-dev-resources-parent ---
+[INFO] org.eclipse.che.dev:che-dev-resources-parent:pom:20
+[INFO] 
+[INFO] ------< org.eclipse.che.dev:che-eclipse-license-resource-bundle >-------
+[INFO] Building Eclipse license codestyle 20                              [2/3]
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- maven-dependency-plugin:2.8:tree (default-cli) @ che-eclipse-license-resource-bundle ---
+[INFO] org.eclipse.che.dev:che-eclipse-license-resource-bundle:jar:20
+[INFO] 
+[INFO] -----------------< org.eclipse.che.dev:che-codestyle >------------------
+[INFO] Building Che codestyle resources 20                                [3/3]
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- maven-dependency-plugin:2.8:tree (default-cli) @ che-codestyle ---
+[INFO] org.eclipse.che.dev:che-codestyle:jar:20
+[INFO] ------------------------------------------------------------------------
+[INFO] Reactor Summary for Development Resources for Eclipse Che projects 20:
+[INFO] 
+[INFO] Development Resources for Eclipse Che projects ..... SUCCESS [  1.108 s]
+[INFO] Eclipse license codestyle .......................... SUCCESS [  0.137 s]
+[INFO] Che codestyle resources ............................ SUCCESS [  0.002 s]
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  1.534 s
+[INFO] Finished at: 2023-10-20T15:01:04-04:00
+[INFO] ------------------------------------------------------------------------
