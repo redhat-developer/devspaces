@@ -40,13 +40,16 @@ cd devspaces-images || exit
 		
 echo "Generate a list of NPM dependencies:"
 # collect dependencies from project yarn.lock (if there)
+num=0
+c=0
 for d in \
+devspaces-code \
 devspaces-configbump \
 devspaces-operator \
 devspaces-operator-bundle \
 devspaces-dashboard \
-devspaces-devfileregistry \
 \
+devspaces-devfileregistry \
 devspaces-idea \
 devspaces-imagepuller \
 devspaces-machineexec \
@@ -57,9 +60,14 @@ devspaces-traefik \
 devspaces-udi \
 ; do
 	#if yarn.lock exists list dependencies
-	LOCK_FILE="$(pwd)/${d}/yarn.lock"
-	if [[ -f $LOCK_FILE ]]; then
-		cd $d
+	LOCK_FILES="$(find "$(pwd)/${d}/" -name "yarn.lock")"
+	for LOCK_FILE in $LOCK_FILES; do
+		(( num = num + 1 ))
+	done
+	for LOCK_FILE in $LOCK_FILES; do
+		(( c = c + 1 ))
+		echo "[$c/$num] Processing $LOCK_FILE ..."
+		pushd ${LOCK_FILE/yarn.lock/} >/dev/null || exit 1
 		SINGLE_MANIFEST="${WORKSPACE}/${CSV_VERSION}/npm/manifest-npm-${d}.txt"
 		rm -fr ${SINGLE_MANIFEST}
 		yarn list --depth=0 | sed \
@@ -73,8 +81,8 @@ devspaces-udi \
 		| sort -uV > ${SINGLE_MANIFEST}
 
 		cat ${SINGLE_MANIFEST} >> ${MANIFEST_FILE/.txt/-raw-unsorted.txt}
-		cd ..
-	fi
+		popd >/dev/null || exit 1
+	done
 done
 
 #Cleanup
