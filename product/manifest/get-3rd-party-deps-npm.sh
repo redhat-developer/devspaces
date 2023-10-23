@@ -64,34 +64,45 @@ devspaces-udi \
 	for LOCK_FILE in $LOCK_FILES; do
 		(( num = num + 1 ))
 	done
+	SINGLE_MANIFEST="${WORKSPACE}/${CSV_VERSION}/npm/manifest-npm-${d}.txt"
+	rm -fr "${SINGLE_MANIFEST}"
 	for LOCK_FILE in $LOCK_FILES; do
 		(( c = c + 1 ))
 		echo "[$c/$num] Processing $LOCK_FILE ..."
-		pushd ${LOCK_FILE/yarn.lock/} >/dev/null || exit 1
-		SINGLE_MANIFEST="${WORKSPACE}/${CSV_VERSION}/npm/manifest-npm-${d}.txt"
-		rm -fr ${SINGLE_MANIFEST}
-		yarn list --depth=0 | sed \
-			-e '/Done in/d' \
-			-e '/yarn list/d ' \
-			-e 's/[├──└│]//g' \
-			-e 's/^[ \t]*//' \
-			-e 's/^@//' \
-			-e "s/@/:/g" \
-			-e "s#^#${d}-container:${DS_VERSION}/#g"	\
-		| sort -uV > ${SINGLE_MANIFEST}
+		pushd "${LOCK_FILE/yarn.lock/}" >/dev/null || exit 1
+			yarn list --depth=0 | sed \
+				-e '/Done in/d' \
+				-e '/yarn list/d ' \
+				-e 's/[├──└│]//g' \
+				-e 's/^[ \t]*//' \
+				-e 's/^@//' \
+				-e "s/@/:/g" \
+				-e "s#^#${d}-container:${CSV_VERSION}/#g"	\
+			| sort -uV >> "${SINGLE_MANIFEST}"
 
-		cat ${SINGLE_MANIFEST} >> ${MANIFEST_FILE/.txt/-raw-unsorted.txt}
+			# collect all resolved items too
+			grep -E "^  resolved \"" "$LOCK_FILE" | sed -r \
+				-e "s#^  resolved \"(https://registry.npmjs.org/|https://registry.yarnpkg.com/)(.+).tgz.*\"#${d}-container::${CSV_VERSION}/\2#" \
+				-e "s#^  resolved \"(.*https://)(github.com/.+)\"#${d}-container::${CSV_VERSION}/\2#" \
+				-e "s#/([^/]+)/-/#/#" \
+				-e "s#\@##" \
+				>> "${SINGLE_MANIFEST}"
+
 		popd >/dev/null || exit 1
 	done
+	if [[ -f "$SINGLE_MANIFEST" ]]; then
+		sort -uV "${SINGLE_MANIFEST}" > "${SINGLE_MANIFEST}_"; mv "${SINGLE_MANIFEST}_" "${SINGLE_MANIFEST}"
+		cat "${SINGLE_MANIFEST}" >> "${MANIFEST_FILE/.txt/-raw-unsorted.txt}"
+	fi
 done
 
 #Cleanup
 cd .. && rm -fr devspaces-images
 
 echo "Sort and dedupe deps across the repos:"
-cat ${MANIFEST_FILE/.txt/-raw-unsorted.txt} | sort -uV >> ${MANIFEST_FILE}
+sort -uV "${MANIFEST_FILE/.txt/-raw-unsorted.txt}" >> ${MANIFEST_FILE}
 echo "" >> ${MANIFEST_FILE}
-rm -rf ${MANIFEST_FILE/.txt/-raw-unsorted.txt}
+rm -rf "${MANIFEST_FILE/.txt/-raw-unsorted.txt}"
 
 ##################################
 
