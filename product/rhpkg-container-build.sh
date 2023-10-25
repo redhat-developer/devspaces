@@ -69,8 +69,8 @@ if [[ ${doRhpkgContainerBuild} -eq 1 ]]; then
       target=${gitbranch}-containers-candidate
       repo="$(git remote -v | grep origin | head -1 | sed -r -e "s#.+/containers/(.+) \(fetch.+#\1#")"
       sha="$(git rev-parse HEAD)"
-      brew container-build ${target} git+https://pkgs.devel.redhat.com/git/containers/${repo}#${sha} --git-branch ${gitbranch} --nowait ${SCRATCH_FLAGS} 2>/dev/null | tee 2>&1 "${LOGFILE}"
-      taskID=$(grep "Created task:" "${LOGFILE}" | sed -e "s#Created task:##") && brew watch-logs $taskID | tee 2>&1 "${LOGFILE}"
+      brew container-build ${target} git+https://pkgs.devel.redhat.com/git/containers/${repo}#${sha} --git-branch ${gitbranch} --nowait ${SCRATCH_FLAGS} 2>/dev/null | tee -a 2>&1 "${LOGFILE}"
+      taskID=$(grep "Created task:" "${LOGFILE}" | sed -e "s#Created task:##") && brew watch-logs $taskID | tee -a 2>&1 "${LOGFILE}"
     fi
     wait
     cd ..
