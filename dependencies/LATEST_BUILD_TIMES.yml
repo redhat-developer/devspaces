@@ -3040,3 +3040,21 @@
   timeWait: 0 mins
   timeBuild: 3 mins
   timeTotal: 4 mins
+- name: devspaces-configbump-rhel8
+  tag: 3.10-17
+  taskId: 56577825
+  timeCreate: Fri Oct 27 16:32:21 2023
+  timeStart: Fri Oct 27 16:32:59 2023
+  timeFinish: Fri Oct 27 16:45:18 2023
+  timeWait: 0 mins
+  timeBuild: 12 mins
+  timeTotal: 12 mins
+- name: devspaces-operator-bundle
+  tag: 3.10-172
+  taskId: 56579171
+  timeCreate: Fri Oct 27 17:27:26 2023
+  timeStart: Fri Oct 27 17:28:09 2023
+  timeFinish: Fri Oct 27 17:31:31 2023
+  timeWait: 0 mins
+  timeBuild: 3 mins
+  timeTotal: 4 mins
