@@ -3202,3 +3202,30 @@
   timeWait: 0 mins
   timeBuild: 3 mins
   timeTotal: 3 mins
+- name: devspaces-idea-rhel8
+  tag: 3.10-6
+  taskId: 56592376
+  timeCreate: Sat Oct 28 16:20:58 2023
+  timeStart: Sat Oct 28 16:21:41 2023
+  timeFinish: Sat Oct 28 16:35:54 2023
+  timeWait: 0 mins
+  timeBuild: 14 mins
+  timeTotal: 14 mins
+- name: devspaces-devfileregistry-rhel8
+  tag: 3.10-78
+  taskId: 56592400
+  timeCreate: Sat Oct 28 16:34:13 2023
+  timeStart: Sat Oct 28 16:34:44 2023
+  timeFinish: Sat Oct 28 16:42:31 2023
+  timeWait: 0 mins
+  timeBuild: 7 mins
+  timeTotal: 8 mins
+- name: devspaces-operator-bundle
+  tag: 3.10-175
+  taskId: 56592463
+  timeCreate: Sat Oct 28 16:49:46 2023
+  timeStart: Sat Oct 28 16:50:09 2023
+  timeFinish: Sat Oct 28 16:53:17 2023
+  timeWait: 0 mins
+  timeBuild: 3 mins
+  timeTotal: 3 mins
