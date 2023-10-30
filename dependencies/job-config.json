@@ -559,7 +559,7 @@
     "FLOATING_QUAY_TAGS": {
       "3.9": "3.9",
       "3.10": "latest",
-      "3.11": "latest",
+      "3.11": "next",
       "3.x": "next"
     },
     "DEV_WORKSPACE_CONTROLLER": {
@@ -599,9 +599,9 @@
       "3.x": "0.21"
     },
     "@eclipse-che/plugin-registry-generator": {
-      "3.9": "next",
-      "3.10": "next",
-      "3.11": "latest",
+      "3.9": "7.74.0",
+      "3.10": "latest",
+      "3.11": "next",
       "3.x": "next"
     },
     "OPENSHIFT_VERSIONS_SUPPORTED": {
