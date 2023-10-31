@@ -221,7 +221,7 @@ def getStagingHost() {
   return "devspaces-build@spmm-util.hosts.stage.psi.bos.redhat.com"
 }
 
-@Field String defaultFailedEmailRecipients='sdawley@redhat.com, nboldt@redhat.com'
+@Field String defaultFailedEmailRecipients='sdawley@redhat.com'
 def notifyBuildFailed(String details="", String toRecipients=defaultFailedEmailRecipients) {
     emailext (
         subject: "Build failed in Jenkins: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
