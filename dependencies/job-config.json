@@ -8,7 +8,7 @@
           "7.74.x",
           "main"
         ],
-        "disabled": true
+        "disabled": false
       },
       "3.10": {
         "upstream_branch": [
@@ -38,7 +38,7 @@
           "7.74.x",
           "main"
         ],
-        "disabled": true
+        "disabled": false
       },
       "3.10": {
         "upstream_branch": [
@@ -68,7 +68,7 @@
           "7.74.x",
           "main"
         ],
-        "disabled": true
+        "disabled": false
       },
       "3.10": {
         "upstream_branch": [
@@ -98,7 +98,7 @@
           "7.74.x",
           "main"
         ],
-        "disabled": true
+        "disabled": false
       },
       "3.10": {
         "upstream_branch": [
@@ -128,7 +128,7 @@
           "7.74.x",
           "main"
         ],
-        "disabled": true
+        "disabled": false
       },
       "3.10": {
         "upstream_branch": [
@@ -158,7 +158,7 @@
           "7.74.x",
           "main"
         ],
-        "disabled": true
+        "disabled": false
       },
       "3.10": {
         "upstream_branch": [
@@ -188,7 +188,7 @@
           "7.74.x",
           "main"
         ],
-        "disabled": true
+        "disabled": false
       },
       "3.10": {
         "upstream_branch": [
@@ -218,7 +218,7 @@
           "devspaces-3.9-rhel-8",
           "devspaces-3.9-rhel-8"
         ],
-        "disabled": true
+        "disabled": false
       },
       "3.10": {
         "upstream_branch": [
@@ -248,7 +248,7 @@
           "devspaces-3.9-rhel-8",
           "devspaces-3.9-rhel-8"
         ],
-        "disabled": true
+        "disabled": false
       },
       "3.10": {
         "upstream_branch": [
@@ -278,7 +278,7 @@
           "20221111",
           "20221111"
         ],
-        "disabled": true
+        "disabled": false
       },
       "3.10": {
         "upstream_branch": [
@@ -308,7 +308,7 @@
           "v2.9.6",
           "v2.9.6"
         ],
-        "disabled": true
+        "disabled": false
       },
       "3.10": {
         "upstream_branch": [
@@ -334,7 +334,7 @@
     },
     "build-all-images": {
       "3.9": {
-        "disabled": true
+        "disabled": false
       },
       "3.10": {
         "disabled": false
@@ -352,7 +352,7 @@
           "devspaces-3.9-rhel-8",
           "devspaces-3.9-rhel-8"
         ],
-        "disabled": true
+        "disabled": false
       },
       "3.10": {
         "upstream_branch": [
@@ -384,7 +384,7 @@
           "7.74.x",
           "main"
         ],
-        "disabled": true
+        "disabled": false
       },
       "3.10": {
         "upstream_branch": [
@@ -414,7 +414,7 @@
           "7.74.x",
           "main"
         ],
-        "disabled": true
+        "disabled": false
       },
       "3.10": {
         "upstream_branch": [
@@ -440,7 +440,7 @@
     },
     "get-sources-rhpkg-container-build": {
       "3.9": {
-        "disabled": true
+        "disabled": false
       },
       "3.10": {
         "disabled": false
@@ -454,7 +454,7 @@
     },
     "push-latest-container-to-quay": {
       "3.9": {
-        "disabled": true
+        "disabled": false
       },
       "3.10": {
         "disabled": false
@@ -468,7 +468,7 @@
     },
     "sync-to-downstream": {
       "3.9": {
-        "disabled": true
+        "disabled": false
       },
       "3.10": {
         "disabled": false
@@ -482,7 +482,7 @@
     },
     "update-digests": {
       "3.9": {
-        "disabled": true
+        "disabled": false
       },
       "3.10": {
         "disabled": false
@@ -496,7 +496,7 @@
     },
     "send-email-qe-build-list": {
       "3.9": {
-        "disabled": true
+        "disabled": false
       },
       "3.10": {
         "disabled": false
@@ -505,12 +505,12 @@
         "disabled": false
       },
       "3.x": {
-        "disabled": true
+        "disabled": false
       }
     },
     "slack_notification": {
       "3.9": {
-        "disabled": true
+        "disabled": false
       },
       "3.10": {
         "disabled": false
@@ -519,7 +519,7 @@
         "disabled": false
       },
       "3.x": {
-        "disabled": true
+        "disabled": false
       }
     }
   },
