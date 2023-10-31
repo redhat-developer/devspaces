@@ -517,29 +517,29 @@
         "CSV_VERSION_PREV": "3.7.2"
       },
       "3.9": {
-        "CSV_VERSION": "3.9.0",
-        "CSV_VERSION_PREV": "3.8.0"
+        "CSV_VERSION": "3.9.1",
+        "CSV_VERSION_PREV": "3.9.0"
       },
       "3.10": {
         "CSV_VERSION": "3.10.0",
-        "CSV_VERSION_PREV": "3.8.0"
+        "CSV_VERSION_PREV": "3.9.0"
       },
       "3.x": {
-        "CSV_VERSION": "3.10.0",
-        "CSV_VERSION_PREV": "3.8.0"
+        "CSV_VERSION": "3.11.0",
+        "CSV_VERSION_PREV": "3.9.0"
       }
     }
   },
   "Other": {
     "Errata": {
       "3.8": "116894",
-      "3.9": "119896",
+      "3.9": "123222",
       "3.10": "n/a",
       "3.x": "n/a"
     },
     "Epic": {
       "3.8": "CRW-4586",
-      "3.9": "CRW-4828",
+      "3.9": "CRW-4973",
       "3.10": "n/a",
       "3.x": "n/a"
     },
