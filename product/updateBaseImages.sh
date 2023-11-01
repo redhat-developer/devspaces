@@ -99,6 +99,8 @@ if [[ $# -lt 1 ]]; then usage; exit; fi
 BASETAG="."
 # suppress latest and -source (RHEC); suppress next and nightly (quay)
 EXCLUDES="latest|-source|next|nightly"
+latestNext="latest" # or next
+TAGS_SORTED="true" # usually true for semver tags, but if tags are SHAs rather than semver, use false
 while [[ "$#" -gt 0 ]]; do
   case $1 in
 	'-w') WORKDIR="$2"; shift 1;;
@@ -118,6 +120,8 @@ while [[ "$#" -gt 0 ]]; do
 	'-q') QUIET=1; shift 0;;
 	'-v') QUIET=0; VERBOSE=1; shift 0;;
 	'--check-recent-updates-only') QUIET=0; VERBOSE=1; checkrecentupdates; shift 0; exit;;
+	'--latestNext') latestNext="$2"; shift 1;;
+	'--sort-tags') TAGS_SORTED="$2"; shift 1;;
 	'--help'|'-h') usage; exit;;
 	*) OTHER="${OTHER} $1"; shift 0;; 
   esac
@@ -255,7 +259,7 @@ for d in $(find "${WORKDIR}/" -maxdepth "${MAXDEPTH}" -name "${DOCKERFILE}" | so
 				GLIT="/tmp/getLatestImageTags.sh -b ${SCRIPTS_BRANCH}"
 				if [[ $QUIET -eq 1 ]];then GLIT="${GLIT} -q"; fi
 				if [[ $VERBOSE -eq 1 ]];then GLIT="${GLIT} -v"; fi
-				GLIT="${GLIT} ${GLIT_REPOFLAG} -c ${FROMPREFIX} -x ${EXCLUDES} --tag ${GLIT_TAG}"
+				GLIT="${GLIT} ${GLIT_REPOFLAG} -c ${FROMPREFIX} -x ${EXCLUDES} --tag ${GLIT_TAG} --latestNext ${latestNext} --sort-tags ${TAGS_SORTED}"
 				if [[ $VERBOSE -eq 1 ]]; then echo "[DEBUG] $GLIT"; fi
 				LATESTTAG=$(${GLIT})
 				if [[ $VERBOSE -eq 1 ]]; then echo "[DEBUG] ============>"; echo "$LATESTTAG"; echo "[DEBUG] <============"; fi

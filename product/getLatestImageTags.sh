@@ -106,7 +106,8 @@ SHOWLOG=0 	# show URL of the console log
 PUSHTOQUAY=0 # utility method to pull then push to quay
 PUSHTOQUAYTAGS="" # utility method to pull then push to quay (extra tags to push)
 PUSHTOQUAYFORCE=0 # normally, don't repush a tag if it's already in the registry (to avoid re-timestamping it and updating tag history)
-SORTED=0 # if 0, use the order of containers in the DS*_CONTAINERS_* strings above; if 1, sort alphabetically
+CONTAINERS_LIST_SORTED=0 # if 0, use the order of containers in the DS*_CONTAINERS_* strings above; if 1, sort alphabetically
+TAGS_SORTED="true" # usually true for semver tags, but if tags are SHAs rather than semver, use false
 latestNext="latest"; if [[ $DS_VERSION == "3.y" ]] || [[ $DWNSTM_BRANCH == "devspaces-3-rhel-8" ]]; then latestNext="next  "; fi
 
 # cleanup /tmp files
@@ -196,7 +197,8 @@ while [[ "$#" -gt 0 ]]; do
     '--errata') if [[ ! $CONTAINERS ]]; then CONTAINERS="${DS_CONTAINERS}"; fi; SHOWNVR=1; ERRATA_NUM="$2"; HIDE_MISSING=1; shift 1;;
     '--tagonly') TAGONLY=1;;
     '--log') SHOWLOG=1;;
-    '--sort') SORTED=1;;
+    '--sort'|'--sort-containers') CONTAINERS_LIST_SORTED=1;;
+    '--sort-tags') TAGS_SORTED="$2"; shift 1;;
     '-h'|'--help') usage; cleanup_temp; exit 1;;
   esac
   shift 1
@@ -236,6 +238,7 @@ if [[ $VERBOSE -eq 1 ]]; then
 	echo "[DEBUG] candidateTag = $candidateTag"
 	echo "[DEBUG] containers = $CONTAINERS"
 	echo "[DEBUG] latestNext = $latestNext"
+	echo "[DEBUG] TAGS_SORTED = $TAGS_SORTED"
 fi
 
 if [[ ${REGISTRY} != "" ]]; then 
@@ -275,7 +278,7 @@ fi
 if [[ ${CONTAINERS} == "" ]]; then usage; cleanup_temp; exit 5; fi
 
 # sort the container list
-if [[ $SORTED -eq 1 ]]; then CONTAINERS=$(tr ' ' '\n' <<< "${CONTAINERS}" | sort | uniq); fi
+if [[ $CONTAINERS_LIST_SORTED -eq 1 ]]; then CONTAINERS=$(tr ' ' '\n' <<< "${CONTAINERS}" | sort | uniq); fi
 
 # special case!
 if [[ ${SHOWNVR} -eq 1 ]]; then 
@@ -366,15 +369,31 @@ for URLfrag in $CONTAINERS; do
 	# shellcheck disable=SC2001
 	QUERY="$(echo "$URL" | sed -e "s#.\+\(registry.redhat.io\|registry.access.redhat.com\)/#skopeo inspect ${ARCH_OVERRIDE} docker://${REGISTRYPRE}#g")${searchTag}"
 	if [[ $VERBOSE -eq 1 ]]; then 
-		echo ""; echo -n "LATESTTAGs=\"\$($QUERY | jq -r .RepoTags[] | grep -E -v '${EXCLUDES}' | grep -E '${BASETAG}' | sort -V)\"; "
+		if [[ $TAGS_SORTED == "true" ]]; then
+			echo ""; echo -n "LATESTTAGs=\"\$($QUERY | jq -r .RepoTags[] | grep -E -v '${EXCLUDES}' | grep -E '${BASETAG}' | sort -V)\"; "
+		else
+			echo ""; echo -n "LATESTTAGs=\"\$($QUERY | jq -r .RepoTags[] | grep -E -v '${EXCLUDES}' | grep -E '${BASETAG}')\"; "
+		fi
 	fi
-	LATESTTAGs="$(${QUERY} 2>/dev/null | jq -r .RepoTags[] | grep -E -v "${EXCLUDES}" | grep -E "${BASETAG}" | sort -V)"
+	if [[ $TAGS_SORTED == "true" ]]; then
+		LATESTTAGs="$(${QUERY} 2>/dev/null | jq -r .RepoTags[] | grep -E -v "${EXCLUDES}" | grep -E "${BASETAG}" | sort -V)"
+	else
+		LATESTTAGs="$(${QUERY} 2>/dev/null | jq -r .RepoTags[] | grep -E -v "${EXCLUDES}" | grep -E "${BASETAG}")"
+	fi
 	if [[ ! ${LATESTTAGs} ]]; then # try again with -container suffix
 		QUERY="$(echo "${URL}-container" | sed -e "s#.\+\(registry.redhat.io\|registry.access.redhat.com\)/#skopeo inspect ${ARCH_OVERRIDE} docker://${REGISTRYPRE}#g")"
 		if [[ $VERBOSE -eq 1 ]]; then 
-		    echo ""; echo -n "LATESTTAGs=\"\$($QUERY | jq -r .RepoTags[] | grep -E -v '${EXCLUDES}' | grep -E '${BASETAG}' | sort -V)\"; " 
+			if [[ $TAGS_SORTED == "true" ]]; then
+				echo ""; echo -n "LATESTTAGs=\"\$($QUERY | jq -r .RepoTags[] | grep -E -v '${EXCLUDES}' | grep -E '${BASETAG}' | sort -V)\"; " 
+			else
+				echo ""; echo -n "LATESTTAGs=\"\$($QUERY | jq -r .RepoTags[] | grep -E -v '${EXCLUDES}' | grep -E '${BASETAG}')\"; " 
+			fi
 		fi
-		LATESTTAGs="$(${QUERY} 2>/dev/null | jq -r .RepoTags[] | grep -E -v "${EXCLUDES}" | grep -E "${BASETAG}" | sort -V)"
+		if [[ $TAGS_SORTED == "true" ]]; then
+			LATESTTAGs="$(${QUERY} 2>/dev/null | jq -r .RepoTags[] | grep -E -v "${EXCLUDES}" | grep -E "${BASETAG}" | sort -V)"
+		else
+			LATESTTAGs="$(${QUERY} 2>/dev/null | jq -r .RepoTags[] | grep -E -v "${EXCLUDES}" | grep -E "${BASETAG}")"
+		fi
 	fi
 
 	# exclude freshmaker containers and/or sort and grab only the last n tags
