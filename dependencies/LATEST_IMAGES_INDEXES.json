@@ -3,28 +3,12 @@
         "operator-bundle": {
             "3.9": {
                 "v4.11": {
-                    "iibURL": "registry-proxy.engineering.redhat.com/rh-osbs/iib:601556",
-                    "iibTag": "601556"
+                    "iibURL": "registry-proxy.engineering.redhat.com/rh-osbs/iib:614120",
+                    "iibTag": "614120"
                 },
-                "v4.12": {
-                    "iibURL": "registry-proxy.engineering.redhat.com/rh-osbs/iib:601566",
-                    "iibTag": "601566"
-                },
-                "v4.13": {
-                    "iibURL": "registry-proxy.engineering.redhat.com/rh-osbs/iib:601570",
-                    "iibTag": "601570"
-                },
-                "v4.14": {
-                    "iibURL": "registry-proxy.engineering.redhat.com/rh-osbs/iib:601574",
-                    "iibTag": "601574"
-                },
-                "v4.15": {
-                    "iibURL": "registry-proxy.engineering.redhat.com/rh-osbs/iib:601576",
-                    "iibTag": "601576"
-                },
-                "OSBSImage": "registry-proxy.engineering.redhat.com/rh-osbs/devspaces-devspaces-operator-bundle:3.9-304",
-                "quayImage": "quay.io/devspaces/devspaces-operator-bundle:3.9-304",
-                "tag": "3.9-304"
+                "OSBSImage": "registry-proxy.engineering.redhat.com/rh-osbs/devspaces-devspaces-operator-bundle:3.9-323",
+                "quayImage": "quay.io/devspaces/devspaces-operator-bundle:3.9-323",
+                "tag": "3.9-323"
             }
         }
     }
