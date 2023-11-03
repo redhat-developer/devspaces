@@ -14,6 +14,7 @@ VERBOSE=0
 CLEANUP=1
 SCRATCH_FLAGS=""
 TARGET_FLAGS=""
+DWNSTM_BRANCH=""
 doRhpkgContainerBuild=1
 
 if [[ ! $WORKSPACE ]]; then
@@ -29,6 +30,7 @@ while [[ "$#" -gt 0 ]]; do
   '-l') LOGFILE="$2"; shift 1;;
   '-v') VERBOSE=1; shift 0;;
   '--scratch') SCRATCH_FLAGS="--scratch"; shift 0;;
+  '-d'|'--downstream-branch') DWNSTM_BRANCH="$2"; shift 1;;
   *) CSV_VERSION="$1"; shift 0;;
   esac
   shift 1
@@ -69,7 +71,13 @@ if [[ ${doRhpkgContainerBuild} -eq 1 ]]; then
       target=${gitbranch}-containers-candidate
       repo="$(git remote -v | grep origin | head -1 | sed -r -e "s#.+/containers/(.+) \(fetch.+#\1#")"
       sha="$(git rev-parse HEAD)"
-      brew container-build ${target} git+https://pkgs.devel.redhat.com/git/containers/${repo}#${sha} --git-branch ${gitbranch} --nowait ${SCRATCH_FLAGS} 2>/dev/null | tee -a 2>&1 "${LOGFILE}"
+
+      if [[ $DWNSTM_BRANCH ]]; then
+        brew container-build ${target} git+https://pkgs.devel.redhat.com/git/containers/${repo}#${sha} --git-branch ${DWNSTM_BRANCH} --nowait ${SCRATCH_FLAGS} 2>/dev/null | tee -a 2>&1 "${LOGFILE}"
+      else
+        brew container-build ${target} git+https://pkgs.devel.redhat.com/git/containers/${repo}#${sha} --git-branch ${gitbranch} --nowait ${SCRATCH_FLAGS} 2>/dev/null | tee -a 2>&1 "${LOGFILE}"
+      fi
+      
       taskID=$(grep "Created task:" "${LOGFILE}" | sed -e "s#Created task:##") && brew watch-logs $taskID | tee -a 2>&1 "${LOGFILE}"
     fi
     wait
