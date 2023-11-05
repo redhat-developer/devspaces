@@ -3643,6 +3643,15 @@
   timeWait: 0 mins
   timeBuild: 5 mins
   timeTotal: 5 mins
+- name: devspaces-udi-rhel8
+  tag: 3.11-4
+  taskId: 56760661
+  timeCreate: Sun Nov 5 03:56:13 2023
+  timeStart: Sun Nov 5 03:56:24 2023
+  timeFinish: Sun Nov 5 04:40:31 2023
+  timeWait: 0 mins
+  timeBuild: 44 mins
+  timeTotal: 44 mins
 - name: devspaces-traefik-rhel8
   tag: 3.11-3
   taskId: 56760679
@@ -3661,6 +3670,15 @@
   timeWait: 0 mins
   timeBuild: 13 mins
   timeTotal: 13 mins
+- name: devspaces-pluginregistry-rhel8
+  tag: 3.11-3
+  taskId: 56760689
+  timeCreate: Sun Nov 5 04:07:15 2023
+  timeStart: Sun Nov 5 04:07:48 2023
+  timeFinish: Sun Nov 5 04:37:58 2023
+  timeWait: 0 mins
+  timeBuild: 30 mins
+  timeTotal: 30 mins
 - name: devspaces-server-rhel8
   tag: 3.11-4
   taskId: 56760692
@@ -3679,3 +3697,12 @@
   timeWait: 0 mins
   timeBuild: 3 mins
   timeTotal: 3 mins
+- name: devspaces-operator-bundle
+  tag: 3.11-30
+  taskId: 56760745
+  timeCreate: Sun Nov 5 05:03:46 2023
+  timeStart: Sun Nov 5 05:03:56 2023
+  timeFinish: Sun Nov 5 05:06:45 2023
+  timeWait: 0 mins
+  timeBuild: 2 mins
+  timeTotal: 2 mins
