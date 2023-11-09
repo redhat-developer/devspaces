@@ -42,21 +42,21 @@ components:
             urlRewriteSupported: false
           targetPort: 13131
           exposure: public
-          protocol: http
+          protocol: https
         - name: code-redirect-2
           attributes:
             discoverable: false
             urlRewriteSupported: false
           targetPort: 13132
           exposure: public
-          protocol: http
+          protocol: https
         - name: code-redirect-3
           attributes:
             discoverable: false
             urlRewriteSupported: false
           targetPort: 13133
           exposure: public
-          protocol: http
+          protocol: https
     attributes:
       app.kubernetes.io/component: che-code-runtime
       app.kubernetes.io/part-of: che-code.eclipse.org
