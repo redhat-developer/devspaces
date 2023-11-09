@@ -1,0 +1,66 @@
+[INFO] Compute list of latest devspaces-3.9-rhel-8-container-candidate NVRs ... 
+
+[INFO] NVRs to query for installed rpms:
+   devspaces-code-rhel8-container-3.9-49
+   devspaces-configbump-rhel8-container-3.9-29
+   devspaces-rhel8-operator-container-3.9-16
+   devspaces-operator-bundle-container-3.9-333
+   devspaces-dashboard-rhel8-container-3.9-30
+   devspaces-devfileregistry-rhel8-container-3.9-38
+   devspaces-idea-rhel8-container-3.9-6
+   devspaces-imagepuller-rhel8-container-3.9-9
+   devspaces-machineexec-rhel8-container-3.9-15
+   devspaces-pluginregistry-rhel8-container-3.9-17
+   devspaces-server-rhel8-container-3.9-15
+   devspaces-traefik-rhel8-container-3.9-10
+   devspaces-udi-rhel8-container-3.9-18
+
+[INFO] Brew logs:
+   http://download.eng.bos.redhat.com/brewroot/packages/devspaces-code-rhel8-container/3.9/49/data/logs/x86_64-build.log
+   http://download.eng.bos.redhat.com/brewroot/packages/devspaces-configbump-rhel8-container/3.9/29/data/logs/x86_64-build.log
+   http://download.eng.bos.redhat.com/brewroot/packages/devspaces-rhel8-operator-container/3.9/16/data/logs/x86_64-build.log
+   http://download.eng.bos.redhat.com/brewroot/packages/devspaces-operator-bundle-container/3.9/333/data/logs/x86_64-build.log
+   http://download.eng.bos.redhat.com/brewroot/packages/devspaces-dashboard-rhel8-container/3.9/30/data/logs/x86_64-build.log
+   http://download.eng.bos.redhat.com/brewroot/packages/devspaces-devfileregistry-rhel8-container/3.9/38/data/logs/x86_64-build.log
+   http://download.eng.bos.redhat.com/brewroot/packages/devspaces-idea-rhel8-container/3.9/6/data/logs/x86_64-build.log
+   http://download.eng.bos.redhat.com/brewroot/packages/devspaces-imagepuller-rhel8-container/3.9/9/data/logs/x86_64-build.log
+   http://download.eng.bos.redhat.com/brewroot/packages/devspaces-machineexec-rhel8-container/3.9/15/data/logs/x86_64-build.log
+   http://download.eng.bos.redhat.com/brewroot/packages/devspaces-pluginregistry-rhel8-container/3.9/17/data/logs/x86_64-build.log
+   http://download.eng.bos.redhat.com/brewroot/packages/devspaces-server-rhel8-container/3.9/15/data/logs/x86_64-build.log
+   http://download.eng.bos.redhat.com/brewroot/packages/devspaces-traefik-rhel8-container/3.9/10/data/logs/x86_64-build.log
+   http://download.eng.bos.redhat.com/brewroot/packages/devspaces-udi-rhel8-container/3.9/18/data/logs/x86_64-build.log
+
+[INFO] NVR build IDs:
+   devspaces-code-rhel8-container-3.9-49 [2762132] - https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=2762132
+   devspaces-configbump-rhel8-container-3.9-29 [2765940] - https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=2765940
+   devspaces-rhel8-operator-container-3.9-16 [2768665] - https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=2768665
+   devspaces-operator-bundle-container-3.9-333 [2768694] - https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=2768694
+   devspaces-dashboard-rhel8-container-3.9-30 [2766533] - https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=2766533
+   devspaces-devfileregistry-rhel8-container-3.9-38 [2765986] - https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=2765986
+   devspaces-idea-rhel8-container-3.9-6 [2760426] - https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=2760426
+   devspaces-imagepuller-rhel8-container-3.9-9 [2765949] - https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=2765949
+   devspaces-machineexec-rhel8-container-3.9-15 [2767009] - https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=2767009
+   devspaces-pluginregistry-rhel8-container-3.9-17 [2765960] - https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=2765960
+   devspaces-server-rhel8-container-3.9-15 [2766521] - https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=2766521
+   devspaces-traefik-rhel8-container-3.9-10 [2765944] - https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=2765944
+   devspaces-udi-rhel8-container-3.9-18 [2760203] - https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=2760203
+
+[INFO] Overall RPM manifest is in file: /mnt/hudson_workspace/workspace/DS_CI/Releng/get-3rd-party-deps-manifests/3.9.1/rpms/manifest-rpms.txt
+[INFO] Unique RPM manifest is in file: /mnt/hudson_workspace/workspace/DS_CI/Releng/get-3rd-party-deps-manifests/3.9.1/rpms/manifest-rpms_uniq.txt
+[INFO] Long RPM log is in file: /mnt/hudson_workspace/workspace/DS_CI/Releng/get-3rd-party-deps-manifests/3.9.1/rpms/manifest-rpms_log.txt
+
+[INFO] Individual RPM manifests:
+* /mnt/hudson_workspace/workspace/DS_CI/Releng/get-3rd-party-deps-manifests/3.9.1/rpms/manifest-rpms-devspaces-code-rhel8-container-3.9-49.txt
+* /mnt/hudson_workspace/workspace/DS_CI/Releng/get-3rd-party-deps-manifests/3.9.1/rpms/manifest-rpms-devspaces-configbump-rhel8-container-3.9-29.txt
+* /mnt/hudson_workspace/workspace/DS_CI/Releng/get-3rd-party-deps-manifests/3.9.1/rpms/manifest-rpms-devspaces-rhel8-operator-container-3.9-16.txt
+* /mnt/hudson_workspace/workspace/DS_CI/Releng/get-3rd-party-deps-manifests/3.9.1/rpms/manifest-rpms-devspaces-operator-bundle-container-3.9-333.txt
+* /mnt/hudson_workspace/workspace/DS_CI/Releng/get-3rd-party-deps-manifests/3.9.1/rpms/manifest-rpms-devspaces-dashboard-rhel8-container-3.9-30.txt
+* /mnt/hudson_workspace/workspace/DS_CI/Releng/get-3rd-party-deps-manifests/3.9.1/rpms/manifest-rpms-devspaces-devfileregistry-rhel8-container-3.9-38.txt
+* /mnt/hudson_workspace/workspace/DS_CI/Releng/get-3rd-party-deps-manifests/3.9.1/rpms/manifest-rpms-devspaces-idea-rhel8-container-3.9-6.txt
+* /mnt/hudson_workspace/workspace/DS_CI/Releng/get-3rd-party-deps-manifests/3.9.1/rpms/manifest-rpms-devspaces-imagepuller-rhel8-container-3.9-9.txt
+* /mnt/hudson_workspace/workspace/DS_CI/Releng/get-3rd-party-deps-manifests/3.9.1/rpms/manifest-rpms-devspaces-machineexec-rhel8-container-3.9-15.txt
+* /mnt/hudson_workspace/workspace/DS_CI/Releng/get-3rd-party-deps-manifests/3.9.1/rpms/manifest-rpms-devspaces-pluginregistry-rhel8-container-3.9-17.txt
+* /mnt/hudson_workspace/workspace/DS_CI/Releng/get-3rd-party-deps-manifests/3.9.1/rpms/manifest-rpms-devspaces-server-rhel8-container-3.9-15.txt
+* /mnt/hudson_workspace/workspace/DS_CI/Releng/get-3rd-party-deps-manifests/3.9.1/rpms/manifest-rpms-devspaces-traefik-rhel8-container-3.9-10.txt
+* /mnt/hudson_workspace/workspace/DS_CI/Releng/get-3rd-party-deps-manifests/3.9.1/rpms/manifest-rpms-devspaces-udi-rhel8-container-3.9-18.txt
+
