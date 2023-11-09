@@ -3688,3 +3688,21 @@
   timeWait: 0 mins
   timeBuild: 3 mins
   timeTotal: 4 mins
+- name: devspaces-operator
+  tag: 3.10-25
+  taskId: 56862287
+  timeCreate: Thu Nov 9 07:29:05 2023
+  timeStart: Thu Nov 9 07:30:40 2023
+  timeFinish: Thu Nov 9 07:47:45 2023
+  timeWait: 1 mins
+  timeBuild: 17 mins
+  timeTotal: 18 mins
+- name: devspaces-operator-bundle
+  tag: 3.10-199
+  taskId: 56862967
+  timeCreate: Thu Nov 9 08:08:39 2023
+  timeStart: Thu Nov 9 08:08:42 2023
+  timeFinish: Thu Nov 9 08:12:24 2023
+  timeWait: 0 mins
+  timeBuild: 3 mins
+  timeTotal: 3 mins
