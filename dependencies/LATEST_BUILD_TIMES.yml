@@ -1060,6 +1060,15 @@
   timeWait: 0 mins
   timeBuild: 3 mins
   timeTotal: 4 mins
+- name: devspaces-udi-rhel8
+  tag: 3.9-19
+  taskId: 56903172
+  timeCreate: Sat Nov 11 12:56:34 2023
+  timeStart: Sat Nov 11 12:57:08 2023
+  timeFinish: Sat Nov 11 13:43:51 2023
+  timeWait: 0 mins
+  timeBuild: 46 mins
+  timeTotal: 47 mins
 - name: devspaces-dashboard-rhel8
   tag: 3.9-31
   taskId: 56903173
@@ -1131,4 +1140,13 @@
   timeFinish: Sat Nov 11 13:32:20 2023
   timeWait: 0 mins
   timeBuild: 3 mins
+  timeTotal: 3 mins
+- name: devspaces-operator-bundle
+  tag: 3.9-335
+  taskId: 56903756
+  timeCreate: Sat Nov 11 13:59:17 2023
+  timeStart: Sat Nov 11 13:59:20 2023
+  timeFinish: Sat Nov 11 14:02:17 2023
+  timeWait: 0 mins
+  timeBuild: 2 mins
   timeTotal: 3 mins
