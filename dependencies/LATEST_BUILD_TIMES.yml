@@ -4219,3 +4219,21 @@
   timeWait: 0 mins
   timeBuild: 3 mins
   timeTotal: 4 mins
+- name: devspaces-code-rhel8
+  tag: 3.11-11
+  taskId: 56917134
+  timeCreate: Mon Nov 13 11:07:39 2023
+  timeStart: Mon Nov 13 11:07:53 2023
+  timeFinish: Mon Nov 13 11:24:48 2023
+  timeWait: 0 mins
+  timeBuild: 16 mins
+  timeTotal: 17 mins
+- name: devspaces-operator-bundle
+  tag: 3.11-53
+  taskId: 56917892
+  timeCreate: Mon Nov 13 11:33:14 2023
+  timeStart: Mon Nov 13 11:33:18 2023
+  timeFinish: Mon Nov 13 11:36:15 2023
+  timeWait: 0 mins
+  timeBuild: 2 mins
+  timeTotal: 3 mins
