@@ -185,10 +185,10 @@ createPr() {
 	git merge "${baseBranch}"
 	git push origin "${headBranch}"
 	lastCommitComment="$(git log -1 --pretty=%B)"
-	if [[ $(/usr/local/bin/hub version 2>/dev/null || true) ]] || [[ $(which hub 2>/dev/null || true) ]]; then
-		hub pull-request -f -m "${lastCommitComment}" -b "${baseBranch}" -h "${headBranch}" "${OPENBROWSERFLAG}" || true 
+	if [[ $(/usr/local/bin/gh version 2>/dev/null || true) ]] || [[ $(which gh 2>/dev/null || true) ]]; then
+		gh pr create -f -B "${baseBranch}" -H "${headBranch}" || true 
 	else
-		echo "# Warning: hub is required to generate pull requests. See https://hub.github.com/ to install it."
+		echo "# Warning: gh is required to generate pull requests. See https://cli.github.com/ to install it."
 		echo -n "# To manually create a pull request, go here: "
 		git config --get remote.origin.url | sed -r -e "s#:#/#" -e "s#git@#https://#" -e "s#\.git#/tree/${headBranch}/#"
 	fi
