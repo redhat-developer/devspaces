@@ -4012,3 +4012,30 @@
   timeWait: 0 mins
   timeBuild: 3 mins
   timeTotal: 3 mins
+- name: devspaces-udi-rhel8
+  tag: 3.10-23
+  taskId: 57066806
+  timeCreate: Mon Nov 20 04:32:04 2023
+  timeStart: Mon Nov 20 04:32:32 2023
+  timeFinish: Mon Nov 20 05:24:56 2023
+  timeWait: 0 mins
+  timeBuild: 52 mins
+  timeTotal: 52 mins
+- name: devspaces-idea-rhel8
+  tag: 3.10-8
+  taskId: 57067195
+  timeCreate: Mon Nov 20 04:52:32 2023
+  timeStart: Mon Nov 20 04:52:59 2023
+  timeFinish: Mon Nov 20 05:08:36 2023
+  timeWait: 0 mins
+  timeBuild: 15 mins
+  timeTotal: 16 mins
+- name: devspaces-operator-bundle
+  tag: 3.10-210
+  taskId: 57068021
+  timeCreate: Mon Nov 20 05:38:17 2023
+  timeStart: Mon Nov 20 05:38:54 2023
+  timeFinish: Mon Nov 20 05:43:24 2023
+  timeWait: 0 mins
+  timeBuild: 4 mins
+  timeTotal: 5 mins
