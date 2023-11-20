@@ -4723,3 +4723,12 @@
   timeWait: 1 mins
   timeBuild: 5 mins
   timeTotal: 6 mins
+- name: devspaces-operator-bundle
+  tag: 3.11-78
+  taskId: 57081476
+  timeCreate: Mon Nov 20 17:36:41 2023
+  timeStart: Mon Nov 20 17:37:07 2023
+  timeFinish: Mon Nov 20 17:40:28 2023
+  timeWait: 0 mins
+  timeBuild: 3 mins
+  timeTotal: 3 mins
