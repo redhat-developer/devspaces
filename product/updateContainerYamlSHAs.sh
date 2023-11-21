@@ -89,13 +89,16 @@ for yaml in $yamls; do
 
           # Try branch (/heads/)
           if [[ ! $SHA ]]; then
-          SHA=$(git ls-remote $repo refs/heads/$branchOrTag | sed -r -e "s@(.+)\\t.+@\\1@g")
+            SHA=$(git ls-remote $repo refs/heads/$branchOrTag | sed -r -e "s@(.+)\\t.+@\\1@g")
           fi
           # Use tag (/tags/) if branch does not exist
           if [[ ! $SHA ]]; then
-          SHA=$(git ls-remote $repo refs/tags/$branchOrTag | sed -r -e "s@(.+)\\t.+@\\1@g")
+            SHA=$(git ls-remote $repo refs/tags/$branchOrTag | sed -r -e "s@(.+)\\t.+@\\1@g")
           fi
-
+          # Or if there's a SHA in job-config.json, use that directly
+          if [[ ! $SHA ]]; then
+            SHA=branchOrTag
+          fi
           # sed replacement (match a line, move *N*ext line and *S*ubstitute it) will only work for this 2-line pattern:
           #   repo: https://github.com/redhat-developer/devspaces-images.git
           #    ref: e8b28394b00f6d320ec7a9b758875c674595ed58
