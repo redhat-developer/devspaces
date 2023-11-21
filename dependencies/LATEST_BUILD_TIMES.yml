@@ -4093,3 +4093,21 @@
   timeWait: 0 mins
   timeBuild: 3 mins
   timeTotal: 3 mins
+- name: devspaces-udi-rhel8
+  tag: 3.10-24
+  taskId: 57115811
+  timeCreate: Tue Nov 21 22:19:04 2023
+  timeStart: Tue Nov 21 22:19:38 2023
+  timeFinish: Tue Nov 21 23:16:17 2023
+  timeWait: 0 mins
+  timeBuild: 56 mins
+  timeTotal: 57 mins
+- name: devspaces-operator-bundle
+  tag: 3.10-213
+  taskId: 57118593
+  timeCreate: Tue Nov 21 23:43:41 2023
+  timeStart: Tue Nov 21 23:44:10 2023
+  timeFinish: Tue Nov 21 23:47:38 2023
+  timeWait: 0 mins
+  timeBuild: 3 mins
+  timeTotal: 3 mins
