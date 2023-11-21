@@ -97,7 +97,7 @@ for yaml in $yamls; do
           fi
           # Or if there's a SHA in job-config.json, use that directly
           if [[ ! $SHA ]]; then
-            SHA=branchOrTag
+            SHA="$branchOrTag"
           fi
           # sed replacement (match a line, move *N*ext line and *S*ubstitute it) will only work for this 2-line pattern:
           #   repo: https://github.com/redhat-developer/devspaces-images.git
