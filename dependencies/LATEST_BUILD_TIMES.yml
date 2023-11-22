@@ -4921,3 +4921,21 @@
   timeWait: 32 mins
   timeBuild: 5 mins
   timeTotal: 37 mins
+- name: devspaces-operator
+  tag: 3.11-12
+  taskId: 57143090
+  timeCreate: Wed Nov 22 13:10:57 2023
+  timeStart: Wed Nov 22 13:11:41 2023
+  timeFinish: Wed Nov 22 13:30:48 2023
+  timeWait: 0 mins
+  timeBuild: 19 mins
+  timeTotal: 19 mins
+- name: devspaces-operator-bundle
+  tag: 3.11-89
+  taskId: 57144569
+  timeCreate: Wed Nov 22 13:53:01 2023
+  timeStart: Wed Nov 22 13:53:12 2023
+  timeFinish: Wed Nov 22 13:56:45 2023
+  timeWait: 0 mins
+  timeBuild: 3 mins
+  timeTotal: 3 mins
