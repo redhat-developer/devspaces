@@ -4831,3 +4831,21 @@
   timeWait: 0 mins
   timeBuild: 3 mins
   timeTotal: 4 mins
+- name: devspaces-code-rhel8
+  tag: 3.11-30
+  taskId: 57118126
+  timeCreate: Tue Nov 21 18:30:57 2023
+  timeStart: Tue Nov 21 18:31:40 2023
+  timeFinish: Tue Nov 21 18:39:20 2023
+  timeWait: 0 mins
+  timeBuild: 7 mins
+  timeTotal: 8 mins
+- name: devspaces-operator-bundle
+  tag: 3.11-84
+  taskId: 57118961
+  timeCreate: Tue Nov 21 18:57:49 2023
+  timeStart: Tue Nov 21 18:57:58 2023
+  timeFinish: Tue Nov 21 19:01:57 2023
+  timeWait: 0 mins
+  timeBuild: 3 mins
+  timeTotal: 4 mins
