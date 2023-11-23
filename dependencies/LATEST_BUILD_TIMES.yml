@@ -5011,3 +5011,30 @@
   timeWait: 0 mins
   timeBuild: 3 mins
   timeTotal: 4 mins
+- name: devspaces-devfileregistry-rhel8
+  tag: 3.11-19
+  taskId: 57176596
+  timeCreate: Thu Nov 23 17:28:24 2023
+  timeStart: Thu Nov 23 17:28:37 2023
+  timeFinish: Thu Nov 23 17:36:21 2023
+  timeWait: 0 mins
+  timeBuild: 7 mins
+  timeTotal: 7 mins
+- name: devspaces-code-rhel8
+  tag: 3.11-37
+  taskId: 57176693
+  timeCreate: Thu Nov 23 17:50:38 2023
+  timeStart: Thu Nov 23 17:51:13 2023
+  timeFinish: Thu Nov 23 17:58:29 2023
+  timeWait: 0 mins
+  timeBuild: 7 mins
+  timeTotal: 7 mins
+- name: devspaces-operator-bundle
+  tag: 3.11-94
+  taskId: 57176845
+  timeCreate: Thu Nov 23 18:10:12 2023
+  timeStart: Thu Nov 23 18:10:14 2023
+  timeFinish: Thu Nov 23 18:13:37 2023
+  timeWait: 0 mins
+  timeBuild: 3 mins
+  timeTotal: 3 mins
