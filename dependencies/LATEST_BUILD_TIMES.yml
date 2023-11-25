@@ -4246,3 +4246,21 @@
   timeWait: 0 mins
   timeBuild: 3 mins
   timeTotal: 3 mins
+- name: devspaces-devfileregistry-rhel8
+  tag: 3.10-85
+  taskId: 57197769
+  timeCreate: Sat Nov 25 14:28:17 2023
+  timeStart: Sat Nov 25 14:28:40 2023
+  timeFinish: Sat Nov 25 14:36:27 2023
+  timeWait: 0 mins
+  timeBuild: 7 mins
+  timeTotal: 8 mins
+- name: devspaces-operator-bundle
+  tag: 3.10-220
+  taskId: 57197782
+  timeCreate: Sat Nov 25 14:50:47 2023
+  timeStart: Sat Nov 25 14:51:27 2023
+  timeFinish: Sat Nov 25 14:54:35 2023
+  timeWait: 0 mins
+  timeBuild: 3 mins
+  timeTotal: 3 mins
