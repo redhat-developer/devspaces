@@ -5335,3 +5335,30 @@
   timeWait: 0 mins
   timeBuild: 3 mins
   timeTotal: 3 mins
+- name: devspaces-udi-rhel8
+  tag: 3.11-11
+  taskId: 57239810
+  timeCreate: Tue Nov 28 04:55:58 2023
+  timeStart: Tue Nov 28 04:56:38 2023
+  timeFinish: Tue Nov 28 05:57:52 2023
+  timeWait: 0 mins
+  timeBuild: 61 mins
+  timeTotal: 61 mins
+- name: devspaces-code-rhel8
+  tag: 3.11-44
+  taskId: 57240290
+  timeCreate: Tue Nov 28 05:54:58 2023
+  timeStart: Tue Nov 28 05:59:04 2023
+  timeFinish: Tue Nov 28 06:07:00 2023
+  timeWait: 4 mins
+  timeBuild: 7 mins
+  timeTotal: 12 mins
+- name: devspaces-operator-bundle
+  tag: 3.11-108
+  taskId: 57240523
+  timeCreate: Tue Nov 28 06:20:06 2023
+  timeStart: Tue Nov 28 06:22:17 2023
+  timeFinish: Tue Nov 28 06:26:17 2023
+  timeWait: 2 mins
+  timeBuild: 4 mins
+  timeTotal: 6 mins
