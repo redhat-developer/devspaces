@@ -1285,3 +1285,75 @@
   timeWait: 0 mins
   timeBuild: 3 mins
   timeTotal: 3 mins
+- name: devspaces-udi-rhel8
+  tag: 3.9-22
+  taskId: 57354949
+  timeCreate: Sat Dec 2 17:55:50 2023
+  timeStart: Sat Dec 2 17:56:16 2023
+  timeFinish: Sat Dec 2 18:45:54 2023
+  timeWait: 0 mins
+  timeBuild: 49 mins
+  timeTotal: 50 mins
+- name: devspaces-configbump-rhel8
+  tag: 3.9-31
+  taskId: 57354950
+  timeCreate: Sat Dec 2 17:56:02 2023
+  timeStart: Sat Dec 2 17:56:17 2023
+  timeFinish: Sat Dec 2 18:08:13 2023
+  timeWait: 0 mins
+  timeBuild: 11 mins
+  timeTotal: 12 mins
+- name: devspaces-imagepuller-rhel8
+  tag: 3.9-12
+  taskId: 57354951
+  timeCreate: Sat Dec 2 17:57:14 2023
+  timeStart: Sat Dec 2 17:57:49 2023
+  timeFinish: Sat Dec 2 18:08:18 2023
+  timeWait: 0 mins
+  timeBuild: 10 mins
+  timeTotal: 11 mins
+- name: devspaces-machineexec-rhel8
+  tag: 3.9-17
+  taskId: 57354964
+  timeCreate: Sat Dec 2 17:58:22 2023
+  timeStart: Sat Dec 2 17:58:35 2023
+  timeFinish: Sat Dec 2 18:04:11 2023
+  timeWait: 0 mins
+  timeBuild: 5 mins
+  timeTotal: 5 mins
+- name: devspaces-dashboard-rhel8
+  tag: 3.9-33
+  taskId: 57354965
+  timeCreate: Sat Dec 2 17:58:29 2023
+  timeStart: Sat Dec 2 17:58:36 2023
+  timeFinish: Sat Dec 2 18:19:23 2023
+  timeWait: 0 mins
+  timeBuild: 20 mins
+  timeTotal: 20 mins
+- name: devspaces-operator
+  tag: 3.9-19
+  taskId: 57354966
+  timeCreate: Sat Dec 2 17:58:30 2023
+  timeStart: Sat Dec 2 17:58:37 2023
+  timeFinish: Sat Dec 2 18:14:11 2023
+  timeWait: 0 mins
+  timeBuild: 15 mins
+  timeTotal: 15 mins
+- name: devspaces-server-rhel8
+  tag: 3.9-17
+  taskId: 57355034
+  timeCreate: Sat Dec 2 18:21:53 2023
+  timeStart: Sat Dec 2 18:22:13 2023
+  timeFinish: Sat Dec 2 18:29:52 2023
+  timeWait: 0 mins
+  timeBuild: 7 mins
+  timeTotal: 7 mins
+- name: devspaces-operator-bundle
+  tag: 3.9-341
+  taskId: 57355109
+  timeCreate: Sat Dec 2 18:40:00 2023
+  timeStart: Sat Dec 2 18:40:24 2023
+  timeFinish: Sat Dec 2 18:43:29 2023
+  timeWait: 0 mins
+  timeBuild: 3 mins
+  timeTotal: 3 mins
