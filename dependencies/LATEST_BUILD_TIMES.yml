@@ -6091,3 +6091,21 @@
   timeWait: 0 mins
   timeBuild: 4 mins
   timeTotal: 4 mins
+- name: devspaces-traefik-rhel8
+  tag: 3.11-5
+  taskId: 57415980
+  timeCreate: Wed Dec 6 13:18:46 2023
+  timeStart: Wed Dec 6 13:44:50 2023
+  timeFinish: Wed Dec 6 14:20:51 2023
+  timeWait: 26 mins
+  timeBuild: 36 mins
+  timeTotal: 62 mins
+- name: devspaces-operator-bundle
+  tag: 3.11-143
+  taskId: 57420006
+  timeCreate: Wed Dec 6 14:30:09 2023
+  timeStart: Wed Dec 6 14:46:39 2023
+  timeFinish: Wed Dec 6 14:51:22 2023
+  timeWait: 16 mins
+  timeBuild: 4 mins
+  timeTotal: 21 mins
