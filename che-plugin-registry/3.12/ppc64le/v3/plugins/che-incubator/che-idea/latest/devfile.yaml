@@ -17,7 +17,7 @@ events:
 components:
   - name: idea-rhel8
     container:
-      image: registry.redhat.io/devspaces/udi-rhel8:3.12
+      image: registry.redhat.io/devspaces/udi-rhel8:3.11
       env:
         - name: PROJECTOR_ASSEMBLY_DIR
           value: /projector
@@ -79,7 +79,7 @@ components:
     volume: {}
   - name: idea-rhel8-injector
     container:
-      image: registry.redhat.io/devspaces/idea-rhel8:3.12
+      image: registry.redhat.io/devspaces/idea-rhel8:3.11
       command:
         - /projector/entrypoint-init-container.sh
       env:
