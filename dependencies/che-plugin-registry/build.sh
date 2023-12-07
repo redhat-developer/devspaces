@@ -157,7 +157,11 @@ prepareOpenvsxPackagingAsset() {
 
     # save current branch name to the temporary file
     echo "$SCRIPT_BRANCH" > current_branch
-    ${BUILDER} ${BUILD_COMMAND} --progress=plain --no-cache -f build/dockerfiles/openvsx-builder.Dockerfile --build-arg CHE_OPENVSX="$CHE_OPENVSX" -t "$OPENVSX_BUILDER_IMAGE" .
+    
+    # get the tag of che-openvsx from job-config.json
+    CHE_OPENVSX_TAG=$(jq -r --arg REGISTRY_VERSION "${REGISTRY_VERSION}" '.Other["CHE_OPENVSX_TAG"][$REGISTRY_VERSION]' "${jobconfigjson}");
+    
+    ${BUILDER} ${BUILD_COMMAND} --progress=plain --no-cache -f build/dockerfiles/openvsx-builder.Dockerfile --build-arg CHE_OPENVSX="$CHE_OPENVSX" --build-arg CHE_OPENVSX_TAG="$CHE_OPENVSX_TAG" -t "$OPENVSX_BUILDER_IMAGE" .
     rm current_branch 
     # shellcheck disable=SC2181
     if [[ $? -eq 0 ]]; then

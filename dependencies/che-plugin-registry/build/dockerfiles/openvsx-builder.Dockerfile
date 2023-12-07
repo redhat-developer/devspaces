@@ -15,6 +15,9 @@ RUN yum install java-17-openjdk-devel git jq unzip curl -y --nodocs && \
 ARG CHE_OPENVSX
 ENV CHE_OPENVSX=${CHE_OPENVSX}
 
+ARG CHE_OPENVSX_TAG
+ENV CHE_OPENVSX_TAG=${CHE_OPENVSX_TAG}
+
 RUN if [ -n "$CHE_OPENVSX" ]; then \
         cd /tmp; \
         curl -sSLo- ${CHE_OPENVSX} | tar xz; \
@@ -22,7 +25,7 @@ RUN if [ -n "$CHE_OPENVSX" ]; then \
         cd /tmp; \
         git clone https://github.com/che-incubator/che-openvsx.git; \
         cd /tmp/che-openvsx; \
-        git checkout che-openvsx-v0.14.1; \
+        git checkout ${CHE_OPENVSX_TAG}; \
     fi
 
 RUN cd /tmp/che-openvsx/server && ./gradlew --no-daemon assemble && \
