@@ -218,7 +218,7 @@ def installRedHatInternalCerts() {
 // note that this URL is also in devspaces-chectl/build/scripts/build.sh and devspaces/product/manifest/get-3rd-party-sources.sh
 // also mentioned in dsc.groovy and get-3rd-party-sources.groovy
 def getStagingHost() {
-  return "devspaces-build@spmm-util.hosts.stage.psi.bos.redhat.com"
+  return "devspaces-build@spmm-util.engineering.redhat.com"
 }
 
 @Field String defaultFailedEmailRecipients='sdawley@redhat.com'

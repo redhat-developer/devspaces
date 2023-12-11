@@ -12,7 +12,7 @@
 #
 # script to copy Visual Studio plugin files to staging server for Brew builds
 
-REMOTE_USER_AND_HOST="devspaces-build@spmm-util.hosts.stage.psi.bos.redhat.com"
+REMOTE_USER_AND_HOST="devspaces-build@spmm-util.engineering.redhat.com"
 MIDSTM_BRANCH=""
 DS_VERSION=""
 

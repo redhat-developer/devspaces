@@ -24,7 +24,7 @@ DEBUG=0
 CLEAN=1 # by default delete intermediate assets to save disk space
 phases=" 1 2 3 "
 PUBLISH=0 # by default don't publish sources to spmm-util
-REMOTE_USER_AND_HOST="devspaces-build@spmm-util.hosts.stage.psi.bos.redhat.com"
+REMOTE_USER_AND_HOST="devspaces-build@spmm-util.engineering.redhat.com"
 
 usage () 
 {
