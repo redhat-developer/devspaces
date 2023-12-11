@@ -17,7 +17,7 @@ VERSION=""
 DEBUG=0
 PUBLISH=0 # by default don't publish to spmm-util
 
-REMOTE_USER_AND_HOST="devspaces-build@spmm-util.hosts.stage.psi.bos.redhat.com"
+REMOTE_USER_AND_HOST="devspaces-build@spmm-util.engineering.redhat.com"
 
 usage () 
 {
