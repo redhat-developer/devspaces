@@ -6199,3 +6199,21 @@
   timeWait: 0 mins
   timeBuild: 3 mins
   timeTotal: 4 mins
+- name: devspaces-operator
+  tag: 3.11-19
+  taskId: 57532333
+  timeCreate: Tue Dec 12 03:52:22 2023
+  timeStart: Tue Dec 12 03:52:39 2023
+  timeFinish: Tue Dec 12 04:08:38 2023
+  timeWait: 0 mins
+  timeBuild: 15 mins
+  timeTotal: 16 mins
+- name: devspaces-operator-bundle
+  tag: 3.11-151
+  taskId: 57533394
+  timeCreate: Tue Dec 12 04:28:27 2023
+  timeStart: Tue Dec 12 04:28:38 2023
+  timeFinish: Tue Dec 12 04:31:59 2023
+  timeWait: 0 mins
+  timeBuild: 3 mins
+  timeTotal: 3 mins
