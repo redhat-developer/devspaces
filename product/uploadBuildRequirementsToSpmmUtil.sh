@@ -80,6 +80,6 @@ done
 if [[ $PUBLISH -eq 1 ]]; then
     set -x
     # ssh spmm-util mkdir staging/devspaces/build-requirements/common
-    rsync -rlP "${TODAY_DIR}" "${REMOTE_USER_AND_HOST}:staging/devspaces/build-requirements/common/"
+    rsync -rlP "${TODAY_DIR}" "${REMOTE_USER_AND_HOST}:staging/devspaces/build-requirements/common/${ARTIFACTDIRNAME}/"
     set +x
 fi
