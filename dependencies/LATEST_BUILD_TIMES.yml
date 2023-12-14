@@ -6316,3 +6316,21 @@
   timeWait: 0 mins
   timeBuild: 3 mins
   timeTotal: 3 mins
+- name: devspaces-imagepuller-rhel8
+  tag: 3.11-8
+  taskId: 57603116
+  timeCreate: Wed Dec 13 23:00:47 2023
+  timeStart: Wed Dec 13 23:10:41 2023
+  timeFinish: Wed Dec 13 23:25:08 2023
+  timeWait: 9 mins
+  timeBuild: 14 mins
+  timeTotal: 24 mins
+- name: devspaces-operator-bundle
+  tag: 3.11-156
+  taskId: 57604375
+  timeCreate: Wed Dec 13 23:40:57 2023
+  timeStart: Wed Dec 13 23:41:22 2023
+  timeFinish: Wed Dec 13 23:45:13 2023
+  timeWait: 0 mins
+  timeBuild: 3 mins
+  timeTotal: 4 mins
