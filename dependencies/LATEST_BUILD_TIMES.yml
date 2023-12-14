@@ -6361,3 +6361,21 @@
   timeWait: 0 mins
   timeBuild: 3 mins
   timeTotal: 4 mins
+- name: devspaces-code-rhel8
+  tag: 3.12-11
+  taskId: 57631935
+  timeCreate: Thu Dec 14 17:14:49 2023
+  timeStart: Thu Dec 14 18:49:43 2023
+  timeFinish: Thu Dec 14 20:37:37 2023
+  timeWait: 94 mins
+  timeBuild: 107 mins
+  timeTotal: 202 mins
+- name: devspaces-operator-bundle
+  tag: 3.12-8
+  taskId: 57639005
+  timeCreate: Thu Dec 14 20:44:37 2023
+  timeStart: Thu Dec 14 20:45:12 2023
+  timeFinish: Thu Dec 14 20:49:01 2023
+  timeWait: 0 mins
+  timeBuild: 3 mins
+  timeTotal: 4 mins
