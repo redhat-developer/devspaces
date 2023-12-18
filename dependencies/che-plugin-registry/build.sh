@@ -41,7 +41,7 @@ Options:
         Docker registry to be used for image; default 'quay.io'
     --organization, -o [ORGANIZATION]
         Docker image organization to be used for image; default: 'eclipse'
-    --openvsx-url
+    --che-openvsx-url
         URL to OpenVSX sources to be downloaded when building embedded plugin registry; default: 'https://github.com/che-incubator/che-openvsx.git'
     --offline
         Build offline version of registry, with all artifacts included
@@ -70,7 +70,7 @@ function parse_arguments() {
             ORGANIZATION="$2"
             shift; shift;
             ;;
-            --openvsx-url)
+            --che-openvsx-url)
             CHE_OPENVSX="$2"
             shift; shift;
             ;;
