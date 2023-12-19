@@ -24,6 +24,7 @@ BUILD_COMMAND="build"
 OPENVSX_ASSET_SRC=openvsx-server.tar.gz
 OPENVSX_ASSET_DEST="$base_dir"/openvsx-server.tar.gz
 OPENVSX_BUILDER_IMAGE=che-openvsx:latest
+CHE_OPENVSX=""
 
 OVSX_ASSET_SRC=opt/app-root/src/ovsx.tar.gz
 OVSX_ASSET_DEST="$base_dir"/ovsx.tar.gz
@@ -40,6 +41,8 @@ Options:
         Docker registry to be used for image; default 'quay.io'
     --organization, -o [ORGANIZATION]
         Docker image organization to be used for image; default: 'eclipse'
+    --che-openvsx-url
+        URL to OpenVSX sources to be downloaded when building embedded plugin registry; default: 'https://github.com/che-incubator/che-openvsx.git'
     --offline
         Build offline version of registry, with all artifacts included
         cached in the registry; disabled by default.
@@ -65,6 +68,10 @@ function parse_arguments() {
             ;;
             -o|--organization)
             ORGANIZATION="$2"
+            shift; shift;
+            ;;
+            --che-openvsx-url)
+            CHE_OPENVSX="$2"
             shift; shift;
             ;;
             --offline)
@@ -150,7 +157,11 @@ prepareOpenvsxPackagingAsset() {
 
     # save current branch name to the temporary file
     echo "$SCRIPT_BRANCH" > current_branch
-    ${BUILDER} ${BUILD_COMMAND} --progress=plain --no-cache -f build/dockerfiles/openvsx-builder.Dockerfile -t "$OPENVSX_BUILDER_IMAGE" .
+    
+    # get the tag of che-openvsx from job-config.json
+    CHE_OPENVSX_TAG=$(jq -r --arg REGISTRY_VERSION "${REGISTRY_VERSION}" '.Other["CHE_OPENVSX_TAG"][$REGISTRY_VERSION]' "${jobconfigjson}");
+    
+    ${BUILDER} ${BUILD_COMMAND} --progress=plain --no-cache -f build/dockerfiles/openvsx-builder.Dockerfile --build-arg CHE_OPENVSX="$CHE_OPENVSX" --build-arg CHE_OPENVSX_TAG="$CHE_OPENVSX_TAG" -t "$OPENVSX_BUILDER_IMAGE" .
     rm current_branch 
     # shellcheck disable=SC2181
     if [[ $? -eq 0 ]]; then
