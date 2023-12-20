@@ -7036,3 +7036,21 @@
   timeWait: 0 mins
   timeBuild: 3 mins
   timeTotal: 3 mins
+- name: devspaces-devfileregistry-rhel8
+  tag: 3.12-19
+  taskId: 57747206
+  timeCreate: Wed Dec 20 22:26:48 2023
+  timeStart: Wed Dec 20 22:26:50 2023
+  timeFinish: Wed Dec 20 22:37:16 2023
+  timeWait: 0 mins
+  timeBuild: 10 mins
+  timeTotal: 10 mins
+- name: devspaces-operator-bundle
+  tag: 3.12-39
+  taskId: 57747338
+  timeCreate: Wed Dec 20 22:43:10 2023
+  timeStart: Wed Dec 20 22:43:16 2023
+  timeFinish: Wed Dec 20 22:47:23 2023
+  timeWait: 0 mins
+  timeBuild: 4 mins
+  timeTotal: 4 mins
