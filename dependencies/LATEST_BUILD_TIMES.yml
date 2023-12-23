@@ -7135,3 +7135,21 @@
   timeWait: 0 mins
   timeBuild: 3 mins
   timeTotal: 4 mins
+- name: devspaces-operator
+  tag: 3.12-4
+  taskId: 57775301
+  timeCreate: Sat Dec 23 16:32:08 2023
+  timeStart: Sat Dec 23 16:32:49 2023
+  timeFinish: Sat Dec 23 16:49:09 2023
+  timeWait: 0 mins
+  timeBuild: 16 mins
+  timeTotal: 17 mins
+- name: devspaces-operator-bundle
+  tag: 3.12-44
+  taskId: 57775346
+  timeCreate: Sat Dec 23 16:54:48 2023
+  timeStart: Sat Dec 23 16:54:57 2023
+  timeFinish: Sat Dec 23 16:58:06 2023
+  timeWait: 0 mins
+  timeBuild: 3 mins
+  timeTotal: 3 mins
