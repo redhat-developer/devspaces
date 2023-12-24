@@ -7171,3 +7171,75 @@
   timeWait: 0 mins
   timeBuild: 3 mins
   timeTotal: 3 mins
+- name: devspaces-machineexec-rhel8
+  tag: 3.12-5
+  taskId: 57777029
+  timeCreate: Sun Dec 24 03:50:23 2023
+  timeStart: Sun Dec 24 03:50:43 2023
+  timeFinish: Sun Dec 24 03:56:27 2023
+  timeWait: 0 mins
+  timeBuild: 5 mins
+  timeTotal: 6 mins
+- name: devspaces-imagepuller-rhel8
+  tag: 3.12-5
+  taskId: 57777034
+  timeCreate: Sun Dec 24 03:52:24 2023
+  timeStart: Sun Dec 24 03:53:01 2023
+  timeFinish: Sun Dec 24 04:05:40 2023
+  timeWait: 0 mins
+  timeBuild: 12 mins
+  timeTotal: 13 mins
+- name: devspaces-operator
+  tag: 3.12-5
+  taskId: 57777035
+  timeCreate: Sun Dec 24 03:52:55 2023
+  timeStart: Sun Dec 24 03:53:10 2023
+  timeFinish: Sun Dec 24 04:10:14 2023
+  timeWait: 0 mins
+  timeBuild: 17 mins
+  timeTotal: 17 mins
+- name: devspaces-configbump-rhel8
+  tag: 3.12-4
+  taskId: 57777037
+  timeCreate: Sun Dec 24 03:53:00 2023
+  timeStart: Sun Dec 24 03:53:22 2023
+  timeFinish: Sun Dec 24 04:06:24 2023
+  timeWait: 0 mins
+  timeBuild: 13 mins
+  timeTotal: 13 mins
+- name: devspaces-traefik-rhel8
+  tag: 3.12-6
+  taskId: 57777039
+  timeCreate: Sun Dec 24 03:53:46 2023
+  timeStart: Sun Dec 24 03:54:17 2023
+  timeFinish: Sun Dec 24 04:19:15 2023
+  timeWait: 0 mins
+  timeBuild: 24 mins
+  timeTotal: 25 mins
+- name: devspaces-dashboard-rhel8
+  tag: 3.12-11
+  taskId: 57777040
+  timeCreate: Sun Dec 24 03:54:02 2023
+  timeStart: Sun Dec 24 03:54:18 2023
+  timeFinish: Sun Dec 24 04:17:44 2023
+  timeWait: 0 mins
+  timeBuild: 23 mins
+  timeTotal: 23 mins
+- name: devspaces-server-rhel8
+  tag: 3.12-9
+  taskId: 57777074
+  timeCreate: Sun Dec 24 04:07:22 2023
+  timeStart: Sun Dec 24 04:07:59 2023
+  timeFinish: Sun Dec 24 04:16:07 2023
+  timeWait: 0 mins
+  timeBuild: 8 mins
+  timeTotal: 8 mins
+- name: devspaces-operator-bundle
+  tag: 3.12-46
+  taskId: 57777086
+  timeCreate: Sun Dec 24 04:15:49 2023
+  timeStart: Sun Dec 24 04:16:22 2023
+  timeFinish: Sun Dec 24 04:19:56 2023
+  timeWait: 0 mins
+  timeBuild: 3 mins
+  timeTotal: 4 mins
