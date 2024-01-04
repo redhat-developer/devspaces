@@ -1,1 +1,242 @@
 1a. Check out 3rd party language server dependencies builder repo (will collect variables later)
+
+1b. Define list of upstream containers & RPMs pulled into them from https://pkgs.devel.redhat.com/cgit/?q=devspaces 
+
+== devspaces-code (devspaces-3.10-rhel-8) ==
+
+== devspaces-configbump (devspaces-3.10-rhel-8) ==
+
+== devspaces-dashboard (devspaces-3.10-rhel-8) ==
+
+== devspaces-devfileregistry (devspaces-3.10-rhel-8) ==
+
+== devspaces-idea (devspaces-3.10-rhel-8) ==
+
+== devspaces-imagepuller (devspaces-3.10-rhel-8) ==
+
+== devspaces-machineexec (devspaces-3.10-rhel-8) ==
+
+== devspaces-operator (devspaces-3.10-rhel-8) ==
+
+== devspaces-operator-bundle (devspaces-3.10-rhel-8) ==
+
+== devspaces-pluginregistry (devspaces-3.10-rhel-8) ==
+
+== devspaces-server (devspaces-3.10-rhel-8) ==
+
+== devspaces-traefik (devspaces-3.10-rhel-8) ==
+
+== devspaces-udi (devspaces-3.10-rhel-8) ==
+
+Short container list (base images only):        /mnt/hudson_workspace/workspace/DS_CI/Releng/get-3rd-party-deps-manifests/3.10.1/manifest-containers-base-images-only.txt
+Long container list (with dockerfile snippets): /mnt/hudson_workspace/workspace/DS_CI/Releng/get-3rd-party-deps-manifests/3.10.1/manifest-containers-binaries-extras.txt
+
+1c. Other than the above, all artifacts used in Red Hat OpenShift Dev Spaces (formerly 
+    Red Hat CodeReady Workspaces) Workspaces are now built in RH Central CI Jenkins:
+https://main-jenkins-csb-crwqe.apps.ocp-c1.prod.psi.redhat.com/
+
+See also latest build architecture diagram & development documentation:
+https://docs.google.com/presentation/d/1R9tr67pDMk3UVUbvN7vBJbJCYGlUsO2ZPcXbdaoOvTs/edit#slide=id.g4ac34a3cdd_0_0
+https://github.com/redhat-developer/devtools-productization/tree/main/codeready-workspaces
+
+ == php ==
+
+4. Install php deps: 
+ * PHP_LS_VERSION = 
+ * PHP_LS_IMAGE = 
+ * PHP_XDEBUG_IMAGE = 
+
+$ php composer.phar require jetbrains/phpstorm-stubs:dev-master
+$ php composer.phar require felixfbecker/language-server:
+
+jetbrains/phpstorm-stubs dev-master 50172be PHP runtime & extensions header...
+
+ == python ==
+
+5. Install python deps: pip install python-language-server[all]==
+ * PYTHON_IMAGE = 
+ * PYTHON_LS_VERSION = 
+
+Defaulting to user installation because normal site-packages is not writeable
+
+Package                Version
+---------------------- ------------
+ansible                4.10.0
+ansible-core           2.11.12
+appdirs                1.4.4
+argcomplete            1.12.3
+astroid                2.11.6
+attrs                  22.2.0
+autopep8               1.5.5
+Babel                  2.11.0
+backoff                1.11.1
+blivet                 3.6.0
+Brlapi                 0.6.7
+CCColUtils             1.5
+certifi                2023.7.22
+cffi                   1.15.1
+chardet                3.0.4
+charset-normalizer     2.0.12
+cloud-init             23.1.1
+configobj              5.0.6
+cryptography           40.0.2
+cupshelpers            1.0
+dasbus                 1.2
+dbus-python            1.2.4
+debtcollector          2.5.0
+decorator              5.1.1
+dill                   0.3.4
+distro                 1.4.0
+dogpile.cache          1.2.2
+ethtool                0.14
+file-magic             0.3.0
+flake8                 3.8.4
+gitdb                  4.0.1
+GitPython              3.0.9
+gpg                    1.13.1
+gssapi                 1.5.1
+idna                   3.4
+importlib-metadata     4.8.3
+importlib-resources    5.4.0
+iniparse               0.4
+initial-setup          0.3.81.7
+isc                    2.0
+iso8601                1.1.0
+isort                  5.10.1
+jedi                   0.17.2
+Jinja2                 3.0.3
+jmespath               0.10.0
+jsonpatch              1.32
+jsonpointer            2.3
+jsonschema             3.2.0
+kerberos               1.3.0
+keystoneauth1          5.1.2
+kobo                   0.28.0
+koji                   1.32.0
+koji-containerbuild    1.3.0
+langtable              0.0.51
+lazy-object-proxy      1.7.1
+libcomps               0.1.18
+MarkupSafe             2.0.1
+mccabe                 0.6.1
+msgpack                1.0.5
+munch                  4.0.0
+netaddr                0.9.0
+netifaces              0.11.0
+ntlm-auth              1.5.0
+ntplib                 0.3.3
+oauthlib               2.1.0
+openstacksdk           1.5.0
+ordered-set            2.0.2
+os-service-types       1.7.0
+oslo.i18n              5.1.0
+oslo.serialization     4.3.0
+oslo.utils             4.13.0
+packaging              21.3
+parso                  0.7.1
+pbr                    5.11.1
+perf                   0.1
+pexpect                4.6.0
+pid                    2.1.1
+pip                    21.3.1
+platformdirs           2.4.0
+pluggy                 1.0.0
+ply                    3.9
+podman                 4.6.0
+prettytable            0.7.2
+productmd              1.35
+ptyprocess             0.5.2
+pwquality              1.4.4
+pycairo                1.16.3
+pycodestyle            2.6.0
+pycparser              2.21
+pycups                 1.9.72
+pycurl                 7.43.0.2
+pydbus                 0.6.0
+pydocstyle             6.1.1
+pyflakes               2.2.0
+PyGObject              3.28.3
+pyinotify              0.9.6
+PyJWT                  1.6.1
+pykickstart            3.16.16
+pylint                 2.13.9
+pyOpenSSL              23.2.0
+pyparsing              3.1.1
+pyparted               3.11.7
+pyroute2               0.5.13
+pyrsistent             0.18.0
+pyserial               3.1.1
+PySocks                1.6.8
+python-bugzilla        3.2.0
+python-cinderclient    4.1.0
+python-dateutil        2.6.1
+python-dmidecode       3.12.2
+python-glanceclient    3.6.0
+python-jsonrpc-server  0.4.0
+python-language-server 0.36.1
+python-linux-procfs    0.7.0
+python-meh             0.47.2
+python-novaclient      7.1.0
+python-qpid-proton     0.37.0
+pytoml                 0.1.14
+pytz                   2023.3.post1
+pyudev                 0.21.0
+pywinrm                0.4.3
+pyxdg                  0.25
+PyYAML                 6.0.1
+requests               2.27.1
+requests-file          1.4.3
+requests-ftp           0.3.1
+requests-gssapi        1.2.2
+requests-kerberos      0.12.0
+requests-ntlm          1.1.0
+requestsexceptions     1.4.0
+resolvelib             0.5.4
+rhmsg                  0.13.1
+rhpkg                  1.45
+rope                   1.1.1
+rpkg                   1.66
+rpm                    4.14.3
+selinux                2.9
+sepolicy               1.1
+setools                4.3.0
+setroubleshoot         1.1
+setuptools             59.6.0
+simplejson             3.19.2
+simpleline             1.1.3
+six                    1.16.0
+slip                   0.6.4
+slip.dbus              0.6.4
+smmap                  3.0.1
+snowballstemmer        2.2.0
+sos                    4.6.0
+stevedore              3.5.2
+subscription-manager   1.28.40
+syspurpose             1.28.40
+systemd-python         234
+templated-dictionary   1.1
+toml                   0.10.2
+tomli                  1.2.3
+typed-ast              1.5.4
+typing_extensions      4.1.1
+udica                  0.2.6
+ujson                  4.3.0
+urllib3                1.26.17
+warlock                1.3.3
+wrapt                  1.15.0
+xmltodict              0.13.0
+yapf                   0.32.0
+zipp                   3.6.0
+
+6. Collect RPM deps
+
+7. Collect MVN deps
+
+
+8. Collect NPM deps
+
+Short manifest is in file: /mnt/hudson_workspace/workspace/DS_CI/Releng/get-3rd-party-deps-manifests/3.10.1/manifest.txt
+Long log is in file: /mnt/hudson_workspace/workspace/DS_CI/Releng/get-3rd-party-deps-manifests/3.10.1/manifest_log.txt
+
+Overall manifest is in file: /mnt/hudson_workspace/workspace/DS_CI/Releng/get-3rd-party-deps-manifests/3.10.1/manifest-all.txt
+
