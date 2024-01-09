@@ -8017,3 +8017,21 @@
   timeWait: 0 mins
   timeBuild: 3 mins
   timeTotal: 3 mins
+- name: devspaces-server-rhel8
+  tag: 3.12-15
+  taskId: 57942314
+  timeCreate: Tue Jan 9 16:37:23 2024
+  timeStart: Tue Jan 9 16:37:26 2024
+  timeFinish: Tue Jan 9 16:45:43 2024
+  timeWait: 0 mins
+  timeBuild: 8 mins
+  timeTotal: 8 mins
+- name: devspaces-operator-bundle
+  tag: 3.12-82
+  taskId: 57943272
+  timeCreate: Tue Jan 9 16:59:57 2024
+  timeStart: Tue Jan 9 17:00:38 2024
+  timeFinish: Tue Jan 9 17:04:30 2024
+  timeWait: 0 mins
+  timeBuild: 3 mins
+  timeTotal: 4 mins
