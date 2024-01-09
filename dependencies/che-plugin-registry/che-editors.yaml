@@ -56,26 +56,26 @@ editors:
               targetPort: 8887
               exposure: public
               path: '/?backgroundColor=434343&wss'
-              secure: false
-              protocol: http
+              secure: true
+              protocol: https
             - name: intellij-redirect-1
               targetPort: 13131
               exposure: public
-              protocol: http
+              protocol: https
               attributes:
                 discoverable: false
                 urlRewriteSupported: false
             - name: intellij-redirect-2
               targetPort: 13132
               exposure: public
-              protocol: http
+              protocol: https
               attributes:
                 discoverable: false
                 urlRewriteSupported: false
             - name: intellij-redirect-3
               targetPort: 13133
               exposure: public
-              protocol: http
+              protocol: https
               attributes:
                 discoverable: false
                 urlRewriteSupported: false
