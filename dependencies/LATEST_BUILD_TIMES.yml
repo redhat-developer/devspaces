@@ -8053,3 +8053,21 @@
   timeWait: 0 mins
   timeBuild: 3 mins
   timeTotal: 3 mins
+- name: devspaces-devfileregistry-rhel8
+  tag: 3.12-45
+  taskId: 57951838
+  timeCreate: Tue Jan 9 22:31:08 2024
+  timeStart: Tue Jan 9 22:31:24 2024
+  timeFinish: Tue Jan 9 22:40:50 2024
+  timeWait: 0 mins
+  timeBuild: 9 mins
+  timeTotal: 9 mins
+- name: devspaces-operator-bundle
+  tag: 3.12-84
+  taskId: 57951951
+  timeCreate: Tue Jan 9 22:47:41 2024
+  timeStart: Tue Jan 9 22:47:52 2024
+  timeFinish: Tue Jan 9 22:51:24 2024
+  timeWait: 0 mins
+  timeBuild: 3 mins
+  timeTotal: 3 mins
