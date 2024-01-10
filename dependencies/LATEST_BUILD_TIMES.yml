@@ -8107,3 +8107,21 @@
   timeWait: 15 mins
   timeBuild: 4 mins
   timeTotal: 19 mins
+- name: devspaces-machineexec-rhel8
+  tag: 3.12-7
+  taskId: 57979177
+  timeCreate: Wed Jan 10 15:31:34 2024
+  timeStart: Wed Jan 10 16:38:52 2024
+  timeFinish: Wed Jan 10 16:46:16 2024
+  timeWait: 67 mins
+  timeBuild: 7 mins
+  timeTotal: 74 mins
+- name: devspaces-operator-bundle
+  tag: 3.12-87
+  taskId: 57983347
+  timeCreate: Wed Jan 10 17:02:57 2024
+  timeStart: Wed Jan 10 17:56:41 2024
+  timeFinish: Wed Jan 10 18:01:30 2024
+  timeWait: 53 mins
+  timeBuild: 4 mins
+  timeTotal: 58 mins
