@@ -8170,3 +8170,21 @@
   timeWait: 95 mins
   timeBuild: 4 mins
   timeTotal: 100 mins
+- name: devspaces-devfileregistry-rhel8
+  tag: 3.12-47
+  taskId: 58025801
+  timeCreate: Thu Jan 11 14:56:59 2024
+  timeStart: Thu Jan 11 15:59:39 2024
+  timeFinish: Thu Jan 11 16:09:23 2024
+  timeWait: 62 mins
+  timeBuild: 9 mins
+  timeTotal: 72 mins
+- name: devspaces-operator-bundle
+  tag: 3.12-90
+  taskId: 58029523
+  timeCreate: Thu Jan 11 16:43:39 2024
+  timeStart: Thu Jan 11 17:39:39 2024
+  timeFinish: Thu Jan 11 17:43:47 2024
+  timeWait: 56 mins
+  timeBuild: 4 mins
+  timeTotal: 60 mins
