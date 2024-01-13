@@ -8224,3 +8224,21 @@
   timeWait: 0 mins
   timeBuild: 3 mins
   timeTotal: 3 mins
+- name: devspaces-idea-rhel8
+  tag: 3.12-5
+  taskId: 58061289
+  timeCreate: Sat Jan 13 03:21:59 2024
+  timeStart: Sat Jan 13 03:22:10 2024
+  timeFinish: Sat Jan 13 03:37:28 2024
+  timeWait: 0 mins
+  timeBuild: 15 mins
+  timeTotal: 15 mins
+- name: devspaces-operator-bundle
+  tag: 3.12-93
+  taskId: 58062719
+  timeCreate: Sat Jan 13 05:54:19 2024
+  timeStart: Sat Jan 13 06:00:11 2024
+  timeFinish: Sat Jan 13 06:03:39 2024
+  timeWait: 5 mins
+  timeBuild: 3 mins
+  timeTotal: 9 mins
