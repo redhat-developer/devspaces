@@ -8431,3 +8431,21 @@
   timeWait: 0 mins
   timeBuild: 3 mins
   timeTotal: 4 mins
+- name: devspaces-server-rhel8
+  tag: 3.12-20
+  taskId: 58080700
+  timeCreate: Mon Jan 15 13:51:17 2024
+  timeStart: Mon Jan 15 13:54:19 2024
+  timeFinish: Mon Jan 15 14:03:17 2024
+  timeWait: 3 mins
+  timeBuild: 8 mins
+  timeTotal: 12 mins
+- name: devspaces-operator-bundle
+  tag: 3.12-101
+  taskId: 58081083
+  timeCreate: Mon Jan 15 14:10:49 2024
+  timeStart: Mon Jan 15 14:11:23 2024
+  timeFinish: Mon Jan 15 14:14:48 2024
+  timeWait: 0 mins
+  timeBuild: 3 mins
+  timeTotal: 3 mins
