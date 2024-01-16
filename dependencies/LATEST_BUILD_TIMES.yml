@@ -8530,3 +8530,21 @@
   timeWait: 15 mins
   timeBuild: 4 mins
   timeTotal: 20 mins
+- name: devspaces-dashboard-rhel8
+  tag: 3.12-20
+  taskId: 58112341
+  timeCreate: Tue Jan 16 11:39:27 2024
+  timeStart: Tue Jan 16 14:04:40 2024
+  timeFinish: Tue Jan 16 14:50:27 2024
+  timeWait: 145 mins
+  timeBuild: 45 mins
+  timeTotal: 191 mins
+- name: devspaces-operator-bundle
+  tag: 3.12-106
+  taskId: 58120117
+  timeCreate: Tue Jan 16 15:16:27 2024
+  timeStart: Tue Jan 16 16:14:01 2024
+  timeFinish: Tue Jan 16 16:18:14 2024
+  timeWait: 57 mins
+  timeBuild: 4 mins
+  timeTotal: 61 mins
