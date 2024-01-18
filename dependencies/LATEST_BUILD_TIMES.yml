@@ -6829,3 +6829,21 @@
   timeWait: 49 mins
   timeBuild: 4 mins
   timeTotal: 54 mins
+- name: devspaces-operator
+  tag: 3.11-22
+  taskId: 58193037
+  timeCreate: Thu Jan 18 18:18:52 2024
+  timeStart: Thu Jan 18 20:01:14 2024
+  timeFinish: Thu Jan 18 20:35:35 2024
+  timeWait: 102 mins
+  timeBuild: 34 mins
+  timeTotal: 136 mins
+- name: devspaces-operator-bundle
+  tag: 3.11-184
+  taskId: 58197731
+  timeCreate: Thu Jan 18 20:52:47 2024
+  timeStart: Thu Jan 18 23:04:28 2024
+  timeFinish: Thu Jan 18 23:10:10 2024
+  timeWait: 131 mins
+  timeBuild: 5 mins
+  timeTotal: 137 mins
