@@ -8701,6 +8701,15 @@
   timeWait: 212 mins
   timeBuild: 16 mins
   timeTotal: 229 mins
+- name: devspaces-udi-rhel8
+  tag: 3.12-9
+  taskId: 58218044
+  timeCreate: Fri Jan 19 11:46:18 2024
+  timeStart: Fri Jan 19 12:37:28 2024
+  timeFinish: Fri Jan 19 13:53:05 2024
+  timeWait: 51 mins
+  timeBuild: 75 mins
+  timeTotal: 126 mins
 - name: devspaces-server-rhel8
   tag: 3.12-26
   taskId: 58218060
@@ -8719,3 +8728,12 @@
   timeWait: 23 mins
   timeBuild: 4 mins
   timeTotal: 27 mins
+- name: devspaces-operator-bundle
+  tag: 3.12-116
+  taskId: 58221833
+  timeCreate: Fri Jan 19 14:12:21 2024
+  timeStart: Fri Jan 19 15:46:34 2024
+  timeFinish: Fri Jan 19 15:50:39 2024
+  timeWait: 94 mins
+  timeBuild: 4 mins
+  timeTotal: 98 mins
