@@ -8890,3 +8890,21 @@
   timeWait: 0 mins
   timeBuild: 3 mins
   timeTotal: 3 mins
+- name: devspaces-idea-rhel8
+  tag: 3.12-7
+  taskId: 58250254
+  timeCreate: Sun Jan 21 07:28:38 2024
+  timeStart: Sun Jan 21 07:29:04 2024
+  timeFinish: Sun Jan 21 07:44:14 2024
+  timeWait: 0 mins
+  timeBuild: 15 mins
+  timeTotal: 15 mins
+- name: devspaces-operator-bundle
+  tag: 3.12-122
+  taskId: 58250366
+  timeCreate: Sun Jan 21 07:54:04 2024
+  timeStart: Sun Jan 21 07:54:35 2024
+  timeFinish: Sun Jan 21 07:58:34 2024
+  timeWait: 0 mins
+  timeBuild: 3 mins
+  timeTotal: 4 mins
