@@ -8980,3 +8980,21 @@
   timeWait: 39 mins
   timeBuild: 5 mins
   timeTotal: 44 mins
+- name: devspaces-operator
+  tag: 3.12-12
+  taskId: 58323439
+  timeCreate: Tue Jan 23 20:55:59 2024
+  timeStart: Tue Jan 23 21:08:54 2024
+  timeFinish: Tue Jan 23 21:26:29 2024
+  timeWait: 12 mins
+  timeBuild: 17 mins
+  timeTotal: 30 mins
+- name: devspaces-operator-bundle
+  tag: 3.12-127
+  taskId: 58325567
+  timeCreate: Tue Jan 23 21:34:09 2024
+  timeStart: Tue Jan 23 21:34:12 2024
+  timeFinish: Tue Jan 23 21:38:05 2024
+  timeWait: 0 mins
+  timeBuild: 3 mins
+  timeTotal: 3 mins
