@@ -9142,3 +9142,75 @@
   timeWait: 0 mins
   timeBuild: 3 mins
   timeTotal: 3 mins
+- name: devspaces-machineexec-rhel8
+  tag: 3.12-10
+  taskId: 58445243
+  timeCreate: Sun Jan 28 08:51:35 2024
+  timeStart: Sun Jan 28 08:51:36 2024
+  timeFinish: Sun Jan 28 08:57:11 2024
+  timeWait: 0 mins
+  timeBuild: 5 mins
+  timeTotal: 5 mins
+- name: devspaces-configbump-rhel8
+  tag: 3.12-8
+  taskId: 58445244
+  timeCreate: Sun Jan 28 08:51:52 2024
+  timeStart: Sun Jan 28 08:52:23 2024
+  timeFinish: Sun Jan 28 09:05:40 2024
+  timeWait: 0 mins
+  timeBuild: 13 mins
+  timeTotal: 13 mins
+- name: devspaces-traefik-rhel8
+  tag: 3.12-11
+  taskId: 58445247
+  timeCreate: Sun Jan 28 08:53:52 2024
+  timeStart: Sun Jan 28 08:53:54 2024
+  timeFinish: Sun Jan 28 09:18:27 2024
+  timeWait: 0 mins
+  timeBuild: 24 mins
+  timeTotal: 24 mins
+- name: devspaces-imagepuller-rhel8
+  tag: 3.12-9
+  taskId: 58445251
+  timeCreate: Sun Jan 28 08:54:12 2024
+  timeStart: Sun Jan 28 08:54:41 2024
+  timeFinish: Sun Jan 28 09:05:40 2024
+  timeWait: 0 mins
+  timeBuild: 10 mins
+  timeTotal: 11 mins
+- name: devspaces-dashboard-rhel8
+  tag: 3.12-28
+  taskId: 58445253
+  timeCreate: Sun Jan 28 08:54:50 2024
+  timeStart: Sun Jan 28 08:55:27 2024
+  timeFinish: Sun Jan 28 09:19:12 2024
+  timeWait: 0 mins
+  timeBuild: 23 mins
+  timeTotal: 24 mins
+- name: devspaces-operator
+  tag: 3.12-15
+  taskId: 58445257
+  timeCreate: Sun Jan 28 08:56:06 2024
+  timeStart: Sun Jan 28 08:56:14 2024
+  timeFinish: Sun Jan 28 09:11:36 2024
+  timeWait: 0 mins
+  timeBuild: 15 mins
+  timeTotal: 15 mins
+- name: devspaces-server-rhel8
+  tag: 3.12-29
+  taskId: 58445353
+  timeCreate: Sun Jan 28 09:12:45 2024
+  timeStart: Sun Jan 28 09:13:09 2024
+  timeFinish: Sun Jan 28 09:20:37 2024
+  timeWait: 0 mins
+  timeBuild: 7 mins
+  timeTotal: 7 mins
+- name: devspaces-operator-bundle
+  tag: 3.12-135
+  taskId: 58445390
+  timeCreate: Sun Jan 28 09:24:05 2024
+  timeStart: Sun Jan 28 09:24:44 2024
+  timeFinish: Sun Jan 28 09:30:28 2024
+  timeWait: 0 mins
+  timeBuild: 5 mins
+  timeTotal: 6 mins
