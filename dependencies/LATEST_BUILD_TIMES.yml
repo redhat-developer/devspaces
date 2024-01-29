@@ -9295,3 +9295,21 @@
   timeWait: 0 mins
   timeBuild: 2 mins
   timeTotal: 3 mins
+- name: devspaces-operator
+  tag: 3.12-16
+  taskId: 58468688
+  timeCreate: Mon Jan 29 14:14:17 2024
+  timeStart: Mon Jan 29 14:14:34 2024
+  timeFinish: Mon Jan 29 14:31:18 2024
+  timeWait: 0 mins
+  timeBuild: 16 mins
+  timeTotal: 17 mins
+- name: devspaces-operator-bundle
+  tag: 3.12-140
+  taskId: 58469851
+  timeCreate: Mon Jan 29 14:39:32 2024
+  timeStart: Mon Jan 29 14:40:02 2024
+  timeFinish: Mon Jan 29 14:43:48 2024
+  timeWait: 0 mins
+  timeBuild: 3 mins
+  timeTotal: 4 mins
