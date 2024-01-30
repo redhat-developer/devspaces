@@ -1,0 +1,25 @@
+containers/devspaces-code-rhel8-container:3.11.0/ubi8/nodejs-18:1-86 as checode-linux-libc-builder
+containers/devspaces-code-rhel8-container:3.11.0/rhel8/go-toolset:1.20.10-10 as machineexec-builder
+containers/devspaces-code-rhel8-container:3.11.0/ubi8:8.9-1107 as ubi-builder
+containers/devspaces-code-rhel8-container:3.11.0/ubi8-minimal:8.9-1108
+containers/devspaces-configbump-rhel8-container:3.11.0/registry.access.redhat.com/ubi8/go-toolset:1.20.10-3 as builder
+containers/devspaces-configbump-rhel8-container:3.11.0/registry.access.redhat.com/ubi8-minimal:8.9-1029 as runtime
+containers/devspaces-dashboard-rhel8-container:3.11.0/ubi8/nodejs-18:1-86 as builder
+containers/devspaces-dashboard-rhel8-container:3.11.0/ubi8/nodejs-18:1-86
+containers/devspaces-devfileregistry-rhel8-container:3.11.0/registry.access.redhat.com/ubi8/python-311:1-43 as builder
+containers/devspaces-devfileregistry-rhel8-container:3.11.0/registry.access.redhat.com/ubi8/httpd-24:1-299 AS registry
+containers/devspaces-idea-rhel8-container:3.11.0/registry.access.redhat.com/ubi8:8.9-1107 as ubi-builder
+containers/devspaces-idea-rhel8-container:3.11.0/registry.access.redhat.com/ubi8-minimal:8.9-1108
+containers/devspaces-imagepuller-rhel8-container:3.11.0/rhel8/go-toolset:1.20.10-3 as builder
+containers/devspaces-imagepuller-rhel8-container:3.11.0/ubi8-minimal:8.9-1029
+containers/devspaces-machineexec-rhel8-container:3.11.0/rhel8/go-toolset:1.20.10-3 as builder
+containers/devspaces-machineexec-rhel8-container:3.11.0/registry.access.redhat.com/ubi8-minimal:8.9-1029 as runtime
+containers/devspaces-operator-rhel8-container:3.11.0/registry.access.redhat.com/ubi8/go-toolset:1.20.10-10 as builder
+containers/devspaces-operator-rhel8-container:3.11.0/ubi8-minimal:8.9-1108
+containers/devspaces-operator-bundle-rhel8-container:3.11.0/scratch
+containers/devspaces-pluginregistry-rhel8-container:3.11.0/registry.redhat.io/rhel8/postgresql-15:1-44
+containers/devspaces-server-rhel8-container:3.11.0/registry.access.redhat.com/ubi8-minimal:8.9-1029
+containers/devspaces-traefik-rhel8-container:3.11.0/registry.access.redhat.com/ubi8-minimal:8.9-1029 as builder
+containers/devspaces-traefik-rhel8-container:3.11.0/registry.access.redhat.com/ubi8-minimal:8.9-1029 
+containers/devspaces-udi-rhel8-container:3.11.0/rhel8/go-toolset:1.20.10-3 as go-builder
+containers/devspaces-udi-rhel8-container:3.11.0/ubi8-minimal:8.9-1029
