@@ -17,7 +17,7 @@ events:
 components:
   - name: che-code-runtime-description
     container:
-      image: registry.redhat.io/devspaces/udi-rhel8:3.12
+      image: registry.redhat.io/devspaces/udi-rhel8:3.13
       volumeMounts:
         - name: checode
           path: /checode
@@ -65,7 +65,7 @@ components:
     volume: {}
   - name: che-code-injector
     container:
-      image: registry.redhat.io/devspaces/code-rhel8:3.12
+      image: registry.redhat.io/devspaces/code-rhel8:3.13
       command:
         - /entrypoint-init-container.sh
       volumeMounts:
