@@ -80,7 +80,7 @@ RUN chmod 755 /usr/local/bin/*.sh && \
     cp -r /build/output/v3 /var/www/html/
 
 COPY v3/plugins/ /var/www/html/v3/plugins/
-COPY v3/images/*.png /var/www/html/v3/images/
+COPY v3/images/*.* /var/www/html/v3/images/
 COPY /build/dockerfiles/entrypoint.sh /usr/local/bin/
 
 RUN \
