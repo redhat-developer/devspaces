@@ -9853,3 +9853,30 @@
   timeWait: 0 mins
   timeBuild: 4 mins
   timeTotal: 4 mins
+- name: devspaces-pluginregistry-rhel8
+  tag: 3.13-2
+  taskId: 58791050
+  timeCreate: Thu Feb 8 12:37:34 2024
+  timeStart: Thu Feb 8 12:38:12 2024
+  timeFinish: Thu Feb 8 13:13:58 2024
+  timeWait: 0 mins
+  timeBuild: 35 mins
+  timeTotal: 36 mins
+- name: devspaces-devfileregistry-rhel8
+  tag: 3.13-12
+  taskId: 58791732
+  timeCreate: Thu Feb 8 12:56:20 2024
+  timeStart: Thu Feb 8 12:56:47 2024
+  timeFinish: Thu Feb 8 13:05:18 2024
+  timeWait: 0 mins
+  timeBuild: 8 mins
+  timeTotal: 8 mins
+- name: devspaces-operator-bundle
+  tag: 3.13-13
+  taskId: 58792872
+  timeCreate: Thu Feb 8 13:36:48 2024
+  timeStart: Thu Feb 8 13:37:38 2024
+  timeFinish: Thu Feb 8 13:41:46 2024
+  timeWait: 0 mins
+  timeBuild: 4 mins
+  timeTotal: 4 mins
