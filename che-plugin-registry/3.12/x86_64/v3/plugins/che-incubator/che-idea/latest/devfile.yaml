@@ -1,6 +1,16 @@
 schemaVersion: 2.1.0
 metadata:
   name: che-idea
+  displayName: IntelliJ IDEA Community (Technology Preview)
+  description: Red Hat OpenShift Dev Spaces with JetBrains IntelliJ IDEA Community IDE
+  icon: /images/intellij-idea.svg
+  attributes:
+    publisher: che-incubator
+    version: 2022.1
+    title: Red Hat OpenShift Dev Spaces with JetBrains IntelliJ IDEA Community IDE
+    repository: https://github.com/che-incubator/jetbrains-editor-images
+    firstPublicationDate: '2022-01-11'
+    skipMetaYaml: true
 commands:
   - id: init-container-command
     apply:
@@ -17,7 +27,7 @@ events:
 components:
   - name: idea-rhel8
     container:
-      image: registry.redhat.io/devspaces/udi-rhel8:3.13
+      image: registry.redhat.io/devspaces/udi-rhel8:3.12
       env:
         - name: PROJECTOR_ASSEMBLY_DIR
           value: /projector
@@ -44,29 +54,29 @@ components:
           targetPort: 8887
           exposure: public
           path: /?backgroundColor=434343&wss
-          secure: false
+          secure: true
           protocol: https
         - name: intellij-redirect-1
-          attributes:
-            discoverable: false
-            urlRewriteSupported: false
           targetPort: 13131
           exposure: public
           protocol: https
-        - name: intellij-redirect-2
           attributes:
             discoverable: false
             urlRewriteSupported: false
+        - name: intellij-redirect-2
           targetPort: 13132
           exposure: public
           protocol: https
-        - name: intellij-redirect-3
           attributes:
             discoverable: false
             urlRewriteSupported: false
+        - name: intellij-redirect-3
           targetPort: 13133
           exposure: public
           protocol: https
+          attributes:
+            discoverable: false
+            urlRewriteSupported: false
     attributes:
       app.kubernetes.io/component: idea-rhel8-runtime
       app.kubernetes.io/part-of: idea-rhel8.eclipse.org
@@ -79,7 +89,7 @@ components:
     volume: {}
   - name: idea-rhel8-injector
     container:
-      image: registry.redhat.io/devspaces/idea-rhel8:3.13
+      image: registry.redhat.io/devspaces/idea-rhel8:3.12
       command:
         - /projector/entrypoint-init-container.sh
       env:

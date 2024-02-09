@@ -9,7 +9,8 @@
     "name": "che-code",
     "publisher": "che-incubator",
     "type": "Che Editor",
-    "version": "insiders"
+    "version": "insiders",
+    "icon": "/v3/images/vscode.svg"
   },
   {
     "id": "che-incubator/che-code/latest",
@@ -21,7 +22,8 @@
     "name": "che-code",
     "publisher": "che-incubator",
     "type": "Che Editor",
-    "version": "latest"
+    "version": "latest",
+    "icon": "/v3/images/vscode.svg"
   },
   {
     "id": "che-incubator/che-idea/latest",
@@ -33,6 +35,7 @@
     "name": "che-idea",
     "publisher": "che-incubator",
     "type": "Che Editor",
-    "version": "latest"
+    "version": "latest",
+    "icon": "/v3/images/intellij-idea.svg"
   }
 ]
