@@ -198,16 +198,16 @@ def getDSShortName(String LONG_NAME) {
   return LONG_NAME.minus("devspaces-")
 }
 
-// see http://hdn.corp.redhat.com/rhel7-csb-stage/repoview/redhat-internal-cert-install.html
-// and http://hdn.corp.redhat.com/rhel7-csb-stage/RPMS/noarch/?C=M;O=D
+// see https://hdn.corp.redhat.com/rhel7-csb-stage/repoview/redhat-internal-cert-install.html
+// and https://hdn.corp.redhat.com/rhel7-csb-stage/RPMS/noarch/?C=M;O=D
 def installRedHatInternalCerts() {
   sh('''#!/bin/bash -xe
   if [[ ! $(rpm -qa | grep redhat-internal-cert-install || true) ]]; then
     cd /tmp
-    # 403 access on http://hdn.corp.redhat.com/rhel7-csb-stage/RPMS/noarch/redhat-internal-cert-install-0.1-24.el7.noarch.rpm
+    # 403 access on https://hdn.corp.redhat.com/rhel7-csb-stage/RPMS/noarch/redhat-internal-cert-install-0.1-24.el7.noarch.rpm
     # so use latest csb.noarch file instead 
-    rpm=$(curl --insecure -sSLo- "http://hdn.corp.redhat.com/rhel7-csb-stage/RPMS/noarch/?C=M;O=D" | grep cert-install | grep "csb.noarch" | head -1 | sed -r -e 's#.+>(redhat-internal-cert-install-.+[^<])</a.+#\\1#')
-    curl --insecure -sSLO http://hdn.corp.redhat.com/rhel7-csb-stage/RPMS/noarch/${rpm}
+    rpm=$(curl --insecure -sSLo- "https://hdn.corp.redhat.com/rhel7-csb-stage/RPMS/noarch/?C=M;O=D" | grep cert-install | grep "csb.noarch" | head -1 | sed -r -e 's#.+>(redhat-internal-cert-install-.+[^<])</a.+#\\1#')
+    curl --insecure -sSLO https://hdn.corp.redhat.com/rhel7-csb-stage/RPMS/noarch/${rpm}
     sudo yum -y install ${rpm}
     rm -fr /tmp/${rpm}
   fi
@@ -279,19 +279,19 @@ fi
 }
 
 // URL from which to get internal RPM installations
-@Field String pulpRepoURL = "http://rhsm-pulp.corp.redhat.com"
+@Field String pulpRepoURL = "https://rhsm-pulp.corp.redhat.com"
 
-// ./getLatestRPM.sh -r "openshift-clients-4" -u http://rhsm-pulp.corp.redhat.com/content/dist/layered/rhel8/basearch/rhocp/4.12 -s ...
+// ./getLatestRPM.sh -r "openshift-clients-4" -u https://rhsm-pulp.corp.redhat.com/content/dist/layered/rhel8/basearch/rhocp/4.12 -s ...
 def updateOCRpms(String rpmRepoVersion="4.11", String dir="${WORKSPACE}/sources", String branch=MIDSTM_BRANCH, String ARCHES="x86_64 s390x ppc64le") {
   updatedVersion=updateRpms("openshift-clients-4", pulpRepoURL + "/content/dist/layered/rhel8/basearch/rhocp/" + rpmRepoVersion, dir, branch, ARCHES)
   commitChanges(dir, "[rpms] Update to " + updatedVersion, branch)
 }
-// ./getLatestRPM.sh -r "odo-3"             -u http://rhsm-pulp.corp.redhat.com/content/dist/layered/rhel8/basearch/ocp-tools/4.11 -s ...
+// ./getLatestRPM.sh -r "odo-3"             -u https://rhsm-pulp.corp.redhat.com/content/dist/layered/rhel8/basearch/ocp-tools/4.11 -s ...
 def updateOdoRpms(String rpmRepoVersion="4.11", String dir="${WORKSPACE}/sources", String branch=MIDSTM_BRANCH, String ARCHES="x86_64 s390x ppc64le") {
   updatedVersion=updateRpms("odo-3", pulpRepoURL + "/content/dist/layered/rhel8/basearch/ocp-tools/" + rpmRepoVersion, dir, branch, ARCHES)
   commitChanges(dir, "[rpms] Update to " + updatedVersion, branch)
 }
-// ./getLatestRPM.sh -r "helm-3"             -u http://rhsm-pulp.corp.redhat.com/content/dist/layered/rhel8/basearch/ocp-tools/4.11 -s ...
+// ./getLatestRPM.sh -r "helm-3"             -u https://rhsm-pulp.corp.redhat.com/content/dist/layered/rhel8/basearch/ocp-tools/4.11 -s ...
 def updateHelmRpms(String rpmRepoVersion="4.11", String dir="${WORKSPACE}/sources", String branch=MIDSTM_BRANCH, String ARCHES="x86_64 s390x ppc64le") {
   updatedVersion=updateRpms("helm-3", pulpRepoURL + "/content/dist/layered/rhel8/basearch/ocp-tools/" + rpmRepoVersion, dir, branch, ARCHES)
   commitChanges(dir, "[rpms] Update to " + updatedVersion, branch)

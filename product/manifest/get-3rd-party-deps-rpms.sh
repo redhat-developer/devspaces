@@ -83,7 +83,7 @@ function loadNVRlog() {
 	MANIFEST_FILE2="$2"
 	ARCH="$3"
 	# shellcheck disable=SC2001
-	URL=$(echo $NVR | sed -e "s#\(.\+\(-container\|-rhel8\)\)-\([0-9.]\+\)-\([0-9.]\+\)#http://download.eng.bos.redhat.com/brewroot/packages/\1/\3/\4/data/logs/${ARCH}-build.log#")
+	URL=$(echo $NVR | sed -e "s#\(.\+\(-container\|-rhel8\)\)-\([0-9.]\+\)-\([0-9.]\+\)#https://download.eng.bos.redhat.com/brewroot/packages/\1/\3/\4/data/logs/${ARCH}-build.log#")
 	# log ""
 	log "   ${URL}"
 

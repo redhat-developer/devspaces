@@ -14,8 +14,8 @@
 
 if [[ ! -x /usr/bin/brew ]]; then 
 	echo "Brew is required. Please install brewkoji rpm from one of these repos:";
-	echo " * http://download.devel.redhat.com/rel-eng/RCMTOOLS/latest-RCMTOOLS-2-F-27/compose/Everything/x86_64/os/"
-	echo " * http://download.devel.redhat.com/rel-eng/RCMTOOLS/latest-RCMTOOLS-2-RHEL-8/compose/BaseOS/\$basearch/os/"
+	echo " * https://download.devel.redhat.com/rel-eng/RCMTOOLS/latest-RCMTOOLS-2-F-27/compose/Everything/x86_64/os/"
+	echo " * https://download.devel.redhat.com/rel-eng/RCMTOOLS/latest-RCMTOOLS-2-RHEL-8/compose/BaseOS/\$basearch/os/"
 fi
 
 usage () {

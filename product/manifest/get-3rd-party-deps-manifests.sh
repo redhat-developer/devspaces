@@ -202,7 +202,7 @@ if [[ ${phases} == *"1"* ]]; then
 		# echo $containerName
 		log ""
 		log "== ${d} (${MIDSTM_BRANCH}) =="
-		logDockerDetails http://pkgs.devel.redhat.com/cgit/containers/${d}/plain/Dockerfile?h=${MIDSTM_BRANCH} "containers/${containerName}:${CSV_VERSION}/"
+		logDockerDetails https://pkgs.devel.redhat.com/cgit/containers/${d}/plain/Dockerfile?h=${MIDSTM_BRANCH} "containers/${containerName}:${CSV_VERSION}/"
 	done
 	bth ""
 

@@ -34,7 +34,7 @@ Sidecar image sources are then synced from the [devspaces-images](https://github
 For example, the udi sidecar: 
 
 * [devspaces-images/devspaces-udi](https://github.com/redhat-developer/devspaces-images/tree/devspaces-3-rhel-8/devspacesudi)
-* [containers/devspaces-udi](http://pkgs.devel.redhat.com/cgit/containers/devspaces-udi/tree/sources?h=devspaces-3-rhel-8)
+* [containers/devspaces-udi](https://pkgs.devel.redhat.com/cgit/containers/devspaces-udi/tree/sources?h=devspaces-3-rhel-8)
 
 ## License
 
