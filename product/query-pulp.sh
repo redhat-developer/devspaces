@@ -62,9 +62,9 @@ elif [ "$DISPLAY_NAME_ONLY" == "true" ]; then
 elif [ "$MORE" == "true" ]; then
   curl -s -k --user qa:qa  https://rhsm-pulp.corp.redhat.com/pulp/api/v2/repositories/search/ \
     --data '{"criteria": {"filters": {"display_name": {"$regex": "'"$QUERY"'"}}}}' \
-    | jq '.[] | {display_name, "content_set": .notes.content_set, "repo_url": "http://rhsm-pulp.corp.redhat.com/\(.notes.relative_url)", "include_in_download_service": .notes.include_in_download_service}'
+    | jq '.[] | {display_name, "content_set": .notes.content_set, "repo_url": "https://rhsm-pulp.corp.redhat.com/\(.notes.relative_url)", "include_in_download_service": .notes.include_in_download_service}'
 else
   curl -s -k --user qa:qa  https://rhsm-pulp.corp.redhat.com/pulp/api/v2/repositories/search/ \
     --data '{"criteria": {"filters": {"display_name": {"$regex": "'"$QUERY"'"}}}}' \
-    | jq -c '.[] | {display_name, "content_set": .notes.content_set, "repo_url": "http://rhsm-pulp.corp.redhat.com/\(.notes.relative_url)"}'
+    | jq -c '.[] | {display_name, "content_set": .notes.content_set, "repo_url": "https://rhsm-pulp.corp.redhat.com/\(.notes.relative_url)"}'
 fi

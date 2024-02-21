@@ -156,7 +156,7 @@ Usage:
 }
 if [[ $# -lt 1 ]]; then usage; cleanup_temp; exit 1; fi
 
-REGISTRY="https://registry.redhat.io" # or http://brew-pulp-docker01.web.prod.ext.phx2.redhat.com:8888 or https://registry-1.docker.io or https://registry.access.redhat.com
+REGISTRY="https://registry.redhat.io" # or https://brew-pulp-docker01.web.prod.ext.phx2.redhat.com:8888 or https://registry-1.docker.io or https://registry.access.redhat.com
 CONTAINERS=""
 while [[ "$#" -gt 0 ]]; do
   case $1 in
@@ -170,12 +170,12 @@ while [[ "$#" -gt 0 ]]; do
     '--freshmaker') EXCLUDES_FRESHMAKER="";; # CRW-2499 by default, exclude freshmaker-built images
     '-a'|'--arches') ARCHES=1;;
     '-r') REGISTRY="$2"; shift 1;;
-    '--rhec'|'--rhcc') REGISTRY="http://registry.redhat.io";;
-    '--stage') REGISTRY="http://registry.stage.redhat.io";;
-    '--pulp-old') REGISTRY="http://brew-pulp-docker01.web.prod.ext.phx2.redhat.com:8888"; EXCLUDES="latest|candidate|guest|containers|sha256-.+.sbom";;
-    '-p'|'--osbs') REGISTRY="http://registry-proxy.engineering.redhat.com/rh-osbs"; EXCLUDES="latest|candidate|guest|containers|sha256-.+.sbom";;
-    '-d'|'--docker') REGISTRY="http://docker.io";;
-    '--quay') REGISTRY="http://quay.io";;
+    '--rhec'|'--rhcc') REGISTRY="https://registry.redhat.io";;
+    '--stage') REGISTRY="https://registry.stage.redhat.io";;
+    '--pulp-old') REGISTRY="https://brew-pulp-docker01.web.prod.ext.phx2.redhat.com:8888"; EXCLUDES="latest|candidate|guest|containers|sha256-.+.sbom";;
+    '-p'|'--osbs') REGISTRY="https://registry-proxy.engineering.redhat.com/rh-osbs"; EXCLUDES="latest|candidate|guest|containers|sha256-.+.sbom";;
+    '-d'|'--docker') REGISTRY="https://docker.io";;
+    '--quay') REGISTRY="https://quay.io";;
     '--pushtoquay') PUSHTOQUAY=1; PUSHTOQUAYTAGS="";;
     --pushtoquay=*) PUSHTOQUAY=1; PUSHTOQUAYTAGS="$(echo "${1#*=}")";;
     '--pushtoquayforce') PUSHTOQUAYFORCE=1;;
@@ -285,8 +285,8 @@ if [[ ${SHOWNVR} -eq 1 ]]; then
 	fi
 	if [[ ! -x /usr/bin/brew ]]; then 
 		echo "Brew is required. Please install brewkoji rpm from one of these repos:";
-		echo " * http://download.devel.redhat.com/rel-eng/RCMTOOLS/latest-RCMTOOLS-2-F-27/compose/Everything/x86_64/os/"
-		echo " * http://download.devel.redhat.com/rel-eng/RCMTOOLS/latest-RCMTOOLS-2-RHEL-8/compose/BaseOS/\$basearch/os/"
+		echo " * https://download.devel.redhat.com/rel-eng/RCMTOOLS/latest-RCMTOOLS-2-F-27/compose/Everything/x86_64/os/"
+		echo " * https://download.devel.redhat.com/rel-eng/RCMTOOLS/latest-RCMTOOLS-2-RHEL-8/compose/BaseOS/\$basearch/os/"
 		exit 1
 	fi
 
@@ -311,7 +311,7 @@ if [[ ${SHOWNVR} -eq 1 ]]; then
 		fi
 		if [[ ${SHOWLOG} -eq 1 ]]; then
 			result=$(echo "$result" | tail -${NUMTAGS} | sed -E -e "s#[\ \t]+${candidateTag}.+##" | \
-				sed -E -e "s#(.+)-container-([0-9.]+)-([0-9]+)#\0 - http://download.eng.bos.redhat.com/brewroot/packages/\1-container/\2/\3/data/logs/x86_64.log#")
+				sed -E -e "s#(.+)-container-([0-9.]+)-([0-9]+)#\0 - https://download.eng.bos.redhat.com/brewroot/packages/\1-container/\2/\3/data/logs/x86_64.log#")
 		elif [[ ${TAGONLY} -eq 1 ]]; then
 			result=$(echo "$result" | tail -${NUMTAGS} | sed -E -e "s#[\ \t]+${candidateTag}.+##" -e "s@.+-container-@@g")
 		else
@@ -423,7 +423,7 @@ for URLfrag in $CONTAINERS; do
 			elif [[ ${SHOWNVR} -eq 1 ]]; then
 				ufrag=${URLfrag%%:*}; ufrag=${ufrag/\//-}
 				if [[ ${SHOWLOG} -eq 1 ]]; then
-					echo "${ufrag}-container-${LATESTTAG} - http://download.eng.bos.redhat.com/brewroot/packages/${ufrag}-container-${LATESTTAG//-//}/data/logs/x86_64.log"
+					echo "${ufrag}-container-${LATESTTAG} - https://download.eng.bos.redhat.com/brewroot/packages/${ufrag}-container-${LATESTTAG//-//}/data/logs/x86_64.log"
 				elif [[ ${TAGONLY} -eq 1 ]]; then
 					echo "${LATESTTAG}"
 				else

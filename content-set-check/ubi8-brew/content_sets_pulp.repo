@@ -1,29 +1,29 @@
 [rhel-8-for-appstream-rpms-pulp]
 name=rhel-8-appstream-rpms-pulp
-baseurl=http://rhsm-pulp.corp.redhat.com/content/dist/rhel8/8/$basearch/appstream/os
+baseurl=https://rhsm-pulp.corp.redhat.com/content/dist/rhel8/8/$basearch/appstream/os
 enabled=1
 gpgcheck=0
  
 [rhel-8-for-baseos-rpms-pulp]
 name=rhel-8-baseos-rpms-pulp
-baseurl=http://rhsm-pulp.corp.redhat.com/content/dist/rhel8/8/$basearch/baseos/os
+baseurl=https://rhsm-pulp.corp.redhat.com/content/dist/rhel8/8/$basearch/baseos/os
 enabled=1
 gpgcheck=0
 
 [rhel-8-for-codeready-builder-rpms-pulp]
 name=rhel-8-codeready-builder-rpms-pulp
-baseurl=http://rhsm-pulp.corp.redhat.com/content/dist/rhel8/8/$basearch/codeready-builder/os
+baseurl=https://rhsm-pulp.corp.redhat.com/content/dist/rhel8/8/$basearch/codeready-builder/os
 enabled=1
 gpgcheck=0
 
 [rhocp-4.11-for-rhel-8-rpms]
 name=rhocp-4.11-for-rhel-8-rpms
-baseurl=http://rhsm-pulp.corp.redhat.com/content/dist/layered/rhel8/$basearch/rhocp/4.11/os/
+baseurl=https://rhsm-pulp.corp.redhat.com/content/dist/layered/rhel8/$basearch/rhocp/4.11/os/
 enabled=1
 gpgcheck=0
 
 [ocp-tools-4.11-for-rhel-8-rpms]
 name=ocp-tools-4.11-for-rhel-8-rpms
-baseurl=http://rhsm-pulp.corp.redhat.com/content/dist/layered/rhel8/$basearch/ocp-tools/4.11/os/
+baseurl=https://rhsm-pulp.corp.redhat.com/content/dist/layered/rhel8/$basearch/ocp-tools/4.11/os/
 enabled=1
 gpgcheck=0

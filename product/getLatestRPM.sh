@@ -21,7 +21,7 @@ while [[ "$#" -gt 0 ]]; do
   '-r') RPM_PATTERN="$2"; shift 1;; # eg., openshift-clients or helm
   '-s') SOURCE_DIR="$2"; shift 1;; # dir to search for Dockerfiles
   '-a') ARCHES="$ARCHES $2"; shift 1;; # use space-separated list of arches, or use multiple -a flags
-  '-u') BASE_URL="$2"; shift 1;; # eg., http://rhsm-pulp.corp.redhat.com/content/dist/layered/rhel8/basearch/rhocp/4.8
+  '-u') BASE_URL="$2"; shift 1;; # eg., https://rhsm-pulp.corp.redhat.com/content/dist/layered/rhel8/basearch/rhocp/4.8
   '-q') QUIET=1; shift 0;;
   '-h') usage;;
   esac
@@ -33,9 +33,9 @@ usage () {
 Usage: 
   $0 -s SOURCE_DIR -r RPM_PATTERN  -u BASE_URL -a 'ARCH1 ... ARCHN' 
 Example: 
-  $0 -s /path/to/dockerfiles/ -r openshift-clients-4 -u http://rhsm-pulp.corp.redhat.com/content/dist/layered/rhel8/basearch/rhocp/4.12
-  $0 -s /path/to/dockerfiles/ -r odo-3               -u http://rhsm-pulp.corp.redhat.com/content/dist/layered/rhel8/basearch/ocp-tools/4.12
-  $0 -s /path/to/dockerfiles/ -r helm-3              -u http://rhsm-pulp.corp.redhat.com/content/dist/layered/rhel8/basearch/ocp-tools/4.12
+  $0 -s /path/to/dockerfiles/ -r openshift-clients-4 -u https://rhsm-pulp.corp.redhat.com/content/dist/layered/rhel8/basearch/rhocp/4.12
+  $0 -s /path/to/dockerfiles/ -r odo-3               -u https://rhsm-pulp.corp.redhat.com/content/dist/layered/rhel8/basearch/ocp-tools/4.12
+  $0 -s /path/to/dockerfiles/ -r helm-3              -u https://rhsm-pulp.corp.redhat.com/content/dist/layered/rhel8/basearch/ocp-tools/4.12
 Options:
   -q quieter output; only reports changed rpm version or 0 if failure
 "
@@ -94,7 +94,7 @@ for d in $dockerfiles; do
     sed -i $d -r \
       -e "s#(/| )(${RPM_PATTERN}[^ ]+.el8)#\1$newVersion#g" \
       -e "s#${repo_prefix}-[0-9.]+#${repo_new}#g" \
-      -e "s#(http://rhsm-pulp.corp.redhat.com/content/dist/layered/rhel8/)([a-z0-9_]+)/${repo_prefix}/[0-9.]+/#\1\2/${repo_new//-/\/}/#g"
+      -e "s#(https://rhsm-pulp.corp.redhat.com/content/dist/layered/rhel8/)([a-z0-9_]+)/${repo_prefix}/[0-9.]+/#\1\2/${repo_new//-/\/}/#g"
   fi
 done
 
