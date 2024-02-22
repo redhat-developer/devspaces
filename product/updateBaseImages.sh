@@ -98,7 +98,9 @@ if [[ $# -lt 1 ]]; then usage; exit; fi
 # # https://quay.io/eclipse/che-machine-exec#^7\.
 BASETAG="."
 # suppress latest and -source (RHEC); suppress next and nightly (quay)
-EXCLUDES="latest|-source|next|nightly"
+# Adding .att because new sha's have appeared in the skopeo output that broke devfilereg
+# ubi8/httpd-24 sha256-eb54516b61a323f653315cef3923a240ade15de871ca324ca6a13c40aa40492c.att
+EXCLUDES="latest|-source|next|nightly|.att"
 while [[ "$#" -gt 0 ]]; do
   case $1 in
 	'-w') WORKDIR="$2"; shift 1;;
