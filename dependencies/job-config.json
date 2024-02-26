@@ -535,11 +535,11 @@
       },
       "3.12": {
         "CSV_VERSION": "3.12.0",
-        "CSV_VERSION_PREV": "3.10.1"
+        "CSV_VERSION_PREV": "3.11.0"
       },
       "3.x": {
         "CSV_VERSION": "3.12.0",
-        "CSV_VERSION_PREV": "3.10.1"
+        "CSV_VERSION_PREV": "3.11.0"
       }
     }
   },
@@ -558,8 +558,8 @@
     },
     "FLOATING_QUAY_TAGS": {
       "3.10": "3.10",
-      "3.11": "latest",
-      "3.12": "next",
+      "3.11": "3.11",
+      "3.12": "latest",
       "3.x": "next"
     },
     "DEV_WORKSPACE_CONTROLLER": {
