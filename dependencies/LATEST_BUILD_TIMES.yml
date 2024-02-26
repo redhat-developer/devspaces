@@ -9970,3 +9970,21 @@
   timeWait: 0 mins
   timeBuild: 3 mins
   timeTotal: 4 mins
+- name: devspaces-pluginregistry-rhel8
+  tag: 3.12-20
+  taskId: 59315312
+  timeCreate: Mon Feb 26 15:48:55 2024
+  timeStart: Mon Feb 26 15:49:38 2024
+  timeFinish: Mon Feb 26 16:23:10 2024
+  timeWait: 0 mins
+  timeBuild: 33 mins
+  timeTotal: 34 mins
+- name: devspaces-operator-bundle
+  tag: 3.12-168
+  taskId: 59317723
+  timeCreate: Mon Feb 26 17:37:06 2024
+  timeStart: Mon Feb 26 17:37:20 2024
+  timeFinish: Mon Feb 26 17:43:18 2024
+  timeWait: 0 mins
+  timeBuild: 5 mins
+  timeTotal: 6 mins
