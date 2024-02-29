@@ -190,8 +190,8 @@ for OCP_VER in ${OCP_VERSIONS}; do
     fi 
 
     if [[ $VERBOSEFLAG == "-v" ]]; then
-        echo "[DEBUG] LATEST DS  OPERATOR BUNDLE = $(${getLatestImageTags} --osbs -c devspaces-operator-bundle --tag "${DS_VERSION}-")"
-        echo "[DEBUG] LATEST DWO OPERATOR BUNDLE = $(${getLatestImageTags} --osbs -c devworkspace-operator-bundle --tag "${DWO_VERSION}-")"
+        echo "[DEBUG] LATEST DS  OPERATOR BUNDLE = $(${getLatestImageTags} --osbs -c devspaces-operator-bundle --tag "${DS_VERSION}")"
+        echo "[DEBUG] LATEST DWO OPERATOR BUNDLE = $(${getLatestImageTags} --osbs -c devworkspace-operator-bundle --tag "${DWO_VERSION}")"
         echo "[DEBUG] Note that the above bundles might not yet exist for the latest IIB, if still being published."
         echo ""
         echo "[DEBUG] DS     INDEX BUNDLE = ${LATEST_IIB}"

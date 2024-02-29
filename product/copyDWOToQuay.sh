@@ -60,7 +60,7 @@ if [[ ! $PROD_VER ]]; then usage; exit 1; fi
 SCRIPT_DIR=$(cd "$(dirname "$0")" || exit; pwd)
 
 # 1. use getLatestImageTags.sh to get latest bundle in an IIB - return: operator-bundle:0.16-5 
-bundle=$(${SCRIPT_DIR}/getLatestImageTags.sh --osbs -c devworkspace-operator-bundle --tag "${PROD_VER}-")
+bundle=$(${SCRIPT_DIR}/getLatestImageTags.sh --osbs -c devworkspace-operator-bundle --tag "${PROD_VER}")
 if [[ ! $bundle ]]; then
     errorf "Could not compute latest bundle! "
     exit 2
