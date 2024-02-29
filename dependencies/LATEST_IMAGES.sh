@@ -56,7 +56,7 @@ if [[ $DWNSTM_BRANCH != "devspaces-3."*"-rhel-8" ]] && [[ $DWNSTM_BRANCH != "dev
 fi
 
 # STEP 1 :: regenerate image tag list in LATEST_IMAGES
-CMD="./product/getLatestImageTags.sh --quay -b ${DWNSTM_BRANCH} --tag ${VERSION}- --hide"
+CMD="./product/getLatestImageTags.sh --quay -b ${DWNSTM_BRANCH} --tag ${VERSION} --hide"
 # shellcheck disable=SC2086
 echo $CMD
 $CMD | tee dependencies/LATEST_IMAGES
