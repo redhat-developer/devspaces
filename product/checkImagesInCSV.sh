@@ -61,7 +61,7 @@ To compare latest image in Quay to latest CSV in bundle in latest IIB:
   TAG=$PROD_VER; \\
   IMG=devspaces/dashboard-rhel8; \\
   IMG=devspaces/devfileregistry-rhel8; \\
-  img_quay=\$(${SCRIPTPATH}/getLatestImageTags.sh -b devspaces-\${TAG}-rhel-8 --quay --tag \"\${TAG}-\" -c \${IMG}); echo \$img_quay; \\
+  img_quay=\$(${SCRIPTPATH}/getLatestImageTags.sh -b devspaces-\${TAG}-rhel-8 --quay --tag \"\${TAG}\" -c \${IMG}); echo \$img_quay; \\
   img_iib=\$(${SCRIPTPATH}/checkImagesInCSV.sh --ds -t \${TAG} -o 4.12 -y -qq -i \${IMG}); echo \$img_iib; \\
   if [[ \$img_quay != \$img_iib ]]; then \\
     ${SCRIPTPATH}/checkImagesInCSV.sh --ds -t \${TAG} -o 4.12 -y -i \${IMG}; \\
@@ -99,9 +99,9 @@ if [[ $PROD_VER ]] && [[ $PROD_VER != "3.yy" ]] && [[ $OCP_VER ]] && [[ ! $IMAGE
   # use getLatestImageTags.sh instead of getLatestIIBs.sh as it's more reliable when datagrepper content is unavailable/expired
   GLIT=${SCRIPTPATH}/getLatestImageTags.sh
   if [[ $GLI_FLAG == "--dwo" ]]; then
-    IMAGES=$(${GLIT} --osbs -c devworkspace-operator-bundle --tag "${PROD_VER}-")
+    IMAGES=$(${GLIT} --osbs -c devworkspace-operator-bundle --tag "${PROD_VER}")
   elif [[ $GLI_FLAG == "--ds" ]]; then
-    IMAGES=$(${GLIT} --osbs -c devspaces-operator-bundle --tag "${PROD_VER}-")
+    IMAGES=$(${GLIT} --osbs -c devspaces-operator-bundle --tag "${PROD_VER}")
   else
     echo "ERROR: only Dev Spaces and Dev Workspace operators are supported by this tool."
     exit 2

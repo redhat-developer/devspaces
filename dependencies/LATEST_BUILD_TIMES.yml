@@ -10006,3 +10006,53 @@
   timeWait: 0 mins
   timeBuild: 3 mins
   timeTotal: 4 mins
+- name: devspaces-operator-bundle
+  tag: 3.12-170
+  taskId: 59403032
+  timeCreate: Thu Feb 29 11:42:13 2024
+  timeStart: Thu Feb 29 11:42:57 2024
+  timeFinish: Thu Feb 29 11:48:10 2024
+  timeWait: 0 mins
+  timeBuild: 5 mins
+  timeTotal: 5 mins
+
+- name: devspaces-imagepuller-rhel8
+  tag: 3.12-12
+  taskId: 59397385
+  timeCreate: Thu Feb 29 09:19:40 2024
+  timeStart: Thu Feb 29 09:19:51 2024
+  timeFinish: Thu Feb 29 09:32:54 2024
+  timeWait: 0 mins
+  timeBuild: 13 mins
+  timeTotal: 13 mins
+
+- name: devspaces-udi-rhel8
+  tag: 3.12-13.1709155411
+  taskId: 59382750
+  timeCreate: Wed Feb 28 13:23:32 2024
+  timeStart: Wed Feb 28 13:24:16 2024
+  timeFinish: Wed Feb 28 14:28:07 2024
+  timeWait: 0 mins
+  timeBuild: 63 mins
+  timeTotal: 64 mins
+
+- name: devspaces-udi-rhel8
+  tag: 3.12-13.1709155413
+  taskId: 59382751
+  timeCreate: Wed Feb 28 13:23:33 2024
+  timeStart: Wed Feb 28 13:24:17 2024
+  timeFinish: Wed Feb 28 14:26:57 2024
+  timeWait: 0 mins
+  timeBuild: 62 mins
+  timeTotal: 63 mins
+
+- name: devspaces-udi-rhel8
+  tag: 3.12-13.1709155439
+  taskId: 59382760
+  timeCreate: Wed Feb 28 13:24:00 2024
+  timeStart: Wed Feb 28 13:24:18 2024
+  timeFinish: Wed Feb 28 14:25:08 2024
+  timeWait: 0 mins
+  timeBuild: 60 mins
+  timeTotal: 61 mins
+

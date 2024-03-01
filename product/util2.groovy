@@ -436,7 +436,7 @@ fi
   return sh(
     returnStdout: true, 
     // -b devspaces-3.0-rhel-8 -c devspaces/server-rhel8 --tag "3.0-" --quay
-    script: './getLatestImageTags.sh -b ' + MIDSTM_BRANCH + ' -c "' + orgAndImage + '" --tag "' + tag + '-" --' + repo
+    script: './getLatestImageTags.sh -b ' + MIDSTM_BRANCH + ' -c "' + orgAndImage + '" --tag "' + tag + '" --' + repo
   ).trim()
 }
 
