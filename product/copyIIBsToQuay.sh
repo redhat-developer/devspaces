@@ -12,6 +12,10 @@
 #
 
 SCRIPT_DIR=$(cd "$(dirname "$0")" || exit; pwd)
+VERBOSEFLAG=""
+EXTRA_TAGS="" # extra tags to set in target image, eg., 3.5.0.RC-02-21-v4.13-x86_64
+PUSHTOQUAYFORCE=0
+targetIndexImage=""
 
 usage () {
 	echo "Query latest IIBs for a Dev Spaces version and optional list of OCP versions, then filter and copy those IIBs to Quay
@@ -21,12 +25,13 @@ Requires:
 * opm v1.26.3+ (see https://docs.openshift.com/container-platform/4.12/cli_reference/opm/cli-opm-install.html#cli-opm-install )
 
 Usage:
-  $0 [OPTIONS]
+  $0 -t PROD_VER [OPTIONS]
 
 Options:
   -p, --push                 : Push IIB(s) to quay registry; default is to show commands but not copy anything
   --force                    : If target image exists, will re-filter and re-push it; otherwise skip to avoid updating image timestamps
   -t PROD_VER                : If x.y version/tag not set, will compute from dependencies/job-config.json file
+  -b MIDSTM_BRANCH           : If not set or run from a git repo will default to devspaces-3-rhel-8
   -o 'OCP_VER1 OCP_VER2 ...' : Space-separated list of OCP version(s) (e.g. 'v4.13 v4.12') to query and publish; defaults to job-config.json values
   -e, --extra-tags           : Extra tags to create, such as 3.5.0.RC-02-21-v4.13-x86_64
   -v                         : Verbose output: include additional information
@@ -34,39 +39,29 @@ Options:
 "
 }
 
-if [[ "$#" -lt 1 ]]; then usage; exit 1; fi
+setDefaults () {
+    #Moving everything into setDefaults so MIDSTM_BRANCH can be passed in as an argument and the script doesn't need to be run in release branches to promote release builds
+    if [[ -z ${MIDSTM_BRANCH} ]]; then
+        MIDSTM_BRANCH=$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "devspaces-3-rhel-8")
+        if [[ ${MIDSTM_BRANCH} != "devspaces-"*"-rhel-"* ]]; then MIDSTM_BRANCH="devspaces-3-rhel-8"; fi
+    fi
 
-PODMAN=$(command -v podman)
-if [[ ! -x $PODMAN ]]; then echo "[ERROR] podman is not installed. Aborting."; echo; usage; exit 1; fi
-command -v skopeo >/dev/null 2>&1 || which skopeo >/dev/null 2>&1 || { echo "skopeo is not installed. Aborting."; exit 1; }
-command -v jq >/dev/null 2>&1     || which jq >/dev/null 2>&1     || { echo "jq is not installed. Aborting."; exit 1; }
+    if [[ -f dependencies/job-config.json ]]; then
+        jobconfigjson=dependencies/job-config.json
+    elif [[ -f ${SCRIPT_DIR}/../dependencies/job-config.json ]]; then
+        jobconfigjson=${SCRIPT_DIR}/../dependencies/job-config.json
+    else
+        pushd /tmp >/dev/null || exit
+        curl -sSLO https://raw.githubusercontent.com/redhat-developer/devspaces/"${MIDSTM_BRANCH}"/dependencies/job-config.json
+        jobconfigjson=/tmp/job-config.json
+        popd >/dev/null || exit 
+    fi
 
-VERBOSEFLAG=""
-EXTRA_TAGS="" # extra tags to set in target image, eg., 3.5.0.RC-02-21-v4.13-x86_64
-PUSHTOQUAYFORCE=0
-targetIndexImage=""
+    # collect defaults from dependencies/job-config.json file
+    # product Version
+    DWO_VERSION=$(jq -r --arg VERSION "${DS_VERSION}" '.Other.DEV_WORKSPACE_OPERATOR_TAG[$VERSION]' "${jobconfigjson}")
+    if [[ $DWO_VERSION == "null" ]]; then echo "[ERROR] DWO Version could not be read from ${jobconfigjson}"; exit 1; fi
 
-MIDSTM_BRANCH=$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "devspaces-3-rhel-8")
-if [[ ${MIDSTM_BRANCH} != "devspaces-"*"-rhel-"* ]]; then MIDSTM_BRANCH="devspaces-3-rhel-8"; fi
-
-if [[ -f dependencies/job-config.json ]]; then
-    jobconfigjson=dependencies/job-config.json
-elif [[ -f ${SCRIPT_DIR}/../dependencies/job-config.json ]]; then
-    jobconfigjson=${SCRIPT_DIR}/../dependencies/job-config.json
-else
-    pushd /tmp >/dev/null || exit
-    curl -sSLO https://raw.githubusercontent.com/redhat-developer/devspaces/"${MIDSTM_BRANCH}"/dependencies/job-config.json
-    jobconfigjson=/tmp/job-config.json
-    popd >/dev/null || exit 
-fi
-
-# collect defaults from dependencies/job-config.json file
-# product Version
-DS_VERSION=$(jq -r '.Version' "${jobconfigjson}")
-DWO_VERSION=$(jq -r --arg VERSION "${DS_VERSION}" '.Other.DEV_WORKSPACE_OPERATOR_TAG[$VERSION]' "${jobconfigjson}")
-if [[ $DWO_VERSION == "null" ]]; then DWO_VERSION="0."; fi
-
-setDefaults() {
     # list of OCP versions
     OCP_VERSIONS_DEFAULT="$(jq -r --arg VERSION "${DS_VERSION}" '.Other.OPENSHIFT_VERSIONS_SUPPORTED[$VERSION]|@tsv' "${jobconfigjson}" | tr "\t" " ")"
     if [[ $OCP_VERSIONS_DEFAULT == "null" ]]; then OCP_VERSIONS_DEFAULT=""; fi
@@ -74,11 +69,13 @@ setDefaults() {
     FLOATING_QUAY_TAGS="$(jq -r --arg VERSION "${DS_VERSION}" '.Other.FLOATING_QUAY_TAGS[$VERSION]' "${jobconfigjson}")"
     if [[ $FLOATING_QUAY_TAGS == "null" ]]; then FLOATING_QUAY_TAGS=""; fi
 }
-setDefaults
+
+if [[ "$#" -lt 1 ]]; then usage; exit 1; fi
 
 while [[ "$#" -gt 0 ]]; do
   case $1 in
-    '-t') DS_VERSION="$2"; setDefaults; shift 1;;
+    '-t') DS_VERSION="$2"; shift 1;;
+    '-b') MIDSTM_BRANCH="$2"; shift 1;;
     '-o') if [[ "$2" != "v"* ]]; then OCP_VERSIONS="${OCP_VERSIONS} v${2}"; else OCP_VERSIONS="${OCP_VERSIONS} ${2}"; fi; shift 1;;
     '-e'|'--extra-tags') EXTRA_TAGS="${EXTRA_TAGS} ${2}"; shift 1;;
     '-v') VERBOSEFLAG="-v"; shift 0;;
@@ -90,15 +87,22 @@ while [[ "$#" -gt 0 ]]; do
   shift 1
 done
 
+PODMAN=$(command -v podman)
+if [[ ! -x $PODMAN ]]; then echo "[ERROR] podman is not installed. Aborting."; echo; usage; exit 1; fi
+command -v skopeo >/dev/null 2>&1 || which skopeo >/dev/null 2>&1 || { echo "skopeo is not installed. Aborting."; exit 1; }
+command -v jq >/dev/null 2>&1     || which jq >/dev/null 2>&1     || { echo "jq is not installed. Aborting."; exit 1; }
+
+# fail if DS_VERSION is not set
+if [[ $DS_VERSION == "" ]]; then
+    echo "[ERROR] No Dev Spaces version set. Must use -t flag to set x.y version."
+    exit 1
+fi
+
+setDefaults; 
+
 if [[ ! $OCP_VERSIONS ]]; then OCP_VERSIONS="${OCP_VERSIONS_DEFAULT}"; fi
 for o in $OCP_VERSIONS; do if [[ $OCP_UNIQ != *" $o"* ]];then OCP_UNIQ="${OCP_UNIQ} $o"; fi; done
 OCP_VERSIONS="$OCP_UNIQ"
-
-# fail if DS_VERSION is not set
-if [[ $DS_VERSION == "" ]] || [[ $DS_VERSION == "null" ]]; then
-    echo "Error reading Version from ${jobconfigjson}! Must use -t flag to set x.y version"
-    exit 1
-fi
 
 if [[ $VERBOSEFLAG == "-v" ]]; then
 	echo "[DEBUG] DS_VERSION=${DS_VERSION}"
