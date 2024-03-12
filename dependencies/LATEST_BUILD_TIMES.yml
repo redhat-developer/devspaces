@@ -10168,3 +10168,21 @@
   timeWait: 0 mins
   timeBuild: 3 mins
   timeTotal: 4 mins
+- name: devspaces-operator
+  tag: 3.12-21
+  taskId: 59654974
+  timeCreate: Tue Mar 12 14:00:59 2024
+  timeStart: Tue Mar 12 14:07:04 2024
+  timeFinish: Tue Mar 12 14:26:57 2024
+  timeWait: 6 mins
+  timeBuild: 19 mins
+  timeTotal: 25 mins
+- name: devspaces-operator-bundle
+  tag: 3.12-178
+  taskId: 59656699
+  timeCreate: Tue Mar 12 14:34:57 2024
+  timeStart: Tue Mar 12 14:36:21 2024
+  timeFinish: Tue Mar 12 14:39:53 2024
+  timeWait: 1 mins
+  timeBuild: 3 mins
+  timeTotal: 4 mins
