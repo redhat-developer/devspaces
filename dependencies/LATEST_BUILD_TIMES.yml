@@ -10186,3 +10186,21 @@
   timeWait: 1 mins
   timeBuild: 3 mins
   timeTotal: 4 mins
+- name: devspaces-operator
+  tag: 3.12-22
+  taskId: 59666165
+  timeCreate: Tue Mar 12 19:01:38 2024
+  timeStart: Tue Mar 12 19:01:52 2024
+  timeFinish: Tue Mar 12 19:18:53 2024
+  timeWait: 0 mins
+  timeBuild: 17 mins
+  timeTotal: 17 mins
+- name: devspaces-operator-bundle
+  tag: 3.12-179
+  taskId: 59666667
+  timeCreate: Tue Mar 12 19:26:47 2024
+  timeStart: Tue Mar 12 19:27:31 2024
+  timeFinish: Tue Mar 12 19:31:30 2024
+  timeWait: 0 mins
+  timeBuild: 3 mins
+  timeTotal: 4 mins
