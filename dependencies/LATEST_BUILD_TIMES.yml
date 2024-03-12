@@ -10150,3 +10150,21 @@
   timeWait: 0 mins
   timeBuild: 4 mins
   timeTotal: 4 mins
+- name: devspaces-server-rhel8
+  tag: 3.12-37
+  taskId: 59646548
+  timeCreate: Tue Mar 12 10:51:11 2024
+  timeStart: Tue Mar 12 10:58:43 2024
+  timeFinish: Tue Mar 12 11:07:40 2024
+  timeWait: 7 mins
+  timeBuild: 8 mins
+  timeTotal: 16 mins
+- name: devspaces-operator-bundle
+  tag: 3.12-177
+  taskId: 59647458
+  timeCreate: Tue Mar 12 11:17:30 2024
+  timeStart: Tue Mar 12 11:18:00 2024
+  timeFinish: Tue Mar 12 11:21:37 2024
+  timeWait: 0 mins
+  timeBuild: 3 mins
+  timeTotal: 4 mins
