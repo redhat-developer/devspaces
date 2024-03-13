@@ -8,79 +8,11 @@
 # SPDX-License-Identifier: EPL-2.0
 #
 
-# set newer version across the DEVSPACES repository in dependencies/VERSION file and registry image tags
-
-SCRIPT=$(readlink -f "$0"); SCRIPTPATH=$(dirname "$SCRIPT")
-
-PR_BRANCH="pr-update-version-and-registry-tags-$(date +%s)"
-OPENBROWSERFLAG="" # if a PR is generated, open it in a browser
-docommit=1 # by default DO commit the change
-dopush=1 # by default DO push the change
+# Update versions and upstream branches in dependencies/job-config.json and across the DEVSPACES repository
 WORKDIR="$(pwd)"
-REMOVE_DEVSPACES_VERSION=""
-ENABLE_DEVSPACES_JOBS_VERSION=""
-ENABLE_DEVSPACES_MGMTJOBS_VERSION=""
-DISABLE_DEVSPACES_JOBS_VERSION=""
-DISABLE_DEVSPACES_MGMTJOBS_VERSION=""
-BRANCH="devspaces-3-rhel-8"
-
-# for DS 3.y = 3.8 Che is 7.72 
-# For DS 3.9+ We are moving to 3 week sprints so the math is changing again.
-# 3.9 => (9 * 2) + 56 = 74 ==> 7.74
-# 3.10 => (10 * 2) + 56 = 76 ==> 7.76
-CHE_OFFSET=56
-
-usage () {
-  echo "
-Usage:   $0 -v [DEVSPACES CSV_VERSION] [-t DEVSPACES_VERSION]
-Example: $0 -v 3.yy.0 # use CSV version
-Example: $0 -t 3.yy   # use tag version
-
-Options:
-  --help, -h              help
-  -w WORKDIR              work in a different dir than $(pwd)
-  -b BRANCH               commit to a different branch than $BRANCH
-  -t DEVSPACES_VERSION          use a specific tag; by default, compute from CSV_VERSION
-  --no-commit, -n         do not commit or push to BRANCH
-  --no-push, -p           do not push to BRANCH
-  -prb                    set a PR_BRANCH; default: pr-update-version-and-registry-tags-(timestamp)
-  -o                      open browser if PR generated
-  
-  --remove [DEVSPACES_VERSION]                  remove data for [DEVSPACES_VERSION] (Example: for .Version = 3.yy, delete 3.yy-2)
-  --enable-jobs [DEVSPACES_VERSION]             enable [DEVSPACES_VERSION] jobs in job-config.json, but leave bundle + management jobs alone
-  --enable-management-jobs [DEVSPACES_VERSION]  enable ALL [DEVSPACES_VERSION] jobs in job-config.json
-  --disable-jobs [DEVSPACES_VERSION]            disable [DEVSPACES_VERSION] jobs in job-config.json, but leave bundle + management jobs alone
-  --disable-management-jobs [DEVSPACES_VERSION] disable ALL [DEVSPACES_VERSION] jobs in job-config.json (implement code freeze)
-  "
-}
-
-if [[ $# -lt 1 ]]; then usage; exit; fi
-
-while [[ "$#" -gt 0 ]]; do
-  case $1 in
-    '-w') WORKDIR="$2"; shift 1;;
-    '-b') BRANCH="$2"; shift 1;;
-    '-v') CSV_VERSION="$2"; shift 1;; # 3.y.0
-    '-t') DEVSPACES_VERSION="$2"; shift 1;; # 3.y
-    '-n'|'--no-commit') docommit=0; dopush=0; shift 0;;
-    '-p'|'--no-push') dopush=0; shift 0;;
-    '-prb') PR_BRANCH="$2"; shift 1;;
-    '-o') OPENBROWSERFLAG="-o"; shift 0;;
-    '--remove') REMOVE_DEVSPACES_VERSION="$2"; shift 1;;
-    '--enable-jobs') ENABLE_DEVSPACES_JOBS_VERSION="$2"; shift 1;;
-    '--enable-management-jobs') ENABLE_DEVSPACES_MGMTJOBS_VERSION="$2"; shift 1;;
-    '--disable-jobs') DISABLE_DEVSPACES_JOBS_VERSION="$2"; shift 1;;
-    '--disable-management-jobs') DISABLE_DEVSPACES_MGMTJOBS_VERSION="$2"; shift 1;;
-    '--help'|'-h') usage; exit;;
-    *) OTHER="${OTHER} $1"; shift 0;;
-  esac
-  shift 1
-done
-
-if [[ ! ${DEVSPACES_VERSION} ]]; then
-  DEVSPACES_VERSION=${CSV_VERSION%.*} # given 3.y.0, want 3.y
-fi
-
+JOB_CONFIG="${WORKDIR}/dependencies/job-config.json"
+CHE_OFFSET=58 # DS 3.12 => (12 * 2) + 58 = 82 ==> Che 7.82
+DWO_OFFSET=14 # DS 3.12 => DWO 0.26
 COPYRIGHT="#
 # Copyright (c) 2018-$(date +%Y) Red Hat, Inc.
 #    This program and the accompanying materials are made
@@ -92,19 +24,105 @@ COPYRIGHT="#
 #  Contributors:
 #    Red Hat, Inc. - initial API and implementation
 "
+doupdateversion=1 #by default update the VERSION files
+BRANCH="devspaces-3-rhel-8"
+PR_BRANCH="pr-update-version-and-registry-tags-$(date +%s)"
+OPENBROWSERFLAG="" # if a PR is generated, open it in a browser
+docommit=1 # by default DO commit the change
+dopush=1 # by default DO push the change
 
-replaceField()
-{
+usage() {
+  echo "
+Usage:  $0 -t DEVSPACES_VERSION
+
+Options:
+  --help, -h                                help
+  -t DEVSPACES_VERSION                      3.yy DevSpaces version to be added or updated
+  -b BRANCH                                 commit to a different branch than $BRANCH
+  -w WORKDIR                                work in a different dir than $(pwd), should be the devspaces git directory
+  -v                                        verbose, enables basic debug statements to let you know if you're in the right loops
+  --no-version, -nv                         don't run the version updates, just update job-config values (updating a previous release etc)
+  --remove [DEVSPACES_VERSION]              remove data for [DEVSPACES_VERSION] (Example: for .Version = 3.yy, delete 3.yy-3)
+  --enable-jobs [DEVSPACES_VERSION]         enable [DEVSPACES_VERSION] jobs in job-config.json
+  --disable-jobs [DEVSPACES_VERSION]        disable [DEVSPACES_VERSION] jobs in job-config.json
+  --no-commit, -n                           do not commit or push to BRANCH
+  --no-push, -p                             do not push to BRANCH
+  -prb                                      set a PR_BRANCH; default: pr-update-version-and-registry-tags-(timestamp)
+  -o                                        open browser if PR generated
+"
+}
+
+if [[ $# -lt 1 ]]; then usage; exit; fi
+
+while [[ "$#" -gt 0 ]]; do
+  case $1 in
+    '--help'|'-h') usage; exit;;
+    '-t') DEVSPACES_VERSION="$2"; shift 1;; # 3.yy
+    '-b') BRANCH="$2"; shift 1;;
+    '-w') WORKDIR="$2"; shift 1;;
+    '-v') VERBOSE=1; shift 0;;
+    '-nv'|'--no-version') doupdateversion=0; shift 0;;
+    '--remove') REMOVE_DEVSPACES_VERSION="$2"; shift 1;;
+    '--enable-jobs') ENABLE_JOBS_VERSION="$2"; shift 1;;
+    '--disable-jobs') DISABLE_JOBS_VERSION="$2"; shift 1;;
+    '-n'|'--no-commit') docommit=0; dopush=0; shift 0;;
+    '-p'|'--no-push') dopush=0; shift 0;;
+    '-prb') PR_BRANCH="$2"; shift 1;;
+    '-o') OPENBROWSERFLAG="-o"; shift 0;;
+    *) OTHER="${OTHER} $1"; shift 0;;
+  esac
+  shift 1
+done
+
+if [[ -z ${DEVSPACES_VERSION} ]]; then
+    usage
+    exit 1
+fi
+
+##################################################
+# Common functions
+##################################################
+replaceField() {
   theFile="$1"
   updateName="$2"
   updateVal="$3"
-  # shellcheck disable=SC2016 disable=SC2002 disable=SC2086
+
   if [[ ${theFile} == *".json" ]]; then
     changed=$(cat "${theFile}" | jq ${updateName}' |= '"$updateVal")
     echo "${changed}" > "${theFile}"
   elif [[ ${theFile} == *".yml" ]] || [[ ${theFile} == *".yaml" ]]; then
-    changed=$(cat "${theFile}" | yq -Y --arg updateName "${updateName}" --arg updateVal "${updateVal}" ${updateName}' = $updateVal')
+    changed=$(cat "${theFile}" | yq --arg updateName "${updateName}" --arg updateVal "${updateVal}" ${updateName}' = $updateVal')
     echo "${COPYRIGHT}${changed}" > "${theFile}"
+  fi
+}
+
+# for a given DEVSPACES version, compute the equivalent Che versions that could be compatible 
+computeLatestPackageVersion() {
+  found=0
+  BASE_VERSION="$1" # Dev Spaces 3.y version to use for computations
+  packageName="$2"
+  THIS_Y_VALUE="${BASE_VERSION#*.}"; 
+  # note that these values are used for versions where main doesn't make sense, such as  @eclipse-che/plugin-registry-generator
+  THIS_CHE_Y=$(( (${THIS_Y_VALUE} * 2) + ${CHE_OFFSET} )); 
+  THIS_CHE_Y_LOWER=$(( ${THIS_CHE_Y} - 1 ));
+  if [[ $VERBOSE ]]; then echo "For THIS_Y_VALUE = $THIS_Y_VALUE, got THIS_CHE_Y = $THIS_CHE_Y and THIS_CHE_Y_LOWER = $THIS_CHE_Y_LOWER"; fi
+
+  # check if .2, .1, .0 version exists in npmjs.com
+  for y in $THIS_CHE_Y $THIS_CHE_Y_LOWER; do 
+    for z in 2 1 0; do 
+      # echo "curl -sSI https://www.npmjs.com/package/${packageName}/v/7.${y}.${z}"
+      if [[ $(curl -sSI "https://www.npmjs.com/package/${packageName}/v/7.${y}.${z}" | grep 404) != *"404"* ]]; then
+      change="plugin-registry-generator[$BASE_VERSION] = 7.${y}.${z}"
+      COMMIT_MSG="${COMMIT_MSG}; update $change"
+        echo "Update $change"
+        replaceField "${JOB_CONFIG}" ".Other[\"${packageName}\"][\"${BASE_VERSION}\"]" "\"7.${y}.${z}\""
+        found=1
+        break 2
+      fi
+    done
+  done
+  if [[ $found -eq 0 ]]; then
+    replaceField "${JOB_CONFIG}" ".Other[\"${packageName}\"][\"${BASE_VERSION}\"]" "\"latest\""
   fi
 }
 
@@ -115,12 +133,14 @@ computeLatestCSV() {
   echo "Found containerTag = ${containerTag}"
 
   # extract the CSV version from the container as with CVE respins, the CSV version != the nominal container tag or JIRA version 2.13.1
-  if [[ ! -x ${SCRIPTPATH}/containerExtract.sh ]]; then
+  #if [[ ! -x ${SCRIPTPATH}/containerExtract.sh ]]; then
+  if [[ ! -x ${WORKDIR}/product/containerExtract.sh ]]; then
       curl -sSLO https://raw.githubusercontent.com/redhat-developer/devspaces/devspaces-3-rhel-8/product/containerExtract.sh
       chmod +x containerExtract.sh
   fi
   rm -fr /tmp/${SOURCE_CONTAINER//\//-}-${containerTag}-*/
-  ${SCRIPTPATH}/containerExtract.sh ${SOURCE_CONTAINER}:${containerTag} --delete-before --delete-after 2>&1 >/dev/null || true
+  #${SCRIPTPATH}/containerExtract.sh ${SOURCE_CONTAINER}:${containerTag} --delete-before --delete-after 2>&1 >/dev/null || true
+  ${WORKDIR}/product/containerExtract.sh ${SOURCE_CONTAINER}:${containerTag} --delete-before --delete-after 2>&1 >/dev/null || true
   if [[ ! -f $(find /tmp/${SOURCE_CONTAINER//\//-}-${containerTag}-*/manifests -name devspaces.csv.yaml) ]]; then
     echo "[WARN] Container ${SOURCE_CONTAINER}:${containerTag} could not be extracted!"
   else 
@@ -155,207 +175,149 @@ computeLatestCSV() {
   replaceField "${WORKDIR}/dependencies/job-config.json" "(.CSVs[\"${image}\"][\"3.x\"].CSV_VERSION_PREV)" "\"${CSV_VERSION_PREV}\""
 }
 
-# for a given DEVSPACES version, compute the equivalent Che versions that could be compatible 
-computeLatestPackageVersion() {
-    found=0
-    BASE_VERSION="$1" # Dev Spaces 3.y version to use for computations
-    packageName="$2"
-    THIS_Y_VALUE="${BASE_VERSION#*.}"; 
-    # 3.7 and 3.8 are both different so hardcode and we can take them out as they become irrelevant
-    # note that these values are used for versions where main doesn't make sense, such as  @eclipse-che/plugin-registry-generator
-    if [[ $THIS_Y_VALUE -eq 8 ]]; then # Check DS 3.8 first, will be relevant longer.
-      THIS_CHE_Y=72
-      THIS_CHE_Y_LOWER=71
-    elif [[ $THIS_Y_VALUE -eq 7 ]]; then # DS 3.7 Mapping
-      THIS_CHE_Y=67
-      THIS_CHE_Y_LOWER=66
-    else # DS 3.9+ Mapping
-      THIS_CHE_Y=$(( (${THIS_Y_VALUE} * 2) + ${CHE_OFFSET} )); 
-      THIS_CHE_Y_LOWER=$(( ${THIS_CHE_Y} - 1 ));
-      # echo "For THIS_Y_VALUE = $THIS_Y_VALUE, got THIS_CHE_Y = $THIS_CHE_Y and THIS_CHE_Y_LOWER = $THIS_CHE_Y_LOWER"
-    fi
+##################################################
+# Update functions
+##################################################
+updateVersion() {
+  if [[ ${doupdateversion} -eq 1 ]]; then
+    # VERSION file is still used by util2.groovy and potentially others.
+    echo "${DEVSPACES_VERSION}" > "${WORKDIR}/dependencies/VERSION"
+    # Update Version field in job-config.json
+    replaceField "${JOB_CONFIG}" '.Version' "\"${DEVSPACES_VERSION}\""
 
-    # check if .2, .1, .0 version exists in npmjs.com
-    for y in $THIS_CHE_Y $THIS_CHE_Y_LOWER; do 
-      for z in 2 1 0; do 
-        # echo "curl -sSI https://www.npmjs.com/package/${packageName}/v/7.${y}.${z}"
-        if [[ $(curl -sSI "https://www.npmjs.com/package/${packageName}/v/7.${y}.${z}" | grep 404) != *"404"* ]]; then
-        change="plugin-registry-generator[$BASE_VERSION] = 7.${y}.${z}"
-        COMMIT_MSG="${COMMIT_MSG}; update $change"
-          echo "Update $change"
-          replaceField "${WORKDIR}/dependencies/job-config.json" ".Other[\"${packageName}\"][\"${BASE_VERSION}\"]" "\"7.${y}.${z}\""
-          found=1
-          break 2
-        fi
-      done
-    done
-    if [[ $found -eq 0 ]]; then
-      replaceField "${WORKDIR}/dependencies/job-config.json" ".Other[\"${packageName}\"][\"${BASE_VERSION}\"]" "\"latest\""
-    fi
+    if [[ $VERBOSE ]]; then echo "[DEBUG] Updating Version files to $DEVSPACES_VERSION"; fi
+  fi
 }
 
-# update job-config file to product version (x.y)
 COMMIT_MSG=""
-updateVersion() {
-    # deprecated, @since 2.11
-    echo "${DEVSPACES_VERSION}" > "${WORKDIR}/dependencies/VERSION"
-    # @since 2.11
-    
-    # replace value of .Version in job-config.json, we need arg to save quotes
-    changed=$(jq --arg version "$DEVSPACES_VERSION" ".Version = \$version" "${WORKDIR}/dependencies/job-config.json")
-    echo "${changed}" > "${WORKDIR}/dependencies/job-config.json"
-    
-    replaceField "${WORKDIR}/dependencies/job-config.json" '.Copyright' "[\"${COPYRIGHT}\"]"
+updateJobConfig() {
+  # Update .Copyright in job-config.json
+  replaceField "${JOB_CONFIG}" '.Copyright' "[\"${COPYRIGHT}\"]"
 
-    DEVSPACES_Y_VALUE="${DEVSPACES_VERSION#*.}"
+  # Update upstream branch mappings
+  DEVSPACES_Y_VALUE="${DEVSPACES_VERSION#*.}"
+  CHE_Y=$(( (${DEVSPACES_Y_VALUE} * 2 ) + ${CHE_OFFSET} ))
+  DWO_Y=$(( ${DEVSPACES_Y_VALUE} + ${DWO_OFFSET} ))
 
-    # for 3.7, want 7.67, 7.66 (ignore 7.65)
-    # for 3.8, want 7.72 or main if 7.72 hasn't been released
-    # for 3.9, want 7.74 or main 
-    if [[ $DEVSPACES_Y_VALUE -eq 8 ]]; then
-      CHE_Y=72
-    elif [[ $DEVSPACES_Y_VALUE -eq 7 ]]; then
-      CHE_Y=67
-    else
-      CHE_Y=$(( (${DEVSPACES_Y_VALUE} * 2 ) + ${CHE_OFFSET} ))
-      # echo "For DEVSPACES_Y_VALUE = $DEVSPACES_Y_VALUE, got CHE_Y = $CHE_Y"
-    fi
-    # CRW-2155, if version is in the json update it for che and devspaces branches
-    # otherwise inject new version.
-    check=$(cat ${WORKDIR}/dependencies/job-config.json | jq '.Jobs[] | keys' | grep "\"${DEVSPACES_VERSION}\"")
-    if [[ ${check} ]]; then #just updating
-      COMMIT_MSG="ci: update ${DEVSPACES_VERSION}"
-      replaceField "${WORKDIR}/dependencies/job-config.json" "(.Jobs[][\"${DEVSPACES_VERSION}\"][\"upstream_branch\"]|select(.[]?|contains(\".x\")))" "[\"7.${CHE_Y}.x\",\"main\"]"
-      replaceField "${WORKDIR}/dependencies/job-config.json" "(.Jobs[][\"${DEVSPACES_VERSION}\"][\"upstream_branch\"]|select(.[]?==\"devspaces-3-rhel-8\"))" "[\"devspaces-${DEVSPACES_VERSION}-rhel-8\",\"devspaces-${DEVSPACES_VERSION}-rhel-8\"]"
+  JOB_KEYS=("Jobs" "Management-Jobs")
 
-      replaceField "${WORKDIR}/dependencies/job-config.json" "(.\"Management-Jobs\"[][\"${DEVSPACES_VERSION}\"][\"upstream_branch\"]|select(.[]?|contains(\".x\")))" "[\"7.${CHE_Y}.x\",\"main\"]"
-      replaceField "${WORKDIR}/dependencies/job-config.json" "(.\"Management-Jobs\"[][\"${DEVSPACES_VERSION}\"][\"upstream_branch\"]|select(.[]?==\"devspaces-3-rhel-8\"))" "[\"devspaces-${DEVSPACES_VERSION}-rhel-8\",\"devspaces-${DEVSPACES_VERSION}-rhel-8\"]"
+  # CRW-2155, if version is in the json update it for che and devspaces branches
+  # otherwise inject new version.
+  check=$(cat ${JOB_CONFIG} | jq '.Jobs[] | keys' | grep "\"${DEVSPACES_VERSION}\"")
+  if [[ ${check} ]]; then # Just updating
+    # Only need to change commit message, other actions are universal.
+    COMMIT_MSG="ci: update ${DEVSPACES_VERSION}"
+    if [[ $VERBOSE ]]; then echo "[DEBUG] Updating $DEVSPACES_VERSION in job-config.json"; fi
+  else # Adding
+    COMMIT_MSG="ci: add new ${DEVSPACES_VERSION}"
+    if [[ $VERBOSE ]]; then echo "[DEBUG] Adding $DEVSPACES_VERSION to job-config.json"; fi
 
-      #make sure jobs are enabled
-      replaceField "${WORKDIR}/dependencies/job-config.json" "(.Jobs[][\"${DEVSPACES_VERSION}\"][\"disabled\"]|select(.==true))" 'false'
-      replaceField "${WORKDIR}/dependencies/job-config.json" "(.\"Management-Jobs\"[][\"${DEVSPACES_VERSION}\"][\"disabled\"]|select(.==true))" 'false'
-      #remove version if desired
-      if [[ $REMOVE_DEVSPACES_VERSION ]]; then
-        replaceField "${WORKDIR}/dependencies/job-config.json" "." "del(..|.[\"${REMOVE_DEVSPACES_VERSION}\"]?)"
+    # Get top level keys to start (Jobs, CSVs, Other, etc)
+    TOP_KEYS=($(cat ${JOB_CONFIG} | jq -r 'keys[]'))
+    if [[ $VERBOSE ]]; then echo "[DEBUG] TOP_KEYS = ${TOP_KEYS[@]}"; fi
+
+    for TOP_KEY in ${TOP_KEYS[@]}
+    do
+      if [[ (${TOP_KEY} != "Version") && (${TOP_KEY} != "Copyright") && (${TOP_KEY} != "Purpose") ]]; then
+        # Get the sub-keys in Jobs so we can add a new object
+        KEYS=($(cat ${JOB_CONFIG} | jq -r ".\"${TOP_KEY}\" | keys[]"))
+        if [[ $VERBOSE ]]; then echo "[DEBUG] KEYS = ${KEYS[@]}"; fi
+
+        for KEY in ${KEYS[@]}
+        do
+          #save content of 3.x
+          content=$(cat ${JOB_CONFIG} | jq ".\"${TOP_KEY}\"[\"${KEY}\"][\"3.x\"]")
+          if [[ $(echo $content | grep "\"") ]]; then #is there a 3.x version
+            #Add DEVSPACES_VERSION from 3.x then delete 3.x
+            #then append 3.x so the general order remains the same
+            replaceField "${JOB_CONFIG}" ".\"${TOP_KEY}\"[\"${KEY}\"]" "(. + {\"${DEVSPACES_VERSION}\": .\"3.x\"} | del(.\"3.x\"))"
+            replaceField "${JOB_CONFIG}" ".\"${TOP_KEY}\"[\"${KEY}\"]" ". + {\"3.x\": ${content}}"
+          fi
+        done
       fi
-    else
-      COMMIT_MSG="ci: add new ${DEVSPACES_VERSION}"
-      # Get top level keys to start (Jobs, CSVs, Other, etc)
-      TOP_KEYS=($(cat ${WORKDIR}/dependencies/job-config.json | jq -r 'keys[]'))
-
-      for TOP_KEY in ${TOP_KEYS[@]}
-      do
-        if [[ (${TOP_KEY} != "Version") && (${TOP_KEY} != "Copyright") && (${TOP_KEY} != "Purpose") ]]; then
-          # Get the sub-keys in Jobs so we can add a new object
-          KEYS=($(cat ${WORKDIR}/dependencies/job-config.json | jq -r ".\"${TOP_KEY}\" | keys[]"))
-
-          for KEY in ${KEYS[@]}
-          do
-            #save content of 3.x
-            content=$(cat ${WORKDIR}/dependencies/job-config.json | jq ".\"${TOP_KEY}\"[\"${KEY}\"][\"3.x\"]")
-            if [[ $(echo $content | grep "\"") ]]; then #is there a 3.x version
-              #Add DEVSPACES_VERSION from 3.x then delete 3.x
-              #then append 3.x so the general order remains the same
-              replaceField "${WORKDIR}/dependencies/job-config.json" ".\"${TOP_KEY}\"[\"${KEY}\"]" "(. + {\"${DEVSPACES_VERSION}\": .\"3.x\"} | del(.\"3.x\"))"
-              replaceField "${WORKDIR}/dependencies/job-config.json" ".\"${TOP_KEY}\"[\"${KEY}\"]" ". + {\"3.x\": ${content}}"
-
-              #while in here remove version if desired
-              if [[ $REMOVE_DEVSPACES_VERSION ]]; then
-                replaceField "${WORKDIR}/dependencies/job-config.json" ".\"${TOP_KEY}\"[\"${KEY}\"]" "del(.\"${REMOVE_DEVSPACES_VERSION}\")"
-              fi
-            fi
-          done
-        fi
-      done
-      replaceField "${WORKDIR}/dependencies/job-config.json" "(.Jobs[][\"${DEVSPACES_VERSION}\"][\"upstream_branch\"]|select(.[]?==\"main\"))" "[\"7.${CHE_Y}.x\",\"main\"]"
-      replaceField "${WORKDIR}/dependencies/job-config.json" "(.Jobs[][\"${DEVSPACES_VERSION}\"][\"upstream_branch\"]|select(.[]?==\"devspaces-3-rhel-8\"))" "[\"devspaces-${DEVSPACES_VERSION}-rhel-8\",\"devspaces-${DEVSPACES_VERSION}-rhel-8\"]"
-
-      replaceField "${WORKDIR}/dependencies/job-config.json" "(.\"Management-Jobs\"[][\"${DEVSPACES_VERSION}\"][\"upstream_branch\"]|select(.[]?==\"main\"))" "[\"7.${CHE_Y}.x\",\"main\"]"
-      replaceField "${WORKDIR}/dependencies/job-config.json" "(.\"Management-Jobs\"[][\"${DEVSPACES_VERSION}\"][\"upstream_branch\"]|select(.[]?==\"devspaces-3-rhel-8\"))" "[\"devspaces-${DEVSPACES_VERSION}-rhel-8\",\"devspaces-${DEVSPACES_VERSION}-rhel-8\"]"
-
-      #make sure new builds are enabled
-      replaceField "${WORKDIR}/dependencies/job-config.json" "(.Jobs[][\"${DEVSPACES_VERSION}\"][\"disabled\"]|select(.==true))" 'false'
-      replaceField "${WORKDIR}/dependencies/job-config.json" "(.\"Management-Jobs\"[][\"${DEVSPACES_VERSION}\"][\"disabled\"]|select(.==true))" 'false'
-    fi 
-
-    #find and disable version-2
-    #start by gathering all DEVSPACES_VERSIONs that have data in the json
-    VERSION_KEYS=($(cat ${WORKDIR}/dependencies/job-config.json | jq -r '.Jobs'[\"dashboard\"]' | keys[]'))
-    #get the array index of version -2. length -1 is 3.x, -2 is the version that was added, so the old version that needs to get disabled is length - 4
-    DISABLE_VERSION_INDEX=$(( ${#VERSION_KEYS[@]} - 4 )) 
-
-    #Disable version -2, and everything previous (if there)
-    while [[ $DISABLE_VERSION_INDEX -gt -1 ]]; do
-        VERSION_DISABLE="${VERSION_KEYS[$DISABLE_VERSION_INDEX]}"
-        # echo "Disable index = $DISABLE_VERSION_INDEX / $VERSION_DISABLE"
-        replaceField "${WORKDIR}/dependencies/job-config.json" "(.Jobs[][\"${VERSION_DISABLE}\"][\"disabled\"]|select(.==false))" 'true'
-        replaceField "${WORKDIR}/dependencies/job-config.json" "(.\"Management-Jobs\"[][\"${VERSION_DISABLE}\"][\"disabled\"]|select(.==false))" 'true'
-        #set the previous 'latest' to be its own version
-
-        # set .2 version of @eclipse-che/plugin-registry-generator if currently set to latest
-        if [[ $(jq -r ".Other[\"@eclipse-che/plugin-registry-generator\"][\"${VERSION_DISABLE}\"]" "${WORKDIR}/dependencies/job-config.json") == "latest" ]]; then
-          computeLatestPackageVersion $VERSION_DISABLE "@eclipse-che/plugin-registry-generator"
-        fi
-        DISABLE_VERSION_INDEX=$(( $DISABLE_VERSION_INDEX -1 ))
     done
 
-    #update tags
-    replaceField "${WORKDIR}/dependencies/job-config.json" ".Other[\"FLOATING_QUAY_TAGS\"][\"${DEVSPACES_VERSION}\"]" "\"next\""
-    replaceField "${WORKDIR}/dependencies/job-config.json" ".Other[\"FLOATING_QUAY_TAGS\"][\"3.x\"]" "\"next\""
-
-    #the 'latest' tag should go on the previous/stable version, which would be version -1, or the index 3 form the end of the VERSION_KEYS array
-    LATEST_INDEX=$(( ${#VERSION_KEYS[@]} - 3 )); LATEST_VERSION="${VERSION_KEYS[$LATEST_INDEX]}";  echo "LATEST_VERSION = $LATEST_VERSION"
-
-    replaceField "${WORKDIR}/dependencies/job-config.json" ".Other[\"FLOATING_QUAY_TAGS\"][\"${LATEST_VERSION}\"]" "\"latest\""
-
-    # set slack notifications to true for latest version
-    replaceField "${WORKDIR}/dependencies/job-config.json" ".Other[\"slack_notification\"][\"${LATEST_VERSION}\"]" "true"
-
-    # search for latest released tag to use for stable builds
-    computeLatestPackageVersion $LATEST_VERSION "@eclipse-che/plugin-registry-generator"
-    # or use "latest" release with replaceField "${WORKDIR}/dependencies/job-config.json" ".Other[\"@eclipse-che/plugin-registry-generator\"][\"${LATEST_VERSION}\"]" "\"latest\""
-    # debug: # cat "${WORKDIR}/dependencies/job-config.json" | grep -E -A5 "FLOATING_QUAY_TAGS|plugin-registry-gen"; exit
-
-    # update CSV versions for 3.yy latest and 3.x too
-    echo "DEVSPACES_VERSION = $DEVSPACES_VERSION"
-    for op in "operator-bundle"; do
-      for ver in "${DEVSPACES_VERSION}" "3.x"; do
-        replaceField "${WORKDIR}/dependencies/job-config.json" ".CSVs[\"${op}\"][\"${ver}\"][\"CSV_VERSION\"]" "\"${DEVSPACES_VERSION}.0\""
-      done
+    for ver in "${DEVSPACES_VERSION}" "3.x"; do
+      replaceField "${JOB_CONFIG}" ".CSVs[\"operator-bundle\"][\"${ver}\"][\"CSV_VERSION\"]" "\"${DEVSPACES_VERSION}.0\""
+      # update DWO mapping
+      replaceField "${JOB_CONFIG}" ".Other[\"DEV_WORKSPACE_OPERATOR_TAG\"][\"${ver}\"]" "\"0.${DWO_Y}\""
     done
+  fi
 
-    # update CSV_VERSION_PREV values
-    computeLatestCSV operator-bundle
+  if [[ $REMOVE_DEVSPACES_VERSION ]]; then
+    if [[ $VERBOSE ]]; then echo "[DEBUG] Removing $REMOVE_DEVSPACES_VERSION"; fi
+    replaceField "${JOB_CONFIG}" "." "del(..|.[\"${REMOVE_DEVSPACES_VERSION}\"]?)"
+  fi
+  
+  # Find and version - 2 to disable in loop (should only be needed for hotfix releases)
+  VERSION_KEYS=($(cat ${JOB_CONFIG} | jq -r '.Jobs'[\"dashboard\"]' | keys[]')) # Using dashboard to find versions
+  #If there are more than 4 versions throw an error until extra versions are weeded out.
+  if [[ ${#VERSION_KEYS[@]} -gt 4 ]]; then echo "There are more than 4 versions in the job-config.json, please remove one."; exit 1; fi
 
-    # optionally, can enable/disable specific job sets for a given version
-    if [[ $ENABLE_DEVSPACES_MGMTJOBS_VERSION ]]; then 
-        replaceField "${WORKDIR}/dependencies/job-config.json" "(.\"Management-Jobs\"[][\"$ENABLE_DEVSPACES_MGMTJOBS_VERSION\"][\"disabled\"]|select(.==true))" 'false'
+  if [[ $VERBOSE ]]; then echo "[DEBUG] Versions in job-config.json: ${VERSION_KEYS[@]}"; fi
+  OLDEST="${VERSION_KEYS[0]}"
+  LATEST="${VERSION_KEYS[1]}"
+
+  for JOB_KEY in ${JOB_KEYS[@]}
+  do
+    if [[ $VERBOSE ]]; then echo "[DEBUG] JOB_KEY = $JOB_KEY"; fi
+    if [[ $VERBOSE ]]; then echo "[DEBUG] Updating upstream branches."; fi
+    replaceField "${JOB_CONFIG}" "(.\"${JOB_KEY}\"[][\"${DEVSPACES_VERSION}\"][\"upstream_branch\"]|select(.[]?|contains(\".x\")))" "[\"7.${CHE_Y}.x\",\"main\"]"
+    replaceField "${JOB_CONFIG}" "(.\"${JOB_KEY}\"[][\"${DEVSPACES_VERSION}\"][\"upstream_branch\"]|select(.[]?==\"main\"))" "[\"7.${CHE_Y}.x\",\"main\"]"
+    replaceField "${JOB_CONFIG}" "(.\"${JOB_KEY}\"[][\"${DEVSPACES_VERSION}\"][\"upstream_branch\"]|select(.[]?==\"devspaces-3-rhel-8\"))" "[\"devspaces-${DEVSPACES_VERSION}-rhel-8\",\"devspaces-${DEVSPACES_VERSION}-rhel-8\"]"
+
+    if [[ $VERBOSE ]]; then echo "Make sure \"current\" jobs are enabled"; fi
+    replaceField "${JOB_CONFIG}" "(.\"${JOB_KEY}\"[][\"${DEVSPACES_VERSION}\"][\"disabled\"]|select(.==true))" 'false'
+
+    if [[ $VERBOSE ]]; then echo "[DEBUG] Disabling $OLDEST"; fi
+    replaceField "${JOB_CONFIG}" "(.\"${JOB_KEY}\"[][\"${OLDEST}\"][\"disabled\"]|select(.==false))" 'true'
+
+     # optionally, can enable/disable specific job sets for a given version
+    if [[ $ENABLE_JOBS_VERSION ]]; then 
+        replaceField "${JOB_CONFIG}" "(.\"${JOB_KEY}\"[][\"$ENABLE_JOBS_VERSION\"][\"disabled\"]|select(.==true))" 'false'
     fi
-    if [[ $ENABLE_DEVSPACES_JOBS_VERSION ]]; then 
-        replaceField "${WORKDIR}/dependencies/job-config.json" "(.Jobs[][\"$ENABLE_DEVSPACES_JOBS_VERSION\"][\"disabled\"]|select(.==true))" 'false'
+    if [[ $DISABLE_JOBS_VERSION ]]; then 
+        replaceField "${JOB_CONFIG}" "(.\"${JOB_KEY}\"[][\"$DISABLE_JOBS_VERSION\"][\"disabled\"]|select(.==false))" 'true'
     fi
-    if [[ $DISABLE_DEVSPACES_MGMTJOBS_VERSION ]]; then 
-        replaceField "${WORKDIR}/dependencies/job-config.json" "(.\"Management-Jobs\"[][\"$DISABLE_DEVSPACES_MGMTJOBS_VERSION\"][\"disabled\"]|select(.==false))" 'true'
-    fi
-    if [[ $DISABLE_DEVSPACES_JOBS_VERSION ]]; then 
-        replaceField "${WORKDIR}/dependencies/job-config.json" "(.Jobs[][\"$DISABLE_DEVSPACES_JOBS_VERSION\"][\"disabled\"]|select(.==false))" 'true'
-    fi
+
+  done
+
+  # set .2 version of @eclipse-che/plugin-registry-generator if currently set to latest
+  if [[ $(jq -r ".Other[\"@eclipse-che/plugin-registry-generator\"][\"${OLDEST}\"]" "${JOB_CONFIG}") == "latest" ]]; then
+    computeLatestPackageVersion $OLDEST "@eclipse-che/plugin-registry-generator"
+  fi
+  computeLatestPackageVersion $LATEST "@eclipse-che/plugin-registry-generator"
+
+  # Update Tags
+  if [[ $VERBOSE ]]; then 
+    echo "[DEBUG] Updating latest/next tags"
+    echo "[DEBUG] Setting 3.x and ${VERSION_KEYS[2]} to \"next\""
+    echo "[DEBUG] Setting ${LATEST} to \"latest\""
+    echo "[DEBUG] Setting ${OLDEST} to \"${OLDEST}\""
+  fi
+  replaceField "${JOB_CONFIG}" ".Other[\"FLOATING_QUAY_TAGS\"][\"${VERSION_KEYS[2]}\"]" "\"next\""
+  replaceField "${JOB_CONFIG}" ".Other[\"FLOATING_QUAY_TAGS\"][\"3.x\"]" "\"next\""
+  replaceField "${JOB_CONFIG}" ".Other[\"FLOATING_QUAY_TAGS\"][\"${LATEST}\"]" "\"latest\""
+  replaceField "${JOB_CONFIG}" ".Other[\"FLOATING_QUAY_TAGS\"][\"${OLDEST}\"]" "\"${OLDEST}\""
+
+  # update CSV_VERSION_PREV values
+  computeLatestCSV operator-bundle
 }
 
 updateDevfileRegistry() {
-    REG_ROOT="${WORKDIR}/dependencies/che-devfile-registry"
-    SCRIPT_DIR="${REG_ROOT}/build/scripts"
-    YAML_ROOT="${REG_ROOT}/devfiles"
-    TEMPLATE_FILE="${REG_ROOT}/deploy/openshift/devspaces-devfile-registry.yaml"
+  REG_ROOT="${WORKDIR}/dependencies/che-devfile-registry"
+  SCRIPT_DIR="${REG_ROOT}/build/scripts"
+  YAML_ROOT="${REG_ROOT}/devfiles"
+  TEMPLATE_FILE="${REG_ROOT}/deploy/openshift/devspaces-devfile-registry.yaml"
 
-    # replace DEVSPACES devfiles with image references to current version tag
-    for devfile in $("$SCRIPT_DIR"/list_yaml.sh "$YAML_ROOT"); do
-       sed -E -e "s|(.*image: *?.*registry.redhat.io/devspaces/.*:).+|\1${DEVSPACES_VERSION}|g" \
-           -i "${devfile}"
-    done
+  # replace DEVSPACES devfiles with image references to current version tag
+  for devfile in $("$SCRIPT_DIR"/list_yaml.sh "$YAML_ROOT"); do
+    sed -E -e "s|(.*image: *?.*registry.redhat.io/devspaces/.*:).+|\1${DEVSPACES_VERSION}|g" \
+      -i "${devfile}"
+  done
 
-    "${SCRIPT_DIR}/update_template.sh" -rn devfile -s "${TEMPLATE_FILE}" -t "${DEVSPACES_VERSION}"
-    git diff -q "${YAML_ROOT}" "${TEMPLATE_FILE}" || true
+  "${SCRIPT_DIR}/update_template.sh" -rn devfile -s "${TEMPLATE_FILE}" -t "${DEVSPACES_VERSION}"
+  git diff -q "${YAML_ROOT}" "${TEMPLATE_FILE}" || true
 }
 
 # '.parameters[]|select(.name=="IMAGE_TAG")|.value'
@@ -368,68 +330,59 @@ updatePluginRegistry() {
         sed -r \
             -e "s#(.*image: (['\"]*)(registry.redhat.io|quay.io)/devspaces/.*:)[0-9.]+(['\"]*)#\1${DEVSPACES_VERSION}\2#g" \
             -e "s#quay.io/devspaces/#registry.redhat.io/devspaces/#g" \
+            -e "s|# Copyright.*|# Copyright (c) 2018-$(date +%Y) Red Hat, Inc.|g" \
             -i "${yaml}"
     done
 
     # update '.parameters[]|select(.name=="IMAGE_TAG")|.value' ==> 3.yy
-    yq -ryiY "(.parameters[] | select(.name == \"IMAGE_TAG\") | .value ) = \"${DEVSPACES_VERSION}\"" "${TEMPLATE_FILE}"
-    echo "${COPYRIGHT}$(cat "${TEMPLATE_FILE}")" > "${TEMPLATE_FILE}".2; mv "${TEMPLATE_FILE}".2 "${TEMPLATE_FILE}"
+    yq -ri "(.parameters[] | select(.name == \"IMAGE_TAG\") | .value ) = \"${DEVSPACES_VERSION}\"" "${TEMPLATE_FILE}"
 
     git diff -q "${YAML_ROOT}" "${TEMPLATE_FILE}" || true
 }
 
 commitChanges() {
-    if [[ ${docommit} -eq 1 ]]; then
-        if [[ $DISABLE_DEVSPACES_JOBS_VERSION ]]; then 
-          COMMIT_MSG="${COMMIT_MSG}; disable $DISABLE_DEVSPACES_JOBS_VERSION jobs"
-        fi
-        if [[ $DISABLE_DEVSPACES_MGMTJOBS_VERSION ]]; then 
-          COMMIT_MSG="${COMMIT_MSG}; disable $DISABLE_DEVSPACES_MGMTJOBS_VERSION mgmt jobs"
-        fi
-        if [[ $ENABLE_DEVSPACES_JOBS_VERSION ]]; then 
-          COMMIT_MSG="${COMMIT_MSG}; enable $ENABLE_DEVSPACES_JOBS_VERSION jobs"
-        fi
-        if [[ $ENABLE_DEVSPACES_MGMTJOBS_VERSION ]]; then 
-          COMMIT_MSG="${COMMIT_MSG}; enable $ENABLE_DEVSPACES_MGMTJOBS_VERSION mgmt jobs"
-        fi
-        if [[ $REMOVE_DEVSPACES_VERSION ]]; then 
-          COMMIT_MSG="${COMMIT_MSG}; remove $REMOVE_DEVSPACES_VERSION jobs"
-        fi
-        git commit -a -s -m "${COMMIT_MSG}"
-        git pull origin "${BRANCH}"
-        if [[ ${dopush} -eq 1 ]]; then
-            PUSH_TRY="$(git push origin "${BRANCH}" 2>&1 || git push origin "${PR_BRANCH}" || true)"
-            # shellcheck disable=SC2181
-            if [[ $? -gt 0 ]] || [[ $PUSH_TRY == *"protected branch hook declined"* ]]; then
-                # if cannot push directly, create pull request for ${BRANCH}
-                git branch "${PR_BRANCH}" || true
-                git checkout "${PR_BRANCH}" || true
-                git pull origin "${PR_BRANCH}" || true
-                git push origin "${PR_BRANCH}"
-                lastCommitComment="$(git log -1 --pretty=%B)"
-                if [[ $(/usr/local/bin/hub version 2>/dev/null || true) ]] || [[ $(which hub 2>/dev/null || true) ]]; then
-                    # collect additional commits in the same PR if it already exists
-                    { hub pull-request -f -m "${lastCommitComment}
+  if [[ ${docommit} -eq 1 ]]; then
+    if [[ $DISABLE_JOBS_VERSION ]]; then 
+      COMMIT_MSG="${COMMIT_MSG}; disable $DISABLE_JOBS_VERSION jobs"
+    fi
+    if [[ $ENABLE_JOBS_VERSION ]]; then 
+      COMMIT_MSG="${COMMIT_MSG}; enable $ENABLE_JOBS_VERSION jobs"
+    fi
+    if [[ $REMOVE_DEVSPACES_VERSION ]]; then 
+      COMMIT_MSG="${COMMIT_MSG}; remove $REMOVE_DEVSPACES_VERSION jobs"
+    fi
+    git commit -a -s -m "${COMMIT_MSG}"
+    git pull origin "${BRANCH}"
+    if [[ ${dopush} -eq 1 ]]; then
+      PUSH_TRY="$(git push origin "${BRANCH}" 2>&1 || git push origin "${PR_BRANCH}" || true)"
+      # shellcheck disable=SC2181
+      if [[ $? -gt 0 ]] || [[ $PUSH_TRY == *"protected branch hook declined"* ]]; then
+        # if cannot push directly, create pull request for ${BRANCH}
+        git branch "${PR_BRANCH}" || true
+        git checkout "${PR_BRANCH}" || true
+        git pull origin "${PR_BRANCH}" || true
+        git push origin "${PR_BRANCH}"
+        lastCommitComment="$(git log -1 --pretty=%B)"
+        if [[ $(/usr/local/bin/hub version 2>/dev/null || true) ]] || [[ $(which hub 2>/dev/null || true) ]]; then
+        # collect additional commits in the same PR if it already exists
+          { hub pull-request -f -m "${lastCommitComment}
 
 ${lastCommitComment}" -b "${BRANCH}" -h "${PR_BRANCH}" "${OPENBROWSERFLAG}"; } || { git merge ${BRANCH}; git push origin "${PR_BRANCH}"; }
-                else
-                    echo "# Warning: hub is required to generate pull requests. See https://hub.github.com/ to install it."
-                    echo -n "# To manually create a pull request, go here: "
-                    git config --get remote.origin.url | sed -r -e "s#:#/#" -e "s#git@#https://#" -e "s#\.git#/tree/${PR_BRANCH}/#"
-                fi
-            fi
+        else
+          echo "# Warning: hub is required to generate pull requests. See https://hub.github.com/ to install it."
+          echo -n "# To manually create a pull request, go here: "
+          git config --get remote.origin.url | sed -r -e "s#:#/#" -e "s#git@#https://#" -e "s#\.git#/tree/${PR_BRANCH}/#"
         fi
+      fi
     fi
+  fi
 }
 
-if [[ -z ${DEVSPACES_VERSION} ]]; then
-    usage
-    exit 1
-fi
-
+# Run update functions
 updateVersion
-updatePluginRegistry
+updateJobConfig
 updateDevfileRegistry
+updatePluginRegistry
 commitChanges
 
 echo "
