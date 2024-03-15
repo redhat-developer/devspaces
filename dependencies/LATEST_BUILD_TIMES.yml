@@ -10204,3 +10204,21 @@
   timeWait: 0 mins
   timeBuild: 3 mins
   timeTotal: 4 mins
+- name: devspaces-udi-rhel8
+  tag: 3.12-14.1710434656
+  taskId: 59720609
+  timeCreate: Thu Mar 14 12:44:16 2024
+  timeStart: Thu Mar 14 12:44:53 2024
+  timeFinish: Thu Mar 14 13:43:38 2024
+  timeWait: 0 mins
+  timeBuild: 58 mins
+  timeTotal: 59 mins
+- name: devspaces-operator-bundle
+  tag: 3.12-180
+  taskId: 59751791
+  timeCreate: Fri Mar 15 11:03:47 2024
+  timeStart: Fri Mar 15 11:09:26 2024
+  timeFinish: Fri Mar 15 11:14:50 2024
+  timeWait: 5 mins
+  timeBuild: 5 mins
+  timeTotal: 11 mins
