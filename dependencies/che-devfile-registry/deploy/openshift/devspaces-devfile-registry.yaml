@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2018-2023 Red Hat, Inc.
+# Copyright (c) 2018-2024 Red Hat, Inc.
 # This program and the accompanying materials are made
 # available under the terms of the Eclipse Public License 2.0
 # which is available at https://www.eclipse.org/legal/epl-2.0/
@@ -114,10 +114,9 @@ parameters:
   - name: IMAGE
     value: registry.redhat.io/devspaces/devfileregistry-rhel8
     displayName: Red Hat OpenShift Dev Spaces devfile registry image
-    description: Red Hat OpenShift Dev Spaces devfile registry container image. Defaults
-      to registry.redhat.io/devspaces/devfileregistry-rhel8
+    description: Red Hat OpenShift Dev Spaces devfile registry container image. Defaults to registry.redhat.io/devspaces/devfileregistry-rhel8
   - name: IMAGE_TAG
-    value: '3.11'
+    value: '3.13'
     displayName: Red Hat OpenShift Dev Spaces devfile registry version
     description: Red Hat OpenShift Dev Spaces devfile registry version
   - name: MEMORY_LIMIT
@@ -130,13 +129,10 @@ parameters:
     description: Always pull by default. Can be IfNotPresent
   - name: DS_DEVFILE_IMAGES_REGISTRY_URL
     displayName: Devfile image registry URL
-    description: URL of docker registry containing base images referred in devfiles;
-      used to override base images in devfiles
+    description: URL of docker registry containing base images referred in devfiles; used to override base images in devfiles
   - name: DS_DEVFILE_IMAGES_REGISTRY_ORGANIZATION
     displayName: Devfile image registry organization
-    description: Organization containing images referenced in devfiles; used to override
-      base images in devfiles
+    description: Organization containing images referenced in devfiles; used to override base images in devfiles
   - name: DS_DEVFILE_IMAGES_REGISTRY_TAG
     displayName: Devfile image registry tag
-    description: Tag used for custom devfile images; used to override base images
-      in devfiles
+    description: Tag used for custom devfile images; used to override base images in devfiles
