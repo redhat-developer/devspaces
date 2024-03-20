@@ -10510,6 +10510,15 @@
   timeWait: 0 mins
   timeBuild: 5 mins
   timeTotal: 6 mins
+- name: devspaces-code-rhel8
+  tag: 3.13-17
+  taskId: 59854585
+  timeCreate: Tue Mar 19 22:37:06 2024
+  timeStart: Tue Mar 19 22:44:24 2024
+  timeFinish: Wed Mar 20 03:25:45 2024
+  timeWait: 7 mins
+  timeBuild: 281 mins
+  timeTotal: 288 mins
 - name: devspaces-traefik-rhel8
   tag: 3.13-3
   taskId: 59854959
@@ -10525,6 +10534,15 @@
   timeCreate: Tue Mar 19 23:53:44 2024
   timeStart: Tue Mar 19 23:53:55 2024
   timeFinish: Tue Mar 19 23:57:18 2024
+  timeWait: 0 mins
+  timeBuild: 3 mins
+  timeTotal: 3 mins
+- name: devspaces-operator-bundle
+  tag: 3.13-41
+  taskId: 59863826
+  timeCreate: Wed Mar 20 03:42:32 2024
+  timeStart: Wed Mar 20 03:42:40 2024
+  timeFinish: Wed Mar 20 03:46:30 2024
   timeWait: 0 mins
   timeBuild: 3 mins
   timeTotal: 3 mins
