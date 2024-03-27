@@ -15,6 +15,7 @@ components:
       endpoints:
         - name: openvsx
           exposure: internal
+          protocol: https
           targetPort: 5432
 commands:
   - id: podman-login
