@@ -1,9 +1,11 @@
-schemaVersion: 2.1.0
+schemaVersion: 2.2.2
 metadata:
   name: che-idea
-  displayName: IntelliJ IDEA Community (Technology Preview)
+  displayName: IntelliJ IDEA Community
   description: Red Hat OpenShift Dev Spaces with JetBrains IntelliJ IDEA Community IDE
   icon: /images/intellij-idea.svg
+  tags:
+    - Tech-Preview
   attributes:
     publisher: che-incubator
     version: 2022.1
