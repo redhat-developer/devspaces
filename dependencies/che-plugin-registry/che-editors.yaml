@@ -1,11 +1,13 @@
 version: 2.0.0
 editors:
-  - schemaVersion: 2.1.0
+  - schemaVersion: 2.2.2
     metadata:
       name: che-incubator/che-idea/latest
-      displayName: IntelliJ IDEA Community (Technology Preview)
+      displayName: IntelliJ IDEA Community
       description: Red Hat OpenShift Dev Spaces with JetBrains IntelliJ IDEA Community IDE
       icon: /images/intellij-idea.svg
+      tags:
+        - Tech-Preview
       attributes:
         publisher: che-incubator
         version: 2022.1
@@ -105,7 +107,7 @@ editors:
           memoryRequest: 32Mi
           cpuLimit: 500m
           cpuRequest: 30m
-  - schemaVersion: 2.1.0
+  - schemaVersion: 2.2.2
     metadata:
       name: che-incubator/che-code/insiders
       displayName: VS Code - Open Source
@@ -191,7 +193,7 @@ editors:
           controller.devfile.io/container-contribution: true
       - name: checode
         volume: {}
-  - schemaVersion: 2.1.0
+  - schemaVersion: 2.2.2
     metadata:
       name: che-incubator/che-code/latest
       displayName: VS Code - Open Source
