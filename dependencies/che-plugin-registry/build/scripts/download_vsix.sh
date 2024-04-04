@@ -5,7 +5,6 @@ trap EXIT
 set -e
 set -o pipefail
 
-downloadVsix=1
 openvsxJson="/openvsx-server/openvsx-sync.json"
 
 usage() {
@@ -14,8 +13,7 @@ usage() {
 All arguments are optional.
 
 -b|--branch     Specify a devspaces branch. Otherwise will be computed from local git directory
--j|--json       Specify a path for openvsx-sync.json. Default: /openvsx-server/openvsx-sync.json
---no-download   Do not download vsix files, only update versions in the openvsx-sync.json"
+-j|--json       Specify a path for openvsx-sync.json. Default: /openvsx-server/openvsx-sync.json"
     exit
 }
 
@@ -30,7 +28,6 @@ while [[ "$#" -gt 0 ]]; do
         openvsxJson="$2"
         shift 1
         ;;
-    '--no-download') downloadVsix=0 ;;
     '-h' | '--help') usage ;;
     esac
     shift 1
@@ -171,32 +168,30 @@ for i in $(seq 0 "$((numberOfExtensions - 1))"); do
         fi
     fi
 
-    if [[ $downloadVsix = 1 ]]; then
-        echo "Downloading ${vsixDownloadLink} into ${vsixPublisher} folder..."
-        vsixFilename="/tmp/vsix/${vsixFullName}-${vsixVersion}.vsix"
-        # download the latest vsix file in the publisher directory
-        curl -sLS "${vsixDownloadLink}" -o "${vsixFilename}"
+    echo "Downloading ${vsixDownloadLink} into ${vsixPublisher} folder..."
+    vsixFilename="/tmp/vsix/${vsixFullName}-${vsixVersion}.vsix"
+    # download the latest vsix file in the publisher directory
+    curl -sLS "${vsixDownloadLink}" -o "${vsixFilename}"
 
-        initTest "Checking $vsixFilename"
+    initTest "Checking $vsixFilename"
 
-        # Extract the supported version of VS Code engine from the package.json
-        vscodeEngineVersion=$(unzip -p "$vsixFilename" "extension/package.json" | jq -r '.engines.vscode')
+    # Extract the supported version of VS Code engine from the package.json
+    vscodeEngineVersion=$(unzip -p "$vsixFilename" "extension/package.json" | jq -r '.engines.vscode')
 
-        # remove ^ from the engine version
-        vscodeEngineVersion="${vscodeEngineVersion//^/}"
-        # remove >= from the engine version
-        vscodeEngineVersion="${vscodeEngineVersion//>=/}"
-        # replace x by 0 in the engine version
-        vscodeEngineVersion="${vscodeEngineVersion//x/0}"
-        # check if the extension's engine version is compatible with the code version
-        # if the extension's engine version is ahead of the code version, check a next version of the extension
-        if [[ "$vscodeEngineVersion" = "$(echo -e "$vscodeEngineVersion\n$codeVersion" | sort -V | head -n1)" ]]; then
-            #VS Code version >= Engine version, can proceed."
-            echo -e "${GREEN}${EMOJI_PASS}${RESETSTYLE} compatible."
-        else
-            echo -e "Extension requires a newer engine version than Che Code version ($codeVersion)."
-            echo -e "${RED}${EMOJI_FAIL}${RESETSTYLE} Test failed!"
-            exit 1
-        fi
+    # remove ^ from the engine version
+    vscodeEngineVersion="${vscodeEngineVersion//^/}"
+    # remove >= from the engine version
+    vscodeEngineVersion="${vscodeEngineVersion//>=/}"
+    # replace x by 0 in the engine version
+    vscodeEngineVersion="${vscodeEngineVersion//x/0}"
+    # check if the extension's engine version is compatible with the code version
+    # if the extension's engine version is ahead of the code version, check a next version of the extension
+    if [[ "$vscodeEngineVersion" = "$(echo -e "$vscodeEngineVersion\n$codeVersion" | sort -V | head -n1)" ]]; then
+        #VS Code version >= Engine version, can proceed."
+        echo -e "${GREEN}${EMOJI_PASS}${RESETSTYLE} compatible."
+    else
+        echo -e "Extension requires a newer engine version than Che Code version ($codeVersion)."
+        echo -e "${RED}${EMOJI_FAIL}${RESETSTYLE} Test failed!"
+        exit 1
     fi
 done
