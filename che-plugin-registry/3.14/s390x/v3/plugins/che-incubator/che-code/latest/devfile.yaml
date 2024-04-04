@@ -27,7 +27,7 @@ events:
 components:
   - name: che-code-injector
     container:
-      image: registry.redhat.io/devspaces/code-rhel8:3.13
+      image: registry.redhat.io/devspaces/code-rhel8:3.14
       command:
         - /entrypoint-init-container.sh
       volumeMounts:
@@ -39,7 +39,7 @@ components:
       cpuRequest: 30m
   - name: che-code-runtime-description
     container:
-      image: registry.redhat.io/devspaces/udi-rhel8:3.13
+      image: registry.redhat.io/devspaces/udi-rhel8:3.14
       memoryLimit: 1024Mi
       memoryRequest: 256Mi
       cpuLimit: 500m
