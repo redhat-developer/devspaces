@@ -41,7 +41,7 @@ for i in $(seq 0 "$((numberOfExtensions - 1))"); do
 
     # publish the file
     ovsx publish "${vsixFilename}"
-    sleep 5
+    sleep 10
 
     # remove the downloaded file
     rm "${vsixFilename}"
