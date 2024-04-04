@@ -1,17 +1,17 @@
 {
     "Images": {
         "quay.io/devspaces/code-rhel8:3.13-44": {"Created": "2024-04-04T12:53:50.784471198Z", "Digest": "112e13e2a9fe33c158486f55727d4de0632eea08704aab541d1d95e77126e08f", "Image": "quay.io/devspaces/code-rhel8:3.13-44"},
-        "quay.io/devspaces/configbump-rhel8:3.13-3": {"Created": "2024-03-19T22:15:50.710717313Z", "Digest": "3e2eac2e4e093acb60f50a57db061a6dcbb5e57cda0ac8d1a9064e8512e15d6d", "Image": "quay.io/devspaces/configbump-rhel8:3.13-3"},
-        "quay.io/devspaces/devspaces-rhel8-operator:3.13-8": {"Created": "2024-04-04T13:56:30.22886957Z", "Digest": "dcdac03589f336dafa2f8d6794a30269d8ca96c47ac659290d88840e7a032bd8", "Image": "quay.io/devspaces/devspaces-rhel8-operator:3.13-8"},
-        "quay.io/devspaces/devspaces-operator-bundle:3.13-94": {"Created": "2024-04-04T16:35:09.932173798Z", "Digest": "9fdb62ad35dd886c1987d62ff2d39565847631fbcea325cf344a4cfbf1b58b82", "Image": "quay.io/devspaces/devspaces-operator-bundle:3.13-94"},
-        "quay.io/devspaces/dashboard-rhel8:3.13-22": {"Created": "2024-04-04T16:06:07.896034676Z", "Digest": "aef8629fd4b335f5ef35de81a31da7e536ad856b3619ee0936f3275f483d7eb2", "Image": "quay.io/devspaces/dashboard-rhel8:3.13-22"},
-        "quay.io/devspaces/devfileregistry-rhel8:3.13-41": {"Created": "2024-04-04T15:23:46.824243925Z", "Digest": "832401141920a929ac34ca2553162caf335212ece0a49f2330de1f3e4d7e30c0", "Image": "quay.io/devspaces/devfileregistry-rhel8:3.13-41"},
+        "quay.io/devspaces/configbump-rhel8:3.13-4": {"Created": "2024-04-04T20:41:39.740147182Z", "Digest": "13c5994eed2475d64ef52ddb3f62a11482592ae43f846c07abaebd83d1a9aac7", "Image": "quay.io/devspaces/configbump-rhel8:3.13-4"},
+        "quay.io/devspaces/devspaces-rhel8-operator:3.13-9": {"Created": "2024-04-04T21:03:38.965182229Z", "Digest": "1dd3271d85e55211b71b756aa695a10d64d63ef555eb34d8e9d2262d02793529", "Image": "quay.io/devspaces/devspaces-rhel8-operator:3.13-9"},
+        "quay.io/devspaces/devspaces-operator-bundle:3.13-96": {"Created": "2024-04-04T21:22:33.993756722Z", "Digest": "8eeeb1e9e36d867cd0302b9249ea0c6db05ea28b94acc18d2c586b1a5e197eda", "Image": "quay.io/devspaces/devspaces-operator-bundle:3.13-96"},
+        "quay.io/devspaces/dashboard-rhel8:3.13-23": {"Created": "2024-04-04T21:08:35.252666906Z", "Digest": "837974e6c239ed14827ecd6e9844849d4a7587a78b12af4fc0de9a6cbc04ed71", "Image": "quay.io/devspaces/dashboard-rhel8:3.13-23"},
+        "quay.io/devspaces/devfileregistry-rhel8:3.13-43": {"Created": "2024-04-04T20:54:15.730055682Z", "Digest": "8192d92c9843f7b0c78b453cb6483870f1f2c892d024d7e799b1085ecd94aff1", "Image": "quay.io/devspaces/devfileregistry-rhel8:3.13-43"},
         "quay.io/devspaces/idea-rhel8:3.13-3": {"Created": "2024-03-19T22:23:59.826667118Z", "Digest": "521db028db123b8f5ed5e7748dfe355615e940ade4b2af2815fd1f72f5bda82d", "Image": "quay.io/devspaces/idea-rhel8:3.13-3"},
         "quay.io/devspaces/imagepuller-rhel8:3.13-3": {"Created": "2024-03-19T22:16:10.817727394Z", "Digest": "3f8bd0e19f14d95412f2e684a1b27b8c278b1eb3a963c2947374483bbfd0d856", "Image": "quay.io/devspaces/imagepuller-rhel8:3.13-3"},
-        "quay.io/devspaces/machineexec-rhel8:3.13-4": {"Created": "2024-04-04T09:51:26.575611891Z", "Digest": "3decc02af064f5410ad1abe32152a6526be24edf54e3419e972e3e63306be1bf", "Image": "quay.io/devspaces/machineexec-rhel8:3.13-4"},
+        "quay.io/devspaces/machineexec-rhel8:3.13-5": {"Created": "2024-04-04T20:53:02.573137166Z", "Digest": "9a28de7edec9f6667c104101f34fc5f11a353f1c5d92f5651437637d46169173", "Image": "quay.io/devspaces/machineexec-rhel8:3.13-5"},
         "quay.io/devspaces/pluginregistry-rhel8:3.13-12": {"Created": "2024-04-04T15:24:52.424508615Z", "Digest": "0c07eb8c9e87fd4cf1aa7a3aae81d432be6942df9d6d61b5946edee64a0d04b4", "Image": "quay.io/devspaces/pluginregistry-rhel8:3.13-12"},
         "quay.io/devspaces/server-rhel8:3.13-9": {"Created": "2024-04-04T09:29:28.792415009Z", "Digest": "425cff35dccca3684b015b854177dcdaf11bc10ed9c513b471f21b196fdadf0a", "Image": "quay.io/devspaces/server-rhel8:3.13-9"},
-        "quay.io/devspaces/traefik-rhel8:3.13-5": {"Created": "2024-03-29T22:18:41.022081258Z", "Digest": "9f11f6d17a7386b70897108b395bb0e1bfdce0eb8faec7937fd3db67d9353d06", "Image": "quay.io/devspaces/traefik-rhel8:3.13-5"},
+        "quay.io/devspaces/traefik-rhel8:3.13-6": {"Created": "2024-04-04T21:15:48.57130959Z", "Digest": "1acb497a8c8e32db8eb79561e33b2aa42a3efbb65b95afef0e3148e1ba412e20", "Image": "quay.io/devspaces/traefik-rhel8:3.13-6"},
         "quay.io/devspaces/udi-rhel8:3.13-5": {"Created": "2024-03-19T22:29:01.670471215Z", "Digest": "b3ba914b716cbcb9663861535989874ccf2678fd62d4900fdeece09cc0d7603b", "Image": "quay.io/devspaces/udi-rhel8:3.13-5"},
         "": {"Created":"", "Digest":"", "Image":""}
     }
