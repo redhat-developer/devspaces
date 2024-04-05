@@ -1,4 +1,4 @@
-schemaVersion: 2.2.0
+schemaVersion: 2.2.2
 metadata:
   name: ds-plugin-registry-dev
 components:
@@ -15,6 +15,7 @@ components:
       endpoints:
         - name: openvsx
           exposure: internal
+          protocol: https
           targetPort: 5432
 commands:
   - id: podman-login
