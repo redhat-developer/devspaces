@@ -279,3 +279,70 @@ editors:
           controller.devfile.io/container-contribution: true
       - name: checode
         volume: {}
+  - schemaVersion: 2.2.2
+    metadata:
+      name: che-incubator/che-idea-server/latest
+      displayName: IntelliJ IDEA Ultimate (desktop)
+      description: JetBrains IntelliJ IDEA Ultimate dev server for Eclipse Che - latest
+      icon: https://resources.jetbrains.com/storage/products/intellij-idea/img/meta/intellij-idea_logo_300x300.png
+      attributes:
+        publisher: che-incubator
+        version: latest
+        title: JetBrains IntelliJ IDEA Ultimate dev server for Eclipse Che - latest
+        repository: 'https://github.com/che-incubator/che-idea-dev-server'
+        firstPublicationDate: '2023-30-11'
+        skipMetaYaml: true
+    commands:
+      - id: inject-editor
+        apply:
+          component: editor-injector
+      - id: start-idea-server
+        exec:
+          component: editor-runtime
+          commandLine: 'nohup /idea-server/entrypoint-volume.sh > /idea-server/std.out 2>&1 &'
+    events:
+      preStart:
+        - inject-editor
+      postStart:
+        - start-idea-server
+    components:
+      - name: idea-server
+        volume: {}
+      - name: editor-injector
+      # injects the IDEA dev server into the shared volume
+        container:
+          image: 'registry.redhat.io/devspaces/idea-server-rhel8:3.14'
+          command: ["/entrypoint-init-container.sh"]
+          volumeMounts:
+            - name: idea-server
+              path: /idea-server
+          memoryLimit: 256Mi
+          memoryRequest: 32Mi
+          cpuLimit: 500m
+          cpuRequest: 30m
+      - name: editor-runtime
+      # defines the editor-specific parameters for a runtime container
+        container:
+          image: 'registry.redhat.io/devspaces/udi-rhel8:3.14'
+          memoryLimit: 6144Mi
+          memoryRequest: 2048Mi
+          cpuLimit: 2000m
+          cpuRequest: 1500m
+          volumeMounts:
+            - name: idea-server
+              path: /idea-server
+          endpoints:
+            - name: idea-server
+              attributes:
+                type: main
+                cookiesAuthEnabled: true
+                discoverable: false
+                urlRewriteSupported: true
+              targetPort: 3400
+              exposure: public
+              secure: true
+              protocol: http
+        attributes:
+          app.kubernetes.io/component: editor-runtime
+          app.kubernetes.io/part-of: idea-server.eclipse.org
+          controller.devfile.io/container-contribution: true
