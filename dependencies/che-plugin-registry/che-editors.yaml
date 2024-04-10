@@ -343,7 +343,7 @@ editors:
               targetPort: 3400
               exposure: public
               secure: true
-              protocol: http
+              protocol: https
         attributes:
           app.kubernetes.io/component: editor-runtime
           app.kubernetes.io/part-of: idea-server.eclipse.org
