@@ -284,7 +284,9 @@ editors:
       name: che-incubator/che-idea-server/latest
       displayName: IntelliJ IDEA Ultimate (desktop)
       description: JetBrains IntelliJ IDEA Ultimate dev server for Eclipse Che - latest
-      icon: https://resources.jetbrains.com/storage/products/intellij-idea/img/meta/intellij-idea_logo_300x300.png
+      icon: /images/intellij-idea.svg
+      tags:
+        - Tech-Preview
       attributes:
         publisher: che-incubator
         version: latest
