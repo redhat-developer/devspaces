@@ -283,14 +283,14 @@ editors:
     metadata:
       name: che-incubator/che-idea-server/latest
       displayName: IntelliJ IDEA Ultimate (desktop)
-      description: JetBrains IntelliJ IDEA Ultimate dev server for Eclipse Che - latest
+      description: Red Hat OpenShift Dev Spaces with JetBrains IntelliJ IDEA Ultimate dev server
       icon: /images/intellij-idea.svg
       tags:
         - Tech-Preview
       attributes:
         publisher: che-incubator
         version: latest
-        title: JetBrains IntelliJ IDEA Ultimate dev server for Eclipse Che - latest
+        title: Red Hat OpenShift Dev Spaces with JetBrains IntelliJ IDEA Ultimate dev server
         repository: 'https://github.com/che-incubator/che-idea-dev-server'
         firstPublicationDate: '2024-10-04'
         skipMetaYaml: true
