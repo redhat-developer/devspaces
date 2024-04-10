@@ -313,7 +313,7 @@ editors:
       - name: editor-injector
       # injects the IDEA dev server into the shared volume
         container:
-          image: 'registry.redhat.io/devspaces/idea-server-rhel8:3.14'
+          image: 'registry.redhat.io/devspaces/idea-remote-dev-server-rhel8:3.14'
           command: ["/entrypoint-init-container.sh"]
           volumeMounts:
             - name: idea-server
