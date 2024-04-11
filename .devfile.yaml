@@ -58,3 +58,13 @@ commands:
           export CHECLUSTER_NAMESPACE="$(kubectl get checluster --all-namespaces -o json | jq -r '.items[0].metadata.namespace')" &&
           export PATCH='{"spec":{"components":{"pluginRegistry":{"openVSXURL":""}}}}' &&
           kubectl patch checluster "${CHECLUSTER_NAME}" --type=merge --patch "${PATCH}" -n "${CHECLUSTER_NAMESPACE}"
+# workaround for https://github.com/eclipse-che/che/issues/22914
+  - id: cleanup-local-files
+    exec:
+      label: "Cleanup local files"
+      component: builder
+      commandLine: rm -rf .local/share/ && rm /home/user/.stow_completed && rm /home/user/.local/share/containers/storage && /entrypoint.sh
+
+events:
+  postStart:
+    - "cleanup-local-files"
