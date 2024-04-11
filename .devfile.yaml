@@ -63,7 +63,7 @@ commands:
     exec:
       label: "Cleanup local files"
       component: builder
-      commandLine: rm -rf .local/share/ && rm /home/user/.stow_completed && rm /home/user/.local/share/containers/storage && /entrypoint.sh
+      commandLine: rm -rf .local/share/ /home/user/.local/share/containers/storage && /entrypoint.sh
 
 events:
   postStart:
