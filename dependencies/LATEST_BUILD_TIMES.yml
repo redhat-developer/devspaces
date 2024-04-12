@@ -11788,6 +11788,15 @@
   timeWait: 0 mins
   timeBuild: 8 mins
   timeTotal: 9 mins
+- name: devspaces-pluginregistry-rhel8
+  tag: 3.13-14
+  taskId: 60478161
+  timeCreate: Fri Apr 12 18:14:34 2024
+  timeStart: Fri Apr 12 18:15:14 2024
+  timeFinish: Fri Apr 12 19:09:07 2024
+  timeWait: 0 mins
+  timeBuild: 53 mins
+  timeTotal: 54 mins
 - name: devspaces-operator-bundle
   tag: 3.13-103
   taskId: 60478426
@@ -11797,3 +11806,12 @@
   timeWait: 3 mins
   timeBuild: 3 mins
   timeTotal: 7 mins
+- name: devspaces-operator-bundle
+  tag: 3.13-104
+  taskId: 60478720
+  timeCreate: Fri Apr 12 19:39:39 2024
+  timeStart: Fri Apr 12 19:40:16 2024
+  timeFinish: Fri Apr 12 19:44:16 2024
+  timeWait: 0 mins
+  timeBuild: 4 mins
+  timeTotal: 4 mins
