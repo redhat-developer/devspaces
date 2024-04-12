@@ -23,7 +23,7 @@ commands:
       label: "1. Login to registry.redhat.io"
       commandLine: podman login registry.redhat.io
       component: builder
-  - id: build
+  - id: build-publish
     exec:
       label: "2. Build and Publish a Custom Plugin Registry"
       component: builder
@@ -58,6 +58,16 @@ commands:
           export CHECLUSTER_NAMESPACE="$(kubectl get checluster --all-namespaces -o json | jq -r '.items[0].metadata.namespace')" &&
           export PATCH='{"spec":{"components":{"pluginRegistry":{"openVSXURL":""}}}}' &&
           kubectl patch checluster "${CHECLUSTER_NAME}" --type=merge --patch "${PATCH}" -n "${CHECLUSTER_NAMESPACE}"
+  - id: build
+    exec:
+      label: "5. Build"
+      component: builder
+      workingDir: ${PROJECTS_ROOT}/devspaces/dependencies/che-plugin-registry
+      commandLine: |
+          set -o xtrace;
+          rm -rf output;
+          mkdir output;
+          BUILDER=podman SKIP_TEST=true SKIP_FORMAT=true SKIP_LINT=true NODE_BUILD_OPTIONS="-max-old-space-size=1024" ./build.sh
 # workaround for https://github.com/eclipse-che/che/issues/22914
   - id: cleanup-local-files
     exec:
