@@ -9,6 +9,9 @@ components:
       memoryLimit: 8Gi
       cpuRequest: 100m
       cpuLimit: 2000m
+      volumeMounts:
+        - name: images
+          path: /home/user/.local
       env:
         - name: CONCURRENTLY_OPTS
           value: -m 1
@@ -17,6 +20,9 @@ components:
           exposure: internal
           protocol: https
           targetPort: 5432
+  - name: images
+    volume:
+      size: 40Gi
 commands:
   - id: podman-login
     exec:
