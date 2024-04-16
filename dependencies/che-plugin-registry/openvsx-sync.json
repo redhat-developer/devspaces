@@ -1,161 +1,214 @@
 [
-    {
-        "id": "donjayamanne.githistory"
-    },
-    {
-        "id": "yzane.markdown-pdf"
-    },
-    {
-        "id": "DavidAnson.vscode-markdownlint"
-    },
-    {
-        "id": "robocorp.robotframework-lsp"
-    },
-    {
-        "id": "shardulm94.trailing-spaces"
-    },
-    {
-        "id": "adamhartford.vscode-base64"
-    },
-    {
-        "id": "usernamehw.indent-one-space"
-    },
-    {
-        "id": "redhat.vscode-xml"
-    },
-    {
-        "id": "redhat.vscode-yaml"
-    },
-    {
-        "id": "vscode.github-authentication"
-    },
-    {
-        "id": "GitHub.vscode-pull-request-github"
-    },
-    {
-        "id": "vscode.typescript-language-features"
-    },
-    {
-        "id": "llvm-vs-code-extensions.vscode-clangd"
-    },
-    {
-        "id": "eclipse-cdt.cdt-gdb-vscode"
-    },
-    {
-        "id": "bmewburn.vscode-intelephense-client"
-    },
-    {
-        "id": "ms-python.python"
-    },
-    {
-        "id": "ms-python.black-formatter"
-    },
-    {
-        "id": "ms-python.isort"
-    },
-    {
-        "id": "ms-toolsai.jupyter"
-    },
-    {
-        "id": "ms-toolsai.jupyter-keymap"
-    },
-    {
-        "id": "ms-toolsai.jupyter-renderers"
-    },
-    {
-        "id": "ms-toolsai.vscode-jupyter-cell-tags"
-    },
-    {
-        "id": "ms-toolsai.vscode-jupyter-slideshow"
-    },
-    {
-        "id": "golang.Go"
-    },
-    {
-        "id": "ms-kubernetes-tools.vscode-kubernetes-tools"
-    },
-    {
-        "id": "redhat.java"
-    },
-    {
-        "id": "vscjava.vscode-java-debug"
-    },
-    {
-        "id": "vscjava.vscode-java-test"
-    },
-    {
-        "id": "redhat.vscode-microprofile"
-    },
-    {
-        "id": "vscode.html-language-features"
-    },
-    {
-        "id": "redhat.vscode-quarkus"
-    },
-    {    
-        "id": "redhat.fabric8-analytics"
-    },
-    {
-        "id": "redhat.vscode-redhat-account"
-    },
-    {
-        "id": "redhat.vscode-openshift-connector"
-    },
-    {
-        "id": "xdebug.php-debug"
-    },
-    {
-        "id": "ms-dotnettools.vscode-dotnet-runtime"
-    },
-    {
-        "id": "muhammad-sammy.csharp"
-    },
-    {
-        "id": "SonarSource.sonarlint-vscode"
-    },
-    {
-        "id": "vscode.git-base"
-    },
-    {
-        "id": "vscode.git"
-    },
-    {
-        "id": "dbaeumer.vscode-eslint"
-    },
-    {
-        "id": "redhat.vscode-commons"
-    },
-    {
-        "id": "redhat.vscode-tekton-pipelines"
-    },
-    {
-        "id": "atlassian.atlascode"
-    },
-    {
-        "id": "JFrog.jfrog-vscode-extension"
-    },
-    {
-        "id": "SonatypeCommunity.vscode-iq-plugin"
-    },
-    {
-        "id": "GitLab.gitlab-workflow"
-    },
-    {
-        "id": "timonwong.shellcheck"
-    },
-    {
-        "id": "redhat.ansible"
-    },
-    {
-        "id": "vscode.npm"
-    },
-    {
-        "id": "esbenp.prettier-vscode"
-    },
-    {
-        "id": "eamodio.gitlens"
-    },
-    {
-        "id": "Continue.continue"
-    }
+  {
+    "id": "donjayamanne.githistory",
+    "version": "0.6.20"
+  },
+  {
+    "id": "yzane.markdown-pdf",
+    "version": "1.5.0"
+  },
+  {
+    "id": "DavidAnson.vscode-markdownlint",
+    "version": "0.54.0"
+  },
+  {
+    "id": "robocorp.robotframework-lsp",
+    "version": "1.11.0"
+  },
+  {
+    "id": "shardulm94.trailing-spaces",
+    "version": "0.4.1"
+  },
+  {
+    "id": "adamhartford.vscode-base64",
+    "version": "0.1.0"
+  },
+  {
+    "id": "usernamehw.indent-one-space",
+    "version": "0.3.0"
+  },
+  {
+    "id": "redhat.vscode-xml",
+    "version": "0.26.1"
+  },
+  {
+    "id": "redhat.vscode-yaml",
+    "version": "1.14.0"
+  },
+  {
+    "id": "vscode.github-authentication",
+    "version": "1.83.1"
+  },
+  {
+    "id": "GitHub.vscode-pull-request-github",
+    "version": "0.86.0"
+  },
+  {
+    "id": "vscode.typescript-language-features",
+    "version": "1.83.1"
+  },
+  {
+    "id": "llvm-vs-code-extensions.vscode-clangd",
+    "version": "0.1.28"
+  },
+  {
+    "id": "eclipse-cdt.cdt-gdb-vscode",
+    "version": "0.0.108"
+  },
+  {
+    "id": "bmewburn.vscode-intelephense-client",
+    "version": "1.10.4"
+  },
+  {
+    "id": "ms-python.python",
+    "version": "2024.2.1"
+  },
+  {
+    "id": "ms-python.black-formatter",
+    "version": "2024.2.0"
+  },
+  {
+    "id": "ms-python.isort",
+    "version": "2023.10.1"
+  },
+  {
+    "id": "ms-toolsai.jupyter",
+    "version": "2023.9.100"
+  },
+  {
+    "id": "ms-toolsai.jupyter-keymap",
+    "version": "1.1.2"
+  },
+  {
+    "id": "ms-toolsai.jupyter-renderers",
+    "version": "1.0.17"
+  },
+  {
+    "id": "ms-toolsai.vscode-jupyter-cell-tags",
+    "version": "0.1.9"
+  },
+  {
+    "id": "ms-toolsai.vscode-jupyter-slideshow",
+    "version": "0.1.6"
+  },
+  {
+    "id": "golang.Go",
+    "version": "0.41.2"
+  },
+  {
+    "id": "ms-kubernetes-tools.vscode-kubernetes-tools",
+    "version": "1.3.16"
+  },
+  {
+    "id": "redhat.java",
+    "version": "1.29.0"
+  },
+  {
+    "id": "vscjava.vscode-java-debug",
+    "version": "0.57.0"
+  },
+  {
+    "id": "vscjava.vscode-java-test",
+    "version": "0.41.0"
+  },
+  {
+    "id": "redhat.vscode-microprofile",
+    "version": "0.11.0"
+  },
+  {
+    "id": "vscode.html-language-features",
+    "version": "1.83.1"
+  },
+  {
+    "id": "redhat.vscode-quarkus",
+    "version": "1.17.0"
+  },
+  {
+    "id": "redhat.fabric8-analytics",
+    "version": "0.9.4"
+  },
+  {
+    "id": "redhat.vscode-redhat-account",
+    "version": "0.2.0"
+  },
+  {
+    "id": "redhat.vscode-openshift-connector",
+    "version": "1.12.0"
+  },
+  {
+    "id": "xdebug.php-debug",
+    "version": "1.34.0"
+  },
+  {
+    "id": "ms-dotnettools.vscode-dotnet-runtime",
+    "version": "2.0.3"
+  },
+  {
+    "id": "muhammad-sammy.csharp",
+    "version": "2.22.5"
+  },
+  {
+    "id": "SonarSource.sonarlint-vscode",
+    "version": "4.4.2"
+  },
+  {
+    "id": "vscode.git-base",
+    "version": "1.83.1"
+  },
+  {
+    "id": "vscode.git",
+    "version": "1.83.1"
+  },
+  {
+    "id": "dbaeumer.vscode-eslint",
+    "version": "2.4.4"
+  },
+  {
+    "id": "redhat.vscode-commons",
+    "version": "0.0.6"
+  },
+  {
+    "id": "redhat.vscode-tekton-pipelines",
+    "version": "1.0.1"
+  },
+  {
+    "id": "atlassian.atlascode",
+    "version": "3.0.10"
+  },
+  {
+    "id": "JFrog.jfrog-vscode-extension",
+    "version": "2.9.6"
+  },
+  {
+    "id": "SonatypeCommunity.vscode-iq-plugin",
+    "version": "1.3.4"
+  },
+  {
+    "id": "GitLab.gitlab-workflow",
+    "version": "4.8.0"
+  },
+  {
+    "id": "timonwong.shellcheck",
+    "version": "0.37.0"
+  },
+  {
+    "id": "redhat.ansible",
+    "version": "24.4.0"
+  },
+  {
+    "id": "vscode.npm",
+    "version": "1.83.1"
+  },
+  {
+    "id": "esbenp.prettier-vscode",
+    "version": "10.4.0"
+  },
+  {
+    "id": "eamodio.gitlens",
+    "version": "14.9.0"
+  },
+  {
+    "id": "Continue.continue",
+    "version": "0.8.22"
+  }
 ]
