@@ -80,10 +80,6 @@ function clear_generated_data() {
     rm -rf ./resources
     for dir in ./devfiles/*/
     do
-      CHE_CODE_DW="${dir}/devworkspace-che-code-insiders.yaml"
-      if [[ -f "$CHE_CODE_DW" ]]; then
-        rm "${CHE_CODE_DW}"
-      fi
       CHE_CODE_DW="${dir}/devworkspace-che-code-latest.yaml"
       if [[ -f "$CHE_CODE_DW" ]]; then
         rm "${CHE_CODE_DW}"
