@@ -11770,3 +11770,21 @@
   timeWait: 27 mins
   timeBuild: 4 mins
   timeTotal: 31 mins
+- name: devspaces-devfileregistry-rhel8
+  tag: 3.14-37
+  taskId: 61003322
+  timeCreate: Fri May 3 22:24:11 2024
+  timeStart: Fri May 3 22:50:53 2024
+  timeFinish: Fri May 3 22:59:19 2024
+  timeWait: 26 mins
+  timeBuild: 8 mins
+  timeTotal: 35 mins
+- name: devspaces-operator-bundle
+  tag: 3.14-5
+  taskId: 61003681
+  timeCreate: Fri May 3 23:06:43 2024
+  timeStart: Fri May 3 23:24:17 2024
+  timeFinish: Fri May 3 23:29:42 2024
+  timeWait: 17 mins
+  timeBuild: 5 mins
+  timeTotal: 22 mins
