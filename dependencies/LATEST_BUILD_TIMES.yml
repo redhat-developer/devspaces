@@ -11923,6 +11923,15 @@
   timeWait: 0 mins
   timeBuild: 294 mins
   timeTotal: 295 mins
+- name: devspaces-traefik-rhel8
+  tag: 3.14-2
+  taskId: 61102751
+  timeCreate: Wed May 8 14:58:51 2024
+  timeStart: Wed May 8 14:59:26 2024
+  timeFinish: Wed May 8 15:30:55 2024
+  timeWait: 0 mins
+  timeBuild: 31 mins
+  timeTotal: 32 mins
 - name: devspaces-operator-bundle
   tag: 3.14-13
   taskId: 61102768
@@ -11932,3 +11941,12 @@
   timeWait: 0 mins
   timeBuild: 3 mins
   timeTotal: 3 mins
+- name: devspaces-operator-bundle
+  tag: 3.14-14
+  taskId: 61103798
+  timeCreate: Wed May 8 16:05:46 2024
+  timeStart: Wed May 8 16:06:29 2024
+  timeFinish: Wed May 8 16:10:22 2024
+  timeWait: 0 mins
+  timeBuild: 3 mins
+  timeTotal: 4 mins
