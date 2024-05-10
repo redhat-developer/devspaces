@@ -38,7 +38,7 @@ if [[ $ALLOWED_REGISTRIES ]] && [[ $ALLOWED_REGISTRIES != " " ]]; then
         for registry in $ALLOWED_REGISTRIES; do
             if [[ $container == "$registry/"* ]]; then
                 check_passed="$registry"
-            elif [[ $container == *"/ansible-creator-ee"* ]]; then
+            elif [[ $container == *"/ansible-workspace-env-reference"* ]]; then
                 check_passed="$container"
             fi
         done
@@ -64,7 +64,7 @@ if [[ $ALLOWED_TAGS ]] && [[ $ALLOWED_TAGS != " " ]]; then
         for tag in $ALLOWED_TAGS; do
             if [[ $container == *"/devspaces/"*":$tag" ]]; then
                 check_passed="$tag"
-            elif [[ $container == *"/jboss-eap"* ]] || [[ $container == *"/mongodb"* ]] || [[ $container == *"/ansible-creator-ee"* ]]; then
+            elif [[ $container == *"/jboss-eap"* ]] || [[ $container == *"/mongodb"* ]] || [[ $container == *"/ansible-workspace-env-reference"* ]]; then
                 check_passed="$container"
             fi
         done
