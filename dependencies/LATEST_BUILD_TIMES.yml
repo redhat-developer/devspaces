@@ -12121,3 +12121,21 @@
   timeWait: 0 mins
   timeBuild: 3 mins
   timeTotal: 4 mins
+- name: devspaces-dashboard-rhel8
+  tag: 3.14-10
+  taskId: 61194811
+  timeCreate: Mon May 13 11:06:38 2024
+  timeStart: Mon May 13 11:07:10 2024
+  timeFinish: Mon May 13 11:33:05 2024
+  timeWait: 0 mins
+  timeBuild: 25 mins
+  timeTotal: 26 mins
+- name: devspaces-operator-bundle
+  tag: 3.14-25
+  taskId: 61195760
+  timeCreate: Mon May 13 11:41:35 2024
+  timeStart: Mon May 13 11:44:24 2024
+  timeFinish: Mon May 13 11:49:45 2024
+  timeWait: 2 mins
+  timeBuild: 5 mins
+  timeTotal: 8 mins
