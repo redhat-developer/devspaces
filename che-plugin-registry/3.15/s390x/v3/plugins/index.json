@@ -1,0 +1,31 @@
+[
+  {
+    "id": "che-incubator/che-code/latest",
+    "description": "Red Hat OpenShift Dev Spaces with Microsoft Visual Studio Code - Open Source IDE",
+    "displayName": "VS Code - Open Source",
+    "links": {
+      "devfile": "/v3/plugins/che-incubator/che-code/latest/devfile.yaml"
+    },
+    "name": "che-code",
+    "publisher": "che-incubator",
+    "type": "Che Editor",
+    "version": "latest",
+    "icon": "/v3/images/vscode.svg"
+  },
+  {
+    "id": "che-incubator/che-idea/latest",
+    "description": "Red Hat OpenShift Dev Spaces with JetBrains IntelliJ IDEA Community IDE",
+    "displayName": "IntelliJ IDEA Community",
+    "links": {
+      "devfile": "/v3/plugins/che-incubator/che-idea/latest/devfile.yaml"
+    },
+    "tags": [
+      "Tech-Preview"
+    ],
+    "name": "che-idea",
+    "publisher": "che-incubator",
+    "type": "Che Editor",
+    "version": "latest",
+    "icon": "/v3/images/intellij-idea.svg"
+  }
+]
