@@ -12220,3 +12220,21 @@
   timeWait: 0 mins
   timeBuild: 4 mins
   timeTotal: 4 mins
+- name: devspaces-operator
+  tag: 3.14-3
+  taskId: 61337819
+  timeCreate: Mon May 20 09:16:21 2024
+  timeStart: Mon May 20 09:16:45 2024
+  timeFinish: Mon May 20 09:33:32 2024
+  timeWait: 0 mins
+  timeBuild: 16 mins
+  timeTotal: 17 mins
+- name: devspaces-operator-bundle
+  tag: 3.14-30
+  taskId: 61338441
+  timeCreate: Mon May 20 09:41:10 2024
+  timeStart: Mon May 20 09:41:31 2024
+  timeFinish: Mon May 20 09:45:32 2024
+  timeWait: 0 mins
+  timeBuild: 4 mins
+  timeTotal: 4 mins
