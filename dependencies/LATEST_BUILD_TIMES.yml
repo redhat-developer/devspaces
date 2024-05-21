@@ -12310,3 +12310,48 @@
   timeWait: 0 mins
   timeBuild: 3 mins
   timeTotal: 3 mins
+- name: devspaces-imagepuller-rhel8
+  tag: 3.14-3
+  taskId: 61373561
+  timeCreate: Tue May 21 13:49:19 2024
+  timeStart: Tue May 21 14:38:31 2024
+  timeFinish: Tue May 21 14:53:20 2024
+  timeWait: 49 mins
+  timeBuild: 14 mins
+  timeTotal: 64 mins
+- name: devspaces-idea-rhel8
+  tag: 3.14-3
+  taskId: 61373806
+  timeCreate: Tue May 21 14:00:53 2024
+  timeStart: Tue May 21 14:41:43 2024
+  timeFinish: Tue May 21 14:58:49 2024
+  timeWait: 40 mins
+  timeBuild: 17 mins
+  timeTotal: 57 mins
+- name: devspaces-operator
+  tag: 3.14-6
+  taskId: 61374060
+  timeCreate: Tue May 21 14:10:11 2024
+  timeStart: Tue May 21 14:51:42 2024
+  timeFinish: Tue May 21 15:09:33 2024
+  timeWait: 41 mins
+  timeBuild: 17 mins
+  timeTotal: 59 mins
+- name: devspaces-server-rhel8
+  tag: 3.14-3
+  taskId: 61374092
+  timeCreate: Tue May 21 14:11:38 2024
+  timeStart: Tue May 21 14:51:43 2024
+  timeFinish: Tue May 21 15:02:06 2024
+  timeWait: 40 mins
+  timeBuild: 10 mins
+  timeTotal: 50 mins
+- name: devspaces-operator-bundle
+  tag: 3.14-36
+  taskId: 61375986
+  timeCreate: Tue May 21 15:15:38 2024
+  timeStart: Tue May 21 15:24:15 2024
+  timeFinish: Tue May 21 15:28:41 2024
+  timeWait: 8 mins
+  timeBuild: 4 mins
+  timeTotal: 13 mins
