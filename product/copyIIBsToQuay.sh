@@ -46,13 +46,15 @@ setDefaults () {
         if [[ ${MIDSTM_BRANCH} != "devspaces-"*"-rhel-"* ]]; then MIDSTM_BRANCH="devspaces-3-rhel-8"; fi
     fi
 
-    if [[ -f dependencies/job-config.json ]]; then
-        jobconfigjson=dependencies/job-config.json
-    elif [[ -f ${SCRIPT_DIR}/../dependencies/job-config.json ]]; then
-        jobconfigjson=${SCRIPT_DIR}/../dependencies/job-config.json
+    if [[ "${MIDSTM_BRANCH}" =  "devspaces-3-rhel-8" ]]; then
+        if [[ -f dependencies/job-config.json ]]; then
+            jobconfigjson=dependencies/job-config.json
+        elif [[ -f ${SCRIPT_DIR}/../dependencies/job-config.json ]]; then
+            jobconfigjson=${SCRIPT_DIR}/../dependencies/job-config.json
+        fi
     else
         pushd /tmp >/dev/null || exit
-        curl -sSLO https://raw.githubusercontent.com/redhat-developer/devspaces/"${MIDSTM_BRANCH}"/dependencies/job-config.json
+        curl -sSLO https://raw.githubusercontent.com/redhat-developer/devspaces/devspaces-3-rhel-8/dependencies/job-config.json
         jobconfigjson=/tmp/job-config.json
         popd >/dev/null || exit 
     fi
