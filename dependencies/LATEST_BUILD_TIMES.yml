@@ -12454,6 +12454,15 @@
   timeWait: 91 mins
   timeBuild: 17 mins
   timeTotal: 109 mins
+- name: devspaces-code-rhel8
+  tag: 3.14-15
+  taskId: 61520034
+  timeCreate: Tue May 28 17:14:58 2024
+  timeStart: Tue May 28 17:56:50 2024
+  timeFinish: Tue May 28 22:28:42 2024
+  timeWait: 41 mins
+  timeBuild: 271 mins
+  timeTotal: 313 mins
 - name: devspaces-operator-bundle
   tag: 3.14-40
   taskId: 61521401
@@ -12463,3 +12472,48 @@
   timeWait: 16 mins
   timeBuild: 5 mins
   timeTotal: 21 mins
+- name: devspaces-udi-rhel8
+  tag: 3.14-6
+  taskId: 61525525
+  timeCreate: Tue May 28 20:57:17 2024
+  timeStart: Tue May 28 21:21:41 2024
+  timeFinish: Tue May 28 22:27:32 2024
+  timeWait: 24 mins
+  timeBuild: 65 mins
+  timeTotal: 90 mins
+- name: devspaces-dashboard-rhel8
+  tag: 3.14-13
+  taskId: 61525535
+  timeCreate: Tue May 28 20:58:19 2024
+  timeStart: Tue May 28 21:23:12 2024
+  timeFinish: Tue May 28 21:47:07 2024
+  timeWait: 24 mins
+  timeBuild: 23 mins
+  timeTotal: 48 mins
+- name: devspaces-pluginregistry-rhel8
+  tag: 3.14-8
+  taskId: 61525744
+  timeCreate: Tue May 28 21:08:14 2024
+  timeStart: Tue May 28 21:23:14 2024
+  timeFinish: Tue May 28 22:17:38 2024
+  timeWait: 15 mins
+  timeBuild: 54 mins
+  timeTotal: 69 mins
+- name: devspaces-operator-bundle
+  tag: 3.14-41
+  taskId: 61526528
+  timeCreate: Tue May 28 22:17:15 2024
+  timeStart: Tue May 28 22:57:44 2024
+  timeFinish: Tue May 28 23:01:57 2024
+  timeWait: 40 mins
+  timeBuild: 4 mins
+  timeTotal: 44 mins
+- name: devspaces-server-rhel8
+  tag: 3.14-7
+  taskId: 61526812
+  timeCreate: Tue May 28 23:03:47 2024
+  timeStart: Tue May 28 23:04:41 2024
+  timeFinish: Tue May 28 23:12:43 2024
+  timeWait: 0 mins
+  timeBuild: 8 mins
+  timeTotal: 8 mins
