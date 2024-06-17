@@ -12823,3 +12823,30 @@
   timeWait: 0 mins
   timeBuild: 3 mins
   timeTotal: 4 mins
+- name: devspaces-configbump-rhel8
+  tag: 3.14-6.1718294419
+  taskId: 61921799
+  timeCreate: Thu Jun 13 12:00:19 2024
+  timeStart: Thu Jun 13 12:02:16 2024
+  timeFinish: Thu Jun 13 12:16:47 2024
+  timeWait: 1 mins
+  timeBuild: 14 mins
+  timeTotal: 16 mins
+- name: devspaces-machineexec-rhel8
+  tag: 3.14-5.1718294422
+  taskId: 61921801
+  timeCreate: Thu Jun 13 12:00:22 2024
+  timeStart: Thu Jun 13 12:04:32 2024
+  timeFinish: Thu Jun 13 12:11:48 2024
+  timeWait: 4 mins
+  timeBuild: 7 mins
+  timeTotal: 11 mins
+- name: devspaces-operator-bundle
+  tag: 3.14-52
+  taskId: 61980096
+  timeCreate: Mon Jun 17 07:33:01 2024
+  timeStart: Mon Jun 17 07:33:15 2024
+  timeFinish: Mon Jun 17 07:36:35 2024
+  timeWait: 0 mins
+  timeBuild: 3 mins
+  timeTotal: 3 mins
