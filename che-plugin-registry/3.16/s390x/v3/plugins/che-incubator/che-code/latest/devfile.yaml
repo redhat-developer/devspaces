@@ -1,0 +1,87 @@
+schemaVersion: 2.2.2
+metadata:
+  name: che-code
+  displayName: VS Code - Open Source
+  description: Red Hat OpenShift Dev Spaces with Microsoft Visual Studio Code - Open Source IDE
+  icon: /images/vscode.svg
+  attributes:
+    publisher: che-incubator
+    version: latest
+    title: Red Hat OpenShift Dev Spaces with Microsoft Visual Studio Code - Open Source IDE
+    repository: https://github.com/che-incubator/che-code
+    firstPublicationDate: '2022-07-19'
+    skipMetaYaml: true
+commands:
+  - id: init-container-command
+    apply:
+      component: che-code-injector
+  - id: init-che-code-command
+    exec:
+      component: che-code-runtime-description
+      commandLine: nohup /checode/entrypoint-volume.sh > /checode/entrypoint-logs.txt 2>&1 &
+events:
+  preStart:
+    - init-container-command
+  postStart:
+    - init-che-code-command
+components:
+  - name: che-code-injector
+    container:
+      image: registry.redhat.io/devspaces/code-rhel8:3.15
+      command:
+        - /entrypoint-init-container.sh
+      volumeMounts:
+        - name: checode
+          path: /checode
+      memoryLimit: 256Mi
+      memoryRequest: 32Mi
+      cpuLimit: 500m
+      cpuRequest: 30m
+  - name: che-code-runtime-description
+    container:
+      image: registry.redhat.io/devspaces/udi-rhel8:3.15
+      memoryLimit: 1024Mi
+      memoryRequest: 256Mi
+      cpuLimit: 500m
+      cpuRequest: 30m
+      volumeMounts:
+        - name: checode
+          path: /checode
+      endpoints:
+        - name: che-code
+          attributes:
+            type: main
+            cookiesAuthEnabled: true
+            discoverable: false
+            urlRewriteSupported: true
+          targetPort: 3100
+          exposure: public
+          secure: true
+          protocol: https
+        - name: code-redirect-1
+          targetPort: 13131
+          exposure: public
+          protocol: https
+          attributes:
+            discoverable: false
+            urlRewriteSupported: false
+        - name: code-redirect-2
+          targetPort: 13132
+          exposure: public
+          protocol: https
+          attributes:
+            discoverable: false
+            urlRewriteSupported: false
+        - name: code-redirect-3
+          targetPort: 13133
+          exposure: public
+          protocol: https
+          attributes:
+            discoverable: false
+            urlRewriteSupported: false
+    attributes:
+      app.kubernetes.io/component: che-code-runtime
+      app.kubernetes.io/part-of: che-code.eclipse.org
+      controller.devfile.io/container-contribution: true
+  - name: checode
+    volume: {}
