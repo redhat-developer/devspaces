@@ -13,6 +13,8 @@
 
 # https://registry.access.redhat.com/rhel8/postgresql-15
 FROM registry.redhat.io/rhel8/postgresql-15:1-50.1708914865
+# rhel9-2-els is used for the build in Brew
+# FROM registry.redhat.io/rhel9-2-els/rhel:9.2-1222
 USER 0
 WORKDIR /
 
@@ -41,6 +43,9 @@ ENV BOOTSTRAP=${BOOTSTRAP}
 COPY ./build/dockerfiles/content_set*.repo /etc/yum.repos.d/
 COPY ./build/dockerfiles/rhel.install.sh /tmp
 RUN /tmp/rhel.install.sh && rm -f /tmp/rhel.install.sh
+
+# Install postgresql and nodejs into rhel9-2-els
+# RUN dnf module install postgresql:15/server nodejs:18/development -y
 
 # Copy OpenVSX server files
 COPY --chown=0:0 /openvsx-server.tar.gz .
@@ -135,8 +140,8 @@ RUN chmod 777 /var/run/postgresql && \
 
 RUN \
     echo "Change permissions for postgres user" && \
-    chmod -R g+rwx /var/lib/pgsql/15 /var/lib/pgsql/data /var/lib/pgsql/backups && \
-    chgrp -R 0 /var/lib/pgsql/15 /var/lib/pgsql/data /var/lib/pgsql/backups && \
+    chmod -R g+rwx /var/lib/pgsql/15 /var/lib/pgsql/15 /var/lib/pgsql/data /var/lib/pgsql/backups && \
+    chgrp -R 0 /var/lib/pgsql/15 /var/lib/pgsql/15 /var/lib/pgsql/data /var/lib/pgsql/backups && \
     mv /var/lib/pgsql/15/data/database /var/lib/pgsql/15/data/old
 
 ARG DS_BRANCH=devspaces-3-rhel-8
