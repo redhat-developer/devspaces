@@ -75,7 +75,6 @@ COPY /build/scripts/*.sh resources.tgz che-*.yaml /build/
 RUN chmod 755 /usr/local/bin/*.sh && \
     tar --no-same-owner -xvf /build/resources.tgz -C /build/ && \
     rm -rf /build/output/v3/che-editors.yaml && \
-    /build/list_referenced_images.sh /build/output/v3 --use-generated-content > /build/output/v3/external_images.txt && cat /build/output/v3/external_images.txt && \
     chmod -R g+rwX /build && \
     cp -r /build/output/v3 /var/www/html/
 
