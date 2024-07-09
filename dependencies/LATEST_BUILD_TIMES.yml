@@ -12724,6 +12724,15 @@
   timeWait: 0 mins
   timeBuild: 59 mins
   timeTotal: 60 mins
+- name: devspaces-udi-rhel8
+  tag: 3.15-4
+  taskId: 62474378
+  timeCreate: Tue Jul 9 16:05:51 2024
+  timeStart: Tue Jul 9 16:10:19 2024
+  timeFinish: Tue Jul 9 17:08:42 2024
+  timeWait: 4 mins
+  timeBuild: 58 mins
+  timeTotal: 62 mins
 - name: devspaces-idea-rhel8
   tag: 3.15-4
   taskId: 62474429
@@ -12742,3 +12751,12 @@
   timeWait: 13 mins
   timeBuild: 4 mins
   timeTotal: 18 mins
+- name: devspaces-operator-bundle
+  tag: 3.15-21
+  taskId: 62476962
+  timeCreate: Tue Jul 9 18:01:49 2024
+  timeStart: Tue Jul 9 18:11:24 2024
+  timeFinish: Tue Jul 9 18:15:26 2024
+  timeWait: 9 mins
+  timeBuild: 4 mins
+  timeTotal: 13 mins
