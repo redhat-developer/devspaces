@@ -46,7 +46,7 @@ fi
 
 ${DNF} -y install \
     java-17-openjdk httpd runc coreutils-single glibc-minimal-langpack glibc-langpack-en langpacks-en glibc-locale-source nc \
-    net-tools procps vi curl wget tar gzip jq findutils bash git skopeo \
+    net-tools procps vi wget tar gzip jq findutils bash git skopeo \
     --releasever 8 --nodocs
 
 ${DNF} -y module reset nodejs && \
