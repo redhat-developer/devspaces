@@ -37,7 +37,7 @@ ENV BOOTSTRAP=${BOOTSTRAP}
 # built in Brew, use tarball in lookaside cache; built locally with BOOTSTRAP = true, comment this out to create the tarball
 # COPY root-local.tgz /tmp/root-local.tgz
 
-COPY ./build/dockerfiles/content_set*.repo /etc/yum.repos.d/
+COPY ./build/dockerfiles/content_sets_rhel9.repo /etc/yum.repos.d/
 COPY ./build/dockerfiles/rhel.install.sh /tmp
 RUN /tmp/rhel.install.sh && rm -f /tmp/rhel.install.sh
 
