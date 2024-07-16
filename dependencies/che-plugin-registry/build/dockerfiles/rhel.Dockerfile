@@ -11,6 +11,7 @@
 #   IBM Corporation - implementation
 #
 
+# https://registry.access.redhat.com/rhel9-2-els/rhel
 FROM registry.redhat.io/rhel9-2-els/rhel:9.2-1222
 USER 0
 WORKDIR /
