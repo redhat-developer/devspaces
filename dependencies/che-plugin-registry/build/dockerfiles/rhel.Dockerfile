@@ -11,7 +11,7 @@
 #   IBM Corporation - implementation
 #
 
-FROM registry.redhat.io/rhel8/postgresql-15:1-50.1708914865
+FROM registry.redhat.io/rhel9-2-els/rhel:9.2-1222
 USER 0
 WORKDIR /
 
@@ -40,6 +40,9 @@ ENV BOOTSTRAP=${BOOTSTRAP}
 COPY ./build/dockerfiles/content_set*.repo /etc/yum.repos.d/
 COPY ./build/dockerfiles/rhel.install.sh /tmp
 RUN /tmp/rhel.install.sh && rm -f /tmp/rhel.install.sh
+
+# Install postgresql and nodejs
+RUN dnf module install postgresql:15/server nodejs:18/development -y
 
 # Copy OpenVSX server files
 COPY --chown=0:0 /openvsx-server.tar.gz .
