@@ -115,9 +115,6 @@ ENV LC_ALL=en_US.UTF-8 \
     LANGUAGE=en_US.UTF-8 \
     PGDATA=/var/lib/pgsql/15/data/database \
     PATH="/tmp/opt/ovsx/bin:$PATH" \
-    # use a cached version of the license list and not go over the internet
-    # it's needed for openvsx server when vsix is publishing on AirGap environment
-    # https://issues.redhat.com/browse/CRW-3481
     JVM_ARGS="-DSPDXParser.OnlyUseLocalLicenses=true -Xmx2048m"
 
 RUN \
