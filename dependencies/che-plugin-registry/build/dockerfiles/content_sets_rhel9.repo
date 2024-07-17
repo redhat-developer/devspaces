@@ -1,0 +1,13 @@
+[rhel-9-for-appstream-rpms-pulp]
+name=rhel-9-for-appstream-rpms-pulp
+baseurl=https://rhsm-pulp.corp.redhat.com/content/dist/rhel9/9/$basearch/appstream/os
+enabled=0
+gpgcheck=0
+skip_if_unavailable=True
+ 
+[rhel-9-for-baseos-rpms-pulp]
+name=rhel-9-for-baseos-rpms-pulp
+baseurl=https://rhsm-pulp.corp.redhat.com/content/dist/rhel9/9/$basearch/baseos/os
+enabled=0
+gpgcheck=0
+skip_if_unavailable=True
