@@ -1,79 +1,3 @@
-containers/devspaces-code-rhel8-container:3.15.0/ubi8/nodejs-20:1-50.1720405266 as checode-linux-libc-ubi8-builder
-containers/devspaces-code-rhel8-container:3.15.0/ubi9/nodejs-20:1-48.1720017855 as checode-linux-libc-ubi9-builder
-containers/devspaces-code-rhel8-container:3.15.0/rhel8/go-toolset:1.21.11-1 as machineexec-builder
-containers/devspaces-code-rhel8-container:3.15.0/ubi8:8.10-1020 as ubi-builder
-containers/devspaces-code-rhel8-container:3.15.0/ubi8-minimal:8.10-1018
-FROM ubi8/nodejs-20:1-50.1720405266 as checode-linux-libc-ubi8-builder
-COPY $REMOTE_SOURCES $REMOTE_SOURCES_DIR
-COPY $REMOTE_SOURCES/devspaces-images-code/app/devspaces-code/build/dockerfiles/content_sets_pulp.repo /etc/yum.repos.d/
-    dnf -y -q module reset   python39; dnf -y -q module install python39:3.9 && \
-    dnf install -y nodejs-devel libsecret-devel libsecret curl make cmake gcc gcc-c++ \
-COPY artifacts/ripgrep-*.tar.gz /tmp/vscode-ripgrep-cache-1.15.9/
-COPY artifacts/*.vsix /tmp/builtInExtensions/
-RUN sed -i -r -e '/function yarnInstall/ !s|^[^#]*yarnInstal|//&|' build/npm/postinstall.js
-    echo 'build_from_source "true"' >> $REMOTE_SOURCES_DIR/devspaces-images-code/app/devspaces-code/code/.yarnrc; \
-    && NODE_VERSION=$(cat $REMOTE_SOURCES_DIR/devspaces-images-code/app/devspaces-code/code/remote/.yarnrc | grep target | cut -d ' ' -f 2 | tr -d '"') \
-    && echo "#####>> Arch & Version: $NODE_ARCH; $NODE_VERSION <<#####" \
-    && mkdir -p $REMOTE_SOURCES_DIR/devspaces-images-code/app/devspaces-code/code/.build/node/v${NODE_VERSION}/linux-${NODE_ARCH} \
-    && echo "caching $REMOTE_SOURCES_DIR/devspaces-images-code/app/devspaces-code/code/.build/node/v${NODE_VERSION}/linux-${NODE_ARCH}/node"; \
-    cp /usr/bin/node $REMOTE_SOURCES_DIR/devspaces-images-code/app/devspaces-code/code/.build/node/v${NODE_VERSION}/linux-${NODE_ARCH}/node; \
-FROM ubi9/nodejs-20:1-48.1720017855 as checode-linux-libc-ubi9-builder
-COPY $REMOTE_SOURCES $REMOTE_SOURCES_DIR
-COPY $REMOTE_SOURCES/devspaces-images-code/app/devspaces-code/build/dockerfiles/content_sets_pulp.repo /etc/yum.repos.d/
-    dnf install -y \
-COPY artifacts/ripgrep-*.tar.gz /tmp/vscode-ripgrep-cache-1.15.9/
-COPY artifacts/*.vsix /tmp/builtInExtensions/
-RUN sed -i -r -e '/function yarnInstall/ !s|^[^#]*yarnInstal|//&|' build/npm/postinstall.js
-    echo 'build_from_source "true"' >> $REMOTE_SOURCES_DIR/devspaces-images-code/app/devspaces-code/code/.yarnrc; \
-    && NODE_VERSION=$(cat $REMOTE_SOURCES_DIR/devspaces-images-code/app/devspaces-code/code/remote/.yarnrc | grep target | cut -d ' ' -f 2 | tr -d '"') \
-    && echo "#####>> Arch & Version: $NODE_ARCH; $NODE_VERSION <<#####" \
-    && mkdir -p $REMOTE_SOURCES_DIR/devspaces-images-code/app/devspaces-code/code/.build/node/v${NODE_VERSION}/linux-${NODE_ARCH} \
-    && echo "caching $REMOTE_SOURCES_DIR/devspaces-images-code/app/devspaces-code/code/.build/node/v${NODE_VERSION}/linux-${NODE_ARCH}/node"; \
-    cp /usr/bin/node $REMOTE_SOURCES_DIR/devspaces-images-code/app/devspaces-code/code/.build/node/v${NODE_VERSION}/linux-${NODE_ARCH}/node; \
-FROM rhel8/go-toolset:1.21.11-1 as machineexec-builder
-COPY $REMOTE_SOURCES $REMOTE_SOURCES_DIR
-RUN CGO_ENABLED=0 GOOS=linux go build -mod=vendor -a -ldflags '-w -s' -a -installsuffix cgo -o che-machine-exec . && \
-FROM ubi8:8.10-1020 as ubi-builder
-RUN yum install --installroot /mnt/rootfs tar gzip brotli libstdc++ coreutils glibc-minimal-langpack --releasever 8 --setopt install_weak_deps=false --nodocs -y && yum --installroot /mnt/rootfs clean all
-RUN rm -rf /mnt/rootfs/var/cache/* /mnt/rootfs/var/log/dnf* /mnt/rootfs/var/log/yum.*
-COPY /build/scripts/entrypoint*.sh /mnt/rootfs/
-COPY /build/remote-config/settings.json /mnt/rootfs/remote/data/Machine/settings.json
-COPY --from=checode-linux-libc-ubi8-builder --chown=0:0 /checode /mnt/rootfs/checode-linux-libc/ubi8
-COPY --from=checode-linux-libc-ubi9-builder --chown=0:0 /checode /mnt/rootfs/checode-linux-libc/ubi9
-COPY --from=machineexec-builder --chown=0:0 /rootfs/go/bin/che-machine-exec /mnt/rootfs/bin/machine-exec
-FROM ubi8-minimal:8.10-1018
-COPY --from=ubi-builder /mnt/rootfs/ /
-
-containers/devspaces-configbump-rhel8-container:3.15.0/registry.redhat.io/rhel9-2-els/rhel:9.2-1260 as builder
-containers/devspaces-configbump-rhel8-container:3.15.0/registry.redhat.io/rhel9-2-els/rhel:9.2-1260 as runtime
-FROM registry.redhat.io/rhel9-2-els/rhel:9.2-1260 as builder
-COPY $REMOTE_SOURCES $REMOTE_SOURCES_DIR
-RUN dnf -y install golang && \
-    GOOS=linux GOARCH=${ARCH} go build -a -ldflags '-w -s' -a -installsuffix cgo -o configbump cmd/configbump/main.go && \
-FROM registry.redhat.io/rhel9-2-els/rhel:9.2-1260 as runtime
-RUN dnf -y install shadow-utils && \
-    adduser appuser && \
-    dnf -y clean all && rm -rf /var/cache/yum && \
-    echo "Installed Packages" && rpm -qa | sort -V && echo "End Of Installed Packages"
-COPY --from=builder /usr/local/bin/configbump /usr/local/bin/configbump
-
-containers/devspaces-dashboard-rhel8-container:3.15.0/ubi8/nodejs-18:1-114 as builder
-containers/devspaces-dashboard-rhel8-container:3.15.0/ubi8/nodejs-18:1-114
-FROM ubi8/nodejs-18:1-114 as builder
-RUN dnf module install -y nodejs:18/development
-COPY $REMOTE_SOURCES $REMOTE_SOURCES_DIR
-COPY .yarn/releases $REMOTE_SOURCES_DIR/devspaces-images-dashboard/app/devspaces-dashboard/.yarn/releases/
-RUN yarn config set nodedir /usr; yarn config set unsafe-perm true && yarn install
-RUN yarn workspace @eclipse-che/dashboard-backend install --production
-FROM ubi8/nodejs-18:1-114
-    yum -y -q update && \
-    yum -y -q clean all && rm -rf /var/cache/yum && \
-    echo "Installed Packages" && rpm -qa | sort -V && echo "End Of Installed Packages"
-COPY --from=builder ${BACKEND_LIB} /backend
-COPY --from=builder ${BACKEND_NODE_MODULES} /backend/node_modules
-COPY --from=builder ${FRONTEND_LIB} /public
-COPY --from=builder ${DEVFILE_REGISTRY} /public/dashboard/devfile-registry
-
 containers/devspaces-devfileregistry-rhel8-container:3.15.0/registry.access.redhat.com/ubi8/python-311:1-68 as builder
 containers/devspaces-devfileregistry-rhel8-container:3.15.0/registry.access.redhat.com/ubi8/httpd-24:1-327 AS registry
 FROM registry.access.redhat.com/ubi8/python-311:1-68 as builder
@@ -111,20 +35,6 @@ COPY --chown=0:0 asset-machine-exec ide/bin/machine-exec
 FROM registry.redhat.io/rhel9-2-els/rhel:9.2-1290
 COPY --from=ubi-builder /mnt/rootfs/ /
 
-containers/devspaces-imagepuller-rhel8-container:3.15.0/registry.redhat.io/rhel9-2-els/rhel:9.2-1260 as builder
-containers/devspaces-imagepuller-rhel8-container:3.15.0/registry.redhat.io/rhel9-2-els/rhel:9.2-1260
-FROM registry.redhat.io/rhel9-2-els/rhel:9.2-1260 as builder
-COPY $REMOTE_SOURCES $REMOTE_SOURCES_DIR
-RUN dnf -y install golang make && \
-    adduser appuser && \
-FROM registry.redhat.io/rhel9-2-els/rhel:9.2-1260
-RUN dnf -y update && dnf clean all && rm -rf /var/cache/yum && echo "Installed Packages" && rpm -qa | sort -V && echo "End Of Installed Packages"
-COPY --from=builder /etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem /etc/pki/ca-trust/extracted/pem/
-COPY --from=builder /etc/pki/tls/certs/ca-bundle.crt /etc/pki/tls/certs/
-COPY --from=builder /etc/passwd /etc/passwd
-COPY --from=builder $REMOTE_SOURCES_DIR/devspaces-images-imagepuller/app/devspaces-imagepuller/bin/kubernetes-image-puller /
-COPY --from=builder $REMOTE_SOURCES_DIR/devspaces-images-imagepuller/app/devspaces-imagepuller/bin/sleep /bin/sleep
-
 containers/devspaces-machineexec-rhel8-container:3.15.0/registry.redhat.io/rhel9-2-els/rhel:9.2-1260 as builder
 containers/devspaces-machineexec-rhel8-container:3.15.0/registry.redhat.io/rhel9-2-els/rhel:9.2-1260 as runtime
 FROM registry.redhat.io/rhel9-2-els/rhel:9.2-1260 as builder
@@ -135,27 +45,6 @@ RUN dnf -y install golang && \
 FROM registry.redhat.io/rhel9-2-els/rhel:9.2-1260 as runtime
 COPY --from=builder /rootfs /
 RUN dnf install -y openssl; dnf clean -y all
-
-containers/devspaces-operator-rhel8-container:3.15.0/registry.redhat.io/rhel9-2-els/rhel:9.2-1290 as builder
-containers/devspaces-operator-rhel8-container:3.15.0/registry.redhat.io/rhel9-2-els/rhel:9.2-1290
-FROM registry.redhat.io/rhel9-2-els/rhel:9.2-1290 as builder
-COPY $REMOTE_SOURCES $REMOTE_SOURCES_DIR
-RUN dnf -y install golang
-COPY go.mod go.mod
-COPY go.sum go.sum
-COPY main.go main.go
-COPY vendor/ vendor/
-COPY api/ api/
-COPY config/ config/
-COPY controllers/ controllers/
-COPY pkg/ pkg/
-COPY editors-definitions /tmp/editors-definitions
-FROM registry.redhat.io/rhel9-2-els/rhel:9.2-1290
-    dnf -y clean all && rm -rf /var/cache/yum && echo "Installed Packages" && rpm -qa | sort -V && echo "End Of Installed Packages"
-COPY --from=builder /tmp/devworkspace-operator/templates /tmp/devworkspace-operator/templates
-COPY --from=builder /tmp/header-rewrite-traefik-plugin /tmp/header-rewrite-traefik-plugin
-COPY --from=builder /tmp/editors-definitions /tmp/editors-definitions
-COPY --from=builder $REMOTE_SOURCES_DIR/devspaces-images-operator/app/devspaces-operator/che-operator /manager
 
 containers/devspaces-operator-bundle-rhel8-container:3.15.0/scratch
 FROM scratch
@@ -188,69 +77,4 @@ RUN dnf -y install java-17-openjdk-headless tar gzip shadow-utils findutils && \
     dnf -y clean all && rm -rf /var/cache/yum && echo "Installed Packages" && rpm -qa | sort -V && echo "End Of Installed Packages" && \
     adduser -G root user && mkdir -p /home/user/devspaces
 COPY artifacts/assembly-main.tar.gz /tmp/assembly-main.tar.gz
-
-containers/devspaces-traefik-rhel8-container:3.15.0/registry.access.redhat.com/ubi8-minimal:8.10-896 as builder
-containers/devspaces-traefik-rhel8-container:3.15.0/registry.access.redhat.com/ubi8-minimal:8.10-896 
-FROM registry.access.redhat.com/ubi8-minimal:8.10-896 as builder
-COPY $REMOTE_SOURCES $REMOTE_SOURCES_DIR
-ENV NODEJS_VERSION="12:8020020200326104117/development"
-RUN microdnf -y install dnf && \
-    dnf -y -q install python2 golang-1.20.12 make gcc-c++ openssl-devel && \
-    dnf -y -q module install nodejs:$NODEJS_VERSION && \
-    yarn install && \
-FROM registry.access.redhat.com/ubi8-minimal:8.10-896 
-COPY --from=builder $REMOTE_SOURCES_DIR/devspaces-images-traefik/app/devspaces-traefik/script/ca-certificates.crt /etc/ssl/certs/
-COPY --from=builder $REMOTE_SOURCES_DIR/devspaces-images-traefik/app/devspaces-traefik/traefik /traefik
-    microdnf -y clean all && rm -rf /var/cache/yum && echo "Installed Packages" && rpm -qa | sort -V && echo "End Of Installed Packages" 
-    TRAEFIK_VERSION="v2.10.0" \
-
-containers/devspaces-udi-rhel8-container:3.15.0/rhel8/go-toolset:1.21.11-1 as go-builder
-containers/devspaces-udi-rhel8-container:3.15.0/ubi8-minimal:8.10-1018
-FROM rhel8/go-toolset:1.21.11-1 as go-builder
-COPY $REMOTE_SOURCES $REMOTE_SOURCES_DIR
-    dnf -y -q install golang make gzip which openshift-clients && \
-    dnf -y -q install perl texinfo texinfo-tex git && \
-    make install && \
-FROM ubi8-minimal:8.10-1018
-    NODEJS_VERSION="18" \
-    PYTHON_VERSION="3.11" \
-    PHP_VERSION="7.4" \
-    XDEBUG_VERSION="3.1.6" \
-ADD etc/storage.conf $HOME/.config/containers/storage.conf
-COPY $REMOTE_SOURCES $REMOTE_SOURCES_DIR
-COPY --chown=0:0 etc/podman-wrapper.sh /usr/bin/
-COPY --chown=0:0 etc/.stow-local-ignore /home/tooling/
-    microdnf install -y dnf && \
-    dnf -y -q install 'dnf-command(config-manager)' && \
-    dnf -y -q module install container-tools:rhel8 maven:3.6 nodejs:$NODEJS_VERSION php:$PHP_VERSION && \
-    dnf -y -q install --setopt=tsflags=nodocs \
-        php php-cli php-fpm php-opcache php-devel php-pear php-gd php-intl php-mysqli php-zlib php-curl \
-        bash bash-completion tar gzip unzip bzip2 which shadow-utils findutils wget curl sudo git git-lfs procps-ng tree vim \
-    dnf -y -q reinstall shadow-utils && \
-    dnf -y -q clean all && rm -rf /var/cache/yum && \
-    sed -i -e 's|^#mount_program|mount_program|g' -e '/additionalimage.*/a "/var/lib/shared",' /etc/containers/storage.conf && \
-    python${PYTHON_VERSION} -m pip install --user --no-cache-dir --upgrade pip setuptools pytest flake8 virtualenv yq && \
-    echo -e "#/usr/bin/bash\n/usr/bin/python${PYTHON_VERSION} -m pip \$*" | sed -r -e "s@#@#\!@" > /usr/bin/pip && \
-    echo -e "#/usr/bin/bash\n/usr/bin/python${PYTHON_VERSION} -m pip \$*" | sed -r -e "s@#@#\!@" > /usr/bin/pip${PYTHON_VERSION} && \
-    echo -e "#/usr/bin/bash\n/usr/bin/python${PYTHON_VERSION} -m flake8 \$*" | sed -r -e "s@#@#\!@" > /usr/bin/flake8 && \
-    echo -e "#/usr/bin/bash\n/usr/bin/python${PYTHON_VERSION} -m flake8 \$*" | sed -r -e "s@#@#\!@" > /usr/bin/flake8${PYTHON_VERSION} && \
-    echo -e "#/usr/bin/bash\n/usr/bin/python${PYTHON_VERSION} -m pytest \$*" | sed -r -e "s@#@#\!@" > /usr/bin/pytest && \
-    echo -e "#/usr/bin/bash\n/usr/bin/python${PYTHON_VERSION} -m pytest \$*" | sed -r -e "s@#@#\!@" > /usr/bin/pytest${PYTHON_VERSION} && \
-    echo -e "#/usr/bin/bash\n/usr/bin/python${PYTHON_VERSION} -m yq \$*" | sed -r -e "s@#@#\!@" > /usr/bin/yq && \
-    SL=/usr/local/bin/python; if [[ ! -f ${SL} ]] && [[ ! -L ${SL} ]]; then ln -s /usr/bin/python${PYTHON_VERSION} ${SL}; else ls -la ${SL}; fi && \
-    SL=/usr/local/bin/pip; if [[ ! -f ${SL} ]] && [[ ! -L ${SL} ]]; then ln -s /usr/bin/pip${PYTHON_VERSION} ${SL}; else ls -la ${SL}; fi && \
-    SL=/usr/local/bin/flake8; if [[ ! -f ${SL} ]] && [[ ! -L ${SL} ]]; then ln -s /usr/bin/flake8${PYTHON_VERSION} ${SL}; else ls -la ${SL}; fi && \
-    SL=/usr/local/bin/pytest; if [[ ! -f ${SL} ]] && [[ ! -L ${SL} ]]; then ln -s /usr/bin/pytest${PYTHON_VERSION} ${SL}; else ls -la ${SL}; fi && \
-    cd /home/tooling; /usr/bin/python${PYTHON_VERSION} -m venv .venv && \
-        dnf -y -q --setopt=tsflags=nodocs install dotnet dotnet-sdk-6.0 dotnet-sdk-7.0; \
-        dnf -y -q --setopt=tsflags=nodocs install dotnet dotnet-sdk-6.0 dotnet-sdk-7.0; \
-        dnf -y -q --setopt=tsflags=nodocs install dotnet dotnet-sdk-7.0; \
-    ./configure --enable-xdebug; make; make install && \
-COPY --from=go-builder $REMOTE_SOURCES_DIR/gopls/app/gopls/gopls $HOME/go/bin/gopls
-COPY --from=go-builder $REMOTE_SOURCES_DIR/kubedock/app/kubedock $HOME/go/bin/kubedock
-COPY --from=go-builder $REMOTE_SOURCES_DIR/stow/app/build/bin/ /usr/bin/
-COPY --from=go-builder $REMOTE_SOURCES_DIR/stow/app/build/share/ /usr/share/
-    echo "Installed Packages" && rpm -qa | sort -V && echo "End Of Installed Packages" && \
-    echo "python basic install:"; python -V; \
-    echo "python venv install:"; source ${HOME}/.venv/bin/activate && python -V; \
 

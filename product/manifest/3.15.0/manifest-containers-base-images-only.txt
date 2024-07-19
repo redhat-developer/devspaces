@@ -1,27 +1,10 @@
-containers/devspaces-code-rhel8-container:3.15.0/ubi8/nodejs-20:1-50.1720405266 as checode-linux-libc-ubi8-builder
-containers/devspaces-code-rhel8-container:3.15.0/ubi9/nodejs-20:1-48.1720017855 as checode-linux-libc-ubi9-builder
-containers/devspaces-code-rhel8-container:3.15.0/rhel8/go-toolset:1.21.11-1 as machineexec-builder
-containers/devspaces-code-rhel8-container:3.15.0/ubi8:8.10-1020 as ubi-builder
-containers/devspaces-code-rhel8-container:3.15.0/ubi8-minimal:8.10-1018
-containers/devspaces-configbump-rhel8-container:3.15.0/registry.redhat.io/rhel9-2-els/rhel:9.2-1260 as builder
-containers/devspaces-configbump-rhel8-container:3.15.0/registry.redhat.io/rhel9-2-els/rhel:9.2-1260 as runtime
-containers/devspaces-dashboard-rhel8-container:3.15.0/ubi8/nodejs-18:1-114 as builder
-containers/devspaces-dashboard-rhel8-container:3.15.0/ubi8/nodejs-18:1-114
 containers/devspaces-devfileregistry-rhel8-container:3.15.0/registry.access.redhat.com/ubi8/python-311:1-68 as builder
 containers/devspaces-devfileregistry-rhel8-container:3.15.0/registry.access.redhat.com/ubi8/httpd-24:1-327 AS registry
 containers/devspaces-idea-rhel8-container:3.15.0/registry.redhat.io/rhel9-2-els/rhel:9.2-1290 as ubi-builder
 containers/devspaces-idea-rhel8-container:3.15.0/registry.redhat.io/rhel9-2-els/rhel:9.2-1290
-containers/devspaces-imagepuller-rhel8-container:3.15.0/registry.redhat.io/rhel9-2-els/rhel:9.2-1260 as builder
-containers/devspaces-imagepuller-rhel8-container:3.15.0/registry.redhat.io/rhel9-2-els/rhel:9.2-1260
 containers/devspaces-machineexec-rhel8-container:3.15.0/registry.redhat.io/rhel9-2-els/rhel:9.2-1260 as builder
 containers/devspaces-machineexec-rhel8-container:3.15.0/registry.redhat.io/rhel9-2-els/rhel:9.2-1260 as runtime
-containers/devspaces-operator-rhel8-container:3.15.0/registry.redhat.io/rhel9-2-els/rhel:9.2-1290 as builder
-containers/devspaces-operator-rhel8-container:3.15.0/registry.redhat.io/rhel9-2-els/rhel:9.2-1290
 containers/devspaces-operator-bundle-rhel8-container:3.15.0/scratch
 containers/devspaces-pluginregistry-rhel8-container:3.15.0/registry.access.redhat.com/ubi8/nodejs-18:1-114 as builder
 containers/devspaces-pluginregistry-rhel8-container:3.15.0/registry.redhat.io/rhel8/postgresql-15:1-70
 containers/devspaces-server-rhel8-container:3.15.0/registry.redhat.io/rhel9-2-els/rhel:9.2-1222
-containers/devspaces-traefik-rhel8-container:3.15.0/registry.access.redhat.com/ubi8-minimal:8.10-896 as builder
-containers/devspaces-traefik-rhel8-container:3.15.0/registry.access.redhat.com/ubi8-minimal:8.10-896 
-containers/devspaces-udi-rhel8-container:3.15.0/rhel8/go-toolset:1.21.11-1 as go-builder
-containers/devspaces-udi-rhel8-container:3.15.0/ubi8-minimal:8.10-1018
