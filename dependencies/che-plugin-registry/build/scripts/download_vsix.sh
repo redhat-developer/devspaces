@@ -148,7 +148,7 @@ for i in $(seq 0 "$((numberOfExtensions - 1))"); do
         vscodeEngineVersion="${vscodeEngineVersion//x/0}"
         # check if the extension's engine version is compatible with the code version
         # if the extension's engine version is ahead of the code version, print an error
-        if [[ "$vscodeEngineVersion" != "$(echo -e "$vscodeEngineVersion\n$codeVersion" | sort -V | head -n1)" ]]; then
+        if [[ "$vscodeEngineVersion" != "*" && "$vscodeEngineVersion" != "$(echo -e "$vscodeEngineVersion\n$codeVersion" | sort -V | head -n1)" ]]; then
             echo "Version ${vsixVersion} of ${vsixName} is not compatible with VS Code editor $codeVersion"
             exit 1
         fi
@@ -185,8 +185,11 @@ for i in $(seq 0 "$((numberOfExtensions - 1))"); do
     # replace x by 0 in the engine version
     vscodeEngineVersion="${vscodeEngineVersion//x/0}"
     # check if the extension's engine version is compatible with the code version
+    # if the extension's engine version is '*', it means the extension is compatible with any VS Code version
+    if [[ "$vscodeEngineVersion" == "*" ]]; then
+        echo -e "${GREEN}${EMOJI_PASS}${RESETSTYLE} compatible."
     # if the extension's engine version is ahead of the code version, check a next version of the extension
-    if [[ "$vscodeEngineVersion" = "$(echo -e "$vscodeEngineVersion\n$codeVersion" | sort -V | head -n1)" ]]; then
+    elif [[ "$vscodeEngineVersion" = "$(echo -e "$vscodeEngineVersion\n$codeVersion" | sort -V | head -n1)" ]]; then
         #VS Code version >= Engine version, can proceed."
         echo -e "${GREEN}${EMOJI_PASS}${RESETSTYLE} compatible."
     else
