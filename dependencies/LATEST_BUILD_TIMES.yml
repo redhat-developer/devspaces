@@ -12751,3 +12751,30 @@
   timeWait: 0 mins
   timeBuild: 5 mins
   timeTotal: 6 mins
+- name: devspaces-udi-rhel8
+  tag: 3.16-2
+  taskId: 62891170
+  timeCreate: Thu Jul 25 09:32:14 2024
+  timeStart: Thu Jul 25 09:32:57 2024
+  timeFinish: Thu Jul 25 10:28:26 2024
+  timeWait: 0 mins
+  timeBuild: 55 mins
+  timeTotal: 56 mins
+- name: devspaces-server-rhel8
+  tag: 3.16-9
+  taskId: 62892456
+  timeCreate: Thu Jul 25 10:21:54 2024
+  timeStart: Thu Jul 25 10:22:11 2024
+  timeFinish: Thu Jul 25 10:31:29 2024
+  timeWait: 0 mins
+  timeBuild: 9 mins
+  timeTotal: 9 mins
+- name: devspaces-operator-bundle
+  tag: 3.16-10
+  taskId: 62892919
+  timeCreate: Thu Jul 25 10:43:59 2024
+  timeStart: Thu Jul 25 10:44:14 2024
+  timeFinish: Thu Jul 25 10:47:52 2024
+  timeWait: 0 mins
+  timeBuild: 3 mins
+  timeTotal: 3 mins
