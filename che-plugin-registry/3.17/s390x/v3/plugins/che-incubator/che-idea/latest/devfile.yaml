@@ -1,0 +1,108 @@
+schemaVersion: 2.2.2
+metadata:
+  name: che-idea
+  displayName: IntelliJ IDEA Community
+  description: Red Hat OpenShift Dev Spaces with JetBrains IntelliJ IDEA Community IDE
+  icon: /images/intellij-idea.svg
+  tags:
+    - Tech-Preview
+  attributes:
+    publisher: che-incubator
+    version: 2022.1
+    title: Red Hat OpenShift Dev Spaces with JetBrains IntelliJ IDEA Community IDE
+    repository: https://github.com/che-incubator/jetbrains-editor-images
+    firstPublicationDate: '2022-01-11'
+    skipMetaYaml: true
+commands:
+  - id: init-container-command
+    apply:
+      component: idea-rhel8-injector
+  - id: init-che-idea-command
+    exec:
+      component: idea-rhel8
+      commandLine: nohup /projector/entrypoint-volume.sh > /projector/entrypoint-logs.txt 2>&1 &
+events:
+  preStart:
+    - init-container-command
+  postStart:
+    - init-che-idea-command
+components:
+  - name: idea-rhel8
+    container:
+      image: registry.redhat.io/devspaces/udi-rhel8:3.17
+      env:
+        - name: PROJECTOR_ASSEMBLY_DIR
+          value: /projector
+        - name: PROJECTOR_CONFIG_DIR
+          value: /home/user/.jetbrains
+      volumeMounts:
+        - name: projector-volume
+          path: /projector
+        - name: projector-configuration
+          path: /home/user/.jetbrains
+        - name: projector-java-configuration
+          path: /home/user/.java
+      memoryLimit: 6144Mi
+      memoryRequest: 2048Mi
+      cpuLimit: 2000m
+      cpuRequest: 1500m
+      endpoints:
+        - name: intellij
+          attributes:
+            type: main
+            cookiesAuthEnabled: true
+            discoverable: false
+            urlRewriteSupported: true
+          targetPort: 8887
+          exposure: public
+          path: /?backgroundColor=434343&wss
+          secure: true
+          protocol: https
+        - name: intellij-redirect-1
+          targetPort: 13131
+          exposure: public
+          protocol: https
+          attributes:
+            discoverable: false
+            urlRewriteSupported: false
+        - name: intellij-redirect-2
+          targetPort: 13132
+          exposure: public
+          protocol: https
+          attributes:
+            discoverable: false
+            urlRewriteSupported: false
+        - name: intellij-redirect-3
+          targetPort: 13133
+          exposure: public
+          protocol: https
+          attributes:
+            discoverable: false
+            urlRewriteSupported: false
+    attributes:
+      app.kubernetes.io/component: idea-rhel8-runtime
+      app.kubernetes.io/part-of: idea-rhel8.eclipse.org
+      controller.devfile.io/container-contribution: true
+  - name: projector-volume
+    volume: {}
+  - name: projector-configuration
+    volume: {}
+  - name: projector-java-configuration
+    volume: {}
+  - name: idea-rhel8-injector
+    container:
+      image: registry.redhat.io/devspaces/idea-rhel8:3.17
+      command:
+        - /projector/entrypoint-init-container.sh
+      env:
+        - name: PROJECTOR_VOLUME_MOUNT
+          value: /projector-volume
+        - name: PROJECTOR_ASSEMBLY_DIR
+          value: /projector
+      volumeMounts:
+        - name: projector-volume
+          path: /projector-volume
+      memoryLimit: 128Mi
+      memoryRequest: 32Mi
+      cpuLimit: 500m
+      cpuRequest: 30m
