@@ -13336,3 +13336,21 @@
   timeWait: 0 mins
   timeBuild: 3 mins
   timeTotal: 3 mins
+- name: devspaces-operator
+  tag: 3.16-7
+  taskId: 63209066
+  timeCreate: Thu Aug 8 07:41:20 2024
+  timeStart: Thu Aug 8 07:42:13 2024
+  timeFinish: Thu Aug 8 08:09:07 2024
+  timeWait: 0 mins
+  timeBuild: 26 mins
+  timeTotal: 27 mins
+- name: devspaces-operator-bundle
+  tag: 3.16-41
+  taskId: 63210217
+  timeCreate: Thu Aug 8 08:30:20 2024
+  timeStart: Thu Aug 8 08:30:56 2024
+  timeFinish: Thu Aug 8 08:34:58 2024
+  timeWait: 0 mins
+  timeBuild: 4 mins
+  timeTotal: 4 mins
