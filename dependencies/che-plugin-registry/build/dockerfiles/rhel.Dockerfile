@@ -43,7 +43,8 @@ COPY ./build/dockerfiles/rhel.install.sh /tmp
 RUN /tmp/rhel.install.sh && rm -f /tmp/rhel.install.sh
 
 # Install postgresql and nodejs
-RUN dnf module install postgresql:15/server nodejs:18/development -y
+RUN dnf -y update && \
+    dnf module install postgresql:15/server nodejs:18/development -y
 
 # Copy OpenVSX server files
 COPY --chown=0:0 /openvsx-server.tar.gz .
