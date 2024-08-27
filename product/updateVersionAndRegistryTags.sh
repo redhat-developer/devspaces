@@ -96,36 +96,6 @@ replaceField() {
   fi
 }
 
-# for a given DEVSPACES version, compute the equivalent Che versions that could be compatible 
-computeLatestPackageVersion() {
-  found=0
-  BASE_VERSION="$1" # Dev Spaces 3.y version to use for computations
-  packageName="$2"
-  THIS_Y_VALUE="${BASE_VERSION#*.}"; 
-  # note that these values are used for versions where main doesn't make sense, such as  @eclipse-che/plugin-registry-generator
-  THIS_CHE_Y=$(( (${THIS_Y_VALUE} * 2) + ${CHE_OFFSET} )); 
-  THIS_CHE_Y_LOWER=$(( ${THIS_CHE_Y} - 1 ));
-  if [[ $VERBOSE ]]; then echo "For THIS_Y_VALUE = $THIS_Y_VALUE, got THIS_CHE_Y = $THIS_CHE_Y and THIS_CHE_Y_LOWER = $THIS_CHE_Y_LOWER"; fi
-
-  # check if .2, .1, .0 version exists in npmjs.com
-  for y in $THIS_CHE_Y $THIS_CHE_Y_LOWER; do 
-    for z in 2 1 0; do 
-      # echo "curl -sSI https://www.npmjs.com/package/${packageName}/v/7.${y}.${z}"
-      if [[ $(curl -sSI "https://www.npmjs.com/package/${packageName}/v/7.${y}.${z}" | grep 404) != *"404"* ]]; then
-      change="plugin-registry-generator[$BASE_VERSION] = 7.${y}.${z}"
-      COMMIT_MSG="${COMMIT_MSG}; update $change"
-        echo "Update $change"
-        replaceField "${JOB_CONFIG}" ".Other[\"${packageName}\"][\"${BASE_VERSION}\"]" "\"7.${y}.${z}\""
-        found=1
-        break 2
-      fi
-    done
-  done
-  if [[ $found -eq 0 ]]; then
-    replaceField "${JOB_CONFIG}" ".Other[\"${packageName}\"][\"${BASE_VERSION}\"]" "\"latest\""
-  fi
-}
-
 computeLatestCSV() {
   image=$1 # operator-bundle
   SOURCE_CONTAINER=registry.redhat.io/devspaces/devspaces-${image}
@@ -281,12 +251,6 @@ updateJobConfig() {
     fi
 
   done
-
-  # set .2 version of @eclipse-che/plugin-registry-generator if currently set to latest
-  if [[ $(jq -r ".Other[\"@eclipse-che/plugin-registry-generator\"][\"${OLDEST}\"]" "${JOB_CONFIG}") == "latest" ]]; then
-    computeLatestPackageVersion $OLDEST "@eclipse-che/plugin-registry-generator"
-  fi
-  computeLatestPackageVersion $LATEST "@eclipse-che/plugin-registry-generator"
 
   # Update Tags
   if [[ $VERBOSE ]]; then 

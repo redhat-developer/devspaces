@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2020-2022 Red Hat, Inc.
+# Copyright (c) 2020-2024 Red Hat, Inc.
 # This program and the accompanying materials are made
 # available under the terms of the Eclipse Public License 2.0
 # which is available at https://www.eclipse.org/legal/epl-2.0/
@@ -27,33 +27,18 @@ jobs:
         fetch-depth: 0
     - uses: actions/setup-node@v1
       with:
-        node-version: '16'
-    - name: Get yarn cache directory path
-      id: yarn-cache-dir-path
-      run: echo "dir=$(yarn cache dir)" >> $GITHUB_OUTPUT
-
-    - uses: actions/cache@v2
-      name: Cache yarn dependencies
-      id: yarn-cache
-      with:
-        path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-        key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-        restore-keys: |
-          ${{ runner.os }}-yarn-
-
-    - name: Login to Quay.io
-      uses: azure/docker-login@83efeb77770c98b620c73055fbb59b2847e17dc0 #v1
-      with:
-        login-server: quay.io
-        username: ${{ secrets.DS_QUAY_USERNAME }}
-        password: ${{ secrets.DS_QUAY_PASSWORD }}
+        node-version: '18'
 
     - name: Login to the Red Hat Registry
-      uses: azure/docker-login@83efeb77770c98b620c73055fbb59b2847e17dc0 #v1
+      uses: azure/docker-login@83efeb77770c98b620c73055fbb59b2847e17dc0
       with:
         login-server: registry.redhat.io
         username: ${{ secrets.REGISTRY_REDHAT_IO_USERNAME }}
         password: ${{ secrets.REGISTRY_REDHAT_IO_PASSWORD }}
+
+    - name: Get yarn cache directory path
+      id: yarn-cache-dir-path
+      run: echo "dir=$(yarn cache dir)" >> $GITHUB_OUTPUT
 
     - name: image-build
       run: |
@@ -61,33 +46,3 @@ jobs:
         export SKIP_LINT=true
         export SKIP_TEST=true
         BUILDER=docker ./build.sh --tag pr-check --offline
-        EXPORTED_FOLDER=/var/www/html/v3
-        ls -la output/
-        docker run --rm --entrypoint=sh quay.io/devspaces/pluginregistry-rhel8:pr-check -c "ls -la ${EXPORTED_FOLDER}"
-        docker create --name pluginRegistry quay.io/devspaces/pluginregistry-rhel8:pr-check sh
-        mkdir root-dir
-        docker cp pluginRegistry:${EXPORTED_FOLDER} root-dir/v3
-        docker rm -f pluginRegistry
-        cp root-dir/v3/plugins/index.json root-dir/index.json
-        tar zcvf content-devspaces.tgz -C root-dir .
-    - uses: actions/upload-artifact@v2
-      with:
-        name: plugin-registry-content-devspaces
-        path: dependencies/che-plugin-registry/content-devspaces.tgz
-  pull-request-info:
-    if: ${{ github.event_name == 'pull_request' }}
-    runs-on: ubuntu-20.04
-    needs: [image-build]
-    steps:
-     - name: Store PR info
-       run: |
-         echo "${{ github.event.number }}" > PR_NUMBER
-         echo "${{ github.event.pull_request.head.sha }}" > PR_SHA
-     - uses: actions/upload-artifact@v2
-       with:
-         name: pull-request-number
-         path: PR_NUMBER
-     - uses: actions/upload-artifact@v2
-       with:
-         name: pull-request-sha
-         path: PR_SHA

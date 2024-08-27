@@ -54,6 +54,8 @@ RUN mkdir -p /tmp/opt
 COPY --chown=0:0 /ovsx.tar.gz .
 RUN tar -xf ovsx.tar.gz -C / && rm ovsx.tar.gz && ls -la /tmp/opt/ovsx/bin/
 
+RUN mkdir -p /var/www/html/v3/plugins/
+
 RUN \
     # Apply permissions to later change these files on httpd
     chmod g+rwx /var/log/httpd && chmod g+rw /run/httpd && \
@@ -69,22 +71,14 @@ RUN \
 COPY /build/scripts/import_vsix.sh /usr/local/bin
 COPY /build/scripts/start_services.sh /usr/local/bin/
 COPY /build/dockerfiles/openvsx.conf /etc/httpd/conf.d/
-COPY README.md .htaccess /var/www/html/
-COPY /build/scripts/*.sh resources.tgz che-*.yaml /build/
+COPY /build/scripts/*.sh /build/
 
 RUN chmod 755 /usr/local/bin/*.sh && \
-    tar --no-same-owner -xvf /build/resources.tgz -C /build/ && \
-    rm -rf /build/output/v3/che-editors.yaml && \
-    chmod -R g+rwX /build && \
-    cp -r /build/output/v3 /var/www/html/
+    chmod -R g+rwX /build
 
-COPY v3/plugins/ /var/www/html/v3/plugins/
-COPY v3/images/*.* /var/www/html/v3/images/
 COPY /build/dockerfiles/entrypoint.sh /usr/local/bin/
 
 RUN \
-    # Apply permissions to later change these files (entrypoint update_extension_vsx_references)
-    chmod g+rwx -R /var/www/html/v3 && \
     # Delete files that should not be copied into the final image
     rm -rf /build
 
