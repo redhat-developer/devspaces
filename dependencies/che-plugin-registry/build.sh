@@ -227,12 +227,6 @@ else
     jobconfigjson=/tmp/job-config.json
 fi
 REGISTRY_VERSION=$(jq -r '.Version' "${jobconfigjson}");
-REGISTRY_GENERATOR_VERSION=$(jq -r --arg REGISTRY_VERSION "${REGISTRY_VERSION}" '.Other["@eclipse-che/plugin-registry-generator"][$REGISTRY_VERSION]' "${jobconfigjson}");
-# echo "REGISTRY_VERSION=${REGISTRY_VERSION}; REGISTRY_GENERATOR_VERSION=${REGISTRY_GENERATOR_VERSION}"
-
-echo "Generate artifacts"
-# do not generate digests as they'll be added at runtime from the operator (see CRW-1157)
-npx @eclipse-che/plugin-registry-generator@"${REGISTRY_GENERATOR_VERSION}" --root-folder:"$(pwd)" --output-folder:"$(pwd)/output" "${BUILD_FLAGS_ARRAY[@]}" --skip-digest-generation:true
 
 if [ "${SKIP_OCI_IMAGE}" != "true" ]; then
     detectBuilder
@@ -244,15 +238,14 @@ if [ "${SKIP_OCI_IMAGE}" != "true" ]; then
     # TODO migrate this to cachito - https://issues.redhat.com/browse/CRW-3336
     prepareOVSXPackagingAsset
     prepareOpenvsxPackagingAsset
-    # Tar up the outputted files as the Dockerfile depends on them
-    tar -czvf resources.tgz ./output/v3/
+
     echo "Build with $BUILDER $BUILD_COMMAND"
     IMAGE="${REGISTRY}/${ORGANIZATION}/pluginregistry-rhel8:${TAG}"
     # Copy to root directory to behave as if in Brew or devspaces-images
     cp "${DOCKERFILE}" ./builder.Dockerfile
     ${BUILDER} ${BUILD_COMMAND} --progress=plain -t "${IMAGE}" -f ./builder.Dockerfile .
     # Remove copied Dockerfile and tarred zip
-    rm ./builder.Dockerfile resources.tgz openvsx-server.tar.gz ovsx.tar.gz
+    rm ./builder.Dockerfile openvsx-server.tar.gz ovsx.tar.gz
     # remove unneeded images from container registry
     cleanupImages
 fi

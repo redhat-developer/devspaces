@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2020-2021 Red Hat, Inc.
+# Copyright (c) 2020-2024 Red Hat, Inc.
 # This program and the accompanying materials are made
 # available under the terms of the Eclipse Public License 2.0
 # which is available at https://www.eclipse.org/legal/epl-2.0/
@@ -30,7 +30,7 @@ jobs:
 
       - uses: actions/setup-node@v1
         with:
-          node-version: '16'
+          node-version: '18'
 
       - name: Login to the Red Hat Registry
         uses: azure/docker-login@83efeb77770c98b620c73055fbb59b2847e17dc0 #v1
@@ -38,19 +38,6 @@ jobs:
           login-server: registry.redhat.io
           username: ${{ secrets.REGISTRY_REDHAT_IO_USERNAME }}
           password: ${{ secrets.REGISTRY_REDHAT_IO_PASSWORD }}
-
-      - name: Get yarn cache directory path
-        id: yarn-cache-dir-path
-        run: echo "dir=$(yarn cache dir)" >> $GITHUB_OUTPUT
-
-      - uses: actions/cache@v2
-        name: Cache yarn dependencies
-        id: yarn-cache
-        with:
-          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
 
       - name: image-build
         run: |
