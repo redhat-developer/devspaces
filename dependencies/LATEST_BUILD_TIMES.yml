@@ -13462,3 +13462,21 @@
   timeWait: 0 mins
   timeBuild: 4 mins
   timeTotal: 4 mins
+- name: devspaces-operator
+  tag: 3.17-7
+  taskId: 63981262
+  timeCreate: Thu Sep 5 09:10:34 2024
+  timeStart: Thu Sep 5 09:11:49 2024
+  timeFinish: Thu Sep 5 09:30:17 2024
+  timeWait: 1 mins
+  timeBuild: 18 mins
+  timeTotal: 19 mins
+- name: devspaces-operator-bundle
+  tag: 3.17-3
+  taskId: 63981438
+  timeCreate: Thu Sep 5 09:36:16 2024
+  timeStart: Thu Sep 5 09:36:51 2024
+  timeFinish: Thu Sep 5 09:41:01 2024
+  timeWait: 0 mins
+  timeBuild: 4 mins
+  timeTotal: 4 mins
