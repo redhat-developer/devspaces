@@ -54,8 +54,6 @@ RUN mkdir -p /tmp/opt
 COPY --chown=0:0 /ovsx.tar.gz .
 RUN tar -xf ovsx.tar.gz -C / && rm ovsx.tar.gz && ls -la /tmp/opt/ovsx/bin/
 
-RUN mkdir -p /var/www/html/v3/plugins/
-
 RUN \
     # Apply permissions to later change these files on httpd
     chmod g+rwx /var/log/httpd && chmod g+rw /run/httpd && \
@@ -92,8 +90,6 @@ RUN \
 RUN sed -i /etc/httpd/conf/httpd.conf \
     -e "s,Listen 80,Listen 8080," \
     -e "s,logs/error_log,/dev/stderr," \
-    -e "/<IfModule log_config_module>/a SetEnvIf User-Agent \"^kube-probe/\" dontlog" \
-    -e 's,CustomLog "logs/access_log" combined,CustomLog /dev/stdout combined env=!dontlog,' \
     -e "s,AllowOverride None,AllowOverride All," && \
     chmod a+rwX /etc/httpd/conf /etc/httpd/conf.d /run/httpd /etc/httpd/logs/
 
