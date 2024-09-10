@@ -54,8 +54,6 @@ RUN mkdir -p /tmp/opt
 COPY --chown=0:0 /ovsx.tar.gz .
 RUN tar -xf ovsx.tar.gz -C / && rm ovsx.tar.gz && ls -la /tmp/opt/ovsx/bin/
 
-RUN mkdir -p /var/www/html/v3/plugins/
-
 RUN \
     # Apply permissions to later change these files on httpd
     chmod g+rwx /var/log/httpd && chmod g+rw /run/httpd && \
