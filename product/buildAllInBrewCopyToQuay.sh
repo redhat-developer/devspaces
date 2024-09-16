@@ -82,7 +82,6 @@ if [[ $PHASES == *"1"* ]]; then
     doBuild "devspaces-code \
         devspaces-configbump \
         devspaces-dashboard \
-        devspaces-devfileregistry \
         devspaces-idea \
         devspaces-imagepuller \
         devspaces-machineexec \

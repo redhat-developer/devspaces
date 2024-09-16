@@ -19,7 +19,7 @@ BREW=""
 # by default, show the tag :: image@sha; optionally just show image:tag
 QUIET=""
 QUIETER=""
-# by default show all images; optionally filter for one or more, eg 'devfile|plugin|udi'
+# by default show all images; optionally filter for one or more, eg 'dashboard|plugin|udi'
 REGEX_FILTER=""
 
 usage () {

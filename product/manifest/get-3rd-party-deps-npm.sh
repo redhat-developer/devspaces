@@ -49,13 +49,12 @@ devspaces-operator \
 devspaces-operator-bundle \
 devspaces-dashboard \
 \
-devspaces-devfileregistry \
 devspaces-idea \
 devspaces-imagepuller \
 devspaces-machineexec \
 devspaces-pluginregistry \
-\
 devspaces-server \
+\
 devspaces-traefik \
 devspaces-udi \
 ; do

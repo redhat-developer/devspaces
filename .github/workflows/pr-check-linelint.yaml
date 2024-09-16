@@ -13,7 +13,6 @@ name: Overall project - PR check - Linelint
 on:
   pull_request:
     paths:
-      - 'dependencies/che-devfile-registry/**'
       - 'dependencies/che-plugin-registry/**'
     branches: 
       - '**'

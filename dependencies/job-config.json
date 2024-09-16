@@ -212,36 +212,6 @@
         "disabled": false
       }
     },
-    "devfileregistry": {
-      "3.15": {
-        "upstream_branch": [
-          "devspaces-3.15-rhel-8",
-          "devspaces-3.15-rhel-8"
-        ],
-        "disabled": true
-      },
-      "3.16": {
-        "upstream_branch": [
-          "devspaces-3.16-rhel-8",
-          "devspaces-3.16-rhel-8"
-        ],
-        "disabled": false
-      },
-      "3.17": {
-        "upstream_branch": [
-          "devspaces-3.17-rhel-8",
-          "devspaces-3.17-rhel-8"
-        ],
-        "disabled": false
-      },
-      "3.x": {
-        "upstream_branch": [
-          "devspaces-3-rhel-8",
-          "devspaces-3-rhel-8"
-        ],
-        "disabled": false
-      }
-    },
     "pluginregistry": {
       "3.15": {
         "upstream_branch": [
