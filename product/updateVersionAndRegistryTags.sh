@@ -268,22 +268,6 @@ updateJobConfig() {
   computeLatestCSV operator-bundle
 }
 
-updateDevfileRegistry() {
-  REG_ROOT="${WORKDIR}/dependencies/che-devfile-registry"
-  SCRIPT_DIR="${REG_ROOT}/build/scripts"
-  YAML_ROOT="${REG_ROOT}/devfiles"
-  TEMPLATE_FILE="${REG_ROOT}/deploy/openshift/devspaces-devfile-registry.yaml"
-
-  # replace DEVSPACES devfiles with image references to current version tag
-  for devfile in $("$SCRIPT_DIR"/list_yaml.sh "$YAML_ROOT"); do
-    sed -E -e "s|(.*image: *?.*registry.redhat.io/devspaces/.*:).+|\1${DEVSPACES_VERSION}|g" \
-      -i "${devfile}"
-  done
-
-  "${SCRIPT_DIR}/update_template.sh" -rn devfile -s "${TEMPLATE_FILE}" -t "${DEVSPACES_VERSION}"
-  git diff -q "${YAML_ROOT}" "${TEMPLATE_FILE}" || true
-}
-
 # '.parameters[]|select(.name=="IMAGE_TAG")|.value'
 updatePluginRegistry() {
     REG_ROOT="${WORKDIR}/dependencies/che-plugin-registry"
@@ -345,7 +329,6 @@ ${lastCommitComment}" -b "${BRANCH}" -h "${PR_BRANCH}" "${OPENBROWSERFLAG}"; } |
 # Run update functions
 updateVersion
 updateJobConfig
-updateDevfileRegistry
 updatePluginRegistry
 commitChanges
 

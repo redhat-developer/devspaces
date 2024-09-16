@@ -115,20 +115,6 @@ updateImageTags() {
 	git commit -s -m "chore(che-*.yaml) update devspaces image tags to :${DS_VERSION}" $YAML_ROOT || echo ""
 }
 
-# for the devspaces main repo, update meta.yaml files to point to the correct branch of $samplesRepo
-updateLinksToDevfiles() {
-	YAML_ROOT="dependencies/che-devfile-registry/devfiles"
-
-	# replace DS meta.yaml files with links to current version of devfile v2
-	# shellcheck disable=SC2044
-	for meta in $(find ${YAML_ROOT} -name "meta.yaml"); do
-	   sed -r -i "${meta}" \
-		   -e "s|/tree/devfilev2|/tree/${TARGET_BRANCH}|g" \
-		   -e "s|/tree/devspaces-[0-9.]-rhel-8|/tree/${TARGET_BRANCH}|g"
-	done
-	git commit -s -m "chore(meta) link v2 devfiles to /tree/${TARGET_BRANCH}" $YAML_ROOT || echo ""
-}
-
 # for the sample projects ONLY, commit changes to the devfile so it contains the correct image and tag
 updateSampleDevfileReferences () {
 	devfile=devfile.yaml
@@ -179,7 +165,6 @@ pushBranchAndOrTagGH () {
 
 		# for the devspaces main repo, update devfiles to point to the correct tag/branch
 		if [[ $d == "devspaces" ]]; then
-			updateLinksToDevfiles
 			toggleQuayRHECReferences
 			updateImageTags
 		fi
@@ -235,16 +220,15 @@ if [[ "${pkgs_devel_branch}" ]] && [[ "${CSV_VERSION}" ]]; then
 	devspaces-code \
 	devspaces-configbump \
 	devspaces-dashboard \
-	devspaces-devfileregistry \
 	devspaces-idea \
-	\
 	devspaces-imagepuller \
+	\
 	devspaces-machineexec \
 	devspaces-operator \
 	devspaces-operator-bundle \
 	devspaces-pluginregistry \
-	\
 	devspaces-server \
+	\
 	devspaces-traefik \
 	devspaces-udi \
 	; do

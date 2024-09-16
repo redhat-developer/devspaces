@@ -18,7 +18,7 @@ QUAY=0
 BREW=0
 # by default, show the tag :: image@sha; optionally just show image:tag
 QUIET=0
-# by default show all images; optionally filter for one or more, eg 'devfile|plugin|udi'
+# by default show all images; optionally filter for one or more, eg 'dashboard|plugin|udi'
 REGEX_FILTER=""
 
 # defaults to pass to getLatestIIBs.sh
@@ -60,7 +60,7 @@ Examples:
 To compare latest image in Quay to latest CSV in bundle in latest IIB:
   TAG=$PROD_VER; \\
   IMG=devspaces/dashboard-rhel8; \\
-  IMG=devspaces/devfileregistry-rhel8; \\
+  IMG=devspaces/pluginregistry-rhel8; \\
   img_quay=\$(${SCRIPTPATH}/getLatestImageTags.sh -b devspaces-\${TAG}-rhel-8 --quay --tag \"\${TAG}-\" -c \${IMG}); echo \$img_quay; \\
   img_iib=\$(${SCRIPTPATH}/checkImagesInCSV.sh --ds -t \${TAG} -o 4.12 -y -qq -i \${IMG}); echo \$img_iib; \\
   if [[ \$img_quay != \$img_iib ]]; then \\

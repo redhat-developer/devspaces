@@ -151,12 +151,10 @@ if [[ ${phases} == *"1"* ]]; then
 	rm -fr ${MANIFEST_FILE/.txt/-containers-binaries-extras.txt} ${MANIFEST_FILE/.txt/-containers-base-images-only.txt}
 	log "1b. Define list of upstream containers & RPMs pulled into them from https://pkgs.devel.redhat.com/cgit/?q=devspaces "
 	for d in \
-	devspaces-devfileregistry \
 	devspaces-idea \
 	devspaces-machineexec \
 	devspaces-operator-bundle \
 	devspaces-pluginregistry \
-	\
 	devspaces-server \
 	; do
 		if [[ $d == "devspaces" ]]; then

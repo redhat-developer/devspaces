@@ -21,7 +21,7 @@ usage ()
 Examples:
   $0 quay.io/devspaces/devspaces-operator-bundle:latest
   $0 quay.io/devworkspace/devworkspace-operator-bundle:next
-  $0 quay.io/devspaces/devfileregistry-rhel8:latest --tar-flags var/www/html/*/external_images.txt --arch ppc64le
+  $0 quay.io/devspaces/pluginregistry-rhel8:latest --tar-flags var/www/html/*/external_images.txt --arch ppc64le
 
 Options:
   --delete-before  remove any local images before attempting to pull and extract a new copy
