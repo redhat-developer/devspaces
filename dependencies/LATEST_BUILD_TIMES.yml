@@ -14029,3 +14029,75 @@
   timeWait: 0 mins
   timeBuild: 3 mins
   timeTotal: 4 mins
+- name: devspaces-udi-rhel8
+  tag: 3.16-6.1727056497
+  taskId: 64412634
+  timeCreate: Mon Sep 23 01:54:57 2024
+  timeStart: Mon Sep 23 01:55:40 2024
+  timeFinish: Mon Sep 23 02:49:26 2024
+  timeWait: 0 mins
+  timeBuild: 53 mins
+  timeTotal: 54 mins
+- name: devspaces-configbump-rhel8
+  tag: 3.16-4.1727061952
+  taskId: 64415867
+  timeCreate: Mon Sep 23 03:25:52 2024
+  timeStart: Mon Sep 23 03:26:19 2024
+  timeFinish: Mon Sep 23 03:46:14 2024
+  timeWait: 0 mins
+  timeBuild: 19 mins
+  timeTotal: 20 mins
+- name: devspaces-server-rhel8
+  tag: 3.16-14.1727061953
+  taskId: 64415868
+  timeCreate: Mon Sep 23 03:25:53 2024
+  timeStart: Mon Sep 23 03:26:20 2024
+  timeFinish: Mon Sep 23 03:34:55 2024
+  timeWait: 0 mins
+  timeBuild: 8 mins
+  timeTotal: 9 mins
+- name: devspaces-machineexec-rhel8
+  tag: 3.16-6.1727061954
+  taskId: 64415869
+  timeCreate: Mon Sep 23 03:25:54 2024
+  timeStart: Mon Sep 23 03:26:20 2024
+  timeFinish: Mon Sep 23 03:34:26 2024
+  timeWait: 0 mins
+  timeBuild: 8 mins
+  timeTotal: 8 mins
+- name: devspaces-imagepuller-rhel8
+  tag: 3.16-3.1727061955
+  taskId: 64415870
+  timeCreate: Mon Sep 23 03:25:55 2024
+  timeStart: Mon Sep 23 03:26:21 2024
+  timeFinish: Mon Sep 23 03:39:26 2024
+  timeWait: 0 mins
+  timeBuild: 13 mins
+  timeTotal: 13 mins
+- name: devspaces-idea-rhel8
+  tag: 3.16-3.1727061956
+  taskId: 64415871
+  timeCreate: Mon Sep 23 03:25:56 2024
+  timeStart: Mon Sep 23 03:26:22 2024
+  timeFinish: Mon Sep 23 03:41:40 2024
+  timeWait: 0 mins
+  timeBuild: 15 mins
+  timeTotal: 15 mins
+- name: devspaces-code-rhel8
+  tag: 3.16-24
+  taskId: 64447337
+  timeCreate: Mon Sep 23 18:17:39 2024
+  timeStart: Mon Sep 23 18:19:27 2024
+  timeFinish: Mon Sep 23 23:15:50 2024
+  timeWait: 1 mins
+  timeBuild: 296 mins
+  timeTotal: 298 mins
+- name: devspaces-operator-bundle
+  tag: 3.16-73
+  taskId: 64454703
+  timeCreate: Mon Sep 23 23:34:34 2024
+  timeStart: Mon Sep 23 23:34:45 2024
+  timeFinish: Mon Sep 23 23:39:06 2024
+  timeWait: 0 mins
+  timeBuild: 4 mins
+  timeTotal: 4 mins
