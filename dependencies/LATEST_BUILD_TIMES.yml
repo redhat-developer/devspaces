@@ -14101,3 +14101,147 @@
   timeWait: 0 mins
   timeBuild: 4 mins
   timeTotal: 4 mins
+- name: devspaces-udi-rhel8
+  tag: 3.16-6.1727145674
+  taskId: 64461581
+  timeCreate: Tue Sep 24 02:41:14 2024
+  timeStart: Tue Sep 24 02:53:43 2024
+  timeFinish: Tue Sep 24 03:53:29 2024
+  timeWait: 12 mins
+  timeBuild: 59 mins
+  timeTotal: 72 mins
+- name: devspaces-udi-rhel8
+  tag: 3.16-6.1727146304
+  taskId: 64462028
+  timeCreate: Tue Sep 24 02:51:44 2024
+  timeStart: Tue Sep 24 03:04:04 2024
+  timeFinish: Tue Sep 24 03:57:01 2024
+  timeWait: 12 mins
+  timeBuild: 52 mins
+  timeTotal: 65 mins
+- name: devspaces-dashboard-rhel8
+  tag: 3.16-27.1727146942
+  taskId: 64462470
+  timeCreate: Tue Sep 24 03:02:22 2024
+  timeStart: Tue Sep 24 03:05:39 2024
+  timeFinish: Tue Sep 24 03:32:51 2024
+  timeWait: 3 mins
+  timeBuild: 27 mins
+  timeTotal: 30 mins
+- name: devspaces-dashboard-rhel8
+  tag: 3.16-27.1727147208
+  taskId: 64462804
+  timeCreate: Tue Sep 24 03:06:49 2024
+  timeStart: Tue Sep 24 03:12:00 2024
+  timeFinish: Tue Sep 24 03:38:11 2024
+  timeWait: 5 mins
+  timeBuild: 26 mins
+  timeTotal: 31 mins
+- name: devspaces-udi-rhel8
+  tag: 3.16-6.1727147376
+  taskId: 64462926
+  timeCreate: Tue Sep 24 03:09:36 2024
+  timeStart: Tue Sep 24 03:21:25 2024
+  timeFinish: Tue Sep 24 04:17:28 2024
+  timeWait: 11 mins
+  timeBuild: 56 mins
+  timeTotal: 67 mins
+- name: devspaces-udi-rhel8
+  tag: 3.16-6.1727147586
+  taskId: 64463283
+  timeCreate: Tue Sep 24 03:13:06 2024
+  timeStart: Tue Sep 24 03:49:31 2024
+  timeFinish: Tue Sep 24 04:48:55 2024
+  timeWait: 36 mins
+  timeBuild: 59 mins
+  timeTotal: 95 mins
+- name: devspaces-udi-rhel8
+  tag: 3.16-6.1727147603
+  taskId: 64463294
+  timeCreate: Tue Sep 24 03:13:23 2024
+  timeStart: Tue Sep 24 03:51:57 2024
+  timeFinish: Tue Sep 24 04:46:12 2024
+  timeWait: 38 mins
+  timeBuild: 54 mins
+  timeTotal: 92 mins
+- name: devspaces-devfileregistry-rhel8
+  tag: 3.16-67.1727147846
+  taskId: 64463413
+  timeCreate: Tue Sep 24 03:17:26 2024
+  timeStart: Tue Sep 24 03:57:28 2024
+  timeFinish: Tue Sep 24 04:07:17 2024
+  timeWait: 40 mins
+  timeBuild: 9 mins
+  timeTotal: 49 mins
+- name: devspaces-devfileregistry-rhel8
+  tag: 3.16-67.1727148105
+  taskId: 64463595
+  timeCreate: Tue Sep 24 03:21:45 2024
+  timeStart: Tue Sep 24 04:03:41 2024
+  timeFinish: Tue Sep 24 04:13:58 2024
+  timeWait: 41 mins
+  timeBuild: 10 mins
+  timeTotal: 52 mins
+- name: devspaces-dashboard-rhel8
+  tag: 3.16-27.1727148200
+  taskId: 64463688
+  timeCreate: Tue Sep 24 03:23:20 2024
+  timeStart: Tue Sep 24 04:10:51 2024
+  timeFinish: Tue Sep 24 04:38:28 2024
+  timeWait: 47 mins
+  timeBuild: 27 mins
+  timeTotal: 75 mins
+- name: devspaces-udi-rhel8
+  tag: 3.16-6.1727148634
+  taskId: 64464043
+  timeCreate: Tue Sep 24 03:30:34 2024
+  timeStart: Tue Sep 24 04:16:20 2024
+  timeFinish: Tue Sep 24 05:14:38 2024
+  timeWait: 45 mins
+  timeBuild: 58 mins
+  timeTotal: 104 mins
+- name: devspaces-udi-rhel8
+  tag: 3.16-6.1727148827
+  taskId: 64464133
+  timeCreate: Tue Sep 24 03:33:47 2024
+  timeStart: Tue Sep 24 04:18:45 2024
+  timeFinish: Tue Sep 24 05:14:39 2024
+  timeWait: 44 mins
+  timeBuild: 55 mins
+  timeTotal: 100 mins
+- name: devspaces-devfileregistry-rhel8
+  tag: 3.16-67.1727153638
+  taskId: 64466791
+  timeCreate: Tue Sep 24 04:53:58 2024
+  timeStart: Tue Sep 24 05:02:27 2024
+  timeFinish: Tue Sep 24 05:12:11 2024
+  timeWait: 8 mins
+  timeBuild: 9 mins
+  timeTotal: 18 mins
+- name: devspaces-dashboard-rhel8
+  tag: 3.16-27.1727153757
+  taskId: 64466880
+  timeCreate: Tue Sep 24 04:55:58 2024
+  timeStart: Tue Sep 24 05:10:14 2024
+  timeFinish: Tue Sep 24 05:35:51 2024
+  timeWait: 14 mins
+  timeBuild: 25 mins
+  timeTotal: 39 mins
+- name: devspaces-operator
+  tag: 3.16-13
+  taskId: 64470506
+  timeCreate: Tue Sep 24 06:11:21 2024
+  timeStart: Tue Sep 24 07:17:41 2024
+  timeFinish: Tue Sep 24 07:39:55 2024
+  timeWait: 66 mins
+  timeBuild: 22 mins
+  timeTotal: 88 mins
+- name: devspaces-operator-bundle
+  tag: 3.16-74
+  taskId: 64475751
+  timeCreate: Tue Sep 24 07:45:27 2024
+  timeStart: Tue Sep 24 09:38:45 2024
+  timeFinish: Tue Sep 24 09:43:49 2024
+  timeWait: 113 mins
+  timeBuild: 5 mins
+  timeTotal: 118 mins
