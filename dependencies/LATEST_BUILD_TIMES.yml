@@ -13732,3 +13732,23 @@
   timeWait: 0 mins
   timeBuild: 5 mins
   timeTotal: 5 mins
+- name: devspaces-operator-bundle
+  tag: 3.17-20
+  taskId: 64616066
+  timeCreate: Sat Sep 28 18:44:54 2024
+  timeStart: Sat Sep 28 18:45:28 2024
+  timeFinish: Sat Sep 28 18:49:03 2024
+  timeWait: 0 mins
+  timeBuild: 3 mins
+  timeTotal: 4 mins
+
+- name: devspaces-idea-rhel8
+  tag: 3.17-2
+  taskId: 64615984
+  timeCreate: Sat Sep 28 18:11:27 2024
+  timeStart: Sat Sep 28 18:12:05 2024
+  timeFinish: Sat Sep 28 18:26:13 2024
+  timeWait: 0 mins
+  timeBuild: 14 mins
+  timeTotal: 14 mins
+
