@@ -61,7 +61,7 @@ while [[ "$#" -gt 0 ]]; do
     '-b') BRANCH="$2"; shift 1;;
     '-w') WORKDIR="$2"; shift 1;;
     '-v') VERBOSE=1; shift 0;;
-    '-nv'|'--no-version') doupdateversion=0; shift 0;;
+    '--no-version') doupdateversion=0; shift 0;;
     '--remove') REMOVE_DEVSPACES_VERSION="$2"; shift 1;;
     '--enable-jobs') ENABLE_JOBS_VERSION="$2"; shift 1;;
     '--disable-jobs') DISABLE_JOBS_VERSION="$2"; shift 1;;
@@ -274,16 +274,9 @@ updatePluginRegistry() {
     SCRIPT_DIR="${REG_ROOT}/build/scripts"
     YAML_ROOT="${REG_ROOT}"
     TEMPLATE_FILE="${REG_ROOT}/deploy/openshift/devspaces-plugin-registry.yaml"
-    for yaml in $("$SCRIPT_DIR"/list_che_yaml.sh "$YAML_ROOT"); do
-        sed -r \
-            -e "s#(.*image: (['\"]*)(registry.redhat.io|quay.io)/devspaces/.*:)[0-9.]+(['\"]*)#\1${DEVSPACES_VERSION}\2#g" \
-            -e "s#quay.io/devspaces/#registry.redhat.io/devspaces/#g" \
-            -e "s|# Copyright.*|# Copyright (c) 2018-$(date +%Y) Red Hat, Inc.|g" \
-            -i "${yaml}"
-    done
 
     # update '.parameters[]|select(.name=="IMAGE_TAG")|.value' ==> 3.yy
-    yq -ri "(.parameters[] | select(.name == \"IMAGE_TAG\") | .value ) = \"${DEVSPACES_VERSION}\"" "${TEMPLATE_FILE}"
+    yq -yi "(.parameters[] | select(.name == \"IMAGE_TAG\") | .value ) = \"${DEVSPACES_VERSION}\"" "${TEMPLATE_FILE}"
 
     git diff -q "${YAML_ROOT}" "${TEMPLATE_FILE}" || true
 }
