@@ -13732,16 +13732,6 @@
   timeWait: 0 mins
   timeBuild: 5 mins
   timeTotal: 5 mins
-- name: devspaces-operator-bundle
-  tag: 3.17-20
-  taskId: 64616066
-  timeCreate: Sat Sep 28 18:44:54 2024
-  timeStart: Sat Sep 28 18:45:28 2024
-  timeFinish: Sat Sep 28 18:49:03 2024
-  timeWait: 0 mins
-  timeBuild: 3 mins
-  timeTotal: 4 mins
-
 - name: devspaces-idea-rhel8
   tag: 3.17-2
   taskId: 64615984
@@ -13751,7 +13741,15 @@
   timeWait: 0 mins
   timeBuild: 14 mins
   timeTotal: 14 mins
-
+- name: devspaces-operator-bundle
+  tag: 3.17-20
+  taskId: 64616066
+  timeCreate: Sat Sep 28 18:44:54 2024
+  timeStart: Sat Sep 28 18:45:28 2024
+  timeFinish: Sat Sep 28 18:49:03 2024
+  timeWait: 0 mins
+  timeBuild: 3 mins
+  timeTotal: 4 mins
 - name: devspaces-configbump-rhel8
   tag: 3.17-3
   taskId: 64649565
@@ -13761,17 +13759,6 @@
   timeWait: 0 mins
   timeBuild: 14 mins
   timeTotal: 14 mins
-
-- name: devspaces-operator-bundle
-  tag: 3.17-21
-  taskId: 64650183
-  timeCreate: Mon Sep 30 20:36:50 2024
-  timeStart: Mon Sep 30 20:36:56 2024
-  timeFinish: Mon Sep 30 20:42:16 2024
-  timeWait: 0 mins
-  timeBuild: 5 mins
-  timeTotal: 5 mins
-
 - name: devspaces-idea-rhel8
   tag: 3.17-3
   taskId: 64649958
@@ -13781,4 +13768,48 @@
   timeWait: 0 mins
   timeBuild: 13 mins
   timeTotal: 14 mins
-
+- name: devspaces-operator-bundle
+  tag: 3.17-21
+  taskId: 64650183
+  timeCreate: Mon Sep 30 20:36:50 2024
+  timeStart: Mon Sep 30 20:36:56 2024
+  timeFinish: Mon Sep 30 20:42:16 2024
+  timeWait: 0 mins
+  timeBuild: 5 mins
+  timeTotal: 5 mins
+- name: devspaces-imagepuller-rhel8
+  tag: 3.17-3
+  taskId: 64650212
+  timeCreate: Mon Sep 30 16:42:00 2024
+  timeStart: Mon Sep 30 16:42:19 2024
+  timeFinish: Mon Sep 30 16:56:03 2024
+  timeWait: 0 mins
+  timeBuild: 13 mins
+  timeTotal: 14 mins
+- name: devspaces-machineexec-rhel8
+  tag: 3.17-3
+  taskId: 64650694
+  timeCreate: Mon Sep 30 16:56:12 2024
+  timeStart: Mon Sep 30 16:56:54 2024
+  timeFinish: Mon Sep 30 17:04:56 2024
+  timeWait: 0 mins
+  timeBuild: 8 mins
+  timeTotal: 8 mins
+- name: devspaces-traefik-rhel8
+  tag: 3.17-3
+  taskId: 64650740
+  timeCreate: Mon Sep 30 17:00:34 2024
+  timeStart: Mon Sep 30 17:00:48 2024
+  timeFinish: Mon Sep 30 17:22:11 2024
+  timeWait: 0 mins
+  timeBuild: 21 mins
+  timeTotal: 21 mins
+- name: devspaces-operator-bundle
+  tag: 3.17-22
+  taskId: 64650928
+  timeCreate: Mon Sep 30 17:13:44 2024
+  timeStart: Mon Sep 30 17:14:29 2024
+  timeFinish: Mon Sep 30 17:18:58 2024
+  timeWait: 0 mins
+  timeBuild: 4 mins
+  timeTotal: 5 mins

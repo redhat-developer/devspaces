@@ -8,9 +8,9 @@ quay.io/devspaces/configbump-rhel8:3.17-3
 
 quay.io/devspaces/devspaces-rhel8-operator:3.17-16
 
-quay.io/devspaces/devspaces-operator-bundle:3.17-21
-     NVR: devspaces-operator-bundle-container-3.17-21
-   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=3314523
+quay.io/devspaces/devspaces-operator-bundle:3.17-22
+     NVR: devspaces-operator-bundle-container-3.17-22
+   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=3314561
   Source: https://pkgs.devel.redhat.com/cgit/containers/devspaces-operator-bundle/commit?id=5f8a0c1b8b6759f0876e2d6e1505466231340609
 
 quay.io/devspaces/dashboard-rhel8:3.17-10
@@ -20,14 +20,23 @@ quay.io/devspaces/idea-rhel8:3.17-3
    Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=3314511
   Source: https://pkgs.devel.redhat.com/cgit/containers/devspaces-idea/commit?id=4e1bc12ce13ca8fe2138d2e44286a7d591a9b997
 
-quay.io/devspaces/imagepuller-rhel8:3.17-2
+quay.io/devspaces/imagepuller-rhel8:3.17-3
+     NVR: devspaces-imagepuller-rhel8-container-3.17-3
+   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=3314527
+  Source: https://pkgs.devel.redhat.com/cgit/containers/devspaces-imagepuller/commit?id=20663835f4adebccaeb7d11c04db922dcae44a90
 
-quay.io/devspaces/machineexec-rhel8:3.17-2
+quay.io/devspaces/machineexec-rhel8:3.17-3
+     NVR: devspaces-machineexec-rhel8-container-3.17-3
+   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=3314538
+  Source: https://pkgs.devel.redhat.com/cgit/containers/devspaces-machineexec/commit?id=35a6914c9c83dfb47681a28ce231eea82fb34485
 
 quay.io/devspaces/pluginregistry-rhel8:3.17-6
 
 quay.io/devspaces/server-rhel8:3.17-4
 
-quay.io/devspaces/traefik-rhel8:3.17-2
+quay.io/devspaces/traefik-rhel8:3.17-3
+     NVR: devspaces-traefik-rhel8-container-3.17-3
+   Build: https://brewweb.engineering.redhat.com/brew/buildinfo?buildID=3314543
+  Source: https://pkgs.devel.redhat.com/cgit/containers/devspaces-traefik/commit?id=83fa7883983ae829cafc77725ca0600f1b06c7c3
 
 quay.io/devspaces/udi-rhel8:3.17-3
