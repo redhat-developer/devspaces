@@ -13858,3 +13858,23 @@
   timeWait: 0 mins
   timeBuild: 4 mins
   timeTotal: 5 mins
+- name: devspaces-operator-bundle
+  tag: 3.17-25
+  taskId: 64672679
+  timeCreate: Tue Oct 1 09:06:08 2024
+  timeStart: Tue Oct 1 09:30:11 2024
+  timeFinish: Tue Oct 1 09:34:41 2024
+  timeWait: 24 mins
+  timeBuild: 4 mins
+  timeTotal: 28 mins
+
+- name: devspaces-udi-rhel8
+  tag: 3.17-5
+  taskId: 64670575
+  timeCreate: Tue Oct 1 07:18:57 2024
+  timeStart: Tue Oct 1 07:40:37 2024
+  timeFinish: Tue Oct 1 08:38:21 2024
+  timeWait: 21 mins
+  timeBuild: 57 mins
+  timeTotal: 79 mins
+
