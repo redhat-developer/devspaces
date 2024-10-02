@@ -13732,16 +13732,6 @@
   timeWait: 0 mins
   timeBuild: 5 mins
   timeTotal: 5 mins
-- name: devspaces-operator-bundle
-  tag: 3.17-20
-  taskId: 64616066
-  timeCreate: Sat Sep 28 18:44:54 2024
-  timeStart: Sat Sep 28 18:45:28 2024
-  timeFinish: Sat Sep 28 18:49:03 2024
-  timeWait: 0 mins
-  timeBuild: 3 mins
-  timeTotal: 4 mins
-
 - name: devspaces-idea-rhel8
   tag: 3.17-2
   taskId: 64615984
@@ -13751,4 +13741,120 @@
   timeWait: 0 mins
   timeBuild: 14 mins
   timeTotal: 14 mins
-
+- name: devspaces-operator-bundle
+  tag: 3.17-20
+  taskId: 64616066
+  timeCreate: Sat Sep 28 18:44:54 2024
+  timeStart: Sat Sep 28 18:45:28 2024
+  timeFinish: Sat Sep 28 18:49:03 2024
+  timeWait: 0 mins
+  timeBuild: 3 mins
+  timeTotal: 4 mins
+- name: devspaces-udi-rhel8
+  tag: 3.18-2
+  taskId: 64669645
+  timeCreate: Tue Oct 1 02:59:59 2024
+  timeStart: Tue Oct 1 03:00:13 2024
+  timeFinish: Tue Oct 1 03:55:26 2024
+  timeWait: 0 mins
+  timeBuild: 55 mins
+  timeTotal: 55 mins
+- name: devspaces-code-rhel8
+  tag: 3.18-1
+  taskId: 64700414
+  timeCreate: Tue Oct 1 18:12:38 2024
+  timeStart: Tue Oct 1 18:39:42 2024
+  timeFinish: Tue Oct 1 23:38:47 2024
+  timeWait: 27 mins
+  timeBuild: 299 mins
+  timeTotal: 326 mins
+- name: devspaces-pluginregistry-rhel8
+  tag: 3.18-2
+  taskId: 64731039
+  timeCreate: Wed Oct 2 09:18:13 2024
+  timeStart: Wed Oct 2 09:25:58 2024
+  timeFinish: Wed Oct 2 10:20:37 2024
+  timeWait: 7 mins
+  timeBuild: 54 mins
+  timeTotal: 62 mins
+- name: devspaces-idea-rhel8
+  tag: 3.18-1
+  taskId: 64740918
+  timeCreate: Wed Oct 2 14:00:29 2024
+  timeStart: Wed Oct 2 14:18:00 2024
+  timeFinish: Wed Oct 2 14:35:33 2024
+  timeWait: 17 mins
+  timeBuild: 17 mins
+  timeTotal: 35 mins
+- name: devspaces-machineexec-rhel8
+  tag: 3.18-1
+  taskId: 64741830
+  timeCreate: Wed Oct 2 14:19:29 2024
+  timeStart: Wed Oct 2 14:25:54 2024
+  timeFinish: Wed Oct 2 14:33:09 2024
+  timeWait: 6 mins
+  timeBuild: 7 mins
+  timeTotal: 13 mins
+- name: devspaces-dashboard-rhel8
+  tag: 3.18-1
+  taskId: 64741849
+  timeCreate: Wed Oct 2 14:19:57 2024
+  timeStart: Wed Oct 2 14:25:54 2024
+  timeFinish: Wed Oct 2 14:52:03 2024
+  timeWait: 5 mins
+  timeBuild: 26 mins
+  timeTotal: 32 mins
+- name: devspaces-configbump-rhel8
+  tag: 3.18-1
+  taskId: 64741852
+  timeCreate: Wed Oct 2 14:20:02 2024
+  timeStart: Wed Oct 2 14:25:55 2024
+  timeFinish: Wed Oct 2 14:41:58 2024
+  timeWait: 5 mins
+  timeBuild: 16 mins
+  timeTotal: 21 mins
+- name: devspaces-imagepuller-rhel8
+  tag: 3.18-2
+  taskId: 64741853
+  timeCreate: Wed Oct 2 14:20:08 2024
+  timeStart: Wed Oct 2 14:25:55 2024
+  timeFinish: Wed Oct 2 14:40:16 2024
+  timeWait: 5 mins
+  timeBuild: 14 mins
+  timeTotal: 20 mins
+- name: devspaces-traefik-rhel8
+  tag: 3.18-1
+  taskId: 64741872
+  timeCreate: Wed Oct 2 14:20:52 2024
+  timeStart: Wed Oct 2 14:27:26 2024
+  timeFinish: Wed Oct 2 14:46:47 2024
+  timeWait: 6 mins
+  timeBuild: 19 mins
+  timeTotal: 25 mins
+- name: devspaces-operator
+  tag: 3.18-3
+  taskId: 64741876
+  timeCreate: Wed Oct 2 14:21:02 2024
+  timeStart: Wed Oct 2 14:28:13 2024
+  timeFinish: Wed Oct 2 14:45:36 2024
+  timeWait: 7 mins
+  timeBuild: 17 mins
+  timeTotal: 24 mins
+- name: devspaces-server-rhel8
+  tag: 3.18-1
+  taskId: 64746257
+  timeCreate: Wed Oct 2 16:41:57 2024
+  timeStart: Wed Oct 2 16:44:53 2024
+  timeFinish: Wed Oct 2 16:52:43 2024
+  timeWait: 2 mins
+  timeBuild: 7 mins
+  timeTotal: 10 mins
+- name: devspaces-operator-bundle
+  tag: 3.18-1
+  taskId: 64747285
+  timeCreate: Wed Oct 2 17:21:25 2024
+  timeStart: Wed Oct 2 17:22:52 2024
+  timeFinish: Wed Oct 2 17:27:03 2024
+  timeWait: 1 mins
+  timeBuild: 4 mins
+  timeTotal: 5 mins
