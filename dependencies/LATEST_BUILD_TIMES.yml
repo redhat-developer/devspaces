@@ -13858,16 +13858,6 @@
   timeWait: 0 mins
   timeBuild: 4 mins
   timeTotal: 5 mins
-- name: devspaces-operator-bundle
-  tag: 3.17-25
-  taskId: 64672679
-  timeCreate: Tue Oct 1 09:06:08 2024
-  timeStart: Tue Oct 1 09:30:11 2024
-  timeFinish: Tue Oct 1 09:34:41 2024
-  timeWait: 24 mins
-  timeBuild: 4 mins
-  timeTotal: 28 mins
-
 - name: devspaces-udi-rhel8
   tag: 3.17-5
   taskId: 64670575
@@ -13877,4 +13867,30 @@
   timeWait: 21 mins
   timeBuild: 57 mins
   timeTotal: 79 mins
-
+- name: devspaces-operator-bundle
+  tag: 3.17-25
+  taskId: 64672679
+  timeCreate: Tue Oct 1 09:06:08 2024
+  timeStart: Tue Oct 1 09:30:11 2024
+  timeFinish: Tue Oct 1 09:34:41 2024
+  timeWait: 24 mins
+  timeBuild: 4 mins
+  timeTotal: 28 mins
+- name: devspaces-server-rhel8
+  tag: 3.17-5
+  taskId: 64732624
+  timeCreate: Wed Oct 2 13:55:15 2024
+  timeStart: Wed Oct 2 13:56:17 2024
+  timeFinish: Wed Oct 2 14:05:14 2024
+  timeWait: 1 mins
+  timeBuild: 8 mins
+  timeTotal: 9 mins
+- name: devspaces-operator-bundle
+  tag: 3.17-26
+  taskId: 64734011
+  timeCreate: Wed Oct 2 14:28:19 2024
+  timeStart: Wed Oct 2 14:29:00 2024
+  timeFinish: Wed Oct 2 14:33:13 2024
+  timeWait: 0 mins
+  timeBuild: 4 mins
+  timeTotal: 4 mins
