@@ -8,6 +8,7 @@ spring:
   autoconfigure:
     exclude: 
       - org.jobrunr.spring.autoconfigure.storage.JobRunrElasticSearchStorageAutoConfiguration
+      - org.springframework.boot.actuate.autoconfigure.tracing.zipkin.ZipkinAutoConfiguration
   cache:
     jcache:
       config: classpath:ehcache.xml
