@@ -272,6 +272,29 @@
         "disabled": false
       }
     },
+    "jetbrains-ide": {
+      "3.17": {
+        "upstream_branch": [
+          "7.93.x",
+          "main"
+        ],
+        "disabled": false
+      },
+      "3.18": {
+        "upstream_branch": [
+          "7.94.x",
+          "main"
+        ],
+        "disabled": false
+      },
+      "3.x": {
+        "upstream_branch": [
+          "main",
+          "main"
+        ],
+        "disabled": false
+      }
+    },
     "traefik": {
       "3.16": {
         "upstream_branch": [
