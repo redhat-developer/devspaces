@@ -76,6 +76,7 @@ devspaces/configbump-rhel8 \
 devspaces/devspaces-rhel8-operator \
 devspaces/devspaces-operator-bundle \
 devspaces/dashboard-rhel8 \
+devspaces/jetbrains-ide-rhel9 \
 \
 devspaces/idea-rhel8 \
 devspaces/imagepuller-rhel8 \
