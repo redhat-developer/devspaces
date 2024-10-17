@@ -14128,3 +14128,30 @@
   timeWait: 18 mins
   timeBuild: 5 mins
   timeTotal: 23 mins
+- name: devspaces-code-rhel8
+  tag: 3.17-15
+  taskId: 65159419
+  timeCreate: Wed Oct 16 14:48:47 2024
+  timeStart: Wed Oct 16 14:48:51 2024
+  timeFinish: Wed Oct 16 19:45:42 2024
+  timeWait: 0 mins
+  timeBuild: 296 mins
+  timeTotal: 296 mins
+- name: devspaces-dashboard-rhel8
+  tag: 3.17-18
+  taskId: 65185718
+  timeCreate: Thu Oct 17 08:16:38 2024
+  timeStart: Thu Oct 17 08:17:19 2024
+  timeFinish: Thu Oct 17 08:47:49 2024
+  timeWait: 0 mins
+  timeBuild: 30 mins
+  timeTotal: 31 mins
+- name: devspaces-operator-bundle
+  tag: 3.17-39
+  taskId: 65186460
+  timeCreate: Thu Oct 17 08:58:27 2024
+  timeStart: Thu Oct 17 08:58:39 2024
+  timeFinish: Thu Oct 17 09:03:59 2024
+  timeWait: 0 mins
+  timeBuild: 5 mins
+  timeTotal: 5 mins
