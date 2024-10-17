@@ -14155,6 +14155,15 @@
   timeWait: 0 mins
   timeBuild: 294 mins
   timeTotal: 294 mins
+- name: devspaces-code-rhel8
+  tag: 3.18-7
+  taskId: 65159567
+  timeCreate: Wed Oct 16 14:50:50 2024
+  timeStart: Wed Oct 16 14:51:09 2024
+  timeFinish: Wed Oct 16 19:59:28 2024
+  timeWait: 0 mins
+  timeBuild: 308 mins
+  timeTotal: 308 mins
 - name: devspaces-operator-bundle
   tag: 3.18-18
   taskId: 65161090
@@ -14164,3 +14173,21 @@
   timeWait: 20 mins
   timeBuild: 5 mins
   timeTotal: 25 mins
+- name: devspaces-operator
+  tag: 3.18-9
+  taskId: 65178426
+  timeCreate: Thu Oct 17 02:50:06 2024
+  timeStart: Thu Oct 17 02:50:15 2024
+  timeFinish: Thu Oct 17 03:09:20 2024
+  timeWait: 0 mins
+  timeBuild: 19 mins
+  timeTotal: 19 mins
+- name: devspaces-operator-bundle
+  tag: 3.18-19
+  taskId: 65179515
+  timeCreate: Thu Oct 17 03:35:25 2024
+  timeStart: Thu Oct 17 03:35:57 2024
+  timeFinish: Thu Oct 17 03:40:11 2024
+  timeWait: 0 mins
+  timeBuild: 4 mins
+  timeTotal: 4 mins
